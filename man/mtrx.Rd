@@ -6,6 +6,13 @@
 \usage{
 mtrx(...)
 }
+\arguments{
+\item{...}{Vector that represent the columns of the mtrx. These must be
+the same length, or can be length \code{1} in which case the vector will be
+recycled. Vectors are combined with \code{vec_c()} which performs an implicit
+cast to enforce a common type. Vectors can optionally be named, which
+results in a named matrix. Otherwise, default names are generated.}
+}
 \description{
 Helpful constructor for building mtrx objects. Pass in named vectors,
 where each vector represents a single column in the mtrx. Length \code{1}
@@ -14,11 +21,16 @@ vectors are recycled.
 \details{
 No rownames are allowed for mtrx objects.
 
-mtrx objects are never reduced to vectors when subsetting using \code{[}.
+mtrx objects are never reduced to vectors when subsetting using \code{[} (i.e.
+dimensions are never dropped).
 }
 \examples{
 
+mtrx(1:10)
+
 a_mtrx <- mtrx(a = 1:5, b = 6:10)
+
+a_mtrx
 
 # first column
 a_mtrx[1]

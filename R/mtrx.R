@@ -40,11 +40,22 @@ new_mtrx <- function(x, dim, col_names) {
 #'
 #' No rownames are allowed for mtrx objects.
 #'
-#' mtrx objects are never reduced to vectors when subsetting using `[`.
+#' mtrx objects are never reduced to vectors when subsetting using `[` (i.e.
+#' dimensions are never dropped).
+#'
+#' @param ... Vector that represent the columns of the mtrx. These must be
+#' the same length, or can be length `1` in which case the vector will be
+#' recycled. Vectors are combined with `vec_c()` which performs an implicit
+#' cast to enforce a common type. Vectors can optionally be named, which
+#' results in a named matrix. Otherwise, default names are generated.
 #'
 #' @examples
 #'
+#' mtrx(1:10)
+#'
 #' a_mtrx <- mtrx(a = 1:5, b = 6:10)
+#'
+#' a_mtrx
 #'
 #' # first column
 #' a_mtrx[1]
@@ -65,7 +76,7 @@ new_mtrx <- function(x, dim, col_names) {
 mtrx <- function(...) {
   .dots <- dots_list(...)
 
-  mtrx_nms <- tidy_names(names2(.dots))
+  mtrx_nms <- tidy_names(names2(.dots), quiet = TRUE)
   .dots <- unname(.dots)
 
   n_cols <- length(.dots)
@@ -75,4 +86,26 @@ mtrx <- function(...) {
   mtrx_vec <- vec_c(!!! mtrx_lst)
 
   new_mtrx(mtrx_vec, dim = c(common_size, n_cols), mtrx_nms)
+}
+
+#' Row-wise mtrx creation
+#'
+#' `mrtrx()` is the equivalent of [tibble::tribble()], but for mtrx objects.
+#' It allows for easy row-wise creation of mtrx objects, which is especially
+#' helpful for small mtrices where readability is key.
+#'
+#' @param ... Arguments specifying the structure of a mtrx. Column names should
+#' be formulas, and may only appear before the data.
+#'
+#' @examples
+#'
+#' mrtrx(
+#'   ~col1, ~col2,
+#'   1,     3,
+#'   5,     2
+#' )
+#'
+#' @export
+mrtrx <- function(...) {
+  as_mtrx(tibble::frame_matrix(...))
 }

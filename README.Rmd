@@ -1,0 +1,72 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# mtrx
+
+The goal of `mtrx` is to provide a simpler matrix class in R, similar in spirit
+to `tibble`.
+
+## Installation
+
+You can install from Github with:
+
+```{r, eval = FALSE}
+devtools::install_github("DavisVaughan/mtrx")
+```
+
+
+## Creation
+
+```{r}
+library(mtrx)
+```
+
+
+Create `mtrx` object by either coercing existing objects to `mtrx` or
+by using the helpful constructor, `mtrx()`.
+
+```{r}
+# Coercion
+mat <- matrix(1:10, nrow = 5, dimnames = list(NULL, c("a", "b")))
+
+as_mtrx(mat)
+```
+
+The constructor takes multiple vectors in `...`, where each element is a column
+of the matrix, possibly named.
+
+```{r}
+mtrx_ex <- mtrx(1:5, a = 6:10)
+
+mtrx_ex
+```
+
+mtrx objects have the same slicing semantics as tibbles. Dimensions are never
+dropped.
+
+```{r}
+# first column
+mtrx_ex[1]
+
+# first row
+mtrx_ex[1,]
+
+# second column by name
+mtrx_ex["a"]
+
+# individual elements
+mtrx_ex[1, "a"]
+```
+
