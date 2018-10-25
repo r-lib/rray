@@ -15,8 +15,12 @@ knitr::opts_chunk$set(
 
 # mtrx
 
+[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+
 The goal of `mtrx` is to provide a simpler matrix class in R, similar in spirit
 to `tibble`.
+
+**This is just an experiment, and this package should not be used for anything meaningful.**
 
 ## Installation
 
