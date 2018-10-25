@@ -1,0 +1,20 @@
+Package: mtrx
+Title: Tidy Matrix Calculations
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Davis",
+           family = "Vaughan",
+           role = c("aut", "cre"),
+           email = "davis@rstudio.com")
+Description: Tidy matrix calculations
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Remotes:
+    r-lib/vctrs
+Imports: 
+    dplyr,
+    rlang,
+    tibble
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 6.1.0.9000
