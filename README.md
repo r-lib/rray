@@ -9,6 +9,11 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 The goal of `mtrx` is to provide a simpler matrix class in R, similar in
 spirit to `tibble`.
 
+Eventually, it would be great if mtrx objects had broadcasting
+semantics, similar to what is done in Numpy.
+
+It would also be neat to have a `dplyr`-ish interface on top of them.
+
 **This is just an experiment, and this package should not be used for
 anything meaningful.**
 
