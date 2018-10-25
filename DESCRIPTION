@@ -1,12 +1,13 @@
 Package: mtrx
-Title: Tidy Matrix Calculations
+Title: Simple Matrices
 Version: 0.0.0.9000
 Authors@R: 
     person(given = "Davis",
            family = "Vaughan",
            role = c("aut", "cre"),
            email = "davis@rstudio.com")
-Description: Tidy matrix calculations
+Description: Provides a 'mtrx' class that provides stricter checking than 
+   a traditional matrix.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -15,6 +16,9 @@ Remotes:
 Imports: 
     dplyr,
     rlang,
-    tibble
+    tibble,
+    vctrs
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.0.9000
+URL: https://github.com/DavisVaughan/mtrx
+BugReports: https://github.com/DavisVaughan/mtrx/issues
