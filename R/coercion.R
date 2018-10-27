@@ -18,6 +18,17 @@ as_matrix <- function(x, ...) {
 }
 
 #' @export
+as_matrix.matrix <- function(x, ...) {
+  x
+}
+
+#' @export
+as_matrix.numeric <- function(x, ...) {
+  # consistent with xtensor
+  matrix(x, nrow = 1)
+}
+
+#' @export
 as_matrix.vctrs_mtrx <- function(x, ...) {
   class(x) <- "matrix"
   dimnames(x) <- list(NULL, attr(x, "col_names"))
@@ -56,7 +67,7 @@ as_mtrx <- function(x, ...) {
 #' @rdname as_mtrx
 #' @export
 as_mtrx.matrix <- function(x, ...) {
-  .dims <- dim(x)
+  .dims <- vec_dim(x)
   cnames <- dimnames(x)[[2]] %||% generate_names(.dims[2])
   new_mtrx(vec_data(x), .dims, cnames)
 }

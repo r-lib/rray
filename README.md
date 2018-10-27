@@ -52,7 +52,7 @@ The constructor takes multiple vectors in `...`, where each element is a
 column of the matrix, possibly named.
 
 ``` r
-mtrx_ex <- mtrx(1:5, a = 6:10)
+mtrx_ex <- mtrx(1:5 + 0, a = 6:10 + 0)
 
 mtrx_ex
 #> <vctrs_mtrx[10]>
@@ -99,4 +99,18 @@ mtrx_ex[1, "a"]
 #> <vctrs_mtrx[1]>
 #>      a
 #> [1,] 6
+```
+
+Broadcast arithmetic is partially available through `xtensor`.
+
+``` r
+
+mtrx_ex + mtrx_ex
+#> <vctrs_mtrx[10]>
+#>      ..1 ..2
+#> [1,]  2  12 
+#> [2,]  4  14 
+#> [3,]  6  16 
+#> [4,]  8  18 
+#> [5,] 10  20
 ```

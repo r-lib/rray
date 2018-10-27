@@ -12,13 +12,18 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Remotes:
-    r-lib/vctrs
+    r-lib/vctrs,
+    DavisVaughan/xtensorrr
 Imports: 
     dplyr,
     rlang,
     tibble,
-    vctrs
+    vctrs,
+    Rcpp
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.0.9000
 URL: https://github.com/DavisVaughan/mtrx
 BugReports: https://github.com/DavisVaughan/mtrx/issues
+LinkingTo: 
+    Rcpp,
+    xtensorrr
