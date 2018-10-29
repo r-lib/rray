@@ -81,9 +81,34 @@ mtrx_ex[1, "a"]
 
 Broadcast arithmetic is partially available through `xtensor`.
 
+```
+(5, 2)
+(5, 1)
+------
+(5, 2)
+```
+
+```{r, error=TRUE}
+col_a <- mtrx_ex["a"]
+col_a
+
+mtrx_ex + col_a
+
+# Note that you cant do this in base R
+as_matrix(mtrx_ex) + as_matrix(col_a)
+```
+
+Outer sums are incredibly simple with this broadcast syntax.
+
+```
+(5, 1)
+(1, 5)
+------
+(5, 5)
+```
+
+
 ```{r}
-
-mtrx_ex + mtrx_ex
-
+col_a + t(col_a)
 ```
 

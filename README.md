@@ -103,14 +103,50 @@ mtrx_ex[1, "a"]
 
 Broadcast arithmetic is partially available through `xtensor`.
 
-``` r
+    (5, 2)
+    (5, 1)
+    ------
+    (5, 2)
 
-mtrx_ex + mtrx_ex
+``` r
+col_a <- mtrx_ex["a"]
+col_a
+#> <vctrs_mtrx[5]>
+#>      a 
+#> [1,]  6
+#> [2,]  7
+#> [3,]  8
+#> [4,]  9
+#> [5,] 10
+
+mtrx_ex + col_a
 #> <vctrs_mtrx[10]>
 #>      ..1 ..2
-#> [1,]  2  12 
-#> [2,]  4  14 
-#> [3,]  6  16 
-#> [4,]  8  18 
-#> [5,] 10  20
+#> [1,]  7  12 
+#> [2,]  9  14 
+#> [3,] 11  16 
+#> [4,] 13  18 
+#> [5,] 15  20
+
+# Note that you cant do this in base R
+as_matrix(mtrx_ex) + as_matrix(col_a)
+#> Error in as_matrix(mtrx_ex) + as_matrix(col_a): non-conformable arrays
+```
+
+Outer sums are incredibly simple with this broadcast syntax.
+
+    (5, 1)
+    (1, 5)
+    ------
+    (5, 5)
+
+``` r
+col_a + t(col_a)
+#> <vctrs_mtrx[25]>
+#>      ..1 ..2 ..3 ..4 ..5
+#> [1,] 12  13  14  15  16 
+#> [2,] 13  14  15  16  17 
+#> [3,] 14  15  16  17  18 
+#> [4,] 15  16  17  18  19 
+#> [5,] 16  17  18  19  20
 ```
