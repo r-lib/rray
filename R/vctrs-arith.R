@@ -4,10 +4,10 @@ mtrx_arith_base <- function(op, x, y) {
 
   op_fn <- switch(
     op,
-    "+" = mtrx_add,
-    "-" = mtrx_subtract,
-    "/" = mtrx_divide,
-    "*" = mtrx_multiply
+    "+" = mtrx_add_cpp,
+    "-" = mtrx_subtract_cpp,
+    "/" = mtrx_divide_cpp,
+    "*" = mtrx_multiply_cpp
   )
 
   # Even though mtrx is not a true matrix, just by setting the dim
