@@ -1,8 +1,7 @@
 #ifndef mtrx_hpp
 #define mtrx_hpp
 
-// This seems to be the only way to get them to show up in RcppExports.cpp?
-
+// xtensor-r headers containing R <-> Rcpp <-> xtensor conversion
 #include "xtensor-r/rarray.hpp"
 #include "xtensor-r/rtensor.hpp"
 #include "xtensor-r/rvectorize.hpp"

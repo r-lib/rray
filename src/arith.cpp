@@ -1,7 +1,5 @@
-#include "mtrx.h"
+#include "mtrx_types.h"
 #include <Rcpp.h>
-
-// [[Rcpp::plugins(cpp14)]]
 
 // Broadcast sum
 // [[Rcpp::export]]
