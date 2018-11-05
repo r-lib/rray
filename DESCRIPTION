@@ -27,3 +27,5 @@ BugReports: https://github.com/DavisVaughan/mtrx/issues
 LinkingTo: 
     Rcpp,
     xtensorrr
+Suggests: 
+    testthat
