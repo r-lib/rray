@@ -2,58 +2,44 @@
 % Please edit documentation in R/dim.R
 \name{matrix-dims}
 \alias{matrix-dims}
-\alias{mtrx_dims2}
-\alias{mtrx_dim2}
-\alias{mtrx_dims_common}
-\alias{mtrx_dim_common}
+\alias{rray_dims_common}
+\alias{rray_dim_common}
 \title{Find common dimensions}
 \usage{
-mtrx_dims2(x, y, .dims = NULL)
+rray_dims_common(..., .dims = NULL)
 
-mtrx_dim2(x, y, .dims = NULL)
-
-mtrx_dims_common(..., .dims = NULL)
-
-mtrx_dim_common(..., .dims = NULL)
+rray_dim_common(..., .dims = NULL)
 }
 \description{
 \itemize{
-\item \code{mtrx_dims2()} finds the common dimensionality among two objects.
-\item \code{mtrx_dim2()} finds the common size of each dimension of two objects.
-\item \code{mtrx_dims_common()} and \code{mtrx_dim_common()} are extensions that take
+\item \code{rray_dims2()} finds the common dimensionality among two objects.
+\item \code{rray_dim2()} finds the common size of each dimension of two objects.
+\item \code{rray_dims_common()} and \code{rray_dim_common()} are extensions that take
 multiple inputs.
 }
 }
 \details{
-\code{mtrx_dims2()} essentially takes the maximum dimensionality of the inputs. This
+\code{rray_dims_common()} essentially takes the maximum dimensionality of the inputs. This
 is the "common" dimensionality. This is different from recycling
 rules. Where comparing dimensionalities of 2 and 3 would throw an error
 with tidy recycling rules, the common dimensionality of these is really 3,
 because the 2D object has an implicit 3rd dimension of size 1.
 
-\code{mtrx_dim2()} uses \code{mtrx_dims2()} to find the common dimensionality,
+\code{rray_dim_common()} finds the common dimensionality,
 makes any implicit dimensions explicit, then recycles the size of each
 dimension to a common size.
 }
-\section{Invariants}{
-
-\itemize{
-\item \code{mtrx_dims2(mtrx_dims2(x, y), z) == mtrx_dims2(x, mtrx_dims2(y, z)}
-\item \code{mtrx_dim2(mtrx_dim2(x, y), z) == mtrx_dim2(x, mtrx_dim2(y, z)}
-}
-}
-
 \examples{
 
 x_1_by_4 <- matrix(1, nrow = 1, ncol = 4)
 x_5_by_1 <- matrix(1, nrow = 5, ncol = 1)
 
 # these are both 2D
-mtrx_dims_common(x_1_by_4, x_5_by_1)
+rray_dims_common(x_1_by_4, x_5_by_1)
 
 # recycle rows: 1 and 4 = 4
 # recycle cols: 5 and 1 = 5
-mtrx_dim_common(x_1_by_4, x_5_by_1)
+rray_dim_common(x_1_by_4, x_5_by_1)
 
 x_5_by_1_by_3 <- array(1, c(5, 1, 3))
 
@@ -61,7 +47,7 @@ x_5_by_1_by_3 <- array(1, c(5, 1, 3))
 # recycle cols:  5 and 1 = 5
 # recycle depth: 1 and 3 = 3
 # (here, depth of 1 for the matrix is implicit)
-mtrx_dim_common(x_1_by_4, x_5_by_1_by_3)
+rray_dim_common(x_1_by_4, x_5_by_1_by_3)
 
 
 }

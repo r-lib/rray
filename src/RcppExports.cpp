@@ -6,60 +6,111 @@
 
 using namespace Rcpp;
 
-// mtrx_add_cpp
-xt::rarray<double> mtrx_add_cpp(xt::rarray<double> x, xt::rarray<double> y);
-RcppExport SEXP _mtrx_mtrx_add_cpp(SEXP xSEXP, SEXP ySEXP) {
+// rray_add_cpp
+xt::rarray<double> rray_add_cpp(xt::rarray<double> x, xt::rarray<double> y);
+RcppExport SEXP _mtrx_rray_add_cpp(SEXP xSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< xt::rarray<double> >::type x(xSEXP);
     Rcpp::traits::input_parameter< xt::rarray<double> >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(mtrx_add_cpp(x, y));
+    rcpp_result_gen = Rcpp::wrap(rray_add_cpp(x, y));
     return rcpp_result_gen;
 END_RCPP
 }
-// mtrx_subtract_cpp
-xt::rarray<double> mtrx_subtract_cpp(xt::rarray<double> x, xt::rarray<double> y);
-RcppExport SEXP _mtrx_mtrx_subtract_cpp(SEXP xSEXP, SEXP ySEXP) {
+// rray_subtract_cpp
+xt::rarray<double> rray_subtract_cpp(xt::rarray<double> x, xt::rarray<double> y);
+RcppExport SEXP _mtrx_rray_subtract_cpp(SEXP xSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< xt::rarray<double> >::type x(xSEXP);
     Rcpp::traits::input_parameter< xt::rarray<double> >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(mtrx_subtract_cpp(x, y));
+    rcpp_result_gen = Rcpp::wrap(rray_subtract_cpp(x, y));
     return rcpp_result_gen;
 END_RCPP
 }
-// mtrx_multiply_cpp
-xt::rarray<double> mtrx_multiply_cpp(xt::rarray<double> x, xt::rarray<double> y);
-RcppExport SEXP _mtrx_mtrx_multiply_cpp(SEXP xSEXP, SEXP ySEXP) {
+// rray_multiply_cpp
+xt::rarray<double> rray_multiply_cpp(xt::rarray<double> x, xt::rarray<double> y);
+RcppExport SEXP _mtrx_rray_multiply_cpp(SEXP xSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< xt::rarray<double> >::type x(xSEXP);
     Rcpp::traits::input_parameter< xt::rarray<double> >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(mtrx_multiply_cpp(x, y));
+    rcpp_result_gen = Rcpp::wrap(rray_multiply_cpp(x, y));
     return rcpp_result_gen;
 END_RCPP
 }
-// mtrx_divide_cpp
-xt::rarray<double> mtrx_divide_cpp(xt::rarray<double> x, xt::rarray<double> y);
-RcppExport SEXP _mtrx_mtrx_divide_cpp(SEXP xSEXP, SEXP ySEXP) {
+// rray_divide_cpp
+xt::rarray<double> rray_divide_cpp(xt::rarray<double> x, xt::rarray<double> y);
+RcppExport SEXP _mtrx_rray_divide_cpp(SEXP xSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< xt::rarray<double> >::type x(xSEXP);
     Rcpp::traits::input_parameter< xt::rarray<double> >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(mtrx_divide_cpp(x, y));
+    rcpp_result_gen = Rcpp::wrap(rray_divide_cpp(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray_broadcast_cpp
+xt::rarray<double> rray_broadcast_cpp(xt::rarray<double> x, IntegerVector shape);
+RcppExport SEXP _mtrx_rray_broadcast_cpp(SEXP xSEXP, SEXP shapeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< xt::rarray<double> >::type x(xSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type shape(shapeSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray_broadcast_cpp(x, shape));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray_broadcast_shape_cpp
+bool rray_broadcast_shape_cpp(IntegerVector src_shape, IntegerVector dest_shape);
+RcppExport SEXP _mtrx_rray_broadcast_shape_cpp(SEXP src_shapeSEXP, SEXP dest_shapeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< IntegerVector >::type src_shape(src_shapeSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type dest_shape(dest_shapeSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray_broadcast_shape_cpp(src_shape, dest_shape));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray_atan_cpp
+xt::rarray<double> rray_atan_cpp(xt::rarray<double> x);
+RcppExport SEXP _mtrx_rray_atan_cpp(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< xt::rarray<double> >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray_atan_cpp(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray_reshape_cpp
+xt::rarray<double> rray_reshape_cpp(xt::rarray<double> x, IntegerVector shape);
+RcppExport SEXP _mtrx_rray_reshape_cpp(SEXP xSEXP, SEXP shapeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< xt::rarray<double> >::type x(xSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type shape(shapeSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray_reshape_cpp(x, shape));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_mtrx_mtrx_add_cpp", (DL_FUNC) &_mtrx_mtrx_add_cpp, 2},
-    {"_mtrx_mtrx_subtract_cpp", (DL_FUNC) &_mtrx_mtrx_subtract_cpp, 2},
-    {"_mtrx_mtrx_multiply_cpp", (DL_FUNC) &_mtrx_mtrx_multiply_cpp, 2},
-    {"_mtrx_mtrx_divide_cpp", (DL_FUNC) &_mtrx_mtrx_divide_cpp, 2},
+    {"_mtrx_rray_add_cpp", (DL_FUNC) &_mtrx_rray_add_cpp, 2},
+    {"_mtrx_rray_subtract_cpp", (DL_FUNC) &_mtrx_rray_subtract_cpp, 2},
+    {"_mtrx_rray_multiply_cpp", (DL_FUNC) &_mtrx_rray_multiply_cpp, 2},
+    {"_mtrx_rray_divide_cpp", (DL_FUNC) &_mtrx_rray_divide_cpp, 2},
+    {"_mtrx_rray_broadcast_cpp", (DL_FUNC) &_mtrx_rray_broadcast_cpp, 2},
+    {"_mtrx_rray_broadcast_shape_cpp", (DL_FUNC) &_mtrx_rray_broadcast_shape_cpp, 2},
+    {"_mtrx_rray_atan_cpp", (DL_FUNC) &_mtrx_rray_atan_cpp, 1},
+    {"_mtrx_rray_reshape_cpp", (DL_FUNC) &_mtrx_rray_reshape_cpp, 2},
     {NULL, NULL, 0}
 };
 
