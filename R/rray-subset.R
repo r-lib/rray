@@ -98,6 +98,3 @@
   }
 
 }
-
-# TODO - Did Hadley update this to take ... rather than i?
-# `[[<-.vctrs_vctr`
