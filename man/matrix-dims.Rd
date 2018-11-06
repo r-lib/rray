@@ -35,6 +35,14 @@ because the 2D object has an implicit 3rd dimension of size 1.
 makes any implicit dimensions explicit, then recycles the size of each
 dimension to a common size.
 }
+\section{Invariants}{
+
+\itemize{
+\item \code{mtrx_dims2(mtrx_dims2(x, y), z) == mtrx_dims2(x, mtrx_dims2(y, z)}
+\item \code{mtrx_dim2(mtrx_dim2(x, y), z) == mtrx_dim2(x, mtrx_dim2(y, z)}
+}
+}
+
 \examples{
 
 x_1_by_4 <- matrix(1, nrow = 1, ncol = 4)
