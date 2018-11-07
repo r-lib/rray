@@ -2,7 +2,7 @@
 #'
 #' Low level constructor for rray objects
 #'
-#' @param x A numeric vector with no attributes representing
+#' @param .data A numeric vector with no attributes representing
 #' the data in the rray.
 #' @param dim An integer vector describing the dimensions of the
 #' `rray`.
@@ -10,6 +10,8 @@
 #' be the same length as `dim`. Each element of the list much be either
 #' a character vector the same length as the corresponding dimension in
 #' `dim`, or `character(0)` for no names for that dimension.
+#' @param ... Name-value pairs defining attributes.
+#' @param subclass The name of the subclass.
 #'
 #' @examples
 #'
@@ -18,9 +20,9 @@
 #' rray_ex
 #'
 #' @export
-new_rray <- function(x, dim, dim_names = list()) {
+new_rray <- function(.data, dim, dim_names = list(), ..., subclass = character()) {
 
-  stopifnot(is_vector(x))
+  stopifnot(is_vector(.data))
   stopifnot(is_integer(dim))
 
   # no support for rray dim_names to have names
@@ -38,10 +40,11 @@ new_rray <- function(x, dim, dim_names = list()) {
   }
 
   new_vctr(
-    .data = x,
+    .data = .data,
     dim = dim,
     dim_names = dim_names,
-    class = "vctrs_rray"
+    ...,
+    class = c(subclass, "vctrs_rray")
   )
 }
 
