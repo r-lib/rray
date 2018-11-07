@@ -4,8 +4,9 @@
 \alias{new_mtrx}
 \title{Create a new mtrx}
 \usage{
-new_mtrx(.data, dim, row_names = character(), col_names = character(),
-  ..., subclass = character())
+new_mtrx(.data = numeric(), dim = integer(2),
+  row_names = character(), col_names = character(), ...,
+  subclass = character())
 }
 \arguments{
 \item{.data}{A numeric vector with no attributes representing

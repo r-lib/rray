@@ -4,7 +4,8 @@
 \alias{new_rray}
 \title{Create a new rray}
 \usage{
-new_rray(.data, dim, dim_names = list(), ..., subclass = character())
+new_rray(.data = numeric(), dim = integer(1), dim_names = NULL, ...,
+  subclass = character())
 }
 \arguments{
 \item{.data}{A numeric vector with no attributes representing
