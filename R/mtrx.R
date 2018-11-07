@@ -17,8 +17,8 @@
 #' mtrx_ex
 #'
 #' @export
-new_mtrx <- function(.data,
-                     dim,
+new_mtrx <- function(.data = numeric(),
+                     dim = integer(2),
                      row_names = character(),
                      col_names = character(),
                      ...,
@@ -86,6 +86,13 @@ new_mtrx <- function(.data,
 mtrx <- function(..., row_names = character()) {
 
   .dots <- dots_list(...)
+  n_cols <- length(.dots)
+
+  # prototype
+  if (is_empty(.dots)) {
+    .dots <- list(numeric())
+    n_cols <- 0L
+  }
 
   is_fully_named <- rlang::is_named(.dots)
   nms <- names2(.dots)
@@ -103,7 +110,6 @@ mtrx <- function(..., row_names = character()) {
   }
 
   .dots <- unname(.dots)
-  n_cols <- length(.dots)
   common_size <- vec_size_common(!!! .dots)
 
   mtrx_lst <- vec_recycle_common(!!! .dots, .size = common_size)

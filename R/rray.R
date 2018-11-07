@@ -20,17 +20,22 @@
 #' rray_ex
 #'
 #' @export
-new_rray <- function(.data, dim, dim_names = list(), ..., subclass = character()) {
+new_rray <- function(.data = numeric(),
+                     dim = integer(1),
+                     dim_names = NULL,
+                     ...,
+                     subclass = character()
+                     ) {
 
   stopifnot(is_vector(.data))
   stopifnot(is_integer(dim))
 
-  # no support for rray dim_names to have names
-  stopifnot(is_bare_list(dim_names))
-
-  if (is_empty(dim_names)) {
+  if (is_null(dim_names)) {
     dim_names <- new_empty_dim_names(vec_size(dim))
   }
+
+  # no support for rray dim_names to have names
+  stopifnot(is_bare_list(dim_names))
 
   stopifnot(map_lgl(dim_names, is_character))
 
