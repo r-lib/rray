@@ -3,7 +3,7 @@
 #' Low level constructor for rray objects
 #'
 #' @param .data A numeric vector with no attributes representing
-#' the data in the rray.
+#' the data.
 #' @param dim An integer vector describing the dimensions of the
 #' `rray`.
 #' @param dim_names A list. For no names, `list()`. Otherwise the list must

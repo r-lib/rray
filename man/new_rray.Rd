@@ -8,7 +8,7 @@ new_rray(.data, dim, dim_names = list(), ..., subclass = character())
 }
 \arguments{
 \item{.data}{A numeric vector with no attributes representing
-the data in the rray.}
+the data.}
 
 \item{dim}{An integer vector describing the dimensions of the
 \code{rray}.}

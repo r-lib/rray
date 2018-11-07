@@ -3,6 +3,8 @@
 #' Low level constructor for mtrx objects
 #'
 #' @inheritParams new_rray
+#' @param dim A size 2 integer vector specifying the number of rows and columns
+#' of the mtrx.
 #' @param row_names A character vector of row names. The default is to have
 #' no row names.
 #' @param col_names A character vector of column names. The default is to

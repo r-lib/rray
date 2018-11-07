@@ -9,10 +9,10 @@ new_mtrx(.data, dim, row_names = character(), col_names = character(),
 }
 \arguments{
 \item{.data}{A numeric vector with no attributes representing
-the data in the rray.}
+the data.}
 
-\item{dim}{An integer vector describing the dimensions of the
-\code{rray}.}
+\item{dim}{A size 2 integer vector specifying the number of rows and columns
+of the mtrx.}
 
 \item{row_names}{A character vector of row names. The default is to have
 no row names.}
