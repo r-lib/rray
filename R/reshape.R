@@ -1,3 +1,4 @@
+#' @export
 rray_reshape <- function(x, dim) {
   x_dim <- vec_dim(x)
   validate_reshape(x_dim, dim)
