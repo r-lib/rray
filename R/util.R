@@ -22,3 +22,7 @@ extend2 <- function(x, y) {
   dim(y) <- extend(y_dim, dims)
   list(x, y)
 }
+
+new_empty_dim_names <- function(n) {
+  map(seq_len(n), function(x) character())
+}

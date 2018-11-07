@@ -2,14 +2,24 @@
 % Please edit documentation in R/rray-coercion.R
 \name{as_rray}
 \alias{as_rray}
+\alias{as_rray.numeric}
 \title{Coerce to an rray}
 \usage{
 as_rray(x, ...)
+
+\method{as_rray}{numeric}(x, ..., row_names = character(),
+  col_name = character())
 }
 \arguments{
-\item{x}{An object to coerce to a rray.}
+\item{x}{An object to coerce to an rray.}
 
 \item{...}{Objects passed on to methods.}
+
+\item{row_names}{A character vector of row names. The default is to have
+no row names.}
+
+\item{col_name}{A single character for the column name. The default is
+to have no column name.}
 }
 \description{
 Coerce \code{x} to an rray object.

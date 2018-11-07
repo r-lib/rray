@@ -30,8 +30,9 @@ as_matrix.numeric <- function(x, ...) {
 
 #' @export
 as_matrix.vctrs_mtrx <- function(x, ...) {
+  dim_nms <- dim_names(x)
   class(x) <- "matrix"
-  dimnames(x) <- dim_names(x)
+  dimnames(x) <- dim_nms
   attr(x, "dim_names") <- NULL
   x
 }
@@ -63,6 +64,24 @@ as.matrix.vctrs_mtrx <- as_matrix.vctrs_mtrx
 #' @export
 as_mtrx <- function(x, ...) {
   UseMethod("as_mtrx")
+}
+
+#' @export
+as_mtrx.vctrs_mtrx <- function(x, ...) {
+  x
+}
+
+#' @export
+as_mtrx.vctrs_rray <- function(x, ...) {
+  dims <- vec_dims(x)
+
+  if (dims > 2) {
+    abort("Cannot convert a >2 dimensional rray into a mtrx.")
+  }
+
+  new_mtrx(
+    .data = vec_data(x),
+    dim = vec_dim(x), )
 }
 
 #' @rdname as_mtrx

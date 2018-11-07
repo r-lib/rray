@@ -33,9 +33,15 @@ as_array.numeric <- function(x, ...) {
 }
 
 #' @export
+as_array.vctrs_mtrx <- function(x, ...) {
+  as.array(as_matrix(x))
+}
+
+#' @export
 as_array.vctrs_rray <- function(x, ...) {
+  dim_nms <- dim_names(x)
   class(x) <- "array"
-  dimnames(x) <- attr(x, "dim_names")
+  dimnames(x) <- dim_nms
   attr(x, "dim_names") <- NULL
   x
 }
@@ -49,16 +55,14 @@ as.array.vctrs_rray <- as_array.vctrs_rray
 #'
 #' Coerce `x` to an rray object.
 #'
-#' @param x An object to coerce to a rray.
+#' @param x An object to coerce to an rray.
 #' @param ... Objects passed on to methods.
 #'
 #' @examples
 #'
 #' as_rray(1)
 #'
-#' as_rray(1:10)
-#'
-#' as_rray(letters)
+#' as_rray(1:10, col_name = "x", row_names = letters[1:10])
 #'
 #' ex <- matrix(1:10, nrow = 5, dimnames = list(NULL, c("a", "b")))
 #' as_rray(ex)
@@ -74,6 +78,11 @@ as_rray.vctrs_rray <- function(x, ...) {
 }
 
 #' @export
+as_rray.vctrs_mtrx <- function(x, ...) {
+  new_rray(vec_data(x), dim = vec_dim(x), dim_names = dim_names(x))
+}
+
+#' @export
 as_rray.array <- function(x, ...) {
   new_rray(vec_data(x), dim = vec_dim(x), dim_names = dim_names(x))
 }
@@ -84,7 +93,10 @@ as_rray.matrix <- function(x, ...) {
 }
 
 #' @export
-as_rray.numeric <- function(x, ...) {
-  new_rray(vec_data(x), dim = c(vec_size(x), 1L), )
+#' @rdname as_rray
+#' @inheritParams new_mtrx
+#' @param col_name A single character for the column name. The default is
+#' to have no column name.
+as_rray.numeric <- function(x, ..., row_names = character(), col_name = character()) {
+  new_rray(vec_data(x), dim = c(vec_size(x), 1L), dim_names = list(row_names, col_name))
 }
-

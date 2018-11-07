@@ -28,16 +28,16 @@ new_rray <- function(.data, dim, dim_names = list(), ..., subclass = character()
   # no support for rray dim_names to have names
   stopifnot(is_bare_list(dim_names))
 
-  if (!is_empty(dim_names)) {
-
-    stopifnot(map_lgl(dim_names, is_character))
-
-    stopifnot(length(dim) == length(dim_names))
-
-    dim_name_lengths <- map_int(dim_names, length)
-    stopifnot(map2_lgl(dim, dim_name_lengths, are_equal_or_no_name))
-
+  if (is_empty(dim_names)) {
+    dim_names <- new_empty_dim_names(vec_size(dim))
   }
+
+  stopifnot(map_lgl(dim_names, is_character))
+
+  stopifnot(length(dim) == length(dim_names))
+
+  dim_name_lengths <- map_int(dim_names, length)
+  stopifnot(map2_lgl(dim, dim_name_lengths, are_equal_or_no_name))
 
   new_vctr(
     .data = .data,
