@@ -14,7 +14,9 @@ rray_arith_base <- function(op, x, y) {
     "*" = rray_multiply_cpp
   )
 
-  as_rray(op_fn(x, y))
+  restore_type <- vec_type2(x, y)
+
+  vec_restore(op_fn(x, y), restore_type)
 }
 
 #' @method vec_arith vctrs_rray
