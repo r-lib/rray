@@ -5,10 +5,6 @@
   # for differentiating x[1] from x[1,]
   n_real_args <- nargs() - !missing(drop)
 
-  if (!missing(drop)) {
-    rlang::warn("`drop` is ignored.")
-  }
-
   # x[i], or just x[]
   if (n_real_args <= 2) {
 
@@ -54,10 +50,6 @@
 #' @export
 `[[.vctrs_mtrx` <- function(x, i, j, exact = TRUE) {
   x <- as_matrix(x)
-
-  if (!is_true(exact)) {
-    rlang::warn("`exact` is ignored.")
-  }
 
   if (!is_missing(i)) {
 

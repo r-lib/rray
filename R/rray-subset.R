@@ -8,10 +8,6 @@
 
   dots <- dots_list(..., .preserve_empty = TRUE)
 
-  if (!missing(drop)) {
-    rlang::warn("`drop` is ignored.")
-  }
-
   # x[i], or just x[]
   if (n_real_args <= 2) {
 
@@ -75,10 +71,6 @@
 `[[.vctrs_rray` <- function(x, i, j, ..., exact = TRUE) {
   x <- as_array(x)
   dots <- dots_list(..., .preserve_empty = TRUE)
-
-  if (!is_true(exact)) {
-    rlang::warn("`exact` is ignored.")
-  }
 
   if (!is_missing(i)) {
 
