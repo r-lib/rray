@@ -132,7 +132,7 @@ vec_cast.vctrs_rray.integer <- function(x, to) {
   new_rray(.data = vec_data(res), dim = vec_dim(res))
 }
 
-#' @method integer vctrs_rray
+#' @method vec_cast.integer vctrs_rray
 #' @export
 vec_cast.integer.vctrs_rray <- function(x, to) {
   # unlike vctrs, we can extend rows
