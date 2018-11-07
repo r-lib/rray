@@ -2,34 +2,34 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 rray_add_cpp <- function(x, y) {
-    .Call(`_mtrx_rray_add_cpp`, x, y)
+    .Call(`_rray_rray_add_cpp`, x, y)
 }
 
 rray_subtract_cpp <- function(x, y) {
-    .Call(`_mtrx_rray_subtract_cpp`, x, y)
+    .Call(`_rray_rray_subtract_cpp`, x, y)
 }
 
 rray_multiply_cpp <- function(x, y) {
-    .Call(`_mtrx_rray_multiply_cpp`, x, y)
+    .Call(`_rray_rray_multiply_cpp`, x, y)
 }
 
 rray_divide_cpp <- function(x, y) {
-    .Call(`_mtrx_rray_divide_cpp`, x, y)
+    .Call(`_rray_rray_divide_cpp`, x, y)
 }
 
 rray_broadcast_cpp <- function(x, shape) {
-    .Call(`_mtrx_rray_broadcast_cpp`, x, shape)
+    .Call(`_rray_rray_broadcast_cpp`, x, shape)
 }
 
 rray_broadcast_shape_cpp <- function(src_shape, dest_shape) {
-    .Call(`_mtrx_rray_broadcast_shape_cpp`, src_shape, dest_shape)
+    .Call(`_rray_rray_broadcast_shape_cpp`, src_shape, dest_shape)
 }
 
 rray_atan_cpp <- function(x) {
-    .Call(`_mtrx_rray_atan_cpp`, x)
+    .Call(`_rray_rray_atan_cpp`, x)
 }
 
 rray_reshape_cpp <- function(x, shape) {
-    .Call(`_mtrx_rray_reshape_cpp`, x, shape)
+    .Call(`_rray_rray_reshape_cpp`, x, shape)
 }
 

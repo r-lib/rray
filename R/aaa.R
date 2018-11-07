@@ -3,6 +3,6 @@
 #' @import vctrs
 NULL
 
-#' @useDynLib mtrx, .registration = TRUE
+#' @useDynLib rray, .registration = TRUE
 #' @importFrom Rcpp sourceCpp
 NULL

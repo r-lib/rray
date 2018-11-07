@@ -28,9 +28,7 @@ Coerce \code{x} to an rray object.
 
 as_rray(1)
 
-as_rray(1:10)
-
-as_rray(letters)
+as_rray(1:10, col_name = "x", row_names = letters[1:10])
 
 ex <- matrix(1:10, nrow = 5, dimnames = list(NULL, c("a", "b")))
 as_rray(ex)

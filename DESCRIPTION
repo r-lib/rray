@@ -1,13 +1,13 @@
-Package: mtrx
-Title: Simple Matrices
+Package: rray
+Title: Simple Matrices and Arrays
 Version: 0.0.0.9000
 Authors@R: 
     person(given = "Davis",
            family = "Vaughan",
            role = c("aut", "cre"),
            email = "davis@rstudio.com")
-Description: Provides a 'mtrx' class that provides stricter checking than 
-   a traditional matrix.
+Description: Provides 'mtrx' and 'rray' classes that provide stricter checking 
+  than traditional versions.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

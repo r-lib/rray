@@ -1,4 +1,4 @@
-#include "mtrx_types.h"
+#include "rray_types.h"
 #include "xtensor/xmath.hpp"
 #include <Rcpp.h>
 using namespace Rcpp;
