@@ -19,3 +19,8 @@ vec_restore.vctrs_rray <- function(x, to) {
   attr(x, "dim") <- value
   x
 }
+
+#' @export
+vec_ptype_abbr.vctrs_rray <- function(x) {
+  "rray"
+}

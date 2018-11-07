@@ -12,3 +12,8 @@ t.vctrs_mtrx <- function(x) {
 vec_restore.vctrs_mtrx <- function(x, to) {
   as_mtrx(x)
 }
+
+#' @export
+vec_ptype_abbr.vctrs_mtrx <- function(x) {
+  "mtrx"
+}
