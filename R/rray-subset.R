@@ -6,7 +6,7 @@
   # for differentiating x[1] from x[1,]
   n_real_args <- nargs() - !missing(drop)
 
-  dots <- list2(...)
+  dots <- dots_list(..., .preserve_empty = TRUE)
 
   if (!missing(drop)) {
     rlang::warn("`drop` is ignored.")
@@ -65,7 +65,7 @@
 #' @export
 `[[.vctrs_rray` <- function(x, i, j, ..., exact = TRUE) {
   x <- as_array(x)
-  dots <- list2(...)
+  dots <- dots_list(..., .preserve_empty = TRUE)
 
   if (!is_true(exact)) {
     rlang::warn("`exact` is ignored.")
