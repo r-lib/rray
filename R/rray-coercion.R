@@ -98,5 +98,10 @@ as_rray.matrix <- function(x, ...) {
 #' @param col_name A single character for the column name. The default is
 #' to have no column name.
 as_rray.numeric <- function(x, ..., row_names = character(), col_name = character()) {
-  new_rray(vec_data(x), dim = c(vec_size(x), 1L), dim_names = list(row_names, col_name))
+  size <- vec_size(x)
+  if (size == 0L) {
+    new_rray(vec_data(x), dim = size, dim_names = NULL)
+  } else {
+    new_rray(vec_data(x), dim = c(size, 1L), dim_names = list(row_names, col_name))
+  }
 }

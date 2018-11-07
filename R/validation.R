@@ -18,7 +18,7 @@ validate_dim <- function(dim) {
     abort("`dim` must be an integer vector.")
   }
 
-  if (!all(dim > 0L)) {
+  if (!all(dim >= 0L)) {
     abort("`dim` must be a positive vector.")
   }
 }

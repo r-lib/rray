@@ -51,3 +51,29 @@ test_that("extract works on 4D", {
   # not enough dims
   expect_error(x[[1, 1]])
 })
+
+test_that("0D slicing", {
+  x <- new_rray()
+  x_dim <- vec_dim(x)
+
+  expect_is(x[0], "vctrs_rray")
+  expect_equal(vec_dim(x[0]), x_dim)
+
+  expect_error(x[,0], "incorrect")
+  expect_error(x[,,0], "incorrect")
+
+  y <- as_rray(matrix(1:10, ncol = 2))
+  y_dim <- vec_dim(y)
+
+  # no columns
+  expect_equal(vec_dim(y[0]), c(5L, 0L))
+  expect_equal(vec_dim(y[,0]), c(5L, 0L))
+
+  # no rows
+  expect_equal(vec_dim(y[0,]), c(0L, 2L))
+
+  expect_error(y[,,0], "incorrect")
+
+  z <- as_rray(array(1, c(1,1,1,1)))
+  expect_error(z[,,,,0], "incorrect")
+})

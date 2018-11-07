@@ -15,6 +15,8 @@ test_that("subset doesn't drop dimensions", {
 
   # multiple dimension subset
   expect_equal(dim(x[1,1]), c(1, 1))
+
+  expect_warning(x[,,FALSE])
 })
 
 test_that("extract can pull elements", {
@@ -28,4 +30,12 @@ test_that("extract can pull elements", {
 
   # not enough dims
   expect_error(x[[,2]])
+})
+
+test_that("0D slicing", {
+  x <- new_mtrx()
+  x_dim <- vec_dim(x)
+
+  expect_is(x[0], "vctrs_mtrx")
+  expect_equal(vec_dim(x[0]), x_dim)
 })

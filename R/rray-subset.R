@@ -22,8 +22,14 @@
         i <- vec_cast(i, integer())
       }
 
-      miss_args <- rep(list(missing_arg()), d - 2)
-      x <- eval_bare(expr(x[, i, !!!miss_args, drop = FALSE]))
+      if (d == 1) {
+        x <- x[i]
+      } else {
+        # cant use vec_slice(), it would take the first row in 3D objs
+        # we want the first col always
+        miss_args <- rep(list(missing_arg()), d - 2)
+        x <- eval_bare(expr(x[, i, !!!miss_args, drop = FALSE]))
+      }
 
     }
     # x[]
@@ -39,13 +45,16 @@
 
   # x[,j] or x[i,j] or x[i,j,...] or x[,j,...]
   if (!is_missing(j)) {
+    if (d == 1) abort("incorrect number of dimensions")
     miss_args <- rep(list(missing_arg()), d - 2)
     x <- eval_bare(expr(x[, j, !!!miss_args, drop = FALSE]))
   }
 
   # x[i,j,...], x[i,,...], x[,,...], x[,j,...]
   if (!is_empty(dots)) {
-    miss_args <- rep(list(missing_arg()), d - 2 - length(dots))
+    n_dots <- length(dots)
+    if (d <= (1 + n_dots)) abort("incorrect number of dimensions")
+    miss_args <- rep(list(missing_arg()), d - 2 - n_dots)
     x <- eval_bare(expr(x[, , !!!c(dots, miss_args), drop = FALSE]))
   }
 
