@@ -3,7 +3,17 @@ dim_names <- function(x) {
 }
 
 dim_names.default <- function(x) {
-  unname(dimnames(x)) %||% list()
+
+  dim_nms <- unname(dimnames(x))
+
+  if (is.null(dim_nms)) {
+    return(list())
+  }
+
+  # NULL -> character(0)
+  dim_nms <- map(dim_nms, function(x) if(is.null(x)) character() else x)
+
+  dim_nms
 }
 
 dim_names.vctrs_rray <- function(x) {
