@@ -14,7 +14,7 @@ the data.}
 \item{dim}{An integer vector describing the dimensions of the
 \code{rray}.}
 
-\item{dim_names}{A list. For no names, \code{list()}. Otherwise the list must
+\item{dim_names}{A list. For no names, \code{NULL}. Otherwise the list must
 be the same length as \code{dim}. Each element of the list much be either
 a character vector the same length as the corresponding dimension in
 \code{dim}, or \code{character(0)} for no names for that dimension.}

@@ -19,8 +19,6 @@ where each vector represents a single column in the mtrx. Length \code{1}
 vectors are recycled.
 }
 \details{
-No rownames are allowed for mtrx objects.
-
 mtrx objects are never reduced to vectors when subsetting using \code{[} (i.e.
 dimensions are never dropped).
 }
