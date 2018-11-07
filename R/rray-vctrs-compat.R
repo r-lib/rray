@@ -72,7 +72,7 @@ vec_type2.vctrs_rray.double <- vec_type2.vctrs_rray.vctrs_rray
 #' @export
 vec_type2.double.vctrs_rray <- vec_type2.vctrs_rray.vctrs_rray
 
-# vec_type2 vctrs_rray <-> integer/matrix/array ---------------------------------
+# vec_type2 vctrs_rray <-> integer/matrix/array --------------------------------
 
 #' @method vec_type2.vctrs_rray integer
 #' @export
@@ -81,6 +81,16 @@ vec_type2.vctrs_rray.integer <- vec_type2.vctrs_rray.vctrs_rray
 #' @method vec_type2.integer vctrs_rray
 #' @export
 vec_type2.integer.vctrs_rray <- vec_type2.vctrs_rray.vctrs_rray
+
+# vec_type2 vctrs_rray <-> vctrs_mtrx ------------------------------------------
+
+#' @method vec_type2.vctrs_rray vctrs_mtrx
+#' @export
+vec_type2.vctrs_rray.vctrs_mtrx <- vec_type2.vctrs_rray.vctrs_rray
+
+#' @method vec_type2.vctrs_mtrx vctrs_rray
+#' @export
+vec_type2.vctrs_mtrx.vctrs_rray <- vec_type2.vctrs_rray.vctrs_rray
 
 # vec_cast boilerplate ---------------------------------------------------------
 
@@ -119,8 +129,9 @@ vec_cast.vctrs_rray.double <- function(x, to) {
 vec_cast.double.vctrs_rray <- function(x, to) {
   # unlike vctrs, we can extend rows
   x <- rray_broadcast(x, vec_dim(to))
-  class(x) <- "double"
-  vec_cast(x, to)
+  x <- as.double(x)
+  dimnames(x) <- dim_names(to)
+  x
 }
 
 # vec_cast vctrs_rray <-> integer -----------------------------------------------
@@ -137,6 +148,37 @@ vec_cast.vctrs_rray.integer <- function(x, to) {
 vec_cast.integer.vctrs_rray <- function(x, to) {
   # unlike vctrs, we can extend rows
   x <- rray_broadcast(x, vec_dim(to))
-  class(x) <- "integer"
-  vec_cast(x, to)
+  x <- as.integer(x)
+  dimnames(x) <- dim_names(to)
+  x
+}
+
+# vec_cast vctrs_rray <-> vctrs_mtrx -------------------------------------------
+
+#' @method vec_cast.vctrs_rray vctrs_mtrx
+#' @export
+vec_cast.vctrs_rray.vctrs_mtrx <- function(x, to) {
+  res <- rray_broadcast(x, vec_dim(to))
+  new_rray(.data = vec_data(res), dim = vec_dim(res), dim_names = dim_names(to))
+}
+
+#' @method vec_cast.vctrs_mtrx vctrs_rray
+#' @export
+vec_cast.vctrs_mtrx.vctrs_rray <- function(x, to) {
+
+  x_dims <- vec_dims(x)
+
+  if (x_dims > 2) {
+    abort("Cannot convert a >2 dimensional rray into a mtrx.")
+  }
+
+  # unlike vctrs, we can extend rows
+  x <- rray_broadcast(x, vec_dim(to))
+
+  new_mtrx(
+    .data = vec_data(x),
+    dim = vec_dim(x),
+    row_names = row_names(to),
+    col_names = col_names(to)
+  )
 }

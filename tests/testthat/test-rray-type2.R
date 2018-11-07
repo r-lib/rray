@@ -23,3 +23,16 @@ test_that("Common dim is found", {
 
   expect_equal(vec_type_common(x, y), vec_type2(x, y))
 })
+
+test_that("rray and mtrx = rray", {
+
+  x <- as_rray(array(1, dim = c(2, 1)))
+  y <- mtrx(1:2, 1:2)
+
+  # common dim
+  expect_is(vec_type2(x, y), "vctrs_rray")
+  expect_equal(dim(vec_type2(x, y)), c(0, 2))
+  expect_equal(dim(vec_type2(y, x)), c(0, 2))
+
+  expect_equal(vec_type_common(x, y), vec_type2(x, y))
+})
