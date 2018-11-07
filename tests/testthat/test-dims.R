@@ -9,7 +9,7 @@ test_that("common dims", {
   expect_equal(rray_dims2(vec_dim(x_2x3), vec_dim(x_1x5)), 2L)
   expect_equal(rray_dims2(vec_dim(x_2x3), NULL), 2L)
   expect_equal(rray_dims2(vec_dim(x_5), vec_dim(x_2x3)), 2L)
-  expect_equal(rray_dims2(vec_dim(x_2x2x2), vec_dim(x_2x3)), 3L)
+  expect_equal(rray_dims2(vec_dim(x_6x1x3), vec_dim(x_2x3)), 3L)
 })
 
 test_that("common dim", {
