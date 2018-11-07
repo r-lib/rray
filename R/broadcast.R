@@ -19,3 +19,16 @@ rray_broadcast.default <- function(x, dim) {
 rray_broadcast.vctrs_rray <- function(x, dim) {
   vec_restore(rray_broadcast.default(x, dim), x)
 }
+
+#' @export
+rray_broadcast.vctrs_mtrx <- function(x, dim) {
+  dim <- vec_cast(dim, integer())
+  out <- rray_broadcast.default(x, dim)
+
+  if (length(dim) > 2) {
+    vec_restore(out, new_rray(dim = c(0L, dim[-1])))
+  } else {
+    vec_restore(out, x)
+  }
+
+}
