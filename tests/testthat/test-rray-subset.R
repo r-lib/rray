@@ -25,7 +25,7 @@ test_that("subset works on 4D", {
   expect_equal(dim(x[, , , 1]), c(3, 4, 2, 1))
 })
 
-test_that("extract can pull elements n-dim elements", {
+test_that("extract can pull n-dim elements", {
   x <- as_rray(array(1:24, dim = c(3, 4, 2)))
 
   expect_equal(x[[1]], 1)

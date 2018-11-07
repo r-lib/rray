@@ -8,7 +8,7 @@ test_that("Can create rrays", {
     structure(
       c(1, 2, 3),
       dim = c(3L, 1L),
-      dim_names = list(),
+      dim_names = list(character(), character()),
       class = c("vctrs_rray", "vctrs_vctr")
     )
   )
@@ -30,7 +30,7 @@ test_that("Can create rrays", {
     structure(
       c(1, 2, 3),
       dim = c(3L, 1L, 1L),
-      dim_names = list(),
+      dim_names = list(character(), character(), character()),
       class = c("vctrs_rray", "vctrs_vctr")
     )
   )
