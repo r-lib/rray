@@ -13,7 +13,8 @@ Encoding: UTF-8
 LazyData: true
 Remotes:
     r-lib/vctrs,
-    DavisVaughan/xtensorrr
+    DavisVaughan/xtensorrr,
+    DavisVaughan/nodegraph
 Imports: 
     dplyr,
     rlang,
@@ -21,7 +22,8 @@ Imports:
     vctrs,
     Rcpp,
     glue,
-    zeallot
+    zeallot,
+    nodegraph
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.0.9000
 URL: https://github.com/DavisVaughan/mtrx
