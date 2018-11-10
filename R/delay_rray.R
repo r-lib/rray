@@ -109,6 +109,7 @@ vec_type2.delay_rray.delay_array <- vec_type2.delay_rray.delay_rray
 #' @export
 vec_type2.delay_array.delay_rray <- vec_type2.delay_rray.delay_rray
 
+#' @export
 #' @importFrom nodegraph compute_engine
 compute_engine.delay_rray <- function(x, self) {
 
@@ -121,6 +122,7 @@ compute_engine.delay_rray <- function(x, self) {
   do.call(vec_arith, c(op = op, vals))
 }
 
+#' @export
 #' @importFrom nodegraph compute_dim_engine
 compute_dim_engine.delay_rray <- function(type, operation, ...) {
   delay_args <- list(...)
