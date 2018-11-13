@@ -11,7 +11,12 @@ as_array_proxy <- function(x, proxy) {
 
 as_matrix_proxy <- function(x, proxy) {
   n <- vec_size(vec_data(x))
-  proxy <- matrix(rep(proxy, times = n), dim = vec_dim(x), dimnames = dim_names(x))
+  proxy <- matrix(
+    data = rep(proxy, times = n),
+    nrow = vec_size(x),
+    ncol = rray_shape(x),
+    dimnames = dim_names(x)
+  )
   vec_cast(x, proxy)
 }
 
