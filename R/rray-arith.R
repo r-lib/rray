@@ -4,7 +4,9 @@ rray_arith_base <- function(op, x, y) {
 
   # precompute dimensionality and extend existing dims
   # xtensor-r issue #57 until we have a fix
-  c(x, y) %<-% extend2(x, y)
+  dim <- rray_dim2(vec_dim(x), vec_dim(y))
+  x <- rray_dims_match(x, dim)
+  y <- rray_dims_match(y, dim)
 
   op_fn <- switch(
     op,
@@ -35,8 +37,8 @@ vec_arith.vctrs_rray.vctrs_rray <- function(op, x, y) {
 #' @export
 vec_arith.vctrs_rray.MISSING <- function(op, x, y) {
   switch(op,
-         "+" = as_rray(+as_array(x)),
-         "-" = as_rray(-as_array(x))
+         "+" = vec_restore(+as_array(x), x),
+         "-" = vec_restore(-as_array(x), x)
   )
 }
 

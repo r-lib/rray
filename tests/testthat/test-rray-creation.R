@@ -4,7 +4,7 @@ test_that("Can create rrays", {
 
   # [3, 1] no names
   expect_equal(
-    new_rray(c(1, 2, 3), c(3L, 1L)),
+    new_rray(c(1, 2, 3), 3L, 1L),
     structure(
       c(1, 2, 3),
       dim = c(3L, 1L),
@@ -15,7 +15,7 @@ test_that("Can create rrays", {
 
   # [3, 1] with names
   expect_equal(
-    new_rray(c(1, 2, 3), c(3L, 1L), list(c("r1", "r2", "r3"), "c1")),
+    new_rray(c(1, 2, 3), 3L, 1L, list(c("r1", "r2", "r3"), "c1")),
     structure(
       c(1, 2, 3),
       dim = c(3L, 1L),
@@ -26,7 +26,7 @@ test_that("Can create rrays", {
 
   # [3, 1, 1]
   expect_equal(
-    new_rray(c(1, 2, 3), c(3L, 1L, 1L)),
+    new_rray(c(1, 2, 3), 3L, c(1L, 1L)),
     structure(
       c(1, 2, 3),
       dim = c(3L, 1L, 1L),
@@ -37,7 +37,7 @@ test_that("Can create rrays", {
 
   # [3, 1, 1] with null row names
   expect_equal(
-    new_rray(c(1, 2, 3), c(3L, 1L, 1L), list(character(0), "c1", "depth1")),
+    new_rray(c(1, 2, 3), 3L, c(1L, 1L), list(character(0), "c1", "depth1")),
     structure(
       c(1, 2, 3),
       dim = c(3L, 1L, 1L),

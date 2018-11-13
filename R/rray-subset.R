@@ -14,18 +14,7 @@
     # x[i]
     if (!is_missing(i)) {
 
-      if(is_integerish(i)) {
-        i <- vec_cast(i, integer())
-      }
-
-      if (d == 1) {
-        x <- x[i]
-      } else {
-        # cant use vec_slice(), it would take the first row in 3D objs
-        # we want the first col always
-        miss_args <- rep(list(missing_arg()), d - 2)
-        x <- eval_bare(expr(x[, i, !!!miss_args, drop = FALSE]))
-      }
+      abort("Use `x[,j]` to select columns, not `x[j]`.")
 
     }
     # x[]
