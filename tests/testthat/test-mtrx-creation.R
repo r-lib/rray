@@ -4,7 +4,7 @@ test_that("Can create mtrxs", {
 
   # [3, 1] no names
   expect_equal(
-    new_mtrx(c(1, 2, 3), c(3L, 1L)),
+    new_mtrx(c(1, 2, 3), n_row = 3L, n_col = 1L),
     structure(
       c(1, 2, 3),
       dim = c(3L, 1L),
@@ -15,7 +15,7 @@ test_that("Can create mtrxs", {
 
   # [3, 1] with names
   expect_equal(
-    new_mtrx(c(1, 2, 3), c(3L, 1L), row_names = c("r1", "r2", "r3"), col_names = c("c1")),
+    new_mtrx(c(1, 2, 3), n_row = 3L, n_col = 1L, row_names = c("r1", "r2", "r3"), col_names = c("c1")),
     structure(
       c(1, 2, 3),
       dim = c(3L, 1L),
