@@ -5,8 +5,10 @@ rray_broadcast <- function(x, dim) {
 
 #' @export
 rray_broadcast.default <- function(x, dim) {
-  x <- rray_dims_match(x, dim)
-  res <- rray_broadcast_cpp(x, dim)
+  res <- rray_dims_match(x, dim)
+  validate_recyclable(vec_dim(res), dim)
+  res <- rray_broadcast_cpp(res, dim)
+  dim_names(res) <- restore_dim_names(dim_names(x), dim)
   res
 }
 
@@ -41,6 +43,37 @@ rray_dims_match <- function(x, dim) {
     abort("cannot decrease dimensions of `x`")
   }
 
-  dim(x) <- vctrs:::dim2(x_dim, dim)$x
+  attr(x, "dim") <- dim2(x_dim, dim)$x
   x
+}
+
+# when broadcasting, cant go from [0,2] to [1,1]. Column dimension is
+# downcasted
+validate_recyclable <- function(from_dim, to_dim) {
+  ok <- from_dim == to_dim | from_dim == 1 | to_dim == 0
+  if (any(!ok)) {
+    abort("Non-recyclable dimensions")
+  }
+}
+
+restore_dim_names <- function(dim_names, to_dim) {
+
+  restored_dim_names <- new_empty_dim_names(vec_size(to_dim))
+
+  # cant use map2 bc to_dim_names could be
+  # shorter than x_dim (i.e. we added a dimension)
+
+  for(i in seq_along(dim_names)) {
+
+    nms <- dim_names[[i]]
+    single_dim <- to_dim[i]
+
+    if (vec_size(nms) == single_dim) {
+      restored_dim_names[[i]] <- nms
+    }
+
+  }
+
+  restored_dim_names
+
 }

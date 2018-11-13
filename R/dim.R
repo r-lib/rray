@@ -44,33 +44,28 @@
 #' @name matrix-dims
 NULL
 
-rray_dims2 <- function(x_dim, y_dim, .dims = NULL) {
-  if (!is.null(.dims)) {
-    return(.dims)
-  }
+rray_dims2 <- function(x_dim, y_dim) {
   max(vec_size(x_dim), vec_size(y_dim))
 }
 
-rray_dim2 <- function(x_dim, y_dim, .dims = NULL) {
-  dims <- rray_dims2(x_dim, y_dim, .dims)
-  x_dim <- extend(x_dim, dims)
-  y_dim <- extend(y_dim, dims)
-  map2_int(x_dim, y_dim, rray_size2)
+rray_dim2 <- function(x_dim, y_dim) {
+  dims_matched <- dim2(x_dim, y_dim)
+  map2_int(dims_matched$x, dims_matched$y, rray_size2)
 }
 
 #' @rdname matrix-dims
 #' @export
-rray_dims_common <- function(..., .dims = NULL) {
+rray_dims_common <- function(...) {
   args <- compact(list2(...))
 
   dim_lst <- map(args, vec_dim)
-  reduce(dim_lst, rray_dims2, .dims = .dims)
+  reduce(dim_lst, rray_dims2)
 
 }
 
 #' @rdname matrix-dims
 #' @export
-rray_dim_common <- function(..., .dims = NULL) {
+rray_dim_common <- function(...) {
   args <- compact(list2(...))
 
   dim_lst <- map(args, vec_dim)
@@ -78,3 +73,16 @@ rray_dim_common <- function(..., .dims = NULL) {
 
 }
 
+# vctrs:::dim2
+dim2 <- function(x, y) {
+  nx <- length(x)
+  ny <- length(y)
+
+  if (nx == ny) {
+    list(x = x, y = y)
+  } else if (nx < ny) {
+    list(x = c(x, rep(1L, ny - nx)), y = y)
+  } else {
+    list(x = x, y = c(y, rep(1L, nx - ny)))
+  }
+}

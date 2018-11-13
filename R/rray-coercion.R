@@ -29,8 +29,12 @@ as_array.matrix <- function(x, ...) {
 
 #' @export
 as_array.numeric <- function(x, ...) {
+  # enforce column
   array(x, dim = c(length(x), 1L))
 }
+
+#' @export
+as_array.logical <- as_array.numeric
 
 #' @export
 as_array.vctrs_mtrx <- function(x, ...) {
@@ -39,6 +43,7 @@ as_array.vctrs_mtrx <- function(x, ...) {
 
 #' @export
 as_array.vctrs_rray <- function(x, ...) {
+  # this is cheap, but maybe not the best way
   dim_nms <- dim_names(x)
   class(x) <- "array"
   dimnames(x) <- dim_nms
@@ -79,29 +84,35 @@ as_rray.vctrs_rray <- function(x, ...) {
 
 #' @export
 as_rray.vctrs_mtrx <- function(x, ...) {
-  new_rray(vec_data(x), dim = vec_dim(x), dim_names = dim_names(x))
+  new_rray(
+    .data = vec_data(x),
+    size = vec_size(x),
+    shape = rray_shape(x),
+    dim_names = dim_names(x)
+  )
 }
 
 #' @export
-as_rray.array <- function(x, ...) {
-  new_rray(vec_data(x), dim = vec_dim(x), dim_names = dim_names(x))
-}
+as_rray.array <- as_rray.vctrs_mtrx
 
 #' @export
-as_rray.matrix <- function(x, ...) {
-  new_rray(vec_data(x), dim = vec_dim(x), dim_names = dim_names(x))
-}
+as_rray.matrix <- as_rray.vctrs_mtrx
 
 #' @export
-#' @rdname as_rray
 #' @inheritParams new_mtrx
 #' @param col_name A single character for the column name. The default is
 #' to have no column name.
 as_rray.numeric <- function(x, ..., row_names = character(), col_name = character()) {
   size <- vec_size(x)
   if (size == 0L) {
-    new_rray(vec_data(x), dim = size, dim_names = NULL)
+    new_rray()
   } else {
-    new_rray(vec_data(x), dim = c(size, 1L), dim_names = list(row_names, col_name))
+    new_rray(vec_data(x), size = size, shape = 1L, dim_names = list(row_names, col_name))
   }
 }
+
+#' @export
+as_rray.integer <- as_rray.numeric
+
+#' @export
+as_rray.logical <- as_rray.numeric

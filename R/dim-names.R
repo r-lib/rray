@@ -46,6 +46,52 @@ dim_names.vctrs_rray <- function(x) {
 
 # ------------------------------------------------------------------------------
 
+`dim_names<-` <- function(x, value) {
+  UseMethod("dim_names<-")
+}
+
+`dim_names<-.default` <- function(x, value) {
+  dimnames(x) <- value
+  x
+}
+
+`dim_names<-.vctrs_rray` <- function(x, value) {
+  attr(x, "dim_names") <- value
+  x
+}
+
+# ------------------------------------------------------------------------------
+
+rray_dim_names2 <- function(x, y) {
+
+  dim <- rray_dim2(vec_dim(x), vec_dim(y))
+  x_nms_list <- restore_dim_names(dim_names(x), dim)
+  y_nms_list <- restore_dim_names(dim_names(y), dim)
+
+  map2(x_nms_list, y_nms_list, function(x_nms, y_nms) {
+
+    n_x <- vec_size(x_nms)
+    n_y <- vec_size(y_nms)
+
+    if (n_x == n_y) {
+      x_nms
+    }
+    else if (n_x == 0L) {
+      y_nms
+    }
+    else if (n_y == 0L) {
+      x_nms
+    }
+    else {
+      abort("Imcompatible dim_name lengths.")
+    }
+
+  })
+
+}
+
+# ------------------------------------------------------------------------------
+
 #' @export
 #' @name dim-names
 row_names <- function(x) {
