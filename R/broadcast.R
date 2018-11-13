@@ -68,7 +68,7 @@ restore_dim_names <- function(dim_names, to_dim) {
     nms <- dim_names[[i]]
     single_dim <- to_dim[i]
 
-    if (vec_size(nms) == single_dim) {
+    if (vec_size(nms) == single_dim || single_dim == 0L) {
       restored_dim_names[[i]] <- nms
     }
 

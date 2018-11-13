@@ -17,22 +17,21 @@
 #' mtrx_ex
 #'
 #' @export
-new_mtrx <- function(.data = numeric(),
-                     dim = integer(2),
-                     row_names = character(),
-                     col_names = character(),
+new_mtrx <- function(.data = numeric(0),
+                     n_row = integer(1),
+                     n_col = integer(1),
+                     row_names = character(0),
+                     col_names = character(0),
                      ...,
-                     subclass = character()) {
+                     subclass = character(0)) {
 
-  stopifnot(is_vector(.data))
-  stopifnot(is_integer(dim))
-  stopifnot(vec_size(dim) == 2L)
   stopifnot(is_character(row_names))
   stopifnot(is_character(col_names))
 
   new_rray(
     .data = .data,
-    dim = dim,
+    size = n_row,
+    shape = n_col,
     dim_names = list(row_names, col_names),
     ...,
     subclass = c(subclass, "vctrs_mtrx")
@@ -115,7 +114,8 @@ mtrx <- function(..., row_names = character()) {
 
   new_mtrx(
     .data = mtrx_vec,
-    dim = c(common_size, n_cols),
+    n_row = common_size,
+    n_col = n_cols,
     row_names = row_names,
     col_names = col_names
   )

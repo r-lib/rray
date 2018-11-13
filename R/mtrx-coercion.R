@@ -31,6 +31,11 @@ as_matrix.numeric <- function(x, ...) {
 #' @export
 as_matrix.vctrs_mtrx <- function(x, ...) {
   dim_nms <- dim_names(x)
+
+  # we allow dim_names for 0 dim dimensions for the prototype
+  # but base R does not.
+  dim_nms[vec_dim(x) == 0] <- list(character())
+
   class(x) <- "matrix"
   dimnames(x) <- dim_nms
   attr(x, "dim_names") <- NULL
@@ -79,24 +84,29 @@ as_mtrx.vctrs_rray <- function(x, ...) {
     abort("Cannot convert a >2 dimensional rray into a mtrx.")
   }
 
+  x_dim_names <- dim_names(x)
+
   new_mtrx(
     .data = vec_data(x),
-    dim = vec_dim(x), )
+    n_row = vec_size(x),
+    n_col = rray_shape(x),
+    row_names = x_dim_names[[1]],
+    col_names = x_dim_names[[2]]
+  )
 }
 
 #' @rdname as_mtrx
 #' @export
 as_mtrx.matrix <- function(x, ...) {
-  dim <- vec_dim(x)
 
-  row_names <- rownames(x) %||% character()
-  col_names <- colnames(x) %||% character()
+  x_dim_names <- dim_names(x)
 
   new_mtrx(
     .data = vec_data(x),
-    dim = dim,
-    row_names = row_names,
-    col_names = col_names
+    n_row = vec_size(x),
+    n_col = rray_shape(x),
+    row_names = x_dim_names[[1]],
+    col_names = x_dim_names[[2]]
   )
 
 }
@@ -113,7 +123,8 @@ as_mtrx.numeric <- function(x,
 
   new_mtrx(
     .data = vec_data(x),
-    dim = c(vec_size(x), 1L),
+    n_row = vec_size(x),
+    n_col = 1L,
     row_names = row_names,
     col_names = col_name
   )
