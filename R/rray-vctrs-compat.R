@@ -64,8 +64,7 @@ vec_type2.vctrs_rray.vctrs_unspecified <- function(x, y) x
 vec_type2.vctrs_rray.vctrs_rray <- function(x, y) {
   shape <- rray_shape2(x, y)
   dim_names <- rray_dim_names2(x, y)
-  # shape_names only
-  dim_names[[1]] <- character(0)
+  # allow row_names when the size is 0 for a complete prototype
   new_rray(shape = shape, dim_names = dim_names)
 }
 

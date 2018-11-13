@@ -138,7 +138,7 @@ is_character_or_null <- function(x) {
 }
 
 are_equal_or_no_name <- function(n_x, n_names) {
-  n_names == 0L || identical(n_x, n_names)
+  n_names == 0L || n_x == 0L || identical(n_x, n_names)
 }
 
 is_rray_type <- function(x) {

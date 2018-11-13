@@ -45,6 +45,11 @@ as_array.vctrs_mtrx <- function(x, ...) {
 as_array.vctrs_rray <- function(x, ...) {
   # this is cheap, but maybe not the best way
   dim_nms <- dim_names(x)
+
+  # we allow dim_names for 0 dim dimensions for the prototype
+  # but base R does not.
+  dim_nms[vec_dim(x) == 0] <- list(character())
+
   class(x) <- "array"
   dimnames(x) <- dim_nms
   attr(x, "dim_names") <- NULL
