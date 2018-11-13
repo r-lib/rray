@@ -4,18 +4,32 @@ using namespace Rcpp;
 
 using shape_type = std::vector<std::size_t>;
 
-// [[Rcpp::export]]
-xt::rarray<double> rray_broadcast_cpp(xt::rarray<double> x, IntegerVector shape) {
-  shape_type new_shape = as<shape_type>(shape);
-  xt::rarray<double> res = xt::broadcast(x, new_shape);
+template <typename T>
+xt::rarray<T> rray_broadcast_cpp_impl(xt::rarray<T> x, IntegerVector dim) {
+  shape_type new_shape = as<shape_type>(dim);
+  xt::rarray<T> res = xt::broadcast(x, new_shape);
   return(res);
 }
 
 // [[Rcpp::export]]
-bool rray_broadcast_shape_cpp(IntegerVector src_shape, IntegerVector dest_shape) {
-  shape_type new_from_shape = as<shape_type>(src_shape);
-  shape_type new_to_shape = as<shape_type>(dest_shape);
-  bool new_shape = xt::broadcast_shape(new_from_shape, new_to_shape);
-  return(new_shape);
-}
+SEXP rray_broadcast_cpp(SEXP x, IntegerVector dim) {
 
+  switch(TYPEOF(x)) {
+
+    case REALSXP: {
+      auto res = Rcpp::as<xt::rarray<double>>(x);
+      return rray_broadcast_cpp_impl(res, dim);
+    }
+
+    case INTSXP: {
+      auto res = Rcpp::as<xt::rarray<int>>(x);
+      return rray_broadcast_cpp_impl(res, dim);
+    }
+
+    default: {
+      stop("Incompatible SEXP encountered; only accepts lists with REALSXPs, INTSXPs and LGLSXPs.");
+    }
+
+  }
+
+}

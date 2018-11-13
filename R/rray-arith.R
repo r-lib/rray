@@ -10,15 +10,15 @@ rray_arith_base <- function(op, x, y) {
 
   op_fn <- switch(
     op,
-    "+" = rray_add_cpp,
-    "-" = rray_subtract_cpp,
-    "/" = rray_divide_cpp,
-    "*" = rray_multiply_cpp
+    "+" = ,
+    "-" = ,
+    "/" = ,
+    "*" = rray_binary_op_cpp
   )
 
   restore_type <- vec_type2(x, y)
 
-  vec_restore(op_fn(x, y), restore_type)
+  vec_restore(op_fn(op, x, y), restore_type)
 }
 
 #' @method vec_arith vctrs_rray

@@ -6,75 +6,28 @@
 
 using namespace Rcpp;
 
-// rray_add_cpp
-xt::rarray<double> rray_add_cpp(xt::rarray<double> x, xt::rarray<double> y);
-RcppExport SEXP _rray_rray_add_cpp(SEXP xSEXP, SEXP ySEXP) {
+// rray_binary_op_cpp
+SEXP rray_binary_op_cpp(std::string op, SEXP x, SEXP y);
+RcppExport SEXP _rray_rray_binary_op_cpp(SEXP opSEXP, SEXP xSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< xt::rarray<double> >::type x(xSEXP);
-    Rcpp::traits::input_parameter< xt::rarray<double> >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(rray_add_cpp(x, y));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rray_subtract_cpp
-xt::rarray<double> rray_subtract_cpp(xt::rarray<double> x, xt::rarray<double> y);
-RcppExport SEXP _rray_rray_subtract_cpp(SEXP xSEXP, SEXP ySEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< xt::rarray<double> >::type x(xSEXP);
-    Rcpp::traits::input_parameter< xt::rarray<double> >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(rray_subtract_cpp(x, y));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rray_multiply_cpp
-xt::rarray<double> rray_multiply_cpp(xt::rarray<double> x, xt::rarray<double> y);
-RcppExport SEXP _rray_rray_multiply_cpp(SEXP xSEXP, SEXP ySEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< xt::rarray<double> >::type x(xSEXP);
-    Rcpp::traits::input_parameter< xt::rarray<double> >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(rray_multiply_cpp(x, y));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rray_divide_cpp
-xt::rarray<double> rray_divide_cpp(xt::rarray<double> x, xt::rarray<double> y);
-RcppExport SEXP _rray_rray_divide_cpp(SEXP xSEXP, SEXP ySEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< xt::rarray<double> >::type x(xSEXP);
-    Rcpp::traits::input_parameter< xt::rarray<double> >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(rray_divide_cpp(x, y));
+    Rcpp::traits::input_parameter< std::string >::type op(opSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(rray_binary_op_cpp(op, x, y));
     return rcpp_result_gen;
 END_RCPP
 }
 // rray_broadcast_cpp
-xt::rarray<double> rray_broadcast_cpp(xt::rarray<double> x, IntegerVector shape);
-RcppExport SEXP _rray_rray_broadcast_cpp(SEXP xSEXP, SEXP shapeSEXP) {
+SEXP rray_broadcast_cpp(SEXP x, IntegerVector dim);
+RcppExport SEXP _rray_rray_broadcast_cpp(SEXP xSEXP, SEXP dimSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< xt::rarray<double> >::type x(xSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type shape(shapeSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray_broadcast_cpp(x, shape));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rray_broadcast_shape_cpp
-bool rray_broadcast_shape_cpp(IntegerVector src_shape, IntegerVector dest_shape);
-RcppExport SEXP _rray_rray_broadcast_shape_cpp(SEXP src_shapeSEXP, SEXP dest_shapeSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< IntegerVector >::type src_shape(src_shapeSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type dest_shape(dest_shapeSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray_broadcast_shape_cpp(src_shape, dest_shape));
+    Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type dim(dimSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray_broadcast_cpp(x, dim));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -103,12 +56,8 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_rray_rray_add_cpp", (DL_FUNC) &_rray_rray_add_cpp, 2},
-    {"_rray_rray_subtract_cpp", (DL_FUNC) &_rray_rray_subtract_cpp, 2},
-    {"_rray_rray_multiply_cpp", (DL_FUNC) &_rray_rray_multiply_cpp, 2},
-    {"_rray_rray_divide_cpp", (DL_FUNC) &_rray_rray_divide_cpp, 2},
+    {"_rray_rray_binary_op_cpp", (DL_FUNC) &_rray_rray_binary_op_cpp, 3},
     {"_rray_rray_broadcast_cpp", (DL_FUNC) &_rray_rray_broadcast_cpp, 2},
-    {"_rray_rray_broadcast_shape_cpp", (DL_FUNC) &_rray_rray_broadcast_shape_cpp, 2},
     {"_rray_rray_atan_cpp", (DL_FUNC) &_rray_rray_atan_cpp, 1},
     {"_rray_rray_reshape_cpp", (DL_FUNC) &_rray_rray_reshape_cpp, 2},
     {NULL, NULL, 0}
