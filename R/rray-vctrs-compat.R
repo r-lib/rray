@@ -10,7 +10,38 @@ t.vctrs_rray <- function(x) {
 
 #' @export
 vec_restore.vctrs_rray <- function(x, to) {
-  as_rray(x) # nothing specific to `to`, compute new dims/names
+  restored_dim_names <- dim_names_restore(x, to)
+  new_rray(
+    .data = vec_data(x),
+    size = vec_size(x),
+    shape = rray_shape(x),
+    dim_names = restored_dim_names
+  )
+}
+
+# potentially the same dim_names
+dim_names_restore <- function(x, to) {
+
+  x_dim <- vec_dim(x)
+  to_dim_names <- dim_names(to)
+
+  restored_dim_names <- new_empty_dim_names(vec_size(x_dim))
+
+  # cant use map2 bc to_dim_names could be
+  # shorter than x_dim (i.e. we added a dimension)
+
+  for(i in seq_along(to_dim_names)) {
+
+    nms <- to_dim_names[[i]]
+    single_dim <- x_dim[i]
+
+    if (vec_size(nms) == single_dim) {
+      restored_dim_names[[i]] <- nms
+    }
+
+  }
+
+  restored_dim_names
 }
 
 #' @export

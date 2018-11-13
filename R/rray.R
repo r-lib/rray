@@ -20,37 +20,46 @@
 #' rray_ex
 #'
 #' @export
-new_rray <- function(.data = numeric(),
-                     dim = integer(1),
+new_rray <- function(.data = numeric(0),
+                     # no concept of scalar/vector. At least 2D.
+                     size = integer(1),
+                     shape = integer(1),
                      dim_names = NULL,
                      ...,
-                     subclass = character()
+                     subclass = character(0)
                      ) {
 
-  stopifnot(is_vector(.data))
-  stopifnot(is_integer(dim))
+  stopifnot(is_rray_type(.data))
+  stopifnot(vec_dims(.data) == 1L)
+  stopifnot(is_bare_integer(size))
+  stopifnot(is_bare_integer(shape))
+  .dim <- c(size, shape)
 
+  # enforce list of empty characters
   if (is_null(dim_names)) {
-    dim_names <- new_empty_dim_names(vec_size(dim))
+    dim_names <- new_empty_dim_names(vec_size(.dim))
   }
-
-  # no support for rray dim_names to have names
-  stopifnot(is_bare_list(dim_names))
 
   stopifnot(map_lgl(dim_names, is_character))
 
-  stopifnot(length(dim) == length(dim_names))
+  # n shape dims and n elements of shape name list
+  stopifnot(vec_size(.dim) == vec_size(dim_names))
 
-  dim_name_lengths <- map_int(dim_names, length)
-  stopifnot(map2_lgl(dim, dim_name_lengths, are_equal_or_no_name))
+  # dim & dim_names
+  dim_name_lengths <- map_int(dim_names, vec_size)
+  stopifnot(map2_lgl(.dim, dim_name_lengths, are_equal_or_no_name))
+
+  # new_rray() takes size and shape for compat with vctrs but we lie a bit
+  # and actually only store the dim because of the nice benefits that gets us
 
   new_vctr(
     .data = .data,
-    dim = dim,
+    dim = .dim,
     dim_names = dim_names,
     ...,
     class = c(subclass, "vctrs_rray")
   )
+
 }
 
 #' Build a rray object
@@ -96,18 +105,31 @@ new_rray <- function(.data = numeric(),
 #' rray(c(1, 2, 3), c(3, 2), dim_names = list(c("x", "y", "z"), character()))
 #'
 #' @export
-rray <- function(x = numeric(), dim = NULL, dim_names = NULL) {
+rray <- function(x = numeric(0), dim = NULL, dim_names = NULL) {
 
-  if (is.null(dim)) {
-    dim <- vec_dim(x)
+  if (is_null(dim)) {
+    dim <- rray_dim_at_least_2D(x)
   }
 
   dim <- vec_cast(dim, integer())
-  validate_dim(dim)
 
-  x <- vec_data(rray_broadcast(x, dim))
+  if (!all(dim >= 0L)) {
+    abort("`dim` must be a non-negative vector.")
+  }
 
-  new_rray(.data = x, dim = dim, dim_names = dim_names)
+  x_dim <- vec_dim(x)
+
+  if (!identical(x_dim, dim)) {
+    x <- rray_broadcast(x, dim)
+  }
+
+  new_rray(
+    .data = vec_data(x),
+    size = dim[1],
+    shape = dim[-1],
+    dim_names = dim_names
+  )
+
 }
 
 
@@ -115,6 +137,29 @@ is_character_or_null <- function(x) {
   is_character(x) || is_null(x)
 }
 
-are_equal_or_no_name <- function(x, y) {
-  y == 0L || identical(x, y)
+are_equal_or_no_name <- function(n_x, n_names) {
+  n_names == 0L || identical(n_x, n_names)
+}
+
+is_rray_type <- function(x) {
+  is_integer(x) || is_double(x) || is_logical(x)
+}
+
+rray_dim_at_least_2D <- function(x) {
+
+  size <- vec_size(x)
+
+  if (vec_dims(x) == 1) { # vector
+
+    if (size == 0) { # but its empty
+      cols <- 0
+    } else {
+      cols <- 1
+    }
+
+    dim(x) <- c(size, cols)
+  }
+
+  dim <- vec_dim(x)
+  dim
 }
