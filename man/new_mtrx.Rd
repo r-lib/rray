@@ -4,22 +4,19 @@
 \alias{new_mtrx}
 \title{Create a new mtrx}
 \usage{
-new_mtrx(.data = numeric(), dim = integer(2),
-  row_names = character(), col_names = character(), ...,
-  subclass = character())
+new_mtrx(.data = numeric(0), size = 0L, shape = 1L,
+  dim_names = NULL, ..., subclass = character(0))
 }
 \arguments{
 \item{.data}{A numeric vector with no attributes representing
 the data.}
 
-\item{dim}{A size 2 integer vector specifying the number of rows and columns
-of the mtrx.}
+\item{shape}{A single integer specifying the number of columns in the mtrx.}
 
-\item{row_names}{A character vector of row names. The default is to have
-no row names.}
-
-\item{col_names}{A character vector of column names. The default is to
-have no column names.}
+\item{dim_names}{A list. For no names, \code{NULL}. Otherwise the list must
+be the same length as \code{dim}. Each element of the list much be either
+a character vector the same length as the corresponding dimension in
+\code{dim}, or \code{character(0)} for no names for that dimension.}
 
 \item{...}{Name-value pairs defining attributes.}
 
@@ -30,7 +27,7 @@ Low level constructor for mtrx objects
 }
 \examples{
 
-mtrx_ex <- new_mtrx(1:10, dim = c(5L, 2L), col_names = c("a", "b"))
+mtrx_ex <- new_mtrx(1:10, size = 5L, shape = 2L, col_names = c("a", "b"))
 
 mtrx_ex
 

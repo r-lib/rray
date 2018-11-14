@@ -23,27 +23,69 @@ as_matrix.matrix <- function(x, ...) {
 }
 
 #' @export
-as_matrix.numeric <- function(x, ...) {
-  # consistent with R and vctrs
-  matrix(x, ncol = 1)
+as_matrix.array <- function(x, ...) {
+
+  dim <- vec_dim(x)
+
+  if (vec_size(dim) > 2L) {
+    abort("Cannot convert a >2 dimensional array into a matrix.")
+  }
+
+  new_matrix(
+    .data = vec_data(x),
+    dim = vec_dim(x),
+    dimnames = dim_names(x)
+  )
+
 }
 
 #' @export
+as_matrix.double <- function(x, ...) {
+  .data <- unname(vec_data(x))
+  new_matrix(
+    .data = .data,
+    dim = c(length(x), 1L),
+    dimnames = list(names(x), NULL)
+  )
+}
+
+#' @export
+as_matrix.integer <- as_matrix.double
+
+#' @export
+as_matrix.logical <- as_matrix.double
+
+#' @export
 as_matrix.vctrs_mtrx <- function(x, ...) {
-  dim_nms <- dim_names(x)
+  new_matrix(
+    .data = vec_data(x),
+    dim = vec_dim(x),
+    dimnames = dim_names(x)
+  )
+}
 
-  # we allow dim_names for 0 dim dimensions for the prototype
-  # but base R does not.
-  dim_nms[vec_dim(x) == 0] <- list(character())
+#' @export
+as_matrix.vctrs_rray <- function(x, ...) {
 
-  class(x) <- "matrix"
-  dimnames(x) <- dim_nms
-  attr(x, "dim_names") <- NULL
-  x
+  dim <- vec_dim(x)
+
+  if (vec_size(dim) > 2L) {
+    abort("Cannot convert a >2 dimensional rray into a matrix.")
+  }
+
+  new_matrix(
+    .data = vec_data(x),
+    dim = dim,
+    dimnames = dim_names(x)
+  )
+
 }
 
 #' @export
 as.matrix.vctrs_mtrx <- as_matrix.vctrs_mtrx
+
+#' @export
+as.matrix.vctrs_rray <- as_matrix.vctrs_rray
 
 
 # as_mtrx() --------------------------------------------------------------------
@@ -84,50 +126,37 @@ as_mtrx.vctrs_rray <- function(x, ...) {
     abort("Cannot convert a >2 dimensional rray into a mtrx.")
   }
 
-  x_dim_names <- dim_names(x)
-
   new_mtrx(
     .data = vec_data(x),
-    n_row = vec_size(x),
-    n_col = rray_shape(x),
-    row_names = x_dim_names[[1]],
-    col_names = x_dim_names[[2]]
+    size = vec_size(x),
+    shape = rray_shape(x),
+    dim_names = dim_names(x)
   )
 }
+
+#' @export
+as_mtrx.array <- as_mtrx.vctrs_rray
 
 #' @rdname as_mtrx
 #' @export
 as_mtrx.matrix <- function(x, ...) {
-
-  x_dim_names <- dim_names(x)
-
   new_mtrx(
     .data = vec_data(x),
-    n_row = vec_size(x),
-    n_col = rray_shape(x),
-    row_names = x_dim_names[[1]],
-    col_names = x_dim_names[[2]]
+    size = vec_size(x),
+    shape = rray_shape(x),
+    dim_names = dim_names(x)
   )
-
 }
 
-#' @rdname as_mtrx
 #' @export
-as_mtrx.numeric <- function(x,
-                            ...,
-                            col_name = character(),
-                            row_names = character()
-                            ) {
-
-  x <- unname(x)
-
-  new_mtrx(
-    .data = vec_data(x),
-    n_row = vec_size(x),
-    n_col = 1L,
-    row_names = row_names,
-    col_names = col_name
-  )
-
+as_mtrx.double <- function(x, ...) {
+  .data <- unname(vec_data(x))
+  new_mtrx(.data, size = vec_size(x), dim_names = dim_names(x))
 }
+
+#' @export
+as_mtrx.integer <- as_mtrx.double
+
+#' @export
+as_mtrx.logical <- as_mtrx.double
 

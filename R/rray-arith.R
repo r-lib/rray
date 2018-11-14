@@ -3,11 +3,12 @@
 rray_arith_base <- function(op, x, y) {
 
   # precompute dimensionality and extend existing dims
-  # xtensor-r issue #57 until we have a fix
-  dim <- rray_dim2(vec_dim(x), vec_dim(y))
-  x <- rray_dims_match(x, dim)
-  y <- rray_dims_match(y, dim)
+  # xtensor-r issue #57 until we have a fix (if ever)
+  dims <- rray_dims2(vec_dim(x), vec_dim(y))
+  x <- rray_dims_match(x, dims)
+  y <- rray_dims_match(y, dims)
 
+  # Get op function
   op_fn <- switch(
     op,
     "+" = ,
@@ -16,9 +17,20 @@ rray_arith_base <- function(op, x, y) {
     "*" = rray_binary_op_cpp
   )
 
+  # Get common dim_names and type
+  dim_nms <- rray_dim_names2(x, y)
   restore_type <- vec_type2(x, y)
 
-  vec_restore(op_fn(op, x, y), restore_type)
+  # Apply function
+  res <- op_fn(op, x, y)
+
+  # Restore type
+  res <- vec_restore(res, restore_type)
+
+  # Add dim names
+  dim_names(res) <- dim_nms
+
+  res
 }
 
 #' @method vec_arith vctrs_rray

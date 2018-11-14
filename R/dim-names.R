@@ -25,7 +25,11 @@ dim_names <- function(x) {
 
 #' @export
 dim_names.default <- function(x) {
+  dimnames(x)
+}
 
+#' @export
+dim_names.array <- function(x) {
   dim_nms <- unname(dimnames(x))
 
   if (is.null(dim_nms)) {
@@ -40,9 +44,25 @@ dim_names.default <- function(x) {
 }
 
 #' @export
+dim_names.matrix <- dim_names.array
+
+#' @export
 dim_names.vctrs_rray <- function(x) {
   attr(x, "dim_names")
 }
+
+# treat vectors as 1 column matrices
+
+#' @export
+dim_names.double <- function(x) {
+  list(names(x) %||% character(), character())
+}
+
+#' @export
+dim_names.integer <- dim_names.double
+
+#' @export
+dim_names.logical <- dim_names.double
 
 # ------------------------------------------------------------------------------
 
@@ -62,13 +82,31 @@ dim_names.vctrs_rray <- function(x) {
 
 # ------------------------------------------------------------------------------
 
+rray_dim_names_common <- function(...) {
+  args <- compact(list2(...))
+
+  if (length(args) == 0) {
+    return(list())
+  }
+
+  dim <- rray_dim_common(!!! args)
+  args_dim_names <- map(args, restore_dim_names, to_dim = dim)
+
+  reduce(args_dim_names, reconcile_dim_names)
+}
+
 rray_dim_names2 <- function(x, y) {
 
   dim <- rray_dim2(vec_dim(x), vec_dim(y))
-  x_nms_list <- restore_dim_names(dim_names(x), dim)
-  y_nms_list <- restore_dim_names(dim_names(y), dim)
+  x_nms_list <- restore_dim_names(x, dim)
+  y_nms_list <- restore_dim_names(y, dim)
 
-  map2(x_nms_list, y_nms_list, function(x_nms, y_nms) {
+  reconcile_dim_names(x_nms_list, y_nms_list)
+}
+
+reconcile_dim_names <- function(x_dim_names, y_dim_names) {
+
+  map2(x_dim_names, y_dim_names, function(x_nms, y_nms) {
 
     n_x <- vec_size(x_nms)
     n_y <- vec_size(y_nms)
@@ -88,6 +126,40 @@ rray_dim_names2 <- function(x, y) {
 
   })
 
+}
+
+restore_dim_names <- function(x, to_dim) {
+
+  dims <- vec_size(to_dim)
+
+  dim_names <- dim_names(x)
+
+  meta_names <- names2(dim_names)
+  meta_names <- c(meta_names, rep("", times = dims - length(meta_names)))
+
+  restored_dim_names <- new_empty_dim_names(dims)
+  names(restored_dim_names) <- meta_names
+
+  # cant use map2 bc to_dim_names could be
+  # shorter than x_dim (i.e. we added a dimension)
+
+  for(i in seq_along(dim_names)) {
+
+    nms <- dim_names[[i]]
+    single_dim <- to_dim[i]
+
+    if (vec_size(nms) == single_dim || single_dim == 0L) {
+      restored_dim_names[[i]] <- nms
+    }
+
+  }
+
+  restored_dim_names
+
+}
+
+new_empty_dim_names <- function(n) {
+  map(seq_len(n), function(x) character())
 }
 
 # ------------------------------------------------------------------------------

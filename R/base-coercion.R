@@ -3,49 +3,65 @@
 # Personally, I think it is appropriate to do elementwise conversion
 # but keep the dimensionality. That preserves the invariants mentioned there
 
-as_array_proxy <- function(x, proxy) {
-  n <- vec_size(vec_data(x))
-  proxy <- array(rep(proxy, times = n), dim = vec_dim(x), dimnames = dim_names(x))
-  vec_cast(x, proxy)
+new_array <- function(.data, dim, dimnames) {
+  structure(.data, dim = dim, dimnames = dimnames)
 }
 
-as_matrix_proxy <- function(x, proxy) {
-  n <- vec_size(vec_data(x))
-  proxy <- matrix(
-    data = rep(proxy, times = n),
-    nrow = vec_size(x),
-    ncol = rray_shape(x),
-    dimnames = dim_names(x)
-  )
-  vec_cast(x, proxy)
+# no need for a class? otherwise its not happy if you give it one
+new_matrix <- function(.data, dim, dimnames) {
+  structure(.data, dim = dim, dimnames = dimnames)
 }
 
 #' @export
 as.double.vctrs_rray <- function(x, ...) {
-  as_array_proxy(x, 1.0)
+  new_array(
+    .data = vec_cast(vec_data(x), double()),
+    dim = vec_dim(x),
+    dimnames = dim_names(x)
+  )
 }
 
 #' @export
 as.integer.vctrs_rray <- function(x, ...) {
-  as_array_proxy(x, 1L)
+  new_array(
+    .data = vec_cast(vec_data(x), integer()),
+    dim = vec_dim(x),
+    dimnames = dim_names(x)
+  )
 }
 
 #' @export
 as.logical.vctrs_rray <- function(x, ...) {
-  as_array_proxy(x, TRUE)
+  new_array(
+    .data = vec_cast(vec_data(x), logical()),
+    dim = vec_dim(x),
+    dimnames = dim_names(x)
+  )
 }
 
 #' @export
 as.double.vctrs_mtrx <- function(x, ...) {
-  as_matrix_proxy(x, 1.0)
+  new_matrix(
+    .data = vec_cast(vec_data(x), double()),
+    dim = vec_dim(x),
+    dimnames = dim_names(x)
+  )
 }
 
 #' @export
 as.integer.vctrs_mtrx <- function(x, ...) {
-  as_matrix_proxy(x, 1L)
+  new_matrix(
+    .data = vec_cast(vec_data(x), integer()),
+    dim = vec_dim(x),
+    dimnames = dim_names(x)
+  )
 }
 
 #' @export
-as.integer.vctrs_mtrx <- function(x, ...) {
-  as_matrix_proxy(x, TRUE)
+as.logical.vctrs_mtrx <- function(x, ...) {
+  new_matrix(
+    .data = vec_cast(vec_data(x), logical()),
+    dim = vec_dim(x),
+    dimnames = dim_names(x)
+  )
 }

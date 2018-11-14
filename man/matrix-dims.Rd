@@ -6,9 +6,9 @@
 \alias{rray_dim_common}
 \title{Find common dimensions}
 \usage{
-rray_dims_common(..., .dims = NULL)
+rray_dims_common(...)
 
-rray_dim_common(..., .dims = NULL)
+rray_dim_common(...)
 }
 \description{
 \itemize{

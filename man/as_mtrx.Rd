@@ -3,15 +3,11 @@
 \name{as_mtrx}
 \alias{as_mtrx}
 \alias{as_mtrx.matrix}
-\alias{as_mtrx.numeric}
 \title{Coerce to a mtrx}
 \usage{
 as_mtrx(x, ...)
 
 \method{as_mtrx}{matrix}(x, ...)
-
-\method{as_mtrx}{numeric}(x, ..., col_name = character(),
-  row_names = character())
 }
 \arguments{
 \item{x}{An object to coerce to a mtrx.}

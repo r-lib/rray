@@ -22,8 +22,8 @@
 #' @export
 new_rray <- function(.data = numeric(0),
                      # no concept of scalar/vector. At least 2D.
-                     size = integer(1),
-                     shape = integer(1),
+                     size = 0L,
+                     shape = 1L,
                      dim_names = NULL,
                      ...,
                      subclass = character(0)
@@ -132,13 +132,8 @@ rray <- function(x = numeric(0), dim = NULL, dim_names = NULL) {
 
 }
 
-
-is_character_or_null <- function(x) {
-  is_character(x) || is_null(x)
-}
-
 are_equal_or_no_name <- function(n_x, n_names) {
-  n_names == 0L || n_x == 0L || identical(n_x, n_names)
+  n_names == 0L || identical(n_x, n_names)
 }
 
 is_rray_type <- function(x) {
@@ -147,17 +142,10 @@ is_rray_type <- function(x) {
 
 rray_dim_at_least_2D <- function(x) {
 
-  size <- vec_size(x)
-
-  if (vec_dims(x) == 1) { # vector
-
-    if (size == 0) { # but its empty
-      cols <- 0
-    } else {
-      cols <- 1
-    }
-
-    dim(x) <- c(size, cols)
+  # vector
+  if (vec_dims(x) == 1) {
+    size <- vec_size(x)
+    dim(x) <- c(size, 1L)
   }
 
   dim <- vec_dim(x)

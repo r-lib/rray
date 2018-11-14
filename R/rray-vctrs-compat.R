@@ -8,14 +8,17 @@ t.vctrs_rray <- function(x) {
   as_rray(t(as_array(x)))
 }
 
+# vec_restore restores ONLY the type
+# no attempt to "restore" dim names.
+# only copies any existing dim_names over
+
 #' @export
 vec_restore.vctrs_rray <- function(x, to) {
-  dim_names <- restore_dim_names(dim_names(to), vec_dim(x))
   new_rray(
     .data = vec_data(x),
     size = vec_size(x),
     shape = rray_shape(x),
-    dim_names = dim_names
+    dim_names = dim_names(x)
   )
 }
 
@@ -27,6 +30,21 @@ vec_restore.vctrs_rray <- function(x, to) {
 #' @export
 vec_ptype_abbr.vctrs_rray <- function(x) {
   "rray"
+}
+
+#' @export
+vec_ptype_full.vctrs_rray <- function(x) {
+  paste0("vctrs_rray<", typeof(x), ">", vec_ptype_shape(x))
+}
+
+# from vctrs
+vec_ptype_shape <- function(x) {
+  dim <- vec_dim(x)
+  if (length(dim) == 1) {
+    ""
+  } else {
+    paste0("[,", paste(dim[-1], collapse = ","), "]")
+  }
 }
 
 
@@ -59,13 +77,13 @@ vec_type2.vctrs_rray.vctrs_unspecified <- function(x, y) x
 
 # vec_type2 vctrs_rray <-> vctrs_rray ------------------------------------------
 
+# vec_type2 makes no attempt to recover dim names, as they are not part of the type.
+# type = class + shape (at least for rray and mtrx objects)
+
 #' @method vec_type2.vctrs_rray vctrs_rray
 #' @export
 vec_type2.vctrs_rray.vctrs_rray <- function(x, y) {
-  shape <- rray_shape2(x, y)
-  dim_names <- rray_dim_names2(x, y)
-  # allow row_names when the size is 0 for a complete prototype
-  new_rray(shape = shape, dim_names = dim_names)
+  new_rray(shape = rray_shape2(x, y))
 }
 
 # vec_type2 vctrs_rray <-> double/matrix/array ---------------------------------
@@ -115,15 +133,17 @@ vec_cast.vctrs_rray.logical <- function(x, to) vec_unspecified_cast(x, to)
 
 # vec_cast vctrs_rray <-> vctrs_rray -------------------------------------------
 
+# like vec_type2, vec_cast is ONLY about casting to a new type (class + shape)
+# and has no regard for names
+
 #' @method vec_cast.vctrs_rray vctrs_rray
 #' @export
 vec_cast.vctrs_rray.vctrs_rray <- function(x, to) {
-  res <- rray_broadcast(x, vec_dim(to))
+  res <- broadcast(x, vec_dim(to))
   new_rray(
     .data = vec_data(res),
     size = vec_size(res),
-    shape = rray_shape(res),
-    dim_names = dim_names(to)
+    shape = rray_shape(res)
   )
 }
 
@@ -140,9 +160,10 @@ vec_cast.vctrs_rray.double <- vec_cast.vctrs_rray.vctrs_rray
 #' @method vec_cast.double vctrs_rray
 #' @export
 vec_cast.double.vctrs_rray <- function(x, to) {
-  x <- rray_broadcast(x, vec_dim(to))
-  x_dbl <- vec_cast(vec_data(x), double())
-  array(x_dbl, dim = vec_dim(to), dimnames = dim_names(to))
+  dim <- vec_dim(to)
+  x <- broadcast(x, dim)
+  x <- vec_cast(vec_data(x), double())
+  array(x, dim = dim)
 }
 
 # vec_cast vctrs_rray <-> integer -----------------------------------------------
@@ -154,9 +175,10 @@ vec_cast.vctrs_rray.integer <- vec_cast.vctrs_rray.vctrs_rray
 #' @method vec_cast.integer vctrs_rray
 #' @export
 vec_cast.integer.vctrs_rray <- function(x, to) {
-  x <- rray_broadcast(x, vec_dim(to))
-  x_dbl <- vec_cast(vec_data(x), integer())
-  array(x_dbl, dim = vec_dim(to), dimnames = dim_names(to))
+  dim <- vec_dim(to)
+  x <- broadcast(x, dim)
+  x <- vec_cast(vec_data(x), integer())
+  array(x, dim = dim)
 }
 
 # vec_cast vctrs_rray <-> logical -----------------------------------------------
@@ -168,9 +190,10 @@ vec_cast.vctrs_rray.logical <- vec_cast.vctrs_rray.vctrs_rray
 #' @method vec_cast.logical vctrs_rray
 #' @export
 vec_cast.logical.vctrs_rray <- function(x, to) {
-  x <- rray_broadcast(x, vec_dim(to))
-  x_dbl <- vec_cast(vec_data(x), logical())
-  array(x_dbl, dim = vec_dim(to), dimnames = dim_names(to))
+  dim <- vec_dim(to)
+  x <- broadcast(x, dim)
+  x <- vec_cast(vec_data(x), logical())
+  array(x, dim = dim)
 }
 
 # vec_cast vctrs_rray <-> vctrs_mtrx -------------------------------------------
@@ -197,9 +220,8 @@ vec_cast.vctrs_mtrx.vctrs_rray <- function(x, to) {
 
   new_mtrx(
     .data = vec_data(x),
-    dim = vec_dim(x),
-    row_names = row_names(to),
-    col_names = col_names(to)
+    size = vec_size(x),
+    shape = rray_shape(x)
   )
 
 }

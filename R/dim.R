@@ -69,11 +69,12 @@ rray_dim_common <- function(...) {
   args <- compact(list2(...))
 
   dim_lst <- map(args, vec_dim)
-  reduce(dim_lst, rray_dim2, .dims = .dims)
+  reduce(dim_lst, rray_dim2)
 
 }
 
 # vctrs:::dim2
+# x and y are dim values
 dim2 <- function(x, y) {
   nx <- length(x)
   ny <- length(y)
@@ -85,4 +86,19 @@ dim2 <- function(x, y) {
   } else {
     list(x = x, y = c(y, rep(1L, nx - ny)))
   }
+}
+
+# Similar to dim2 but takes dim and extends
+# it to match the number of dims
+dim_extend <- function(dim, dims) {
+  x_dims <- length(dim)
+
+  if (x_dims == dims) {
+    dim
+  } else if (x_dims < dims) {
+    c(dim, rep(1L, dims - x_dims))
+  } else {
+    abort("Can not decrease dimensions")
+  }
+
 }

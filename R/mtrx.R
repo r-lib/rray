@@ -3,36 +3,31 @@
 #' Low level constructor for mtrx objects
 #'
 #' @inheritParams new_rray
-#' @param dim A size 2 integer vector specifying the number of rows and columns
-#' of the mtrx.
-#' @param row_names A character vector of row names. The default is to have
-#' no row names.
-#' @param col_names A character vector of column names. The default is to
-#' have no column names.
+#' @param shape A single integer specifying the number of columns in the mtrx.
 #'
 #' @examples
 #'
-#' mtrx_ex <- new_mtrx(1:10, dim = c(5L, 2L), col_names = c("a", "b"))
+#' mtrx_ex <- new_mtrx(1:10, size = 5L, shape = 2L, col_names = c("a", "b"))
 #'
 #' mtrx_ex
 #'
 #' @export
 new_mtrx <- function(.data = numeric(0),
-                     n_row = integer(1),
-                     n_col = integer(1),
-                     row_names = character(0),
-                     col_names = character(0),
+                     size = 0L,
+                     shape = 1L,
+                     dim_names = NULL,
                      ...,
                      subclass = character(0)) {
 
-  stopifnot(is_character(row_names))
-  stopifnot(is_character(col_names))
+  # mtrx can only have 2 columns
+  stopifnot(vec_size(shape) == 1L)
+  stopifnot(vec_size(dim_names) <= 2L)
 
   new_rray(
     .data = .data,
-    size = n_row,
-    shape = n_col,
-    dim_names = list(row_names, col_names),
+    size = size,
+    shape = shape,
+    dim_names = dim_names,
     ...,
     subclass = c(subclass, "vctrs_mtrx")
   )
@@ -83,13 +78,14 @@ new_mtrx <- function(.data = numeric(0),
 mtrx <- function(..., row_names = character()) {
 
   .dots <- dots_list(...)
-  n_cols <- length(.dots)
 
-  # prototype
+  # for prototype (calculate n_cols after this so you
+  # always have at least 1 col)
   if (is_empty(.dots)) {
-    .dots <- list(numeric())
-    n_cols <- 0L
+    .dots <- list(numeric(0))
   }
+
+  n_cols <- length(.dots)
 
   is_fully_named <- rlang::is_named(.dots)
   nms <- names2(.dots)
@@ -114,10 +110,9 @@ mtrx <- function(..., row_names = character()) {
 
   new_mtrx(
     .data = mtrx_vec,
-    n_row = common_size,
-    n_col = n_cols,
-    row_names = row_names,
-    col_names = col_names
+    size = common_size,
+    shape = n_cols,
+    dim_names = list(row_names, col_names)
   )
 
 }
@@ -143,6 +138,6 @@ mtrx <- function(..., row_names = character()) {
 #' @export
 mrtrx <- function(..., row_names = character()) {
   mat <- tibble::frame_matrix(...)
-  dimnames(mat) <- list(row_names, colnames(mat))
+  dim_names(mat) <- list(row_names, colnames(mat))
   as_mtrx(mat)
 }

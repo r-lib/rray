@@ -10,19 +10,22 @@ t.vctrs_mtrx <- function(x) {
 
 #' @export
 vec_restore.vctrs_mtrx <- function(x, to) {
-  res <- vec_restore.vctrs_rray(x, to)
   new_mtrx(
-    .data = vec_data(res),
-    n_row = vec_size(res),
-    n_col = rray_shape(res),
-    row_names = row_names(res),
-    col_names = col_names(res)
+    .data = vec_data(x),
+    size = vec_size(x),
+    shape = rray_shape(x),
+    dim_names = dim_names(x)
   )
 }
 
 #' @export
 vec_ptype_abbr.vctrs_mtrx <- function(x) {
   "mtrx"
+}
+
+#' @export
+vec_ptype_full.vctrs_mtrx <- function(x) {
+  paste0("vctrs_mtrx<", typeof(x), ">", vec_ptype_shape(x))
 }
 
 
@@ -46,9 +49,7 @@ vec_type2.vctrs_mtrx.vctrs_unspecified <- function(x, y) x
 #' @method vec_type2.vctrs_mtrx vctrs_mtrx
 #' @export
 vec_type2.vctrs_mtrx.vctrs_mtrx <- function(x, y) {
-  n_col <- rray_shape2(x, y)
-  dim_names <- rray_dim_names2(x, y)
-  new_mtrx(n_col = n_col, row_names = dim_names[[1]], col_names = dim_names[[2]])
+  new_mtrx(shape = rray_shape2(x, y))
 }
 
 # vec_type2 vctrs_rray <-> double/matrix/array ---------------------------------
@@ -98,10 +99,8 @@ vec_cast.vctrs_mtrx.vctrs_mtrx <- function(x, to) {
   res <- rray_broadcast(x, vec_dim(to))
   new_mtrx(
     .data = vec_data(res),
-    n_row = vec_size(to),
-    n_col = rray_shape(to),
-    row_names = row_names(to),
-    col_names = col_names(to)
+    size = vec_size(res),
+    shape = rray_shape(res)
   )
 }
 
@@ -109,50 +108,36 @@ vec_cast.vctrs_mtrx.vctrs_mtrx <- function(x, to) {
 
 #' @method vec_cast.vctrs_mtrx double
 #' @export
-vec_cast.vctrs_mtrx.double <- function(x, to) {
-  res <- rray_broadcast(x, vec_dim(to))
-  new_mtrx(
-    .data = vec_data(res),
-    dim = vec_dim(res),
-    row_names = row_names(to),
-    col_names = col_names(to)
-  )
-}
+vec_cast.vctrs_mtrx.double <- vec_cast.vctrs_mtrx.vctrs_mtrx
 
 #' @method vec_cast.double vctrs_mtrx
 #' @export
 vec_cast.double.vctrs_mtrx <- function(x, to) {
-  x <- rray_broadcast(x, vec_dim(to))
-  x_dbl <- vec_cast(vec_data(x), double())
-  matrix(x_dbl, nrow = vec_size(to), ncol = rray_shape(to), dimnames = dim_names(to))
+  vec_cast.double.vctrs_rray(x, to)
 }
 
 # vec_cast vctrs_mtrx <-> integer -----------------------------------------------
 
 #' @method vec_cast.vctrs_rray integer
 #' @export
-vec_cast.vctrs_mtrx.integer <- vec_cast.vctrs_mtrx.double
+vec_cast.vctrs_mtrx.integer <- vec_cast.vctrs_mtrx.vctrs_mtrx
 
 #' @method vec_cast.integer vctrs_mtrx
 #' @export
 vec_cast.integer.vctrs_mtrx <- function(x, to) {
-  x <- rray_broadcast(x, vec_dim(to))
-  x_dbl <- vec_cast(vec_data(x), integer())
-  matrix(x_dbl, nrow = vec_size(to), ncol = rray_shape(to), dimnames = dim_names(to))
+  vec_cast.integer.vctrs_rray(x, to)
 }
 
 # vec_cast vctrs_mtrx <-> logical -----------------------------------------------
 
 #' @method vec_cast.vctrs_rray logical
 #' @export
-vec_cast.vctrs_mtrx.logical <- vec_cast.vctrs_mtrx.double
+vec_cast.vctrs_mtrx.logical <- vec_cast.vctrs_mtrx.vctrs_mtrx
 
 #' @method vec_cast.logical vctrs_mtrx
 #' @export
 vec_cast.logical.vctrs_mtrx <- function(x, to) {
-  x <- rray_broadcast(x, vec_dim(to))
-  x_dbl <- vec_cast(vec_data(x), logical())
-  matrix(x_dbl, nrow = vec_size(to), ncol = rray_shape(to), dimnames = dim_names(to))
+  vec_cast.logical.vctrs_rray(x, to)
 }
 
 # vec_cast vctrs_rray <-> vctrs_mtrx -------------------------------------------

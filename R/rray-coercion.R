@@ -28,13 +28,20 @@ as_array.matrix <- function(x, ...) {
 }
 
 #' @export
-as_array.numeric <- function(x, ...) {
-  # enforce column
-  array(x, dim = c(length(x), 1L))
+as_array.double <- function(x, ...) {
+  array(
+    data = x,
+    # enforce column
+    dim = c(length(x), 1L),
+    dimnames = list(names(x), NULL)
+  )
 }
 
 #' @export
-as_array.logical <- as_array.numeric
+as_array.integer <- as_array.double
+
+#' @export
+as_array.logical <- as_array.double
 
 #' @export
 as_array.vctrs_mtrx <- function(x, ...) {
@@ -43,21 +50,18 @@ as_array.vctrs_mtrx <- function(x, ...) {
 
 #' @export
 as_array.vctrs_rray <- function(x, ...) {
-  # this is cheap, but maybe not the best way
-  dim_nms <- dim_names(x)
-
-  # we allow dim_names for 0 dim dimensions for the prototype
-  # but base R does not.
-  dim_nms[vec_dim(x) == 0] <- list(character())
-
-  class(x) <- "array"
-  dimnames(x) <- dim_nms
-  attr(x, "dim_names") <- NULL
-  x
+  new_array(
+    .data = vec_data(x),
+    dim = vec_dim(x),
+    dimnames = dim_names(x)
+  )
 }
 
 #' @export
 as.array.vctrs_rray <- as_array.vctrs_rray
+
+#' @export
+as.array.vctrs_mtrx <- as_array.vctrs_mtrx
 
 # as_rray() --------------------------------------------------------------------
 
@@ -104,20 +108,13 @@ as_rray.array <- as_rray.vctrs_mtrx
 as_rray.matrix <- as_rray.vctrs_mtrx
 
 #' @export
-#' @inheritParams new_mtrx
-#' @param col_name A single character for the column name. The default is
-#' to have no column name.
-as_rray.numeric <- function(x, ..., row_names = character(), col_name = character()) {
-  size <- vec_size(x)
-  if (size == 0L) {
-    new_rray()
-  } else {
-    new_rray(vec_data(x), size = size, shape = 1L, dim_names = list(row_names, col_name))
-  }
+as_rray.double <- function(x, ...) {
+  .data <- unname(vec_data(x))
+  new_rray(.data, size = vec_size(x), dim_names = dim_names(x))
 }
 
 #' @export
-as_rray.integer <- as_rray.numeric
+as_rray.integer <- as_rray.double
 
 #' @export
-as_rray.logical <- as_rray.numeric
+as_rray.logical <- as_rray.double

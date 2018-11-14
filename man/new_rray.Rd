@@ -4,15 +4,12 @@
 \alias{new_rray}
 \title{Create a new rray}
 \usage{
-new_rray(.data = numeric(), dim = integer(1), dim_names = NULL, ...,
-  subclass = character())
+new_rray(.data = numeric(0), size = 0L, shape = 1L,
+  dim_names = NULL, ..., subclass = character(0))
 }
 \arguments{
 \item{.data}{A numeric vector with no attributes representing
 the data.}
-
-\item{dim}{An integer vector describing the dimensions of the
-\code{rray}.}
 
 \item{dim_names}{A list. For no names, \code{NULL}. Otherwise the list must
 be the same length as \code{dim}. Each element of the list much be either
@@ -22,6 +19,9 @@ a character vector the same length as the corresponding dimension in
 \item{...}{Name-value pairs defining attributes.}
 
 \item{subclass}{The name of the subclass.}
+
+\item{dim}{An integer vector describing the dimensions of the
+\code{rray}.}
 }
 \description{
 Low level constructor for rray objects

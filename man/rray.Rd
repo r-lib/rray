@@ -4,7 +4,7 @@
 \alias{rray}
 \title{Build a rray object}
 \usage{
-rray(x = numeric(), dim = NULL, dim_names = NULL)
+rray(x = numeric(0), dim = NULL, dim_names = NULL)
 }
 \arguments{
 \item{x}{A numeric vector, matrix, or array to convert to an rray. It
