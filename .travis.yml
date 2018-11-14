@@ -24,10 +24,10 @@ before_install:
     - sed -i 's|CXX_STD = CXX14||' src/Makevars
     - head src/Makevars
 install:
-- mkdir -p latest-gcc-symlinks
-- ln -s /usr/bin/g++-6 latest-gcc-symlinks/g++
-- ln -s /usr/bin/gcc-6 latest-gcc-symlinks/gcc
-- export PATH=$PWD/latest-gcc-symlinks:$PATH
+  - mkdir -p latest-gcc-symlinks
+  - ln -s /usr/bin/g++-6 latest-gcc-symlinks/g++
+  - ln -s /usr/bin/gcc-6 latest-gcc-symlinks/gcc
+  - export PATH=$PWD/latest-gcc-symlinks:$PATH
 # ------------------------------------------------------------------------------
 
 matrix:
