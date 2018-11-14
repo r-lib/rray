@@ -22,7 +22,9 @@ addons:
 before_install:
     - echo "** Overriding src/Makevars and removing C++14 on Travis only"
     - sed -i 's|CXX_STD = CXX14||' src/Makevars
-    - echo src/Makevars
+    - head src/Makevars
+    - export CXX=g++-6 CC=gcc-6;
+    - echo $CXX
 # ------------------------------------------------------------------------------
 
 matrix:
