@@ -4,8 +4,7 @@ test_that("subset doesn't drop dimensions", {
   x <- as_mtrx(matrix(1:24, 3, 8))
 
   # 1st col of every dimension
-  expect_equal(dim(x[1]), c(3, 1))
-  expect_equal(x[1], x[,1])
+  expect_equal(dim(x[,1]), c(3, 1))
 
   # first row
   expect_equal(dim(x[1,]), c(1, 8))
