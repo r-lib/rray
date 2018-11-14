@@ -42,7 +42,7 @@ before_install:
 r_github_packages:
   - r-lib/pkgdown
 
- matrix:
+matrix:
   include:
   - r: devel
   - r: release
