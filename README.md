@@ -8,6 +8,8 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 [![Travis build
 status](https://travis-ci.org/DavisVaughan/rray.svg?branch=master)](https://travis-ci.org/DavisVaughan/rray)
 
+## Introduction
+
 The goal of `rray` is to provide stricter matrix and array classes in R,
 similar in spirit to `tibble`.
 
