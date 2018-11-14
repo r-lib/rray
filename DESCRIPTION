@@ -16,7 +16,6 @@ Remotes:
     DavisVaughan/xtensorrr
 Imports: 
     rlang,
-    tibble,
     vctrs,
     Rcpp,
     glue,

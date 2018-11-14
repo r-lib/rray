@@ -119,28 +119,31 @@ mtrx <- function(..., row_names = character()) {
 
 }
 
+# This is the only thing that would require the tibble dependency, so let's
+# remove it for now and reevaluate later. Maybe we can add tibble::frame_matrix()
+# as a native function here.
 
-#' Row-wise mtrx creation
-#'
-#' `mrtrx()` is the equivalent of [tibble::tribble()], but for mtrx objects.
-#' It allows for easy row-wise creation of mtrx objects, which is especially
-#' helpful for small mtrices where readability is key.
-#'
-#' @inheritParams mtrx
-#' @param ... Arguments specifying the structure of a mtrx. Column names should
-#' be formulas, and may only appear before the data.
-#'
-#' @examples
-#'
-#' mrtrx(
-#'   ~col1, ~col2,
-#'   1,     3,
-#'   5,     2
-#' )
-#'
-#' @export
-mrtrx <- function(..., row_names = character()) {
-  mat <- tibble::frame_matrix(...)
-  dim_names(mat) <- list(row_names, colnames(mat))
-  as_mtrx(mat)
-}
+# #' Row-wise mtrx creation
+# #'
+# #' `mrtrx()` is the equivalent of [tibble::tribble()], but for mtrx objects.
+# #' It allows for easy row-wise creation of mtrx objects, which is especially
+# #' helpful for small mtrices where readability is key.
+# #'
+# #' @inheritParams mtrx
+# #' @param ... Arguments specifying the structure of a mtrx. Column names should
+# #' be formulas, and may only appear before the data.
+# #'
+# #' @examples
+# #'
+# #' mrtrx(
+# #'   ~col1, ~col2,
+# #'   1,     3,
+# #'   5,     2
+# #' )
+# #'
+# #' @export
+# mrtrx <- function(..., row_names = character()) {
+#   mat <- tibble::frame_matrix(...)
+#   dim_names(mat) <- list(row_names, colnames(mat))
+#   as_mtrx(mat)
+# }
