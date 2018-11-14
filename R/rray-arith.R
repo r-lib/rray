@@ -33,6 +33,8 @@ rray_arith_base <- function(op, x, y) {
   res
 }
 
+#' @export
+#' @rdname vctrs-compat
 #' @method vec_arith vctrs_rray
 #' @export vec_arith.vctrs_rray
 vec_arith.vctrs_rray <- function(op, x, y) {

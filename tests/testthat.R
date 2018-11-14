@@ -1,4 +1,4 @@
 library(testthat)
-library(mtrx)
+library(rray)
 
-test_check("mtrx")
+test_check("rray")

@@ -4,18 +4,32 @@
 #'
 #' @param .data A numeric vector with no attributes representing
 #' the data.
-#' @param dim An integer vector describing the dimensions of the
-#' `rray`.
-#' @param dim_names A list. For no names, `NULL`. Otherwise the list must
-#' be the same length as `dim`. Each element of the list much be either
-#' a character vector the same length as the corresponding dimension in
-#' `dim`, or `character(0)` for no names for that dimension.
+#'
+#' @param size An integer. The number of _observations_ in the object.
+#' This is equivalent to the number of rows.
+#'
+#' @param shape An integer vector. The shape corresponds to all of the
+#' dimensions in the object except for the first one (the `size`).
+#'
+#' @param dim_names A list. For no names, `NULL`, in which case a list of
+#' empty characters will be constructed. Otherwise the list must
+#' be the same length as the total number of dimensions
+#' (i.e `length(c(size, shape))`). Each element of the list much be either
+#' a character vector the same size as the corresponding dimension, or
+#' `character(0)` for no names for that dimension.
+#'
 #' @param ... Name-value pairs defining attributes.
+#'
 #' @param subclass The name of the subclass.
 #'
 #' @examples
 #'
-#' rray_ex <- new_rray(1:10, dim = c(5L, 2L), col_names = c("a", "b"))
+#' rray_ex <- new_rray(
+#'   .data = 1:10,
+#'   size = 5L,
+#'   shape = 2L,
+#'   dim_names = list(character(), c("a", "b"))
+#' )
 #'
 #' rray_ex
 #'

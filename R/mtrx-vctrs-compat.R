@@ -32,6 +32,7 @@ vec_ptype_full.vctrs_mtrx <- function(x) {
 # vec_type2 boilerplate --------------------------------------------------------
 
 #' @export
+#' @rdname vctrs-compat
 #' @method vec_type2 vctrs_mtrx
 #' @export vec_type2.vctrs_mtrx
 vec_type2.vctrs_mtrx <- function(x, y) UseMethod("vec_type2.vctrs_mtrx")
@@ -79,6 +80,7 @@ vec_type2.integer.vctrs_mtrx <- vec_type2.vctrs_mtrx.vctrs_mtrx
 # vec_cast boilerplate ---------------------------------------------------------
 
 #' @export
+#' @rdname vctrs-compat
 #' @method vec_cast vctrs_mtrx
 #' @export vec_cast.vctrs_mtrx
 vec_cast.vctrs_mtrx <- function(x, to) UseMethod("vec_cast.vctrs_mtrx")

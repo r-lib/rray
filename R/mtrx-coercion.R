@@ -103,8 +103,6 @@ as.matrix.vctrs_rray <- as_matrix.vctrs_rray
 #'
 #' as_mtrx(1:10, "col1")
 #'
-#' as_mtrx(letters)
-#'
 #' ex <- matrix(1:10, nrow = 5, dimnames = list(NULL, c("a", "b")))
 #' as_mtrx(ex)
 #'

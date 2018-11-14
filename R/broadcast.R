@@ -46,6 +46,9 @@
 #' Broadcasting is an important concept in rray, as it is the engine behind
 #' the different structure for arithmetic operations.
 #'
+#' @param x The object to broadcast.
+#' @param dim An integer vector. The dimension to broadcast to.
+#'
 #' @examples
 #'
 #' # From 5x1 ...

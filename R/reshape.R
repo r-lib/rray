@@ -1,3 +1,11 @@
+# TODO - This functions feels incomplete or not useful?
+
+#' Reshape an rray or mtrx
+#'
+#' Reshape to a new dimension
+#'
+#' @inheritParams rray_broadcast
+#'
 #' @export
 rray_reshape <- function(x, dim) {
   x_dim <- vec_dim(x)

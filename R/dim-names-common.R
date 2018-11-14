@@ -18,6 +18,8 @@
 #' is the same as the size of the dimension, use them.
 #' 3) If there are no dim names found, then the result is `character(0)`.
 #'
+#' @param x,y,... Objects to find common dimensions for.
+#'
 #' @examples
 #' library(magrittr)
 #'

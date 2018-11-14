@@ -11,12 +11,17 @@ new_mtrx(.data = numeric(0), size = 0L, shape = 1L,
 \item{.data}{A numeric vector with no attributes representing
 the data.}
 
+\item{size}{An integer. The number of \emph{observations} in the object.
+This is equivalent to the number of rows.}
+
 \item{shape}{A single integer specifying the number of columns in the mtrx.}
 
-\item{dim_names}{A list. For no names, \code{NULL}. Otherwise the list must
-be the same length as \code{dim}. Each element of the list much be either
-a character vector the same length as the corresponding dimension in
-\code{dim}, or \code{character(0)} for no names for that dimension.}
+\item{dim_names}{A list. For no names, \code{NULL}, in which case a list of
+empty characters will be constructed. Otherwise the list must
+be the same length as the total number of dimensions
+(i.e \code{length(c(size, shape))}). Each element of the list much be either
+a character vector the same size as the corresponding dimension, or
+\code{character(0)} for no names for that dimension.}
 
 \item{...}{Name-value pairs defining attributes.}
 

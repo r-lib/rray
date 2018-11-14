@@ -51,6 +51,8 @@ new_mtrx <- function(.data = numeric(0),
 #' cast to enforce a common type. Vectors can optionally be named, which
 #' results in a named matrix. Otherwise, default names are generated.
 #'
+#' @param row_names A character vector of row names for the resulting mtrx.
+#'
 #' @examples
 #'
 #' mtrx(1:10)
@@ -124,6 +126,7 @@ mtrx <- function(..., row_names = character()) {
 #' It allows for easy row-wise creation of mtrx objects, which is especially
 #' helpful for small mtrices where readability is key.
 #'
+#' @inheritParams mtrx
 #' @param ... Arguments specifying the structure of a mtrx. Column names should
 #' be formulas, and may only appear before the data.
 #'

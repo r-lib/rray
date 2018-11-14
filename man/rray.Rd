@@ -13,10 +13,12 @@ is brodcast based on \code{dim} to other dimensions if requested.}
 \item{dim}{An integer vector describing the dimensions of the rray. If \code{NULL},
 the dimensions are taken from the existing object using \code{\link[vctrs:vec_dim]{vctrs::vec_dim()}}.}
 
-\item{dim_names}{A list. For no names, \code{NULL}. Otherwise the list must
-be the same length as \code{dim}. Each element of the list much be either
-a character vector the same length as the corresponding dimension in
-\code{dim}, or \code{character(0)} for no names for that dimension.}
+\item{dim_names}{A list. For no names, \code{NULL}, in which case a list of
+empty characters will be constructed. Otherwise the list must
+be the same length as the total number of dimensions
+(i.e \code{length(c(size, shape))}). Each element of the list much be either
+a character vector the same size as the corresponding dimension, or
+\code{character(0)} for no names for that dimension.}
 }
 \description{
 Constructor for building rray objects. Existing vectors, matrices, and

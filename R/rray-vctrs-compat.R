@@ -62,7 +62,21 @@ vec_ptype_shape <- function(x) {
 
 # vec_type2 boilerplate --------------------------------------------------------
 
+#' vctrs compatibility functions
+#'
+#' These functions are the extensions that allow mtrx and rray objects to
+#' work with vctrs.
+#'
+#' @param x,y Objects.
+#' @param to Type to cast to.
+#' @param op An arithmetic operator as a string.
+#'
+#' @name vctrs-compat
+#'
+NULL
+
 #' @export
+#' @rdname vctrs-compat
 #' @method vec_type2 vctrs_rray
 #' @export vec_type2.vctrs_rray
 vec_type2.vctrs_rray <- function(x, y) UseMethod("vec_type2.vctrs_rray")
@@ -119,6 +133,7 @@ vec_type2.vctrs_mtrx.vctrs_rray <- vec_type2.vctrs_rray.vctrs_rray
 # vec_cast boilerplate ---------------------------------------------------------
 
 #' @export
+#' @rdname vctrs-compat
 #' @method vec_cast vctrs_rray
 #' @export vec_cast.vctrs_rray
 vec_cast.vctrs_rray <- function(x, to) UseMethod("vec_cast.vctrs_rray")

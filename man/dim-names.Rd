@@ -31,6 +31,9 @@ n_dim_names(x, n)
 \arguments{
 \item{x}{The object to extract the dimension names for.}
 
+\item{value}{The new dimension names to use for \code{x}. This is a list of
+character vectors.}
+
 \item{n}{The n-th dimension to use.}
 
 \item{nms}{A character vector of new dimension names for the n-th dimension.}

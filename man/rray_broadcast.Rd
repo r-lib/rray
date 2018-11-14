@@ -6,6 +6,11 @@
 \usage{
 rray_broadcast(x, dim)
 }
+\arguments{
+\item{x}{The object to broadcast.}
+
+\item{dim}{An integer vector. The dimension to broadcast to.}
+}
 \description{
 \code{rray_broadcast()} will \emph{broadcast} the dimensions of the current
 object to a new dimension.

@@ -9,6 +9,8 @@ mrtrx(..., row_names = character())
 \arguments{
 \item{...}{Arguments specifying the structure of a mtrx. Column names should
 be formulas, and may only appear before the data.}
+
+\item{row_names}{A character vector of row names for the resulting mtrx.}
 }
 \description{
 \code{mrtrx()} is the equivalent of \code{\link[tibble:tribble]{tibble::tribble()}}, but for mtrx objects.

@@ -12,6 +12,8 @@ the same length, or can be length \code{1} in which case the vector will be
 recycled. Vectors are combined with \code{vec_c()} which performs an implicit
 cast to enforce a common type. Vectors can optionally be named, which
 results in a named matrix. Otherwise, default names are generated.}
+
+\item{row_names}{A character vector of row names for the resulting mtrx.}
 }
 \description{
 Helpful constructor for building mtrx objects. Pass in named vectors,

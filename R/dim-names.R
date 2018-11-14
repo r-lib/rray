@@ -14,6 +14,8 @@
 #' @param x The object to extract the dimension names for.
 #' @param n The n-th dimension to use.
 #' @param nms A character vector of new dimension names for the n-th dimension.
+#' @param value The new dimension names to use for `x`. This is a list of
+#' character vectors.
 #'
 #' @name dim-names
 #'
