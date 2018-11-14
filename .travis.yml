@@ -4,9 +4,6 @@ language: R
 sudo: required
 cache: packages
 
-#r_github_packages:
-#  - r-lib/pkgdown
-
 # ------------------------------------------------------------------------------
 # Need to update Travis's really old gcc for use with cpp14
 # https://stackoverflow.com/questions/39728709/using-an-alternate-compiler-for-travis-ci-r-project-builds
@@ -32,6 +29,20 @@ before_install:
   - sed -i 's|CXX_STD = CXX14||' src/Makevars
 # ------------------------------------------------------------------------------
 
-matrix:
+r_github_packages:
+  - r-lib/pkgdown
+
+ matrix:
   include:
   - r: devel
+  - r: release
+    after_success:
+    - Rscript -e 'covr::codecov()'
+
+     deploy:
+      provider: script
+      script: Rscript -e 'pkgdown::deploy_site_github(verbose = TRUE)'
+      skip_cleanup: true
+  - r: oldrel
+  - r: 3.2
+  - r: 3.1
