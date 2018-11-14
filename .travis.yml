@@ -9,7 +9,11 @@ cache: packages
 
 # ------------------------------------------------------------------------------
 # need to update gcc for cpp14
+# https://stackoverflow.com/questions/39728709/using-an-alternate-compiler-for-travis-ci-r-project-builds
 # - Use g++-6 so we definitely have C++14 as the default
+# - update-alternatives is required for the R session that builds MY package to use g++-6 (and cpp14)
+# - The Makevars is for all of the dependencies to use gcc-6 and g++-6 when building those
+# (in theory we only needed the Makevars, but this doesn't seem to be enough, as Dirk pointed out)
 
 # base64 resolves to:
 # VER=-6
@@ -27,6 +31,8 @@ before_install:
   - mkdir -p ~/.R
   - echo "VkVSPS02CkNDPWdjYyQoVkVSKQpDWFg9ZysrJChWRVIp" | base64 -d > ~/.R/Makevars
   - cat ~/.R/Makevars
+  - echo "** Overriding src/Makevars and removing C++14 on Travis only"
+  - sed -i 's|CXX_STD = CXX14||' src/Makevars
 # ------------------------------------------------------------------------------
 
 matrix:
