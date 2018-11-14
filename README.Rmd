@@ -75,7 +75,7 @@ mtrx_ex[,1]
 mtrx_ex[1,]
 
 # second column by name
-mtrx_ex["a"]
+mtrx_ex[,"a"]
 
 # individual elements
 mtrx_ex[1, "a"]
@@ -91,7 +91,7 @@ Broadcast semantics are available through `xtensor`.
 ```
 
 ```{r, error=TRUE}
-col_a <- mtrx_ex["a"]
+col_a <- mtrx_ex[,"a"]
 col_a
 
 mtrx_ex + col_a

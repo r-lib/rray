@@ -87,7 +87,7 @@ mtrx_ex[1,]
 #> [1,] 1 6
 
 # second column by name
-mtrx_ex["a"]
+mtrx_ex[,"a"]
 #> <vctrs_mtrx<double>[,1][5]>
 #>      a 
 #> [1,]  6
@@ -111,7 +111,7 @@ Broadcast semantics are available through `xtensor`.
     (5, 2)
 
 ``` r
-col_a <- mtrx_ex["a"]
+col_a <- mtrx_ex[,"a"]
 col_a
 #> <vctrs_mtrx<double>[,1][5]>
 #>      a 
