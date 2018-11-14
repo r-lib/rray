@@ -8,17 +8,17 @@ cache: packages
 #  - r-lib/pkgdown
 
 # ------------------------------------------------------------------------------
-# need to update gcc for cpp14
+# Need to update Travis's really old gcc for use with cpp14
 # https://stackoverflow.com/questions/39728709/using-an-alternate-compiler-for-travis-ci-r-project-builds
-# - Use g++-6 so we definitely have C++14 as the default
-# - update-alternatives is required for the R session that builds MY package to use g++-6 (and cpp14)
-# - The Makevars is for all of the dependencies to use gcc-6 and g++-6 when building those
-# (in theory we only needed the Makevars, but this doesn't seem to be enough, as Dirk pointed out)
-
-# base64 resolves to:
-# VER=-6
-# CC=gcc$(VER)
-# CXX=g++$(VER)
+# 1) Use g++-6 so we definitely have C++14 as the default
+# 2) update-alternatives is required for the R session that builds MY package
+#    to use g++-6 (and cpp14)
+# 3) Then we remove the "request" for CXX14 in src/Makevars and let R just find
+#    the default, which is now g++-6 (bc of step 2) which uses cpp14 by default.
+# 4) A Makevars used to be used for all of the *dependencies* to use gcc-6 and
+#    g++-6 when building those (in theory we only needed this Makevars, but
+#    this doesn't seem to be enough when building the actual package of
+#    interest, as Dirk pointed out)
 
 addons:
   apt:
@@ -28,9 +28,6 @@ addons:
       - g++-6
 before_install:
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 100
-  - mkdir -p ~/.R
-  - echo "VkVSPS02CkNDPWdjYyQoVkVSKQpDWFg9ZysrJChWRVIp" | base64 -d > ~/.R/Makevars
-  - cat ~/.R/Makevars
   - echo "** Overriding src/Makevars and removing C++14 on Travis only"
   - sed -i 's|CXX_STD = CXX14||' src/Makevars
 # ------------------------------------------------------------------------------
