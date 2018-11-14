@@ -4,8 +4,8 @@ language: R
 sudo: false
 cache: packages
 
-r_github_packages:
-  - r-lib/pkgdown
+#r_github_packages:
+#  - r-lib/pkgdown
 
 # ------------------------------------------------------------------------------
 # need to update gcc for cpp14
@@ -28,10 +28,10 @@ matrix:
     after_success:
     - Rscript -e 'covr::codecov()'
 
-    deploy:
-      provider: script
-      script: Rscript -e 'pkgdown::deploy_site_github(verbose = TRUE)'
-      skip_cleanup: true
+#    deploy:
+#      provider: script
+#      script: Rscript -e 'pkgdown::deploy_site_github(verbose = TRUE)'
+#      skip_cleanup: true
   - r: oldrel
   - r: 3.2
   - r: 3.1
