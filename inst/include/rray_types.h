@@ -1,5 +1,5 @@
-#ifndef mtrx_hpp
-#define mtrx_hpp
+#ifndef rray_hpp
+#define rray_hpp
 
 // xtensor-r headers containing R <-> Rcpp <-> xtensor conversion
 #include "xtensor-r/rarray.hpp"
