@@ -47,7 +47,7 @@ new_rray <- function(.data = numeric(0),
 
   # dim & dim_names
   dim_name_lengths <- map_int(dim_names, vec_size)
-  stopifnot(map2_lgl(.dim, dim_name_lengths, are_equal_or_no_name))
+  stopifnot(map2_lgl(.dim, dim_name_lengths, validate_equal_size_or_no_names))
 
   # new_rray() takes size and shape for compat with vctrs but we lie a bit
   # and actually only store the dim because of the nice benefits that gets us
@@ -132,7 +132,7 @@ rray <- function(x = numeric(0), dim = NULL, dim_names = NULL) {
 
 }
 
-are_equal_or_no_name <- function(n_x, n_names) {
+validate_equal_size_or_no_names <- function(n_x, n_names) {
   n_names == 0L || identical(n_x, n_names)
 }
 

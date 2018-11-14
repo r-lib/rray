@@ -3,12 +3,18 @@
 \name{dim-names}
 \alias{dim-names}
 \alias{dim_names}
+\alias{dim_names<-}
+\alias{set_dim_names}
 \alias{row_names}
 \alias{col_names}
 \alias{n_dim_names}
 \title{Dimension names}
 \usage{
 dim_names(x)
+
+dim_names(x) <- value
+
+set_dim_names(x, n, nms)
 
 row_names(x)
 
@@ -19,18 +25,46 @@ n_dim_names(x, n)
 \arguments{
 \item{x}{The object to extract the dimension names for.}
 
-\item{n}{The n-th dimension to extract names for.}
+\item{n}{The n-th dimension to use.}
+
+\item{nms}{A character vector of new dimension names for the n-th dimension.}
 }
 \description{
 Extract names of various dimensions.
 }
 \details{
-Unlike \code{dimnames()} which can return \code{NULL}, \code{dim_names()} always returns a
+Unlike \code{dimnames()} which can return \code{NULL} and contain elements that are
+\code{NULL}, \code{dim_names()} always returns a
 list the same length as the dimensionality of \code{x}. If any dimensions do not
-have names, \code{character(0)} is returned for that element of the list.
+have names, \code{character(0)} is returned for that element of the list. This
+results in a type stable result: a list where the elements are character vectors.
+
+A vector is treated as a 1 column matrix (so, 2 dimensions) and \code{dim_names()}
+will return the names of the vector as the row names, if it has any.
 }
 \examples{
 
-mtrx(x = 1:5, y = 6:10, row_names = letters[1:5])
+x <- mtrx(x = 1:5, y = 6:10, row_names = letters[1:5])
+dim_names(x)
+
+# 2D object, so 2 sets of dim names
+dim_names(rray())
+
+# 3D object, so 3 sets of dim names
+dim_names(rray(1, dim = c(1,1,1)))
+
+# Vectors are 1 column matrices (2D)
+dim_names(1:5)
+
+vec <- c(x = 1, y = 2)
+dim_names(vec)
+
+# You can add dim names using set_dim_names()
+# and the pipe operator
+library(magrittr)
+rray(1, c(1, 2, 1)) \%>\%
+  set_dim_names(1, "r1") \%>\%
+  set_dim_names(2, c("c1", "c2")) \%>\%
+  set_dim_names(3, "3rd dim")
 
 }

@@ -2,18 +2,46 @@
 #'
 #' Extract names of various dimensions.
 #'
-#' Unlike `dimnames()` which can return `NULL`, `dim_names()` always returns a
+#' Unlike `dimnames()` which can return `NULL` and contain elements that are
+#' `NULL`, `dim_names()` always returns a
 #' list the same length as the dimensionality of `x`. If any dimensions do not
-#' have names, `character(0)` is returned for that element of the list.
+#' have names, `character(0)` is returned for that element of the list. This
+#' results in a type stable result: a list where the elements are character vectors.
+#'
+#' A vector is treated as a 1 column matrix (so, 2 dimensions) and `dim_names()`
+#' will return the names of the vector as the row names, if it has any.
 #'
 #' @param x The object to extract the dimension names for.
-#' @param n The n-th dimension to extract names for.
+#' @param n The n-th dimension to use.
+#' @param nms A character vector of new dimension names for the n-th dimension.
 #'
 #' @name dim-names
 #'
+#'
 #' @examples
 #'
-#' mtrx(x = 1:5, y = 6:10, row_names = letters[1:5])
+#' x <- mtrx(x = 1:5, y = 6:10, row_names = letters[1:5])
+#' dim_names(x)
+#'
+#' # 2D object, so 2 sets of dim names
+#' dim_names(rray())
+#'
+#' # 3D object, so 3 sets of dim names
+#' dim_names(rray(1, dim = c(1,1,1)))
+#'
+#' # Vectors are 1 column matrices (2D)
+#' dim_names(1:5)
+#'
+#' vec <- c(x = 1, y = 2)
+#' dim_names(vec)
+#'
+#' # You can add dim names using set_dim_names()
+#' # and the pipe operator
+#' library(magrittr)
+#' rray(1, c(1, 2, 1)) %>%
+#'   set_dim_names(1, "r1") %>%
+#'   set_dim_names(2, c("c1", "c2")) %>%
+#'   set_dim_names(3, "3rd dim")
 #'
 NULL
 
@@ -64,102 +92,75 @@ dim_names.integer <- dim_names.double
 #' @export
 dim_names.logical <- dim_names.double
 
+# Base R compat
+
+#' @export
+dimnames.vctrs_rray <- function(x) {
+  dim_names(x)
+}
+
 # ------------------------------------------------------------------------------
 
+#' @export
+#' @rdname dim-names
 `dim_names<-` <- function(x, value) {
   UseMethod("dim_names<-")
 }
 
+#' @export
 `dim_names<-.default` <- function(x, value) {
   dimnames(x) <- value
   x
 }
 
+#' @export
 `dim_names<-.vctrs_rray` <- function(x, value) {
+
+  if (is_null(value)) {
+    value <- new_empty_dim_names(vec_dims(x))
+  }
+
+  stopifnot(map_lgl(value, is_character))
+
+  # n shape dims and n elements of shape name list
+  stopifnot(vec_dims(x) == vec_size(value))
+
+  # dim & dim_names
+  dim_name_lengths <- map_int(value, vec_size)
+  stopifnot(
+    map2_lgl(vec_dim(x), dim_name_lengths, validate_equal_size_or_no_names)
+  )
+
   attr(x, "dim_names") <- value
+  x
+}
+
+# Base R compat
+
+#' @export
+`dimnames<-.vctrs_rray` <- function(x, value) {
+  dim_names(x) <- value
   x
 }
 
 # ------------------------------------------------------------------------------
 
-rray_dim_names_common <- function(...) {
-  args <- compact(list2(...))
+#' @export
+#' @rdname dim-names
+set_dim_names <- function(x, n, nms) {
 
-  if (length(args) == 0) {
-    return(list())
-  }
+  dim <- vec_dim(x)
 
-  dim <- rray_dim_common(!!! args)
-  args_dim_names <- map(args, restore_dim_names, to_dim = dim)
+  n <- vec_cast(n, integer())
+  validate_scalar_n(n)
+  validate_requested_dims(x, n)
 
-  reduce(args_dim_names, reconcile_dim_names)
-}
+  nms <- vec_cast(nms, character())
+  validate_equal_size_or_no_names(dim[n], vec_size(nms))
 
-rray_dim_names2 <- function(x, y) {
+  dim_names(x)[[n]] <- nms
 
-  dim <- rray_dim2(vec_dim(x), vec_dim(y))
-  x_nms_list <- restore_dim_names(x, dim)
-  y_nms_list <- restore_dim_names(y, dim)
-
-  reconcile_dim_names(x_nms_list, y_nms_list)
-}
-
-reconcile_dim_names <- function(x_dim_names, y_dim_names) {
-
-  map2(x_dim_names, y_dim_names, function(x_nms, y_nms) {
-
-    n_x <- vec_size(x_nms)
-    n_y <- vec_size(y_nms)
-
-    if (n_x == n_y) {
-      x_nms
-    }
-    else if (n_x == 0L) {
-      y_nms
-    }
-    else if (n_y == 0L) {
-      x_nms
-    }
-    else {
-      abort("Imcompatible dim_name lengths.")
-    }
-
-  })
-
-}
-
-restore_dim_names <- function(x, to_dim) {
-
-  dims <- vec_size(to_dim)
-
-  dim_names <- dim_names(x)
-
-  meta_names <- names2(dim_names)
-  meta_names <- c(meta_names, rep("", times = dims - length(meta_names)))
-
-  restored_dim_names <- new_empty_dim_names(dims)
-  names(restored_dim_names) <- meta_names
-
-  # cant use map2 bc to_dim_names could be
-  # shorter than x_dim (i.e. we added a dimension)
-
-  for(i in seq_along(dim_names)) {
-
-    nms <- dim_names[[i]]
-    single_dim <- to_dim[i]
-
-    if (vec_size(nms) == single_dim || single_dim == 0L) {
-      restored_dim_names[[i]] <- nms
-    }
-
-  }
-
-  restored_dim_names
-
-}
-
-new_empty_dim_names <- function(n) {
-  map(seq_len(n), function(x) character())
+  x
 }
 
 # ------------------------------------------------------------------------------
@@ -200,16 +201,28 @@ n_dim_names <- function(x, n) {
 n_dim_names.default <- function(x, n) {
 
   n <- vec_cast(n, integer())
+  validate_scalar_n(n)
+  validate_requested_dims(x, n)
+
+  dim_names(x)[[n]]
+}
+
+# ------------------------------------------------------------------------------
+
+validate_scalar_n <- function(n) {
   if (!is_scalar_integer(n)) {
     glubort("`n` must have size 1, not {length(n)}.")
   }
+}
 
-  dims <- vec_dims(x)
+validate_requested_dims <- function(x, n) {
+
+  dim <- rray_dim_at_least_2D(x)
+  dims <- vec_size(dim)
   if (dims < n) {
     glubort(
       "The dimensionality of `x` ({dims}) must be ",
-      "greater than the requested dimension ({n})")
+      "greater than the requested dimension ({n}).")
   }
 
-  dim_names(x)[[n]]
 }
