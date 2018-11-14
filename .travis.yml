@@ -17,6 +17,11 @@ cache: packages
 #    this doesn't seem to be enough when building the actual package of
 #    interest, as Dirk pointed out)
 
+# base64 resolves to:
+# VER=-6
+# CC=gcc$(VER)
+# CXX=g++$(VER)
+
 addons:
   apt:
     sources:
@@ -24,7 +29,11 @@ addons:
     packages:
       - g++-6
 before_install:
-  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 100
+  - mkdir -p ~/.R
+  - echo "VkVSPS02CkNDPWdjYyQoVkVSKQpDWFg9ZysrJChWRVIp" | base64 -d > ~/.R/Makevars
+  - cat ~/.R/Makevars
+  - echo $CC
+  - echo $CXX
   - echo "** Overriding src/Makevars and removing C++14 on Travis only"
   - sed -i 's|CXX_STD = CXX14||' src/Makevars
 # ------------------------------------------------------------------------------
