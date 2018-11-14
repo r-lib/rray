@@ -16,8 +16,8 @@ addons:
     packages:
       - g++-5
 before_install:
-    - sed '$ a CXX14 = g++' ~/.R/Makevars
-    - sed '$ a CXX14STD = -std=c++14' ~/.R/Makevars
+    - echo "CXX14 = g++" >> ~/.R/Makevars
+    - echo "CXX14STD = -std=c++14" >> ~/.R/Makevars
 # ------------------------------------------------------------------------------
 
 matrix:
