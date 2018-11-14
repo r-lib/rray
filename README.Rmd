@@ -16,6 +16,8 @@ knitr::opts_chunk$set(
 # rray
 
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+[![Travis build status](https://travis-ci.org/DavisVaughan/rray.svg?branch=master)](https://travis-ci.org/DavisVaughan/rray)
+
 
 The goal of `rray` is to provide stricter matrix and array classes in R, similar in spirit
 to `tibble`.
@@ -66,7 +68,7 @@ dropped.
 
 ```{r}
 # first column
-mtrx_ex[1]
+mtrx_ex[,1]
 
 # first row
 mtrx_ex[1,]
@@ -126,7 +128,7 @@ Subsetting rray objects is strict too.
 
 ```{r}
 # first col
-x_rray[1]
+x_rray[,1]
 
 # first row of each dimension
 x_rray[1,]
@@ -138,7 +140,7 @@ x_rray[,,1]
 Broadcasting operations are more powerful here.
 
 ```{r}
-x_rray[1]
+x_rray[,1]
 ```
 
 ```
@@ -149,7 +151,7 @@ x_rray[1]
 ```
 
 ```{r}
-x_rray - x_rray[1]
+x_rray - x_rray[,1]
 ```
 
 ```
