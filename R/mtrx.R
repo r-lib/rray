@@ -62,8 +62,6 @@ new_mtrx <- function(.data = numeric(0),
 #' a_mtrx
 #'
 #' # first column
-#' a_mtrx[1]
-#' a_mtrx["a"]
 #' a_mtrx[,1]
 #' a_mtrx[,"a"]
 #'

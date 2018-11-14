@@ -33,8 +33,6 @@ a_mtrx <- mtrx(a = 1:5, b = 6:10)
 a_mtrx
 
 # first column
-a_mtrx[1]
-a_mtrx["a"]
 a_mtrx[,1]
 a_mtrx[,"a"]
 
