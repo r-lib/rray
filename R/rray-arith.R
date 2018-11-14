@@ -62,8 +62,6 @@ vec_arith.vctrs_rray.MISSING <- function(op, x, y) {
 #' @export
 vec_arith.vctrs_rray.numeric <- vec_arith.vctrs_rray.vctrs_rray
 
-#' @importFrom vctrs vec_arith.numeric
-
 #' @method vec_arith.numeric vctrs_rray
 #' @export
 vec_arith.numeric.vctrs_rray <- vec_arith.vctrs_rray.vctrs_rray
