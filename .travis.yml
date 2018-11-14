@@ -12,6 +12,13 @@ cache: packages
 # http://dirk.eddelbuettel.com/blog/2017/06/13/
 # - Use g++-6 so we definitely have C++14 as the default
 # - Tell R not to try enabling C++14, and to just use the default
+
+# base64 resolves to:
+# VER=-6
+# CC=gcc$(VER) -std=c14
+# CXX=g++$(VER)
+# SHLIB_CXXLD=g++$(VER)
+
 addons:
   apt:
     sources:
@@ -19,17 +26,10 @@ addons:
     packages:
       - gcc-6
       - g++-6
-env:
-  - COMPILER=g++-6
-  - CC=gcc-6
-  - CXX=g++-6
 before_install:
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 100
   - mkdir -p ~/.R
-  - echo "VER=-6" > ~/.R/Makevars
-  - echo "CC=gcc$(VER) -std=c14" > ~/.R/Makevars
-  - echo "CXX=g++$(VER)" > ~/.R/Makevars
-  - echo "SHLIB_CXXLD=g++$(VER)" > ~/.R/Makevars
+  - echo "VkVSPS02CkNDPWdjYyQoVkVSKSAtc3RkPWMxNApDWFg9ZysrJChWRVIpClNITElCX0NYWExEPWcrKyQoVkVSKQ==" | base64 -d > ~/.R/Makevars
   - cat ~/.R/Makevars
 # ------------------------------------------------------------------------------
 
