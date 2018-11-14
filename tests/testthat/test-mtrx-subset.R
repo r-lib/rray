@@ -34,6 +34,6 @@ test_that("0D slicing", {
   x <- new_mtrx()
   x_dim <- vec_dim(x)
 
-  expect_is(x[0], "vctrs_mtrx")
-  expect_equal(vec_dim(x[0]), x_dim)
+  expect_is(x[,0], "vctrs_mtrx")
+  expect_equal(vec_dim(x[,0]), c(0, 0))
 })

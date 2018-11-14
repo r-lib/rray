@@ -58,7 +58,7 @@ test_that("0D slicing", {
   x_dim <- vec_dim(x)
 
   expect_is(x[,0], "vctrs_rray")
-  expect_equal(vec_dim(x[,0]), x_dim)
+  expect_equal(vec_dim(x[,0]), c(0, 0))
 
   expect_error(x[,,0], "incorrect")
 
