@@ -9,27 +9,23 @@ cache: packages
 
 # ------------------------------------------------------------------------------
 # need to update gcc for cpp14
-# http://dirk.eddelbuettel.com/blog/2017/06/13/
 # - Use g++-6 so we definitely have C++14 as the default
-# - Tell R not to try enabling C++14, and to just use the default
 
 # base64 resolves to:
 # VER=-6
-# CC=gcc$(VER) -std=c14
+# CC=gcc$(VER)
 # CXX=g++$(VER)
-# SHLIB_CXXLD=g++$(VER)
 
 addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - gcc-6
       - g++-6
 before_install:
   - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 100
   - mkdir -p ~/.R
-  - echo "VkVSPS02CkNDPWdjYyQoVkVSKSAtc3RkPWMxNApDWFg9ZysrJChWRVIpClNITElCX0NYWExEPWcrKyQoVkVSKQ==" | base64 -d > ~/.R/Makevars
+  - echo "VkVSPS02CkNDPWdjYyQoVkVSKQpDWFg9ZysrJChWRVIp" | base64 -d > ~/.R/Makevars
   - cat ~/.R/Makevars
 # ------------------------------------------------------------------------------
 
