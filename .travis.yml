@@ -15,10 +15,9 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - g++-5
-env:
-   - MATRIX_EVAL="CC=gcc-5 && CXX=g++-5 && CXX14=g++-5"
 before_install:
-    - eval "${MATRIX_EVAL}"
+    - sed '$ a CXX14 = g++' ~/.R/Makevars
+    - sed '$ a CXX14STD = -std=c++14' ~/.R/Makevars
 # ------------------------------------------------------------------------------
 
 matrix:
