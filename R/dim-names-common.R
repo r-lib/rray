@@ -1,7 +1,7 @@
 #' Find common dimension names
 #'
 #' Obtain a common list of dimension names among a set of objects. For
-#' interactive use, `rray_dim_names_common()` will be more useful.
+#' interactive use, `rray_dim_names_common()` is more useful.
 #'
 #' `rray_dim_names_common()` is the engine that determines what dim names should
 #' be used in the result of arithmetic operations and other functions that
@@ -19,10 +19,39 @@
 #' 3) If there are no dim names found, then the result is `character(0)`.
 #'
 #' @examples
+#' library(magrittr)
 #'
-#' # Row names but no column names
-#' x <- rray(1, dim = c(1, 2), dim_names = list("r1", character()))
+#' # 1x2 - Row names but no column names
+#' x <- rray(1, dim = c(1, 2)) %>%
+#'   set_row_names("r_from_x")
 #'
+#' # 1x1 - Row names and column names
+#' y <- mtrx(c_from_y = 1) %>%
+#'   set_row_names("r_from_y")
+#'
+#' # 1x1 - Row names but no column names
+#' z <- mtrx(1) %>%
+#'   set_row_names("r_from_z")
+#'
+#' # Combining y and z
+#' # y has names for both dimensions
+#' # so they are used
+#' rray_dim_names_common(y, z)
+#'
+#' # Combining z and y
+#' # - Row names are found first from z
+#' # - But z has no column names
+#' # - So column names are found from y
+#' rray_dim_names_common(z, y)
+#'
+#' # Combining x and y
+#' # - Row names are found first from x
+#' # - x has no column names
+#' # - y has column names
+#' # - But they are different length from
+#' #   the common column dimension (2)
+#' # - No column names are used
+#' rray_dim_names_common(x, y)
 #'
 #' @name common-dim-names
 #'
