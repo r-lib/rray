@@ -163,6 +163,18 @@ set_dim_names <- function(x, n, nms) {
   x
 }
 
+#' @export
+#' @rdname dim-names
+set_row_names <- function(x, nms) {
+  set_dim_names(x, 1L, nms)
+}
+
+#' @export
+#' @rdname dim-names
+set_col_names <- function(x, nms) {
+  set_dim_names(x, 2L, nms)
+}
+
 # ------------------------------------------------------------------------------
 
 #' @export

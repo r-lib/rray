@@ -5,6 +5,8 @@
 \alias{dim_names}
 \alias{dim_names<-}
 \alias{set_dim_names}
+\alias{set_row_names}
+\alias{set_col_names}
 \alias{row_names}
 \alias{col_names}
 \alias{n_dim_names}
@@ -15,6 +17,10 @@ dim_names(x)
 dim_names(x) <- value
 
 set_dim_names(x, n, nms)
+
+set_row_names(x, nms)
+
+set_col_names(x, nms)
 
 row_names(x)
 
