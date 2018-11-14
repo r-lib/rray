@@ -9,16 +9,18 @@ cache: packages
 
 # ------------------------------------------------------------------------------
 # need to update gcc for cpp14
+# http://dirk.eddelbuettel.com/blog/2017/06/13/
+# - Use g++-6 so we definitely have C++14 as the default
+# - Tell R not to try enabling C++14, and to just use the default
 addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - g++-5
+      - g++-6
 before_install:
-    - touch ~/.R/Makevars
-    - echo "CXX14 = g++" > ~/.R/Makevars
-    - echo "CXX14STD = -std=c++14" > ~/.R/Makevars
+    - echo "** Overriding src/Makevars and removing C++14 on Travis only"
+    - sed -i 's|CXX_STD = CXX14||' src/Makevars
 # ------------------------------------------------------------------------------
 
 matrix:
