@@ -15,7 +15,7 @@
         i <- vec_cast(i, integer())
       }
 
-      x <- x[, i, drop = FALSE]
+      abort("Use `x[,j]` to select columns, not `x[j]`.")
 
     }
     # x[]
