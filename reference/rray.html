@@ -8,8 +8,6 @@
 
 <title>Build a rray object — rray • rray</title>
 
-<link rel="shortcut icon" type="image/x-icon" href="../favicon.ico">
-
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
@@ -66,7 +64,7 @@ a different dimension using dim." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rray</a>
-        <span class="label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.0.9000</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.0.9000</span>
       </span>
     </div>
 
@@ -115,7 +113,7 @@ a different dimension using <code>dim</code>.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>rray</span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='fu'>numeric</span>(<span class='fl'>0</span>), <span class='kw'>dim</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>dim_names</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>rray</span>(<span class='kw'>x</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/numeric'>numeric</a></span>(<span class='fl'>0</span>), <span class='kw'>dim</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>dim_names</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -128,16 +126,16 @@ is brodcast based on <code>dim</code> to other dimensions if requested.</p></td>
     <tr>
       <th>dim</th>
       <td><p>An integer vector describing the dimensions of the rray. If <code>NULL</code>,
-the dimensions are taken from the existing object using <code><a href='http://www.rdocumentation.org/packages/vctrs/topics/dims'>vctrs::vec_dim()</a></code>.</p></td>
+the dimensions are taken from the existing object using <code><a href='https://www.rdocumentation.org/packages/vctrs/topics/dims'>vctrs::vec_dim()</a></code>.</p></td>
     </tr>
     <tr>
       <th>dim_names</th>
       <td><p>A list. For no names, <code>NULL</code>, in which case a list of
 empty characters will be constructed. Otherwise the list must
 be the same length as the total number of dimensions
-(i.e <code>length(c(size, shape))</code>). Each element of the list much be either
+(i.e <code><a href='https://www.rdocumentation.org/packages/base/topics/length'>length(c(size, shape))</a></code>). Each element of the list much be either
 a character vector the same size as the corresponding dimension, or
-<code>character(0)</code> for no names for that dimension.</p></td>
+<code><a href='https://www.rdocumentation.org/packages/base/topics/character'>character(0)</a></code> for no names for that dimension.</p></td>
     </tr>
     </table>
     
@@ -150,16 +148,16 @@ dimensions are never dropped).</p>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
 <span class='co'># 3 rows</span>
-<span class='fu'>rray</span>(<span class='fu'>c</span>(<span class='fl'>1</span>,<span class='fl'>2</span>,<span class='fl'>3</span>), <span class='kw'>dim</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>3</span>))</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[3]&gt;
+<span class='fu'>rray</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>,<span class='fl'>2</span>,<span class='fl'>3</span>), <span class='kw'>dim</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>3</span>))</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[3]&gt;
 #&gt; [1] 1 2 3</div><div class='input'>
 <span class='co'># 3 rows, 4 cols</span>
-<span class='fu'>rray</span>(<span class='fu'>c</span>(<span class='fl'>1</span>,<span class='fl'>2</span>,<span class='fl'>3</span>), <span class='kw'>dim</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>3</span>, <span class='fl'>4</span>))</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,4][12]&gt;
+<span class='fu'>rray</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>,<span class='fl'>2</span>,<span class='fl'>3</span>), <span class='kw'>dim</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>3</span>, <span class='fl'>4</span>))</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,4][12]&gt;
 #&gt;      [,1] [,2] [,3] [,4]
 #&gt; [1,] 1    1    1    1   
 #&gt; [2,] 2    2    2    2   
 #&gt; [3,] 3    3    3    3   </div><div class='input'>
 <span class='co'># 3x2x4 array</span>
-<span class='fu'>rray</span>(<span class='fl'>1</span>, <span class='kw'>dim</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>3</span>, <span class='fl'>2</span>, <span class='fl'>4</span>))</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,2,4][24]&gt;
+<span class='fu'>rray</span>(<span class='fl'>1</span>, <span class='kw'>dim</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>3</span>, <span class='fl'>2</span>, <span class='fl'>4</span>))</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,2,4][24]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1] [,2]
@@ -189,13 +187,13 @@ dimensions are never dropped).</p>
 #&gt; [3,] 1    1   
 #&gt; </div><div class='input'>
 <span class='co'># from a matrix</span>
-<span class='no'>mat</span> <span class='kw'>&lt;-</span> <span class='fu'>matrix</span>(<span class='fu'>c</span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>4</span>), <span class='kw'>ncol</span> <span class='kw'>=</span> <span class='fl'>2</span>)
+<span class='no'>mat</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>4</span>), <span class='kw'>ncol</span> <span class='kw'>=</span> <span class='fl'>2</span>)
 <span class='fu'>rray</span>(<span class='no'>mat</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,2][4]&gt;
 #&gt;      [,1] [,2]
 #&gt; [1,] 1    3   
 #&gt; [2,] 2    4   </div><div class='input'>
 <span class='co'># from a matrix, with broadcasting</span>
-<span class='fu'>rray</span>(<span class='no'>mat</span>, <span class='kw'>dim</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>3</span>))</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,2,3][12]&gt;
+<span class='fu'>rray</span>(<span class='no'>mat</span>, <span class='kw'>dim</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>3</span>))</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,2,3][12]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1] [,2]
@@ -215,8 +213,8 @@ dimensions are never dropped).</p>
 #&gt; [2,] 2    4   
 #&gt; </div><div class='input'>
 <span class='co'># from an array, with broadcasting</span>
-<span class='no'>arr</span> <span class='kw'>&lt;-</span> <span class='fu'>array</span>(<span class='fl'>1</span>, <span class='fu'>c</span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>2</span>))
-<span class='fu'>rray</span>(<span class='no'>arr</span>, <span class='fu'>c</span>(<span class='fl'>3</span>, <span class='fl'>2</span>, <span class='fl'>2</span>))</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,2,2][12]&gt;
+<span class='no'>arr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/array'>array</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>2</span>))
+<span class='fu'>rray</span>(<span class='no'>arr</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>3</span>, <span class='fl'>2</span>, <span class='fl'>2</span>))</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,2,2][12]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1] [,2]
@@ -232,7 +230,7 @@ dimensions are never dropped).</p>
 #&gt; [3,] 1    1   
 #&gt; </div><div class='input'>
 <span class='co'># with row names</span>
-<span class='fu'>rray</span>(<span class='fu'>c</span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>3</span>), <span class='fu'>c</span>(<span class='fl'>3</span>, <span class='fl'>2</span>), <span class='kw'>dim_names</span> <span class='kw'>=</span> <span class='fu'>list</span>(<span class='fu'>c</span>(<span class='st'>"x"</span>, <span class='st'>"y"</span>, <span class='st'>"z"</span>), <span class='fu'>character</span>()))</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,2][6]&gt;
+<span class='fu'>rray</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>3</span>), <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>3</span>, <span class='fl'>2</span>), <span class='kw'>dim_names</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"x"</span>, <span class='st'>"y"</span>, <span class='st'>"z"</span>), <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/character'>character</a></span>()))</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,2][6]&gt;
 #&gt;   [,1] [,2]
 #&gt; x 1    1   
 #&gt; y 2    2   
@@ -258,7 +256,7 @@ dimensions are never dropped).</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="http://pkgdown.r-lib.org/">pkgdown</a>.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a>.</p>
 </div>
 
       </footer>

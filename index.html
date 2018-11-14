@@ -6,7 +6,6 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Simple Matrices and Arrays • rray</title>
-<link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.1/clipboard.min.js" integrity="sha256-hIvIxeqhGZF+VVeM55k0mJvWpQ6gTkWk3Emc+NmowYA=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
@@ -20,7 +19,7 @@
 <![endif]-->
 </head>
 <body>
-    <div class="container template-article">
+    <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
@@ -32,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">rray</a>
-        <span class="label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.0.9000</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.0.9000</span>
       </span>
     </div>
 
@@ -65,11 +64,7 @@
 
       
       </header><div class="row">
-  <div class="col-md-9 contents">
-    
-
-    
-    
+  <div class="contents col-md-9">
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 <div id="rray" class="section level1">
 
@@ -85,15 +80,15 @@
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
 <p>You can install from Github with:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">install_github</a></span>(<span class="st">"DavisVaughan/rray"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"DavisVaughan/rray"</span>)</a></code></pre></div>
 </div>
 <div id="creation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#creation" class="anchor"></a>Creation</h2>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">library</span>(rray)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(rray)</a></code></pre></div>
 <p>Create <code>mtrx</code> objects by either coercing existing objects to <code>mtrx</code> or by using the helpful constructor, <code><a href="reference/mtrx.html">mtrx()</a></code>.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># Coercion</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2">mat &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>, <span class="dt">nrow =</span> <span class="dv">5</span>, <span class="dt">dimnames =</span> <span class="kw">list</span>(<span class="ot">NULL</span>, <span class="kw">c</span>(<span class="st">"a"</span>, <span class="st">"b"</span>)))</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">mat &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/matrix">matrix</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>, <span class="dt">nrow =</span> <span class="dv">5</span>, <span class="dt">dimnames =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="ot">NULL</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"a"</span>, <span class="st">"b"</span>)))</a>
 <a class="sourceLine" id="cb3-3" data-line-number="3"></a>
 <a class="sourceLine" id="cb3-4" data-line-number="4"><span class="kw"><a href="reference/as_mtrx.html">as_mtrx</a></span>(mat)</a>
 <a class="sourceLine" id="cb3-5" data-line-number="5"><span class="co">#&gt; &lt;vctrs_mtrx&lt;integer&gt;[,2][10]&gt;</span></a>
@@ -104,7 +99,7 @@
 <a class="sourceLine" id="cb3-10" data-line-number="10"><span class="co">#&gt; [4,]  4  9</span></a>
 <a class="sourceLine" id="cb3-11" data-line-number="11"><span class="co">#&gt; [5,]  5 10</span></a></code></pre></div>
 <p>The constructor takes multiple vectors in <code>...</code>, where each element is a column of the matrix, possibly named.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">mtrx_ex &lt;-<span class="st"> </span><span class="kw"><a href="reference/mtrx.html">mtrx</a></span>(<span class="dt">b =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>), <span class="dt">a =</span> <span class="kw">c</span>(<span class="dv">6</span>, <span class="dv">7</span>, <span class="dv">8</span>, <span class="dv">9</span>, <span class="dv">10</span>))</a>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">mtrx_ex &lt;-<span class="st"> </span><span class="kw"><a href="reference/mtrx.html">mtrx</a></span>(<span class="dt">b =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>), <span class="dt">a =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">6</span>, <span class="dv">7</span>, <span class="dv">8</span>, <span class="dv">9</span>, <span class="dv">10</span>))</a>
 <a class="sourceLine" id="cb4-2" data-line-number="2"></a>
 <a class="sourceLine" id="cb4-3" data-line-number="3">mtrx_ex</a>
 <a class="sourceLine" id="cb4-4" data-line-number="4"><span class="co">#&gt; &lt;vctrs_mtrx&lt;double&gt;[,2][10]&gt;</span></a>
@@ -179,7 +174,7 @@
 (1, 5)
 ------
 (5, 5)</code></pre>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">col_a <span class="op">+</span><span class="st"> </span><span class="kw">t</span>(col_a)</a>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">col_a <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/t">t</a></span>(col_a)</a>
 <a class="sourceLine" id="cb9-2" data-line-number="2"><span class="co">#&gt; &lt;vctrs_mtrx&lt;double&gt;[,5][25]&gt;</span></a>
 <a class="sourceLine" id="cb9-3" data-line-number="3"><span class="co">#&gt;       </span></a>
 <a class="sourceLine" id="cb9-4" data-line-number="4"><span class="co">#&gt;        [,1] [,2] [,3] [,4] [,5]</span></a>
@@ -189,7 +184,7 @@
 <a class="sourceLine" id="cb9-8" data-line-number="8"><span class="co">#&gt;   [4,] 15   16   17   18   19  </span></a>
 <a class="sourceLine" id="cb9-9" data-line-number="9"><span class="co">#&gt;   [5,] 16   17   18   19   20</span></a>
 <a class="sourceLine" id="cb9-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb9-11" data-line-number="11">col_a <span class="op">*</span><span class="st"> </span><span class="kw">t</span>(col_a)</a>
+<a class="sourceLine" id="cb9-11" data-line-number="11">col_a <span class="op">*</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/t">t</a></span>(col_a)</a>
 <a class="sourceLine" id="cb9-12" data-line-number="12"><span class="co">#&gt; &lt;vctrs_mtrx&lt;double&gt;[,5][25]&gt;</span></a>
 <a class="sourceLine" id="cb9-13" data-line-number="13"><span class="co">#&gt;       </span></a>
 <a class="sourceLine" id="cb9-14" data-line-number="14"><span class="co">#&gt;        [,1] [,2] [,3] [,4] [,5]</span></a>
@@ -199,8 +194,8 @@
 <a class="sourceLine" id="cb9-18" data-line-number="18"><span class="co">#&gt;   [4,]  54   63   72   81   90 </span></a>
 <a class="sourceLine" id="cb9-19" data-line-number="19"><span class="co">#&gt;   [5,]  60   70   80   90  100</span></a></code></pre></div>
 <p>It’s not just restricted to matrices either. Let’s create a 2x3x2 rray object.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">x_rray &lt;-<span class="st"> </span><span class="kw"><a href="reference/rray.html">rray</a></span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">7</span>, <span class="dv">8</span>, <span class="dv">9</span>, <span class="dv">10</span>, <span class="dv">11</span>, <span class="dv">12</span>))</a>
-<a class="sourceLine" id="cb10-2" data-line-number="2">x_rray &lt;-<span class="st"> </span><span class="kw"><a href="reference/rray_reshape.html">rray_reshape</a></span>(x_rray, <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">2</span>))</a>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">x_rray &lt;-<span class="st"> </span><span class="kw"><a href="reference/rray.html">rray</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">7</span>, <span class="dv">8</span>, <span class="dv">9</span>, <span class="dv">10</span>, <span class="dv">11</span>, <span class="dv">12</span>))</a>
+<a class="sourceLine" id="cb10-2" data-line-number="2">x_rray &lt;-<span class="st"> </span><span class="kw"><a href="reference/rray_reshape.html">rray_reshape</a></span>(x_rray, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">2</span>))</a>
 <a class="sourceLine" id="cb10-3" data-line-number="3"></a>
 <a class="sourceLine" id="cb10-4" data-line-number="4">x_rray</a>
 <a class="sourceLine" id="cb10-5" data-line-number="5"><span class="co">#&gt; &lt;vctrs_rray&lt;double&gt;[,3,2][12]&gt;</span></a>
@@ -332,7 +327,7 @@
 <a class="sourceLine" id="cb17-25" data-line-number="25"><span class="co">#&gt;   [1,] 13   15   17  </span></a>
 <a class="sourceLine" id="cb17-26" data-line-number="26"><span class="co">#&gt;   [2,] 15   17   19</span></a></code></pre></div>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="co"># Divide by an R matrix</span></a>
-<a class="sourceLine" id="cb18-2" data-line-number="2">x_rray <span class="op">/</span><span class="st"> </span><span class="kw">matrix</span>(<span class="dv">5</span>, <span class="dt">nrow =</span> <span class="dv">2</span>, <span class="dt">ncol =</span> <span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb18-2" data-line-number="2">x_rray <span class="op">/</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/matrix">matrix</a></span>(<span class="dv">5</span>, <span class="dt">nrow =</span> <span class="dv">2</span>, <span class="dt">ncol =</span> <span class="dv">3</span>)</a>
 <a class="sourceLine" id="cb18-3" data-line-number="3"><span class="co">#&gt; &lt;vctrs_rray&lt;double&gt;[,3,2][12]&gt;</span></a>
 <a class="sourceLine" id="cb18-4" data-line-number="4"><span class="co">#&gt; , , 1</span></a>
 <a class="sourceLine" id="cb18-5" data-line-number="5"><span class="co">#&gt; </span></a>
@@ -366,7 +361,7 @@
 <a class="sourceLine" id="cb18-33" data-line-number="33"><span class="co">#&gt;   [2,] 4.0  5.0  6.0</span></a>
 <a class="sourceLine" id="cb18-34" data-line-number="34"></a>
 <a class="sourceLine" id="cb18-35" data-line-number="35"><span class="co"># R vectors are treated as 1 column matrices</span></a>
-<a class="sourceLine" id="cb18-36" data-line-number="36">x_rray <span class="op">+</span><span class="st"> </span><span class="kw">c</span>(<span class="dv">10</span>, <span class="dv">11</span>)</a>
+<a class="sourceLine" id="cb18-36" data-line-number="36">x_rray <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">10</span>, <span class="dv">11</span>)</a>
 <a class="sourceLine" id="cb18-37" data-line-number="37"><span class="co">#&gt; &lt;vctrs_rray&lt;double&gt;[,3,2][12]&gt;</span></a>
 <a class="sourceLine" id="cb18-38" data-line-number="38"><span class="co">#&gt; , , 1</span></a>
 <a class="sourceLine" id="cb18-39" data-line-number="39"><span class="co">#&gt; </span></a>
@@ -382,14 +377,14 @@
 <a class="sourceLine" id="cb18-49" data-line-number="49"><span class="co">#&gt;   [1,] 17   19   21  </span></a>
 <a class="sourceLine" id="cb18-50" data-line-number="50"><span class="co">#&gt;   [2,] 19   21   23</span></a></code></pre></div>
 <p>You can manually broadcast with <code><a href="reference/rray_broadcast.html">rray_broadcast()</a></code></p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="kw"><a href="reference/rray_broadcast.html">rray_broadcast</a></span>(<span class="kw">c</span>(<span class="dv">10</span>, <span class="dv">11</span>), <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">10</span>))</a>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="kw"><a href="reference/rray_broadcast.html">rray_broadcast</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">10</span>, <span class="dv">11</span>), <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">2</span>, <span class="dv">10</span>))</a>
 <a class="sourceLine" id="cb19-2" data-line-number="2"><span class="co">#&gt;       </span></a>
 <a class="sourceLine" id="cb19-3" data-line-number="3"><span class="co">#&gt;        [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8] [,9] [,10]</span></a>
 <a class="sourceLine" id="cb19-4" data-line-number="4"><span class="co">#&gt;   [1,]   10   10   10   10   10   10   10   10   10    10</span></a>
 <a class="sourceLine" id="cb19-5" data-line-number="5"><span class="co">#&gt;   [2,]   11   11   11   11   11   11   11   11   11    11</span></a>
 <a class="sourceLine" id="cb19-6" data-line-number="6"></a>
 <a class="sourceLine" id="cb19-7" data-line-number="7"><span class="co"># broadcasting a mtrx to 3 dimensions result in an rray</span></a>
-<a class="sourceLine" id="cb19-8" data-line-number="8"><span class="kw"><a href="reference/rray_broadcast.html">rray_broadcast</a></span>(col_a, <span class="kw">c</span>(<span class="dv">5</span>, <span class="dv">3</span>, <span class="dv">2</span>))</a>
+<a class="sourceLine" id="cb19-8" data-line-number="8"><span class="kw"><a href="reference/rray_broadcast.html">rray_broadcast</a></span>(col_a, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">5</span>, <span class="dv">3</span>, <span class="dv">2</span>))</a>
 <a class="sourceLine" id="cb19-9" data-line-number="9"><span class="co">#&gt; &lt;vctrs_rray&lt;double&gt;[,3,2][30]&gt;</span></a>
 <a class="sourceLine" id="cb19-10" data-line-number="10"><span class="co">#&gt; , , 1</span></a>
 <a class="sourceLine" id="cb19-11" data-line-number="11"><span class="co">#&gt; </span></a>
@@ -408,8 +403,8 @@
 <a class="sourceLine" id="cb19-24" data-line-number="24"><span class="co">#&gt; [3,]  8    8    8  </span></a>
 <a class="sourceLine" id="cb19-25" data-line-number="25"><span class="co">#&gt; [4,]  9    9    9  </span></a>
 <a class="sourceLine" id="cb19-26" data-line-number="26"><span class="co">#&gt; [5,] 10   10   10</span></a></code></pre></div>
-<p>There are a number of other functions in <code>xtensor</code> that would be great to expose. One of them is <code>atan()</code> and it has been exposed already.</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="kw">atan</span>(col_a)</a>
+<p>There are a number of other functions in <code>xtensor</code> that would be great to expose. One of them is <code><a href="https://www.rdocumentation.org/packages/base/topics/Trig">atan()</a></code> and it has been exposed already.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Trig">atan</a></span>(col_a)</a>
 <a class="sourceLine" id="cb20-2" data-line-number="2"><span class="co">#&gt; &lt;vctrs_mtrx&lt;double&gt;[,1][5]&gt;</span></a>
 <a class="sourceLine" id="cb20-3" data-line-number="3"><span class="co">#&gt;      [,1]    </span></a>
 <a class="sourceLine" id="cb20-4" data-line-number="4"><span class="co">#&gt; [1,] 1.405648</span></a>
@@ -418,7 +413,7 @@
 <a class="sourceLine" id="cb20-7" data-line-number="7"><span class="co">#&gt; [4,] 1.460139</span></a>
 <a class="sourceLine" id="cb20-8" data-line-number="8"><span class="co">#&gt; [5,] 1.471128</span></a>
 <a class="sourceLine" id="cb20-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb20-10" data-line-number="10"><span class="kw">atan</span>(x_rray)</a>
+<a class="sourceLine" id="cb20-10" data-line-number="10"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Trig">atan</a></span>(x_rray)</a>
 <a class="sourceLine" id="cb20-11" data-line-number="11"><span class="co">#&gt; &lt;vctrs_rray&lt;double&gt;[,3,2][12]&gt;</span></a>
 <a class="sourceLine" id="cb20-12" data-line-number="12"><span class="co">#&gt; , , 1</span></a>
 <a class="sourceLine" id="cb20-13" data-line-number="13"><span class="co">#&gt; </span></a>
@@ -435,7 +430,7 @@
 </div>
   </div>
 
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+  <div class="col-md-3" id="sidebar">
     <div class="links">
 <h2>Links</h2>
 <ul class="list-unstyled">
@@ -459,7 +454,7 @@
 </ul>
 </div>
 
-      <div class="dev-status">
+  <div class="dev-status">
 <h2>Dev status</h2>
 <ul class="list-unstyled">
 <li><a href="https://www.tidyverse.org/lifecycle/#experimental"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
@@ -467,7 +462,6 @@
 </ul>
 </div>
 </div>
-
 </div>
 
 
@@ -476,7 +470,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="http://pkgdown.r-lib.org/">pkgdown</a>.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a>.</p>
 </div>
 
       </footer>

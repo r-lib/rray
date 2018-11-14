@@ -8,8 +8,6 @@
 
 <title>Create a new rray — new_rray • rray</title>
 
-<link rel="shortcut icon" type="image/x-icon" href="../favicon.ico">
-
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
@@ -64,7 +62,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rray</a>
-        <span class="label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.0.9000</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.0.9000</span>
       </span>
     </div>
 
@@ -111,8 +109,8 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>new_rray</span>(<span class='kw'>.data</span> <span class='kw'>=</span> <span class='fu'>numeric</span>(<span class='fl'>0</span>), <span class='kw'>size</span> <span class='kw'>=</span> <span class='fl'>0L</span>, <span class='kw'>shape</span> <span class='kw'>=</span> <span class='fl'>1L</span>,
-  <span class='kw'>dim_names</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>, <span class='kw'>subclass</span> <span class='kw'>=</span> <span class='fu'>character</span>(<span class='fl'>0</span>))</pre>
+    <pre class="usage"><span class='fu'>new_rray</span>(<span class='kw'>.data</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/numeric'>numeric</a></span>(<span class='fl'>0</span>), <span class='kw'>size</span> <span class='kw'>=</span> <span class='fl'>0L</span>, <span class='kw'>shape</span> <span class='kw'>=</span> <span class='fl'>1L</span>,
+  <span class='kw'>dim_names</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>, <span class='kw'>subclass</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/character'>character</a></span>(<span class='fl'>0</span>))</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -137,9 +135,9 @@ dimensions in the object except for the first one (the <code>size</code>).</p></
       <td><p>A list. For no names, <code>NULL</code>, in which case a list of
 empty characters will be constructed. Otherwise the list must
 be the same length as the total number of dimensions
-(i.e <code>length(c(size, shape))</code>). Each element of the list much be either
+(i.e <code><a href='https://www.rdocumentation.org/packages/base/topics/length'>length(c(size, shape))</a></code>). Each element of the list much be either
 a character vector the same size as the corresponding dimension, or
-<code>character(0)</code> for no names for that dimension.</p></td>
+<code><a href='https://www.rdocumentation.org/packages/base/topics/character'>character(0)</a></code> for no names for that dimension.</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -158,7 +156,7 @@ a character vector the same size as the corresponding dimension, or
   <span class='kw'>.data</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>10</span>,
   <span class='kw'>size</span> <span class='kw'>=</span> <span class='fl'>5L</span>,
   <span class='kw'>shape</span> <span class='kw'>=</span> <span class='fl'>2L</span>,
-  <span class='kw'>dim_names</span> <span class='kw'>=</span> <span class='fu'>list</span>(<span class='fu'>character</span>(), <span class='fu'>c</span>(<span class='st'>"a"</span>, <span class='st'>"b"</span>))
+  <span class='kw'>dim_names</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/character'>character</a></span>(), <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"a"</span>, <span class='st'>"b"</span>))
 )
 
 <span class='no'>rray_ex</span></div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,2][10]&gt;
@@ -187,7 +185,7 @@ a character vector the same size as the corresponding dimension, or
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="http://pkgdown.r-lib.org/">pkgdown</a>.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a>.</p>
 </div>
 
       </footer>

@@ -8,8 +8,6 @@
 
 <title>Find common dimensions — common-dim • rray</title>
 
-<link rel="shortcut icon" type="image/x-icon" href="../favicon.ico">
-
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
@@ -69,7 +67,7 @@ of a set of objects.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rray</a>
-        <span class="label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.0.9000</span>
+        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.0.9000</span>
       </span>
     </div>
 
@@ -165,7 +163,7 @@ are used in broadcasted arithmetic operations.</p>
 <span class='co'># recycle rows: 1 VS 4 = 4</span>
 <span class='co'># recycle cols: 5 VS 1 = 5</span>
 <span class='fu'>rray_dim_common</span>(<span class='no'>x_1_by_4</span>, <span class='no'>x_5_by_1</span>)</div><div class='output co'>#&gt; [1] 5 4</div><div class='input'>
-<span class='no'>x_5_by_1_by_3</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>, <span class='fu'>c</span>(<span class='fl'>5</span>, <span class='fl'>1</span>, <span class='fl'>3</span>))
+<span class='no'>x_5_by_1_by_3</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>5</span>, <span class='fl'>1</span>, <span class='fl'>3</span>))
 
 <span class='co'># recycle rows:    1 VS 4 = 4</span>
 <span class='co'># recycle cols:    5 VS 1 = 5</span>
@@ -193,7 +191,7 @@ are used in broadcasted arithmetic operations.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="http://pkgdown.r-lib.org/">pkgdown</a>.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a>.</p>
 </div>
 
       </footer>
