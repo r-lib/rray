@@ -89,6 +89,7 @@
 
 }
 
+#' @importFrom utils head
 #' @export
 head.vctrs_rray <- function (x, n = 6L, ...) {
 
@@ -111,6 +112,7 @@ head.vctrs_rray <- function (x, n = 6L, ...) {
   x[seq_len(n),]
 }
 
+#' @importFrom utils tail
 #' @export
 tail.vctrs_rray <- function(x, n = 6L, ...) {
 
