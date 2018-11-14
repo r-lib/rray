@@ -1,7 +1,7 @@
 # R for travis: see documentation at https://docs.travis-ci.com/user/languages/r
 
 language: R
-sudo: false
+sudo: required
 cache: packages
 
 #r_github_packages:
@@ -19,14 +19,18 @@ addons:
     packages:
       - gcc-6
       - g++-6
+env:
+  - COMPILER=g++-6
+  - CC=gcc-6
+  - CXX=g++-6
 before_install:
-    - echo "** Overriding src/Makevars and removing C++14 on Travis only"
-    - sed -i 's|CXX_STD = CXX14||' src/Makevars
-    - head src/Makevars
-    - mkdir -p latest-gcc-symlinks
-    - ln -s /usr/bin/g++-6 latest-gcc-symlinks/g++
-    - ln -s /usr/bin/gcc-6 latest-gcc-symlinks/gcc
-    - export PATH=$PWD/latest-gcc-symlinks:$PATH
+  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-6 100
+  - mkdir -p ~/.R
+  - echo "VER=-6" > ~/.R/Makevars
+  - echo "CC=gcc$(VER) -std=c14" > ~/.R/Makevars
+  - echo "CXX=g++$(VER)" > ~/.R/Makevars
+  - echo "SHLIB_CXXLD=g++$(VER)" > ~/.R/Makevars
+  - cat ~/.R/Makevars
 # ------------------------------------------------------------------------------
 
 matrix:
