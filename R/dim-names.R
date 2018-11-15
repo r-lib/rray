@@ -111,12 +111,40 @@ dimnames.vctrs_rray <- function(x) {
 
 #' @export
 `dim_names<-.default` <- function(x, value) {
-  dimnames(x) <- value
-  x
+  set_full_dim_names(x, value)
 }
 
 #' @export
 `dim_names<-.vctrs_rray` <- function(x, value) {
+  set_full_dim_names(x, value)
+}
+
+# Using a helper function internally can help avoid
+# copies when the new dim names are identical to the
+# old ones. Using an assignment function like dim_names<-
+# ALWAYS makes a copy no matter what.
+
+set_full_dim_names <- function(x, value) {
+  UseMethod("set_full_dim_names")
+}
+
+set_full_dim_names.default <- function(x, value) {
+
+  # potentially avoid copy
+  if (identical(dim_names(x), value)) {
+    return(x)
+  }
+
+  dimnames(x) <- value
+  x
+}
+
+set_full_dim_names.vctrs_rray <- function(x, value) {
+
+  # potentially avoid copy
+  if (identical(dim_names(x), value)) {
+    return(x)
+  }
 
   if (is_null(value)) {
     value <- new_empty_dim_names(vec_dims(x))
@@ -135,6 +163,7 @@ dimnames.vctrs_rray <- function(x) {
 
   attr(x, "dim_names") <- value
   x
+
 }
 
 # Base R compat

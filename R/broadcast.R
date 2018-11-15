@@ -80,7 +80,8 @@ rray_broadcast <- function(x, dim) {
 #' @export
 rray_broadcast.default <- function(x, dim) {
   res <- broadcast(x, dim)
-  dim_names(res) <- restore_dim_names(x, dim)
+  new_dim_names <- restore_dim_names(x, dim)
+  res <- set_full_dim_names(res, new_dim_names)
   res
 }
 

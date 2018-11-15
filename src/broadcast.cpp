@@ -5,24 +5,24 @@ using namespace Rcpp;
 using shape_type = std::vector<std::size_t>;
 
 template <typename T>
-xt::rarray<T> rray_broadcast_cpp_impl(xt::rarray<T> x, IntegerVector dim) {
+SEXP rray_broadcast_cpp_impl(const xt::rarray<T>& x, const IntegerVector& dim) {
   shape_type new_shape = as<shape_type>(dim);
-  xt::rarray<T> res = xt::broadcast(x, new_shape);
+  const xt::rarray<T>& res = xt::broadcast(x, new_shape);
   return(res);
 }
 
 // [[Rcpp::export]]
-SEXP rray_broadcast_cpp(SEXP x, IntegerVector dim) {
+SEXP rray_broadcast_cpp(SEXP x, const IntegerVector& dim) {
 
   switch(TYPEOF(x)) {
 
     case REALSXP: {
-      auto res = Rcpp::as<xt::rarray<double>>(x);
+      const xt::rarray<double>& res = xt::rarray<double>(x);
       return rray_broadcast_cpp_impl(res, dim);
     }
 
     case INTSXP: {
-      auto res = Rcpp::as<xt::rarray<int>>(x);
+      const xt::rarray<int>& res = xt::rarray<int>(x);
       return rray_broadcast_cpp_impl(res, dim);
     }
 

@@ -7,12 +7,12 @@
 using namespace Rcpp;
 
 // rray_binary_op_cpp
-SEXP rray_binary_op_cpp(std::string op, SEXP x, SEXP y);
+SEXP rray_binary_op_cpp(const std::string& op, SEXP x, SEXP y);
 RcppExport SEXP _rray_rray_binary_op_cpp(SEXP opSEXP, SEXP xSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::string >::type op(opSEXP);
+    Rcpp::traits::input_parameter< const std::string& >::type op(opSEXP);
     Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
     Rcpp::traits::input_parameter< SEXP >::type y(ySEXP);
     rcpp_result_gen = Rcpp::wrap(rray_binary_op_cpp(op, x, y));
@@ -20,13 +20,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // rray_broadcast_cpp
-SEXP rray_broadcast_cpp(SEXP x, IntegerVector dim);
+SEXP rray_broadcast_cpp(SEXP x, const IntegerVector& dim);
 RcppExport SEXP _rray_rray_broadcast_cpp(SEXP xSEXP, SEXP dimSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type dim(dimSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type dim(dimSEXP);
     rcpp_result_gen = Rcpp::wrap(rray_broadcast_cpp(x, dim));
     return rcpp_result_gen;
 END_RCPP

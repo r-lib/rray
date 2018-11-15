@@ -6,30 +6,30 @@ using namespace Rcpp;
 // Core arithmetic operations
 
 template <typename T1, typename T2>
-SEXP rray_add_cpp(xt::rarray<T1> x, xt::rarray<T2> y) {
+SEXP rray_add_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
   using common_type = typename std::common_type<T1, T2>::type;
-  xt::rarray<common_type> res = x + y;
+  const xt::rarray<common_type>& res = x + y;
   return res;
 }
 
 template <typename T1, typename T2>
-SEXP rray_subtract_cpp(xt::rarray<T1> x, xt::rarray<T2> y) {
+SEXP rray_subtract_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
   using common_type = typename std::common_type<T1, T2>::type;
-  xt::rarray<common_type> res = x - y;
+  const xt::rarray<common_type>& res = x - y;
   return res;
 }
 
 template <typename T1, typename T2>
-SEXP rray_multiply_cpp(xt::rarray<T1> x, xt::rarray<T2> y) {
+SEXP rray_multiply_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
   using common_type = typename std::common_type<T1, T2>::type;
-  xt::rarray<common_type> res = x * y;
+  const xt::rarray<common_type>& res = x * y;
   return res;
 }
 
 template <typename T1, typename T2>
-SEXP rray_divide_cpp(xt::rarray<T1> x, xt::rarray<T2> y) {
+SEXP rray_divide_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
   using common_type = typename std::common_type<T1, T2>::type;
-  xt::rarray<common_type> res = x / y;
+  const xt::rarray<common_type>& res = x / y;
   return res;
 }
 
@@ -44,7 +44,7 @@ constexpr unsigned int str2int(const char* str, int h = 0) {
 // Switch on the op
 
 template <typename T1, typename T2>
-SEXP rray_binary_op_cpp_impl(std::string op, xt::rarray<T1> x, xt::rarray<T2> y) {
+SEXP rray_binary_op_cpp_impl(const std::string& op, const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
 
   switch(str2int(op.c_str())) {
 
@@ -76,7 +76,7 @@ SEXP rray_binary_op_cpp_impl(std::string op, xt::rarray<T1> x, xt::rarray<T2> y)
 // Switch on the types of x and y
 
 // [[Rcpp::export]]
-SEXP rray_binary_op_cpp(std::string op, SEXP x, SEXP y) {
+SEXP rray_binary_op_cpp(const std::string& op, SEXP x, SEXP y) {
 
   // I can't figure out any cleaner way to do this.
 
@@ -84,18 +84,18 @@ SEXP rray_binary_op_cpp(std::string op, SEXP x, SEXP y) {
   switch(TYPEOF(x)) {
 
     case REALSXP: {
-      auto res1 = Rcpp::as<xt::rarray<double>>(x);
+      const xt::rarray<double>& res1 = xt::rarray<double>(x);
 
       // Switch on Y
       switch(TYPEOF(y)) {
 
         case REALSXP: {
-          auto res2 = Rcpp::as<xt::rarray<double>>(y);
+          const xt::rarray<double>& res2 = xt::rarray<double>(y);
           return rray_binary_op_cpp_impl(op, res1, res2);
         }
 
         case INTSXP: {
-          auto res2 = Rcpp::as<xt::rarray<int>>(y);
+          const xt::rarray<int>& res2 = xt::rarray<int>(y);
           return rray_binary_op_cpp_impl(op, res1, res2);
         }
 
@@ -108,18 +108,18 @@ SEXP rray_binary_op_cpp(std::string op, SEXP x, SEXP y) {
     } // End REALSXP X case
 
     case INTSXP: {
-      auto res1 = Rcpp::as<xt::rarray<int>>(x);
+      const xt::rarray<int>& res1 = xt::rarray<int>(x);
 
       // Switch on Y
       switch(TYPEOF(y)) {
 
         case REALSXP: {
-          auto res2 = Rcpp::as<xt::rarray<double>>(y);
+          const xt::rarray<double>& res2 = xt::rarray<double>(y);
           return rray_binary_op_cpp_impl(op, res1, res2);
         }
 
         case INTSXP: {
-          auto res2 = Rcpp::as<xt::rarray<int>>(y);
+          const xt::rarray<int>& res2 = xt::rarray<int>(y);
           return rray_binary_op_cpp_impl(op, res1, res2);
         }
 
