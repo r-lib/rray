@@ -163,6 +163,7 @@ set_full_dim_names.vctrs_rray <- function(x, value) {
 
   attr(x, "dim_names") <- value
   x
+
 }
 
 # Base R compat
