@@ -119,11 +119,15 @@
 <a class="sourceLine" id="cb4-5" data-line-number="5"><span class="co">#&gt; [1,] 1</span></a>
 <a class="sourceLine" id="cb4-6" data-line-number="6"><span class="co">#&gt; [2,] 2</span></a>
 <a class="sourceLine" id="cb4-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="co"># individual elements</span></a>
-<a class="sourceLine" id="cb4-9" data-line-number="9">mtrx_ex[<span class="dv">1</span>, <span class="st">"a"</span>]</a>
-<a class="sourceLine" id="cb4-10" data-line-number="10"><span class="co">#&gt; &lt;vctrs_mtrx&lt;integer&gt;[,1][1]&gt;</span></a>
-<a class="sourceLine" id="cb4-11" data-line-number="11"><span class="co">#&gt;      a</span></a>
-<a class="sourceLine" id="cb4-12" data-line-number="12"><span class="co">#&gt; [1,] 3</span></a></code></pre></div>
+<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="co"># not this</span></a>
+<a class="sourceLine" id="cb4-9" data-line-number="9">mtrx_ex[<span class="dv">1</span>]</a>
+<a class="sourceLine" id="cb4-10" data-line-number="10"><span class="co">#&gt; Error: Use `x[,j]` to select columns, not `x[j]`.</span></a>
+<a class="sourceLine" id="cb4-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb4-12" data-line-number="12"><span class="co"># individual elements</span></a>
+<a class="sourceLine" id="cb4-13" data-line-number="13">mtrx_ex[<span class="dv">1</span>, <span class="st">"a"</span>]</a>
+<a class="sourceLine" id="cb4-14" data-line-number="14"><span class="co">#&gt; &lt;vctrs_mtrx&lt;integer&gt;[,1][1]&gt;</span></a>
+<a class="sourceLine" id="cb4-15" data-line-number="15"><span class="co">#&gt;      a</span></a>
+<a class="sourceLine" id="cb4-16" data-line-number="16"><span class="co">#&gt; [1,] 3</span></a></code></pre></div>
 <p>These rules also apply to <code>rray</code> objects. You can create an <code>rray</code> from a vector, matrix, or array.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># 2 rows, 3 columns, 2 "deep" (being the 3rd dimension)</span></a>
 <a class="sourceLine" id="cb5-2" data-line-number="2">x_rray &lt;-<span class="st"> </span><span class="kw"><a href="reference/rray.html">rray</a></span>(<span class="dv">1</span>, <span class="dt">dim =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">2</span>))</a>
@@ -177,7 +181,7 @@
 <h2 class="hasAnchor">
 <a href="#broadcasting" class="anchor"></a>Broadcasting</h2>
 <p>Broadcasting, the concept of recycling dimensions of one object to match the dimensions of another, is one of the core differences between operations with rray and base R.</p>
-<p>It allows you to do amazing things such as:</p>
+<p>It allows you to do powerful operations such as:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">x_rray </a>
 <a class="sourceLine" id="cb7-2" data-line-number="2"><span class="co">#&gt; &lt;vctrs_rray&lt;double&gt;[,3,2][6]&gt;</span></a>
 <a class="sourceLine" id="cb7-3" data-line-number="3"><span class="co">#&gt; , , 1</span></a>
