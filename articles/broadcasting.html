@@ -89,13 +89,10 @@
 
     
     
-<div id="broadcasting" class="section level2">
-<h2 class="hasAnchor">
-<a href="#broadcasting" class="anchor"></a>Broadcasting</h2>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(rray)</a></code></pre></div>
-<div id="rules" class="section level3">
-<h3 class="hasAnchor">
-<a href="#rules" class="anchor"></a>Rules</h3>
+<div id="rules" class="section level2">
+<h2 class="hasAnchor">
+<a href="#rules" class="anchor"></a>Rules</h2>
 <p>Broadcasting is the concept of recycling dimensions of one object to match the dimensions of another so that some arithmetic operation can be applied.</p>
 <p>It sounds complicated, but it’s much easier to think about if you simply write down what is happening. There are only three rules:</p>
 <ol style="list-style-type: decimal">
@@ -105,9 +102,9 @@
 </ol>
 <p>These three rules also happen to match the “tidy” recycling rules.</p>
 </div>
-<div id="example" class="section level3">
-<h3 class="hasAnchor">
-<a href="#example" class="anchor"></a>Example</h3>
+<div id="example" class="section level2">
+<h2 class="hasAnchor">
+<a href="#example" class="anchor"></a>Example</h2>
 <p>As an example, consider a 3x2 matrix and a 3x1 matrix. With base R, you can’t add these together.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">x &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/matrix">matrix</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>, <span class="dt">nrow =</span> <span class="dv">3</span>, <span class="dt">ncol =</span> <span class="dv">2</span>, <span class="dt">byrow =</span> <span class="ot">TRUE</span>)</a>
 <a class="sourceLine" id="cb2-2" data-line-number="2">y &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/matrix">matrix</a></span>(<span class="dv">1</span>,   <span class="dt">nrow =</span> <span class="dv">3</span>, <span class="dt">ncol =</span> <span class="dv">1</span>)</a>
@@ -189,9 +186,9 @@
 <a class="sourceLine" id="cb8-14" data-line-number="14"><span class="co">#&gt; [2,] 1    1    1    1   </span></a>
 <a class="sourceLine" id="cb8-15" data-line-number="15"><span class="co">#&gt; [3,] 1    1    1    1</span></a></code></pre></div>
 </div>
-<div id="outer-sums" class="section level3">
-<h3 class="hasAnchor">
-<a href="#outer-sums" class="anchor"></a>Outer sums</h3>
+<div id="outer-sums" class="section level2">
+<h2 class="hasAnchor">
+<a href="#outer-sums" class="anchor"></a>Outer sums</h2>
 <p>Broadcasting makes certain calculations surprisingly simple. Consider this outer sum calculation:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">z &lt;-<span class="st"> </span><span class="kw"><a href="../reference/as_mtrx.html">as_mtrx</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>)</a>
 <a class="sourceLine" id="cb9-2" data-line-number="2"></a>
@@ -208,7 +205,6 @@
 (3, 3)</code></pre>
 <p>It’s this kind of powerful calculation that makes me think that R could greatly benefit from the adoption of these semantics.</p>
 </div>
-</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -216,7 +212,9 @@
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-<li><a href="#broadcasting">Broadcasting</a></li>
+<li><a href="#rules">Rules</a></li>
+      <li><a href="#example">Example</a></li>
+      <li><a href="#outer-sums">Outer sums</a></li>
       </ul>
 </div>
       </div>
