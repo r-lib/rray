@@ -18,13 +18,11 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Broadcasting
-
 ```{r}
 library(rray)
 ```
 
-### Rules
+## Rules
 
 Broadcasting is the concept of recycling dimensions of one object to match the dimensions of another so that some arithmetic operation can be applied.
 
@@ -38,7 +36,7 @@ It sounds complicated, but it's much easier to think about if you simply write d
 
 These three rules also happen to match the "tidy" recycling rules.
 
-### Example
+## Example
 
 As an example, consider a 3x2 matrix and a 3x1 matrix. With base R, you can't 
 add these together.
@@ -105,7 +103,7 @@ to match the other dimensions so that the 3x1 matrix becomes a 3x4x2 array.
 rray_broadcast(y_mtrx, c(3, 4, 2))
 ```
 
-### Outer sums
+## Outer sums
 
 Broadcasting makes certain calculations surprisingly simple. Consider this 
 outer sum calculation:
