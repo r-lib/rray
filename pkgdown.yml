@@ -1,5 +1,6 @@
 pandoc: '2.2'
 pkgdown: 1.1.0.9000
-pkgdown_sha: a2e7b262c6db857014a24cbaf1c8ec2921e59f2c
-articles: []
+pkgdown_sha: 33c059119873eb94656ec119f5ba62e86b3e7977
+articles:
+  broadcasting: broadcasting.html
 
