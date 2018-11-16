@@ -69,6 +69,10 @@ mtrx_ex[,1]
 #> [1,] 1
 #> [2,] 2
 
+# not this
+mtrx_ex[1]
+#> Error: Use `x[,j]` to select columns, not `x[j]`.
+
 # individual elements
 mtrx_ex[1, "a"]
 #> <vctrs_mtrx<integer>[,1][1]>
@@ -138,7 +142,7 @@ Broadcasting, the concept of recycling dimensions of one object to match
 the dimensions of another, is one of the core differences between
 operations with rray and base R.
 
-It allows you to do amazing things such as:
+It allows you to do powerful operations such as:
 
 ``` r
 x_rray 

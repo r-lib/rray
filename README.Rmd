@@ -55,9 +55,12 @@ mtrices are stricter than base R's matrix objects in two main ways:
 * You must be explicit about the dimension when selecting columns (i.e. `x[,1]` not `x[1]`).
 * Dimensions are never dropped.
 
-```{r}
+```{r, error = TRUE}
 # first column
 mtrx_ex[,1]
+
+# not this
+mtrx_ex[1]
 
 # individual elements
 mtrx_ex[1, "a"]
@@ -89,7 +92,7 @@ Broadcasting, the concept of recycling dimensions of one object to match the
 dimensions of another, is one of the core differences between operations with
 rray and base R.
 
-It allows you to do amazing things such as:
+It allows you to do powerful operations such as:
 
 ```{r}
 x_rray 
