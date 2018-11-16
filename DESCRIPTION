@@ -29,4 +29,7 @@ LinkingTo:
     xtensorrr
 Suggests: 
     testthat,
-    magrittr
+    magrittr,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
