@@ -35,7 +35,7 @@ vec_ptype_full.vctrs_mtrx <- function(x) {
 #' @rdname vctrs-compat
 #' @method vec_type2 vctrs_mtrx
 #' @export vec_type2.vctrs_mtrx
-vec_type2.vctrs_mtrx <- function(x, y) UseMethod("vec_type2.vctrs_mtrx")
+vec_type2.vctrs_mtrx <- function(x, y) UseMethod("vec_type2.vctrs_mtrx", y)
 
 #' @method vec_type2.vctrs_mtrx default
 #' @export

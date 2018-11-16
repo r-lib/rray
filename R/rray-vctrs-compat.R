@@ -79,7 +79,7 @@ NULL
 #' @rdname vctrs-compat
 #' @method vec_type2 vctrs_rray
 #' @export vec_type2.vctrs_rray
-vec_type2.vctrs_rray <- function(x, y) UseMethod("vec_type2.vctrs_rray")
+vec_type2.vctrs_rray <- function(x, y) UseMethod("vec_type2.vctrs_rray", y)
 
 #' @method vec_type2.vctrs_rray default
 #' @export
