@@ -20,6 +20,10 @@ knitr::opts_chunk$set(
 
 ## Broadcasting
 
+```{r}
+library(rray)
+```
+
 ### Rules
 
 Broadcasting is the concept of recycling dimensions of one object to match the dimensions of another so that some arithmetic operation can be applied.
