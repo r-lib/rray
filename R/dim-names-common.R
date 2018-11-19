@@ -68,8 +68,9 @@ rray_dim_names_common <- function(...) {
     return(list())
   }
 
-  dim <- rray_dim_common(!!! args)
-  args_dim_names <- map(args, restore_dim_names, to_dim = dim)
+  .dim <- rray_dim_common(!!! args)
+
+  args_dim_names <- map(args, restore_dim_names, to_dim = .dim)
 
   reduce(args_dim_names, reconcile_dim_names)
 }
@@ -78,9 +79,10 @@ rray_dim_names_common <- function(...) {
 #' @rdname common-dim-names
 rray_dim_names2 <- function(x, y) {
 
-  dim <- rray_dim2(vec_dim(x), vec_dim(y))
-  x_nms_list <- restore_dim_names(x, dim)
-  y_nms_list <- restore_dim_names(y, dim)
+  .dim <- rray_dim2(vec_dim(x), vec_dim(y))
+
+  x_nms_list <- restore_dim_names(x, .dim)
+  y_nms_list <- restore_dim_names(y, .dim)
 
   reconcile_dim_names(x_nms_list, y_nms_list)
 }
@@ -122,10 +124,12 @@ restore_dim_names <- function(x, to_dim) {
 
   dims <- vec_size(to_dim)
 
+  from_dims <- vec_dims(x)
   dim_names <- dim_names(x)
 
   meta_names <- names2(dim_names)
-  meta_names <- c(meta_names, rep("", times = dims - length(meta_names)))
+  meta_names <- meta_names[seq_len(dims)]
+  meta_names <- ifelse(is.na(meta_names), "", meta_names)
 
   restored_dim_names <- new_empty_dim_names(dims)
   names(restored_dim_names) <- meta_names
@@ -133,7 +137,13 @@ restore_dim_names <- function(x, to_dim) {
   # cant use map2 bc to_dim_names could be
   # shorter than x_dim (i.e. we added a dimension)
 
-  for(i in seq_along(dim_names)) {
+  for (i in seq_len(dims)) {
+
+    # if you are reshaping down in dimensions, then you
+    # will run out of dim names to copy over
+    if (i > from_dims) {
+      break
+    }
 
     nms <- dim_names[[i]]
     single_dim <- to_dim[i]

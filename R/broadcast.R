@@ -79,7 +79,7 @@ rray_broadcast <- function(x, dim) {
 
 #' @export
 rray_broadcast.default <- function(x, dim) {
-  res <- broadcast(x, dim)
+  res <- broadcast_impl(x, dim)
   new_dim_names <- restore_dim_names(x, dim)
   res <- set_full_dim_names(res, new_dim_names)
   res
@@ -104,7 +104,7 @@ rray_broadcast.vctrs_mtrx <- function(x, dim) {
 
 # makes no attempt to recover dim names
 # or type
-broadcast <- function(x, dim) {
+broadcast_impl <- function(x, dim) {
   res <- rray_dims_match(x, vec_size(dim))
   validate_recyclable(vec_dim(res), dim)
   res <- rray_broadcast_cpp(res, dim)
@@ -124,6 +124,10 @@ rray_dims_match <- function(x, dims) {
 
   dim <- dim_extend(x_dim, dims)
   x <- set_dim(x, dim)
+
+  new_dim_nms <- dim_names_extend(dim_names(x), dims)
+  x <- set_full_dim_names(x, new_dim_nms)
+
   x
 }
 

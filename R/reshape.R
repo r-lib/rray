@@ -1,5 +1,3 @@
-# TODO - This functions feels incomplete or not useful?
-
 #' Reshape an rray or mtrx
 #'
 #' Reshape to a new dimension
@@ -8,10 +6,23 @@
 #'
 #' @export
 rray_reshape <- function(x, dim) {
+  res <- reshape_impl(x, dim)
+  res <- vec_restore(res, x)
+
+  # Actually going down in dimensions here, but restore_dim_names()
+  # can handle that
+  new_dim_names <- restore_dim_names(x, vec_dim(res))
+  res <- set_full_dim_names(res, new_dim_names)
+
+  res
+}
+
+# Reshapes, but does not try and restore
+# any class or dim names (no copies there)
+reshape_impl <- function(x, dim) {
   x_dim <- vec_dim(x)
   validate_reshape(x_dim, dim)
-  res <- rray_reshape_cpp(x, dim)
-  vec_restore(res, x)
+  rray_reshape_cpp(x, dim)
 }
 
 validate_reshape <- function(from, to) {
