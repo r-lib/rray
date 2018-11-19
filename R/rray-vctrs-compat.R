@@ -60,6 +60,14 @@ vec_ptype_shape <- function(x) {
   vec_restore(x_array, x)
 }
 
+#' @export
+`[[<-.vctrs_rray` <- function(x, ..., value) {
+  value <- vec_cast(value, x[[...]])
+  x_array <- as_array(x)
+  x_array[[...]] <- value
+  vec_restore(x_array, x)
+}
+
 # vec_type2 boilerplate --------------------------------------------------------
 
 #' vctrs compatibility functions
@@ -154,7 +162,7 @@ vec_cast.vctrs_rray.logical <- function(x, to) vec_unspecified_cast(x, to)
 #' @method vec_cast.vctrs_rray vctrs_rray
 #' @export
 vec_cast.vctrs_rray.vctrs_rray <- function(x, to) {
-  res <- broadcast(x, vec_dim(to))
+  res <- broadcast_impl(x, vec_dim(to))
   new_rray(
     .data = vec_data(res),
     size = vec_size(res),
@@ -176,7 +184,7 @@ vec_cast.vctrs_rray.double <- vec_cast.vctrs_rray.vctrs_rray
 #' @export
 vec_cast.double.vctrs_rray <- function(x, to) {
   dim <- vec_dim(to)
-  x <- broadcast(x, dim)
+  x <- broadcast_impl(x, dim)
   x <- vec_cast(vec_data(x), double())
   array(x, dim = dim)
 }
@@ -191,7 +199,7 @@ vec_cast.vctrs_rray.integer <- vec_cast.vctrs_rray.vctrs_rray
 #' @export
 vec_cast.integer.vctrs_rray <- function(x, to) {
   dim <- vec_dim(to)
-  x <- broadcast(x, dim)
+  x <- broadcast_impl(x, dim)
   x <- vec_cast(vec_data(x), integer())
   array(x, dim = dim)
 }
@@ -206,7 +214,7 @@ vec_cast.vctrs_rray.logical <- vec_cast.vctrs_rray.vctrs_rray
 #' @export
 vec_cast.logical.vctrs_rray <- function(x, to) {
   dim <- vec_dim(to)
-  x <- broadcast(x, dim)
+  x <- broadcast_impl(x, dim)
   x <- vec_cast(vec_data(x), logical())
   array(x, dim = dim)
 }

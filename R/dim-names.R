@@ -269,3 +269,18 @@ validate_requested_dims <- function(x, n) {
   }
 
 }
+
+# Similar to dim2 but takes dim_names and extends
+# it to match the number of dims
+dim_names_extend <- function(dim_names, dims) {
+  nms_dims <- length(dim_names)
+
+  if (nms_dims == dims) {
+    dim_names
+  } else if (nms_dims < dims) {
+    c(dim_names, new_empty_dim_names(dims - nms_dims))
+  } else {
+    abort("Can not decrease dimensions")
+  }
+
+}
