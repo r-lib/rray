@@ -6,14 +6,14 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Simple Matrices and Arrays • rray</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.1/clipboard.min.js" integrity="sha256-hIvIxeqhGZF+VVeM55k0mJvWpQ6gTkWk3Emc+NmowYA=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="Simple Matrices and Arrays">
 <meta property="og:description" content="Provides 'mtrx' and 'rray' classes that provide stricter checking 
   than traditional versions.">
 <meta name="twitter:card" content="summary">
-<!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
+<!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
@@ -98,7 +98,7 @@
 <a href="#mtrx-and-rray" class="anchor"></a>mtrx and rray</h2>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(rray)</a></code></pre></div>
 <p>The rray package introduces two new classes. An <code>rray</code>, which is an N-dimensional object and essentially a stricter array, and a <code>mtrx</code>, which is a subclass of an <code>rray</code> that restricts the object to only two dimensions.</p>
-<p>rray consistently takes the approach that all inputs have at least two dimensions, with scalars and vectors being treated as 1 column matrices.</p>
+<p>rray allows the creation of 1D objects, which look similar to vectors, but function similar to 1 column matrices (in terms of how operations are broadcasted).</p>
 <p>The easiest way to create a <code>mtrx</code> is to use the constructor. It takes in (potentially named) vectors and transforms them into the columns of the matrix.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">mtrx_ex &lt;-<span class="st"> </span><span class="kw"><a href="reference/mtrx.html">mtrx</a></span>(<span class="dt">b =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>, <span class="dt">a =</span> <span class="dv">3</span><span class="op">:</span><span class="dv">4</span>)</a>
 <a class="sourceLine" id="cb3-2" data-line-number="2"></a>
@@ -109,7 +109,7 @@
 <a class="sourceLine" id="cb3-7" data-line-number="7"><span class="co">#&gt; [2,] 2 4</span></a></code></pre></div>
 <p>mtrices are stricter than base R’s matrix objects in two main ways:</p>
 <ul>
-<li>You must be explicit about the dimension when selecting columns (i.e. <code><a href="https://www.rdocumentation.org/packages/base/topics/Extract">x[,1]</a></code> not <code><a href="https://www.rdocumentation.org/packages/base/topics/Extract">x[1]</a></code>).</li>
+<li>You must be explicit about the dimension when selecting columns (i.e. <code>x[,1]</code> not <code>x[1]</code>).</li>
 <li>Dimensions are never dropped.</li>
 </ul>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># first column</span></a>
@@ -198,19 +198,17 @@
 <a class="sourceLine" id="cb7-14" data-line-number="14"><span class="co">#&gt; &lt;vctrs_rray&lt;double&gt;[,3,2][18]&gt;</span></a>
 <a class="sourceLine" id="cb7-15" data-line-number="15"><span class="co">#&gt; , , 1</span></a>
 <a class="sourceLine" id="cb7-16" data-line-number="16"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb7-17" data-line-number="17"><span class="co">#&gt;       </span></a>
-<a class="sourceLine" id="cb7-18" data-line-number="18"><span class="co">#&gt;        [,1] [,2] [,3]</span></a>
-<a class="sourceLine" id="cb7-19" data-line-number="19"><span class="co">#&gt;   [1,] 2    2    2   </span></a>
-<a class="sourceLine" id="cb7-20" data-line-number="20"><span class="co">#&gt;   [2,] 3    3    3   </span></a>
-<a class="sourceLine" id="cb7-21" data-line-number="21"><span class="co">#&gt;   [3,] 4    4    4   </span></a>
-<a class="sourceLine" id="cb7-22" data-line-number="22"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb7-23" data-line-number="23"><span class="co">#&gt; , , 2</span></a>
-<a class="sourceLine" id="cb7-24" data-line-number="24"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb7-25" data-line-number="25"><span class="co">#&gt;       </span></a>
-<a class="sourceLine" id="cb7-26" data-line-number="26"><span class="co">#&gt;        [,1] [,2] [,3]</span></a>
-<a class="sourceLine" id="cb7-27" data-line-number="27"><span class="co">#&gt;   [1,] 2    2    2   </span></a>
-<a class="sourceLine" id="cb7-28" data-line-number="28"><span class="co">#&gt;   [2,] 3    3    3   </span></a>
-<a class="sourceLine" id="cb7-29" data-line-number="29"><span class="co">#&gt;   [3,] 4    4    4</span></a></code></pre></div>
+<a class="sourceLine" id="cb7-17" data-line-number="17"><span class="co">#&gt;      [,1] [,2] [,3]</span></a>
+<a class="sourceLine" id="cb7-18" data-line-number="18"><span class="co">#&gt; [1,] 2    2    2   </span></a>
+<a class="sourceLine" id="cb7-19" data-line-number="19"><span class="co">#&gt; [2,] 3    3    3   </span></a>
+<a class="sourceLine" id="cb7-20" data-line-number="20"><span class="co">#&gt; [3,] 4    4    4   </span></a>
+<a class="sourceLine" id="cb7-21" data-line-number="21"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb7-22" data-line-number="22"><span class="co">#&gt; , , 2</span></a>
+<a class="sourceLine" id="cb7-23" data-line-number="23"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb7-24" data-line-number="24"><span class="co">#&gt;      [,1] [,2] [,3]</span></a>
+<a class="sourceLine" id="cb7-25" data-line-number="25"><span class="co">#&gt; [1,] 2    2    2   </span></a>
+<a class="sourceLine" id="cb7-26" data-line-number="26"><span class="co">#&gt; [2,] 3    3    3   </span></a>
+<a class="sourceLine" id="cb7-27" data-line-number="27"><span class="co">#&gt; [3,] 4    4    4</span></a></code></pre></div>
 <p>To learn how this is working, see the broadcasting vignette, <code><a href="articles/broadcasting.html">vignette("broadcasting", "rray")</a></code>.</p>
 </div>
 <div id="motivation" class="section level2">
@@ -270,10 +268,9 @@
 <p>With rray, dimension names can come from both <code>x</code> and <code>y</code>. The rules for determining dimension names in rray are spelled out in <code><a href="reference/common-dim-names.html">?rray_dim_names_common</a></code>.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">x <span class="op">+</span><span class="st"> </span>y</a>
 <a class="sourceLine" id="cb10-2" data-line-number="2"><span class="co">#&gt; &lt;vctrs_mtrx&lt;integer&gt;[,2][4]&gt;</span></a>
-<a class="sourceLine" id="cb10-3" data-line-number="3"><span class="co">#&gt;     </span></a>
-<a class="sourceLine" id="cb10-4" data-line-number="4"><span class="co">#&gt;      a  b </span></a>
-<a class="sourceLine" id="cb10-5" data-line-number="5"><span class="co">#&gt;   r1  6 10</span></a>
-<a class="sourceLine" id="cb10-6" data-line-number="6"><span class="co">#&gt;   r2  8 12</span></a></code></pre></div>
+<a class="sourceLine" id="cb10-3" data-line-number="3"><span class="co">#&gt;    a  b </span></a>
+<a class="sourceLine" id="cb10-4" data-line-number="4"><span class="co">#&gt; r1  6 10</span></a>
+<a class="sourceLine" id="cb10-5" data-line-number="5"><span class="co">#&gt; r2  8 12</span></a></code></pre></div>
 </div>
 <div id="alternatives" class="section level2">
 <h2 class="hasAnchor">
@@ -284,7 +281,7 @@
 </div>
   </div>
 
-  <div class="col-md-3" id="sidebar">
+  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <div class="links">
 <h2>Links</h2>
 <ul class="list-unstyled">
@@ -324,9 +321,8 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a>.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.2.0.9000.</p>
 </div>
-
       </footer>
 </div>
 

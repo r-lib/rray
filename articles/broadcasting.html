@@ -6,13 +6,13 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Broadcasting • rray</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.1/clipboard.min.js" integrity="sha256-hIvIxeqhGZF+VVeM55k0mJvWpQ6gTkWk3Emc+NmowYA=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Broadcasting">
 <meta property="og:description" content="">
 <meta name="twitter:card" content="summary">
-<!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
+<!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
@@ -80,9 +80,9 @@
       <h1>Broadcasting</h1>
                         <h4 class="author">Davis Vaughan</h4>
             
-            <h4 class="date">2018-11-19</h4>
+            <h4 class="date">2018-11-30</h4>
       
-      <small class="dont-index">Source: <a href="https://github.com/DavisVaughan/rray/blob/master/vignettes/broadcasting.Rmd"><code><a href="https://www.rdocumentation.org/packages/base/topics/Arithmetic">vignettes/broadcasting.Rmd</a></code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/DavisVaughan/rray/blob/master/vignettes/broadcasting.Rmd"><code>vignettes/broadcasting.Rmd</code></a></small>
       <div class="hidden name"><code>broadcasting.Rmd</code></div>
 
     </div>
@@ -117,11 +117,10 @@
 <a class="sourceLine" id="cb3-3" data-line-number="3"></a>
 <a class="sourceLine" id="cb3-4" data-line-number="4">x_mtrx <span class="op">+</span><span class="st"> </span>y_mtrx</a>
 <a class="sourceLine" id="cb3-5" data-line-number="5"><span class="co">#&gt; &lt;vctrs_mtrx&lt;double&gt;[,2][6]&gt;</span></a>
-<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="co">#&gt;       </span></a>
-<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="co">#&gt;        [,1] [,2]</span></a>
-<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="co">#&gt;   [1,] 2    3   </span></a>
-<a class="sourceLine" id="cb3-9" data-line-number="9"><span class="co">#&gt;   [2,] 2    3   </span></a>
-<a class="sourceLine" id="cb3-10" data-line-number="10"><span class="co">#&gt;   [3,] 2    3</span></a></code></pre></div>
+<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="co">#&gt;      [,1] [,2]</span></a>
+<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="co">#&gt; [1,] 2    3   </span></a>
+<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="co">#&gt; [2,] 2    3   </span></a>
+<a class="sourceLine" id="cb3-9" data-line-number="9"><span class="co">#&gt; [3,] 2    3</span></a></code></pre></div>
 <p>Internally, this is what is happening:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">y_bcasted &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray_broadcast.html">rray_broadcast</a></span>(y_mtrx, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">3</span>, <span class="dv">2</span>))</a>
 <a class="sourceLine" id="cb4-2" data-line-number="2"></a>
@@ -134,11 +133,10 @@
 <a class="sourceLine" id="cb4-9" data-line-number="9"></a>
 <a class="sourceLine" id="cb4-10" data-line-number="10">x_mtrx <span class="op">+</span><span class="st"> </span>y_bcasted</a>
 <a class="sourceLine" id="cb4-11" data-line-number="11"><span class="co">#&gt; &lt;vctrs_mtrx&lt;double&gt;[,2][6]&gt;</span></a>
-<a class="sourceLine" id="cb4-12" data-line-number="12"><span class="co">#&gt;       </span></a>
-<a class="sourceLine" id="cb4-13" data-line-number="13"><span class="co">#&gt;        [,1] [,2]</span></a>
-<a class="sourceLine" id="cb4-14" data-line-number="14"><span class="co">#&gt;   [1,] 2    3   </span></a>
-<a class="sourceLine" id="cb4-15" data-line-number="15"><span class="co">#&gt;   [2,] 2    3   </span></a>
-<a class="sourceLine" id="cb4-16" data-line-number="16"><span class="co">#&gt;   [3,] 2    3</span></a></code></pre></div>
+<a class="sourceLine" id="cb4-12" data-line-number="12"><span class="co">#&gt;      [,1] [,2]</span></a>
+<a class="sourceLine" id="cb4-13" data-line-number="13"><span class="co">#&gt; [1,] 2    3   </span></a>
+<a class="sourceLine" id="cb4-14" data-line-number="14"><span class="co">#&gt; [2,] 2    3   </span></a>
+<a class="sourceLine" id="cb4-15" data-line-number="15"><span class="co">#&gt; [3,] 2    3</span></a></code></pre></div>
 <p>Personally, I find it helpful to write it down:</p>
 <pre><code>(3, 2) &lt;- a 3x2 matrix
 (3, 1) &lt;- combined with a 3x1
@@ -151,19 +149,17 @@
 <a class="sourceLine" id="cb6-4" data-line-number="4"><span class="co">#&gt; &lt;vctrs_rray&lt;double&gt;[,4,2][24]&gt;</span></a>
 <a class="sourceLine" id="cb6-5" data-line-number="5"><span class="co">#&gt; , , 1</span></a>
 <a class="sourceLine" id="cb6-6" data-line-number="6"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb6-7" data-line-number="7"><span class="co">#&gt;       </span></a>
-<a class="sourceLine" id="cb6-8" data-line-number="8"><span class="co">#&gt;        [,1] [,2] [,3] [,4]</span></a>
-<a class="sourceLine" id="cb6-9" data-line-number="9"><span class="co">#&gt;   [1,] 2    2    2    2   </span></a>
-<a class="sourceLine" id="cb6-10" data-line-number="10"><span class="co">#&gt;   [2,] 2    2    2    2   </span></a>
-<a class="sourceLine" id="cb6-11" data-line-number="11"><span class="co">#&gt;   [3,] 2    2    2    2   </span></a>
-<a class="sourceLine" id="cb6-12" data-line-number="12"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb6-13" data-line-number="13"><span class="co">#&gt; , , 2</span></a>
-<a class="sourceLine" id="cb6-14" data-line-number="14"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb6-15" data-line-number="15"><span class="co">#&gt;       </span></a>
-<a class="sourceLine" id="cb6-16" data-line-number="16"><span class="co">#&gt;        [,1] [,2] [,3] [,4]</span></a>
-<a class="sourceLine" id="cb6-17" data-line-number="17"><span class="co">#&gt;   [1,] 2    2    2    2   </span></a>
-<a class="sourceLine" id="cb6-18" data-line-number="18"><span class="co">#&gt;   [2,] 2    2    2    2   </span></a>
-<a class="sourceLine" id="cb6-19" data-line-number="19"><span class="co">#&gt;   [3,] 2    2    2    2</span></a></code></pre></div>
+<a class="sourceLine" id="cb6-7" data-line-number="7"><span class="co">#&gt;      [,1] [,2] [,3] [,4]</span></a>
+<a class="sourceLine" id="cb6-8" data-line-number="8"><span class="co">#&gt; [1,] 2    2    2    2   </span></a>
+<a class="sourceLine" id="cb6-9" data-line-number="9"><span class="co">#&gt; [2,] 2    2    2    2   </span></a>
+<a class="sourceLine" id="cb6-10" data-line-number="10"><span class="co">#&gt; [3,] 2    2    2    2   </span></a>
+<a class="sourceLine" id="cb6-11" data-line-number="11"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb6-12" data-line-number="12"><span class="co">#&gt; , , 2</span></a>
+<a class="sourceLine" id="cb6-13" data-line-number="13"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb6-14" data-line-number="14"><span class="co">#&gt;      [,1] [,2] [,3] [,4]</span></a>
+<a class="sourceLine" id="cb6-15" data-line-number="15"><span class="co">#&gt; [1,] 2    2    2    2   </span></a>
+<a class="sourceLine" id="cb6-16" data-line-number="16"><span class="co">#&gt; [2,] 2    2    2    2   </span></a>
+<a class="sourceLine" id="cb6-17" data-line-number="17"><span class="co">#&gt; [3,] 2    2    2    2</span></a></code></pre></div>
 <p>To understand this, let’s again write it out:</p>
 <pre><code>(3, 1,  ) &lt;- implicit 1 here
 (3, 4, 2)
@@ -194,11 +190,10 @@
 <a class="sourceLine" id="cb9-2" data-line-number="2"></a>
 <a class="sourceLine" id="cb9-3" data-line-number="3">z <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/t">t</a></span>(z)</a>
 <a class="sourceLine" id="cb9-4" data-line-number="4"><span class="co">#&gt; &lt;vctrs_mtrx&lt;integer&gt;[,3][9]&gt;</span></a>
-<a class="sourceLine" id="cb9-5" data-line-number="5"><span class="co">#&gt;       </span></a>
-<a class="sourceLine" id="cb9-6" data-line-number="6"><span class="co">#&gt;        [,1] [,2] [,3]</span></a>
-<a class="sourceLine" id="cb9-7" data-line-number="7"><span class="co">#&gt;   [1,] 2    3    4   </span></a>
-<a class="sourceLine" id="cb9-8" data-line-number="8"><span class="co">#&gt;   [2,] 3    4    5   </span></a>
-<a class="sourceLine" id="cb9-9" data-line-number="9"><span class="co">#&gt;   [3,] 4    5    6</span></a></code></pre></div>
+<a class="sourceLine" id="cb9-5" data-line-number="5"><span class="co">#&gt;      [,1] [,2] [,3]</span></a>
+<a class="sourceLine" id="cb9-6" data-line-number="6"><span class="co">#&gt; [1,] 2    3    4   </span></a>
+<a class="sourceLine" id="cb9-7" data-line-number="7"><span class="co">#&gt; [2,] 3    4    5   </span></a>
+<a class="sourceLine" id="cb9-8" data-line-number="8"><span class="co">#&gt; [3,] 4    5    6</span></a></code></pre></div>
 <pre><code>(3, 1)
 (1, 3)
 ------
@@ -227,9 +222,8 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a>.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.2.0.9000.</p>
 </div>
-
       </footer>
 </div>
 
