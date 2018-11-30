@@ -127,12 +127,19 @@ restore_dim_names <- function(x, to_dim) {
   from_dims <- vec_dims(x)
   dim_names <- dim_names(x)
 
-  meta_names <- names2(dim_names)
-  meta_names <- meta_names[seq_len(dims)]
-  meta_names <- ifelse(is.na(meta_names), "", meta_names)
-
   restored_dim_names <- new_empty_dim_names(dims)
-  names(restored_dim_names) <- meta_names
+
+  # If no meta names, returns NULL and we don't add them
+  # If any meta names, returns the name for dimensions that have a name, and
+  # "" for dimensions that don't have names. So "" is what we should use to
+  # fill out new dimensions if there were any names already.
+  meta_names <- names(dim_names)
+
+  if (!is.null(meta_names)) {
+    meta_names <- meta_names[seq_len(dims)]
+    meta_names <- ifelse(is.na(meta_names), "", meta_names)
+    names(restored_dim_names) <- meta_names
+  }
 
   # cant use map2 bc to_dim_names could be
   # shorter than x_dim (i.e. we added a dimension)
