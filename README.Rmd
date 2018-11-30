@@ -40,7 +40,7 @@ library(rray)
 
 The rray package introduces two new classes. An `rray`, which is an N-dimensional object and essentially a stricter array, and a `mtrx`, which is a subclass of an `rray` that restricts the object to only two dimensions. 
 
-rray consistently takes the approach that all inputs have at least two dimensions, with scalars and vectors being treated as 1 column matrices.
+rray allows the creation of 1D objects, which look similar to vectors, but function similar to 1 column matrices (in terms of how operations are broadcasted).
 
 The easiest way to create a `mtrx` is to use the constructor. It takes in (potentially named) vectors and transforms them into the columns of the matrix.
 

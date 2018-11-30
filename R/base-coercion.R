@@ -4,12 +4,16 @@
 # but keep the dimensionality. That preserves the invariants mentioned there
 
 new_array <- function(.data, dim, dimnames) {
-  structure(.data, dim = dim, dimnames = dimnames)
+  array(.data, dim = dim, dimnames = dimnames)
 }
 
-# no need for a class? otherwise its not happy if you give it one
 new_matrix <- function(.data, dim, dimnames) {
-  structure(.data, dim = dim, dimnames = dimnames)
+
+  if (vec_size(dim) == 1) {
+    dim <- c(dim, 1L)
+  }
+
+  matrix(.data, nrow = dim[1], ncol = dim[2], dimnames = dimnames)
 }
 
 #' @export

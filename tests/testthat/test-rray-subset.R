@@ -57,9 +57,11 @@ test_that("0D slicing", {
   x <- new_rray()
   x_dim <- vec_dim(x)
 
-  expect_is(x[,0], "vctrs_rray")
-  expect_equal(vec_dim(x[,0]), c(0, 0))
+  # x[i] slicing only available for 1D arrays
+  expect_equal(vec_dim(x[0]), x_dim)
+  expect_equal(vec_dim(x[0,]), x_dim)
 
+  expect_error(x[,0], "incorrect")
   expect_error(x[,,0], "incorrect")
 
   y <- as_rray(matrix(1:10, ncol = 2))

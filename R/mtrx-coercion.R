@@ -149,7 +149,12 @@ as_mtrx.matrix <- function(x, ...) {
 #' @export
 as_mtrx.double <- function(x, ...) {
   .data <- unname(vec_data(x))
-  new_mtrx(.data, size = vec_size(x), dim_names = dim_names(x))
+
+  # this method only applies for vectors, which need
+  # another dimension of dim_names to become a matrix
+  dim_nms <- c(dim_names(x), new_empty_dim_names(1))
+
+  new_mtrx(.data, size = vec_size(x), dim_names = dim_nms)
 }
 
 #' @export

@@ -14,7 +14,12 @@
     # x[i]
     if (!is_missing(i)) {
 
-      abort("Use `x[,j]` to select columns, not `x[j]`.")
+      if (d == 1L) {
+        x <- x[i]
+      }
+      else {
+        abort("Use `x[,j]` to select columns, not `x[j]`.")
+      }
 
     }
     # x[]
