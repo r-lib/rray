@@ -36,8 +36,9 @@ N-dimensional object and essentially a stricter array, and a `mtrx`,
 which is a subclass of an `rray` that restricts the object to only two
 dimensions.
 
-rray consistently takes the approach that all inputs have at least two
-dimensions, with scalars and vectors being treated as 1 column matrices.
+rray allows the creation of 1D objects, which look similar to vectors,
+but function similar to 1 column matrices (in terms of how operations
+are broadcasted).
 
 The easiest way to create a `mtrx` is to use the constructor. It takes
 in (potentially named) vectors and transforms them into the columns of
@@ -161,19 +162,17 @@ x_rray + 1:3
 #> <vctrs_rray<double>[,3,2][18]>
 #> , , 1
 #> 
-#>       
-#>        [,1] [,2] [,3]
-#>   [1,] 2    2    2   
-#>   [2,] 3    3    3   
-#>   [3,] 4    4    4   
+#>      [,1] [,2] [,3]
+#> [1,] 2    2    2   
+#> [2,] 3    3    3   
+#> [3,] 4    4    4   
 #> 
 #> , , 2
 #> 
-#>       
-#>        [,1] [,2] [,3]
-#>   [1,] 2    2    2   
-#>   [2,] 3    3    3   
-#>   [3,] 4    4    4
+#>      [,1] [,2] [,3]
+#> [1,] 2    2    2   
+#> [2,] 3    3    3   
+#> [3,] 4    4    4
 ```
 
 To learn how this is working, see the broadcasting vignette,
@@ -255,10 +254,9 @@ determining dimension names in rray are spelled out in
 ``` r
 x + y
 #> <vctrs_mtrx<integer>[,2][4]>
-#>     
-#>      a  b 
-#>   r1  6 10
-#>   r2  8 12
+#>    a  b 
+#> r1  6 10
+#> r2  8 12
 ```
 
 ## Alternatives

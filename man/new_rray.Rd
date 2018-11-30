@@ -4,7 +4,7 @@
 \alias{new_rray}
 \title{Create a new rray}
 \usage{
-new_rray(.data = numeric(0), size = 0L, shape = 1L,
+new_rray(.data = numeric(0), size = 0L, shape = integer(0),
   dim_names = NULL, ..., subclass = character(0))
 }
 \arguments{

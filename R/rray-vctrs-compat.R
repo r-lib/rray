@@ -4,6 +4,19 @@ format.vctrs_rray <- function(x, ...) {
 }
 
 #' @export
+obj_print_data.vctrs_rray <- function(x, ...) {
+  if (length(x) == 0) {
+    return()
+  }
+
+  # vctrs sets names() here which is problematic
+  # for 1D arrays
+
+  print(format(x), quote = FALSE)
+  invisible(x)
+}
+
+#' @export
 t.vctrs_rray <- function(x) {
   as_rray(t(as_array(x)))
 }

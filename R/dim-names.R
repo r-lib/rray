@@ -85,7 +85,7 @@ dim_names.vctrs_rray <- function(x) {
 
 #' @export
 dim_names.double <- function(x) {
-  list(names(x) %||% character(), character())
+  list(names(x) %||% character())
 }
 
 #' @export
@@ -260,8 +260,7 @@ validate_scalar_n <- function(n) {
 
 validate_requested_dims <- function(x, n) {
 
-  dim <- rray_dim_at_least_2D(x)
-  dims <- vec_size(dim)
+  dims <- vec_dims(x)
   if (dims < n) {
     glubort(
       "The dimensionality of `x` ({dims}) must be ",

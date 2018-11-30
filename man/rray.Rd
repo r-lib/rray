@@ -31,7 +31,8 @@ dimensions are never dropped).
 }
 \examples{
 
-# 3 rows
+# 1D rray. Looks like a vector
+# functions similar to a 1 column matrix
 rray(c(1,2,3), dim = c(3))
 
 # 3 rows, 4 cols

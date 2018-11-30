@@ -35,9 +35,9 @@
 #'
 #' @export
 new_rray <- function(.data = numeric(0),
-                     # no concept of scalar/vector. At least 2D.
                      size = 0L,
-                     shape = 1L,
+                     # matches vctrs shape() idea
+                     shape = integer(0),
                      dim_names = NULL,
                      ...,
                      subclass = character(0)
@@ -95,7 +95,8 @@ new_rray <- function(.data = numeric(0),
 #'
 #' @examples
 #'
-#' # 3 rows
+#' # 1D rray. Looks like a vector
+#' # functions similar to a 1 column matrix
 #' rray(c(1,2,3), dim = c(3))
 #'
 #' # 3 rows, 4 cols
@@ -122,7 +123,7 @@ new_rray <- function(.data = numeric(0),
 rray <- function(x = numeric(0), dim = NULL, dim_names = NULL) {
 
   if (is_null(dim)) {
-    dim <- rray_dim_at_least_2D(x)
+    dim <- vec_dim(x)
   }
 
   dim <- vec_cast(dim, integer())
@@ -152,16 +153,4 @@ validate_equal_size_or_no_names <- function(n_x, n_names) {
 
 is_rray_type <- function(x) {
   is_integer(x) || is_double(x) || is_logical(x)
-}
-
-rray_dim_at_least_2D <- function(x) {
-
-  # vector
-  if (vec_dims(x) == 1) {
-    size <- vec_size(x)
-    dim(x) <- c(size, 1L)
-  }
-
-  dim <- vec_dim(x)
-  dim
 }
