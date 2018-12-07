@@ -26,8 +26,13 @@ SEXP rray_broadcast_cpp(SEXP x, const IntegerVector& dim) {
       return rray_broadcast_cpp_impl(res, dim);
     }
 
+    case LGLSXP: {
+      const xt::rarray<rlogical>& res = xt::rarray<rlogical>(x);
+      return rray_broadcast_cpp_impl(res, dim);
+    }
+
     default: {
-      stop("Incompatible SEXP encountered; only accepts lists with REALSXPs, INTSXPs and LGLSXPs.");
+      stop("Incompatible SEXP encountered; only accepts doubles, integers, and logicals.");
     }
 
   }

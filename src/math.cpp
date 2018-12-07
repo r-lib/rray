@@ -3,8 +3,13 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
+// Math functions like atan() should always return doubles. Otherwise, if
+// xt::rarray<T> is used, a logical will be recoerced to a logical and that
+// is not what we want.
+// Even base R returns doubles: class(atan(0L)) == "numeric"
+
 template <typename T>
-xt::rarray<T> rray_atan_cpp(xt::rarray<T> x) {
+xt::rarray<double> rray_atan_cpp(xt::rarray<T> x) {
   return(xt::atan(x));
 }
 
@@ -14,7 +19,6 @@ xt::rarray<T> rray_atan_cpp(xt::rarray<T> x) {
 constexpr unsigned int str2int(const char* str, int h = 0) {
   return !str[h] ? 5381 : (str2int(str, h+1) * 33) ^ str[h];
 }
-
 
 // -----------------------------------------------------------------------------
 // Switch on the op
@@ -48,17 +52,22 @@ SEXP rray_unary_op_cpp(std::string op, SEXP x) {
   switch(TYPEOF(x)) {
 
     case REALSXP: {
-      auto res1 = Rcpp::as<xt::rarray<double>>(x);
+      auto res1 = xt::rarray<double>(x);
       return rray_unary_op_cpp_impl(op, res1);
     }
 
     case INTSXP: {
-      auto res1 = Rcpp::as<xt::rarray<int>>(x);
+      auto res1 = xt::rarray<int>(x);
+      return rray_unary_op_cpp_impl(op, res1);
+    }
+
+    case LGLSXP: {
+      auto res1 = xt::rarray<rlogical>(x);
       return rray_unary_op_cpp_impl(op, res1);
     }
 
     default: {
-      stop("Incompatible SEXP encountered; only accepts REALSXPs and INTSXPs.");
+      stop("Incompatible SEXP encountered; only accepts doubles, integers, and logicals.");
     }
 
   }
