@@ -141,6 +141,16 @@ vec_type2.vctrs_rray.integer <- vec_type2.vctrs_rray.vctrs_rray
 #' @export
 vec_type2.integer.vctrs_rray <- vec_type2.vctrs_rray.vctrs_rray
 
+# vec_type2 vctrs_rray <-> logical/matrix/array --------------------------------
+
+#' @method vec_type2.vctrs_rray logical
+#' @export
+vec_type2.vctrs_rray.logical <- vec_type2.vctrs_rray.vctrs_rray
+
+#' @method vec_type2.logical vctrs_rray
+#' @export
+vec_type2.logical.vctrs_rray <- vec_type2.vctrs_rray.vctrs_rray
+
 # vec_type2 vctrs_rray <-> vctrs_mtrx ------------------------------------------
 
 #' @method vec_type2.vctrs_rray vctrs_mtrx

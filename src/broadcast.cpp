@@ -1,4 +1,5 @@
 #include <rray_types.h>
+#include <tools/errors.hpp>
 #include <Rcpp.h>
 using namespace Rcpp;
 
@@ -26,8 +27,13 @@ SEXP rray_broadcast_cpp(SEXP x, const IntegerVector& dim) {
       return rray_broadcast_cpp_impl(res, dim);
     }
 
+    case LGLSXP: {
+      const xt::rarray<rlogical>& res = xt::rarray<rlogical>(x);
+      return rray_broadcast_cpp_impl(res, dim);
+    }
+
     default: {
-      stop("Incompatible SEXP encountered; only accepts lists with REALSXPs, INTSXPs and LGLSXPs.");
+      error_unknown_type();
     }
 
   }
