@@ -1,4 +1,6 @@
-#include "rray_types.h"
+#include <rray_types.h>
+#include <tools/errors.hpp>
+#include <tools/utils.hpp>
 #include <Rcpp.h>
 using namespace Rcpp;
 
@@ -62,13 +64,6 @@ SEXP rray_divide_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
 }
 
 // -----------------------------------------------------------------------------
-// Helper for switching on the string op
-
-constexpr unsigned int str2int(const char* str, int h = 0) {
-  return !str[h] ? 5381 : (str2int(str, h+1) * 33) ^ str[h];
-}
-
-// -----------------------------------------------------------------------------
 // Switch on the op
 
 template <typename T1, typename T2>
@@ -98,13 +93,6 @@ SEXP rray_binary_op_cpp_impl(const std::string& op, const xt::rarray<T1>& x, con
 
   }
 
-}
-
-// -----------------------------------------------------------------------------
-// Helper for error messaging
-
-std::string error_bad_binary_types() {
-  return("Incompatible SEXP encountered; only accepts doubles, integers, and logicals.");
 }
 
 // -----------------------------------------------------------------------------
@@ -138,7 +126,7 @@ SEXP rray_binary_op_cpp(const std::string& op, SEXP x, SEXP y) {
         }
 
         default: {
-          stop(error_bad_binary_types());
+          error_unknown_type();
         }
 
       } // End Y switch
@@ -167,7 +155,7 @@ SEXP rray_binary_op_cpp(const std::string& op, SEXP x, SEXP y) {
         }
 
         default: {
-          stop(error_bad_binary_types());
+          error_unknown_type();
         }
 
       } // End Y switch
@@ -197,7 +185,7 @@ SEXP rray_binary_op_cpp(const std::string& op, SEXP x, SEXP y) {
         }
 
         default: {
-          stop(error_bad_binary_types());
+          error_unknown_type();
         }
 
       } // End Y switch
@@ -205,7 +193,7 @@ SEXP rray_binary_op_cpp(const std::string& op, SEXP x, SEXP y) {
     } // End LGLSXP X case
 
     default: {
-      stop(error_bad_binary_types());
+      error_unknown_type();
     }
 
   } // End X switch

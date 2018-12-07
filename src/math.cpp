@@ -1,5 +1,7 @@
-#include "rray_types.h"
-#include "xtensor/xmath.hpp"
+#include <rray_types.h>
+#include <xtensor/xmath.hpp>
+#include <tools/errors.hpp>
+#include <tools/utils.hpp>
 #include <Rcpp.h>
 using namespace Rcpp;
 
@@ -11,13 +13,6 @@ using namespace Rcpp;
 template <typename T>
 xt::rarray<double> rray_atan_cpp(xt::rarray<T> x) {
   return(xt::atan(x));
-}
-
-// -----------------------------------------------------------------------------
-// Helper for switching on the string op
-
-constexpr unsigned int str2int(const char* str, int h = 0) {
-  return !str[h] ? 5381 : (str2int(str, h+1) * 33) ^ str[h];
 }
 
 // -----------------------------------------------------------------------------
@@ -67,7 +62,7 @@ SEXP rray_unary_op_cpp(std::string op, SEXP x) {
     }
 
     default: {
-      stop("Incompatible SEXP encountered; only accepts doubles, integers, and logicals.");
+      error_unknown_type();
     }
 
   }

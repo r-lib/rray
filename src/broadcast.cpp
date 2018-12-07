@@ -1,4 +1,5 @@
 #include <rray_types.h>
+#include <tools/errors.hpp>
 #include <Rcpp.h>
 using namespace Rcpp;
 
@@ -32,7 +33,7 @@ SEXP rray_broadcast_cpp(SEXP x, const IntegerVector& dim) {
     }
 
     default: {
-      stop("Incompatible SEXP encountered; only accepts doubles, integers, and logicals.");
+      error_unknown_type();
     }
 
   }
