@@ -56,6 +56,7 @@ vec_arith.vctrs_rray.MISSING <- function(op, x, y) {
   )
 }
 
+# ------------------------------------------------------------------------------
 # vctrs_rray <-> numeric / matrix / array
 
 #' @method vec_arith.vctrs_rray numeric
@@ -66,3 +67,13 @@ vec_arith.vctrs_rray.numeric <- vec_arith.vctrs_rray.vctrs_rray
 #' @export
 vec_arith.numeric.vctrs_rray <- vec_arith.vctrs_rray.vctrs_rray
 
+# ------------------------------------------------------------------------------
+# vctrs_rray <-> logical / matrix / array
+
+#' @method vec_arith.vctrs_rray logical
+#' @export
+vec_arith.vctrs_rray.logical <- vec_arith.vctrs_rray.vctrs_rray
+
+#' @method vec_arith.logical vctrs_rray
+#' @export
+vec_arith.logical.vctrs_rray <- vec_arith.vctrs_rray.vctrs_rray
