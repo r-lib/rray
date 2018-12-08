@@ -3,6 +3,7 @@
 #include <tools/utils.hpp>
 #include <Rcpp.h>
 using namespace Rcpp;
+using namespace rray;
 
 // -----------------------------------------------------------------------------
 // Core arithmetic operations

@@ -20,13 +20,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // rray_broadcast_cpp
-SEXP rray_broadcast_cpp(SEXP x, const IntegerVector& dim);
+SEXP rray_broadcast_cpp(SEXP x, rray::dim_t dim);
 RcppExport SEXP _rray_rray_broadcast_cpp(SEXP xSEXP, SEXP dimSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const IntegerVector& >::type dim(dimSEXP);
+    Rcpp::traits::input_parameter< rray::dim_t >::type dim(dimSEXP);
     rcpp_result_gen = Rcpp::wrap(rray_broadcast_cpp(x, dim));
     return rcpp_result_gen;
 END_RCPP
@@ -44,14 +44,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // rray_reshape_cpp
-xt::rarray<double> rray_reshape_cpp(xt::rarray<double> x, IntegerVector shape);
-RcppExport SEXP _rray_rray_reshape_cpp(SEXP xSEXP, SEXP shapeSEXP) {
+SEXP rray_reshape_cpp(SEXP x, rray::dim_t dim);
+RcppExport SEXP _rray_rray_reshape_cpp(SEXP xSEXP, SEXP dimSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< xt::rarray<double> >::type x(xSEXP);
-    Rcpp::traits::input_parameter< IntegerVector >::type shape(shapeSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray_reshape_cpp(x, shape));
+    Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
+    Rcpp::traits::input_parameter< rray::dim_t >::type dim(dimSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray_reshape_cpp(x, dim));
     return rcpp_result_gen;
 END_RCPP
 }

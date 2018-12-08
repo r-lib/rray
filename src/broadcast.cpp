@@ -2,18 +2,16 @@
 #include <tools/errors.hpp>
 #include <Rcpp.h>
 using namespace Rcpp;
-
-using shape_type = std::vector<std::size_t>;
+using namespace rray;
 
 template <typename T>
-SEXP rray_broadcast_cpp_impl(const xt::rarray<T>& x, const IntegerVector& dim) {
-  shape_type new_shape = as<shape_type>(dim);
-  const xt::rarray<T>& res = xt::broadcast(x, new_shape);
+SEXP rray_broadcast_cpp_impl(const xt::rarray<T>& x, rray::dim_t dim) {
+  const xt::rarray<T>& res = xt::broadcast(x, dim);
   return(res);
 }
 
 // [[Rcpp::export]]
-SEXP rray_broadcast_cpp(SEXP x, const IntegerVector& dim) {
+SEXP rray_broadcast_cpp(SEXP x, rray::dim_t dim) {
 
   switch(TYPEOF(x)) {
 

@@ -13,7 +13,7 @@ rray_unary_op_cpp <- function(op, x) {
     .Call(`_rray_rray_unary_op_cpp`, op, x)
 }
 
-rray_reshape_cpp <- function(x, shape) {
-    .Call(`_rray_rray_reshape_cpp`, x, shape)
+rray_reshape_cpp <- function(x, dim) {
+    .Call(`_rray_rray_reshape_cpp`, x, dim)
 }
 

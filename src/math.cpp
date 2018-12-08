@@ -4,6 +4,7 @@
 #include <tools/utils.hpp>
 #include <Rcpp.h>
 using namespace Rcpp;
+using namespace rray;
 
 // Math functions like atan() should always return doubles. Otherwise, if
 // xt::rarray<T> is used, a logical will be recoerced to a logical and that
