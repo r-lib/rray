@@ -118,6 +118,10 @@ test_that("division works", {
   expect_equal(dim(x_broad3), c(4, 2, 2))
 })
 
+test_that("division coerces to double", {
+  expect_equal(vec_data(rray(1L) / 2L), 0.5)
+})
+
 test_that("multiplication works", {
   dat <- c(1, 2, 3, 4)
   x <- rray(dat, dim = c(4, 1))
