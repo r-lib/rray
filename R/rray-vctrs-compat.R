@@ -31,7 +31,7 @@ vec_restore.vctrs_rray <- function(x, to) {
     .data = vec_data(x),
     size = vec_size(x),
     shape = rray_shape(x),
-    dim_names = dim_names(x)
+    dim_names = new_empty_dim_names(vec_dims(x))
   )
 }
 
