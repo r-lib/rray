@@ -7,7 +7,8 @@
 namespace rray {
 
   // Useful aliases
-  using dim_t = std::vector<std::size_t>;
+  using dim_t  = const std::vector<std::size_t>&;
+  using axes_t = const std::vector<std::size_t>&;
 
 }
 

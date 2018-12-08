@@ -19,3 +19,7 @@ set_dim <- function(x, dim) {
 
   x
 }
+
+as_cpp_idx <- function(x) {
+  x - 1L
+}

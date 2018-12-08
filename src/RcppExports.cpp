@@ -43,6 +43,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray_reducer_cpp
+SEXP rray_reducer_cpp(std::string op, SEXP x, rray::axes_t axes);
+RcppExport SEXP _rray_rray_reducer_cpp(SEXP opSEXP, SEXP xSEXP, SEXP axesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type op(opSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
+    Rcpp::traits::input_parameter< rray::axes_t >::type axes(axesSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray_reducer_cpp(op, x, axes));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray_reshape_cpp
 SEXP rray_reshape_cpp(SEXP x, rray::dim_t dim);
 RcppExport SEXP _rray_rray_reshape_cpp(SEXP xSEXP, SEXP dimSEXP) {
@@ -60,6 +73,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray_binary_op_cpp", (DL_FUNC) &_rray_rray_binary_op_cpp, 3},
     {"_rray_rray_broadcast_cpp", (DL_FUNC) &_rray_rray_broadcast_cpp, 2},
     {"_rray_rray_unary_op_cpp", (DL_FUNC) &_rray_rray_unary_op_cpp, 2},
+    {"_rray_rray_reducer_cpp", (DL_FUNC) &_rray_rray_reducer_cpp, 3},
     {"_rray_rray_reshape_cpp", (DL_FUNC) &_rray_rray_reshape_cpp, 2},
     {NULL, NULL, 0}
 };
