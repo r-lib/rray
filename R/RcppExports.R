@@ -17,7 +17,3 @@ rray_reshape_cpp <- function(x, shape) {
     .Call(`_rray_rray_reshape_cpp`, x, shape)
 }
 
-rray_squeeze_cpp <- function(x, axis) {
-    .Call(`_rray_rray_squeeze_cpp`, x, axis)
-}
-
