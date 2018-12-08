@@ -32,12 +32,12 @@ BEGIN_RCPP
 END_RCPP
 }
 // rray_custom_reducer_cpp
-xt::rarray<double> rray_custom_reducer_cpp(xt::rarray<double> x, Rcpp::Function f, rray::axes_t axes);
+SEXP rray_custom_reducer_cpp(SEXP x, Rcpp::Function f, rray::axes_t axes);
 RcppExport SEXP _rray_rray_custom_reducer_cpp(SEXP xSEXP, SEXP fSEXP, SEXP axesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< xt::rarray<double> >::type x(xSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
     Rcpp::traits::input_parameter< Rcpp::Function >::type f(fSEXP);
     Rcpp::traits::input_parameter< rray::axes_t >::type axes(axesSEXP);
     rcpp_result_gen = Rcpp::wrap(rray_custom_reducer_cpp(x, f, axes));
