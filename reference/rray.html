@@ -33,8 +33,8 @@
 <meta property="og:title" content="Build a rray object — rray" />
 
 <meta property="og:description" content="Constructor for building rray objects. Existing vectors, matrices, and
-arrays can be used to build the rray, and they can be broadcast up to
-a different dimension using dim." />
+arrays can be used to build the rray, but their dimension names are not
+retained." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -121,8 +121,8 @@ a different dimension using dim." />
     <div class="ref-description">
     
     <p>Constructor for building rray objects. Existing vectors, matrices, and
-arrays can be used to build the rray, and they can be broadcast up to
-a different dimension using <code>dim</code>.</p>
+arrays can be used to build the rray, but their dimension names are not
+retained.</p>
     
     </div>
 
@@ -133,8 +133,7 @@ a different dimension using <code>dim</code>.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>A numeric vector, matrix, or array to convert to an rray. It
-is brodcast based on <code>dim</code> to other dimensions if requested.</p></td>
+      <td><p>A numeric vector, matrix, or array to convert to an rray.</p></td>
     </tr>
     <tr>
       <th>dim</th>
@@ -154,7 +153,13 @@ a character vector the same size as the corresponding dimension, or
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>rray objects are never reduced to vectors when subsetting using <code>[</code> (i.e.
+    <p>The <code>dim</code> argument is very flexible.</p><ul>
+<li><p>If <code>vec_size(x) == prod(dim)</code>, then a reshape is performed.</p></li>
+<li><p>Otherwise broadcasting is attempted.</p></li>
+</ul>
+    <p>This allows quick construction of a wide variety of structures. See the
+example section for more.</p>
+<p>rray objects are never reduced to vectors when subsetting using <code>[</code> (i.e.
 dimensions are never dropped).</p>
     
 
@@ -226,6 +231,11 @@ dimensions are never dropped).</p>
 #&gt; [1,] 1    3   
 #&gt; [2,] 2    4   
 #&gt; </div><div class='input'>
+<span class='co'># reshape that matrix during creation</span>
+<span class='co'># (different from broadcasting)</span>
+<span class='fu'>rray</span>(<span class='no'>mat</span>, <span class='kw'>dim</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>4</span>))</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,4][4]&gt;
+#&gt;      [,1] [,2] [,3] [,4]
+#&gt; [1,] 1    2    3    4   </div><div class='input'>
 <span class='co'># from an array, with broadcasting</span>
 <span class='no'>arr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/array'>array</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>2</span>))
 <span class='fu'>rray</span>(<span class='no'>arr</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>3</span>, <span class='fl'>2</span>, <span class='fl'>2</span>))</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,2,2][12]&gt;
