@@ -14,13 +14,13 @@ Returns the number of elements in array-like object
 }
 \examples{
 
-rray_elems(1:5)
+# rray_elems(1:5)
 
-rray_elems(matrix(1, 2, 2))
+# rray_elems(matrix(1, 2, 2))
 
 # different from vec_size()
 # that only returns number of obs
-vec_size(matrix(1, 2, 2))
+# vec_size(matrix(1, 2, 2))
 
 }
 \keyword{internal}
