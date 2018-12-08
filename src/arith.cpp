@@ -54,13 +54,12 @@ SEXP rray_multiply_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
 template <typename T1, typename T2>
 SEXP rray_divide_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
 
-  using value_type_T1 = xt::r_detail::get_underlying_value_type_r<T1>;
-  using value_type_T2 = xt::r_detail::get_underlying_value_type_r<T2>;
+  // with division, always coerce to double
+  // We want rray(1L) / 2L to return 0.5 like base R
+  auto x_dbl = xt::cast<double>(x);
+  auto y_dbl = xt::cast<double>(y);
 
-  using common_type = typename std::common_type<typename value_type_T1::type,
-                                                typename value_type_T2::type>::type;
-
-  const xt::rarray<common_type>& res = x / y;
+  const xt::rarray<double>& res = x_dbl / y_dbl;
   return res;
 }
 
