@@ -6,6 +6,43 @@
 \usage{
 rray_sum(x, axes = 1)
 }
-\description{
-Calculate the sum along an axis
+\arguments{
+\item{x}{A vector, matrix, or array to reduce.}
+
+\item{axes}{An integer vector specifying the axes to reduce over. \code{1} reduces
+the number of rows to 1, performing the reduction along the way. \code{2} does the
+same, but with the columns, and so on for higher dimensions.}
 }
+\description{
+\code{rray_sum()} computes the sum along a given axis or axes. The dimensionality
+of \code{x} is retained in the result.
+}
+\details{
+Currently, objects are coerced to \code{rray}s before the reduction is applied.
+}
+\examples{
+
+x <- rray(1:10, c(5, 2))
+
+# Reduce the number of rows to 1,
+# summing along the way
+rray_sum(x, 1)
+
+# Reduce the number of columns to 1,
+# summing along the way
+rray_sum(x, 2)
+
+# Column-wise proportions
+x / rray_sum(x, 1)
+
+# Row-wise proportions
+x / rray_sum(x, 2)
+
+# Reducing over multiple axes
+# This reduces over the rows and columns
+# of each mini-matrix in the 3rd dimension
+y <- rray(1:24, c(2, 3, 4))
+rray_sum(y, c(1, 2))
+
+}
+\concept{reducers}
