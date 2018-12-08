@@ -107,23 +107,23 @@ SEXP rray_binary_op_cpp(const std::string& op, SEXP x, SEXP y) {
   switch(TYPEOF(x)) {
 
     case REALSXP: {
-      const xt::rarray<double>& res1 = xt::rarray<double>(x);
+      const xt::rarray<double>& x_rray = xt::rarray<double>(x);
 
       switch(TYPEOF(y)) {
 
         case REALSXP: {
-          const xt::rarray<double>& res2 = xt::rarray<double>(y);
-          return rray_binary_op_cpp_impl(op, res1, res2);
+          const xt::rarray<double>& y_rray = xt::rarray<double>(y);
+          return rray_binary_op_cpp_impl(op, x_rray, y_rray);
         }
 
         case INTSXP: {
-          const xt::rarray<int>& res2 = xt::rarray<int>(y);
-          return rray_binary_op_cpp_impl(op, res1, res2);
+          const xt::rarray<int>& y_rray = xt::rarray<int>(y);
+          return rray_binary_op_cpp_impl(op, x_rray, y_rray);
         }
 
         case LGLSXP: {
-          const xt::rarray<rlogical>& res2 = xt::rarray<rlogical>(y);
-          return rray_binary_op_cpp_impl(op, res1, res2);
+          const xt::rarray<rlogical>& y_rray = xt::rarray<rlogical>(y);
+          return rray_binary_op_cpp_impl(op, x_rray, y_rray);
         }
 
         default: {
@@ -135,24 +135,24 @@ SEXP rray_binary_op_cpp(const std::string& op, SEXP x, SEXP y) {
     } // End REALSXP X case
 
     case INTSXP: {
-      const xt::rarray<int>& res1 = xt::rarray<int>(x);
+      const xt::rarray<int>& x_rray = xt::rarray<int>(x);
 
       // Switch on Y
       switch(TYPEOF(y)) {
 
         case REALSXP: {
-          const xt::rarray<double>& res2 = xt::rarray<double>(y);
-          return rray_binary_op_cpp_impl(op, res1, res2);
+          const xt::rarray<double>& y_rray = xt::rarray<double>(y);
+          return rray_binary_op_cpp_impl(op, x_rray, y_rray);
         }
 
         case INTSXP: {
-          const xt::rarray<int>& res2 = xt::rarray<int>(y);
-          return rray_binary_op_cpp_impl(op, res1, res2);
+          const xt::rarray<int>& y_rray = xt::rarray<int>(y);
+          return rray_binary_op_cpp_impl(op, x_rray, y_rray);
         }
 
         case LGLSXP: {
-          const xt::rarray<rlogical>& res2 = xt::rarray<rlogical>(y);
-          return rray_binary_op_cpp_impl(op, res1, res2);
+          const xt::rarray<rlogical>& y_rray = xt::rarray<rlogical>(y);
+          return rray_binary_op_cpp_impl(op, x_rray, y_rray);
         }
 
         default: {
@@ -165,24 +165,24 @@ SEXP rray_binary_op_cpp(const std::string& op, SEXP x, SEXP y) {
 
     case LGLSXP: {
 
-      const xt::rarray<rlogical>& res1 = xt::rarray<rlogical>(x);
+      const xt::rarray<rlogical>& x_rray = xt::rarray<rlogical>(x);
 
       // Switch on Y
       switch(TYPEOF(y)) {
 
         case REALSXP: {
-          const xt::rarray<double>& res2 = xt::rarray<double>(y);
-          return rray_binary_op_cpp_impl(op, res1, res2);
+          const xt::rarray<double>& y_rray = xt::rarray<double>(y);
+          return rray_binary_op_cpp_impl(op, x_rray, y_rray);
         }
 
         case INTSXP: {
-          const xt::rarray<int>& res2 = xt::rarray<int>(y);
-          return rray_binary_op_cpp_impl(op, res1, res2);
+          const xt::rarray<int>& y_rray = xt::rarray<int>(y);
+          return rray_binary_op_cpp_impl(op, x_rray, y_rray);
         }
 
         case LGLSXP: {
-          const xt::rarray<rlogical>& res2 = xt::rarray<rlogical>(y);
-          return rray_binary_op_cpp_impl(op, res1, res2);
+          const xt::rarray<rlogical>& y_rray = xt::rarray<rlogical>(y);
+          return rray_binary_op_cpp_impl(op, x_rray, y_rray);
         }
 
         default: {
