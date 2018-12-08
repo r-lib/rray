@@ -7,8 +7,7 @@
 rray(x = numeric(0), dim = NULL, dim_names = NULL)
 }
 \arguments{
-\item{x}{A numeric vector, matrix, or array to convert to an rray. It
-is brodcast based on \code{dim} to other dimensions if requested.}
+\item{x}{A numeric vector, matrix, or array to convert to an rray.}
 
 \item{dim}{An integer vector describing the dimensions of the rray. If \code{NULL},
 the dimensions are taken from the existing object using \code{\link[vctrs:vec_dim]{vctrs::vec_dim()}}.}
@@ -22,10 +21,19 @@ a character vector the same size as the corresponding dimension, or
 }
 \description{
 Constructor for building rray objects. Existing vectors, matrices, and
-arrays can be used to build the rray, and they can be broadcast up to
-a different dimension using \code{dim}.
+arrays can be used to build the rray, but their dimension names are not
+retained.
 }
 \details{
+The \code{dim} argument is very flexible.
+\itemize{
+\item If \code{vec_size(x) == prod(dim)}, then a reshape is performed.
+\item Otherwise broadcasting is attempted.
+}
+
+This allows quick construction of a wide variety of structures. See the
+example section for more.
+
 rray objects are never reduced to vectors when subsetting using \code{[} (i.e.
 dimensions are never dropped).
 }
@@ -47,6 +55,10 @@ rray(mat)
 
 # from a matrix, with broadcasting
 rray(mat, dim = c(2, 2, 3))
+
+# reshape that matrix during creation
+# (different from broadcasting)
+rray(mat, dim = c(1, 4))
 
 # from an array, with broadcasting
 arr <- array(1, c(1, 2, 2))

@@ -79,16 +79,23 @@ new_rray <- function(.data = numeric(0),
 #' Build a rray object
 #'
 #' Constructor for building rray objects. Existing vectors, matrices, and
-#' arrays can be used to build the rray, and they can be broadcast up to
-#' a different dimension using `dim`.
+#' arrays can be used to build the rray, but their dimension names are not
+#' retained.
+#'
+#' The `dim` argument is very flexible.
+#'
+#' - If `vec_size(x) == prod(dim)`, then a reshape is performed.
+#' - Otherwise broadcasting is attempted.
+#'
+#' This allows quick construction of a wide variety of structures. See the
+#' example section for more.
 #'
 #' rray objects are never reduced to vectors when subsetting using `[` (i.e.
 #' dimensions are never dropped).
 #'
 #' @inheritParams new_rray
 #'
-#' @param x A numeric vector, matrix, or array to convert to an rray. It
-#' is brodcast based on `dim` to other dimensions if requested.
+#' @param x A numeric vector, matrix, or array to convert to an rray.
 #'
 #' @param dim An integer vector describing the dimensions of the rray. If `NULL`,
 #' the dimensions are taken from the existing object using [vctrs::vec_dim()].
@@ -112,6 +119,10 @@ new_rray <- function(.data = numeric(0),
 #' # from a matrix, with broadcasting
 #' rray(mat, dim = c(2, 2, 3))
 #'
+#' # reshape that matrix during creation
+#' # (different from broadcasting)
+#' rray(mat, dim = c(1, 4))
+#'
 #' # from an array, with broadcasting
 #' arr <- array(1, c(1, 2, 2))
 #' rray(arr, c(3, 2, 2))
@@ -134,7 +145,9 @@ rray <- function(x = numeric(0), dim = NULL, dim_names = NULL) {
 
   x_dim <- vec_dim(x)
 
-  if (!identical(x_dim, dim)) {
+  # only broadcast if new dim is different than current dim
+  # and you can't reshape to match
+  if (!identical(x_dim, dim) && !is_reshapeable(x, dim)) {
     x <- rray_broadcast(x, dim)
   }
 
@@ -153,4 +166,34 @@ validate_equal_size_or_no_names <- function(n_x, n_names) {
 
 is_rray_type <- function(x) {
   is_integer(x) || is_double(x) || is_logical(x)
+}
+
+#' Check if `x` can be reshaped
+#'
+#' `x` is reshapeable to `to_dim` if the number of elements in `x` equal
+#' the number of elements implied by `to_dim`, i.e. `prod(to_dim)`.
+#'
+#' @keywords internal
+is_reshapeable <- function(x, to_dim) {
+  n_x <- rray_elems(x)
+  n_x == prod(to_dim)
+}
+
+#' Returns the number of elements in array-like object
+#'
+#' @param x An object. Often a vector, matrix, or array.
+#'
+#' @examples
+#'
+#' rray_elems(1:5)
+#'
+#' rray_elems(matrix(1, 2, 2))
+#'
+#' # different from vec_size()
+#' # that only returns number of obs
+#' vec_size(matrix(1, 2, 2))
+#'
+#' @keywords internal
+rray_elems <- function(x) {
+  prod(vec_dim(x))
 }

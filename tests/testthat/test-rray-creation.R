@@ -1,5 +1,8 @@
 context("test-rray-creation")
 
+# ------------------------------------------------------------------------------
+# new_rray() constructor
+
 test_that("Can create rrays", {
 
   # [3, 1] no names
@@ -60,4 +63,37 @@ test_that("Error if bad dim", {
 test_that("Error if bad names", {
   expect_error(new_rray(c(1, 2, 3), c(3L, 1L), list("only_one")))
   expect_error(new_rray(c(1, 2, 3), c(3L, 1L), list(1)))
+})
+
+# ------------------------------------------------------------------------------
+# rray() helper constructor testing
+
+test_that("Can reshape on the way in", {
+  x <- 1:6
+  expect_equal(vec_dim(rray(x, c(1, 6))), c(1, 6))
+  expect_equal(vec_dim(rray(x, c(6, 1))), c(6, 1))
+  expect_equal(vec_dim(rray(x, c(2, 3))), c(2, 3))
+
+  x_6x1 <- as.matrix(x)
+  expect_equal(vec_dim(rray(x_6x1, c(1, 6))), c(1, 6))
+
+  x_1D <- as.array(x)
+  expect_equal(vec_dim(rray(x_1D, c(1, 6))), c(1, 6))
+  expect_equal(vec_dim(rray(x_1D, c(6, 1))), c(6, 1))
+  expect_equal(vec_dim(rray(x_1D, c(2, 3))), c(2, 3))
+})
+
+test_that("Can broadcast on the way in", {
+
+  x <- 1:6
+  expect_equal(vec_dim(rray(x, c(6, 2))), c(6, 2))
+  expect_equal(vec_dim(rray(x, c(6, 2, 1))), c(6, 2, 1))
+
+  # can't do this, not valid broadcasting b/x x is treated
+  # as having 6 rows (1 col matrix idea).
+  expect_error(rray(x, c(2, 6)), "Non-recyclable dimensions")
+
+  x_6x1 <- as.matrix(x)
+  expect_equal(vec_dim(rray(x_6x1, c(6, 2))), c(6, 2))
+  expect_equal(vec_dim(rray(x_6x1, c(6, 2, 1))), c(6, 2, 1))
 })
