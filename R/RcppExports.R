@@ -13,6 +13,10 @@ rray_unary_op_cpp <- function(op, x) {
     .Call(`_rray_rray_unary_op_cpp`, op, x)
 }
 
+rray_custom_reducer_cpp <- function(x, f, axes, type_) {
+    .Call(`_rray_rray_custom_reducer_cpp`, x, f, axes, type_)
+}
+
 rray_reducer_cpp <- function(op, x, axes) {
     .Call(`_rray_rray_reducer_cpp`, op, x, axes)
 }
