@@ -66,6 +66,8 @@ vec_ptype_shape <- function(x) {
 # you are casting to
 # If vctrs did: function(x, ..., value) and vec_cast(value, x[...]) then
 # all would be good
+
+#' @export
 `[<-.vctrs_rray` <- function(x, ..., value) {
   value <- vec_cast(value, x[...])
   x_array <- as_array(x)

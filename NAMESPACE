@@ -2,6 +2,7 @@
 
 S3method("[",vctrs_mtrx)
 S3method("[",vctrs_rray)
+S3method("[<-",vctrs_rray)
 S3method("[[",vctrs_mtrx)
 S3method("[[",vctrs_rray)
 S3method("[[<-",vctrs_rray)
