@@ -4,7 +4,6 @@
 #include <xtensor/xreducer.hpp>
 #include <xtensor/xarray.hpp>
 #include <Rcpp.h>
-#include <Rinternals.h>
 using namespace Rcpp;
 using namespace rray;
 
@@ -67,7 +66,7 @@ class binary_functor {
 
       // Clever conversion to replace explicit use of
       // REAL() or INTEGER()
-      RET_T res = ((RET_T *)DATAPTR(f_res))[0];
+      RET_T res = ((RET_T *)dataptr(f_res))[0];
 
       return(res);
     }
