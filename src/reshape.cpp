@@ -5,7 +5,7 @@ using namespace Rcpp;
 using namespace rray;
 
 template <typename T>
-xt::rarray<T> rray_reshape_cpp_impl(xt::rarray<T> x, rray::dim_t dim) {
+xt::rarray<T> rray_reshape_cpp_impl(const xt::rarray<T>& x, rray::dim_t dim) {
   // needs a copy, otherwise modifying x
   xt::rarray<T> res(x);
   res.reshape(dim);
