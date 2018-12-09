@@ -71,21 +71,26 @@ class binary_functor {
 };
 
 
-template <typename ELEM_R_T, int RTYPE>
+template <typename ELEM_R_T, typename RET_R_T>
 SEXP rray_custom_reducer_impl(SEXP x, Rcpp::Function f, rray::axes_t axes) {
 
-  // Underlying r_type. Necessary when the ELEM_T is rlogical where int should be returned
+  // Underlying Cpp type. This helper is necessary because it converts
+  // rlogical->int
   using elem_t = xt::r_detail::get_underlying_value_type_r<ELEM_R_T>;
+  using ret_t  = xt::r_detail::get_underlying_value_type_r<RET_R_T>;
 
+  // Pull the SEXPTYPE of the return value from the cpp type
+  // The helper is necessary because rlogical->LGLSXP has been specially registered
+  static constexpr int ret_sexptype = Rcpp::traits::r_sexptype_traits<RET_R_T>::rtype;
+
+  // Create the rarray with the type matching x
   auto x_rray = xt::rarray<ELEM_R_T>(x);
 
-  // Cpp return type corresponding to the RTYPE
-  using return_type = typename Rcpp::traits::storage_type<RTYPE>::type;
-
-  auto r_functor = binary_functor<typename elem_t::type, return_type>(f, RTYPE);
+  // Create the functor
+  auto r_functor = binary_functor<typename elem_t::type, typename ret_t::type>(f, ret_sexptype);
   auto xr_functor = xt::make_xreducer_functor(r_functor);
 
-  xt::rarray<return_type> res = xt::reduce(xr_functor, x_rray, axes);
+  xt::rarray<RET_R_T> res = xt::reduce(xr_functor, x_rray, axes);
 
   return(res);
 
@@ -110,15 +115,15 @@ SEXP rray_custom_reducer_cpp(SEXP x, Rcpp::Function f, rray::axes_t axes, SEXP t
       switch(str2int(type)) {
 
         case str2int("double"): {
-          return rray_custom_reducer_impl<double, REALSXP>(x, f, axes);
+          return rray_custom_reducer_impl<double, double>(x, f, axes);
         }
 
         case str2int("integer"): {
-          return rray_custom_reducer_impl<double, INTSXP>(x, f, axes);
+          return rray_custom_reducer_impl<double, int>(x, f, axes);
         }
 
         case str2int("logical"): {
-          return rray_custom_reducer_impl<double, LGLSXP>(x, f, axes);
+          return rray_custom_reducer_impl<double, rlogical>(x, f, axes);
         }
 
         default: {
@@ -134,15 +139,15 @@ SEXP rray_custom_reducer_cpp(SEXP x, Rcpp::Function f, rray::axes_t axes, SEXP t
       switch(str2int(type)) {
 
         case str2int("double"): {
-          return rray_custom_reducer_impl<int, REALSXP>(x, f, axes);
+          return rray_custom_reducer_impl<int, double>(x, f, axes);
         }
 
         case str2int("integer"): {
-          return rray_custom_reducer_impl<int, INTSXP>(x, f, axes);
+          return rray_custom_reducer_impl<int, int>(x, f, axes);
         }
 
         case str2int("logical"): {
-          return rray_custom_reducer_impl<int, LGLSXP>(x, f, axes);
+          return rray_custom_reducer_impl<int, rlogical>(x, f, axes);
         }
 
         default: {
@@ -157,15 +162,15 @@ SEXP rray_custom_reducer_cpp(SEXP x, Rcpp::Function f, rray::axes_t axes, SEXP t
       switch(str2int(type)) {
 
         case str2int("double"): {
-          return rray_custom_reducer_impl<rlogical, REALSXP>(x, f, axes);
+          return rray_custom_reducer_impl<rlogical, double>(x, f, axes);
         }
 
         case str2int("integer"): {
-          return rray_custom_reducer_impl<rlogical, INTSXP>(x, f, axes);
+          return rray_custom_reducer_impl<rlogical, int>(x, f, axes);
         }
 
         case str2int("logical"): {
-          return rray_custom_reducer_impl<rlogical, LGLSXP>(x, f, axes);
+          return rray_custom_reducer_impl<rlogical, rlogical>(x, f, axes);
         }
 
         default: {
