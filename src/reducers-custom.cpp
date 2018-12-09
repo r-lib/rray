@@ -4,6 +4,7 @@
 #include <xtensor/xreducer.hpp>
 #include <xtensor/xarray.hpp>
 #include <Rcpp.h>
+#include <Rinternals.h>
 using namespace Rcpp;
 using namespace rray;
 
