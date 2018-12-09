@@ -31,6 +31,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray_unary_op_cpp
+SEXP rray_unary_op_cpp(std::string op, SEXP x);
+RcppExport SEXP _rray_rray_unary_op_cpp(SEXP opSEXP, SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type op(opSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray_unary_op_cpp(op, x));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray_custom_reducer_cpp
 SEXP rray_custom_reducer_cpp(SEXP x, Rcpp::Function f, rray::axes_t axes, SEXP type_);
 RcppExport SEXP _rray_rray_custom_reducer_cpp(SEXP xSEXP, SEXP fSEXP, SEXP axesSEXP, SEXP type_SEXP) {
@@ -42,18 +54,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< rray::axes_t >::type axes(axesSEXP);
     Rcpp::traits::input_parameter< SEXP >::type type_(type_SEXP);
     rcpp_result_gen = Rcpp::wrap(rray_custom_reducer_cpp(x, f, axes, type_));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rray_unary_op_cpp
-SEXP rray_unary_op_cpp(std::string op, SEXP x);
-RcppExport SEXP _rray_rray_unary_op_cpp(SEXP opSEXP, SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::string >::type op(opSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray_unary_op_cpp(op, x));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -86,8 +86,8 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray_binary_op_cpp", (DL_FUNC) &_rray_rray_binary_op_cpp, 3},
     {"_rray_rray_broadcast_cpp", (DL_FUNC) &_rray_rray_broadcast_cpp, 2},
-    {"_rray_rray_custom_reducer_cpp", (DL_FUNC) &_rray_rray_custom_reducer_cpp, 4},
     {"_rray_rray_unary_op_cpp", (DL_FUNC) &_rray_rray_unary_op_cpp, 2},
+    {"_rray_rray_custom_reducer_cpp", (DL_FUNC) &_rray_rray_custom_reducer_cpp, 4},
     {"_rray_rray_reducer_cpp", (DL_FUNC) &_rray_rray_reducer_cpp, 3},
     {"_rray_rray_reshape_cpp", (DL_FUNC) &_rray_rray_reshape_cpp, 2},
     {NULL, NULL, 0}
