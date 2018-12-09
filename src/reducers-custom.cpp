@@ -2,6 +2,7 @@
 #include <tools/errors.hpp>
 #include <tools/utils.hpp>
 #include <xtensor/xreducer.hpp>
+#include <xtensor/xarray.hpp>
 #include <Rcpp.h>
 using namespace Rcpp;
 using namespace rray;
@@ -39,6 +40,7 @@ class binary_functor {
     // Also pulling the first element of the result, even if it had more than
     // one thing. Should do checking instead.
     RET_T operator () (const ELEM_T& x, const ELEM_T& y) const {
+
       SEXP f_res = f(x, y);
 
       // Type check
@@ -76,24 +78,27 @@ SEXP rray_custom_reducer_impl(SEXP x, Rcpp::Function f, rray::axes_t axes) {
 
   // Underlying Cpp type. This helper is necessary because it converts
   // rlogical->int
-  using elem_t = xt::r_detail::get_underlying_value_type_r<ELEM_R_T>;
-  using ret_t  = xt::r_detail::get_underlying_value_type_r<RET_R_T>;
+  using elem_t = typename xt::r_detail::get_underlying_value_type_r<ELEM_R_T>::type;
+  using ret_t  = typename xt::r_detail::get_underlying_value_type_r<RET_R_T>::type;
 
   // Pull the SEXPTYPE of the return value from the cpp type
   // The helper is necessary because rlogical->LGLSXP has been specially registered
   static constexpr int ret_sexptype = Rcpp::traits::r_sexptype_traits<RET_R_T>::rtype;
 
   // Create the rarray with the type matching x
-  auto x_rray = xt::rarray<ELEM_R_T>(x);
+  const xt::rarray<ELEM_R_T>& x_rray = xt::rarray<ELEM_R_T>(x);
 
   // Create the functor
-  auto r_functor = binary_functor<typename elem_t::type, typename ret_t::type>(f, ret_sexptype);
+  auto r_functor = binary_functor<elem_t, ret_t>(f, ret_sexptype);
   auto xr_functor = xt::make_xreducer_functor(r_functor);
 
-  xt::rarray<RET_R_T> res = xt::reduce(xr_functor, x_rray, axes);
+  // Temporary solution until xtensor-r#76 is resolved
+  // Currently it is problematic to assign directly to an rarray from xt::reduce()
+  // Can't use xarray<RET_R_T> because it doesnt know about rlogical
+  xt::xarray<ret_t> temp_res = xt::reduce(xr_functor, x_rray, axes);
+  xt::rarray<RET_R_T> res = temp_res;
 
   return(res);
-
 }
 
 // [[Rcpp::export]]
