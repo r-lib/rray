@@ -82,6 +82,30 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray_squish_cpp
+void rray_squish_cpp(const xt::rarray<double>& x, std::vector<std::size_t> dim);
+RcppExport SEXP _rray_rray_squish_cpp(SEXP xSEXP, SEXP dimSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const xt::rarray<double>& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::size_t> >::type dim(dimSEXP);
+    rray_squish_cpp(x, dim);
+    return R_NilValue;
+END_RCPP
+}
+// rray_concatenate_cpp
+xt::rarray<double> rray_concatenate_cpp(const xt::rarray<double>& x, const xt::rarray<double>& y, std::size_t axis);
+RcppExport SEXP _rray_rray_concatenate_cpp(SEXP xSEXP, SEXP ySEXP, SEXP axisSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const xt::rarray<double>& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const xt::rarray<double>& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< std::size_t >::type axis(axisSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray_concatenate_cpp(x, y, axis));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray_binary_op_cpp", (DL_FUNC) &_rray_rray_binary_op_cpp, 3},
@@ -90,6 +114,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray_custom_reducer_cpp", (DL_FUNC) &_rray_rray_custom_reducer_cpp, 4},
     {"_rray_rray_reducer_cpp", (DL_FUNC) &_rray_rray_reducer_cpp, 3},
     {"_rray_rray_reshape_cpp", (DL_FUNC) &_rray_rray_reshape_cpp, 2},
+    {"_rray_rray_squish_cpp", (DL_FUNC) &_rray_rray_squish_cpp, 2},
+    {"_rray_rray_concatenate_cpp", (DL_FUNC) &_rray_rray_concatenate_cpp, 3},
     {NULL, NULL, 0}
 };
 

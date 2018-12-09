@@ -25,3 +25,11 @@ rray_reshape_cpp <- function(x, dim) {
     .Call(`_rray_rray_reshape_cpp`, x, dim)
 }
 
+rray_squish_cpp <- function(x, dim) {
+    invisible(.Call(`_rray_rray_squish_cpp`, x, dim))
+}
+
+rray_concatenate_cpp <- function(x, y, axis) {
+    .Call(`_rray_rray_concatenate_cpp`, x, y, axis)
+}
+
