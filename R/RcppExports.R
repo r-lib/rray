@@ -9,8 +9,8 @@ rray_broadcast_cpp <- function(x, dim) {
     .Call(`_rray_rray_broadcast_cpp`, x, dim)
 }
 
-rray_custom_reducer_cpp <- function(x, f, axes) {
-    .Call(`_rray_rray_custom_reducer_cpp`, x, f, axes)
+rray_custom_reducer_cpp <- function(x, f, axes, type_) {
+    .Call(`_rray_rray_custom_reducer_cpp`, x, f, axes, type_)
 }
 
 rray_unary_op_cpp <- function(op, x) {
