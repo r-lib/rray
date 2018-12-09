@@ -78,6 +78,7 @@ reducer_impl <- function(.x, .f, ..., axes, type) {
   # restore the type, but not dim_names
   res <- vec_restore(res, .x)
 
+  # until we get keepdims = True
   new_dim <- vec_dim(.x)
   new_dim[axes] <- 1L
   res <- rray_reshape(res, new_dim)
