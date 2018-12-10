@@ -47,6 +47,22 @@ test_that("Can reduce base R objects", {
   )
 })
 
+test_that("Reducing where x is initially int then becomes dbl works", {
+  x <- rray(1:5, c(5, 1))
+
+  # informative to see what is happening
+  # if its working, we get 1, 1.5, 2, 2.5
+  # if not working, get 1 1 1 1
+  # rray_reduce_dbl(x, ~{print(.x); .x + .5})
+
+  # If this doesn't work, the result is 1.5 because .x is coerced
+  # down to int each time. Bad!
+  expect_equal(
+    vec_data(rray_reduce_dbl(x, ~.x + .5)),
+    3
+  )
+})
+
 test_that("Reducing to 0D works", {
 
   x_mat <- as.matrix(x)

@@ -34,12 +34,8 @@ class binary_functor {
     SEXPTYPE RTYPE;
     R_xlen_t good_length = 1;
 
-  public:
-    binary_functor(Rcpp::Function f_, SEXPTYPE RTYPE_) : f(f_), RTYPE(RTYPE_) {  }
-
-    // Also pulling the first element of the result, even if it had more than
-    // one thing. Should do checking instead.
-    RET_T operator () (const ELEM_T& x, const ELEM_T& y) const {
+    template <typename T1, typename T2>
+    RET_T call_f(const T1& x, const T2& y) const {
 
       SEXP f_res = f(x, y);
 
@@ -69,7 +65,24 @@ class binary_functor {
       RET_T res = ((RET_T *)dataptr(f_res))[0];
 
       return(res);
+
     }
+
+  public:
+    binary_functor(Rcpp::Function f_, SEXPTYPE RTYPE_) : f(f_), RTYPE(RTYPE_) {  }
+
+    // These control the two possible cases when calling `f` repeatedly
+    // You could start with a double x, then it could be updated to int x
+    // and from then on out always be int x. Or vice versa. But this handles
+    // that flexibility.
+    RET_T operator () (const double& x, const ELEM_T& y) const {
+      return call_f<double, ELEM_T>(x, y);
+    }
+
+    RET_T operator () (const int& x, const ELEM_T& y) const {
+      return call_f<int, ELEM_T>(x, y);
+    }
+
 };
 
 
