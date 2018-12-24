@@ -2,7 +2,7 @@
 % Please edit documentation in R/reshape.R
 \name{rray_reshape}
 \alias{rray_reshape}
-\title{Reshape an rray or mtrx}
+\title{Reshape an rray}
 \usage{
 rray_reshape(x, dim)
 }

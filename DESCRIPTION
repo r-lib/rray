@@ -6,8 +6,8 @@ Authors@R:
            family = "Vaughan",
            role = c("aut", "cre"),
            email = "davis@rstudio.com")
-Description: Provides 'mtrx' and 'rray' classes that provide stricter checking 
-  than traditional versions.
+Description: Implements an 'rray' class that provide stricter checking 
+  than traditional arrays.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

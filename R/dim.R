@@ -39,20 +39,20 @@
 #'
 #' @examples
 #'
-#' x_1_by_4 <- mtrx(1, 2, 3, 4)
-#' x_5_by_1 <- mtrx(1:5)
+#' x_1_by_4 <- rray(c(1, 2, 3, 4), c(1, 4))
+#' x_5_by_1 <- rray(1:5, c(5, 1))
 #'
 #' # these are both 2D
 #' rray_dims_common(x_1_by_4, x_5_by_1)
 #'
-#' # recycle rows: 1 VS 4 = 4
-#' # recycle cols: 5 VS 1 = 5
+#' # recycle rows: 1 VS 5 = 5
+#' # recycle cols: 4 VS 1 = 4
 #' rray_dim_common(x_1_by_4, x_5_by_1)
 #'
 #' x_5_by_1_by_3 <- rray(1, c(5, 1, 3))
 #'
-#' # recycle rows:    1 VS 4 = 4
-#' # recycle cols:    5 VS 1 = 5
+#' # recycle rows:    5 VS 1 = 5
+#' # recycle cols:    4 VS 1 = 4
 #' # recycle 3rd dim: 1 VS 3 = 3
 #' # (here, 3rd dim of 1 for the matrix is implicit)
 #' rray_dim_common(x_1_by_4, x_5_by_1_by_3)

@@ -42,30 +42,3 @@ as.logical.vctrs_rray <- function(x, ...) {
     dimnames = dim_names(x)
   )
 }
-
-#' @export
-as.double.vctrs_mtrx <- function(x, ...) {
-  new_matrix(
-    .data = vec_cast(vec_data(x), double()),
-    dim = vec_dim(x),
-    dimnames = dim_names(x)
-  )
-}
-
-#' @export
-as.integer.vctrs_mtrx <- function(x, ...) {
-  new_matrix(
-    .data = vec_cast(vec_data(x), integer()),
-    dim = vec_dim(x),
-    dimnames = dim_names(x)
-  )
-}
-
-#' @export
-as.logical.vctrs_mtrx <- function(x, ...) {
-  new_matrix(
-    .data = vec_cast(vec_data(x), logical()),
-    dim = vec_dim(x),
-    dimnames = dim_names(x)
-  )
-}
