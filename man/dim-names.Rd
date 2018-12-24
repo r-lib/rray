@@ -53,22 +53,28 @@ will return the names of the vector as the row names, if it has any.
 }
 \examples{
 
-x <- mtrx(x = 1:5, y = 6:10, row_names = letters[1:5])
+x <- rray(1:10, c(5, 2))
+dim_names(x) <- list(letters[1:5], character())
+x
 dim_names(x)
 
-# 2D object, so 2 sets of dim names
+# 1D object, so 1 set of dim names
 dim_names(rray())
 
-# 3D object, so 3 sets of dim names
-dim_names(rray(1, dim = c(1,1,1)))
+# 2D object, so 2 sets of dim names
+dim_names(rray(1, dim = c(1, 1)))
 
-# Vectors are 1 column matrices (2D)
+# 3D object, so 3 sets of dim names
+dim_names(rray(1, dim = c(1, 1, 1)))
+
+# Vectors are treated as 1D arrays
 dim_names(1:5)
 
 vec <- c(x = 1, y = 2)
 dim_names(vec)
 
-# You can add dim names using set_dim_names()
+# You can add dim names more easily
+# using set_dim_names()
 # and the pipe operator
 library(magrittr)
 rray(1, c(1, 2, 1)) \%>\%

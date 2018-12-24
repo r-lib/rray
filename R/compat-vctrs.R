@@ -87,7 +87,7 @@ vec_ptype_shape <- function(x) {
 
 #' vctrs compatibility functions
 #'
-#' These functions are the extensions that allow mtrx and rray objects to
+#' These functions are the extensions that allow rray objects to
 #' work with vctrs.
 #'
 #' @param x,y Objects.
@@ -115,7 +115,7 @@ vec_type2.vctrs_rray.vctrs_unspecified <- function(x, y) x
 # vec_type2 vctrs_rray <-> vctrs_rray ------------------------------------------
 
 # vec_type2 makes no attempt to recover dim names, as they are not part of the type.
-# type = class + shape (at least for rray and mtrx objects)
+# type = class + shape (at least for rray objects)
 
 #' @method vec_type2.vctrs_rray vctrs_rray
 #' @export
@@ -152,16 +152,6 @@ vec_type2.vctrs_rray.logical <- vec_type2.vctrs_rray.vctrs_rray
 #' @method vec_type2.logical vctrs_rray
 #' @export
 vec_type2.logical.vctrs_rray <- vec_type2.vctrs_rray.vctrs_rray
-
-# vec_type2 vctrs_rray <-> vctrs_mtrx ------------------------------------------
-
-#' @method vec_type2.vctrs_rray vctrs_mtrx
-#' @export
-vec_type2.vctrs_rray.vctrs_mtrx <- vec_type2.vctrs_rray.vctrs_rray
-
-#' @method vec_type2.vctrs_mtrx vctrs_rray
-#' @export
-vec_type2.vctrs_mtrx.vctrs_rray <- vec_type2.vctrs_rray.vctrs_rray
 
 # vec_cast boilerplate ---------------------------------------------------------
 
@@ -242,34 +232,4 @@ vec_cast.logical.vctrs_rray <- function(x, to) {
   x <- broadcast_impl(x, dim)
   x <- vec_cast(vec_data(x), logical())
   array(x, dim = dim)
-}
-
-# vec_cast vctrs_rray <-> vctrs_mtrx -------------------------------------------
-
-# mtrx to rray
-
-#' @method vec_cast.vctrs_rray vctrs_mtrx
-#' @export
-vec_cast.vctrs_rray.vctrs_mtrx <- vec_cast.vctrs_rray.vctrs_rray
-
-# rray to mtrx, need to be careful here
-
-#' @method vec_cast.vctrs_mtrx vctrs_rray
-#' @export
-vec_cast.vctrs_mtrx.vctrs_rray <- function(x, to) {
-
-  x_dims <- vec_dims(x)
-
-  if (x_dims > 2) {
-    abort("Cannot convert a >2 dimensional rray into a mtrx.")
-  }
-
-  x <- rray_broadcast(x, vec_dim(to))
-
-  new_mtrx(
-    .data = vec_data(x),
-    size = vec_size(x),
-    shape = rray_shape(x)
-  )
-
 }

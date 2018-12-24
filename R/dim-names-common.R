@@ -5,7 +5,7 @@
 #'
 #' `rray_dim_names_common()` is the engine that determines what dim names should
 #' be used in the result of arithmetic operations and other functions that
-#' involve multiple rray or mtrx objects and return a single result.
+#' involve multiple rray objects and return a single result.
 #'
 #' The rules for determining the set of common dim names between objects
 #' `x` and `y` (in that order) are:
@@ -28,11 +28,12 @@
 #'   set_row_names("r_from_x")
 #'
 #' # 1x1 - Row names and column names
-#' y <- mtrx(c_from_y = 1) %>%
+#' y <- rray(1, dim = c(1, 1)) %>%
+#'   set_col_names("c_from_y") %>%
 #'   set_row_names("r_from_y")
 #'
 #' # 1x1 - Row names but no column names
-#' z <- mtrx(1) %>%
+#' z <- rray(1, c(1, 1)) %>%
 #'   set_row_names("r_from_z")
 #'
 #' # Combining y and z

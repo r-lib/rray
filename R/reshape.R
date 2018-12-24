@@ -1,4 +1,4 @@
-#' Reshape an rray or mtrx
+#' Reshape an rray
 #'
 #' Reshape to a new dimension
 #'

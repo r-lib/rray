@@ -25,36 +25,36 @@ You can install from Github with:
 devtools::install_github("DavisVaughan/rray")
 ```
 
-## mtrx and rray
+## The rray
 
 ``` r
 library(rray)
+library(magrittr)
 ```
 
-The rray package introduces two new classes. An `rray`, which is an
-N-dimensional object and essentially a stricter array, and a `mtrx`,
-which is a subclass of an `rray` that restricts the object to only two
-dimensions.
+The rray package introduces a new array-like object, the `rray`. This is
+an N-dimensional object and essentially a stricter array.
 
 rray allows the creation of 1D objects, which look similar to vectors,
 but function similar to 1 column matrices (in terms of how operations
 are broadcasted).
 
-The easiest way to create a `mtrx` is to use the constructor. It takes
-in (potentially named) vectors and transforms them into the columns of
-the matrix.
+The easiest way to create an `rray` is to use the constructor. It takes
+an object which could be a vector, matrix, or array, and creates a new
+`rray` with optional reshaping.
 
 ``` r
-mtrx_ex <- mtrx(b = 1:2, a = 3:4)
+x_rray <- rray(1:4, c(2, 2)) %>%
+  set_col_names(c("a", "b"))
 
-mtrx_ex
-#> <vctrs_mtrx<integer>[,2][4]>
-#>      b a
+x_rray
+#> <vctrs_rray<integer>[,2][4]>
+#>      a b
 #> [1,] 1 3
 #> [2,] 2 4
 ```
 
-mtrices are stricter than base R’s matrix objects in two main ways:
+rrays are stricter than base R’s rray objects in two main ways:
 
   - You must be explicit about the dimension when selecting columns
     (i.e. `x[,1]` not `x[1]`).
@@ -64,31 +64,30 @@ mtrices are stricter than base R’s matrix objects in two main ways:
 
 ``` r
 # first column
-mtrx_ex[,1]
-#> <vctrs_mtrx<integer>[,1][2]>
-#>      b
+x_rray[,1]
+#> <vctrs_rray<integer>[,1][2]>
+#>      a
 #> [1,] 1
 #> [2,] 2
 
 # not this
-mtrx_ex[1]
+x_rray[1]
 #> Error: Use `x[,j]` to select columns, not `x[j]`.
 
 # individual elements
-mtrx_ex[1, "a"]
-#> <vctrs_mtrx<integer>[,1][1]>
+x_rray[1, "a"]
+#> <vctrs_rray<integer>[,1][1]>
 #>      a
-#> [1,] 3
+#> [1,] 1
 ```
 
-These rules also apply to `rray` objects. You can create an `rray` from
-a vector, matrix, or array.
+It’s easy to create 3D objects (and higher dimensions) as well.
 
 ``` r
 # 2 rows, 3 columns, 2 "deep" (being the 3rd dimension)
-x_rray <- rray(1, dim = c(1, 3, 2))
+y_rray <- rray(1, dim = c(1, 3, 2))
 
-x_rray
+y_rray
 #> <vctrs_rray<double>[,3,2][6]>
 #> , , 1
 #> 
@@ -101,9 +100,12 @@ x_rray
 #> [1,] 1    1    1
 ```
 
+The same subsetting rules apply here, allowing for more intuitive subset
+operations.
+
 ``` r
 # first col
-x_rray[,1]
+y_rray[,1]
 #> <vctrs_rray<double>[,1,2][2]>
 #> , , 1
 #> 
@@ -116,7 +118,7 @@ x_rray[,1]
 #> [1,] 1
 
 # first row of each dimension
-x_rray[1,]
+y_rray[1,]
 #> <vctrs_rray<double>[,3,2][6]>
 #> , , 1
 #> 
@@ -129,7 +131,7 @@ x_rray[1,]
 #> [1,] 1    1    1
 
 # select the first element in the 3rd dimension
-x_rray[,,1]
+y_rray[,,1]
 #> <vctrs_rray<double>[,3,1][3]>
 #> , , 1
 #> 
@@ -146,7 +148,7 @@ operations with rray and base R.
 It allows you to do powerful operations such as:
 
 ``` r
-x_rray 
+y_rray 
 #> <vctrs_rray<double>[,3,2][6]>
 #> , , 1
 #> 
@@ -158,7 +160,7 @@ x_rray
 #>      [,1] [,2] [,3]
 #> [1,] 1    1    1
 
-x_rray + 1:3
+y_rray + 1:3
 #> <vctrs_rray<double>[,3,2][18]>
 #> , , 1
 #> 
@@ -218,42 +220,42 @@ consistent, it lacks in expressibility that I feel should be there, and
 results can be surprising.
 
 ``` r
-x <- mtrx(a = 1:2, b = 3:4)
-y <- mtrx(5:6, 7:8, row_names = c("r1", "r2"))
+z_rray <- rray(5:8, c(2, 2)) %>%
+  set_row_names(c("r1", "r2"))
 
-x_mat <- as.matrix(x)
-y_mat <- as.matrix(y)
+x_mat <- as.matrix(x_rray)
+z_mat <- as.matrix(z_rray)
 
 x_mat
 #>      a b
 #> [1,] 1 3
 #> [2,] 2 4
 
-y_mat
+z_mat
 #>    [,1] [,2]
 #> r1    5    7
 #> r2    6    8
 
 # Dimension names of x_mat are used
-x_mat + y_mat
+x_mat + z_mat
 #>      a  b
 #> [1,] 6 10
 #> [2,] 8 12
 
-# Dimension names of y_mat are used
-y_mat + x_mat
+# Dimension names of z_mat are used
+z_mat + x_mat
 #>    [,1] [,2]
 #> r1    6   10
 #> r2    8   12
 ```
 
-With rray, dimension names can come from both `x` and `y`. The rules for
+With rray, dimension names can come from both objects. The rules for
 determining dimension names in rray are spelled out in
 `?rray_dim_names_common`.
 
 ``` r
-x + y
-#> <vctrs_mtrx<integer>[,2][4]>
+x_rray + z_rray
+#> <vctrs_rray<integer>[,2][4]>
 #>    a  b 
 #> r1  6 10
 #> r2  8 12
@@ -261,8 +263,9 @@ x + y
 
 ## Alternatives
 
-I don’t know of any other R packages that attempt to implement
-broadcasting semantics.
+The `Matrix` package implements a small subset of column-wise
+broadcasting operations. `rray` fully supports broadcasting in all
+operations.
 
 The original motivation for this package, and even for `xtensor`, is the
 excellent Python library, `numpy`. As far as I know, it has the original
