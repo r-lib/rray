@@ -10,8 +10,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="Simple Matrices and Arrays">
-<meta property="og:description" content="Provides 'mtrx' and 'rray' classes that provide stricter checking 
-  than traditional versions.">
+<meta property="og:description" content="Implements an 'rray' class that provide stricter checking 
+  than traditional arrays.">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -97,46 +97,48 @@
 <p>You can install from Github with:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">devtools<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/devtools/topics/reexports">install_github</a></span>(<span class="st">"DavisVaughan/rray"</span>)</a></code></pre></div>
 </div>
-<div id="mtrx-and-rray" class="section level2">
+<div id="the-rray" class="section level2">
 <h2 class="hasAnchor">
-<a href="#mtrx-and-rray" class="anchor"></a>mtrx and rray</h2>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(rray)</a></code></pre></div>
-<p>The rray package introduces two new classes. An <code>rray</code>, which is an N-dimensional object and essentially a stricter array, and a <code>mtrx</code>, which is a subclass of an <code>rray</code> that restricts the object to only two dimensions.</p>
+<a href="#the-rray" class="anchor"></a>The rray</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(rray)</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(magrittr)</a></code></pre></div>
+<p>The rray package introduces a new array-like object, the <code>rray</code>. This is an N-dimensional object and essentially a stricter array.</p>
 <p>rray allows the creation of 1D objects, which look similar to vectors, but function similar to 1 column matrices (in terms of how operations are broadcasted).</p>
-<p>The easiest way to create a <code>mtrx</code> is to use the constructor. It takes in (potentially named) vectors and transforms them into the columns of the matrix.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">mtrx_ex &lt;-<span class="st"> </span><span class="kw"><a href="reference/mtrx.html">mtrx</a></span>(<span class="dt">b =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>, <span class="dt">a =</span> <span class="dv">3</span><span class="op">:</span><span class="dv">4</span>)</a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb3-3" data-line-number="3">mtrx_ex</a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"><span class="co">#&gt; &lt;vctrs_mtrx&lt;integer&gt;[,2][4]&gt;</span></a>
-<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="co">#&gt;      b a</span></a>
-<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="co">#&gt; [1,] 1 3</span></a>
-<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="co">#&gt; [2,] 2 4</span></a></code></pre></div>
-<p>mtrices are stricter than base R’s matrix objects in two main ways:</p>
+<p>The easiest way to create an <code>rray</code> is to use the constructor. It takes an object which could be a vector, matrix, or array, and creates a new <code>rray</code> with optional reshaping.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">x_rray &lt;-<span class="st"> </span><span class="kw"><a href="reference/rray.html">rray</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">2</span>, <span class="dv">2</span>)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb3-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="reference/dim-names.html">set_col_names</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"a"</span>, <span class="st">"b"</span>))</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4">x_rray</a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="co">#&gt; &lt;vctrs_rray&lt;integer&gt;[,2][4]&gt;</span></a>
+<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="co">#&gt;      a b</span></a>
+<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="co">#&gt; [1,] 1 3</span></a>
+<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="co">#&gt; [2,] 2 4</span></a></code></pre></div>
+<p>rrays are stricter than base R’s rray objects in two main ways:</p>
 <ul>
 <li>You must be explicit about the dimension when selecting columns (i.e. <code>x[,1]</code> not <code>x[1]</code>).</li>
 <li>Dimensions are never dropped.</li>
 </ul>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># first column</span></a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">mtrx_ex[,<span class="dv">1</span>]</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="co">#&gt; &lt;vctrs_mtrx&lt;integer&gt;[,1][2]&gt;</span></a>
-<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="co">#&gt;      b</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">x_rray[,<span class="dv">1</span>]</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="co">#&gt; &lt;vctrs_rray&lt;integer&gt;[,1][2]&gt;</span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="co">#&gt;      a</span></a>
 <a class="sourceLine" id="cb4-5" data-line-number="5"><span class="co">#&gt; [1,] 1</span></a>
 <a class="sourceLine" id="cb4-6" data-line-number="6"><span class="co">#&gt; [2,] 2</span></a>
 <a class="sourceLine" id="cb4-7" data-line-number="7"></a>
 <a class="sourceLine" id="cb4-8" data-line-number="8"><span class="co"># not this</span></a>
-<a class="sourceLine" id="cb4-9" data-line-number="9">mtrx_ex[<span class="dv">1</span>]</a>
+<a class="sourceLine" id="cb4-9" data-line-number="9">x_rray[<span class="dv">1</span>]</a>
 <a class="sourceLine" id="cb4-10" data-line-number="10"><span class="co">#&gt; Error: Use `x[,j]` to select columns, not `x[j]`.</span></a>
 <a class="sourceLine" id="cb4-11" data-line-number="11"></a>
 <a class="sourceLine" id="cb4-12" data-line-number="12"><span class="co"># individual elements</span></a>
-<a class="sourceLine" id="cb4-13" data-line-number="13">mtrx_ex[<span class="dv">1</span>, <span class="st">"a"</span>]</a>
-<a class="sourceLine" id="cb4-14" data-line-number="14"><span class="co">#&gt; &lt;vctrs_mtrx&lt;integer&gt;[,1][1]&gt;</span></a>
+<a class="sourceLine" id="cb4-13" data-line-number="13">x_rray[<span class="dv">1</span>, <span class="st">"a"</span>]</a>
+<a class="sourceLine" id="cb4-14" data-line-number="14"><span class="co">#&gt; &lt;vctrs_rray&lt;integer&gt;[,1][1]&gt;</span></a>
 <a class="sourceLine" id="cb4-15" data-line-number="15"><span class="co">#&gt;      a</span></a>
-<a class="sourceLine" id="cb4-16" data-line-number="16"><span class="co">#&gt; [1,] 3</span></a></code></pre></div>
-<p>These rules also apply to <code>rray</code> objects. You can create an <code>rray</code> from a vector, matrix, or array.</p>
+<a class="sourceLine" id="cb4-16" data-line-number="16"><span class="co">#&gt; [1,] 1</span></a></code></pre></div>
+<p>It’s easy to create 3D objects (and higher dimensions) as well.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># 2 rows, 3 columns, 2 "deep" (being the 3rd dimension)</span></a>
-<a class="sourceLine" id="cb5-2" data-line-number="2">x_rray &lt;-<span class="st"> </span><span class="kw"><a href="reference/rray.html">rray</a></span>(<span class="dv">1</span>, <span class="dt">dim =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">2</span>))</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">y_rray &lt;-<span class="st"> </span><span class="kw"><a href="reference/rray.html">rray</a></span>(<span class="dv">1</span>, <span class="dt">dim =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">2</span>))</a>
 <a class="sourceLine" id="cb5-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb5-4" data-line-number="4">x_rray</a>
+<a class="sourceLine" id="cb5-4" data-line-number="4">y_rray</a>
 <a class="sourceLine" id="cb5-5" data-line-number="5"><span class="co">#&gt; &lt;vctrs_rray&lt;double&gt;[,3,2][6]&gt;</span></a>
 <a class="sourceLine" id="cb5-6" data-line-number="6"><span class="co">#&gt; , , 1</span></a>
 <a class="sourceLine" id="cb5-7" data-line-number="7"><span class="co">#&gt; </span></a>
@@ -147,8 +149,9 @@
 <a class="sourceLine" id="cb5-12" data-line-number="12"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb5-13" data-line-number="13"><span class="co">#&gt;      [,1] [,2] [,3]</span></a>
 <a class="sourceLine" id="cb5-14" data-line-number="14"><span class="co">#&gt; [1,] 1    1    1</span></a></code></pre></div>
+<p>The same subsetting rules apply here, allowing for more intuitive subset operations.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="co"># first col</span></a>
-<a class="sourceLine" id="cb6-2" data-line-number="2">x_rray[,<span class="dv">1</span>]</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">y_rray[,<span class="dv">1</span>]</a>
 <a class="sourceLine" id="cb6-3" data-line-number="3"><span class="co">#&gt; &lt;vctrs_rray&lt;double&gt;[,1,2][2]&gt;</span></a>
 <a class="sourceLine" id="cb6-4" data-line-number="4"><span class="co">#&gt; , , 1</span></a>
 <a class="sourceLine" id="cb6-5" data-line-number="5"><span class="co">#&gt; </span></a>
@@ -161,7 +164,7 @@
 <a class="sourceLine" id="cb6-12" data-line-number="12"><span class="co">#&gt; [1,] 1</span></a>
 <a class="sourceLine" id="cb6-13" data-line-number="13"></a>
 <a class="sourceLine" id="cb6-14" data-line-number="14"><span class="co"># first row of each dimension</span></a>
-<a class="sourceLine" id="cb6-15" data-line-number="15">x_rray[<span class="dv">1</span>,]</a>
+<a class="sourceLine" id="cb6-15" data-line-number="15">y_rray[<span class="dv">1</span>,]</a>
 <a class="sourceLine" id="cb6-16" data-line-number="16"><span class="co">#&gt; &lt;vctrs_rray&lt;double&gt;[,3,2][6]&gt;</span></a>
 <a class="sourceLine" id="cb6-17" data-line-number="17"><span class="co">#&gt; , , 1</span></a>
 <a class="sourceLine" id="cb6-18" data-line-number="18"><span class="co">#&gt; </span></a>
@@ -174,7 +177,7 @@
 <a class="sourceLine" id="cb6-25" data-line-number="25"><span class="co">#&gt; [1,] 1    1    1</span></a>
 <a class="sourceLine" id="cb6-26" data-line-number="26"></a>
 <a class="sourceLine" id="cb6-27" data-line-number="27"><span class="co"># select the first element in the 3rd dimension</span></a>
-<a class="sourceLine" id="cb6-28" data-line-number="28">x_rray[,,<span class="dv">1</span>]</a>
+<a class="sourceLine" id="cb6-28" data-line-number="28">y_rray[,,<span class="dv">1</span>]</a>
 <a class="sourceLine" id="cb6-29" data-line-number="29"><span class="co">#&gt; &lt;vctrs_rray&lt;double&gt;[,3,1][3]&gt;</span></a>
 <a class="sourceLine" id="cb6-30" data-line-number="30"><span class="co">#&gt; , , 1</span></a>
 <a class="sourceLine" id="cb6-31" data-line-number="31"><span class="co">#&gt; </span></a>
@@ -186,7 +189,7 @@
 <a href="#broadcasting" class="anchor"></a>Broadcasting</h2>
 <p>Broadcasting, the concept of recycling dimensions of one object to match the dimensions of another, is one of the core differences between operations with rray and base R.</p>
 <p>It allows you to do powerful operations such as:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">x_rray </a>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">y_rray </a>
 <a class="sourceLine" id="cb7-2" data-line-number="2"><span class="co">#&gt; &lt;vctrs_rray&lt;double&gt;[,3,2][6]&gt;</span></a>
 <a class="sourceLine" id="cb7-3" data-line-number="3"><span class="co">#&gt; , , 1</span></a>
 <a class="sourceLine" id="cb7-4" data-line-number="4"><span class="co">#&gt; </span></a>
@@ -198,7 +201,7 @@
 <a class="sourceLine" id="cb7-10" data-line-number="10"><span class="co">#&gt;      [,1] [,2] [,3]</span></a>
 <a class="sourceLine" id="cb7-11" data-line-number="11"><span class="co">#&gt; [1,] 1    1    1</span></a>
 <a class="sourceLine" id="cb7-12" data-line-number="12"></a>
-<a class="sourceLine" id="cb7-13" data-line-number="13">x_rray <span class="op">+</span><span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span></a>
+<a class="sourceLine" id="cb7-13" data-line-number="13">y_rray <span class="op">+</span><span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span></a>
 <a class="sourceLine" id="cb7-14" data-line-number="14"><span class="co">#&gt; &lt;vctrs_rray&lt;double&gt;[,3,2][18]&gt;</span></a>
 <a class="sourceLine" id="cb7-15" data-line-number="15"><span class="co">#&gt; , , 1</span></a>
 <a class="sourceLine" id="cb7-16" data-line-number="16"><span class="co">#&gt; </span></a>
@@ -242,36 +245,36 @@
 <a class="sourceLine" id="cb8-21" data-line-number="21"><span class="co">#&gt; Error in x + y: non-conformable arrays</span></a></code></pre></div>
 <p>As shown earlier, broadcasting solves this problem. I believe that broadcasting is a natural expression of intent when working with arrays, and is fully <em>shape-stable</em> in the fact that the dimensions of the outputs are always fully defined by the dimensions of the inputs, so I feel that its adoption in R would be worthwhile.</p>
 <p>A second motivation is the handling of dimension names in base R. While consistent, it lacks in expressibility that I feel should be there, and results can be surprising.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">x &lt;-<span class="st"> </span><span class="kw"><a href="reference/mtrx.html">mtrx</a></span>(<span class="dt">a =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>, <span class="dt">b =</span> <span class="dv">3</span><span class="op">:</span><span class="dv">4</span>)</a>
-<a class="sourceLine" id="cb9-2" data-line-number="2">y &lt;-<span class="st"> </span><span class="kw"><a href="reference/mtrx.html">mtrx</a></span>(<span class="dv">5</span><span class="op">:</span><span class="dv">6</span>, <span class="dv">7</span><span class="op">:</span><span class="dv">8</span>, <span class="dt">row_names =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"r1"</span>, <span class="st">"r2"</span>))</a>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">z_rray &lt;-<span class="st"> </span><span class="kw"><a href="reference/rray.html">rray</a></span>(<span class="dv">5</span><span class="op">:</span><span class="dv">8</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">2</span>, <span class="dv">2</span>)) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="reference/dim-names.html">set_row_names</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"r1"</span>, <span class="st">"r2"</span>))</a>
 <a class="sourceLine" id="cb9-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb9-4" data-line-number="4">x_mat &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/matrix">as.matrix</a></span>(x)</a>
-<a class="sourceLine" id="cb9-5" data-line-number="5">y_mat &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/matrix">as.matrix</a></span>(y)</a>
+<a class="sourceLine" id="cb9-4" data-line-number="4">x_mat &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/matrix">as.matrix</a></span>(x_rray)</a>
+<a class="sourceLine" id="cb9-5" data-line-number="5">z_mat &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/matrix">as.matrix</a></span>(z_rray)</a>
 <a class="sourceLine" id="cb9-6" data-line-number="6"></a>
 <a class="sourceLine" id="cb9-7" data-line-number="7">x_mat</a>
 <a class="sourceLine" id="cb9-8" data-line-number="8"><span class="co">#&gt;      a b</span></a>
 <a class="sourceLine" id="cb9-9" data-line-number="9"><span class="co">#&gt; [1,] 1 3</span></a>
 <a class="sourceLine" id="cb9-10" data-line-number="10"><span class="co">#&gt; [2,] 2 4</span></a>
 <a class="sourceLine" id="cb9-11" data-line-number="11"></a>
-<a class="sourceLine" id="cb9-12" data-line-number="12">y_mat</a>
+<a class="sourceLine" id="cb9-12" data-line-number="12">z_mat</a>
 <a class="sourceLine" id="cb9-13" data-line-number="13"><span class="co">#&gt;    [,1] [,2]</span></a>
 <a class="sourceLine" id="cb9-14" data-line-number="14"><span class="co">#&gt; r1    5    7</span></a>
 <a class="sourceLine" id="cb9-15" data-line-number="15"><span class="co">#&gt; r2    6    8</span></a>
 <a class="sourceLine" id="cb9-16" data-line-number="16"></a>
 <a class="sourceLine" id="cb9-17" data-line-number="17"><span class="co"># Dimension names of x_mat are used</span></a>
-<a class="sourceLine" id="cb9-18" data-line-number="18">x_mat <span class="op">+</span><span class="st"> </span>y_mat</a>
+<a class="sourceLine" id="cb9-18" data-line-number="18">x_mat <span class="op">+</span><span class="st"> </span>z_mat</a>
 <a class="sourceLine" id="cb9-19" data-line-number="19"><span class="co">#&gt;      a  b</span></a>
 <a class="sourceLine" id="cb9-20" data-line-number="20"><span class="co">#&gt; [1,] 6 10</span></a>
 <a class="sourceLine" id="cb9-21" data-line-number="21"><span class="co">#&gt; [2,] 8 12</span></a>
 <a class="sourceLine" id="cb9-22" data-line-number="22"></a>
-<a class="sourceLine" id="cb9-23" data-line-number="23"><span class="co"># Dimension names of y_mat are used</span></a>
-<a class="sourceLine" id="cb9-24" data-line-number="24">y_mat <span class="op">+</span><span class="st"> </span>x_mat</a>
+<a class="sourceLine" id="cb9-23" data-line-number="23"><span class="co"># Dimension names of z_mat are used</span></a>
+<a class="sourceLine" id="cb9-24" data-line-number="24">z_mat <span class="op">+</span><span class="st"> </span>x_mat</a>
 <a class="sourceLine" id="cb9-25" data-line-number="25"><span class="co">#&gt;    [,1] [,2]</span></a>
 <a class="sourceLine" id="cb9-26" data-line-number="26"><span class="co">#&gt; r1    6   10</span></a>
 <a class="sourceLine" id="cb9-27" data-line-number="27"><span class="co">#&gt; r2    8   12</span></a></code></pre></div>
-<p>With rray, dimension names can come from both <code>x</code> and <code>y</code>. The rules for determining dimension names in rray are spelled out in <code><a href="reference/common-dim-names.html">?rray_dim_names_common</a></code>.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">x <span class="op">+</span><span class="st"> </span>y</a>
-<a class="sourceLine" id="cb10-2" data-line-number="2"><span class="co">#&gt; &lt;vctrs_mtrx&lt;integer&gt;[,2][4]&gt;</span></a>
+<p>With rray, dimension names can come from both objects. The rules for determining dimension names in rray are spelled out in <code><a href="reference/common-dim-names.html">?rray_dim_names_common</a></code>.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">x_rray <span class="op">+</span><span class="st"> </span>z_rray</a>
+<a class="sourceLine" id="cb10-2" data-line-number="2"><span class="co">#&gt; &lt;vctrs_rray&lt;integer&gt;[,2][4]&gt;</span></a>
 <a class="sourceLine" id="cb10-3" data-line-number="3"><span class="co">#&gt;    a  b </span></a>
 <a class="sourceLine" id="cb10-4" data-line-number="4"><span class="co">#&gt; r1  6 10</span></a>
 <a class="sourceLine" id="cb10-5" data-line-number="5"><span class="co">#&gt; r2  8 12</span></a></code></pre></div>
@@ -279,7 +282,7 @@
 <div id="alternatives" class="section level2">
 <h2 class="hasAnchor">
 <a href="#alternatives" class="anchor"></a>Alternatives</h2>
-<p>I don’t know of any other R packages that attempt to implement broadcasting semantics.</p>
+<p>The <code>Matrix</code> package implements a small subset of column-wise broadcasting operations. <code>rray</code> fully supports broadcasting in all operations.</p>
 <p>The original motivation for this package, and even for <code>xtensor</code>, is the excellent Python library, <code>numpy</code>. As far as I know, it has the original implementation of broadcasting, and is a core library that a huge number of others are built on top of.</p>
 </div>
 </div>

@@ -168,18 +168,18 @@ are used in broadcasted arithmetic operations.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='no'>x_1_by_4</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='mtrx.html'>mtrx</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>4</span>)
-<span class='no'>x_5_by_1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='mtrx.html'>mtrx</a></span>(<span class='fl'>1</span>:<span class='fl'>5</span>)
+<span class='no'>x_1_by_4</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>4</span>), <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>4</span>))
+<span class='no'>x_5_by_1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>5</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>5</span>, <span class='fl'>1</span>))
 
 <span class='co'># these are both 2D</span>
 <span class='fu'>rray_dims_common</span>(<span class='no'>x_1_by_4</span>, <span class='no'>x_5_by_1</span>)</div><div class='output co'>#&gt; [1] 2</div><div class='input'>
-<span class='co'># recycle rows: 1 VS 4 = 4</span>
-<span class='co'># recycle cols: 5 VS 1 = 5</span>
+<span class='co'># recycle rows: 1 VS 5 = 5</span>
+<span class='co'># recycle cols: 4 VS 1 = 4</span>
 <span class='fu'>rray_dim_common</span>(<span class='no'>x_1_by_4</span>, <span class='no'>x_5_by_1</span>)</div><div class='output co'>#&gt; [1] 5 4</div><div class='input'>
 <span class='no'>x_5_by_1_by_3</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>5</span>, <span class='fl'>1</span>, <span class='fl'>3</span>))
 
-<span class='co'># recycle rows:    1 VS 4 = 4</span>
-<span class='co'># recycle cols:    5 VS 1 = 5</span>
+<span class='co'># recycle rows:    5 VS 1 = 5</span>
+<span class='co'># recycle cols:    4 VS 1 = 4</span>
 <span class='co'># recycle 3rd dim: 1 VS 3 = 3</span>
 <span class='co'># (here, 3rd dim of 1 for the matrix is implicit)</span>
 <span class='fu'>rray_dim_common</span>(<span class='no'>x_1_by_4</span>, <span class='no'>x_5_by_1_by_3</span>)</div><div class='output co'>#&gt; [1] 5 4 3</div><div class='input'>

@@ -80,7 +80,7 @@
       <h1>Broadcasting</h1>
                         <h4 class="author">Davis Vaughan</h4>
             
-            <h4 class="date">2018-12-10</h4>
+            <h4 class="date">2018-12-24</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/DavisVaughan/rray/blob/master/vignettes/broadcasting.Rmd"><code>vignettes/broadcasting.Rmd</code></a></small>
       <div class="hidden name"><code>broadcasting.Rmd</code></div>
@@ -112,27 +112,27 @@
 <a class="sourceLine" id="cb2-4" data-line-number="4">x <span class="op">+</span><span class="st"> </span>y</a>
 <a class="sourceLine" id="cb2-5" data-line-number="5"><span class="co">#&gt; Error in x + y: non-conformable arrays</span></a></code></pre></div>
 <p>With broadcasting semantics, the 3x1 matrix is “broadcasted” up to a 3x2 matrix, and then the operation is applied. Essentially, the 1st column is copied into the 2nd column.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">x_mtrx &lt;-<span class="st"> </span><span class="kw"><a href="../reference/as_mtrx.html">as_mtrx</a></span>(x)</a>
-<a class="sourceLine" id="cb3-2" data-line-number="2">y_mtrx &lt;-<span class="st"> </span><span class="kw"><a href="../reference/as_mtrx.html">as_mtrx</a></span>(y)</a>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">x_rray &lt;-<span class="st"> </span><span class="kw"><a href="../reference/as_rray.html">as_rray</a></span>(x)</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">y_rray &lt;-<span class="st"> </span><span class="kw"><a href="../reference/as_rray.html">as_rray</a></span>(y)</a>
 <a class="sourceLine" id="cb3-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb3-4" data-line-number="4">x_mtrx <span class="op">+</span><span class="st"> </span>y_mtrx</a>
-<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="co">#&gt; &lt;vctrs_mtrx&lt;double&gt;[,2][6]&gt;</span></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4">x_rray <span class="op">+</span><span class="st"> </span>y_rray</a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="co">#&gt; &lt;vctrs_rray&lt;double&gt;[,2][6]&gt;</span></a>
 <a class="sourceLine" id="cb3-6" data-line-number="6"><span class="co">#&gt;      [,1] [,2]</span></a>
 <a class="sourceLine" id="cb3-7" data-line-number="7"><span class="co">#&gt; [1,] 2    3   </span></a>
 <a class="sourceLine" id="cb3-8" data-line-number="8"><span class="co">#&gt; [2,] 2    3   </span></a>
 <a class="sourceLine" id="cb3-9" data-line-number="9"><span class="co">#&gt; [3,] 2    3</span></a></code></pre></div>
 <p>Internally, this is what is happening:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">y_bcasted &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray_broadcast.html">rray_broadcast</a></span>(y_mtrx, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">3</span>, <span class="dv">2</span>))</a>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">y_bcasted &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray_broadcast.html">rray_broadcast</a></span>(y_rray, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">3</span>, <span class="dv">2</span>))</a>
 <a class="sourceLine" id="cb4-2" data-line-number="2"></a>
 <a class="sourceLine" id="cb4-3" data-line-number="3">y_bcasted</a>
-<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="co">#&gt; &lt;vctrs_mtrx&lt;double&gt;[,2][6]&gt;</span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="co">#&gt; &lt;vctrs_rray&lt;double&gt;[,2][6]&gt;</span></a>
 <a class="sourceLine" id="cb4-5" data-line-number="5"><span class="co">#&gt;      [,1] [,2]</span></a>
 <a class="sourceLine" id="cb4-6" data-line-number="6"><span class="co">#&gt; [1,] 1    1   </span></a>
 <a class="sourceLine" id="cb4-7" data-line-number="7"><span class="co">#&gt; [2,] 1    1   </span></a>
 <a class="sourceLine" id="cb4-8" data-line-number="8"><span class="co">#&gt; [3,] 1    1</span></a>
 <a class="sourceLine" id="cb4-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb4-10" data-line-number="10">x_mtrx <span class="op">+</span><span class="st"> </span>y_bcasted</a>
-<a class="sourceLine" id="cb4-11" data-line-number="11"><span class="co">#&gt; &lt;vctrs_mtrx&lt;double&gt;[,2][6]&gt;</span></a>
+<a class="sourceLine" id="cb4-10" data-line-number="10">x_rray <span class="op">+</span><span class="st"> </span>y_bcasted</a>
+<a class="sourceLine" id="cb4-11" data-line-number="11"><span class="co">#&gt; &lt;vctrs_rray&lt;double&gt;[,2][6]&gt;</span></a>
 <a class="sourceLine" id="cb4-12" data-line-number="12"><span class="co">#&gt;      [,1] [,2]</span></a>
 <a class="sourceLine" id="cb4-13" data-line-number="13"><span class="co">#&gt; [1,] 2    3   </span></a>
 <a class="sourceLine" id="cb4-14" data-line-number="14"><span class="co">#&gt; [2,] 2    3   </span></a>
@@ -143,9 +143,9 @@
 ------
 (3, 2) &lt;- results in a 3x2</code></pre>
 <p>Broadcasting can be applied to higher dimensions as well. Let’s try an example with an array and a matrix.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">x_rray &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray.html">rray</a></span>(<span class="dv">1</span>, <span class="dt">dim =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">2</span>))</a>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">x_rray_3D &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray.html">rray</a></span>(<span class="dv">1</span>, <span class="dt">dim =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">2</span>))</a>
 <a class="sourceLine" id="cb6-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb6-3" data-line-number="3">y_mtrx <span class="op">+</span><span class="st"> </span>x_rray</a>
+<a class="sourceLine" id="cb6-3" data-line-number="3">y_rray <span class="op">+</span><span class="st"> </span>x_rray_3D</a>
 <a class="sourceLine" id="cb6-4" data-line-number="4"><span class="co">#&gt; &lt;vctrs_rray&lt;double&gt;[,4,2][24]&gt;</span></a>
 <a class="sourceLine" id="cb6-5" data-line-number="5"><span class="co">#&gt; , , 1</span></a>
 <a class="sourceLine" id="cb6-6" data-line-number="6"><span class="co">#&gt; </span></a>
@@ -166,7 +166,7 @@
 ---------
 (3, 4, 2)</code></pre>
 <p>Both the explicit 1 and the implicit 1 in the 3x1 matrix are broadcasted up to match the other dimensions so that the 3x1 matrix becomes a 3x4x2 array.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw"><a href="../reference/rray_broadcast.html">rray_broadcast</a></span>(y_mtrx, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">2</span>))</a>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw"><a href="../reference/rray_broadcast.html">rray_broadcast</a></span>(y_rray, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">2</span>))</a>
 <a class="sourceLine" id="cb8-2" data-line-number="2"><span class="co">#&gt; &lt;vctrs_rray&lt;double&gt;[,4,2][24]&gt;</span></a>
 <a class="sourceLine" id="cb8-3" data-line-number="3"><span class="co">#&gt; , , 1</span></a>
 <a class="sourceLine" id="cb8-4" data-line-number="4"><span class="co">#&gt; </span></a>
@@ -186,10 +186,10 @@
 <h2 class="hasAnchor">
 <a href="#outer-sums" class="anchor"></a>Outer sums</h2>
 <p>Broadcasting makes certain calculations surprisingly simple. Consider this outer sum calculation:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">z &lt;-<span class="st"> </span><span class="kw"><a href="../reference/as_mtrx.html">as_mtrx</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>)</a>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">z &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray.html">rray</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">3</span>, <span class="dv">1</span>))</a>
 <a class="sourceLine" id="cb9-2" data-line-number="2"></a>
 <a class="sourceLine" id="cb9-3" data-line-number="3">z <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/t">t</a></span>(z)</a>
-<a class="sourceLine" id="cb9-4" data-line-number="4"><span class="co">#&gt; &lt;vctrs_mtrx&lt;integer&gt;[,3][9]&gt;</span></a>
+<a class="sourceLine" id="cb9-4" data-line-number="4"><span class="co">#&gt; &lt;vctrs_rray&lt;integer&gt;[,3][9]&gt;</span></a>
 <a class="sourceLine" id="cb9-5" data-line-number="5"><span class="co">#&gt;      [,1] [,2] [,3]</span></a>
 <a class="sourceLine" id="cb9-6" data-line-number="6"><span class="co">#&gt; [1,] 2    3    4   </span></a>
 <a class="sourceLine" id="cb9-7" data-line-number="7"><span class="co">#&gt; [2,] 3    4    5   </span></a>

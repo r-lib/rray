@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>vctrs compatibility functions — vec_type2.vctrs_mtrx • rray</title>
+<title>vctrs compatibility functions — vec_arith.vctrs_rray • rray</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="vctrs compatibility functions — vec_type2.vctrs_mtrx" />
+<meta property="og:title" content="vctrs compatibility functions — vec_arith.vctrs_rray" />
 
-<meta property="og:description" content="These functions are the extensions that allow mtrx and rray objects to
+<meta property="og:description" content="These functions are the extensions that allow rray objects to
 work with vctrs." />
 <meta name="twitter:card" content="summary" />
 
@@ -113,24 +113,18 @@ work with vctrs." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>vctrs compatibility functions</h1>
-    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/mtrx-vctrs-compat.R'><code>R/mtrx-vctrs-compat.R</code></a>, <a href='https://github.com/DavisVaughan/rray/blob/master/R/rray-arith.R'><code>R/rray-arith.R</code></a>, <a href='https://github.com/DavisVaughan/rray/blob/master/R/rray-vctrs-compat.R'><code>R/rray-vctrs-compat.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/arith.R'><code>R/arith.R</code></a>, <a href='https://github.com/DavisVaughan/rray/blob/master/R/compat-vctrs.R'><code>R/compat-vctrs.R</code></a></small>
     <div class="hidden name"><code>vctrs-compat.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>These functions are the extensions that allow mtrx and rray objects to
+    <p>These functions are the extensions that allow rray objects to
 work with vctrs.</p>
     
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for vctrs_mtrx</span>
-<span class='fu'>vec_type2</span>(<span class='no'>x</span>, <span class='no'>y</span>)
-
-<span class='co'># S3 method for vctrs_mtrx</span>
-<span class='fu'>vec_cast</span>(<span class='no'>x</span>, <span class='no'>to</span>)
-
-<span class='co'># S3 method for vctrs_rray</span>
+    <pre class="usage"><span class='co'># S3 method for vctrs_rray</span>
 <span class='fu'>vec_arith</span>(<span class='no'>op</span>, <span class='no'>x</span>, <span class='no'>y</span>)
 
 <span class='co'># S3 method for vctrs_rray</span>
@@ -143,16 +137,16 @@ work with vctrs.</p>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
+      <th>op</th>
+      <td><p>An arithmetic operator as a string.</p></td>
+    </tr>
+    <tr>
       <th>x, y</th>
       <td><p>Objects.</p></td>
     </tr>
     <tr>
       <th>to</th>
       <td><p>Type to cast to.</p></td>
-    </tr>
-    <tr>
-      <th>op</th>
-      <td><p>An arithmetic operator as a string.</p></td>
     </tr>
     </table>
     

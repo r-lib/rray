@@ -141,7 +141,7 @@ interactive use, <code>rray_dim_names_common()</code> is more useful.</p>
 
     <p><code>rray_dim_names_common()</code> is the engine that determines what dim names should
 be used in the result of arithmetic operations and other functions that
-involve multiple rray or mtrx objects and return a single result.</p>
+involve multiple rray objects and return a single result.</p>
 <p>The rules for determining the set of common dim names between objects
 <code>x</code> and <code>y</code> (in that order) are:</p><ol>
 <li><p>Compute the common <code>dim</code> between <code>x</code> and <code>y</code> using <code><a href='common-dim.html'>rray_dim_common()</a></code>.</p></li>
@@ -164,11 +164,12 @@ is the same as the size of the dimension, use them.</p></li>
   <span class='fu'><a href='dim-names.html'>set_row_names</a></span>(<span class='st'>"r_from_x"</span>)
 
 <span class='co'># 1x1 - Row names and column names</span>
-<span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='mtrx.html'>mtrx</a></span>(<span class='kw'>c_from_y</span> <span class='kw'>=</span> <span class='fl'>1</span>) <span class='kw'>%&gt;%</span>
+<span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>, <span class='kw'>dim</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>1</span>)) <span class='kw'>%&gt;%</span>
+  <span class='fu'><a href='dim-names.html'>set_col_names</a></span>(<span class='st'>"c_from_y"</span>) <span class='kw'>%&gt;%</span>
   <span class='fu'><a href='dim-names.html'>set_row_names</a></span>(<span class='st'>"r_from_y"</span>)
 
 <span class='co'># 1x1 - Row names but no column names</span>
-<span class='no'>z</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='mtrx.html'>mtrx</a></span>(<span class='fl'>1</span>) <span class='kw'>%&gt;%</span>
+<span class='no'>z</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>1</span>)) <span class='kw'>%&gt;%</span>
   <span class='fu'><a href='dim-names.html'>set_row_names</a></span>(<span class='st'>"r_from_z"</span>)
 
 <span class='co'># Combining y and z</span>
