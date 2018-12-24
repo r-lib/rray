@@ -32,10 +32,12 @@ test_that("Reducing to 0D works", {
 
   x_mat <- as.matrix(x)
 
-  # TODO THESE SHOULD NOT BE ERRORS
-  # Eventually https://github.com/QuantStack/xtensor-r/issues/74
-  # will be fixed
-  expect_error(rray_sum(x, 1))
-  expect_error(rray_sum(x_mat, c(1, 2)))
+  sum_1D <- rray_sum(x, 1)
+  sum_2D <- rray_sum(x_mat, c(1, 2))
 
+  expect_equal(vec_dim(sum_1D), 1L)
+  expect_equal(vec_dim(sum_2D), c(1L, 1L))
+
+  expect_equal(vec_data(sum_1D), 55)
+  expect_equal(vec_data(sum_2D), 55)
 })
