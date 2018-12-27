@@ -3,11 +3,6 @@
 #include <Rcpp.h>
 using namespace Rcpp;
 
-// Call xt::squeeze() but always use xt::check_policy::full()
-// which throws an error if you are trying to drop a dimension
-// with >1 element. You pretty much never want this so we don't
-// expose that option.
-
 template <typename T>
 xt::rarray<T> rray_expand_dims_cpp_impl(const xt::rarray<T>& x, std::size_t axis) {
   xt::rarray<T> res = xt::expand_dims(x, axis);
