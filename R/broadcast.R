@@ -87,7 +87,13 @@ rray_broadcast.default <- function(x, dim) {
 
 #' @export
 rray_broadcast.vctrs_rray <- function(x, dim) {
-  vec_restore(rray_broadcast.default(x, dim), x)
+  # I would use the default but vec_restore()
+  # would remove the dim names
+  res <- broadcast_impl(x, dim)
+  res <- vec_restore(res, x)
+  new_dim_names <- restore_dim_names(x, dim)
+  res <- set_full_dim_names(res, new_dim_names)
+  res
 }
 
 # makes no attempt to recover dim names
