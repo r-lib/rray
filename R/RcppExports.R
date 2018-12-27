@@ -13,6 +13,10 @@ rray_expand_dims_cpp <- function(x, axis) {
     .Call(`_rray_rray_expand_dims_cpp`, x, axis)
 }
 
+rray_flip_cpp <- function(x, axis) {
+    .Call(`_rray_rray_flip_cpp`, x, axis)
+}
+
 rray_unary_op_cpp <- function(op, x) {
     .Call(`_rray_rray_unary_op_cpp`, op, x)
 }
