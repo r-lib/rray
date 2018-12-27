@@ -9,6 +9,10 @@ rray_broadcast_cpp <- function(x, dim) {
     .Call(`_rray_rray_broadcast_cpp`, x, dim)
 }
 
+rray_expand_dims_cpp <- function(x, axis) {
+    .Call(`_rray_rray_expand_dims_cpp`, x, axis)
+}
+
 rray_unary_op_cpp <- function(op, x) {
     .Call(`_rray_rray_unary_op_cpp`, op, x)
 }

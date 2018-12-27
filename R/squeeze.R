@@ -41,8 +41,6 @@
 #' # But not here
 #' rray_squeeze(t(x))
 #'
-#' @inheritParams rray_broadcast
-#'
 #' @export
 rray_squeeze <- function(x, axis = NULL) {
 
@@ -57,7 +55,7 @@ rray_squeeze <- function(x, axis = NULL) {
   # vec_restore() reattaches the old dimensions
   x <- as_rray(x)
 
-  res <- squeeze_impl(x, as_cpp_idx(axis))
+  res <- squeeze_impl(x, axis)
   res <- vec_restore(res, x)
   new_dim_names <- restore_dim_names(x, vec_dim(res))
   res <- set_full_dim_names(res, new_dim_names)
@@ -67,5 +65,5 @@ rray_squeeze <- function(x, axis = NULL) {
 }
 
 squeeze_impl <- function(x, axis) {
-  rray_squeeze_cpp(x, axis)
+  rray_squeeze_cpp(x, as_cpp_idx(axis))
 }
