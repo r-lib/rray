@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Function reference • rray</title>
+<title>Flip an rray along a dimension — rray_flip • rray</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,7 +30,10 @@
 
 
 
-<meta property="og:title" content="Function reference" />
+<meta property="og:title" content="Flip an rray along a dimension — rray_flip" />
+
+<meta property="og:description" content="rray_flip() reverses the elements of an rray along a single dimension." />
+<meta name="twitter:card" content="summary" />
 
 
 
@@ -47,7 +50,7 @@
   </head>
 
   <body>
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -106,132 +109,71 @@
       </header>
 
 <div class="row">
-  <div class="contents col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header">
-      <h1>Reference</h1>
+    <h1>Flip an rray along a dimension</h1>
+    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/flip.R'><code>R/flip.R</code></a></small>
+    <div class="hidden name"><code>rray_flip.Rd</code></div>
     </div>
 
-    <table class="ref-index">
+    <div class="ref-description">
+    
+    <p><code>rray_flip()</code> reverses the elements of an rray along a single dimension.</p>
+    
+    </div>
 
-    <colgroup>
-      
-      <col class="alias" />
-      <col class="title" />
-    </colgroup>
-
-    <tbody>
-      <tr>
-        <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
-        </th>
-      </tr>
-      <tr>
-        
-        <td>
-          <p><code><a href="as_array.html">as_array()</a></code> </p>
-        </td>
-        <td><p>Coerce to an array</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="as_matrix.html">as_matrix()</a></code> </p>
-        </td>
-        <td><p>Coerce to a matrix</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="as_rray.html">as_rray()</a></code> </p>
-        </td>
-        <td><p>Coerce to an rray</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="common-dim-names.html">rray_dim_names_common()</a></code> <code><a href="common-dim-names.html">rray_dim_names2()</a></code> </p>
-        </td>
-        <td><p>Find common dimension names</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="common-dim.html">rray_dims_common()</a></code> <code><a href="common-dim.html">rray_dim_common()</a></code> </p>
-        </td>
-        <td><p>Find common dimensions</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dim-names.html">dim_names()</a></code> <code><a href="dim-names.html">`dim_names<-`()</a></code> <code><a href="dim-names.html">set_dim_names()</a></code> <code><a href="dim-names.html">set_row_names()</a></code> <code><a href="dim-names.html">set_col_names()</a></code> <code><a href="dim-names.html">row_names()</a></code> <code><a href="dim-names.html">col_names()</a></code> <code><a href="dim-names.html">n_dim_names()</a></code> </p>
-        </td>
-        <td><p>Dimension names</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="new_rray.html">new_rray()</a></code> </p>
-        </td>
-        <td><p>Create a new rray</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="reducers.html">rray_reduce_dbl()</a></code> <code><a href="reducers.html">rray_reduce_int()</a></code> <code><a href="reducers.html">rray_reduce_lgl()</a></code> </p>
-        </td>
-        <td><p>Reducers</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="rray.html">rray()</a></code> </p>
-        </td>
-        <td><p>Build a rray object</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="rray_broadcast.html">rray_broadcast()</a></code> </p>
-        </td>
-        <td><p>Broadcast to a new dimension</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="rray_expand_dims.html">rray_expand_dims()</a></code> </p>
-        </td>
-        <td><p>Insert a dimension into an rray</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="rray_flip.html">rray_flip()</a></code> </p>
-        </td>
-        <td><p>Flip an rray along a dimension</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="rray_reshape.html">rray_reshape()</a></code> </p>
-        </td>
-        <td><p>Reshape an rray</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="rray_squeeze.html">rray_squeeze()</a></code> </p>
-        </td>
-        <td><p>Squeeze an rray</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="rray_sum.html">rray_sum()</a></code> </p>
-        </td>
-        <td><p>Calculate the sum along an axis</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="vctrs-compat.html">vec_arith(<i>&lt;vctrs_rray&gt;</i>)</a></code> <code><a href="vctrs-compat.html">vec_type2(<i>&lt;vctrs_rray&gt;</i>)</a></code> <code><a href="vctrs-compat.html">vec_cast(<i>&lt;vctrs_rray&gt;</i>)</a></code> </p>
-        </td>
-        <td><p>vctrs compatibility functions</p></td>
-      </tr>
-    </tbody>
+    <pre class="usage"><span class='fu'>rray_flip</span>(<span class='no'>x</span>, <span class='no'>axis</span>)</pre>
+    
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>x</th>
+      <td><p>An rray.</p></td>
+    </tr>
+    <tr>
+      <th>axis</th>
+      <td><p>An integer of size <code>1</code> specifying the dimension to flip.</p></td>
+    </tr>
     </table>
-  </div>
+    
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
+    <p>Dimension names are flipped as well.</p>
+    
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'>
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>10</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>5</span>, <span class='fl'>2</span>))
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dim-names.html'>set_row_names</a></span>(<span class='no'>x</span>, <span class='no'>letters</span>[<span class='fl'>1</span>:<span class='fl'>5</span>])
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dim-names.html'>set_col_names</a></span>(<span class='no'>x</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"c1"</span>, <span class='st'>"c2"</span>))
+
+<span class='fu'>rray_flip</span>(<span class='no'>x</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,2][10]&gt;
+#&gt;   c1 c2
+#&gt; e  5 10
+#&gt; d  4  9
+#&gt; c  3  8
+#&gt; b  2  7
+#&gt; a  1  6</div><div class='input'>
+<span class='fu'>rray_flip</span>(<span class='no'>x</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,2][10]&gt;
+#&gt;   c2 c1
+#&gt; a  6  1
+#&gt; b  7  2
+#&gt; c  8  3
+#&gt; d  9  4
+#&gt; e 10  5</div><div class='input'>
+</div></pre>
+  </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-all-functions">All functions</a></li>
+      <li><a href="#arguments">Arguments</a></li>
+      
+      <li><a href="#details">Details</a></li>
+      
+      <li><a href="#examples">Examples</a></li>
     </ul>
+
   </div>
 </div>
 
