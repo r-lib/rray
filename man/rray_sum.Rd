@@ -4,14 +4,15 @@
 \alias{rray_sum}
 \title{Calculate the sum along an axis}
 \usage{
-rray_sum(x, axes = 1)
+rray_sum(x, axes = NULL)
 }
 \arguments{
 \item{x}{A vector, matrix, or array to reduce.}
 
 \item{axes}{An integer vector specifying the axes to reduce over. \code{1} reduces
 the number of rows to 1, performing the reduction along the way. \code{2} does the
-same, but with the columns, and so on for higher dimensions.}
+same, but with the columns, and so on for higher dimensions. The default
+reduces along all axes.}
 }
 \description{
 \code{rray_sum()} computes the sum along a given axis or axes. The dimensionality
@@ -32,6 +33,9 @@ rray_sum(x, 1)
 # summing along the way
 rray_sum(x, 2)
 
+# Reduce along all axes, but keep dimensions
+rray_sum(x)
+
 # Column-wise proportions
 x / rray_sum(x, 1)
 
@@ -44,5 +48,10 @@ x / rray_sum(x, 2)
 y <- rray(1:24, c(2, 3, 4))
 rray_sum(y, c(1, 2))
 
+}
+\seealso{
+Other reducers: \code{\link{rray_amax}},
+  \code{\link{rray_amin}}, \code{\link{rray_mean}},
+  \code{\link{rray_prod}}
 }
 \concept{reducers}

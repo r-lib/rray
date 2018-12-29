@@ -21,5 +21,10 @@ set_dim <- function(x, dim) {
 }
 
 as_cpp_idx <- function(x) {
+
+  if (is.null(x)) {
+    return(x)
+  }
+
   x - 1L
 }

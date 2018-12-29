@@ -82,14 +82,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // rray_reducer_cpp
-SEXP rray_reducer_cpp(std::string op, SEXP x, rray::axes_t axes);
+SEXP rray_reducer_cpp(std::string op, SEXP x, SEXP axes);
 RcppExport SEXP _rray_rray_reducer_cpp(SEXP opSEXP, SEXP xSEXP, SEXP axesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type op(opSEXP);
     Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
-    Rcpp::traits::input_parameter< rray::axes_t >::type axes(axesSEXP);
+    Rcpp::traits::input_parameter< SEXP >::type axes(axesSEXP);
     rcpp_result_gen = Rcpp::wrap(rray_reducer_cpp(op, x, axes));
     return rcpp_result_gen;
 END_RCPP
