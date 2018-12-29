@@ -124,7 +124,7 @@ for the specification of specific dimensions to squeeze.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>rray_squeeze</span>(<span class='no'>x</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>rray_squeeze</span>(<span class='no'>x</span>, <span class='kw'>axes</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -134,7 +134,7 @@ for the specification of specific dimensions to squeeze.</p>
       <td><p>An rray.</p></td>
     </tr>
     <tr>
-      <th>axis</th>
+      <th>axes</th>
       <td><p>An integer vector specifying the size 1 dimensions to drop. If
 <code>NULL</code>, all size 1 dimensions are dropped.</p></td>
     </tr>
@@ -164,9 +164,9 @@ names in both situations.</p>
 <span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray_reshape.html'>rray_reshape</a></span>(<span class='no'>x</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>10</span>, <span class='fl'>1</span>, <span class='fl'>1</span>))
 <span class='fu'>rray_squeeze</span>(<span class='no'>y</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[10]&gt;
 #&gt;  [1]  1  2  3  4  5  6  7  8  9 10</div><div class='input'>
-<span class='co'># Use `axis` to specify dimensions to drop</span>
+<span class='co'># Use `axes` to specify dimensions to drop</span>
 <span class='co'># (10, 1, 1) -&gt; drop 2 -&gt; (10, 1)</span>
-<span class='fu'>rray_squeeze</span>(<span class='no'>y</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,1][10]&gt;
+<span class='fu'>rray_squeeze</span>(<span class='no'>y</span>, <span class='kw'>axes</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,1][10]&gt;
 #&gt;       [,1]
 #&gt;  [1,]  1  
 #&gt;  [2,]  2  
