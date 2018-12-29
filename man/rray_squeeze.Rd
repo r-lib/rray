@@ -4,12 +4,12 @@
 \alias{rray_squeeze}
 \title{Squeeze an rray}
 \usage{
-rray_squeeze(x, axis = NULL)
+rray_squeeze(x, axes = NULL)
 }
 \arguments{
 \item{x}{An rray.}
 
-\item{axis}{An integer vector specifying the size 1 dimensions to drop. If
+\item{axes}{An integer vector specifying the size 1 dimensions to drop. If
 \code{NULL}, all size 1 dimensions are dropped.}
 }
 \description{
@@ -38,9 +38,9 @@ rray_squeeze(x)
 y <- rray_reshape(x, c(10, 1, 1))
 rray_squeeze(y)
 
-# Use `axis` to specify dimensions to drop
+# Use `axes` to specify dimensions to drop
 # (10, 1, 1) -> drop 2 -> (10, 1)
-rray_squeeze(y, axis = 2)
+rray_squeeze(y, axes = 2)
 
 # Dimension names are kept here
 x <- set_row_names(x, letters[1:10])

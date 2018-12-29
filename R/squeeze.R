@@ -16,7 +16,7 @@
 #' names in both situations.
 #'
 #' @param x An rray.
-#' @param axis An integer vector specifying the size 1 dimensions to drop. If
+#' @param axes An integer vector specifying the size 1 dimensions to drop. If
 #' `NULL`, all size 1 dimensions are dropped.
 #'
 #' @examples
@@ -30,9 +30,9 @@
 #' y <- rray_reshape(x, c(10, 1, 1))
 #' rray_squeeze(y)
 #'
-#' # Use `axis` to specify dimensions to drop
+#' # Use `axes` to specify dimensions to drop
 #' # (10, 1, 1) -> drop 2 -> (10, 1)
-#' rray_squeeze(y, axis = 2)
+#' rray_squeeze(y, axes = 2)
 #'
 #' # Dimension names are kept here
 #' x <- set_row_names(x, letters[1:10])
@@ -42,20 +42,20 @@
 #' rray_squeeze(t(x))
 #'
 #' @export
-rray_squeeze <- function(x, axis = NULL) {
+rray_squeeze <- function(x, axes = NULL) {
 
-  if (is.null(axis)) {
+  if (is.null(axes)) {
     dim <- vec_dim(x)
-    axis <- which(dim == 1L)
+    axes <- which(dim == 1L)
   }
 
-  axis <- vec_cast(axis, integer())
+  axes <- vec_cast(axes, integer())
 
   # Because otherwise for matrices,
   # vec_restore() reattaches the old dimensions
   x <- as_rray(x)
 
-  res <- squeeze_impl(x, axis)
+  res <- squeeze_impl(x, axes)
   res <- vec_restore(res, x)
   new_dim_names <- restore_dim_names(x, vec_dim(res))
   res <- set_full_dim_names(res, new_dim_names)
@@ -64,6 +64,6 @@ rray_squeeze <- function(x, axis = NULL) {
 
 }
 
-squeeze_impl <- function(x, axis) {
-  rray_squeeze_cpp(x, as_cpp_idx(axis))
+squeeze_impl <- function(x, axes) {
+  rray_squeeze_cpp(x, as_cpp_idx(axes))
 }
