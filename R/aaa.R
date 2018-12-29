@@ -13,6 +13,7 @@
 #'
 #' @importFrom vctrs stop_incompatible_cast
 #' @importFrom vctrs stop_incompatible_type
+#' @importFrom vctrs stop_incompatible_op
 #'
 #' @importFrom vctrs new_vctr
 #' @importFrom vctrs obj_print_data

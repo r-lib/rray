@@ -156,3 +156,7 @@ test_that("multiplication works", {
   expect_is(x_broad3, "vctrs_rray")
   expect_equal(dim(x_broad3), c(4, 2, 2))
 })
+
+test_that("Fallthrough operation throws unsupported operation error", {
+  expect_error(rray(1) + "a", "is not permitted")
+})

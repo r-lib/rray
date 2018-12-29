@@ -41,6 +41,12 @@ vec_arith.vctrs_rray <- function(op, x, y) {
   UseMethod("vec_arith.vctrs_rray", y)
 }
 
+#' @method vec_arith.vctrs_rray default
+#' @export
+vec_arith.vctrs_rray.default <- function(op, x, y) {
+  stop_incompatible_op(op, x, y)
+}
+
 #' @method vec_arith.vctrs_rray vctrs_rray
 #' @export
 vec_arith.vctrs_rray.vctrs_rray <- function(op, x, y) {
