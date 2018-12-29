@@ -32,6 +32,11 @@
 #' @importFrom vctrs vec_type2.logical
 NULL
 
+# Required for R 3.1
+
+#' @importFrom vctrs vec_cast.character
+NULL
+
 #' @importFrom rlang abort
 #' @importFrom rlang is_integer
 #' @importFrom rlang is_character
