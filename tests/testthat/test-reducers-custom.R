@@ -4,8 +4,9 @@ x <- rray(1:4)
 y <- rray_reshape(x, c(2, 2))
 
 test_that("Results are equivalent to rray_sum()", {
-  expect_equal(rray_sum(y), rray_reduce_int(y, sum))
-  expect_equal(rray_sum(y, axes = 2), rray_reduce_int(y, sum, axes = 2))
+  # sum converts integers to doubles
+  expect_equal(rray_sum(y, axes = 1), rray_reduce_dbl(y, sum))
+  expect_equal(rray_sum(y, axes = 2), rray_reduce_dbl(y, sum, axes = 2))
 })
 
 test_that("Lambda functions are allowed", {
