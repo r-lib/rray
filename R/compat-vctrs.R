@@ -1,7 +1,14 @@
-#' @export
-format.vctrs_rray <- function(x, ...) {
-  format(as_array(x))
-}
+# Printing seems to be broken if I try and use the
+# format method for array objects (it right aligns characters but not column
+# headers). In the long run, we
+# probably want our own format method that doesn't use the array
+# one. For now, call print(as_array(x)) in obj_print_data() to have
+# the alignment be correct. For an example of bad behavior, print
+# as_rray(sh8) from ?solve with the format method
+
+# format.vctrs_rray <- function(x, ...) {
+#   format(as_array(x))
+# }
 
 #' @export
 obj_print_data.vctrs_rray <- function(x, ...) {
@@ -12,7 +19,7 @@ obj_print_data.vctrs_rray <- function(x, ...) {
   # vctrs sets names() here which is problematic
   # for 1D arrays
 
-  print(format(x), quote = FALSE)
+  print(as_array(x))
   invisible(x)
 }
 
