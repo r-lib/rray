@@ -29,11 +29,10 @@ as_array.matrix <- function(x, ...) {
 
 #' @export
 as_array.double <- function(x, ...) {
-  array(
-    data = x,
-    # enforce column
-    dim = c(length(x), 1L),
-    dimnames = list(names(x), NULL)
+  new_array(
+    .data = unname(vec_data(x)),
+    dim = vec_dim(x),
+    dimnames = dim_names(x)
   )
 }
 
@@ -44,13 +43,7 @@ as_array.integer <- as_array.double
 as_array.logical <- as_array.double
 
 #' @export
-as_array.vctrs_rray <- function(x, ...) {
-  new_array(
-    .data = vec_data(x),
-    dim = vec_dim(x),
-    dimnames = dim_names(x)
-  )
-}
+as_array.vctrs_rray <- as_array.double
 
 #' @export
 as.array.vctrs_rray <- as_array.vctrs_rray
@@ -80,29 +73,18 @@ as_matrix.matrix <- function(x, ...) {
 }
 
 #' @export
-as_matrix.array <- function(x, ...) {
+as_matrix.double <- function(x, ...) {
+  .data <- unname(vec_data(x))
 
   dim <- vec_dim(x)
-
   if (vec_size(dim) > 2L) {
-    abort("Cannot convert a >2 dimensional array into a matrix.")
+    abort("Cannot reduce a >2 dimensional object to a matrix.")
   }
 
   new_matrix(
-    .data = vec_data(x),
-    dim = vec_dim(x),
-    dimnames = dim_names(x)
-  )
-
-}
-
-#' @export
-as_matrix.double <- function(x, ...) {
-  .data <- unname(vec_data(x))
-  new_matrix(
     .data = .data,
-    dim = c(length(x), 1L),
-    dimnames = list(names(x), NULL)
+    dim = dim,
+    dimnames = dim_names(x)
   )
 }
 
@@ -113,21 +95,7 @@ as_matrix.integer <- as_matrix.double
 as_matrix.logical <- as_matrix.double
 
 #' @export
-as_matrix.vctrs_rray <- function(x, ...) {
-
-  dim <- vec_dim(x)
-
-  if (vec_size(dim) > 2L) {
-    abort("Cannot convert a >2 dimensional rray into a matrix.")
-  }
-
-  new_matrix(
-    .data = vec_data(x),
-    dim = dim,
-    dimnames = dim_names(x)
-  )
-
-}
+as_matrix.vctrs_rray <- as_matrix.double
 
 #' @export
 as.matrix.vctrs_rray <- as_matrix.vctrs_rray
@@ -161,22 +129,13 @@ as_rray.vctrs_rray <- function(x, ...) {
 }
 
 #' @export
-as_rray.array <- function(x, ...) {
+as_rray.double <- function(x, ...) {
   new_rray(
-    .data = vec_data(x),
+    .data = unname(vec_data(x)),
     size = vec_size(x),
     shape = rray_shape(x),
     dim_names = dim_names(x)
   )
-}
-
-#' @export
-as_rray.matrix <- as_rray.array
-
-#' @export
-as_rray.double <- function(x, ...) {
-  .data <- unname(vec_data(x))
-  new_rray(.data, size = vec_size(x), dim_names = dim_names(x))
 }
 
 #' @export

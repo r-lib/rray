@@ -8,12 +8,16 @@ new_array <- function(.data, dim, dimnames) {
 }
 
 new_matrix <- function(.data, dim, dimnames) {
-
-  if (vec_size(dim) == 1) {
-    dim <- c(dim, 1L)
-  }
-
+  dim <- at_least_2D(dim, 1L)
+  dimnames <- at_least_2D(dimnames, new_empty_dim_names(1))
   matrix(.data, nrow = dim[1], ncol = dim[2], dimnames = dimnames)
+}
+
+at_least_2D <- function(x, elem) {
+  if (vec_size(x) == 1) {
+    x <- c(x, elem)
+  }
+  x
 }
 
 #' @export
