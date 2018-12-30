@@ -161,31 +161,31 @@ reduces along all axes.</p></td>
 <span class='co'># summing along the way</span>
 <span class='fu'>rray_sum</span>(<span class='no'>x</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,2][2]&gt;
 #&gt;      [,1] [,2]
-#&gt; [1,] 15   40  </div><div class='input'>
+#&gt; [1,]   15   40</div><div class='input'>
 <span class='co'># Reduce the number of columns to 1,</span>
 <span class='co'># summing along the way</span>
 <span class='fu'>rray_sum</span>(<span class='no'>x</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,1][5]&gt;
 #&gt;      [,1]
-#&gt; [1,]  7  
-#&gt; [2,]  9  
-#&gt; [3,] 11  
-#&gt; [4,] 13  
-#&gt; [5,] 15  </div><div class='input'>
+#&gt; [1,]    7
+#&gt; [2,]    9
+#&gt; [3,]   11
+#&gt; [4,]   13
+#&gt; [5,]   15</div><div class='input'>
 <span class='co'># Reduce along all axes, but keep dimensions</span>
 <span class='fu'>rray_sum</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,1][1]&gt;
 #&gt;      [,1]
-#&gt; [1,] 55  </div><div class='input'>
+#&gt; [1,]   55</div><div class='input'>
 <span class='co'># Column-wise proportions</span>
 <span class='no'>x</span> / <span class='fu'>rray_sum</span>(<span class='no'>x</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,2][10]&gt;
-#&gt;      [,1]       [,2]      
-#&gt; [1,] 0.06666667 0.15000000
-#&gt; [2,] 0.13333333 0.17500000
-#&gt; [3,] 0.20000000 0.20000000
-#&gt; [4,] 0.26666667 0.22500000
-#&gt; [5,] 0.33333333 0.25000000</div><div class='input'>
+#&gt;            [,1]  [,2]
+#&gt; [1,] 0.06666667 0.150
+#&gt; [2,] 0.13333333 0.175
+#&gt; [3,] 0.20000000 0.200
+#&gt; [4,] 0.26666667 0.225
+#&gt; [5,] 0.33333333 0.250</div><div class='input'>
 <span class='co'># Row-wise proportions</span>
 <span class='no'>x</span> / <span class='fu'>rray_sum</span>(<span class='no'>x</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,2][10]&gt;
-#&gt;      [,1]      [,2]     
+#&gt;           [,1]      [,2]
 #&gt; [1,] 0.1428571 0.8571429
 #&gt; [2,] 0.2222222 0.7777778
 #&gt; [3,] 0.2727273 0.7272727
@@ -199,22 +199,22 @@ reduces along all axes.</p></td>
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1]
-#&gt; [1,]  21 
+#&gt; [1,]   21
 #&gt; 
 #&gt; , , 2
 #&gt; 
 #&gt;      [,1]
-#&gt; [1,]  57 
+#&gt; [1,]   57
 #&gt; 
 #&gt; , , 3
 #&gt; 
 #&gt;      [,1]
-#&gt; [1,]  93 
+#&gt; [1,]   93
 #&gt; 
 #&gt; , , 4
 #&gt; 
 #&gt;      [,1]
-#&gt; [1,] 129 
+#&gt; [1,]  129
 #&gt; </div><div class='input'>
 </div></pre>
   </div>

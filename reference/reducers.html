@@ -165,65 +165,65 @@ will be applied in this manner along each of the <code>axes</code>.</p></td>
 <span class='co'># Equivalent</span>
 <span class='fu'>rray_reduce_int</span>(<span class='no'>x</span>, <span class='no'>sum</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,2][2]&gt;
 #&gt;      [,1] [,2]
-#&gt; [1,]  78  222 </div><div class='input'><span class='fu'>rray_reduce_int</span>(<span class='no'>x</span>, ~<span class='no'>.x</span> + <span class='no'>.y</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,2][2]&gt;
+#&gt; [1,]   78  222</div><div class='input'><span class='fu'>rray_reduce_int</span>(<span class='no'>x</span>, ~<span class='no'>.x</span> + <span class='no'>.y</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,2][2]&gt;
 #&gt;      [,1] [,2]
-#&gt; [1,]  78  222 </div><div class='input'><span class='fu'><a href='rray_sum.html'>rray_sum</a></span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,1][1]&gt;
+#&gt; [1,]   78  222</div><div class='input'><span class='fu'><a href='rray_sum.html'>rray_sum</a></span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,1][1]&gt;
 #&gt;      [,1]
-#&gt; [1,] 300 </div><div class='input'>
+#&gt; [1,]  300</div><div class='input'>
 <span class='co'># Same as above, but reduce the columns</span>
 <span class='fu'>rray_reduce_int</span>(<span class='no'>x</span>, <span class='no'>sum</span>, <span class='kw'>axes</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,1][12]&gt;
 #&gt;       [,1]
-#&gt;  [1,] 14  
-#&gt;  [2,] 16  
-#&gt;  [3,] 18  
-#&gt;  [4,] 20  
-#&gt;  [5,] 22  
-#&gt;  [6,] 24  
-#&gt;  [7,] 26  
-#&gt;  [8,] 28  
-#&gt;  [9,] 30  
-#&gt; [10,] 32  
-#&gt; [11,] 34  
-#&gt; [12,] 36  </div><div class='input'><span class='fu'>rray_reduce_int</span>(<span class='no'>x</span>, ~<span class='no'>.x</span> + <span class='no'>.y</span>, <span class='kw'>axes</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,1][12]&gt;
+#&gt;  [1,]   14
+#&gt;  [2,]   16
+#&gt;  [3,]   18
+#&gt;  [4,]   20
+#&gt;  [5,]   22
+#&gt;  [6,]   24
+#&gt;  [7,]   26
+#&gt;  [8,]   28
+#&gt;  [9,]   30
+#&gt; [10,]   32
+#&gt; [11,]   34
+#&gt; [12,]   36</div><div class='input'><span class='fu'>rray_reduce_int</span>(<span class='no'>x</span>, ~<span class='no'>.x</span> + <span class='no'>.y</span>, <span class='kw'>axes</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,1][12]&gt;
 #&gt;       [,1]
-#&gt;  [1,] 14  
-#&gt;  [2,] 16  
-#&gt;  [3,] 18  
-#&gt;  [4,] 20  
-#&gt;  [5,] 22  
-#&gt;  [6,] 24  
-#&gt;  [7,] 26  
-#&gt;  [8,] 28  
-#&gt;  [9,] 30  
-#&gt; [10,] 32  
-#&gt; [11,] 34  
-#&gt; [12,] 36  </div><div class='input'><span class='fu'><a href='rray_sum.html'>rray_sum</a></span>(<span class='no'>x</span>, <span class='kw'>axes</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,1][12]&gt;
+#&gt;  [1,]   14
+#&gt;  [2,]   16
+#&gt;  [3,]   18
+#&gt;  [4,]   20
+#&gt;  [5,]   22
+#&gt;  [6,]   24
+#&gt;  [7,]   26
+#&gt;  [8,]   28
+#&gt;  [9,]   30
+#&gt; [10,]   32
+#&gt; [11,]   34
+#&gt; [12,]   36</div><div class='input'><span class='fu'><a href='rray_sum.html'>rray_sum</a></span>(<span class='no'>x</span>, <span class='kw'>axes</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,1][12]&gt;
 #&gt;       [,1]
-#&gt;  [1,] 14  
-#&gt;  [2,] 16  
-#&gt;  [3,] 18  
-#&gt;  [4,] 20  
-#&gt;  [5,] 22  
-#&gt;  [6,] 24  
-#&gt;  [7,] 26  
-#&gt;  [8,] 28  
-#&gt;  [9,] 30  
-#&gt; [10,] 32  
-#&gt; [11,] 34  
-#&gt; [12,] 36  </div><div class='input'>
+#&gt;  [1,]   14
+#&gt;  [2,]   16
+#&gt;  [3,]   18
+#&gt;  [4,]   20
+#&gt;  [5,]   22
+#&gt;  [6,]   24
+#&gt;  [7,]   26
+#&gt;  [8,]   28
+#&gt;  [9,]   30
+#&gt; [10,]   32
+#&gt; [11,]   34
+#&gt; [12,]   36</div><div class='input'>
 <span class='co'># Running max of each column</span>
 <span class='no'>x_shuffled</span> <span class='kw'>&lt;-</span> <span class='no'>x</span>[<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>:<span class='fl'>5</span>, <span class='fl'>10</span>:<span class='fl'>6</span>, <span class='fl'>12</span>, <span class='fl'>11</span>),]
 <span class='fu'>rray_reduce_int</span>(<span class='no'>x_shuffled</span>, <span class='no'>max</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,2][2]&gt;
 #&gt;      [,1] [,2]
-#&gt; [1,] 12   24  </div><div class='input'>
+#&gt; [1,]   12   24</div><div class='input'>
 <span class='co'># Passing named arguments through</span>
 <span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='no'>x</span>
 <span class='no'>y</span>[<span class='fl'>1</span>,<span class='fl'>1</span>] <span class='kw'>&lt;-</span> <span class='fl'>NA</span>
 <span class='fu'>rray_reduce_int</span>(<span class='no'>y</span>, <span class='no'>sum</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,2][2]&gt;
 #&gt;      [,1] [,2]
-#&gt; [1,]  77  222 </div><div class='input'><span class='fu'>rray_reduce_int</span>(<span class='no'>y</span>, ~<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sum'>sum</a></span>(<span class='no'>.x</span>, <span class='no'>.y</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>))</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,2][2]&gt;
+#&gt; [1,]   77  222</div><div class='input'><span class='fu'>rray_reduce_int</span>(<span class='no'>y</span>, ~<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sum'>sum</a></span>(<span class='no'>.x</span>, <span class='no'>.y</span>, <span class='kw'>na.rm</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>))</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,2][2]&gt;
 #&gt;      [,1] [,2]
-#&gt; [1,]  77  222 </div><div class='input'>
+#&gt; [1,]   77  222</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

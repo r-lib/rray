@@ -157,13 +157,13 @@ dimension.</p></td>
 <span class='fu'>rray_expand_dims</span>(<span class='no'>x</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,5,2][10]&gt;
 #&gt; , , c1
 #&gt; 
-#&gt;      a  b  c  d  e 
-#&gt; [1,]  1  2  3  4  5
+#&gt;      a b c d e
+#&gt; [1,] 1 2 3 4 5
 #&gt; 
 #&gt; , , c2
 #&gt; 
-#&gt;      a  b  c  d  e 
-#&gt; [1,]  6  7  8  9 10
+#&gt;      a b c d  e
+#&gt; [1,] 6 7 8 9 10
 #&gt; </div><div class='input'>
 <span class='co'># (5, 2)</span>
 <span class='co'># Add dimension to the middle</span>
@@ -172,20 +172,20 @@ dimension.</p></td>
 #&gt; , , c1
 #&gt; 
 #&gt;   [,1]
-#&gt; a  1  
-#&gt; b  2  
-#&gt; c  3  
-#&gt; d  4  
-#&gt; e  5  
+#&gt; a    1
+#&gt; b    2
+#&gt; c    3
+#&gt; d    4
+#&gt; e    5
 #&gt; 
 #&gt; , , c2
 #&gt; 
 #&gt;   [,1]
-#&gt; a  6  
-#&gt; b  7  
-#&gt; c  8  
-#&gt; d  9  
-#&gt; e 10  
+#&gt; a    6
+#&gt; b    7
+#&gt; c    8
+#&gt; d    9
+#&gt; e   10
 #&gt; </div><div class='input'>
 <span class='co'># (5, 2)</span>
 <span class='co'># Add dimension to the end</span>
@@ -209,13 +209,13 @@ dimension.</p></td>
 <span class='fu'>rray_expand_dims</span>(<span class='no'>x</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,5,2][10]&gt;
 #&gt; , , c1
 #&gt; 
-#&gt;      a  b  c  d  e 
-#&gt; [1,]  1  2  3  4  5
+#&gt;      a b c d e
+#&gt; [1,] 1 2 3 4 5
 #&gt; 
 #&gt; , , c2
 #&gt; 
-#&gt;      a  b  c  d  e 
-#&gt; [1,]  6  7  8  9 10
+#&gt;      a b c d  e
+#&gt; [1,] 6 7 8 9 10
 #&gt; </div><div class='input'>
 <span class='co'># A reshape, on the other hand,</span>
 <span class='co'># drops all dimension names</span>
@@ -223,12 +223,12 @@ dimension.</p></td>
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1] [,2] [,3] [,4] [,5]
-#&gt; [1,]  1    2    3    4    5  
+#&gt; [1,]    1    2    3    4    5
 #&gt; 
 #&gt; , , 2
 #&gt; 
 #&gt;      [,1] [,2] [,3] [,4] [,5]
-#&gt; [1,]  6    7    8    9   10  
+#&gt; [1,]    6    7    8    9   10
 #&gt; </div><div class='input'>
 </div></pre>
   </div>

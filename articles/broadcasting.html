@@ -118,25 +118,25 @@
 <a class="sourceLine" id="cb3-4" data-line-number="4">x_rray <span class="op">+</span><span class="st"> </span>y_rray</a>
 <a class="sourceLine" id="cb3-5" data-line-number="5"><span class="co">#&gt; &lt;vctrs_rray&lt;double&gt;[,2][6]&gt;</span></a>
 <a class="sourceLine" id="cb3-6" data-line-number="6"><span class="co">#&gt;      [,1] [,2]</span></a>
-<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="co">#&gt; [1,] 2    3   </span></a>
-<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="co">#&gt; [2,] 2    3   </span></a>
-<a class="sourceLine" id="cb3-9" data-line-number="9"><span class="co">#&gt; [3,] 2    3</span></a></code></pre></div>
+<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="co">#&gt; [1,]    2    3</span></a>
+<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="co">#&gt; [2,]    2    3</span></a>
+<a class="sourceLine" id="cb3-9" data-line-number="9"><span class="co">#&gt; [3,]    2    3</span></a></code></pre></div>
 <p>Internally, this is what is happening:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">y_bcasted &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray_broadcast.html">rray_broadcast</a></span>(y_rray, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">3</span>, <span class="dv">2</span>))</a>
 <a class="sourceLine" id="cb4-2" data-line-number="2"></a>
 <a class="sourceLine" id="cb4-3" data-line-number="3">y_bcasted</a>
 <a class="sourceLine" id="cb4-4" data-line-number="4"><span class="co">#&gt; &lt;vctrs_rray&lt;double&gt;[,2][6]&gt;</span></a>
 <a class="sourceLine" id="cb4-5" data-line-number="5"><span class="co">#&gt;      [,1] [,2]</span></a>
-<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="co">#&gt; [1,] 1    1   </span></a>
-<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="co">#&gt; [2,] 1    1   </span></a>
-<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="co">#&gt; [3,] 1    1</span></a>
+<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="co">#&gt; [1,]    1    1</span></a>
+<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="co">#&gt; [2,]    1    1</span></a>
+<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="co">#&gt; [3,]    1    1</span></a>
 <a class="sourceLine" id="cb4-9" data-line-number="9"></a>
 <a class="sourceLine" id="cb4-10" data-line-number="10">x_rray <span class="op">+</span><span class="st"> </span>y_bcasted</a>
 <a class="sourceLine" id="cb4-11" data-line-number="11"><span class="co">#&gt; &lt;vctrs_rray&lt;double&gt;[,2][6]&gt;</span></a>
 <a class="sourceLine" id="cb4-12" data-line-number="12"><span class="co">#&gt;      [,1] [,2]</span></a>
-<a class="sourceLine" id="cb4-13" data-line-number="13"><span class="co">#&gt; [1,] 2    3   </span></a>
-<a class="sourceLine" id="cb4-14" data-line-number="14"><span class="co">#&gt; [2,] 2    3   </span></a>
-<a class="sourceLine" id="cb4-15" data-line-number="15"><span class="co">#&gt; [3,] 2    3</span></a></code></pre></div>
+<a class="sourceLine" id="cb4-13" data-line-number="13"><span class="co">#&gt; [1,]    2    3</span></a>
+<a class="sourceLine" id="cb4-14" data-line-number="14"><span class="co">#&gt; [2,]    2    3</span></a>
+<a class="sourceLine" id="cb4-15" data-line-number="15"><span class="co">#&gt; [3,]    2    3</span></a></code></pre></div>
 <p>Personally, I find it helpful to write it down:</p>
 <pre><code>(3, 2) &lt;- a 3x2 matrix
 (3, 1) &lt;- combined with a 3x1
@@ -150,16 +150,16 @@
 <a class="sourceLine" id="cb6-5" data-line-number="5"><span class="co">#&gt; , , 1</span></a>
 <a class="sourceLine" id="cb6-6" data-line-number="6"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb6-7" data-line-number="7"><span class="co">#&gt;      [,1] [,2] [,3] [,4]</span></a>
-<a class="sourceLine" id="cb6-8" data-line-number="8"><span class="co">#&gt; [1,] 2    2    2    2   </span></a>
-<a class="sourceLine" id="cb6-9" data-line-number="9"><span class="co">#&gt; [2,] 2    2    2    2   </span></a>
-<a class="sourceLine" id="cb6-10" data-line-number="10"><span class="co">#&gt; [3,] 2    2    2    2   </span></a>
+<a class="sourceLine" id="cb6-8" data-line-number="8"><span class="co">#&gt; [1,]    2    2    2    2</span></a>
+<a class="sourceLine" id="cb6-9" data-line-number="9"><span class="co">#&gt; [2,]    2    2    2    2</span></a>
+<a class="sourceLine" id="cb6-10" data-line-number="10"><span class="co">#&gt; [3,]    2    2    2    2</span></a>
 <a class="sourceLine" id="cb6-11" data-line-number="11"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb6-12" data-line-number="12"><span class="co">#&gt; , , 2</span></a>
 <a class="sourceLine" id="cb6-13" data-line-number="13"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb6-14" data-line-number="14"><span class="co">#&gt;      [,1] [,2] [,3] [,4]</span></a>
-<a class="sourceLine" id="cb6-15" data-line-number="15"><span class="co">#&gt; [1,] 2    2    2    2   </span></a>
-<a class="sourceLine" id="cb6-16" data-line-number="16"><span class="co">#&gt; [2,] 2    2    2    2   </span></a>
-<a class="sourceLine" id="cb6-17" data-line-number="17"><span class="co">#&gt; [3,] 2    2    2    2</span></a></code></pre></div>
+<a class="sourceLine" id="cb6-15" data-line-number="15"><span class="co">#&gt; [1,]    2    2    2    2</span></a>
+<a class="sourceLine" id="cb6-16" data-line-number="16"><span class="co">#&gt; [2,]    2    2    2    2</span></a>
+<a class="sourceLine" id="cb6-17" data-line-number="17"><span class="co">#&gt; [3,]    2    2    2    2</span></a></code></pre></div>
 <p>To understand this, let’s again write it out:</p>
 <pre><code>(3, 1,  ) &lt;- implicit 1 here
 (3, 4, 2)
@@ -171,16 +171,16 @@
 <a class="sourceLine" id="cb8-3" data-line-number="3"><span class="co">#&gt; , , 1</span></a>
 <a class="sourceLine" id="cb8-4" data-line-number="4"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb8-5" data-line-number="5"><span class="co">#&gt;      [,1] [,2] [,3] [,4]</span></a>
-<a class="sourceLine" id="cb8-6" data-line-number="6"><span class="co">#&gt; [1,] 1    1    1    1   </span></a>
-<a class="sourceLine" id="cb8-7" data-line-number="7"><span class="co">#&gt; [2,] 1    1    1    1   </span></a>
-<a class="sourceLine" id="cb8-8" data-line-number="8"><span class="co">#&gt; [3,] 1    1    1    1   </span></a>
+<a class="sourceLine" id="cb8-6" data-line-number="6"><span class="co">#&gt; [1,]    1    1    1    1</span></a>
+<a class="sourceLine" id="cb8-7" data-line-number="7"><span class="co">#&gt; [2,]    1    1    1    1</span></a>
+<a class="sourceLine" id="cb8-8" data-line-number="8"><span class="co">#&gt; [3,]    1    1    1    1</span></a>
 <a class="sourceLine" id="cb8-9" data-line-number="9"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb8-10" data-line-number="10"><span class="co">#&gt; , , 2</span></a>
 <a class="sourceLine" id="cb8-11" data-line-number="11"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb8-12" data-line-number="12"><span class="co">#&gt;      [,1] [,2] [,3] [,4]</span></a>
-<a class="sourceLine" id="cb8-13" data-line-number="13"><span class="co">#&gt; [1,] 1    1    1    1   </span></a>
-<a class="sourceLine" id="cb8-14" data-line-number="14"><span class="co">#&gt; [2,] 1    1    1    1   </span></a>
-<a class="sourceLine" id="cb8-15" data-line-number="15"><span class="co">#&gt; [3,] 1    1    1    1</span></a></code></pre></div>
+<a class="sourceLine" id="cb8-13" data-line-number="13"><span class="co">#&gt; [1,]    1    1    1    1</span></a>
+<a class="sourceLine" id="cb8-14" data-line-number="14"><span class="co">#&gt; [2,]    1    1    1    1</span></a>
+<a class="sourceLine" id="cb8-15" data-line-number="15"><span class="co">#&gt; [3,]    1    1    1    1</span></a></code></pre></div>
 </div>
 <div id="outer-sums" class="section level2">
 <h2 class="hasAnchor">
@@ -191,9 +191,9 @@
 <a class="sourceLine" id="cb9-3" data-line-number="3">z <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/t">t</a></span>(z)</a>
 <a class="sourceLine" id="cb9-4" data-line-number="4"><span class="co">#&gt; &lt;vctrs_rray&lt;integer&gt;[,3][9]&gt;</span></a>
 <a class="sourceLine" id="cb9-5" data-line-number="5"><span class="co">#&gt;      [,1] [,2] [,3]</span></a>
-<a class="sourceLine" id="cb9-6" data-line-number="6"><span class="co">#&gt; [1,] 2    3    4   </span></a>
-<a class="sourceLine" id="cb9-7" data-line-number="7"><span class="co">#&gt; [2,] 3    4    5   </span></a>
-<a class="sourceLine" id="cb9-8" data-line-number="8"><span class="co">#&gt; [3,] 4    5    6</span></a></code></pre></div>
+<a class="sourceLine" id="cb9-6" data-line-number="6"><span class="co">#&gt; [1,]    2    3    4</span></a>
+<a class="sourceLine" id="cb9-7" data-line-number="7"><span class="co">#&gt; [2,]    3    4    5</span></a>
+<a class="sourceLine" id="cb9-8" data-line-number="8"><span class="co">#&gt; [3,]    4    5    6</span></a></code></pre></div>
 <pre><code>(3, 1)
 (1, 3)
 ------

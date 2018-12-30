@@ -168,16 +168,16 @@ names in both situations.</p>
 <span class='co'># (10, 1, 1) -&gt; drop 2 -&gt; (10, 1)</span>
 <span class='fu'>rray_squeeze</span>(<span class='no'>y</span>, <span class='kw'>axes</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,1][10]&gt;
 #&gt;       [,1]
-#&gt;  [1,]  1  
-#&gt;  [2,]  2  
-#&gt;  [3,]  3  
-#&gt;  [4,]  4  
-#&gt;  [5,]  5  
-#&gt;  [6,]  6  
-#&gt;  [7,]  7  
-#&gt;  [8,]  8  
-#&gt;  [9,]  9  
-#&gt; [10,] 10  </div><div class='input'>
+#&gt;  [1,]    1
+#&gt;  [2,]    2
+#&gt;  [3,]    3
+#&gt;  [4,]    4
+#&gt;  [5,]    5
+#&gt;  [6,]    6
+#&gt;  [7,]    7
+#&gt;  [8,]    8
+#&gt;  [9,]    9
+#&gt; [10,]   10</div><div class='input'>
 <span class='co'># Dimension names are kept here</span>
 <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dim-names.html'>set_row_names</a></span>(<span class='no'>x</span>, <span class='no'>letters</span>[<span class='fl'>1</span>:<span class='fl'>10</span>])
 <span class='fu'>rray_squeeze</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[10]&gt;
