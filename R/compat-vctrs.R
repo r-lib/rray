@@ -67,6 +67,45 @@ vec_ptype_shape <- function(x) {
   }
 }
 
+# Because vctrs uses x[1:length] in obj_str_leaf() which
+# is not allowed for rray objects. This also has a more informative
+# title
+
+#' @export
+obj_str_data.vctrs_rray <- function(x, ...) {
+
+  width <- getOption("width") - 2
+  out <- vec_data(x)
+
+  # Avoid spending too much time formatting elements that won't see
+  length <- ceiling(width / 2)
+  if (vec_size(out) > length) {
+    out <- vec_slice(out, 1:length)
+  } else {
+    out <- out
+  }
+
+  title <- glue::glue(" {vec_ptype_abbr(x)} {vec_ptype_shape(x)}[{vec_size(x)}] ")
+  cat_line(inline_list(title, format(out), width = width))
+
+  invisible(x)
+}
+
+# Print helper stolen from vctrs
+cat_line <- function(...) {
+  cat(paste0(..., "\n", collapse = ""))
+}
+
+# Print helper stolen from vctrs
+inline_list <- function(title, x, width = getOption("width"), quote = "") {
+  label_width <- width - nchar(title)
+  x <- glue::glue_collapse(
+    encodeString(x, quote = quote),
+    sep = ", ",
+    width = label_width
+  )
+  paste0(title, x)
+}
 
 # Override the vctrs `[<-` because it does not allow you to pass in more than
 # just i AND it calls vec_cast() where `to` is the full x obj, not just on the slice

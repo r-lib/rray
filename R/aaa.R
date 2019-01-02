@@ -17,6 +17,7 @@
 #'
 #' @importFrom vctrs new_vctr
 #' @importFrom vctrs obj_print_data
+#' @importFrom vctrs obj_str_data
 #'
 #' @importFrom vctrs vec_arith
 #' @importFrom vctrs vec_arith.logical
