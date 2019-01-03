@@ -27,6 +27,21 @@ test_that("names() and dim_names() are kept", {
   expect_equal(dim_names(as_matrix(x_mat)), nms)
 })
 
+test_that("meta dim names are kept", {
+
+  x_nms <- dim_names(x_array)
+  names(x_nms) <- "meta_nm"
+  x_array_meta <- x_array
+  dim_names(x_array_meta) <- x_nms
+
+  nms_with_meta <- c(dim_names(x_array_meta), new_empty_dim_names(1))
+
+  expect_equal(
+    dim_names(as_matrix(x_array_meta)),
+    nms_with_meta
+  )
+})
+
 test_that("Cannot reduce dimensions", {
   expect_error(as_matrix(rray(1, c(1, 1, 1))), "Cannot reduce")
 })
@@ -55,6 +70,20 @@ test_that("names() and dim_names() are kept", {
   expect_equal(dim_names(as_array(x_mat)), nms_2D)
 })
 
+test_that("meta dim names are kept", {
+
+  x_rray <- as_rray(x_array)
+  x_nms <- dim_names(x_rray)
+  names(x_nms) <- "meta_nm"
+  dim_names(x_rray) <- x_nms
+
+  nms_with_meta <- dim_names(x_rray)
+
+  expect_equal(
+    dim_names(as_array(x_rray)),
+    nms_with_meta
+  )
+})
 
 # ------------------------------------------------------------------------------
 context("test-coercion-rray")
@@ -77,6 +106,21 @@ test_that("names() and dim_names() are kept", {
   expect_equal(dim_names(as_rray(x)), nms_1D)
   expect_equal(dim_names(as_rray(x_array)), nms_1D)
   expect_equal(dim_names(as_rray(x_mat)), nms_2D)
+})
+
+test_that("meta dim names are kept", {
+
+  x_nms <- dim_names(x_array)
+  names(x_nms) <- "meta_nm"
+  x_array_meta <- x_array
+  dim_names(x_array_meta) <- x_nms
+
+  nms_with_meta <- dim_names(x_array_meta)
+
+  expect_equal(
+    dim_names(as_rray(x_array_meta)),
+    nms_with_meta
+  )
 })
 
 test_that("4D tests", {

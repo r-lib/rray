@@ -66,7 +66,7 @@ dim_names.default <- function(x) {
 
 #' @export
 dim_names.array <- function(x) {
-  dim_nms <- unname(dimnames(x))
+  dim_nms <- dimnames(x)
 
   if (is.null(dim_nms)) {
     dims <- vec_dims(x)
