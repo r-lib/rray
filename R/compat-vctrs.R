@@ -223,9 +223,10 @@ vec_cast.vctrs_rray.logical <- function(x, to) vec_unspecified_cast(x, to)
 #' @method vec_cast.vctrs_rray vctrs_rray
 #' @export
 vec_cast.vctrs_rray.vctrs_rray <- function(x, to) {
-  res <- broadcast_impl(x, vec_dim(to))
+  dim <- c(vec_size(x), rray_shape(to))
+  res <- broadcast_impl(x, dim)
   new_rray(
-    .data = vec_data(res),
+    .data = vec_cast(vec_data(res), vec_data(to)),
     size = vec_size(res),
     shape = rray_shape(res)
   )
@@ -244,7 +245,7 @@ vec_cast.vctrs_rray.double <- vec_cast.vctrs_rray.vctrs_rray
 #' @method vec_cast.double vctrs_rray
 #' @export
 vec_cast.double.vctrs_rray <- function(x, to) {
-  dim <- vec_dim(to)
+  dim <- c(vec_size(x), rray_shape(to))
   x <- broadcast_impl(x, dim)
   x <- vec_cast(vec_data(x), double())
   array(x, dim = dim)
@@ -259,7 +260,7 @@ vec_cast.vctrs_rray.integer <- vec_cast.vctrs_rray.vctrs_rray
 #' @method vec_cast.integer vctrs_rray
 #' @export
 vec_cast.integer.vctrs_rray <- function(x, to) {
-  dim <- vec_dim(to)
+  dim <- c(vec_size(x), rray_shape(to))
   x <- broadcast_impl(x, dim)
   x <- vec_cast(vec_data(x), integer())
   array(x, dim = dim)
@@ -274,7 +275,7 @@ vec_cast.vctrs_rray.logical <- vec_cast.vctrs_rray.vctrs_rray
 #' @method vec_cast.logical vctrs_rray
 #' @export
 vec_cast.logical.vctrs_rray <- function(x, to) {
-  dim <- vec_dim(to)
+  dim <- c(vec_size(x), rray_shape(to))
   x <- broadcast_impl(x, dim)
   x <- vec_cast(vec_data(x), logical())
   array(x, dim = dim)

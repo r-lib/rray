@@ -30,23 +30,43 @@ test_that("to base types", {
 test_that("can broadcast shape", {
   x <- as_rray(array(1, dim = c(1, 2)))
 
+  # Broadcast shape only, not size!
   x_array <- vec_cast(x, array(1, dim = c(2, 2)))
   expect_is(x_array, "matrix")
-  expect_equal(dim(x_array), c(2, 2))
+  expect_equal(dim(x_array), c(1, 2))
 
   x_array2 <- vec_cast(x, array(1, dim = c(2, 2, 2)))
   expect_is(x_array2, "array")
-  expect_equal(dim(x_array2), c(2, 2, 2))
+  expect_equal(dim(x_array2), c(1, 2, 2))
 
   x_matrix <- vec_cast(x, matrix(1, 2, 2))
   expect_is(x_matrix, "matrix")
-  expect_equal(dim(x_matrix), c(2, 2))
+  expect_equal(dim(x_matrix), c(1, 2))
 
   expect_equal(x_array, x_matrix)
 
   # can broadcast shape with rray's
   y <- as_rray(array(1, dim = c(2, 2, 3)))
-  expect_equal(dim(vec_cast(x, y)), c(2, 2, 3))
+  expect_equal(dim(vec_cast(x, y)), c(1, 2, 3))
+})
+
+test_that("casting updates inner types", {
+  x_int <- rray(1L)
+
+  expect_equal(
+    vec_cast(x_int, double()),
+    array(1)
+  )
+
+  expect_equal(
+    vec_cast(x_int, matrix(1)),
+    matrix(1)
+  )
+
+  expect_equal(
+    vec_cast(x_int, matrix(FALSE)),
+    matrix(TRUE)
+  )
 })
 
 test_that("using base coercing functions", {
