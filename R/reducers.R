@@ -3,11 +3,6 @@
 
 rray_reducer_base <- function(reducer, x, axes) {
 
-  # currently, this only works with rrays
-  # because we need the correct vec_restore to be called
-  # so dim_names can be recomputed
-  x <- as_rray(x)
-
   # only integer axes
   axes <- vec_cast(axes, integer())
   validate_axes(axes, vec_dims(x))
@@ -16,7 +11,7 @@ rray_reducer_base <- function(reducer, x, axes) {
   res <- rray_reducer_cpp(reducer, x, as_cpp_idx(axes))
 
   # restore the type, but not dim_names
-  res <- vec_restore(res, x)
+  res <- rray_partial_restore(res, x)
 
   # TODO currently, xtensor reduces the result correctly,
   # but the resulting dimensions are reduced as well.
