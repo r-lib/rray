@@ -23,3 +23,19 @@ test_that("Common dim is found", {
 
   expect_equal(vec_type_common(x, y), vec_type2(x, y))
 })
+
+test_that("Common inner type is found", {
+
+  x <- rray(1)
+  y <- rray(1L)
+  z <- 1L
+
+  # numeric + integer
+  expect_equal(vec_type2(x, y), new_rray(numeric()))
+
+  # numeric + integer
+  expect_equal(vec_type2(x, z), new_rray(numeric()))
+
+  # integer + integer
+  expect_equal(vec_type2(y, z), new_rray(integer()))
+})
