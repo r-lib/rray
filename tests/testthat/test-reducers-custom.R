@@ -40,11 +40,10 @@ test_that("Can reduce over multiple axes", {
 })
 
 test_that("Can reduce base R objects", {
-  # results are currently rray objects
   y_mat <- as.matrix(y)
   expect_equal(
     rray_reduce_int(y_mat, ~.x + .y),
-    rray_reduce_int(y, ~.x + .y)
+    matrix(c(3L, 7L), ncol = 2)
   )
 })
 

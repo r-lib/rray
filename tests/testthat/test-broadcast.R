@@ -5,7 +5,7 @@ test_that("can broadcast dimension of 1 to N", {
   expect_equal(vec_dim(rray_broadcast(x, c(5, 2))), c(5, 2))
 })
 
-test_that("broadcasting keeps original class (with vec_restore())", {
+test_that("broadcasting keeps original class (with rray_partial_restore())", {
   x <- as_rray(array(1, dim = c(1, 2)))
   res <- rray_broadcast(x, c(1, 2))
   expect_is(res, "vctrs_rray")

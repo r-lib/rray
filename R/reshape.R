@@ -7,7 +7,7 @@
 #' @export
 rray_reshape <- function(x, dim) {
   res <- reshape_impl(x, dim)
-  res <- vec_restore(res, x)
+  res <- rray_partial_restore(res, x)
 
   # Actually going down in dimensions here, but restore_dim_names()
   # can handle that

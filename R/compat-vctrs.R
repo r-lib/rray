@@ -32,6 +32,9 @@ t.vctrs_rray <- function(x) {
 # no attempt to "restore" dim names.
 # only copies any existing dim_names over
 
+# TODO - I think this is incorrect
+# and should function more like rray_restore()
+
 #' @export
 vec_restore.vctrs_rray <- function(x, to) {
   new_rray(
@@ -118,7 +121,9 @@ inline_list <- function(title, x, width = getOption("width"), quote = "") {
   value <- vec_cast(value, x[...])
   x_array <- as_array(x)
   x_array[...] <- value
-  vec_restore(x_array, x)
+  res <- rray_restore(x_array, x)
+  dim_names(res) <- dim_names(x)
+  res
 }
 
 #' @export
@@ -126,7 +131,9 @@ inline_list <- function(title, x, width = getOption("width"), quote = "") {
   value <- vec_cast(value, x[[...]])
   x_array <- as_array(x)
   x_array[[...]] <- value
-  vec_restore(x_array, x)
+  res <- rray_restore(x_array, x)
+  dim_names(res) <- dim_names(x)
+  res
 }
 
 # vec_type2 boilerplate --------------------------------------------------------

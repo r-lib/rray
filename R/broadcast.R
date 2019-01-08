@@ -74,25 +74,15 @@ rray_broadcast <- function(x, dim) {
   UseMethod("rray_broadcast")
 }
 
-# default restores names, but not type (really not
-# class, as a new shape is created)
-
 #' @export
 rray_broadcast.default <- function(x, dim) {
   res <- broadcast_impl(x, dim)
-  new_dim_names <- restore_dim_names(x, dim)
-  res <- set_full_dim_names(res, new_dim_names)
-  res
-}
 
-#' @export
-rray_broadcast.vctrs_rray <- function(x, dim) {
-  # I would use the default but vec_restore()
-  # would remove the dim names
-  res <- broadcast_impl(x, dim)
-  res <- vec_restore(res, x)
+  res <- rray_partial_restore(res, x)
+
   new_dim_names <- restore_dim_names(x, dim)
   res <- set_full_dim_names(res, new_dim_names)
+
   res
 }
 

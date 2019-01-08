@@ -39,10 +39,8 @@ rray_flip <- function(x, axis) {
     glubort("`axis` for this `x` can be at most {dims}, not {axis}.")
   }
 
-  x <- as_rray(x)
-
   res <- rray_flip_impl(x, axis)
-  res <- vec_restore(res, x)
+  res <- rray_restore(res, x)
 
   # Reverse dim names along the specified axis
   x_dim_names <- dim_names(x)

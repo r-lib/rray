@@ -59,7 +59,6 @@ rray_reduce_lgl <- function(.x, .f, ..., axes = 1) {
 
 reducer_impl <- function(.x, .f, ..., axes, type) {
 
-  .x <- as_rray(.x)
   .f <- rlang::as_function(.f)
 
   # Enable passing of ...
@@ -75,8 +74,7 @@ reducer_impl <- function(.x, .f, ..., axes, type) {
   # perform the reduction
   res <- rray_custom_reducer_cpp(.x, f, as_cpp_idx(axes), type)
 
-  # restore the type, but not dim_names
-  res <- vec_restore(res, .x)
+  res <- rray_partial_restore(res, .x)
 
   # until we get keepdims = True
   new_dim <- vec_dim(.x)

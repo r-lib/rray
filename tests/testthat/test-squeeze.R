@@ -60,3 +60,33 @@ test_that("explicit dimensions can be specified", {
   # (1, 10, 1) -> drop 3 -> (1, 10)
   expect_equal(vec_dim(rray_squeeze(x, 3)), c(1, 10))
 })
+
+test_that("can squeeze base objects", {
+
+  x_arr <- array(
+    c(1,2,3,4),
+    dim = c(2,1,2),
+    dimnames = list(c("r1", "r2"), c("c1"), c("d1", "d2"))
+  )
+
+  x_arr2 <- array(1:8, c(8, 1, 1))
+
+  x_base <- drop(x_arr)
+  x_base <- set_col_names(x_base, character())
+
+  expect_equal(
+    rray_squeeze(x_arr, 2),
+    x_base
+  )
+
+  expect_is(
+    rray_squeeze(x_arr2),
+    "array"
+  )
+
+  expect_equal(
+    rray_squeeze(x_arr2),
+    as.array(1:8)
+  )
+
+})

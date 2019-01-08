@@ -57,6 +57,28 @@ test_that("Reducing to 0D works", {
   expect_equal(vec_data(..2D), 55)
 })
 
+test_that("reducing base types maintains type", {
+
+  x_int <- vec_data(x)
+
+  x_mat <- as.matrix(x)
+  x_mat_cnames <- set_col_names(x_mat, "x")
+
+  x_arr <- as.array(x)
+
+  # this should inherit from integer, but currently modifies in place
+  # and x_int becomes an array https://github.com/QuantStack/xtensor-r/pull/87
+  expect_failure(expect_is({rray_sum(x_int, 1); x_int}, "integer"))
+
+  expect_is(rray_sum(x_mat, 1), "matrix")
+  expect_is(rray_sum(x_arr, 1), "array")
+
+  expect_equal(vec_dim(rray_sum(x_mat, 1)), c(1, 1))
+
+  expect_equal(col_names(rray_sum(x_mat_cnames, 1)), "x")
+  expect_equal(col_names(rray_sum(x_mat_cnames, 2)), "x")
+})
+
 test_that("rray_sum() with integers gives doubles to prevent overflow", {
   expect_equal(
     vec_type(rray_sum(rray(1L))),
@@ -126,6 +148,26 @@ test_that("Reducing to 0D works", {
 
   expect_equal(vec_data(..1D), prod(vec_data(x)))
   expect_equal(vec_data(..2D), prod(vec_data(x)))
+})
+
+test_that("reducing base types maintains type", {
+
+  x_int <- vec_data(x)
+
+  x_mat <- as.matrix(x)
+  x_mat_cnames <- set_col_names(x_mat, "x")
+
+  x_arr <- as.array(x)
+
+  expect_failure(expect_is({rray_prod(x_int, 1); x_int}, "integer"))
+
+  expect_is(rray_prod(x_mat, 1), "matrix")
+  expect_is(rray_prod(x_arr, 1), "array")
+
+  expect_equal(vec_dim(rray_prod(x_mat, 1)), c(1, 1))
+
+  expect_equal(col_names(rray_prod(x_mat_cnames, 1)), "x")
+  expect_equal(col_names(rray_prod(x_mat_cnames, 2)), "x")
 })
 
 test_that("rray_prod() with integers gives doubles to prevent overflow", {
@@ -200,6 +242,26 @@ test_that("Reducing to 0D works", {
   expect_equal(vec_data(..2D), mean(vec_data(x)))
 })
 
+test_that("reducing base types maintains type", {
+
+  x_int <- vec_data(x)
+
+  x_mat <- as.matrix(x)
+  x_mat_cnames <- set_col_names(x_mat, "x")
+
+  x_arr <- as.array(x)
+
+  expect_failure(expect_is({rray_mean(x_int, 1); x_int}, "integer"))
+
+  expect_is(rray_mean(x_mat, 1), "matrix")
+  expect_is(rray_mean(x_arr, 1), "array")
+
+  expect_equal(vec_dim(rray_mean(x_mat, 1)), c(1, 1))
+
+  expect_equal(col_names(rray_mean(x_mat_cnames, 1)), "x")
+  expect_equal(col_names(rray_mean(x_mat_cnames, 2)), "x")
+})
+
 test_that("rray_mean() with integers gives doubles to prevent overflow", {
   expect_equal(
     vec_type(rray_mean(rray(1L))),
@@ -271,6 +333,26 @@ test_that("Reducing to 0D works", {
   expect_equal(vec_data(..2D), max(vec_data(x)))
 })
 
+test_that("reducing base types maintains type", {
+
+  x_int <- vec_data(x)
+
+  x_mat <- as.matrix(x)
+  x_mat_cnames <- set_col_names(x_mat, "x")
+
+  x_arr <- as.array(x)
+
+  expect_failure(expect_is({rray_amax(x_int, 1); x_int}, "integer"))
+
+  expect_is(rray_amax(x_mat, 1), "matrix")
+  expect_is(rray_amax(x_arr, 1), "array")
+
+  expect_equal(vec_dim(rray_amax(x_mat, 1)), c(1, 1))
+
+  expect_equal(col_names(rray_amax(x_mat_cnames, 1)), "x")
+  expect_equal(col_names(rray_amax(x_mat_cnames, 2)), "x")
+})
+
 test_that("rray_amax() with integers gives doubles to prevent overflow", {
   expect_equal(
     vec_type(rray_amax(rray(1L))),
@@ -340,6 +422,26 @@ test_that("Reducing to 0D works", {
 
   expect_equal(vec_data(..1D), min(vec_data(x)))
   expect_equal(vec_data(..2D), min(vec_data(x)))
+})
+
+test_that("reducing base types maintains type", {
+
+  x_int <- vec_data(x)
+
+  x_mat <- as.matrix(x)
+  x_mat_cnames <- set_col_names(x_mat, "x")
+
+  x_arr <- as.array(x)
+
+  expect_failure(expect_is({rray_amin(x_int, 1); x_int}, "integer"))
+
+  expect_is(rray_amin(x_mat, 1), "matrix")
+  expect_is(rray_amin(x_arr, 1), "array")
+
+  expect_equal(vec_dim(rray_amin(x_mat, 1)), c(1, 1))
+
+  expect_equal(col_names(rray_amin(x_mat_cnames, 1)), "x")
+  expect_equal(col_names(rray_amin(x_mat_cnames, 2)), "x")
 })
 
 test_that("rray_amin() with integers gives doubles to prevent overflow", {

@@ -64,10 +64,8 @@ rray_expand_dims <- function(x, axis) {
     glubort("`axis` for this `x` can be at most {dims + 1}, not {axis}.")
   }
 
-  x <- as_rray(x)
-
   res <- rray_expand_dims_impl(x, axis)
-  res <- vec_restore(res, x)
+  res <- rray_partial_restore(res, x)
 
   x_dim_names <- dim_names(x)
 
