@@ -492,18 +492,15 @@ SEXP rray_op_unary_cpp(std::string op, SEXP x) {
   switch(TYPEOF(x)) {
 
   case REALSXP: {
-    auto x_rray = xt::rarray<double>(x);
-    return rray_op_unary_cpp_impl(op, x_rray);
+    return rray_op_unary_cpp_impl(op, xt::rarray<double>(x));
   }
 
   case INTSXP: {
-    auto x_rray = xt::rarray<int>(x);
-    return rray_op_unary_cpp_impl(op, x_rray);
+    return rray_op_unary_cpp_impl(op, xt::rarray<int>(x));
   }
 
   case LGLSXP: {
-    auto x_rray = xt::rarray<rlogical>(x);
-    return rray_op_unary_cpp_impl(op, x_rray);
+    return rray_op_unary_cpp_impl(op, xt::rarray<rlogical>(x));
   }
 
   default: {
