@@ -14,7 +14,7 @@ rray_arith_base <- function(op, x, y) {
     "+" = ,
     "-" = ,
     "/" = ,
-    "*" = rray_binary_op_cpp
+    "*" = rray_op_binary_cpp
   )
 
   # Get common dim_names and type

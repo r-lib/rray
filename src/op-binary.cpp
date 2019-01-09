@@ -64,10 +64,15 @@ SEXP rray_divide_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
 }
 
 // -----------------------------------------------------------------------------
+// More Binary operations
+
+
+
+// -----------------------------------------------------------------------------
 // Switch on the op
 
 template <typename T1, typename T2>
-SEXP rray_binary_op_cpp_impl(const std::string& op, const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
+SEXP rray_op_binary_cpp_impl(const std::string& op, const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
 
   switch(str2int(op.c_str())) {
 
@@ -88,7 +93,7 @@ SEXP rray_binary_op_cpp_impl(const std::string& op, const xt::rarray<T1>& x, con
     }
 
     default: {
-      stop("Unknown binary arithmetic operation.");
+      stop("Unknown binary operation.");
     }
 
   }
@@ -96,106 +101,63 @@ SEXP rray_binary_op_cpp_impl(const std::string& op, const xt::rarray<T1>& x, con
 }
 
 // -----------------------------------------------------------------------------
-// Switch on the types of x and y
+// Switch on the types of y
+
+template<typename T1>
+SEXP rray_op_binary_cpp_y(const std::string& op, const xt::rarray<T1>& x_rray, SEXP y) {
+
+  switch(TYPEOF(y)) {
+
+  case REALSXP: {
+    const xt::rarray<double>& y_rray = xt::rarray<double>(y);
+    return rray_op_binary_cpp_impl(op, x_rray, y_rray);
+  }
+
+  case INTSXP: {
+    const xt::rarray<int>& y_rray = xt::rarray<int>(y);
+    return rray_op_binary_cpp_impl(op, x_rray, y_rray);
+  }
+
+  case LGLSXP: {
+    const xt::rarray<rlogical>& y_rray = xt::rarray<rlogical>(y);
+    return rray_op_binary_cpp_impl(op, x_rray, y_rray);
+  }
+
+  default: {
+    error_unknown_type();
+  }
+
+  }
+
+}
+
+// -----------------------------------------------------------------------------
+// Switch on the types of x
 
 // [[Rcpp::export]]
-SEXP rray_binary_op_cpp(const std::string& op, SEXP x, SEXP y) {
-
-  // I can't figure out any cleaner way to do this.
+SEXP rray_op_binary_cpp(const std::string& op, SEXP x, SEXP y) {
 
   switch(TYPEOF(x)) {
 
     case REALSXP: {
       const xt::rarray<double>& x_rray = xt::rarray<double>(x);
-
-      switch(TYPEOF(y)) {
-
-        case REALSXP: {
-          const xt::rarray<double>& y_rray = xt::rarray<double>(y);
-          return rray_binary_op_cpp_impl(op, x_rray, y_rray);
-        }
-
-        case INTSXP: {
-          const xt::rarray<int>& y_rray = xt::rarray<int>(y);
-          return rray_binary_op_cpp_impl(op, x_rray, y_rray);
-        }
-
-        case LGLSXP: {
-          const xt::rarray<rlogical>& y_rray = xt::rarray<rlogical>(y);
-          return rray_binary_op_cpp_impl(op, x_rray, y_rray);
-        }
-
-        default: {
-          error_unknown_type();
-        }
-
-      } // End Y switch
-
-    } // End REALSXP X case
+      return rray_op_binary_cpp_y(op, x_rray, y);
+    }
 
     case INTSXP: {
       const xt::rarray<int>& x_rray = xt::rarray<int>(x);
-
-      // Switch on Y
-      switch(TYPEOF(y)) {
-
-        case REALSXP: {
-          const xt::rarray<double>& y_rray = xt::rarray<double>(y);
-          return rray_binary_op_cpp_impl(op, x_rray, y_rray);
-        }
-
-        case INTSXP: {
-          const xt::rarray<int>& y_rray = xt::rarray<int>(y);
-          return rray_binary_op_cpp_impl(op, x_rray, y_rray);
-        }
-
-        case LGLSXP: {
-          const xt::rarray<rlogical>& y_rray = xt::rarray<rlogical>(y);
-          return rray_binary_op_cpp_impl(op, x_rray, y_rray);
-        }
-
-        default: {
-          error_unknown_type();
-        }
-
-      } // End Y switch
-
-    } // End INTSXP X case
+      return rray_op_binary_cpp_y(op, x_rray, y);
+    }
 
     case LGLSXP: {
-
       const xt::rarray<rlogical>& x_rray = xt::rarray<rlogical>(x);
-
-      // Switch on Y
-      switch(TYPEOF(y)) {
-
-        case REALSXP: {
-          const xt::rarray<double>& y_rray = xt::rarray<double>(y);
-          return rray_binary_op_cpp_impl(op, x_rray, y_rray);
-        }
-
-        case INTSXP: {
-          const xt::rarray<int>& y_rray = xt::rarray<int>(y);
-          return rray_binary_op_cpp_impl(op, x_rray, y_rray);
-        }
-
-        case LGLSXP: {
-          const xt::rarray<rlogical>& y_rray = xt::rarray<rlogical>(y);
-          return rray_binary_op_cpp_impl(op, x_rray, y_rray);
-        }
-
-        default: {
-          error_unknown_type();
-        }
-
-      } // End Y switch
-
-    } // End LGLSXP X case
+      return rray_op_binary_cpp_y(op, x_rray, y);
+    }
 
     default: {
       error_unknown_type();
     }
 
-  } // End X switch
+  }
 
 }
