@@ -17,6 +17,16 @@ xt::rarray<T> as_r_idx(xt::rarray<T> x) {
 }
 
 // -----------------------------------------------------------------------------
+// Broadcast
+
+template <typename T>
+SEXP rray_broadcast_cpp(const xt::rarray<T>& x, SEXP arg) {
+  rray::dim_t dim = as<std::vector<std::size_t>>(arg);
+  const xt::rarray<T>& res = xt::broadcast(x, dim);
+  return(res);
+}
+
+// -----------------------------------------------------------------------------
 // Sort / arg*
 
 // sort and argsort seem somewhat broken.
@@ -124,6 +134,12 @@ SEXP rray_op_unary_1_arg_cpp_impl(std::string op, xt::rarray<T1> x, SEXP arg) {
 
   switch(str2int(op.c_str())) {
 
+  // ---------------------------------------------------------------------------
+  // Broadcast
+
+  case str2int("broadcast"): {
+    return rray_broadcast_cpp(x, arg);
+  }
 
   // ---------------------------------------------------------------------------
   // Sort / arg*

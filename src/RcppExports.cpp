@@ -6,18 +6,6 @@
 
 using namespace Rcpp;
 
-// rray_broadcast_cpp
-SEXP rray_broadcast_cpp(SEXP x, rray::dim_t dim);
-RcppExport SEXP _rray_rray_broadcast_cpp(SEXP xSEXP, SEXP dimSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
-    Rcpp::traits::input_parameter< rray::dim_t >::type dim(dimSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray_broadcast_cpp(x, dim));
-    return rcpp_result_gen;
-END_RCPP
-}
 // rray_ones_cpp
 SEXP rray_ones_cpp(const std::vector<std::size_t>& shape);
 RcppExport SEXP _rray_rray_ones_cpp(SEXP shapeSEXP) {
@@ -193,7 +181,6 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_rray_rray_broadcast_cpp", (DL_FUNC) &_rray_rray_broadcast_cpp, 2},
     {"_rray_rray_ones_cpp", (DL_FUNC) &_rray_rray_ones_cpp, 1},
     {"_rray_rray_zeros_cpp", (DL_FUNC) &_rray_rray_zeros_cpp, 1},
     {"_rray_rray_eye_cpp", (DL_FUNC) &_rray_rray_eye_cpp, 2},
