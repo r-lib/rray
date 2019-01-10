@@ -85,6 +85,38 @@ SEXP rray_full_like_cpp(const xt::rarray<T>& x, SEXP arg) {
 }
 
 // -----------------------------------------------------------------------------
+// Accumulators
+
+// To prevent overflow, return doubles
+// TODO - https://github.com/QuantStack/xtensor/issues/1333
+
+template <typename T>
+SEXP rray_cumsum_cpp(const xt::rarray<T>& x, SEXP arg) {
+
+  if (Rf_isNull(arg)) {
+    const xt::rarray<double>& res = xt::cumsum(x);
+    return res;
+  }
+
+  std::ptrdiff_t axis = as<std::ptrdiff_t>(arg);
+  const xt::rarray<double>& res = xt::cumsum(x, axis);
+  return res;
+}
+
+template <typename T>
+SEXP rray_cumprod_cpp(const xt::rarray<T>& x, SEXP arg) {
+
+  if (Rf_isNull(arg)) {
+    const xt::rarray<double>& res = xt::cumprod(x);
+    return res;
+  }
+
+  std::ptrdiff_t axis = as<std::ptrdiff_t>(arg);
+  const xt::rarray<double>& res = xt::cumprod(x, axis);
+  return res;
+}
+
+// -----------------------------------------------------------------------------
 // Switch on the op
 
 template <typename T1>
@@ -117,6 +149,17 @@ SEXP rray_op_unary_1_arg_cpp_impl(std::string op, xt::rarray<T1> x, SEXP arg) {
 
   case str2int("full_like"): {
     return rray_full_like_cpp(x, arg);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Accumulator
+
+  case str2int("cumsum"): {
+    return rray_cumsum_cpp(x, arg);
+  }
+
+  case str2int("cumprod"): {
+    return rray_cumprod_cpp(x, arg);
   }
 
   default: {
