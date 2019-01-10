@@ -18,6 +18,52 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray_ones_cpp
+SEXP rray_ones_cpp(const std::vector<std::size_t>& shape);
+RcppExport SEXP _rray_rray_ones_cpp(SEXP shapeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::vector<std::size_t>& >::type shape(shapeSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray_ones_cpp(shape));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray_zeros_cpp
+SEXP rray_zeros_cpp(const std::vector<std::size_t>& shape);
+RcppExport SEXP _rray_rray_zeros_cpp(SEXP shapeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::vector<std::size_t>& >::type shape(shapeSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray_zeros_cpp(shape));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray_eye_cpp
+SEXP rray_eye_cpp(const std::vector<std::size_t> shape, int k);
+RcppExport SEXP _rray_rray_eye_cpp(SEXP shapeSEXP, SEXP kSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const std::vector<std::size_t> >::type shape(shapeSEXP);
+    Rcpp::traits::input_parameter< int >::type k(kSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray_eye_cpp(shape, k));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray_eye_square_cpp
+SEXP rray_eye_square_cpp(std::size_t n, int k);
+RcppExport SEXP _rray_rray_eye_square_cpp(SEXP nSEXP, SEXP kSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::size_t >::type n(nSEXP);
+    Rcpp::traits::input_parameter< int >::type k(kSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray_eye_square_cpp(n, k));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray_expand_dims_cpp
 SEXP rray_expand_dims_cpp(SEXP x, std::size_t axis);
 RcppExport SEXP _rray_rray_expand_dims_cpp(SEXP xSEXP, SEXP axisSEXP) {
@@ -148,6 +194,10 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray_broadcast_cpp", (DL_FUNC) &_rray_rray_broadcast_cpp, 2},
+    {"_rray_rray_ones_cpp", (DL_FUNC) &_rray_rray_ones_cpp, 1},
+    {"_rray_rray_zeros_cpp", (DL_FUNC) &_rray_rray_zeros_cpp, 1},
+    {"_rray_rray_eye_cpp", (DL_FUNC) &_rray_rray_eye_cpp, 2},
+    {"_rray_rray_eye_square_cpp", (DL_FUNC) &_rray_rray_eye_square_cpp, 2},
     {"_rray_rray_expand_dims_cpp", (DL_FUNC) &_rray_rray_expand_dims_cpp, 2},
     {"_rray_rray_flip_cpp", (DL_FUNC) &_rray_rray_flip_cpp, 2},
     {"_rray_rray_op_binary_cpp", (DL_FUNC) &_rray_rray_op_binary_cpp, 3},

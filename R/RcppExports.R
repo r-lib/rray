@@ -5,6 +5,22 @@ rray_broadcast_cpp <- function(x, dim) {
     .Call(`_rray_rray_broadcast_cpp`, x, dim)
 }
 
+rray_ones_cpp <- function(shape) {
+    .Call(`_rray_rray_ones_cpp`, shape)
+}
+
+rray_zeros_cpp <- function(shape) {
+    .Call(`_rray_rray_zeros_cpp`, shape)
+}
+
+rray_eye_cpp <- function(shape, k = 0L) {
+    .Call(`_rray_rray_eye_cpp`, shape, k)
+}
+
+rray_eye_square_cpp <- function(n, k = 0L) {
+    .Call(`_rray_rray_eye_square_cpp`, n, k)
+}
+
 rray_expand_dims_cpp <- function(x, axis) {
     .Call(`_rray_rray_expand_dims_cpp`, x, axis)
 }

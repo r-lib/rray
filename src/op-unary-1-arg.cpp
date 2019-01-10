@@ -1,4 +1,6 @@
 #include <rray_types.h>
+// this header seems necessary for full_like() rather than xbuilder.hpp
+#include <xtensor/xarray.hpp>
 #include <xtensor/xsort.hpp>
 #include <tools/errors.hpp>
 #include <tools/utils.hpp>
@@ -7,16 +9,80 @@ using namespace Rcpp;
 using namespace rray;
 
 // -----------------------------------------------------------------------------
-// Sort
+// Helper
 
-// This seems somewhat broken
+template <typename T>
+xt::rarray<T> as_r_idx(xt::rarray<T> x) {
+  return x + 1;
+}
 
-// template <typename T>
-// SEXP rray_sort_cpp(xt::rarray<T> x, SEXP arg) {
-//   std::ptrdiff_t axis = *INTEGER(arg);
-//   xt::rarray<T> res = xt::sort(x, axis);
-//   return res;
-// }
+// -----------------------------------------------------------------------------
+// Sort / arg*
+
+// sort and argsort seem somewhat broken.
+// https://github.com/QuantStack/xtensor-r/issues/88
+
+template <typename T>
+SEXP rray_sort_cpp(xt::rarray<T> x, SEXP arg) {
+  std::ptrdiff_t axis = as<std::ptrdiff_t>(arg);
+  xt::rarray<T> res = xt::sort(x, axis);
+  return res;
+}
+
+template <typename T>
+SEXP rray_argsort_cpp(xt::rarray<T> x, SEXP arg) {
+  std::ptrdiff_t axis = as<std::ptrdiff_t>(arg);
+  xt::rarray<int> res = xt::argsort(x, axis);
+  return as_r_idx(res);
+  return res;
+}
+
+// Waiting on the ability to specify the layout for argmax / argmin
+// especially when arg = NULL
+// https://github.com/QuantStack/xtensor-r/issues/89
+
+template <typename T>
+SEXP rray_argmax_cpp(xt::rarray<T> x, SEXP arg) {
+
+  if (Rf_isNull(arg)) {
+    xt::rarray<int> res = xt::argmax(x);
+    return as_r_idx(res);
+  }
+
+  std::ptrdiff_t axis = *INTEGER(arg);
+  xt::rarray<int> res = xt::argmax(x, axis);
+  return as_r_idx(res);
+}
+
+template <typename T>
+SEXP rray_argmin_cpp(xt::rarray<T> x, SEXP arg) {
+
+  if (Rf_isNull(arg)) {
+    xt::rarray<int> res = xt::argmin(x);
+    return as_r_idx(res);
+  }
+
+  std::ptrdiff_t axis = *INTEGER(arg);
+  xt::rarray<int> res = xt::argmin(x, axis);
+  return as_r_idx(res);
+}
+
+// -----------------------------------------------------------------------------
+// Builders
+
+// type of arg has to be the same as the type of T
+
+template <typename T>
+SEXP rray_full_like_cpp(const xt::rarray<T>& x, SEXP arg) {
+
+  // Coerce arg to the underlying type T
+  // (rlogical is really int so we need the underlying int type)
+  using underlying_type = typename xt::r_detail::get_underlying_value_type_r<T>::type;
+  underlying_type fill_value = as<underlying_type>(arg);
+
+  const xt::rarray<T>& res = xt::full_like(x, fill_value);
+  return res;
+}
 
 // -----------------------------------------------------------------------------
 // Switch on the op
@@ -26,9 +92,32 @@ SEXP rray_op_unary_1_arg_cpp_impl(std::string op, xt::rarray<T1> x, SEXP arg) {
 
   switch(str2int(op.c_str())) {
 
-  // case str2int("sort"): {
-  //   return rray_sort_cpp(x, arg);
-  // }
+
+  // ---------------------------------------------------------------------------
+  // Sort / arg*
+
+  case str2int("sort"): {
+    return rray_sort_cpp(x, arg);
+  }
+
+  case str2int("argsort"): {
+    return rray_argsort_cpp(x, arg);
+  }
+
+  case str2int("argmax"): {
+    return rray_argmax_cpp(x, arg);
+  }
+
+  case str2int("argmin"): {
+    return rray_argmin_cpp(x, arg);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Builders
+
+  case str2int("full_like"): {
+    return rray_full_like_cpp(x, arg);
+  }
 
   default: {
     stop("Unknown unary operation.");
