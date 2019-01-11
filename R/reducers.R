@@ -191,10 +191,24 @@ rray_amin <- function(x, axes = NULL) {
 # ------------------------------------------------------------------------------
 # Helpers
 
-validate_axes <- function(axes, dims) {
+validate_axis <- function(axis, dims) {
+  validate_axes(axis, dims, n = 1L, nm = "axis")
+}
+
+validate_axes <- function(axes, dims, n = dims, nm = "axes") {
 
   if (is.null(axes)) {
     return(axes)
+  }
+
+  ok_axes <- vec_size(axes) <= n
+
+  if (!ok_axes) {
+    glubort(
+      "Invalid `{nm}`.
+       The maximum size of `{nm}` is {n}.
+       The provided size of `{nm}` is {vec_size(axes)}."
+    )
   }
 
   ok_vec <- axes <= dims
@@ -204,9 +218,9 @@ validate_axes <- function(axes, dims) {
     pos <- which(!ok_vec)
     pos <- glue::glue_collapse(pos, sep = ", ")
     glubort(
-      "Invalid `axes`.
-       The maximum value for `axes` is {dims}.
-       The following `axes` positions are incorrect: {pos}."
+      "Invalid `{nm}`.
+       The maximum value for `{nm}` is {dims}.
+       The following `{nm}` positions are incorrect: {pos}."
     )
   }
 
@@ -217,9 +231,9 @@ validate_axes <- function(axes, dims) {
     pos <- which(!ok_vec)
     pos <- glue::glue_collapse(pos, sep = ", ")
     glubort(
-      "Invalid `axes`.
-       The minimum value for `axes` is 1.
-       The following `axes` positions are incorrect: {pos}."
+      "Invalid `{nm}`.
+       The minimum value for `{nm}` is 1.
+       The following `{nm}` positions are incorrect: {pos}."
     )
   }
 
