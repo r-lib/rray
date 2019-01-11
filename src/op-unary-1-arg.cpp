@@ -47,12 +47,12 @@ template <typename T>
 SEXP rray_argmax_cpp(xt::rarray<T> x, SEXP arg) {
 
   if (Rf_isNull(arg)) {
-    xt::rarray<int> res = xt::argmax(x);
+    xt::rarray<int> res = xt::argmax<xt::layout_type::column_major>(x);
     return as_r_idx(res);
   }
 
-  std::ptrdiff_t axis = *INTEGER(arg);
-  xt::rarray<int> res = xt::argmax(x, axis);
+  std::size_t axis = Rcpp::as<std::size_t>(arg);
+  xt::rarray<int> res = xt::argmax<xt::layout_type::column_major>(x, axis);
   return as_r_idx(res);
 }
 
@@ -60,12 +60,12 @@ template <typename T>
 SEXP rray_argmin_cpp(xt::rarray<T> x, SEXP arg) {
 
   if (Rf_isNull(arg)) {
-    xt::rarray<int> res = xt::argmin(x);
+    xt::rarray<int> res = xt::argmin<xt::layout_type::column_major>(x);
     return as_r_idx(res);
   }
 
-  std::ptrdiff_t axis = *INTEGER(arg);
-  xt::rarray<int> res = xt::argmin(x, axis);
+  std::size_t axis = Rcpp::as<std::size_t>(arg);
+  xt::rarray<int> res = xt::argmin<xt::layout_type::column_major>(x, axis);
   return as_r_idx(res);
 }
 
