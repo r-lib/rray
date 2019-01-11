@@ -37,6 +37,7 @@ before_install:
 
 r_github_packages:
   - r-lib/pkgdown
+  - DavisVaughan/Xtensor.R@dev # to always pull fresh xtensor cpp code
 
 matrix:
   include:
