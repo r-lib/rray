@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Calculate the mean along an axis — rray_mean • rray</title>
+<title>Calculate the minimum along an axis — rray_min • rray</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Calculate the mean along an axis — rray_mean" />
+<meta property="og:title" content="Calculate the minimum along an axis — rray_min" />
 
-<meta property="og:description" content="rray_mean() computes the mean along a given axis or axes. The
+<meta property="og:description" content="rray_min() computes the minimum along a given axis or axes. The
 dimensionality of x is retained in the result." />
 <meta name="twitter:card" content="summary" />
 
@@ -112,19 +112,19 @@ dimensionality of x is retained in the result." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Calculate the mean along an axis</h1>
+    <h1>Calculate the minimum along an axis</h1>
     <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/reducers.R'><code>R/reducers.R</code></a></small>
-    <div class="hidden name"><code>rray_mean.Rd</code></div>
+    <div class="hidden name"><code>rray_min.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p><code>rray_mean()</code> computes the mean along a given axis or axes. The
+    <p><code>rray_min()</code> computes the minimum along a given axis or axes. The
 dimensionality of <code>x</code> is retained in the result.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>rray_mean</span>(<span class='no'>x</span>, <span class='kw'>axes</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>rray_min</span>(<span class='no'>x</span>, <span class='kw'>axes</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -149,7 +149,7 @@ reduces along all axes.</p></td>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other reducers: <code><a href='rray_max.html'>rray_max</a></code>,
-  <code><a href='rray_min.html'>rray_min</a></code>, <code><a href='rray_prod.html'>rray_prod</a></code>,
+  <code><a href='rray_mean.html'>rray_mean</a></code>, <code><a href='rray_prod.html'>rray_prod</a></code>,
   <code><a href='rray_sum.html'>rray_sum</a></code></p></div>
     
 
@@ -157,19 +157,19 @@ reduces along all axes.</p></td>
     <pre class="examples"><div class='input'>
 <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>10</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>5</span>, <span class='fl'>2</span>))
 
-<span class='fu'>rray_mean</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,1][1]&gt;
+<span class='fu'>rray_min</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,1][1]&gt;
 #&gt;      [,1]
-#&gt; [1,]  5.5</div><div class='input'>
-<span class='fu'>rray_mean</span>(<span class='no'>x</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,2][2]&gt;
+#&gt; [1,]    1</div><div class='input'>
+<span class='fu'>rray_min</span>(<span class='no'>x</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,2][2]&gt;
 #&gt;      [,1] [,2]
-#&gt; [1,]    3    8</div><div class='input'>
-<span class='fu'>rray_mean</span>(<span class='no'>x</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,1][5]&gt;
+#&gt; [1,]    1    6</div><div class='input'>
+<span class='fu'>rray_min</span>(<span class='no'>x</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,1][5]&gt;
 #&gt;      [,1]
-#&gt; [1,]  3.5
-#&gt; [2,]  4.5
-#&gt; [3,]  5.5
-#&gt; [4,]  6.5
-#&gt; [5,]  7.5</div><div class='input'>
+#&gt; [1,]    1
+#&gt; [2,]    2
+#&gt; [3,]    3
+#&gt; [4,]    4
+#&gt; [5,]    5</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
