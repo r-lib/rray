@@ -38,7 +38,7 @@ rray_op_unary_over_axis <- function(op, x, axis) {
 
 #' Locate the position of the maximum value
 #'
-#' `rray_argmax()` returns the integer position of the maximum value over an
+#' `rray_max_pos()` returns the integer position of the maximum value over an
 #' axis.
 #'
 #' @param x A vector, matrix, array, or rray.
@@ -52,40 +52,40 @@ rray_op_unary_over_axis <- function(op, x, axis) {
 #' x <- rray(c(1:10, 20:11), dim = c(5, 2, 2))
 #'
 #' # Flatten x, then find the position of the max value
-#' rray_argmax(x)
+#' rray_max_pos(x)
 #'
 #' # Compute along the rows
-#' rray_argmax(x, 1)
+#' rray_max_pos(x, 1)
 #'
 #' # Compute along the columns
-#' rray_argmax(x, 2)
+#' rray_max_pos(x, 2)
 #'
 #' @export
-rray_argmax <- function(x, axis = NULL) {
+rray_max_pos <- function(x, axis = NULL) {
   rray_op_unary_over_axis("argmax", x, axis)
 }
 
 #' Locate the position of the minimum value
 #'
-#' `rray_argmin()` returns the integer position of the minimum value over an
+#' `rray_min_pos()` returns the integer position of the minimum value over an
 #' axis.
 #'
-#' @inheritParams rray_argmax
+#' @inheritParams rray_max_pos
 #'
 #' @examples
 #'
 #' x <- rray(c(1:10, 20:11), dim = c(5, 2, 2))
 #'
 #' # Flatten x, then find the position of the max value
-#' rray_argmin(x)
+#' rray_min_pos(x)
 #'
 #' # Compute along the rows
-#' rray_argmin(x, 1)
+#' rray_min_pos(x, 1)
 #'
 #' # Compute along the columns
-#' rray_argmin(x, 2)
+#' rray_min_pos(x, 2)
 #'
 #' @export
-rray_argmin <- function(x, axis = NULL) {
+rray_min_pos <- function(x, axis = NULL) {
   rray_op_unary_over_axis("argmin", x, axis)
 }

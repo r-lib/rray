@@ -140,7 +140,7 @@ rray_mean <- function(x, axes = NULL) {
 
 #' Calculate the maximum along an axis
 #'
-#' `rray_amax()` computes the maximum along a given axis or axes. The
+#' `rray_max()` computes the maximum along a given axis or axes. The
 #' dimensionality of `x` is retained in the result.
 #'
 #' @inherit rray_sum details
@@ -151,21 +151,21 @@ rray_mean <- function(x, axes = NULL) {
 #'
 #' x <- rray(1:10, c(5, 2))
 #'
-#' rray_amax(x)
+#' rray_max(x)
 #'
-#' rray_amax(x, 1)
+#' rray_max(x, 1)
 #'
-#' rray_amax(x, 2)
+#' rray_max(x, 2)
 #'
 #' @export
 #' @family reducers
-rray_amax <- function(x, axes = NULL) {
+rray_max <- function(x, axes = NULL) {
   rray_reducer_base("amax", x, axes = axes)
 }
 
 #' Calculate the minimum along an axis
 #'
-#' `rray_amin()` computes the minimum along a given axis or axes. The
+#' `rray_min()` computes the minimum along a given axis or axes. The
 #' dimensionality of `x` is retained in the result.
 #'
 #' @inherit rray_sum details
@@ -176,15 +176,15 @@ rray_amax <- function(x, axes = NULL) {
 #'
 #' x <- rray(1:10, c(5, 2))
 #'
-#' rray_amin(x)
+#' rray_min(x)
 #'
-#' rray_amin(x, 1)
+#' rray_min(x, 1)
 #'
-#' rray_amin(x, 2)
+#' rray_min(x, 2)
 #'
 #' @export
 #' @family reducers
-rray_amin <- function(x, axes = NULL) {
+rray_min <- function(x, axes = NULL) {
   rray_reducer_base("amin", x, axes = axes)
 }
 
