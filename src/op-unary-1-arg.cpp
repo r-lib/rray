@@ -9,14 +9,6 @@ using namespace Rcpp;
 using namespace rray;
 
 // -----------------------------------------------------------------------------
-// Helper
-
-template <typename T>
-xt::rarray<T> as_r_idx(xt::rarray<T> x) {
-  return x + 1;
-}
-
-// -----------------------------------------------------------------------------
 // Broadcast
 
 template <typename T>
