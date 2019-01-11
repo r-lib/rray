@@ -37,7 +37,12 @@ before_install:
 
 r_github_packages:
   - r-lib/pkgdown
-  - DavisVaughan/Xtensor.R@dev # to always pull fresh xtensor cpp code
+
+# To always pull fresh xtensor cpp code
+# Can't rely on Remotes b/c Xtensor.R dynamically pulls in
+# underlying headers
+before_script:
+  - Rscript -e 'devtools::install_github("DavisVaughan/Xtensor.R@dev", build_vignettes = FALSE, force = TRUE)'
 
 matrix:
   include:
