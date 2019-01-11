@@ -91,7 +91,7 @@ rray_broadcast.default <- function(x, dim) {
 broadcast_impl <- function(x, dim) {
   res <- rray_dims_match(x, vec_size(dim))
   validate_recyclable(vec_dim(res), dim)
-  res <- rray_broadcast_cpp(res, dim)
+  res <- rray_op_unary_1_arg_cpp("broadcast", res, dim)
   res
 }
 

@@ -277,31 +277,31 @@ context("test-reducer-amax")
 test_that("Results are correct", {
 
   expect_equal(
-    vec_data(rray_amax(y, 1)),
+    vec_data(rray_max(y, 1)),
     vapply(seq_len(ncol(y)), function(i) max(vec_data(y[,i])), numeric(1))
   )
 
   expect_equal(
-    vec_data(rray_amax(y, 2)),
+    vec_data(rray_max(y, 2)),
     vapply(seq_len(nrow(y)), function(i) max(vec_data(y[i,])), numeric(1))
   )
 })
 
 test_that("Default `axes` argument reduces over all dims", {
   expect_equal(
-    vec_data(rray_amax(y)),
+    vec_data(rray_max(y)),
     max(vec_data(y))
   )
 
   expect_equal(
-    vec_dims(rray_amax(y)),
+    vec_dims(rray_max(y)),
     2L
   )
 })
 
 test_that("Dimensions are not dropped (by default)", {
-  expect_equal(vec_dim(rray_amax(y, 1)), c(1, 2))
-  expect_equal(vec_dim(rray_amax(y, 2)), c(5, 1))
+  expect_equal(vec_dim(rray_max(y, 1)), c(1, 2))
+  expect_equal(vec_dim(rray_max(y, 2)), c(5, 1))
 })
 
 test_that("Dimension names are kept", {
@@ -309,12 +309,12 @@ test_that("Dimension names are kept", {
   yy <- set_col_names(y, c("c1", "c2"))
   yy <- set_row_names(yy, letters[1:5])
 
-  expect_equal(col_names(rray_amax(yy, 1)), c("c1", "c2"))
-  expect_equal(row_names(rray_amax(yy, 2)), letters[1:5])
+  expect_equal(col_names(rray_max(yy, 1)), c("c1", "c2"))
+  expect_equal(row_names(rray_max(yy, 2)), letters[1:5])
 })
 
 test_that("Can reduce over multiple axes", {
-  out <- rray_amax(rray(1, c(2, 3, 4)), c(1,2))
+  out <- rray_max(rray(1, c(2, 3, 4)), c(1,2))
   expect_equal(vec_data(out), rep(1, times = 4))
   expect_equal(vec_dim(out), c(1, 1, 4))
 })
@@ -323,8 +323,8 @@ test_that("Reducing to 0D works", {
 
   x_mat <- as.matrix(x)
 
-  ..1D <- rray_amax(x, 1)
-  ..2D <- rray_amax(x_mat, c(1, 2))
+  ..1D <- rray_max(x, 1)
+  ..2D <- rray_max(x_mat, c(1, 2))
 
   expect_equal(vec_dim(..1D), 1L)
   expect_equal(vec_dim(..2D), c(1L, 1L))
@@ -342,20 +342,20 @@ test_that("reducing base types maintains type", {
 
   x_arr <- as.array(x)
 
-  expect_failure(expect_is({rray_amax(x_int, 1); x_int}, "integer"))
+  expect_failure(expect_is({rray_max(x_int, 1); x_int}, "integer"))
 
-  expect_is(rray_amax(x_mat, 1), "matrix")
-  expect_is(rray_amax(x_arr, 1), "array")
+  expect_is(rray_max(x_mat, 1), "matrix")
+  expect_is(rray_max(x_arr, 1), "array")
 
-  expect_equal(vec_dim(rray_amax(x_mat, 1)), c(1, 1))
+  expect_equal(vec_dim(rray_max(x_mat, 1)), c(1, 1))
 
-  expect_equal(col_names(rray_amax(x_mat_cnames, 1)), "x")
-  expect_equal(col_names(rray_amax(x_mat_cnames, 2)), "x")
+  expect_equal(col_names(rray_max(x_mat_cnames, 1)), "x")
+  expect_equal(col_names(rray_max(x_mat_cnames, 2)), "x")
 })
 
-test_that("rray_amax() with integers gives doubles to prevent overflow", {
+test_that("rray_max() with integers gives doubles to prevent overflow", {
   expect_equal(
-    vec_type(rray_amax(rray(1L))),
+    vec_type(rray_max(rray(1L))),
     vec_type(rray(1))
   )
 })
@@ -368,31 +368,31 @@ context("test-reducer-amin")
 test_that("Results are correct", {
 
   expect_equal(
-    vec_data(rray_amin(y, 1)),
+    vec_data(rray_min(y, 1)),
     vapply(seq_len(ncol(y)), function(i) min(vec_data(y[,i])), numeric(1))
   )
 
   expect_equal(
-    vec_data(rray_amin(y, 2)),
+    vec_data(rray_min(y, 2)),
     vapply(seq_len(nrow(y)), function(i) min(vec_data(y[i,])), numeric(1))
   )
 })
 
 test_that("Default `axes` argument reduces over all dims", {
   expect_equal(
-    vec_data(rray_amin(y)),
+    vec_data(rray_min(y)),
     min(vec_data(y))
   )
 
   expect_equal(
-    vec_dims(rray_amin(y)),
+    vec_dims(rray_min(y)),
     2L
   )
 })
 
 test_that("Dimensions are not dropped (by default)", {
-  expect_equal(vec_dim(rray_amin(y, 1)), c(1, 2))
-  expect_equal(vec_dim(rray_amin(y, 2)), c(5, 1))
+  expect_equal(vec_dim(rray_min(y, 1)), c(1, 2))
+  expect_equal(vec_dim(rray_min(y, 2)), c(5, 1))
 })
 
 test_that("Dimension names are kept", {
@@ -400,12 +400,12 @@ test_that("Dimension names are kept", {
   yy <- set_col_names(y, c("c1", "c2"))
   yy <- set_row_names(yy, letters[1:5])
 
-  expect_equal(col_names(rray_amin(yy, 1)), c("c1", "c2"))
-  expect_equal(row_names(rray_amin(yy, 2)), letters[1:5])
+  expect_equal(col_names(rray_min(yy, 1)), c("c1", "c2"))
+  expect_equal(row_names(rray_min(yy, 2)), letters[1:5])
 })
 
 test_that("Can reduce over multiple axes", {
-  out <- rray_amin(rray(1, c(2, 3, 4)), c(1,2))
+  out <- rray_min(rray(1, c(2, 3, 4)), c(1,2))
   expect_equal(vec_data(out), rep(1, times = 4))
   expect_equal(vec_dim(out), c(1, 1, 4))
 })
@@ -414,8 +414,8 @@ test_that("Reducing to 0D works", {
 
   x_mat <- as.matrix(x)
 
-  ..1D <- rray_amin(x, 1)
-  ..2D <- rray_amin(x_mat, c(1, 2))
+  ..1D <- rray_min(x, 1)
+  ..2D <- rray_min(x_mat, c(1, 2))
 
   expect_equal(vec_dim(..1D), 1L)
   expect_equal(vec_dim(..2D), c(1L, 1L))
@@ -433,20 +433,20 @@ test_that("reducing base types maintains type", {
 
   x_arr <- as.array(x)
 
-  expect_failure(expect_is({rray_amin(x_int, 1); x_int}, "integer"))
+  expect_failure(expect_is({rray_min(x_int, 1); x_int}, "integer"))
 
-  expect_is(rray_amin(x_mat, 1), "matrix")
-  expect_is(rray_amin(x_arr, 1), "array")
+  expect_is(rray_min(x_mat, 1), "matrix")
+  expect_is(rray_min(x_arr, 1), "array")
 
-  expect_equal(vec_dim(rray_amin(x_mat, 1)), c(1, 1))
+  expect_equal(vec_dim(rray_min(x_mat, 1)), c(1, 1))
 
-  expect_equal(col_names(rray_amin(x_mat_cnames, 1)), "x")
-  expect_equal(col_names(rray_amin(x_mat_cnames, 2)), "x")
+  expect_equal(col_names(rray_min(x_mat_cnames, 1)), "x")
+  expect_equal(col_names(rray_min(x_mat_cnames, 2)), "x")
 })
 
-test_that("rray_amin() with integers gives doubles to prevent overflow", {
+test_that("rray_min() with integers gives doubles to prevent overflow", {
   expect_equal(
-    vec_type(rray_amin(rray(1L))),
+    vec_type(rray_min(rray(1L))),
     vec_type(rray(1))
   )
 })

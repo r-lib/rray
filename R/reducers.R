@@ -140,7 +140,7 @@ rray_mean <- function(x, axes = NULL) {
 
 #' Calculate the maximum along an axis
 #'
-#' `rray_amax()` computes the maximum along a given axis or axes. The
+#' `rray_max()` computes the maximum along a given axis or axes. The
 #' dimensionality of `x` is retained in the result.
 #'
 #' @inherit rray_sum details
@@ -151,21 +151,21 @@ rray_mean <- function(x, axes = NULL) {
 #'
 #' x <- rray(1:10, c(5, 2))
 #'
-#' rray_amax(x)
+#' rray_max(x)
 #'
-#' rray_amax(x, 1)
+#' rray_max(x, 1)
 #'
-#' rray_amax(x, 2)
+#' rray_max(x, 2)
 #'
 #' @export
 #' @family reducers
-rray_amax <- function(x, axes = NULL) {
+rray_max <- function(x, axes = NULL) {
   rray_reducer_base("amax", x, axes = axes)
 }
 
 #' Calculate the minimum along an axis
 #'
-#' `rray_amin()` computes the minimum along a given axis or axes. The
+#' `rray_min()` computes the minimum along a given axis or axes. The
 #' dimensionality of `x` is retained in the result.
 #'
 #' @inherit rray_sum details
@@ -176,25 +176,39 @@ rray_amax <- function(x, axes = NULL) {
 #'
 #' x <- rray(1:10, c(5, 2))
 #'
-#' rray_amin(x)
+#' rray_min(x)
 #'
-#' rray_amin(x, 1)
+#' rray_min(x, 1)
 #'
-#' rray_amin(x, 2)
+#' rray_min(x, 2)
 #'
 #' @export
 #' @family reducers
-rray_amin <- function(x, axes = NULL) {
+rray_min <- function(x, axes = NULL) {
   rray_reducer_base("amin", x, axes = axes)
 }
 
 # ------------------------------------------------------------------------------
 # Helpers
 
-validate_axes <- function(axes, dims) {
+validate_axis <- function(axis, dims) {
+  validate_axes(axis, dims, n = 1L, nm = "axis")
+}
+
+validate_axes <- function(axes, dims, n = dims, nm = "axes") {
 
   if (is.null(axes)) {
     return(axes)
+  }
+
+  ok_axes <- vec_size(axes) <= n
+
+  if (!ok_axes) {
+    glubort(
+      "Invalid `{nm}`.
+       The maximum size of `{nm}` is {n}.
+       The provided size of `{nm}` is {vec_size(axes)}."
+    )
   }
 
   ok_vec <- axes <= dims
@@ -204,9 +218,9 @@ validate_axes <- function(axes, dims) {
     pos <- which(!ok_vec)
     pos <- glue::glue_collapse(pos, sep = ", ")
     glubort(
-      "Invalid `axes`.
-       The maximum value for `axes` is {dims}.
-       The following `axes` positions are incorrect: {pos}."
+      "Invalid `{nm}`.
+       The maximum value for `{nm}` is {dims}.
+       The following `{nm}` positions are incorrect: {pos}."
     )
   }
 
@@ -217,9 +231,9 @@ validate_axes <- function(axes, dims) {
     pos <- which(!ok_vec)
     pos <- glue::glue_collapse(pos, sep = ", ")
     glubort(
-      "Invalid `axes`.
-       The minimum value for `axes` is 1.
-       The following `axes` positions are incorrect: {pos}."
+      "Invalid `{nm}`.
+       The minimum value for `{nm}` is 1.
+       The following `{nm}` positions are incorrect: {pos}."
     )
   }
 
