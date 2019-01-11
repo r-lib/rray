@@ -86,6 +86,16 @@ SEXP rray_full_like_cpp(const xt::rarray<T>& x, SEXP arg) {
   return res;
 }
 
+// TODO - handle "scalar" inputs rray_op_unary_1_arg_cpp("diag", x = 1L, 0L)
+// https://github.com/QuantStack/xtensor-r/issues/91
+
+template <typename T>
+SEXP rray_diag_cpp(const xt::rarray<T>& x, SEXP arg) {
+  int k = Rcpp::as<int>(arg);
+  const xt::rarray<T>& res = xt::diag(x, k);
+  return res;
+}
+
 // -----------------------------------------------------------------------------
 // Accumulators
 
@@ -157,6 +167,10 @@ SEXP rray_op_unary_1_arg_cpp_impl(std::string op, xt::rarray<T1> x, SEXP arg) {
 
   case str2int("full_like"): {
     return rray_full_like_cpp(x, arg);
+  }
+
+  case str2int("diag"): {
+    return rray_diag_cpp(x, arg);
   }
 
   // ---------------------------------------------------------------------------
