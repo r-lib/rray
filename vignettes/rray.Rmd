@@ -1,8 +1,8 @@
 ---
-title: "`rray`"
+title: "The `rray`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{`rray`}
+  %\VignetteIndexEntry{The `rray`}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
