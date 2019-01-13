@@ -22,104 +22,319 @@ knitr::opts_chunk$set(
 library(rray)
 ```
 
-## Rules
+## Introduction
 
-Broadcasting is the concept of recycling dimensions of one object to match the dimensions of another so that some arithmetic operation can be applied.
+rray provides _broadcasting_ semantics throughout the entire package. Broadcasting is the concept of recycling dimensions of one object to match the dimensions of another, so that some operation can be applied between the two inputs. It sounds complicated, but it really boils down to a few rules that can be applied to understand any broadcasting operation.
 
-It sounds complicated, but it's much easier to think about if you simply write down what is happening. There are only three rules:
+## Motivation
 
-1) Dimensions of size 1 are always recycled up to the other dimension you are comparing to.
+Before the rules are introduced, consider what happens when matrices of different dimensions are added together in base R.
 
-2) Implicit dimensions are always appended to the right hand side, and are assumed to be 1's (this is actually different from how it is done in Python).
+```{r, error = TRUE}
+x <- matrix(1:2,  nrow = 3, ncol = 2, byrow = TRUE)
+y <- matrix(1L,   nrow = 3, ncol = 1)
 
-3) If two dimensions do not match, and neither are 1, an error is thrown.
+x
 
-These three rules also happen to match the "tidy" recycling rules.
-
-## Example
-
-As an example, consider a 3x2 matrix and a 3x1 matrix. With base R, you can't 
-add these together.
-
-```{r, error=TRUE}
-x <- matrix(1:2, nrow = 3, ncol = 2, byrow = TRUE)
-y <- matrix(1,   nrow = 3, ncol = 1)
+y
 
 x + y
 ```
 
-With broadcasting semantics, the 3x1 matrix is "broadcasted" up to a 3x2 matrix,
-and then the operation is applied. Essentially, the 1st column is copied into
-the 2nd column.
+If _any_ of the dimensions don't match, then an error is thrown. This behavior is actually the original motivation for the rray package. I believe that there is an intuitve result to this operation, which looks like this:
+
+```{r, echo=FALSE}
+as.matrix(rray(x) + rray(y))
+```
+
+The mental model to understand how this works is to alter the dimensions of `y` to match the dimensions of `x` by duplicating the columns. This is known as _broadcasting y_. After this alteration is done, then the addition is performed.
+
+```{r}
+y_broadcast <- rray_broadcast(y, c(3, 2))
+
+y_broadcast
+
+x + y_broadcast
+```
+
+But how did we know (programmatically) how to alter `y` to match the dimensions of `x` here? That is where the broadcasting rules come in.
+
+## Rules
+
+**Broadcasting operations happen in three steps:**
+
+1) Find a set of common dimensions among the inputs.
+2) Broadcast each input to the common dimensions.
+3) Perform the operation on the broadcast inputs.
+
+Steps 2 and 3 are relatively straightforward. For step 3, all of the inputs will have the same dimensions in the end, so the operation can be done in the same was as base R would do originally. For step 2, altering a dimension using broadcasting just means to repeat the dimension as many times as necessary. In the previous example, I claimed that `y` need to be broadcasted from a `(3, 1)` matrix to `(3, 2)`. This just meant duplicating the existing column so there are two of them.
+
+The real engine of broadcasting revolves around step 1, finding common dimensions among the inputs. To find this set of common dimensions, each individual dimension of `x` and `y` are compared against one another (rows are compared to rows, columns to columns, etc). In each comparison, a set of rules are applied to generate the common dimension. Ones all of the dimensions are compared, the resulting set of dimensions is the shape that `x` and `y` are both broadcast to in step 2, and is the shape of the result obtained from the operation in step 3. Below are the rules used when comparing individual dimensions.
+
+**The rules of broadcasting:**
+
+1) If a dimension is implicit, it should be appended to the right hand side as a `1`.
+
+2) If the dimensions are the same, that is the common dimension.
+
+3) If the dimensions are different, and one is `1`, then that input can validly be recycled, so the larger dimension is used.
+
+4) If the dimensions are different, and neither is `1`, throw an error.
+
+These three rules also happen to match the "tidy" recycling rules. I also believe that these rules are fully _shape-stable_, meaning that you can exactly predict the shape of the output from the shapes of the inputs. I think this is an important idea for creating intuitive software.
+
+## Example - `x + y`
+
+Let's revisit the original example, but use the broadcasting rules to understand how to get the result.
+
+```{r}
+x
+
+y
+```
+
+When adding these two matrices together, it's useful to write out the dimensions explicitly, using the general notation of:
+
+```
+(rows, cols) | object_name
+```
+
+```
+(3, 2) | x
+(3, 1) | y
+-------|-------
+(3, 2) | common
+```
+
+To understand how we get from `x + y -> result`, compare dimensions vertically (one at a time), and apply the broadcasting rules.
+
+* 1st dimension:
+
+  - `x` has `3` rows
+  - `y` has `3` rows.
+  - Rule 2, the common dimension is `3`.
+
+* 2nd dimension:
+
+  - `x` has `2` columns
+  - `y` has `1` column
+  - Rule 3, use the larger dimension, `2`.
+  
+The common dimensions have now been determined, `(3, 2)`. At this point, the other broadcasting steps are applied:
+
+* Broadcast `x` to `(3, 2)`. Nothing to do here.
+* Broadcast `y` to `(3, 2)`. Originally, `y` was `(3, 1)`. To broadcast to `(3, 2)`, duplicate the 2nd dimension (the column) of `y`.
+* Now, `x` and `y` are `(3, 2)`. Add them!
+
+rray applies these rules automatically when an `rray` object is used.
 
 ```{r}
 x_rray <- as_rray(x)
-y_rray <- as_rray(y)
 
-x_rray + y_rray
+x_rray
+
+x_rray + y
 ```
 
-Internally, this is what is happening:
+## Example - Implicit Dimensions
+
+If `y` was a vector of `1`s, not a matrix, what would have changed?
 
 ```{r}
-y_bcasted <- rray_broadcast(y_rray, c(3, 2))
+x_rray
 
-y_bcasted
+z <- as.vector(y)
+z
 
-x_rray + y_bcasted
+x_rray + z
 ```
 
-Personally, I find it helpful to write it down:
+This operation is still valid, and represents an important broadcasting idea because it allows lower dimensional objects (1D) to be combined with higher dimensional objects (2D) in a formalized way. To start, write out the dimensions:
 
 ```
-(3, 2) <- a 3x2 matrix
-(3, 1) <- combined with a 3x1
-------
-(3, 2) <- results in a 3x2
+(3, 2) | x
+(3)    | z
 ```
 
-Broadcasting can be applied to higher dimensions as well. Let's try an example 
-with an array and a matrix.
+To find the common dimensions, Rule 1 is first applied because there are "implicit" dimensions. `z` has the 1st dimension (the rows), but is missing the 2nd dimension (the columns). When this occurs, add `1`s to the right hand side until the dimensionalities match.
+
+```
+(3, 2) | x
+(3, 1) | z
+```
+
+Now, apply broadcasting rules as usual.
+
+* 1st dimension:
+
+  - `x` has `3` rows.
+  - `z` has `3` rows.
+  - Rule 2, the common dimension is `3`.
+
+* 2nd dimension:
+
+  - `x` has `2` columns
+  - `y` has `1` column
+  - Rule 3, use the larger dimension, `2`.
+  
+The common dimensions are `(3, 2)`. `x` already has these dimensions, so nothing need to be done to it. `z` only has the dimensions `(3)`, so clearly something needs to change there. To see what `rray` will do when broadcasting an object to a new set of dimensions, use `rray_broadcast()`. In this case, the vector of `1`s first became a one column matrix when the implicit dimension was added, and then that column was repeated to match the common dimensions. At that point, the result could be added to `x`.
 
 ```{r}
-x_rray_3D <- rray(1, dim = c(3, 4, 2))
+z
 
-y_rray + x_rray_3D
+rray_broadcast(z, c(3, 1))
+
+rray_broadcast(z, c(3, 2))
 ```
 
-To understand this, let's again write it out:
+## Example - Higher Dimensions
 
-```
-(3, 1,  ) <- implicit 1 here
-(3, 4, 2)
----------
-(3, 4, 2)
-```
-
-Both the explicit 1 and the implicit 1 in the 3x1 matrix are broadcasted up
-to match the other dimensions so that the 3x1 matrix becomes a 3x4x2 array.
+Broadcasting get's more interesting when higher dimensional objects are used. Additionally, at this point only 1 dimension has been changing (the columns), and only 1 object at a time needed altering. This example will require both inputs to be changed.
 
 ```{r}
-rray_broadcast(y_rray, c(3, 4, 2))
+a <- rray(1:3, c(1, 3))
+a
+
+b <- rray(1:8, c(4, 1, 2))
+b
 ```
 
-## Outer sums
-
-Broadcasting makes certain calculations surprisingly simple. Consider this 
-outer sum calculation:
+Perhaps surprisingly, these inputs can be added together using broadcasting.
 
 ```{r}
-z <- rray(1:3, c(3, 1))
-
-z + t(z)
+a + b
 ```
 
+To understand this, write out dimensions and follow the rules, as usual.
+
 ```
-(3, 1)
-(1, 3)
-------
-(3, 3)
+(1, 3)    | a
+(4, 1, 2) | b
 ```
 
-It's this kind of powerful calculation that makes me think that R could greatly
-benefit from the adoption of these semantics.
+Implicit dimensions are present for `a`, so make them explicit with `1`s using Rule 1.
+
+```
+(1, 3, 1) | a
+(4, 1, 2) | b
+```
+
+* 1st dimension:
+
+  - `a` has `1` rows.
+  - `b` has `4` rows.
+  - Rule 3, use the larger dimension, `4`.
+
+* 2nd dimension:
+
+  - `a` has `3` columns.
+  - `b` has `1` column.
+  - Rule 3, use the larger dimension, `3`.
+  
+* 3rd dimension:
+
+  - `a` has `1` element in the 3rd dimension.
+  - `b` has `2` element in the 3rd dimension.
+  - Rule 3, use the larger dimension, `2`.
+
+So the common dimensions are `(4, 3, 2)`. Generally, once you internalize the rules enough, it's easier to write them compactly as:
+
+```
+(1, 3,  ) | a
+(4, 1, 2) | b
+--------- | ------
+(4, 3, 2) | common
+```
+
+Here are the incremental changes made to `a` to go from `(1, 3)` to `(4, 3, 2)`.
+
+```{r}
+a
+
+rray_broadcast(a, c(1, 3, 1))
+
+rray_broadcast(a, c(4, 3, 1))
+
+rray_broadcast(a, c(4, 3, 2))
+```
+
+And here are the changes made to `b` to go from `(4, 1, 2)` to `(4, 3, 2)`.
+
+```{r}
+b
+
+rray_broadcast(b, c(4, 3, 2))
+```
+
+## Addendum
+
+### Base R Exceptions
+
+The only exception to the strict behavior of base R is when an array is combined with a vector. "Scalar" operations work as one might expect:
+
+```{r}
+x
+
+x * 2
+```
+
+But when a vector and an array are combined, the vector is recycled along the rows of the array as necessary to fit the dimensions of the array. 
+
+```{r}
+vec_1 <- c(1, 2, 3)
+
+x
+
+x + vec_1
+```
+
+This example seems intuitive, but even _partial recycling_ is allowed, which can be quite confusing and dangerous.
+
+```{r}
+vec_2 <- c(1, 2)
+
+x + vec_2
+```
+
+This is confusingly identical to the following, where `vec_2` is repeated to construct something that can be added to `x`.
+
+```{r}
+recycled <- matrix(NA, 3, 2)
+
+recycled[1, 1] <- vec_2[1]
+recycled[2, 1] <- vec_2[2]
+recycled[3, 1] <- vec_2[1]
+recycled[1, 2] <- vec_2[2]
+recycled[2, 2] <- vec_2[1]
+recycled[3, 2] <- vec_2[2]
+
+recycled
+
+x + recycled
+```
+
+rray never performs partial recycling when broadcasting, and will complain that the lengths are incorrect.
+
+```{r, error = TRUE}
+x_rray
+
+x_rray + vec_2
+```
+
+### Differences from Python
+
+In the Python world, numpy is used for broadcasting operations. The underlying C++ library used for rray is heavily based on the numpy principles. However, one interesting thing to note is that when applying broadcasting rules for numpy, implicit dimensions are _prepended to the left hand side_ as `1`s. This is used consistently in the numpy world, even down to how they are printed. However, R often uses the concept of appended implicit dimensions the right hand side, and prints with this concept in mind.
+
+For one simple example, coercing a vector to a matrix does this:
+
+```{r}
+z
+
+as.matrix(z)
+```
+
+Meaning the dimensions went from `(3)` to `(3, 1)`. numpy actually does the opposite, and would convert `(3)` to `(1, 3)`. This is fine, because they use it consistently there, but can be confusing when comparing broadcasting of rray to numpy, and is just something to keep in mind.
+
+
+
+
