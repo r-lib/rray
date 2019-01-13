@@ -14,11 +14,11 @@ rray has three goals:
 
 1)  To provide an rray class that implements stricted matrices and
     arrays than base R, similar in spirit to the tibble package.
-    `vignette("rray", package = "rray")`.
+    `vignette("the-rray", package = "rray")`.
 
 2)  To support *broadcasting* semantics throughout the package, allowing
     for more flexible and intuitive array operations than are possible
-    with base R. `vignette("rray", package = "broadcasting")`.
+    with base R. `vignette("broadcasting", package = "rray")`.
 
 3)  To provide a consistent, powerful toolkit for array based
     manipulation.
