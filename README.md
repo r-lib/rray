@@ -12,7 +12,7 @@ status](https://travis-ci.org/DavisVaughan/rray.svg?branch=master)](https://trav
 
 rray has three goals:
 
-1)  To provide an rray class that implements stricted matrices and
+1)  To provide an rray class that implements stricter matrices and
     arrays than base R, similar in spirit to the tibble package.
     `vignette("the-rray", package = "rray")`.
 
@@ -21,7 +21,9 @@ rray has three goals:
     with base R. `vignette("broadcasting", package = "rray")`.
 
 3)  To provide a consistent, powerful toolkit for array based
-    manipulation.
+    manipulation. (WIP, but see the [function
+    reference](https://davisvaughan.github.io/rray/reference/index.html)
+    for current functionality)
 
 View the vignette for each goal to learn more about how to use rray.
 
