@@ -42,10 +42,12 @@ test_that("dimension names behavior is consistent", {
     letters[1:10]
   )
 
-  # this doesnt make sense because the corresponding dim size changes
+  # it doesn't make sense to keep dim names
+  # because the corresponding dim size changes
+  # (i.e. size 1 to 10)
   expect_equal(
     n_dim_names(rray_squeeze(x), 1),
-    character()
+    NULL
   )
 
 })

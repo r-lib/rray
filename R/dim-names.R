@@ -73,9 +73,6 @@ dim_names.array <- function(x) {
     return(new_empty_dim_names(dims))
   }
 
-  # NULL -> character(0)
-  dim_nms <- map(dim_nms, function(x) if(is.null(x)) character() else x)
-
   dim_nms
 }
 
@@ -84,7 +81,7 @@ dim_names.matrix <- dim_names.array
 
 #' @export
 dim_names.vctrs_rray <- function(x) {
-  attr(x, "dim_names")
+  attr(x, "dimnames")
 }
 
 # treat vectors as 1 column matrices
@@ -156,7 +153,7 @@ set_full_dim_names.vctrs_rray <- function(x, value) {
     value <- new_empty_dim_names(vec_dims(x))
   }
 
-  stopifnot(map_lgl(value, is_character))
+  stopifnot(map_lgl(value, is_character_or_null))
 
   # n shape dims and n elements of shape name list
   stopifnot(vec_dims(x) == vec_size(value))
@@ -167,7 +164,7 @@ set_full_dim_names.vctrs_rray <- function(x, value) {
     map2_lgl(vec_dim(x), dim_name_lengths, validate_equal_size_or_no_names)
   )
 
-  attr(x, "dim_names") <- value
+  attr(x, "dimnames") <- value
   x
 
 }

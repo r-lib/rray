@@ -11,7 +11,7 @@ test_that("Can create rrays", {
     structure(
       c(1, 2, 3),
       dim = c(3L, 1L),
-      dim_names = list(character(), character()),
+      dimnames = list(NULL, NULL),
       class = c("vctrs_rray", "vctrs_vctr")
     )
   )
@@ -22,7 +22,7 @@ test_that("Can create rrays", {
     structure(
       c(1, 2, 3),
       dim = c(3L, 1L),
-      dim_names = list(c("r1", "r2", "r3"), "c1"),
+      dimnames = list(c("r1", "r2", "r3"), "c1"),
       class = c("vctrs_rray", "vctrs_vctr")
     )
   )
@@ -33,7 +33,7 @@ test_that("Can create rrays", {
     structure(
       c(1, 2, 3),
       dim = c(3L, 1L, 1L),
-      dim_names = list(character(), character(), character()),
+      dimnames = list(NULL, NULL, NULL),
       class = c("vctrs_rray", "vctrs_vctr")
     )
   )
@@ -44,7 +44,7 @@ test_that("Can create rrays", {
     structure(
       c(1, 2, 3),
       dim = c(3L, 1L, 1L),
-      dim_names = list(character(0), "c1", "depth1"),
+      dimnames = list(NULL, "c1", "depth1"),
       class = c("vctrs_rray", "vctrs_vctr")
     )
   )
@@ -97,3 +97,4 @@ test_that("Can broadcast on the way in", {
   expect_equal(vec_dim(rray(x_6x1, c(6, 2))), c(6, 2))
   expect_equal(vec_dim(rray(x_6x1, c(6, 2, 1))), c(6, 2, 1))
 })
+

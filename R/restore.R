@@ -61,7 +61,6 @@ rray_partial_restore <- function(x, to) {
 most_attributes <- function(x) {
   x_attr <- attributes(x) %||% list()
 
-  x_attr[["dim_names"]] <- NULL
   x_attr[["dimnames"]] <- NULL
   x_attr[["names"]] <- NULL
 
