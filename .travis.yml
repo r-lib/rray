@@ -35,9 +35,6 @@ before_install:
   - sed -i 's|CXX_STD = CXX14||' src/Makevars
 # ------------------------------------------------------------------------------
 
-r_github_packages:
-  - r-lib/pkgdown
-
 # To always pull fresh xtensor cpp code
 # Can't rely on Remotes b/c Xtensor.R dynamically pulls in
 # underlying headers
@@ -50,7 +47,8 @@ matrix:
   - r: release
     after_success:
     - Rscript -e 'covr::codecov()'
-
+    before_cache:
+    - Rscript -e 'remotes::install_cran("pkgdown")'
     deploy:
       provider: script
       script: Rscript -e 'pkgdown::deploy_site_github(verbose = TRUE)'
