@@ -88,7 +88,7 @@ test_that("can squeeze base objects", {
 
   expect_equal(
     rray_squeeze(x_arr2),
-    as.array(1:8)
+    array(1:8, dimnames = list(NULL))
   )
 
 })

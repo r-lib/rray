@@ -29,6 +29,18 @@ t.vctrs_rray <- function(x) {
 }
 
 #' @export
+vec_restore.vctrs_rray <- function(x, to, ..., i = NULL) {
+  x_dim <- vec_dim(x)
+
+  new_rray(
+    .data = vec_data(x),
+    size = x_dim[1],
+    shape = x_dim[-1],
+    dim_names = dim_names(x)
+  )
+}
+
+#' @export
 `dim<-.vctrs_rray` <- function(x, value) {
   rray_broadcast(x, value)
 }
@@ -104,7 +116,7 @@ inline_list <- function(title, x, width = getOption("width"), quote = "") {
   value <- vec_cast(value, x[...])
   x_array <- as_array(x)
   x_array[...] <- value
-  res <- rray_restore(x_array, x)
+  res <- vec_restore(x_array, x)
   dim_names(res) <- dim_names(x)
   res
 }
@@ -114,7 +126,7 @@ inline_list <- function(title, x, width = getOption("width"), quote = "") {
   value <- vec_cast(value, x[[...]])
   x_array <- as_array(x)
   x_array[[...]] <- value
-  res <- rray_restore(x_array, x)
+  res <- vec_restore(x_array, x)
   dim_names(res) <- dim_names(x)
   res
 }

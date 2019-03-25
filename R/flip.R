@@ -40,16 +40,13 @@ rray_flip <- function(x, axis) {
   }
 
   res <- rray_flip_impl(x, axis)
-  res <- rray_restore(res, x)
 
   # Reverse dim names along the specified axis
   x_dim_names <- dim_names(x)
-
   x_dim_names <- rev_dim_names(x_dim_names, axis)
-
   res <- set_full_dim_names(res, x_dim_names)
 
-  res
+  vec_restore(res, x)
 }
 
 rray_flip_impl <- function(x, axis) {

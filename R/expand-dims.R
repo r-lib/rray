@@ -65,7 +65,6 @@ rray_expand_dims <- function(x, axis) {
   }
 
   res <- rray_expand_dims_impl(x, axis)
-  res <- rray_partial_restore(res, x)
 
   x_dim_names <- dim_names(x)
 
@@ -89,7 +88,7 @@ rray_expand_dims <- function(x, axis) {
 
   res <- set_full_dim_names(res, new_dim_names)
 
-  res
+  vec_restore(res, x)
 }
 
 rray_expand_dims_impl <- function(x, axis) {

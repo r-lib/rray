@@ -37,7 +37,7 @@ x <- rray(1:24, c(12, 2))
 # Equivalent
 rray_reduce_int(x, sum)
 rray_reduce_int(x, ~.x + .y)
-rray_sum(x)
+rray_sum(x, axes = 1)
 
 # Same as above, but reduce the columns
 rray_reduce_int(x, sum, axes = 2)
