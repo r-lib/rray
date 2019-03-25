@@ -66,10 +66,6 @@ test_that("reducing base types maintains type", {
 
   x_arr <- as.array(x)
 
-  # this should inherit from integer, but currently modifies in place
-  # and x_int becomes an array https://github.com/QuantStack/xtensor-r/pull/87
-  expect_failure(expect_is({rray_sum(x_int, 1); x_int}, "integer"))
-
   expect_is(rray_sum(x_mat, 1), "matrix")
   expect_is(rray_sum(x_arr, 1), "array")
 
@@ -158,8 +154,6 @@ test_that("reducing base types maintains type", {
   x_mat_cnames <- set_col_names(x_mat, "x")
 
   x_arr <- as.array(x)
-
-  expect_failure(expect_is({rray_prod(x_int, 1); x_int}, "integer"))
 
   expect_is(rray_prod(x_mat, 1), "matrix")
   expect_is(rray_prod(x_arr, 1), "array")
@@ -251,8 +245,6 @@ test_that("reducing base types maintains type", {
 
   x_arr <- as.array(x)
 
-  expect_failure(expect_is({rray_mean(x_int, 1); x_int}, "integer"))
-
   expect_is(rray_mean(x_mat, 1), "matrix")
   expect_is(rray_mean(x_arr, 1), "array")
 
@@ -342,8 +334,6 @@ test_that("reducing base types maintains type", {
 
   x_arr <- as.array(x)
 
-  expect_failure(expect_is({rray_max(x_int, 1); x_int}, "integer"))
-
   expect_is(rray_max(x_mat, 1), "matrix")
   expect_is(rray_max(x_arr, 1), "array")
 
@@ -432,8 +422,6 @@ test_that("reducing base types maintains type", {
   x_mat_cnames <- set_col_names(x_mat, "x")
 
   x_arr <- as.array(x)
-
-  expect_failure(expect_is({rray_min(x_int, 1); x_int}, "integer"))
 
   expect_is(rray_min(x_mat, 1), "matrix")
   expect_is(rray_min(x_arr, 1), "array")

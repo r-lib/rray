@@ -54,7 +54,7 @@ new_rray <- function(.data = numeric(0),
     dim_names <- new_empty_dim_names(vec_size(.dim))
   }
 
-  stopifnot(map_lgl(dim_names, is_character))
+  stopifnot(map_lgl(dim_names, is_character_or_null))
 
   # n shape dims and n elements of shape name list
   stopifnot(vec_size(.dim) == vec_size(dim_names))
@@ -64,16 +64,22 @@ new_rray <- function(.data = numeric(0),
   stopifnot(map2_lgl(.dim, dim_name_lengths, validate_equal_size_or_no_names))
 
   # new_rray() takes size and shape for compat with vctrs but we lie a bit
-  # and actually only store the dim because of the nice benefits that gets us
+  # and actually only store the `dim`. We also store the `dimnames` not
+  # `dim_names` because vctrs treats `dim` and `dimnames` special in
+  # `vec_restore()`
 
   new_vctr(
     .data = .data,
     dim = .dim,
-    dim_names = dim_names,
+    dimnames = dim_names,
     ...,
     class = c(subclass, "vctrs_rray")
   )
 
+}
+
+is_character_or_null <- function(x) {
+  is_null(x) || is_character(x)
 }
 
 #' Build a rray object
@@ -197,3 +203,4 @@ is_reshapeable <- function(x, to_dim) {
 rray_elems <- function(x) {
   prod(vec_dim(x))
 }
+

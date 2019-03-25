@@ -53,12 +53,10 @@ rray_squeeze <- function(x, axes = NULL) {
 
   res <- squeeze_impl(x, axes)
 
-  res <- rray_partial_restore(res, x)
-
   new_dim_names <- restore_dim_names(x, vec_dim(res))
   res <- set_full_dim_names(res, new_dim_names)
 
-  res
+  vec_restore(res, x)
 }
 
 squeeze_impl <- function(x, axes) {

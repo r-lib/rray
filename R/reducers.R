@@ -10,9 +10,6 @@ rray_reducer_base <- function(reducer, x, axes) {
   # perform the reduction
   res <- rray_reducer_cpp(reducer, x, as_cpp_idx(axes))
 
-  # restore the type, but not dim_names
-  res <- rray_partial_restore(res, x)
-
   # TODO currently, xtensor reduces the result correctly,
   # but the resulting dimensions are reduced as well.
   # I don't think it should do this, so here we reshape
@@ -35,8 +32,8 @@ rray_reducer_base <- function(reducer, x, axes) {
   new_dim_names <- restore_dim_names(x, new_dim)
   res <- set_full_dim_names(res, new_dim_names)
 
-  res
 
+  vec_restore(res, x)
 }
 
 # ------------------------------------------------------------------------------

@@ -28,20 +28,15 @@ t.vctrs_rray <- function(x) {
   as_rray(t(as_array(x)))
 }
 
-# vec_restore restores ONLY the type
-# no attempt to "restore" dim names.
-# only copies any existing dim_names over
-
-# TODO - I think this is incorrect
-# and should function more like rray_restore()
-
 #' @export
-vec_restore.vctrs_rray <- function(x, to) {
+vec_restore.vctrs_rray <- function(x, to, ..., i = NULL) {
+  x_dim <- vec_dim(x)
+
   new_rray(
     .data = vec_data(x),
-    size = vec_size(x),
-    shape = rray_shape(x),
-    dim_names = new_empty_dim_names(vec_dims(x))
+    size = x_dim[1],
+    shape = x_dim[-1],
+    dim_names = dim_names(x)
   )
 }
 
@@ -121,7 +116,7 @@ inline_list <- function(title, x, width = getOption("width"), quote = "") {
   value <- vec_cast(value, x[...])
   x_array <- as_array(x)
   x_array[...] <- value
-  res <- rray_restore(x_array, x)
+  res <- vec_restore(x_array, x)
   dim_names(res) <- dim_names(x)
   res
 }
@@ -131,7 +126,7 @@ inline_list <- function(title, x, width = getOption("width"), quote = "") {
   value <- vec_cast(value, x[[...]])
   x_array <- as_array(x)
   x_array[[...]] <- value
-  res <- rray_restore(x_array, x)
+  res <- vec_restore(x_array, x)
   dim_names(res) <- dim_names(x)
   res
 }

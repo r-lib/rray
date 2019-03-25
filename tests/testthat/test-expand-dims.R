@@ -40,17 +40,17 @@ test_that("dimension names kept on expansion", {
 
   expect_equal(
     dim_names(rray_expand_dims(x, 1)),
-    c(list(character()), dim_names(x))
+    c(list(NULL), dim_names(x))
   )
 
   expect_equal(
     dim_names(rray_expand_dims(x, 2)),
-    c(dim_names(x)[1], list(character()), dim_names(x)[2])
+    c(dim_names(x)[1], list(NULL), dim_names(x)[2])
   )
 
   expect_equal(
     dim_names(rray_expand_dims(x, 3)),
-    c(dim_names(x), list(character()))
+    c(dim_names(x), list(NULL))
   )
 
 })

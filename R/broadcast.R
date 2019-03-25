@@ -78,12 +78,10 @@ rray_broadcast <- function(x, dim) {
 rray_broadcast.default <- function(x, dim) {
   res <- broadcast_impl(x, dim)
 
-  res <- rray_partial_restore(res, x)
-
   new_dim_names <- restore_dim_names(x, dim)
   res <- set_full_dim_names(res, new_dim_names)
 
-  res
+  vec_restore(res, x)
 }
 
 # makes no attempt to recover dim names

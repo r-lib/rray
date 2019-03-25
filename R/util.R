@@ -11,12 +11,7 @@ glubort <- function(..., .sep = "", .envir = parent.frame()) {
 # override dim<- to broadcast. Otherwise without this
 # we get an infinite loop because broadcast would call dim<-
 set_dim <- function(x, dim) {
-
-  # potentially avoid copy
-  if (!identical(vec_dim(x), dim)) {
-    attr(x, "dim") <- dim
-  }
-
+  attr(x, "dim") <- dim
   x
 }
 

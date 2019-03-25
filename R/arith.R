@@ -24,13 +24,11 @@ rray_arith_base <- function(op, x, y) {
   # Apply function
   res <- op_fn(op, x, y)
 
-  # Restore type
-  res <- rray_restore(res, restore_type)
-
   # Add dim names
   dim_names(res) <- dim_nms
 
-  res
+  # Restore type
+  vec_restore(res, restore_type)
 }
 
 #' @export
@@ -62,9 +60,7 @@ vec_arith.vctrs_rray.MISSING <- function(op, x, y) {
          "-" = -as_array(x)
   )
 
-  res <- rray_restore(res, x)
-  dim_names(res) <- dim_names(x)
-  res
+  vec_restore(res, x)
 }
 
 # ------------------------------------------------------------------------------

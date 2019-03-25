@@ -168,5 +168,5 @@ restore_dim_names <- function(x, to_dim) {
 
 # returns a list of n empty characters
 new_empty_dim_names <- function(n) {
-  map(seq_len(n), function(x) character())
+  map(seq_len(n), function(x) NULL)
 }

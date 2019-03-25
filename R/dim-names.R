@@ -73,9 +73,6 @@ dim_names.array <- function(x) {
     return(new_empty_dim_names(dims))
   }
 
-  # NULL -> character(0)
-  dim_nms <- map(dim_nms, function(x) if(is.null(x)) character() else x)
-
   dim_nms
 }
 
@@ -84,14 +81,14 @@ dim_names.matrix <- dim_names.array
 
 #' @export
 dim_names.vctrs_rray <- function(x) {
-  attr(x, "dim_names")
+  attr(x, "dimnames")
 }
 
 # treat vectors as 1 column matrices
 
 #' @export
 dim_names.double <- function(x) {
-  list(names(x) %||% character())
+  list(names(x))
 }
 
 #' @export
@@ -125,38 +122,22 @@ dimnames.vctrs_rray <- function(x) {
   set_full_dim_names(x, value)
 }
 
-# Using a helper function internally can help avoid
-# copies when the new dim names are identical to the
-# old ones. Using an assignment function like dim_names<-
-# ALWAYS makes a copy no matter what.
-
 set_full_dim_names <- function(x, value) {
   UseMethod("set_full_dim_names")
 }
 
 set_full_dim_names.default <- function(x, value) {
-
-  # potentially avoid copy
-  if (identical(dim_names(x), value)) {
-    return(x)
-  }
-
   dimnames(x) <- value
   x
 }
 
 set_full_dim_names.vctrs_rray <- function(x, value) {
 
-  # potentially avoid copy
-  if (identical(dim_names(x), value)) {
-    return(x)
-  }
-
   if (is_null(value)) {
     value <- new_empty_dim_names(vec_dims(x))
   }
 
-  stopifnot(map_lgl(value, is_character))
+  stopifnot(map_lgl(value, is_character_or_null))
 
   # n shape dims and n elements of shape name list
   stopifnot(vec_dims(x) == vec_size(value))
@@ -167,9 +148,8 @@ set_full_dim_names.vctrs_rray <- function(x, value) {
     map2_lgl(vec_dim(x), dim_name_lengths, validate_equal_size_or_no_names)
   )
 
-  attr(x, "dim_names") <- value
+  attr(x, "dimnames") <- value
   x
-
 }
 
 # Base R compat

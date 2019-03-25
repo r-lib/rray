@@ -43,7 +43,7 @@ test_that("Can reduce base R objects", {
   y_mat <- as.matrix(y)
   expect_equal(
     rray_reduce_int(y_mat, ~.x + .y),
-    matrix(c(3L, 7L), ncol = 2)
+    matrix(c(3L, 7L), ncol = 2, dimnames = list(NULL, NULL))
   )
 })
 

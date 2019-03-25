@@ -19,7 +19,7 @@
 #' # Equivalent
 #' rray_reduce_int(x, sum)
 #' rray_reduce_int(x, ~.x + .y)
-#' rray_sum(x)
+#' rray_sum(x, axes = 1)
 #'
 #' # Same as above, but reduce the columns
 #' rray_reduce_int(x, sum, axes = 2)
@@ -74,8 +74,6 @@ reducer_impl <- function(.x, .f, ..., axes, type) {
   # perform the reduction
   res <- rray_custom_reducer_cpp(.x, f, as_cpp_idx(axes), type)
 
-  res <- rray_partial_restore(res, .x)
-
   # until we get keepdims = True
   new_dim <- vec_dim(.x)
   new_dim[axes] <- 1L
@@ -84,5 +82,5 @@ reducer_impl <- function(.x, .f, ..., axes, type) {
   new_dim_names <- restore_dim_names(.x, new_dim)
   res <- set_full_dim_names(res, new_dim_names)
 
-  res
+  vec_restore(res, .x)
 }

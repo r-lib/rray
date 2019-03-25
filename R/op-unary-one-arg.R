@@ -7,9 +7,6 @@ rray_op_unary_over_axis <- function(op, x, axis) {
   # perform the op
   res <- rray_op_unary_1_arg_cpp(op, x, as_cpp_idx(axis))
 
-  # restore the type, but not dim_names
-  res <- rray_partial_restore(res, x)
-
   # TODO currently, xtensor reduces the result correctly,
   # but the resulting dimensions are reduced as well.
   # I don't think it should do this, so here we reshape
@@ -32,8 +29,7 @@ rray_op_unary_over_axis <- function(op, x, axis) {
   new_dim_names <- restore_dim_names(x, new_dim)
   res <- set_full_dim_names(res, new_dim_names)
 
-  res
-
+  vec_restore(res, x)
 }
 
 #' Locate the position of the maximum value

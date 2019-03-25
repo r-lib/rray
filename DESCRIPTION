@@ -12,7 +12,7 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Remotes:
-    DavisVaughan/Xtensor.R@dev
+    r-lib/vctrs
 Imports: 
     rlang,
     vctrs,
@@ -20,7 +20,7 @@ Imports:
     glue,
     utils
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 6.1.0.9000
+RoxygenNote: 6.1.1
 URL: https://github.com/DavisVaughan/rray
 BugReports: https://github.com/DavisVaughan/rray/issues
 LinkingTo: 
