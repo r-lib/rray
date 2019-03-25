@@ -66,32 +66,20 @@
   x <- as_array(x)
   dots <- dots_list(..., .preserve_empty = TRUE)
 
-  if (!is_missing(i)) {
-
-    if (!is_missing(j)) {
-
-      if (!is_empty(dots)) {
-
-        eval_bare(expr(x[[i, j, !!! dots]]))
-
-      } else {
-
-        x[[i, j]]
-
-      }
-    }
-    else {
-
-      x[[i]]
-
-    }
-
-  }
-  else {
-    # throw right error
+  if (is_missing(i)) {
+    # this errors with a consistent error to base R
     x[[]]
   }
 
+  if (is_missing(j)) {
+    return(x[[i]])
+  }
+
+  if (is_empty(dots)) {
+    return(x[[i, j]])
+  }
+
+  eval_bare(expr(x[[i, j, !!! dots]]))
 }
 
 #' @export
