@@ -207,7 +207,46 @@
 <a class="sourceLine" id="cb7-2" data-line-number="2"><span class="co">#&gt; [1] 1 2</span></a></code></pre></div>
 <p>rray disables this behavior, and instead throws an error.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">x_3D_rray[<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>]</a>
-<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="co">#&gt; Error: Use `x[,j]` to select columns, not `x[j]`.</span></a></code></pre></div>
+<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="co">#&gt; Error: Use `x[,j]` to select columns, not `x[j]`.</span></a>
+<a class="sourceLine" id="cb8-3" data-line-number="3"><span class="co">#&gt; Backtrace:</span></a>
+<a class="sourceLine" id="cb8-4" data-line-number="4"><span class="co">#&gt;      █</span></a>
+<a class="sourceLine" id="cb8-5" data-line-number="5"><span class="co">#&gt;   1. ├─base::tryCatch(...)</span></a>
+<a class="sourceLine" id="cb8-6" data-line-number="6"><span class="co">#&gt;   2. │ └─base:::tryCatchList(expr, classes, parentenv, handlers)</span></a>
+<a class="sourceLine" id="cb8-7" data-line-number="7"><span class="co">#&gt;   3. │   ├─base:::tryCatchOne(...)</span></a>
+<a class="sourceLine" id="cb8-8" data-line-number="8"><span class="co">#&gt;   4. │   │ └─base:::doTryCatch(return(expr), name, parentenv, handler)</span></a>
+<a class="sourceLine" id="cb8-9" data-line-number="9"><span class="co">#&gt;   5. │   └─base:::tryCatchList(expr, names[-nh], parentenv, handlers[-nh])</span></a>
+<a class="sourceLine" id="cb8-10" data-line-number="10"><span class="co">#&gt;   6. │     └─base:::tryCatchOne(expr, names, parentenv, handlers[[1L]])</span></a>
+<a class="sourceLine" id="cb8-11" data-line-number="11"><span class="co">#&gt;   7. │       └─base:::doTryCatch(return(expr), name, parentenv, handler)</span></a>
+<a class="sourceLine" id="cb8-12" data-line-number="12"><span class="co">#&gt;   8. ├─base::withCallingHandlers(...)</span></a>
+<a class="sourceLine" id="cb8-13" data-line-number="13"><span class="co">#&gt;   9. ├─base::saveRDS(...)</span></a>
+<a class="sourceLine" id="cb8-14" data-line-number="14"><span class="co">#&gt;  10. ├─base::do.call(...)</span></a>
+<a class="sourceLine" id="cb8-15" data-line-number="15"><span class="co">#&gt;  11. ├─(function (what, args, quote = FALSE, envir = parent.frame()) ...</span></a>
+<a class="sourceLine" id="cb8-16" data-line-number="16"><span class="co">#&gt;  12. ├─(function (...) ...</span></a>
+<a class="sourceLine" id="cb8-17" data-line-number="17"><span class="co">#&gt;  13. │ └─rmarkdown::render(...)</span></a>
+<a class="sourceLine" id="cb8-18" data-line-number="18"><span class="co">#&gt;  14. │   └─knitr::knit(...)</span></a>
+<a class="sourceLine" id="cb8-19" data-line-number="19"><span class="co">#&gt;  15. │     └─knitr:::process_file(text, output)</span></a>
+<a class="sourceLine" id="cb8-20" data-line-number="20"><span class="co">#&gt;  16. │       ├─base::withCallingHandlers(...)</span></a>
+<a class="sourceLine" id="cb8-21" data-line-number="21"><span class="co">#&gt;  17. │       ├─knitr:::process_group(group)</span></a>
+<a class="sourceLine" id="cb8-22" data-line-number="22"><span class="co">#&gt;  18. │       └─knitr:::process_group.block(group)</span></a>
+<a class="sourceLine" id="cb8-23" data-line-number="23"><span class="co">#&gt;  19. │         └─knitr:::call_block(x)</span></a>
+<a class="sourceLine" id="cb8-24" data-line-number="24"><span class="co">#&gt;  20. │           └─knitr:::block_exec(params)</span></a>
+<a class="sourceLine" id="cb8-25" data-line-number="25"><span class="co">#&gt;  21. │             ├─knitr:::in_dir(...)</span></a>
+<a class="sourceLine" id="cb8-26" data-line-number="26"><span class="co">#&gt;  22. │             └─knitr:::evaluate(...)</span></a>
+<a class="sourceLine" id="cb8-27" data-line-number="27"><span class="co">#&gt;  23. │               └─evaluate::evaluate(...)</span></a>
+<a class="sourceLine" id="cb8-28" data-line-number="28"><span class="co">#&gt;  24. │                 └─evaluate:::evaluate_call(...)</span></a>
+<a class="sourceLine" id="cb8-29" data-line-number="29"><span class="co">#&gt;  25. │                   ├─evaluate:::timing_fn(...)</span></a>
+<a class="sourceLine" id="cb8-30" data-line-number="30"><span class="co">#&gt;  26. │                   ├─evaluate:::handle(...)</span></a>
+<a class="sourceLine" id="cb8-31" data-line-number="31"><span class="co">#&gt;  27. │                   │ └─base::try(f, silent = TRUE)</span></a>
+<a class="sourceLine" id="cb8-32" data-line-number="32"><span class="co">#&gt;  28. │                   │   └─base::tryCatch(...)</span></a>
+<a class="sourceLine" id="cb8-33" data-line-number="33"><span class="co">#&gt;  29. │                   │     └─base:::tryCatchList(expr, classes, parentenv, handlers)</span></a>
+<a class="sourceLine" id="cb8-34" data-line-number="34"><span class="co">#&gt;  30. │                   │       └─base:::tryCatchOne(expr, names, parentenv, handlers[[1L]])</span></a>
+<a class="sourceLine" id="cb8-35" data-line-number="35"><span class="co">#&gt;  31. │                   │         └─base:::doTryCatch(return(expr), name, parentenv, handler)</span></a>
+<a class="sourceLine" id="cb8-36" data-line-number="36"><span class="co">#&gt;  32. │                   ├─base::withCallingHandlers(...)</span></a>
+<a class="sourceLine" id="cb8-37" data-line-number="37"><span class="co">#&gt;  33. │                   ├─base::withVisible(eval(expr, envir, enclos))</span></a>
+<a class="sourceLine" id="cb8-38" data-line-number="38"><span class="co">#&gt;  34. │                   └─base::eval(expr, envir, enclos)</span></a>
+<a class="sourceLine" id="cb8-39" data-line-number="39"><span class="co">#&gt;  35. │                     └─base::eval(expr, envir, enclos)</span></a>
+<a class="sourceLine" id="cb8-40" data-line-number="40"><span class="co">#&gt;  36. ├─x_3D_rray[1:2]</span></a>
+<a class="sourceLine" id="cb8-41" data-line-number="41"><span class="co">#&gt;  37. └─rray:::`[.vctrs_rray`(x_3D_rray, 1:2)</span></a></code></pre></div>
 <p>Instead, either coerce to a vector then subset the inner elements, or first use the more explicit rray subsetting behavior to isolate the elements (keeping the dimensionality) and then call <code><a href="https://www.rdocumentation.org/packages/base/topics/vector">as.vector()</a></code>. Alternatively, to keep an rray but drop dimensions of size <code>1</code>, use <code><a href="../reference/rray_squeeze.html">rray_squeeze()</a></code>.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="co"># coerce then subset</span></a>
 <a class="sourceLine" id="cb9-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/vector">as.vector</a></span>(x_3D_rray)[<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>]</a>
@@ -276,15 +315,15 @@
 <a class="sourceLine" id="cb12-3" data-line-number="3"></a>
 <a class="sourceLine" id="cb12-4" data-line-number="4">x_row_nms_rray <span class="op">+</span><span class="st"> </span>x_col_nms_rray</a>
 <a class="sourceLine" id="cb12-5" data-line-number="5"><span class="co">#&gt; &lt;vctrs_rray&lt;integer&gt;[,1][2]&gt;</span></a>
-<a class="sourceLine" id="cb12-6" data-line-number="6"><span class="co">#&gt;    c1</span></a>
-<a class="sourceLine" id="cb12-7" data-line-number="7"><span class="co">#&gt; r1  2</span></a>
-<a class="sourceLine" id="cb12-8" data-line-number="8"><span class="co">#&gt; r2  4</span></a>
+<a class="sourceLine" id="cb12-6" data-line-number="6"><span class="co">#&gt;      [,1]</span></a>
+<a class="sourceLine" id="cb12-7" data-line-number="7"><span class="co">#&gt; [1,]    2</span></a>
+<a class="sourceLine" id="cb12-8" data-line-number="8"><span class="co">#&gt; [2,]    4</span></a>
 <a class="sourceLine" id="cb12-9" data-line-number="9"></a>
 <a class="sourceLine" id="cb12-10" data-line-number="10">x_col_nms_rray <span class="op">+</span><span class="st"> </span>x_row_nms_rray</a>
 <a class="sourceLine" id="cb12-11" data-line-number="11"><span class="co">#&gt; &lt;vctrs_rray&lt;integer&gt;[,1][2]&gt;</span></a>
-<a class="sourceLine" id="cb12-12" data-line-number="12"><span class="co">#&gt;    c1</span></a>
-<a class="sourceLine" id="cb12-13" data-line-number="13"><span class="co">#&gt; r1  2</span></a>
-<a class="sourceLine" id="cb12-14" data-line-number="14"><span class="co">#&gt; r2  4</span></a></code></pre></div>
+<a class="sourceLine" id="cb12-12" data-line-number="12"><span class="co">#&gt;      [,1]</span></a>
+<a class="sourceLine" id="cb12-13" data-line-number="13"><span class="co">#&gt; [1,]    2</span></a>
+<a class="sourceLine" id="cb12-14" data-line-number="14"><span class="co">#&gt; [2,]    4</span></a></code></pre></div>
 <p>This isn’t to say that the order doesn’t matter. If both inputs have row names, for example, the row names of the result come from the first input.</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">x_col_row_nms_rray &lt;-<span class="st"> </span><span class="kw"><a href="../reference/dim-names.html">set_row_names</a></span>(x_col_nms_rray, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"row1"</span>, <span class="st">"row2"</span>))</a>
 <a class="sourceLine" id="cb13-2" data-line-number="2">x_col_row_nms_rray</a>
@@ -295,15 +334,15 @@
 <a class="sourceLine" id="cb13-7" data-line-number="7"></a>
 <a class="sourceLine" id="cb13-8" data-line-number="8">x_row_nms_rray <span class="op">+</span><span class="st"> </span>x_col_row_nms_rray</a>
 <a class="sourceLine" id="cb13-9" data-line-number="9"><span class="co">#&gt; &lt;vctrs_rray&lt;integer&gt;[,1][2]&gt;</span></a>
-<a class="sourceLine" id="cb13-10" data-line-number="10"><span class="co">#&gt;    c1</span></a>
-<a class="sourceLine" id="cb13-11" data-line-number="11"><span class="co">#&gt; r1  2</span></a>
-<a class="sourceLine" id="cb13-12" data-line-number="12"><span class="co">#&gt; r2  4</span></a>
+<a class="sourceLine" id="cb13-10" data-line-number="10"><span class="co">#&gt;      [,1]</span></a>
+<a class="sourceLine" id="cb13-11" data-line-number="11"><span class="co">#&gt; [1,]    2</span></a>
+<a class="sourceLine" id="cb13-12" data-line-number="12"><span class="co">#&gt; [2,]    4</span></a>
 <a class="sourceLine" id="cb13-13" data-line-number="13"></a>
 <a class="sourceLine" id="cb13-14" data-line-number="14">x_col_row_nms_rray <span class="op">+</span><span class="st"> </span>x_row_nms_rray</a>
 <a class="sourceLine" id="cb13-15" data-line-number="15"><span class="co">#&gt; &lt;vctrs_rray&lt;integer&gt;[,1][2]&gt;</span></a>
-<a class="sourceLine" id="cb13-16" data-line-number="16"><span class="co">#&gt;      c1</span></a>
-<a class="sourceLine" id="cb13-17" data-line-number="17"><span class="co">#&gt; row1  2</span></a>
-<a class="sourceLine" id="cb13-18" data-line-number="18"><span class="co">#&gt; row2  4</span></a></code></pre></div>
+<a class="sourceLine" id="cb13-16" data-line-number="16"><span class="co">#&gt;      [,1]</span></a>
+<a class="sourceLine" id="cb13-17" data-line-number="17"><span class="co">#&gt; [1,]    2</span></a>
+<a class="sourceLine" id="cb13-18" data-line-number="18"><span class="co">#&gt; [2,]    4</span></a></code></pre></div>
 <p>This approach emphasizes maintaining the maximum amount of information possible. The underlying engine for dimension name handling is <code><a href="../reference/common-dim-names.html">rray_dim_names_common()</a></code>. Pass it multiple inputs, and it will return the common dimension names using rray’s rules.</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw"><a href="../reference/common-dim-names.html">rray_dim_names_common</a></span>(x_row_nms, x_col_nms)</a>
 <a class="sourceLine" id="cb14-2" data-line-number="2"><span class="co">#&gt; [[1]]</span></a>
@@ -335,7 +374,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.9000.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
 </div>
       </footer>
 </div>
