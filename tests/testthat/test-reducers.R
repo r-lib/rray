@@ -438,3 +438,14 @@ test_that("rray_min() with integers gives doubles to prevent overflow", {
     vec_type(rray(1))
   )
 })
+
+# ------------------------------------------------------------------------------
+# Scalar reductions
+
+test_that("reductions with scalars don't crash R", {
+  expect_equal(
+    rray_sum(1, axes = NULL),
+    rray_sum(1, axes = 1L)
+  )
+})
+
