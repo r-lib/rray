@@ -12,7 +12,7 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Remotes:
-    r-lib/vctrs
+    r-lib/vctrs#253
 Imports: 
     rlang,
     vctrs,
