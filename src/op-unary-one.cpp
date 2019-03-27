@@ -21,7 +21,7 @@ SEXP rray_broadcast_cpp(const xt::rarray<T>& x, SEXP arg) {
 // -----------------------------------------------------------------------------
 // Sort / arg*
 
-// sort and argsort seem somewhat broken.
+// TODO - sort and argsort seem somewhat broken.
 // https://github.com/QuantStack/xtensor-r/issues/88
 
 template <typename T>
