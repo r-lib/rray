@@ -41,10 +41,6 @@ rray_reducer_cpp <- function(op, x, axes) {
     .Call(`_rray_rray_reducer_cpp`, op, x, axes)
 }
 
-rray_reshape_cpp <- function(x, dim) {
-    .Call(`_rray_rray_reshape_cpp`, x, dim)
-}
-
 rray_squeeze_cpp <- function(x, axis) {
     .Call(`_rray_rray_squeeze_cpp`, x, axis)
 }

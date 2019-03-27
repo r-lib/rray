@@ -129,6 +129,22 @@ SEXP rray_cumprod_cpp(const xt::rarray<T>& x, SEXP arg) {
 }
 
 // -----------------------------------------------------------------------------
+// Generators
+
+template <typename T>
+SEXP rray_reshape_cpp(const xt::rarray<T>& x, SEXP arg) {
+
+  std::vector<std::size_t> dim = as<std::vector<std::size_t>>(arg);
+
+  // needs a copy, otherwise modifying x
+  xt::rarray<T> res(x);
+
+  res.reshape(dim);
+
+  return(res);
+}
+
+// -----------------------------------------------------------------------------
 // Manipulation
 
 template <typename T>
@@ -199,6 +215,13 @@ SEXP rray_op_unary_1_arg_cpp_impl(std::string op, xt::rarray<T1> x, SEXP arg) {
 
   case str2int("cumprod"): {
     return rray_cumprod_cpp(x, arg);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Generators
+
+  case str2int("reshape"): {
+    return rray_reshape_cpp(x, arg);
   }
 
   // ---------------------------------------------------------------------------

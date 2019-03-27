@@ -131,18 +131,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rray_reshape_cpp
-SEXP rray_reshape_cpp(SEXP x, rray::dim_t dim);
-RcppExport SEXP _rray_rray_reshape_cpp(SEXP xSEXP, SEXP dimSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
-    Rcpp::traits::input_parameter< rray::dim_t >::type dim(dimSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray_reshape_cpp(x, dim));
-    return rcpp_result_gen;
-END_RCPP
-}
 // rray_squeeze_cpp
 SEXP rray_squeeze_cpp(SEXP x, rray::axes_t axis);
 RcppExport SEXP _rray_rray_squeeze_cpp(SEXP xSEXP, SEXP axisSEXP) {
@@ -167,7 +155,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray_op_unary_cpp", (DL_FUNC) &_rray_rray_op_unary_cpp, 2},
     {"_rray_rray_custom_reducer_cpp", (DL_FUNC) &_rray_rray_custom_reducer_cpp, 4},
     {"_rray_rray_reducer_cpp", (DL_FUNC) &_rray_rray_reducer_cpp, 3},
-    {"_rray_rray_reshape_cpp", (DL_FUNC) &_rray_rray_reshape_cpp, 2},
     {"_rray_rray_squeeze_cpp", (DL_FUNC) &_rray_rray_squeeze_cpp, 2},
     {NULL, NULL, 0}
 };
