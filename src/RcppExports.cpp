@@ -131,18 +131,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rray_squeeze_cpp
-SEXP rray_squeeze_cpp(SEXP x, rray::axes_t axis);
-RcppExport SEXP _rray_rray_squeeze_cpp(SEXP xSEXP, SEXP axisSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
-    Rcpp::traits::input_parameter< rray::axes_t >::type axis(axisSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray_squeeze_cpp(x, axis));
-    return rcpp_result_gen;
-END_RCPP
-}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray_ones_cpp", (DL_FUNC) &_rray_rray_ones_cpp, 1},
@@ -155,7 +143,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray_op_unary_cpp", (DL_FUNC) &_rray_rray_op_unary_cpp, 2},
     {"_rray_rray_custom_reducer_cpp", (DL_FUNC) &_rray_rray_custom_reducer_cpp, 4},
     {"_rray_rray_reducer_cpp", (DL_FUNC) &_rray_rray_reducer_cpp, 3},
-    {"_rray_rray_squeeze_cpp", (DL_FUNC) &_rray_rray_squeeze_cpp, 2},
     {NULL, NULL, 0}
 };
 

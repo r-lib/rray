@@ -16,6 +16,7 @@
 #' names in both situations.
 #'
 #' @param x An rray.
+#'
 #' @param axes An integer vector specifying the size 1 dimensions to drop. If
 #' `NULL`, all size 1 dimensions are dropped.
 #'
@@ -50,6 +51,7 @@ rray_squeeze <- function(x, axes = NULL) {
   }
 
   axes <- vec_cast(axes, integer())
+  validate_axes(axes, vec_dims(x))
 
   res <- squeeze_impl(x, axes)
 
@@ -60,5 +62,5 @@ rray_squeeze <- function(x, axes = NULL) {
 }
 
 squeeze_impl <- function(x, axes) {
-  rray_squeeze_cpp(x, as_cpp_idx(axes))
+  rray_op_unary_1_arg_cpp("squeeze", x, as_cpp_idx(axes))
 }
