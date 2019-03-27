@@ -86,9 +86,6 @@ SEXP rray_full_like_cpp(const xt::rarray<T>& x, SEXP arg) {
   return res;
 }
 
-// TODO - handle "scalar" inputs rray_op_unary_one_cpp("diag", x = 1L, 0L)
-// https://github.com/QuantStack/xtensor-r/issues/91
-
 template <typename T>
 SEXP rray_diag_cpp(const xt::rarray<T>& x, SEXP arg) {
   int k = Rcpp::as<int>(arg);
