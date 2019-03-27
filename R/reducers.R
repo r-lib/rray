@@ -10,26 +10,9 @@ rray_reducer_base <- function(reducer, x, axes) {
   # perform the reduction
   res <- rray_reducer_cpp(reducer, x, as_cpp_idx(axes))
 
-  # TODO currently, xtensor reduces the result correctly,
-  # but the resulting dimensions are reduced as well.
-  # I don't think it should do this, so here we reshape
-  # maybe they can include an option to allow this?
-  # at the very least, do this at the cpp level
-  # Hopefully this will get added soon so we can default
-  # keepdims = True:
-  # https://github.com/QuantStack/xtensor-r/issues/75
-  new_dim <- vec_dim(x)
+  res <- keep_dims(res, x, axes)
 
-  if (is.null(axes)) {
-    new_dim[] <- 1L
-  }
-  else {
-    new_dim[axes] <- 1L
-  }
-
-  res <- rray_reshape(res, new_dim)
-
-  new_dim_names <- restore_dim_names(x, new_dim)
+  new_dim_names <- restore_dim_names(x, vec_dim(res))
   res <- set_full_dim_names(res, new_dim_names)
 
 
