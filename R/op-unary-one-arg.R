@@ -5,7 +5,7 @@ rray_op_unary_over_axis <- function(op, x, axis) {
   validate_axis(axis, vec_dims(x))
 
   # perform the op
-  res <- rray_op_unary_1_arg_cpp(op, x, as_cpp_idx(axis))
+  res <- rray_op_unary_one_cpp(op, x, as_cpp_idx(axis))
 
   # TODO currently, xtensor reduces the result correctly,
   # but the resulting dimensions are reduced as well.

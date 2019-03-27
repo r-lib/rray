@@ -23,7 +23,7 @@ rray_reshape <- function(x, dim) {
 }
 
 rray_reshape_impl <- function(x, dim) {
-  rray_op_unary_1_arg_cpp("reshape", x, dim)
+  rray_op_unary_one_cpp("reshape", x, dim)
 }
 
 validate_reshape <- function(from, to) {

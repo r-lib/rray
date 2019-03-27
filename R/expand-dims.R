@@ -81,5 +81,5 @@ rray_expand_dims <- function(x, axis) {
 }
 
 rray_expand_dims_impl <- function(x, axis) {
-  rray_op_unary_1_arg_cpp("expand_dims", x, as_cpp_idx(axis))
+  rray_op_unary_one_cpp("expand_dims", x, as_cpp_idx(axis))
 }

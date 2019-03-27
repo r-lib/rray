@@ -86,7 +86,7 @@ SEXP rray_full_like_cpp(const xt::rarray<T>& x, SEXP arg) {
   return res;
 }
 
-// TODO - handle "scalar" inputs rray_op_unary_1_arg_cpp("diag", x = 1L, 0L)
+// TODO - handle "scalar" inputs rray_op_unary_one_cpp("diag", x = 1L, 0L)
 // https://github.com/QuantStack/xtensor-r/issues/91
 
 template <typename T>
@@ -179,7 +179,7 @@ SEXP rray_flip_cpp(const xt::rarray<T>& x, SEXP arg) {
 // Switch on the op
 
 template <typename T1>
-SEXP rray_op_unary_1_arg_cpp_impl(std::string op, xt::rarray<T1> x, SEXP arg) {
+SEXP rray_op_unary_one_cpp_impl(std::string op, xt::rarray<T1> x, SEXP arg) {
 
   switch(str2int(op.c_str())) {
 
@@ -265,21 +265,21 @@ SEXP rray_op_unary_1_arg_cpp_impl(std::string op, xt::rarray<T1> x, SEXP arg) {
 // Switch on the type of x
 
 // [[Rcpp::export]]
-SEXP rray_op_unary_1_arg_cpp(std::string op, SEXP x, SEXP arg) {
+SEXP rray_op_unary_one_cpp(std::string op, SEXP x, SEXP arg) {
 
   // Switch on X
   switch(TYPEOF(x)) {
 
   case REALSXP: {
-    return rray_op_unary_1_arg_cpp_impl(op, xt::rarray<double>(x), arg);
+    return rray_op_unary_one_cpp_impl(op, xt::rarray<double>(x), arg);
   }
 
   case INTSXP: {
-    return rray_op_unary_1_arg_cpp_impl(op, xt::rarray<int>(x), arg);
+    return rray_op_unary_one_cpp_impl(op, xt::rarray<int>(x), arg);
   }
 
   case LGLSXP: {
-    return rray_op_unary_1_arg_cpp_impl(op, xt::rarray<rlogical>(x), arg);
+    return rray_op_unary_one_cpp_impl(op, xt::rarray<rlogical>(x), arg);
   }
 
   default: {

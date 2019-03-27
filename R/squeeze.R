@@ -62,5 +62,5 @@ rray_squeeze <- function(x, axes = NULL) {
 }
 
 squeeze_impl <- function(x, axes) {
-  rray_op_unary_1_arg_cpp("squeeze", x, as_cpp_idx(axes))
+  rray_op_unary_one_cpp("squeeze", x, as_cpp_idx(axes))
 }

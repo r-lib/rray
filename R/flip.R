@@ -37,7 +37,7 @@ rray_flip <- function(x, axis) {
 }
 
 rray_flip_impl <- function(x, axis) {
-  rray_op_unary_1_arg_cpp("flip", x, as_cpp_idx(axis))
+  rray_op_unary_one_cpp("flip", x, as_cpp_idx(axis))
 }
 
 rev_dim_names <- function(dim_names, axis) {
