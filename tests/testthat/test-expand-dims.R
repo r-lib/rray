@@ -27,7 +27,7 @@ test_that("error on bad expansion", {
 
   expect_error(
     rray_expand_dims(x, 4),
-    "`axis` for this `x` can be at most 3, not 4."
+    "The maximum value for `axis` is 3."
   )
 
 })

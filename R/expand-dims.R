@@ -47,22 +47,11 @@
 #' @export
 rray_expand_dims <- function(x, axis) {
 
-  if (rlang::is_missing(axis)) {
-    abort("`axis` must be supplied.")
-  }
-
-  axis <- vec_cast(axis, integer())
-
-  axis_size <- vec_size(axis)
-  if (axis_size != 1) {
-    glubort("`axis` must have length 1, not {axis_size}.")
-  }
-
   dims <- vec_dims(x)
 
-  if (axis > (dims + 1)) {
-    glubort("`axis` for this `x` can be at most {dims + 1}, not {axis}.")
-  }
+  # axis allowed to be max of dims + 1 here
+  axis <- vec_cast(axis, integer())
+  validate_axis(axis, dims + 1L)
 
   res <- rray_expand_dims_impl(x, axis)
 
@@ -92,5 +81,5 @@ rray_expand_dims <- function(x, axis) {
 }
 
 rray_expand_dims_impl <- function(x, axis) {
-  rray_expand_dims_cpp(x, as_cpp_idx(axis))
+  rray_op_unary_1_arg_cpp("expand_dims", x, as_cpp_idx(axis))
 }
