@@ -97,7 +97,6 @@ SEXP rray_diag_cpp(const xt::rarray<T>& x, SEXP arg) {
 // Accumulators
 
 // To prevent overflow, return doubles
-// TODO - https://github.com/QuantStack/xtensor/issues/1333
 
 template <typename T>
 SEXP rray_cumsum_cpp(const xt::rarray<T>& x, SEXP arg) {
