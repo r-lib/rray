@@ -21,10 +21,6 @@ rray_expand_dims_cpp <- function(x, axis) {
     .Call(`_rray_rray_expand_dims_cpp`, x, axis)
 }
 
-rray_flip_cpp <- function(x, axis) {
-    .Call(`_rray_rray_flip_cpp`, x, axis)
-}
-
 rray_op_binary_cpp <- function(op, x, y) {
     .Call(`_rray_rray_op_binary_cpp`, op, x, y)
 }

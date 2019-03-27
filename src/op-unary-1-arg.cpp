@@ -129,6 +129,16 @@ SEXP rray_cumprod_cpp(const xt::rarray<T>& x, SEXP arg) {
 }
 
 // -----------------------------------------------------------------------------
+// Manipulation
+
+template <typename T>
+SEXP rray_flip_cpp(const xt::rarray<T>& x, SEXP arg) {
+  std::size_t axis = as<std::size_t>(arg);
+  xt::rarray<T> res = xt::flip(x, axis);
+  return res;
+}
+
+// -----------------------------------------------------------------------------
 // Switch on the op
 
 template <typename T1>
@@ -182,6 +192,13 @@ SEXP rray_op_unary_1_arg_cpp_impl(std::string op, xt::rarray<T1> x, SEXP arg) {
 
   case str2int("cumprod"): {
     return rray_cumprod_cpp(x, arg);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Manipulation
+
+  case str2int("flip"): {
+    return rray_flip_cpp(x, arg);
   }
 
   default: {

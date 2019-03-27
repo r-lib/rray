@@ -22,22 +22,9 @@
 #' @export
 rray_flip <- function(x, axis) {
 
-  if (rlang::is_missing(axis)) {
-    abort("`axis` must be supplied.")
-  }
-
+  # only integer axes
   axis <- vec_cast(axis, integer())
-
-  axis_size <- vec_size(axis)
-  if (axis_size != 1) {
-    glubort("`axis` must have length 1, not {axis_size}.")
-  }
-
-  dims <- vec_dims(x)
-
-  if (axis > dims) {
-    glubort("`axis` for this `x` can be at most {dims}, not {axis}.")
-  }
+  validate_axis(axis, vec_dims(x))
 
   res <- rray_flip_impl(x, axis)
 
@@ -50,7 +37,7 @@ rray_flip <- function(x, axis) {
 }
 
 rray_flip_impl <- function(x, axis) {
-  rray_flip_cpp(x, as_cpp_idx(axis))
+  rray_op_unary_1_arg_cpp("flip", x, as_cpp_idx(axis))
 }
 
 rev_dim_names <- function(dim_names, axis) {
