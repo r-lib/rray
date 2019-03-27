@@ -32,31 +32,6 @@ rray_op_unary_over_axis <- function(op, x, axis) {
   vec_restore(res, x)
 }
 
-#' Locate the position of the minimum value
-#'
-#' `rray_min_pos()` returns the integer position of the minimum value over an
-#' axis.
-#'
-#' @inheritParams rray_max_pos
-#'
-#' @examples
-#'
-#' x <- rray(c(1:10, 20:11), dim = c(5, 2, 2))
-#'
-#' # Flatten x, then find the position of the max value
-#' rray_min_pos(x)
-#'
-#' # Compute along the rows
-#' rray_min_pos(x, 1)
-#'
-#' # Compute along the columns
-#' rray_min_pos(x, 2)
-#'
-#' @export
-rray_min_pos <- function(x, axis = NULL) {
-  rray_op_unary_over_axis("argmin", x, axis)
-}
-
 
 # TODO currently, xtensor reduces the result correctly,
 # but the resulting dimensions are reduced as well.
