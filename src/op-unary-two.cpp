@@ -1,0 +1,83 @@
+#include <rray_types.h>
+#include <xtensor/xstrided_view.hpp>
+#include <xtensor/xmanipulation.hpp>
+#include <tools/errors.hpp>
+#include <tools/utils.hpp>
+#include <Rcpp.h>
+using namespace Rcpp;
+using namespace rray;
+
+// -----------------------------------------------------------------------------
+// Manipulation
+
+template <typename T>
+SEXP rray_split_cpp(const xt::rarray<T>& x, SEXP arg1, SEXP arg2) {
+
+  std::size_t n = as<std::size_t>(arg1);
+  std::size_t axis = as<std::size_t>(arg2);
+
+  auto res = xt::split(x, n, axis);
+
+  List out(n);
+
+  // For whatever reason, we have to cast to rarray<T> first
+  // before going to SEXP
+  for (int i = 0; i < n; ++i) {
+    xt::rarray<T> res_i = res[i];
+    out[i] = res_i;
+  }
+
+  return out;
+}
+
+// -----------------------------------------------------------------------------
+// Switch on the op
+
+template <typename T1>
+SEXP rray_op_unary_two_cpp_impl(std::string op, xt::rarray<T1> x, SEXP arg1, SEXP arg2) {
+
+  switch(str2int(op.c_str())) {
+
+  // ---------------------------------------------------------------------------
+  // Manipulation
+
+  case str2int("split"): {
+    return rray_split_cpp(x, arg1, arg2);
+  }
+
+  default: {
+    stop("Unknown unary operation.");
+  }
+
+  }
+
+}
+
+// -----------------------------------------------------------------------------
+// Switch on the type of x
+
+// [[Rcpp::export]]
+SEXP rray_op_unary_two_cpp(std::string op, SEXP x, SEXP arg1, SEXP arg2) {
+
+  // Switch on X
+  switch(TYPEOF(x)) {
+
+  case REALSXP: {
+    return rray_op_unary_two_cpp_impl(op, xt::rarray<double>(x), arg1, arg2);
+  }
+
+  case INTSXP: {
+    return rray_op_unary_two_cpp_impl(op, xt::rarray<int>(x), arg1, arg2);
+  }
+
+  case LGLSXP: {
+    return rray_op_unary_two_cpp_impl(op, xt::rarray<rlogical>(x), arg1, arg2);
+  }
+
+  default: {
+    error_unknown_type();
+  }
+
+  }
+
+}

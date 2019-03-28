@@ -29,6 +29,10 @@ rray_op_unary_one_cpp <- function(op, x, arg) {
     .Call(`_rray_rray_op_unary_one_cpp`, op, x, arg)
 }
 
+rray_op_unary_two_cpp <- function(op, x, arg1, arg2) {
+    .Call(`_rray_rray_op_unary_two_cpp`, op, x, arg1, arg2)
+}
+
 rray_op_unary_cpp <- function(op, x) {
     .Call(`_rray_rray_op_unary_cpp`, op, x)
 }
