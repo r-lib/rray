@@ -85,7 +85,7 @@ as_matrix.double <- function(x, ...) {
 
   new_matrix(
     .data = .data,
-    dim = dim,
+    dim = matrix_dim,
     dimnames = new_dim_names
   )
 }
