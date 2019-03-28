@@ -42,8 +42,14 @@ test_that("meta dim names are kept", {
   )
 })
 
-test_that("Cannot reduce dimensions", {
-  expect_error(as_matrix(rray(1, c(1, 1, 1))), "Cannot reduce")
+test_that("Cannot reduce >2D to a matrix most of the time", {
+  expect_error(as_matrix(rray(1, c(1, 1, 2))), "A >2D object")
+
+  # If the non-matrix dimensions are all 1, we can reduce
+  expect_equal(
+    as_matrix(rray(1, c(2, 3, 1))),
+    new_matrix(1, c(2, 3))
+  )
 })
 
 # ------------------------------------------------------------------------------

@@ -77,14 +77,16 @@ as_matrix.double <- function(x, ...) {
   .data <- unname(vec_data(x))
 
   dim <- vec_dim(x)
-  if (vec_size(dim) > 2L) {
-    abort("Cannot reduce a >2 dimensional object to a matrix.")
-  }
+
+  validate_matrix_coercible_dim(dim)
+
+  matrix_dim <- dim[c(1L, 2L)]
+  new_dim_names <- restore_dim_names(x, matrix_dim)
 
   new_matrix(
     .data = .data,
     dim = dim,
-    dimnames = dim_names(x)
+    dimnames = new_dim_names
   )
 }
 
@@ -99,6 +101,31 @@ as_matrix.vctrs_rray <- as_matrix.double
 
 #' @export
 as.matrix.vctrs_rray <- as_matrix.vctrs_rray
+
+validate_matrix_coercible_dim <- function(dim) {
+
+  if (vec_size(dim) <= 2L) {
+    return(invisible(dim))
+  }
+
+  non_matrix_dim <- dim[-c(1L, 2L)]
+  bad <- which(non_matrix_dim > 1L)
+  ok <- length(bad) == 0L
+
+  if (ok) {
+    return(invisible(dim))
+  }
+
+  bad <- bad + 2L # readjust after removing matrix dimensions
+  bad <- glue::glue_collapse(bad, ", ")
+
+  glubort(
+    "A >2D object can only be reduced to a matrix if all ",
+    "dimensions except for the first two are 1. This is not the case for ",
+    "dimension(s): {bad}."
+  )
+
+}
 
 # as_rray() --------------------------------------------------------------------
 
