@@ -80,12 +80,15 @@ as_matrix.double <- function(x, ...) {
 
   validate_matrix_coercible_dim(dim)
 
-  matrix_dim <- dim[c(1L, 2L)]
-  new_dim_names <- restore_dim_names(x, matrix_dim)
+  if (vec_dims(x) > 2L) {
+    dim <- dim[c(1L, 2L)]
+  }
+
+  new_dim_names <- restore_dim_names(x, dim)
 
   new_matrix(
     .data = .data,
-    dim = matrix_dim,
+    dim = dim,
     dimnames = new_dim_names
   )
 }
