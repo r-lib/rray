@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Locate the position of the minimum value — rray_min_pos • rray</title>
+<title>Compute the determinant — rray_det • rray</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,10 +30,9 @@
 
 
 
-<meta property="og:title" content="Locate the position of the minimum value — rray_min_pos" />
+<meta property="og:title" content="Compute the determinant — rray_det" />
 
-<meta property="og:description" content="rray_min_pos() returns the integer position of the minimum value over an
-axis." />
+<meta property="og:description" content="rray_det() computes the determinant of a matrix." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -115,79 +114,54 @@ axis." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Locate the position of the minimum value</h1>
-    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/min-pos.R'><code>R/min-pos.R</code></a></small>
-    <div class="hidden name"><code>rray_min_pos.Rd</code></div>
+    <h1>Compute the determinant</h1>
+    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/linear-algebra.R'><code>R/linear-algebra.R</code></a></small>
+    <div class="hidden name"><code>rray_det.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p><code>rray_min_pos()</code> returns the integer position of the minimum value over an
-axis.</p>
+    <p><code>rray_det()</code> computes the determinant of a matrix.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>rray_min_pos</span>(<span class='no'>x</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>rray_det</span>(<span class='no'>x</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>A vector, matrix, array, or rray.</p></td>
-    </tr>
-    <tr>
-      <th>axis</th>
-      <td><p>A single integer specifying the axis to compute along. <code>1</code>
-computes along rows, reducing the number of rows to 1.
-<code>2</code> does the same, but along columns, and so on for higher dimensions.
-The default of <code>NULL</code> first flattens <code>x</code> to 1-D.</p></td>
+      <td><p>A square matrix to compute the determinant for.
+Alternatively, a higher dimensional array which is treated as a stack
+of matrices computed from the first two dimensions.</p></td>
     </tr>
     </table>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>:<span class='fl'>10</span>, <span class='fl'>20</span>:<span class='fl'>11</span>), <span class='kw'>dim</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>5</span>, <span class='fl'>2</span>, <span class='fl'>2</span>))
+    <pre class="examples"><div class='input'><span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fl'>1</span>:<span class='fl'>4</span>, <span class='kw'>ncol</span> <span class='kw'>=</span> <span class='fl'>2</span>)
 
-<span class='co'># Flatten x, then find the position of the max value</span>
-<span class='fu'>rray_min_pos</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,1,1][1]&gt;
-#&gt; , , 1
+<span class='co'># Dimensions are kept</span>
+<span class='fu'>rray_det</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt;      [,1]
+#&gt; [1,]   -2</div><div class='input'>
+<span class='no'>x_3d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray_broadcast.html'>rray_broadcast</a></span>(<span class='no'>x</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>3</span>))
+
+<span class='co'># 3D matrices are treated as stacks of 2D matrices</span>
+<span class='fu'>rray_det</span>(<span class='no'>x_3d</span>)</div><div class='output co'>#&gt; , , 1
 #&gt; 
 #&gt;      [,1]
-#&gt; [1,]    1
-#&gt; </div><div class='input'>
-<span class='co'># Compute along the rows</span>
-<span class='fu'>rray_min_pos</span>(<span class='no'>x</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,2,2][4]&gt;
-#&gt; , , 1
-#&gt; 
-#&gt;      [,1] [,2]
-#&gt; [1,]    1    1
-#&gt; 
-#&gt; , , 2
-#&gt; 
-#&gt;      [,1] [,2]
-#&gt; [1,]    5    5
-#&gt; </div><div class='input'>
-<span class='co'># Compute along the columns</span>
-<span class='fu'>rray_min_pos</span>(<span class='no'>x</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,1,2][10]&gt;
-#&gt; , , 1
-#&gt; 
-#&gt;      [,1]
-#&gt; [1,]    1
-#&gt; [2,]    1
-#&gt; [3,]    1
-#&gt; [4,]    1
-#&gt; [5,]    1
+#&gt; [1,]   -2
 #&gt; 
 #&gt; , , 2
 #&gt; 
 #&gt;      [,1]
-#&gt; [1,]    2
-#&gt; [2,]    2
-#&gt; [3,]    2
-#&gt; [4,]    2
-#&gt; [5,]    2
+#&gt; [1,]   -2
+#&gt; 
+#&gt; , , 3
+#&gt; 
+#&gt;      [,1]
+#&gt; [1,]   -2
 #&gt; </div><div class='input'>
 </div></pre>
   </div>
