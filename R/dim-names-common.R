@@ -156,14 +156,21 @@ restore_dim_names <- function(x, to_dim) {
     nms <- dim_names[[i]]
     single_dim <- to_dim[i]
 
-    if (vec_size(nms) == single_dim || single_dim == 0L) {
-      restored_dim_names[[i]] <- nms
+    # Nothing to restore
+    if (is.null(nms)) {
+      next
     }
 
+    # To be restorable, the size of the old names
+    # must match the new dim
+    if (vec_size(nms) != single_dim) {
+      next
+    }
+
+    restored_dim_names[[i]] <- nms
   }
 
   restored_dim_names
-
 }
 
 # returns a list of n empty characters
