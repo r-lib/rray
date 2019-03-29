@@ -87,6 +87,12 @@ rray_broadcast.default <- function(x, dim) {
 # makes no attempt to recover dim names
 # or type
 broadcast_impl <- function(x, dim) {
+
+  # TODO - remove after https://github.com/QuantStack/xtensor-r/issues/103
+  if (identical(vec_dim(x), dim)) {
+    return(x)
+  }
+
   res <- rray_dims_match(x, vec_size(dim))
   validate_recyclable(vec_dim(res), dim)
   res <- rray_op_unary_one_cpp("broadcast", res, dim)
