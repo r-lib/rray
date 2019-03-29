@@ -66,3 +66,5 @@ NULL
 #' @useDynLib rray, .registration = TRUE
 #' @importFrom Rcpp sourceCpp
 NULL
+
+utils::globalVariables(c("at", "arg"))
