@@ -276,15 +276,15 @@
 <a class="sourceLine" id="cb12-3" data-line-number="3"></a>
 <a class="sourceLine" id="cb12-4" data-line-number="4">x_row_nms_rray <span class="op">+</span><span class="st"> </span>x_col_nms_rray</a>
 <a class="sourceLine" id="cb12-5" data-line-number="5"><span class="co">#&gt; &lt;vctrs_rray&lt;integer&gt;[,1][2]&gt;</span></a>
-<a class="sourceLine" id="cb12-6" data-line-number="6"><span class="co">#&gt;      [,1]</span></a>
-<a class="sourceLine" id="cb12-7" data-line-number="7"><span class="co">#&gt; [1,]    2</span></a>
-<a class="sourceLine" id="cb12-8" data-line-number="8"><span class="co">#&gt; [2,]    4</span></a>
+<a class="sourceLine" id="cb12-6" data-line-number="6"><span class="co">#&gt;    c1</span></a>
+<a class="sourceLine" id="cb12-7" data-line-number="7"><span class="co">#&gt; r1  2</span></a>
+<a class="sourceLine" id="cb12-8" data-line-number="8"><span class="co">#&gt; r2  4</span></a>
 <a class="sourceLine" id="cb12-9" data-line-number="9"></a>
 <a class="sourceLine" id="cb12-10" data-line-number="10">x_col_nms_rray <span class="op">+</span><span class="st"> </span>x_row_nms_rray</a>
 <a class="sourceLine" id="cb12-11" data-line-number="11"><span class="co">#&gt; &lt;vctrs_rray&lt;integer&gt;[,1][2]&gt;</span></a>
-<a class="sourceLine" id="cb12-12" data-line-number="12"><span class="co">#&gt;      [,1]</span></a>
-<a class="sourceLine" id="cb12-13" data-line-number="13"><span class="co">#&gt; [1,]    2</span></a>
-<a class="sourceLine" id="cb12-14" data-line-number="14"><span class="co">#&gt; [2,]    4</span></a></code></pre></div>
+<a class="sourceLine" id="cb12-12" data-line-number="12"><span class="co">#&gt;    c1</span></a>
+<a class="sourceLine" id="cb12-13" data-line-number="13"><span class="co">#&gt; r1  2</span></a>
+<a class="sourceLine" id="cb12-14" data-line-number="14"><span class="co">#&gt; r2  4</span></a></code></pre></div>
 <p>This isn’t to say that the order doesn’t matter. If both inputs have row names, for example, the row names of the result come from the first input.</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">x_col_row_nms_rray &lt;-<span class="st"> </span><span class="kw"><a href="../reference/dim-names.html">set_row_names</a></span>(x_col_nms_rray, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"row1"</span>, <span class="st">"row2"</span>))</a>
 <a class="sourceLine" id="cb13-2" data-line-number="2">x_col_row_nms_rray</a>
@@ -295,15 +295,15 @@
 <a class="sourceLine" id="cb13-7" data-line-number="7"></a>
 <a class="sourceLine" id="cb13-8" data-line-number="8">x_row_nms_rray <span class="op">+</span><span class="st"> </span>x_col_row_nms_rray</a>
 <a class="sourceLine" id="cb13-9" data-line-number="9"><span class="co">#&gt; &lt;vctrs_rray&lt;integer&gt;[,1][2]&gt;</span></a>
-<a class="sourceLine" id="cb13-10" data-line-number="10"><span class="co">#&gt;      [,1]</span></a>
-<a class="sourceLine" id="cb13-11" data-line-number="11"><span class="co">#&gt; [1,]    2</span></a>
-<a class="sourceLine" id="cb13-12" data-line-number="12"><span class="co">#&gt; [2,]    4</span></a>
+<a class="sourceLine" id="cb13-10" data-line-number="10"><span class="co">#&gt;    c1</span></a>
+<a class="sourceLine" id="cb13-11" data-line-number="11"><span class="co">#&gt; r1  2</span></a>
+<a class="sourceLine" id="cb13-12" data-line-number="12"><span class="co">#&gt; r2  4</span></a>
 <a class="sourceLine" id="cb13-13" data-line-number="13"></a>
 <a class="sourceLine" id="cb13-14" data-line-number="14">x_col_row_nms_rray <span class="op">+</span><span class="st"> </span>x_row_nms_rray</a>
 <a class="sourceLine" id="cb13-15" data-line-number="15"><span class="co">#&gt; &lt;vctrs_rray&lt;integer&gt;[,1][2]&gt;</span></a>
-<a class="sourceLine" id="cb13-16" data-line-number="16"><span class="co">#&gt;      [,1]</span></a>
-<a class="sourceLine" id="cb13-17" data-line-number="17"><span class="co">#&gt; [1,]    2</span></a>
-<a class="sourceLine" id="cb13-18" data-line-number="18"><span class="co">#&gt; [2,]    4</span></a></code></pre></div>
+<a class="sourceLine" id="cb13-16" data-line-number="16"><span class="co">#&gt;      c1</span></a>
+<a class="sourceLine" id="cb13-17" data-line-number="17"><span class="co">#&gt; row1  2</span></a>
+<a class="sourceLine" id="cb13-18" data-line-number="18"><span class="co">#&gt; row2  4</span></a></code></pre></div>
 <p>This approach emphasizes maintaining the maximum amount of information possible. The underlying engine for dimension name handling is <code><a href="../reference/common-dim-names.html">rray_dim_names_common()</a></code>. Pass it multiple inputs, and it will return the common dimension names using rray’s rules.</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw"><a href="../reference/common-dim-names.html">rray_dim_names_common</a></span>(x_row_nms, x_col_nms)</a>
 <a class="sourceLine" id="cb14-2" data-line-number="2"><span class="co">#&gt; [[1]]</span></a>
