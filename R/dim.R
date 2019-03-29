@@ -60,8 +60,8 @@
 #' @name common-dim
 NULL
 
-rray_dims2 <- function(x_dim, y_dim) {
-  max(vec_size(x_dim), vec_size(y_dim))
+rray_dims2 <- function(x_dims, y_dims) {
+  max(x_dims, y_dims)
 }
 
 rray_dim2 <- function(x_dim, y_dim) {
@@ -74,9 +74,8 @@ rray_dim2 <- function(x_dim, y_dim) {
 rray_dims_common <- function(...) {
   args <- compact(list2(...))
 
-  dim_lst <- map(args, vec_dim)
-  reduce(dim_lst, rray_dims2)
-
+  dims_lst <- map(args, vec_dims)
+  reduce(dims_lst, rray_dims2)
 }
 
 #' @rdname common-dim
