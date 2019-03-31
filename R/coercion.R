@@ -30,7 +30,7 @@ as_array.matrix <- function(x, ...) {
 #' @export
 as_array.double <- function(x, ...) {
   new_array(
-    .data = unname(vec_data(x)),
+    .data = as.vector(x),
     dim = vec_dim(x),
     dimnames = dim_names(x)
   )
@@ -74,7 +74,7 @@ as_matrix.matrix <- function(x, ...) {
 
 #' @export
 as_matrix.double <- function(x, ...) {
-  .data <- unname(vec_data(x))
+  .data <- as.vector(x)
 
   dim <- vec_dim(x)
 
