@@ -89,7 +89,7 @@ rray_bind <- function(..., axis = 1L) {
 
   pos <- 1L
   for (i in seq_along(args)) {
-    arg <- vec_data(args[[i]])
+    arg <- args[[i]]
     n <- axis_ns[i]
 
     # `at` controls where we update `out` at
