@@ -79,7 +79,7 @@ rray_broadcast.default <- function(x, dim) {
 
   dim <- vec_cast(dim, integer())
 
-  res <- broadcast_impl(x, dim)
+  res <- rray_broadcast_impl(x, dim)
 
   new_dim_names <- restore_dim_names(x, dim)
   res <- set_full_dim_names(res, new_dim_names)
@@ -87,7 +87,7 @@ rray_broadcast.default <- function(x, dim) {
   vec_restore(res, x)
 }
 
-broadcast_impl <- function(x, dim) {
+rray_broadcast_impl <- function(x, dim) {
   res <- rray_dims_match(x, vec_size(dim))
   validate_recyclable(vec_dim(res), dim)
   res <- rray_op_unary_one_cpp("broadcast", res, dim)
