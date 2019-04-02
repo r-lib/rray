@@ -24,11 +24,6 @@ obj_print_data.vctrs_rray <- function(x, ...) {
 }
 
 #' @export
-t.vctrs_rray <- function(x) {
-  as_rray(t(as_array(x)))
-}
-
-#' @export
 vec_restore.vctrs_rray <- function(x, to, ..., i = NULL) {
   x_dim <- vec_dim(x)
 
