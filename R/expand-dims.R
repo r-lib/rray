@@ -56,25 +56,7 @@ rray_expand_dims <- function(x, axis) {
   res <- rray_expand_dims_impl(x, axis)
 
   x_dim_names <- dim_names(x)
-
-  # Get dimension names after the new axis
-  if (dims >= axis) {
-    post_names <- x_dim_names[(axis):dims]
-  }
-  else {
-    post_names <- list()
-  }
-
-  # Get dimension names before the new axis
-  pre_names <- x_dim_names[seq_len(axis-1)]
-
-  # New dim names with an empty dimension inserted
-  new_dim_names <- c(
-    pre_names,
-    new_empty_dim_names(1),
-    post_names
-  )
-
+  new_dim_names <- rray_expand_dim_names(x_dim_names, axis)
   res <- set_full_dim_names(res, new_dim_names)
 
   vec_restore(res, x)
@@ -82,4 +64,35 @@ rray_expand_dims <- function(x, axis) {
 
 rray_expand_dims_impl <- function(x, axis) {
   rray_op_unary_one_cpp("expand_dims", x, as_cpp_idx(axis))
+}
+
+# Adds at least 1 `NULL` dim names at the `axis`
+# if axis > length(dim_names) it can add multiple
+# `NULL` elements until length(dim_names) == axis
+rray_expand_dim_names <- function(dim_names, axis) {
+
+  dims <- vec_size(dim_names)
+
+  # Get dimension names after the new axis
+  if (dims >= axis) {
+    post_names <- dim_names[(axis):dims]
+    n_empty <- 1L
+  }
+  else {
+    post_names <- list()
+    n_empty <- axis - dims
+    axis <- min(axis, dims + 1)
+  }
+
+  # Get dimension names before the new axis
+  pre_names <- dim_names[seq_len(axis - 1)]
+
+  # New dim names with an empty dimension inserted
+  new_dim_names <- c(
+    pre_names,
+    new_empty_dim_names(n_empty),
+    post_names
+  )
+
+  new_dim_names
 }
