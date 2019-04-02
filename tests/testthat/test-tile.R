@@ -81,3 +81,23 @@ test_that("can tile length 0 input", {
     new_array(numeric(), c(0, 2, 1))
   )
 })
+
+test_that("can tile 0 column input", {
+
+  x <- new_matrix(numeric(), c(1, 0))
+
+  expect_equal(
+    rray_tile(x, 1),
+    x
+  )
+
+  expect_equal(
+    rray_tile(x, 2),
+    rbind(x, x)
+  )
+
+  expect_equal(
+    rray_tile(x, c(1, 2)),
+    x
+  )
+})
