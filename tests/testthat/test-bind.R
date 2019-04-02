@@ -286,6 +286,11 @@ test_that("can rray_bind() with no input", {
   expect_equal(rray_bind(), NULL)
 })
 
+test_that("can rray_bind() with `NULL`", {
+  expect_equal(rray_bind(NULL), NULL)
+  expect_equal(rray_bind(NULL, 1L), new_array(1L))
+})
+
 test_that("can rray_rbind() and rray_cbind()", {
   expect_equal(
     rray_rbind(matrix(1), matrix(2)),

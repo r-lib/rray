@@ -59,7 +59,7 @@ rray_bind <- function(..., axis = 1L) {
   axis <- vec_cast(axis, integer())
   validate_axis(axis, dims = Inf)
 
-  args <- rlang::list2(...)
+  args <- compact(rlang::list2(...))
 
   if (length(args) == 0L) {
     return(NULL)
