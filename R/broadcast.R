@@ -71,13 +71,21 @@
 #'
 #' @export
 rray_broadcast <- function(x, dim) {
-  UseMethod("rray_broadcast")
-}
-
-#' @export
-rray_broadcast.default <- function(x, dim) {
-
   dim <- vec_cast(dim, integer())
+
+  # Expand dimensionality of `x` as needed
+  x <- rray_dims_match(x, vec_size(dim))
+
+  # pre-subset where any `dim == 0L` is requested
+  x <- pre_zero_slice(x, dim)
+
+  x_dim <- vec_dim(x)
+
+  # If any `x_dim == 0`, it can't be recycled,
+  # so set `dim == 0` in those positions
+  dim <- pre_recycle_zeros(x_dim, dim)
+
+  validate_recyclable(x_dim, dim)
 
   res <- rray_broadcast_impl(x, dim)
 
@@ -88,10 +96,7 @@ rray_broadcast.default <- function(x, dim) {
 }
 
 rray_broadcast_impl <- function(x, dim) {
-  res <- rray_dims_match(x, vec_size(dim))
-  validate_recyclable(vec_dim(res), dim)
-  res <- rray_op_unary_one_cpp("broadcast", res, dim)
-  res
+  rray_op_unary_one_cpp("broadcast", x, dim)
 }
 
 # Match up the dims of x with the dims of y
@@ -116,12 +121,37 @@ rray_dims_match <- function(x, dims) {
   x
 }
 
+# If a dimension was zero before, it should always be zero
+# no matter what we request it be broadcast to
+pre_recycle_zeros <- function(from_dim, to_dim) {
+  zeros <- from_dim == 0L
+  to_dim[zeros] <- 0L
+  to_dim
+}
+
+# xtensor doesn't reduce dimensions down to 0D
+# if the broadcasts requests it so we do that ahead of time
+pre_zero_slice <- function(x, dim) {
+  slicer <- map(dim, get_zero_slicer)
+  eval_bare(expr(x[!!!slicer, drop = FALSE]))
+}
+
+get_zero_slicer <- function(single_dim) {
+  if (single_dim == 0L) {
+    0
+  }
+  else {
+    missing_arg()
+  }
+}
+
 # when broadcasting, cant go from [0,2] to [1,1]. Column dimension is
 # downcasted
 validate_recyclable <- function(from_dim, to_dim) {
-  ok <- from_dim == to_dim | from_dim == 1 | to_dim == 0
+  ok <- from_dim == to_dim | from_dim == 1L | to_dim == 0L | from_dim == 0L
   if (any(!ok)) {
     abort("Non-recyclable dimensions")
   }
+  invisible()
 }
 

@@ -11,7 +11,13 @@ glubort <- function(..., .sep = "", .envir = parent.frame()) {
 # override dim<- to broadcast. Otherwise without this
 # we get an infinite loop because broadcast would call dim<-
 set_dim <- function(x, dim) {
+
+  if (is.null(x)) {
+    return(NULL)
+  }
+
   attr(x, "dim") <- dim
+
   x
 }
 
