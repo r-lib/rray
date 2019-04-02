@@ -3,14 +3,11 @@
 \name{rray_transpose}
 \alias{rray_transpose}
 \alias{t.vctrs_rray}
-\alias{aperm.vctrs_rray}
 \title{Transpose an array}
 \usage{
 rray_transpose(x, permutation = NULL)
 
 \method{t}{vctrs_rray}(x)
-
-\method{aperm}{vctrs_rray}(a, perm = NULL, ...)
 }
 \arguments{
 \item{x}{A vector, matrix, array, or rray.}
@@ -18,10 +15,6 @@ rray_transpose(x, permutation = NULL)
 \item{permutation}{This should be some permutation of \code{1:n} with \code{n}
 being the number of dimensions of \code{x}. If \code{NULL}, the reverse of \code{1:n} is
 used, which is the normal transpose.}
-
-\item{a}{An rray.}
-
-\item{perm}{See \code{permutation}.}
 }
 \description{
 \code{rray_transpose()} transposes \code{x} along axes defined by \code{permutation}. By

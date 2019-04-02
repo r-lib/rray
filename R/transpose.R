@@ -10,10 +10,6 @@
 #' being the number of dimensions of `x`. If `NULL`, the reverse of `1:n` is
 #' used, which is the normal transpose.
 #'
-#' @param a An rray.
-#'
-#' @param perm See `permutation`.
-#'
 #' @details
 #'
 #' Unlike `t()`, using `rray_transpose()` on a vector does not transpose it,
@@ -99,7 +95,6 @@ t.vctrs_rray <- function(x) {
   rray_transpose(x)
 }
 
-#' @rdname rray_transpose
 #' @export
 aperm.vctrs_rray <- function(a, perm = NULL, ...) {
   rray_transpose(a, permutation = perm)
