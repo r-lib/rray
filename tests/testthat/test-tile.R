@@ -101,3 +101,7 @@ test_that("can tile 0 column input", {
     x
   )
 })
+
+test_that("`NULL` input", {
+  expect_equal(rray_tile(NULL, c(1, 2)), NULL)
+})

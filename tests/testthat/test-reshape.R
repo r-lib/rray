@@ -89,4 +89,6 @@ test_that("can reshape 0 column input", {
   )
 })
 
-
+test_that("can reshape with `NULL` input", {
+  expect_equal(rray_reshape(NULL, c(1, 2)), NULL)
+})
