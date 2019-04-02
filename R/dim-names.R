@@ -131,6 +131,10 @@ set_full_dim_names.default <- function(x, value) {
   x
 }
 
+set_full_dim_names.NULL <- function(x, value) {
+  NULL
+}
+
 set_full_dim_names.vctrs_rray <- function(x, value) {
 
   if (is_null(value)) {

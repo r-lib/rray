@@ -9,8 +9,7 @@ rray_reshape <- function(x, dim) {
 
   dim <- vec_cast(dim, integer())
 
-  x_dim <- vec_dim(x)
-  validate_reshape(x_dim, dim)
+  validate_reshape(x, dim)
 
   res <- rray_reshape_impl(x, dim)
 
@@ -26,9 +25,15 @@ rray_reshape_impl <- function(x, dim) {
   rray_op_unary_one_cpp("reshape", x, dim)
 }
 
-validate_reshape <- function(from, to) {
+validate_reshape <- function(x, to) {
+
+  if (is.null(x)) {
+    return(invisible(x))
+  }
 
   validate_dim(to)
+
+  from <- vec_dim(x)
 
   size_from <- prod(from)
   size_to   <- prod(to)
@@ -39,6 +44,8 @@ validate_reshape <- function(from, to) {
       "must be equal to the size you are reshaping to ({size_to})."
     )
   }
+
+  invisible(x)
 }
 
 validate_dim <- function(dim) {
