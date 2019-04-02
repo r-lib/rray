@@ -53,5 +53,40 @@ test_that("dimension names are maintained where appropriate", {
 
 })
 
+test_that("can reshape 0 row input", {
+
+  x <- new_matrix(numeric(), c(0, 0))
+
+  expect_equal(
+    rray_reshape(x, c(2, 0)),
+    new_matrix(numeric(), c(2, 0))
+  )
+
+  expect_equal(
+    rray_reshape(x, c(2, 0, 1)),
+    new_array(numeric(), c(2, 0, 1))
+  )
+
+})
+
+test_that("can reshape 0 column input", {
+
+  x <- new_matrix(numeric(), c(2, 0))
+
+  expect_equal(
+    rray_reshape(x, c(0, 2)),
+    new_matrix(numeric(), c(0, 2))
+  )
+
+  expect_equal(
+    rray_reshape(x, c(0, 2, 2)),
+    new_array(numeric(), c(0, 2, 2))
+  )
+
+  expect_equal(
+    rray_reshape(x, c(0, 2, 0)),
+    new_array(numeric(), c(0, 2, 0))
+  )
+})
 
 
