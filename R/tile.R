@@ -12,7 +12,7 @@
 #' # Repeat the rows twice
 #' rray_tile(x, 2)
 #'
-#' # Repeate the rows twice and the columns three times
+#' # Repeat the rows twice and the columns three times
 #' rray_tile(x, c(2, 3))
 #'
 #' # Tile into a third dimension
