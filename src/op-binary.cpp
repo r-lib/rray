@@ -359,6 +359,10 @@ SEXP rray_op_binary_cpp(const std::string& op,
                         SEXP x,
                         SEXP y) {
 
+  if (Rf_isNull(x) || Rf_isNull(y)) {
+    return(R_NilValue);
+  }
+
   switch(TYPEOF(x)) {
 
   case REALSXP: {

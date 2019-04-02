@@ -527,6 +527,10 @@ SEXP rray_op_unary_cpp_impl(std::string op, xt::rarray<T1> x) {
 // [[Rcpp::export]]
 SEXP rray_op_unary_cpp(std::string op, SEXP x) {
 
+  if (Rf_isNull(x)) {
+    return(R_NilValue);
+  }
+
   // Switch on X
   switch(TYPEOF(x)) {
 

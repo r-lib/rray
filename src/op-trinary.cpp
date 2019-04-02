@@ -153,6 +153,10 @@ SEXP rray_op_trinary_cpp(const std::string& op,
                          SEXP y,
                          SEXP z) {
 
+  if (Rf_isNull(x) || Rf_isNull(y) || Rf_isNull(z)) {
+    return(R_NilValue);
+  }
+
   switch(TYPEOF(x)) {
 
   case REALSXP: {
