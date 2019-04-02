@@ -42,12 +42,15 @@ rray_tile <- function(x, times) {
   res
 }
 
+# - Generate the repeated index for each dim
+# - If `times == 1` for that dim, return a missing arg to return
+#   that entire dim
+# - `single_dim == 0` is handled gracefully and `integer()`
+#   is returned which is correct
 get_tile_index <- function(single_time, single_dim) {
   if (single_time == 1L) {
     return(missing_arg())
   }
-
-  # TODO - dim == 0?
 
   rep(seq_len(single_dim), times = single_time)
 }
