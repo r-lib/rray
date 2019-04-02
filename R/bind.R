@@ -175,7 +175,7 @@ rray_dim_names_common_along_axis <- function(..., axis) {
     })
   }
 
-  new_dim_names <- reduce(all_dim_names, reconcile_dim_names)
+  new_dim_names <- reduce(all_dim_names, coalesce_dim_names)
 
   new_dim_names
 }

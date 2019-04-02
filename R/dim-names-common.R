@@ -73,7 +73,7 @@ rray_dim_names_common <- function(...) {
 
   args_dim_names <- map(args, restore_dim_names, to_dim = .dim)
 
-  reduce(args_dim_names, reconcile_dim_names)
+  reduce(args_dim_names, coalesce_dim_names)
 }
 
 #' @export
@@ -85,14 +85,14 @@ rray_dim_names2 <- function(x, y) {
   x_nms_list <- restore_dim_names(x, .dim)
   y_nms_list <- restore_dim_names(y, .dim)
 
-  reconcile_dim_names(x_nms_list, y_nms_list)
+  coalesce_dim_names(x_nms_list, y_nms_list)
 }
 
 # Given two sets of equal length dim names, find the
 # actual "common dim names" between them
 # - if x has names for a dimension, use them
 # - if x has no names for a dimension, but y does, use them
-reconcile_dim_names <- function(x_dim_names, y_dim_names) {
+coalesce_dim_names <- function(x_dim_names, y_dim_names) {
 
   map2(x_dim_names, y_dim_names, function(x_nms, y_nms) {
 
