@@ -21,13 +21,33 @@
 #' @export
 rray_tile <- function(x, times) {
 
-  times <- vec_cast(times, integer())
+  dims <- vec_dims(x)
+  size_times <- vec_size(times)
 
-  for (i in seq_along(times)) {
-    time <- times[i]
-    x <- rep_len(list(x), time)
-    x <- rray_bind(!!!x, axis = i)
+  if (dims < size_times) {
+    new_dim <- dim_extend(vec_dim(x), size_times)
+    x <- rray_reshape(x, new_dim)
   }
 
-  x
+  if (dims > size_times) {
+    times <- dim_extend(times, dims)
+  }
+
+  dim <- vec_dim(x)
+
+  slicer <- map2(times, dim, get_tile_index)
+
+  res <- eval_bare(expr(x[!!!slicer, drop = FALSE]))
+
+  res
+}
+
+get_tile_index <- function(single_time, single_dim) {
+  if (single_time == 1L) {
+    return(missing_arg())
+  }
+
+  # TODO - dim == 0?
+
+  rep(seq_len(single_dim), times = single_time)
 }

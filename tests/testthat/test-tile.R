@@ -2,7 +2,7 @@ context("test-tile")
 
 test_that("can tile a vector", {
 
-  x <- 1:5
+  x <- new_array(1:5)
 
   expect_equal(
     rray_tile(x, 2),
@@ -17,7 +17,7 @@ test_that("can tile a vector", {
 
 test_that("can tile a matrix", {
 
-  x <- matrix(1:5)
+  x <- new_matrix(1:5)
 
   expect_equal(
     rray_tile(x, 2),
