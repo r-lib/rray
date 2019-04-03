@@ -19,7 +19,8 @@ rray_unique_count(x, axis = 1L)
 }
 \description{
 \itemize{
-\item \code{rray_unique()}: the unique values. Equivalent to \code{unique(x, MARGIN)}.
+\item \code{rray_unique()}: the unique values. Equivalent to \code{\link[=unique]{unique()}} with the
+\code{MARGIN} argument.
 \item \code{rray_unique_loc()}: the locations of the unique values.
 \item \code{rray_unique_count()}: the number of unique values.
 }

@@ -2,7 +2,8 @@
 #'
 #' @description
 #'
-#' * `rray_unique()`: the unique values. Equivalent to `unique(x, MARGIN)`.
+#' * `rray_unique()`: the unique values. Equivalent to [unique()] with the
+#' `MARGIN` argument.
 #'
 #' * `rray_unique_loc()`: the locations of the unique values.
 #'
