@@ -10,7 +10,7 @@
 #' [duplicated()] with the `MARGIN` argument, but it reports all duplicated
 #' values, not just the second and subsequent repetitions.
 #'
-#' * `rray_unique_count()`: returns an integer vector giving the location of the
+#' * `rray_duplicate_id()`: returns an integer vector giving the location of the
 #' first occurence of the value.
 #'
 #' @param x A vector, matrix, array, or rray.
@@ -23,7 +23,7 @@
 #'
 #' * `rray_duplicate_detect()`: a logical vector the same length as `x`.
 #'
-#' * `rray_unique_count()`: an integer vector the same length as `x`.
+#' * `rray_duplicate_id()`: an integer vector the same length as `x`.
 #'
 #' @seealso
 #'

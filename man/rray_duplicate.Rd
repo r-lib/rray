@@ -22,7 +22,7 @@ rray_duplicate_id(x, axis = 1L)
 \itemize{
 \item \code{rray_duplicate_any()}: a logical vector of length 1.
 \item \code{rray_duplicate_detect()}: a logical vector the same length as \code{x}.
-\item \code{rray_unique_count()}: an integer vector the same length as \code{x}.
+\item \code{rray_duplicate_id()}: an integer vector the same length as \code{x}.
 }
 }
 \description{
@@ -33,7 +33,7 @@ similar to \code{\link[=anyDuplicated]{anyDuplicated()}} with the \code{MARGIN} 
 element of the vector is duplicated elsewhere. It is similar to
 \code{\link[=duplicated]{duplicated()}} with the \code{MARGIN} argument, but it reports all duplicated
 values, not just the second and subsequent repetitions.
-\item \code{rray_unique_count()}: returns an integer vector giving the location of the
+\item \code{rray_duplicate_id()}: returns an integer vector giving the location of the
 first occurence of the value.
 }
 }
