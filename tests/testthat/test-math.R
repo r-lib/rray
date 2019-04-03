@@ -5,7 +5,7 @@ test_that("transpose works", {
   x <- rray(dat, dim = c(4, 1))
 
   expect_equal(dim(t(x)), c(1, 4))
-  expect_equal(vec_data(t(x)), vec_data(x))
+  expect_equal(vec_data(t(x)), t(vec_data(x)))
 
   y <- rray_broadcast(x, c(4,2))
 
@@ -20,25 +20,31 @@ test_that("addition works", {
   # with scalar
   x_sclr <- x + 1
   expect_is(x_sclr, "vctrs_rray")
-  expect_equal(vec_data(x_sclr), dat + 1)
+  expect_equal(vec_data(x_sclr), as_matrix(dat + 1))
   expect_equal(dim(x_sclr), c(4, 1))
 
   # same dim
   x_col <- x + x
   expect_is(x_col, "vctrs_rray")
-  expect_equal(vec_data(x_col), dat + dat)
+  expect_equal(vec_data(x_col), as_matrix(dat + dat))
   expect_equal(dim(x_col), c(4, 1))
 
   # outer
   x_broad <- x + t(x)
   expect_is(x_broad, "vctrs_rray")
-  expect_equal(vec_data(x_broad), unlist(map(1:4, function(x) x + c(1, 2, 3, 4))))
+  expect_equal(
+    vec_data(x_broad),
+    new_matrix(unlist(map(1:4, function(x) x + c(1, 2, 3, 4))), dim = c(4, 4))
+  )
   expect_equal(dim(x_broad), c(4, 4))
 
   # higher value of same dim
   x_broad2 <- x + rray_broadcast(x, c(4, 2))
   expect_is(x_broad2, "vctrs_rray")
-  expect_equal(vec_data(x_broad2), rep(vec_data(x) + vec_data(x), 2))
+  expect_equal(
+    vec_data(x_broad2),
+    new_matrix(rep(vec_data(x) + vec_data(x), 2), c(4, 2))
+  )
   expect_equal(dim(x_broad2), c(4, 2))
 
   # 1 more dim
@@ -55,25 +61,31 @@ test_that("subtraction works", {
   # with scalar
   x_sclr <- x - 1
   expect_is(x_sclr, "vctrs_rray")
-  expect_equal(vec_data(x_sclr), dat - 1)
+  expect_equal(vec_data(x_sclr), as_matrix(dat - 1))
   expect_equal(dim(x_sclr), c(4, 1))
 
   # same dim
   x_col <- x - x
   expect_is(x_col, "vctrs_rray")
-  expect_equal(vec_data(x_col), dat - dat)
+  expect_equal(vec_data(x_col), as_matrix(dat - dat))
   expect_equal(dim(x_col), c(4, 1))
 
   # outer
   x_broad <- x - t(x)
   expect_is(x_broad, "vctrs_rray")
-  expect_equal(vec_data(x_broad), unlist(map(seq(-1, -4), function(x) x + c(1, 2, 3, 4))))
+  expect_equal(
+    vec_data(x_broad),
+    new_matrix(unlist(map(seq(-1, -4), function(x) x + c(1, 2, 3, 4))), c(4, 4))
+  )
   expect_equal(dim(x_broad), c(4, 4))
 
   # higher value of same dim
   x_broad2 <- x - rray_broadcast(x, c(4, 2))
   expect_is(x_broad2, "vctrs_rray")
-  expect_equal(vec_data(x_broad2), rep(vec_data(x) - vec_data(x), 2))
+  expect_equal(
+    vec_data(x_broad2),
+    new_matrix(rep(vec_data(x) - vec_data(x), 2), c(4, 2))
+  )
   expect_equal(dim(x_broad2), c(4, 2))
 
   # 1 more dim
@@ -90,25 +102,31 @@ test_that("division works", {
   # with scalar
   x_sclr <- x / 1
   expect_is(x_sclr, "vctrs_rray")
-  expect_equal(vec_data(x_sclr), dat / 1)
+  expect_equal(vec_data(x_sclr), as_matrix(dat / 1))
   expect_equal(dim(x_sclr), c(4, 1))
 
   # same dim
   x_col <- x / x
   expect_is(x_col, "vctrs_rray")
-  expect_equal(vec_data(x_col), dat / dat)
+  expect_equal(vec_data(x_col), as_matrix(dat / dat))
   expect_equal(dim(x_col), c(4, 1))
 
   # outer
   x_broad <- x / t(x)
   expect_is(x_broad, "vctrs_rray")
-  expect_equal(vec_data(x_broad), unlist(map(1/(1:4), function(x) x * c(1, 2, 3, 4))))
+  expect_equal(
+    vec_data(x_broad),
+    new_matrix(unlist(map(1/(1:4), function(x) x * c(1, 2, 3, 4))), c(4, 4))
+  )
   expect_equal(dim(x_broad), c(4, 4))
 
   # higher value of same dim
   x_broad2 <- x / rray_broadcast(x, c(4, 2))
   expect_is(x_broad2, "vctrs_rray")
-  expect_equal(vec_data(x_broad2), rep(vec_data(x) / vec_data(x), 2))
+  expect_equal(
+    vec_data(x_broad2),
+    new_matrix(rep(vec_data(x) / vec_data(x), 2), c(4, 2))
+  )
   expect_equal(dim(x_broad2), c(4, 2))
 
   # 1 more dim
@@ -119,7 +137,7 @@ test_that("division works", {
 })
 
 test_that("division coerces to double", {
-  expect_equal(vec_data(rray(1L) / 2L), 0.5)
+  expect_equal(vec_data(rray(1L) / 2L), new_array(0.5))
 })
 
 test_that("multiplication works", {
@@ -129,25 +147,31 @@ test_that("multiplication works", {
   # with scalar
   x_sclr <- x * 2
   expect_is(x_sclr, "vctrs_rray")
-  expect_equal(vec_data(x_sclr), dat * 2)
+  expect_equal(vec_data(x_sclr), as_matrix(dat * 2))
   expect_equal(dim(x_sclr), c(4, 1))
 
   # same dim
   x_col <- x * x
   expect_is(x_col, "vctrs_rray")
-  expect_equal(vec_data(x_col), dat * dat)
+  expect_equal(vec_data(x_col), as_matrix(dat * dat))
   expect_equal(dim(x_col), c(4, 1))
 
   # outer
   x_broad <- x * t(x)
   expect_is(x_broad, "vctrs_rray")
-  expect_equal(vec_data(x_broad), unlist(map(1:4, function(x) x * c(1, 2, 3, 4))))
+  expect_equal(
+    vec_data(x_broad),
+    new_matrix(unlist(map(1:4, function(x) x * c(1, 2, 3, 4))), c(4, 4))
+  )
   expect_equal(dim(x_broad), c(4, 4))
 
   # higher value of same dim
   x_broad2 <- x * rray_broadcast(x, c(4, 2))
   expect_is(x_broad2, "vctrs_rray")
-  expect_equal(vec_data(x_broad2), rep(vec_data(x) * vec_data(x), 2))
+  expect_equal(
+    vec_data(x_broad2),
+    new_matrix(rep(vec_data(x) * vec_data(x), 2), c(4, 2))
+  )
   expect_equal(dim(x_broad2), c(4, 2))
 
   # 1 more dim

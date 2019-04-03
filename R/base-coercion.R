@@ -31,27 +31,40 @@ at_least_2D <- function(x, elem) {
 
 #' @export
 as.double.vctrs_rray <- function(x, ...) {
+
+  dim <- vec_dim(x)
+  to <- new_ptype_array(double(), dim)
+
   new_array(
-    .data = vec_cast(vec_data(x), double()),
-    dim = vec_dim(x),
+    .data = vec_cast(vec_data(x), to),
+    dim = dim,
     dimnames = dim_names(x)
   )
 }
 
 #' @export
 as.integer.vctrs_rray <- function(x, ...) {
+
+  dim <- vec_dim(x)
+  to <- new_ptype_array(integer(), dim)
+
   new_array(
-    .data = vec_cast(vec_data(x), integer()),
-    dim = vec_dim(x),
+    .data = vec_cast(vec_data(x), to),
+    dim = dim,
     dimnames = dim_names(x)
   )
 }
 
 #' @export
 as.logical.vctrs_rray <- function(x, ...) {
+
+  dim <- vec_dim(x)
+  to <- new_ptype_array(logical(), dim)
+
+
   new_array(
-    .data = vec_cast(vec_data(x), logical()),
-    dim = vec_dim(x),
+    .data = vec_cast(vec_data(x), to),
+    dim = to,
     dimnames = dim_names(x)
   )
 }

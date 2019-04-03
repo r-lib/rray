@@ -243,10 +243,7 @@ vec_cast.vctrs_rray.double <- vec_cast.vctrs_rray.vctrs_rray
 #' @method vec_cast.double vctrs_rray
 #' @export
 vec_cast.double.vctrs_rray <- function(x, to) {
-  dim <- c(vec_size(x), rray_shape(to))
-  x <- rray_broadcast(x, dim)
-  x <- vec_cast(vec_data(x), double())
-  array(x, dim = dim)
+  vec_cast_from_rray(x, to, double())
 }
 
 # vec_cast vctrs_rray <-> integer -----------------------------------------------
@@ -258,10 +255,7 @@ vec_cast.vctrs_rray.integer <- vec_cast.vctrs_rray.vctrs_rray
 #' @method vec_cast.integer vctrs_rray
 #' @export
 vec_cast.integer.vctrs_rray <- function(x, to) {
-  dim <- c(vec_size(x), rray_shape(to))
-  x <- rray_broadcast(x, dim)
-  x <- vec_cast(vec_data(x), integer())
-  array(x, dim = dim)
+  vec_cast_from_rray(x, to, integer())
 }
 
 # vec_cast vctrs_rray <-> logical -----------------------------------------------
@@ -273,8 +267,23 @@ vec_cast.vctrs_rray.logical <- vec_cast.vctrs_rray.vctrs_rray
 #' @method vec_cast.logical vctrs_rray
 #' @export
 vec_cast.logical.vctrs_rray <- function(x, to) {
+  vec_cast_from_rray(x, to, logical())
+}
+
+new_ptype_array <- function(data, dim) {
+  new_array(data, dim = c(0L, dim[-1]))
+}
+
+vec_cast_from_rray <- function(x, to, inner) {
+  x <- vec_data(x)
+
+  # Inner data type coercion
+  to_inner <- new_ptype_array(inner, vec_dim(x))
+  x <- vec_cast(x, to_inner)
+
+  # New shape specified by shape of `to`
+  # and size of `x`
   dim <- c(vec_size(x), rray_shape(to))
-  x <- rray_broadcast(x, dim)
-  x <- vec_cast(vec_data(x), logical())
-  array(x, dim = dim)
+
+  rray_broadcast(x, dim)
 }

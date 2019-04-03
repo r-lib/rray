@@ -51,12 +51,12 @@ test_that("can flip base types", {
   )
 
   expect_equal(
-    vec_data(rray_flip(x, 1)),
+    as.vector(rray_flip(x, 1)),
     c(5:1, 10:6)
   )
 
   expect_equal(
-    vec_data(rray_flip(x, 2)),
+    as.vector(rray_flip(x, 2)),
     c(6:10, 1:5)
   )
 
@@ -66,7 +66,7 @@ test_that("can flip base types", {
   )
 
   expect_equal(
-    vec_data(rray_flip(y, 3)),
+    as.vector(rray_flip(y, 3)),
     c(9:12, 5:8, 1:4)
   )
 
