@@ -7,6 +7,8 @@
 #' @importFrom vctrs vec_type
 #' @importFrom vctrs vec_type_common
 #' @importFrom vctrs vec_math
+#' @importFrom vctrs vec_unique
+#' @importFrom vctrs vec_unique_loc
 #'
 #' @importFrom vctrs vec_ptype_full
 #' @importFrom vctrs vec_ptype_abbr
