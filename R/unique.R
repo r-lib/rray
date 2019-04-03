@@ -13,9 +13,28 @@
 #'
 #' @param axis A single integer. The axis to look for unique values over.
 #'
+#' @return
+#'
+#' * `rray_unique()`: an array the same type as `x` containing only
+#' unique values.
+#'
+#' * `rray_unique_loc()`: an integer vector, giving locations of
+#' the unique values.
+#'
+#' * `rray_unique_count()`: an integer vector of length 1, giving the number
+#' of unique values.
+#'
 #' @details
 #'
 #' When duplicates are detected, the _first_ one is used in the result.
+#'
+#' @seealso
+#'
+#' [rray_duplicate_any()] for functions that work with the dual of
+#' unique values: duplicated values.
+#'
+#' [vctrs::vec_unique()] for functions that detect unique values among
+#' any type of vector object.
 #'
 #' @examples
 #' x <- rray(c(1, 1, 2, 2), c(2, 2))
