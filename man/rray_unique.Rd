@@ -24,6 +24,9 @@ rray_unique_count(x, axis = 1L)
 \item \code{rray_unique_count()}: the number of unique values.
 }
 }
+\details{
+When duplicates are detected, the \emph{first} one is used in the result.
+}
 \examples{
 x <- rray(c(1, 1, 2, 2), c(2, 2))
 x <- set_row_names(x, c("r1", "r2"))

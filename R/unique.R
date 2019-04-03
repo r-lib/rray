@@ -12,6 +12,10 @@
 #'
 #' @param axis A single integer.
 #'
+#' @details
+#'
+#' When duplicates are detected, the _first_ one is used in the result.
+#'
 #' @examples
 #' x <- rray(c(1, 1, 2, 2), c(2, 2))
 #' x <- set_row_names(x, c("r1", "r2"))
