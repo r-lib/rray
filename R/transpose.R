@@ -131,7 +131,3 @@ validate_permutation <- function(permutation, dims) {
 
   invisible(permutation)
 }
-
-# TODO aperm() method?
-
-# TODO tests
