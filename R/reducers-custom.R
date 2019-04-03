@@ -69,7 +69,7 @@
 #
 #   # only integer axes
 #   axes <- vec_cast(axes, integer())
-#   validate_axes(axes, vec_dims(.x))
+#   validate_axes(axes, .x)
 #
 #   # perform the reduction
 #   res <- rray_custom_reducer_cpp(.x, f, as_cpp_idx(axes), type)

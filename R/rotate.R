@@ -71,10 +71,10 @@ rray_rotate <- function(x, from = 1, to = 2, times = 1) {
   dims <- vec_dims(x)
 
   from <- vec_cast(from, integer())
-  validate_axes(from, dims, 1L, "from")
+  validate_axes(from, x, n = 1L, nm = "from")
 
   to <- vec_cast(to, integer())
-  validate_axes(to, dims, 1L, "to")
+  validate_axes(to, x, n = 1L, nm = "to")
 
   if (identical(from, to)) {
     glubort("`from` and `to` must be different values.")
@@ -106,6 +106,11 @@ validate_scalar <- function(x, nm) {
 }
 
 validate_at_least_two_dims <- function(x, arg = "x") {
+
+  if (is.null(x)) {
+    return(NULL)
+  }
+
   dims <- vec_dims(x)
 
   if (dims < 2L) {

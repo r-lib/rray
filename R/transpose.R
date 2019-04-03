@@ -69,7 +69,7 @@ rray_transpose <- function(x, permutation = NULL) {
   dims <- vec_dims(x)
   permutation <- vec_cast(permutation, integer())
   validate_permutation(permutation, dims)
-  validate_axes(permutation, dims, nm = "permutation")
+  validate_axes(permutation, x, nm = "permutation")
 
   res <- rray_transpose_impl(x, permutation)
 

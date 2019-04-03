@@ -24,7 +24,7 @@ rray_flip <- function(x, axis) {
 
   # only integer axes
   axis <- vec_cast(axis, integer())
-  validate_axis(axis, vec_dims(x))
+  validate_axis(axis, x)
 
   res <- rray_flip_impl(x, axis)
 

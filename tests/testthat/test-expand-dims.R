@@ -54,3 +54,7 @@ test_that("dimension names kept on expansion", {
   )
 
 })
+
+test_that("can expand dims on `NULL` input", {
+  expect_equal(rray_expand_dims(NULL, 2), NULL)
+})

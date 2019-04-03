@@ -22,7 +22,7 @@
 rray_min_pos <- function(x, axis = NULL) {
 
   axis <- vec_cast(axis, integer())
-  validate_axis(axis, vec_dims(x))
+  validate_axis(axis, x)
 
   res <- rray_min_pos_impl(x, axis)
 

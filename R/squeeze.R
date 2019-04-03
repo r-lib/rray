@@ -51,7 +51,7 @@ rray_squeeze <- function(x, axes = NULL) {
   }
 
   axes <- vec_cast(axes, integer())
-  validate_axes(axes, vec_dims(x))
+  validate_axes(axes, x)
 
   res <- squeeze_impl(x, axes)
 
