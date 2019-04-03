@@ -15,7 +15,7 @@ rray_unique_count(x, axis = 1L)
 \arguments{
 \item{x}{A vector, matrix, array, or rray.}
 
-\item{axis}{A single integer.}
+\item{axis}{A single integer. The axis to look for unique values over.}
 }
 \description{
 \itemize{

@@ -11,7 +11,7 @@
 #'
 #' @param x A vector, matrix, array, or rray.
 #'
-#' @param axis A single integer.
+#' @param axis A single integer. The axis to look for unique values over.
 #'
 #' @details
 #'
