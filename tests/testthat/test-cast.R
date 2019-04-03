@@ -55,17 +55,17 @@ test_that("casting updates inner types", {
 
   expect_equal(
     vec_cast(x_int, double()),
-    array(1)
+    new_array(1)
   )
 
   expect_equal(
     vec_cast(x_int, matrix(1)),
-    matrix(1)
+    new_matrix(1)
   )
 
   expect_equal(
     vec_cast(x_int, matrix(FALSE)),
-    matrix(TRUE)
+    new_matrix(TRUE)
   )
 })
 

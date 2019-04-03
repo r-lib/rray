@@ -7,13 +7,13 @@ y <- rray_reshape(x, c(5, 2))
 context("test-reducer-sum")
 
 test_that("Results are correct", {
-  expect_equal(vec_data(rray_sum(y, 1)), c(15, 40))
-  expect_equal(vec_data(rray_sum(y, 2)), c(7, 9, 11, 13, 15))
+  expect_equal(as.vector(rray_sum(y, 1)), c(15, 40))
+  expect_equal(as.vector(rray_sum(y, 2)), c(7, 9, 11, 13, 15))
 })
 
 test_that("Default `axes` argument reduces over all dims", {
   expect_equal(
-    vec_data(rray_sum(y)),
+    as.vector(rray_sum(y)),
     sum(vec_data(y))
   )
 
@@ -39,7 +39,7 @@ test_that("Dimension names are kept", {
 
 test_that("Can reduce over multiple axes", {
   out <- rray_sum(rray(1, c(2, 3, 4)), c(1,2))
-  expect_equal(vec_data(out), rep(6, times = 4))
+  expect_equal(as.vector(out), rep(6, times = 4))
   expect_equal(vec_dim(out), c(1, 1, 4))
 })
 
@@ -53,8 +53,8 @@ test_that("Reducing to 0D works", {
   expect_equal(vec_dim(..1D), 1L)
   expect_equal(vec_dim(..2D), c(1L, 1L))
 
-  expect_equal(vec_data(..1D), 55)
-  expect_equal(vec_data(..2D), 55)
+  expect_equal(as.vector(..1D), 55)
+  expect_equal(as.vector(..2D), 55)
 })
 
 test_that("reducing base types maintains type", {
@@ -90,19 +90,19 @@ context("test-reducer-prod")
 test_that("Results are correct", {
 
   expect_equal(
-    vec_data(rray_prod(y, 1)),
-    vapply(seq_len(ncol(y)), function(i) prod(vec_data(y[,i])), numeric(1))
+    as.vector(rray_prod(y, 1)),
+    vapply(seq_len(ncol(y)), function(i) prod(as.vector(y[,i])), numeric(1))
   )
 
   expect_equal(
-    vec_data(rray_prod(y, 2)),
-    vapply(seq_len(nrow(y)), function(i) prod(vec_data(y[i,])), numeric(1))
+    as.vector(rray_prod(y, 2)),
+    vapply(seq_len(nrow(y)), function(i) prod(as.vector(y[i,])), numeric(1))
   )
 })
 
 test_that("Default `axes` argument reduces over all dims", {
   expect_equal(
-    vec_data(rray_prod(y)),
+    as.vector(rray_prod(y)),
     prod(vec_data(y))
   )
 
@@ -128,7 +128,7 @@ test_that("Dimension names are kept", {
 
 test_that("Can reduce over multiple axes", {
   out <- rray_prod(rray(1, c(2, 3, 4)), c(1,2))
-  expect_equal(vec_data(out), rep(1, times = 4))
+  expect_equal(as.vector(out), rep(1, times = 4))
   expect_equal(vec_dim(out), c(1, 1, 4))
 })
 
@@ -142,8 +142,8 @@ test_that("Reducing to 0D works", {
   expect_equal(vec_dim(..1D), 1L)
   expect_equal(vec_dim(..2D), c(1L, 1L))
 
-  expect_equal(vec_data(..1D), prod(vec_data(x)))
-  expect_equal(vec_data(..2D), prod(vec_data(x)))
+  expect_equal(as.vector(..1D), prod(vec_data(x)))
+  expect_equal(as.vector(..2D), prod(vec_data(x)))
 })
 
 test_that("reducing base types maintains type", {
@@ -180,19 +180,19 @@ context("test-reducer-mean")
 test_that("Results are correct", {
 
   expect_equal(
-    vec_data(rray_mean(y, 1)),
-    vapply(seq_len(ncol(y)), function(i) mean(vec_data(y[,i])), numeric(1))
+    as.vector(rray_mean(y, 1)),
+    vapply(seq_len(ncol(y)), function(i) mean(as.vector(y[,i])), numeric(1))
   )
 
   expect_equal(
-    vec_data(rray_mean(y, 2)),
-    vapply(seq_len(nrow(y)), function(i) mean(vec_data(y[i,])), numeric(1))
+    as.vector(rray_mean(y, 2)),
+    vapply(seq_len(nrow(y)), function(i) mean(as.vector(y[i,])), numeric(1))
   )
 })
 
 test_that("Default `axes` argument reduces over all dims", {
   expect_equal(
-    vec_data(rray_mean(y)),
+    as.vector(rray_mean(y)),
     mean(vec_data(y))
   )
 
@@ -218,7 +218,7 @@ test_that("Dimension names are kept", {
 
 test_that("Can reduce over multiple axes", {
   out <- rray_mean(rray(1, c(2, 3, 4)), c(1,2))
-  expect_equal(vec_data(out), rep(1, times = 4))
+  expect_equal(as.vector(out), rep(1, times = 4))
   expect_equal(vec_dim(out), c(1, 1, 4))
 })
 
@@ -232,8 +232,8 @@ test_that("Reducing to 0D works", {
   expect_equal(vec_dim(..1D), 1L)
   expect_equal(vec_dim(..2D), c(1L, 1L))
 
-  expect_equal(vec_data(..1D), mean(vec_data(x)))
-  expect_equal(vec_data(..2D), mean(vec_data(x)))
+  expect_equal(as.vector(..1D), mean(vec_data(x)))
+  expect_equal(as.vector(..2D), mean(vec_data(x)))
 })
 
 test_that("reducing base types maintains type", {
@@ -269,19 +269,19 @@ context("test-reducer-amax")
 test_that("Results are correct", {
 
   expect_equal(
-    vec_data(rray_max(y, 1)),
-    vapply(seq_len(ncol(y)), function(i) max(vec_data(y[,i])), numeric(1))
+    as.vector(rray_max(y, 1)),
+    vapply(seq_len(ncol(y)), function(i) max(as.vector(y[,i])), numeric(1))
   )
 
   expect_equal(
-    vec_data(rray_max(y, 2)),
-    vapply(seq_len(nrow(y)), function(i) max(vec_data(y[i,])), numeric(1))
+    as.vector(rray_max(y, 2)),
+    vapply(seq_len(nrow(y)), function(i) max(as.vector(y[i,])), numeric(1))
   )
 })
 
 test_that("Default `axes` argument reduces over all dims", {
   expect_equal(
-    vec_data(rray_max(y)),
+    as.vector(rray_max(y)),
     max(vec_data(y))
   )
 
@@ -307,7 +307,7 @@ test_that("Dimension names are kept", {
 
 test_that("Can reduce over multiple axes", {
   out <- rray_max(rray(1, c(2, 3, 4)), c(1,2))
-  expect_equal(vec_data(out), rep(1, times = 4))
+  expect_equal(as.vector(out), rep(1, times = 4))
   expect_equal(vec_dim(out), c(1, 1, 4))
 })
 
@@ -321,8 +321,8 @@ test_that("Reducing to 0D works", {
   expect_equal(vec_dim(..1D), 1L)
   expect_equal(vec_dim(..2D), c(1L, 1L))
 
-  expect_equal(vec_data(..1D), max(vec_data(x)))
-  expect_equal(vec_data(..2D), max(vec_data(x)))
+  expect_equal(as.vector(..1D), max(vec_data(x)))
+  expect_equal(as.vector(..2D), max(vec_data(x)))
 })
 
 test_that("reducing base types maintains type", {
@@ -358,19 +358,19 @@ context("test-reducer-amin")
 test_that("Results are correct", {
 
   expect_equal(
-    vec_data(rray_min(y, 1)),
-    vapply(seq_len(ncol(y)), function(i) min(vec_data(y[,i])), numeric(1))
+    as.vector(rray_min(y, 1)),
+    vapply(seq_len(ncol(y)), function(i) min(as.vector(y[,i])), numeric(1))
   )
 
   expect_equal(
-    vec_data(rray_min(y, 2)),
-    vapply(seq_len(nrow(y)), function(i) min(vec_data(y[i,])), numeric(1))
+    as.vector(rray_min(y, 2)),
+    vapply(seq_len(nrow(y)), function(i) min(as.vector(y[i,])), numeric(1))
   )
 })
 
 test_that("Default `axes` argument reduces over all dims", {
   expect_equal(
-    vec_data(rray_min(y)),
+    as.vector(rray_min(y)),
     min(vec_data(y))
   )
 
@@ -396,7 +396,7 @@ test_that("Dimension names are kept", {
 
 test_that("Can reduce over multiple axes", {
   out <- rray_min(rray(1, c(2, 3, 4)), c(1,2))
-  expect_equal(vec_data(out), rep(1, times = 4))
+  expect_equal(as.vector(out), rep(1, times = 4))
   expect_equal(vec_dim(out), c(1, 1, 4))
 })
 
@@ -410,8 +410,8 @@ test_that("Reducing to 0D works", {
   expect_equal(vec_dim(..1D), 1L)
   expect_equal(vec_dim(..2D), c(1L, 1L))
 
-  expect_equal(vec_data(..1D), min(vec_data(x)))
-  expect_equal(vec_data(..2D), min(vec_data(x)))
+  expect_equal(as.vector(..1D), min(vec_data(x)))
+  expect_equal(as.vector(..2D), min(vec_data(x)))
 })
 
 test_that("reducing base types maintains type", {
