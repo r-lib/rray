@@ -163,7 +163,7 @@ vec_type2.vctrs_rray.vctrs_unspecified <- function(x, y) x
 #' @method vec_type2.vctrs_rray vctrs_rray
 #' @export
 vec_type2.vctrs_rray.vctrs_rray <- function(x, y) {
-  inner_ptype <- vec_type(vec_type2(vec_data(x), vec_data(y)))
+  inner_ptype <- vec_type2(vec_data(x), vec_data(y))
   new_rray(inner_ptype, shape = rray_shape2(x, y))
 }
 
