@@ -44,7 +44,6 @@ new_rray <- function(.data = numeric(0),
                      ) {
 
   stopifnot(is_rray_type(.data))
-  stopifnot(vec_dims(.data) == 1L)
   stopifnot(is_bare_integer(size))
   stopifnot(is_bare_integer(shape))
   .dim <- c(size, shape)
