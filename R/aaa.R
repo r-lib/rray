@@ -9,6 +9,7 @@
 #' @importFrom vctrs vec_math
 #' @importFrom vctrs vec_unique
 #' @importFrom vctrs vec_unique_loc
+#' @importFrom vctrs vec_unique_count
 #'
 #' @importFrom vctrs vec_ptype_full
 #' @importFrom vctrs vec_ptype_abbr
