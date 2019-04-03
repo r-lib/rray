@@ -5,7 +5,7 @@ rray_reducer_base <- function(reducer, x, axes) {
 
   # only integer axes
   axes <- vec_cast(axes, integer())
-  validate_axes(axes, vec_dims(x))
+  validate_axes(axes, x)
 
   # perform the reduction
   res <- rray_reducer_cpp(reducer, x, as_cpp_idx(axes))
@@ -171,14 +171,27 @@ rray_min <- function(x, axes = NULL) {
 # ------------------------------------------------------------------------------
 # Helpers
 
-validate_axis <- function(axis, dims) {
-  validate_axes(axis, dims, n = 1L, nm = "axis")
+validate_axis <- function(axis, x, dims = NULL) {
+  validate_axes(axis, x, n = 1L, nm = "axis", dims = dims)
 }
 
-validate_axes <- function(axes, dims, n = dims, nm = "axes") {
+# `dims` argument is used as an override in a few cases (rray_expand_dims())
+validate_axes <- function(axes, x, n = NULL, nm = "axes", dims = NULL) {
 
   if (is.null(axes)) {
-    return(axes)
+    return(invisible(NULL))
+  }
+
+  if (is.null(x)) {
+    return(invisible(NULL))
+  }
+
+  if (is.null(dims)) {
+    dims <- vec_dims(x)
+  }
+
+  if (is.null(n)) {
+    n <- dims
   }
 
   ok_axes <- vec_size(axes) <= n
@@ -217,5 +230,5 @@ validate_axes <- function(axes, dims, n = dims, nm = "axes") {
     )
   }
 
-  axes
+  invisible(axes)
 }

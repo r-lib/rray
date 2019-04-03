@@ -51,7 +51,7 @@ rray_expand_dims <- function(x, axis) {
 
   # axis allowed to be max of dims + 1 here
   axis <- vec_cast(axis, integer())
-  validate_axis(axis, dims + 1L)
+  validate_axis(axis, x, dims = dims + 1L)
 
   res <- rray_expand_dims_impl(x, axis)
 

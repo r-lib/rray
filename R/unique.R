@@ -16,7 +16,7 @@
 rray_unique <- function(x, axis = 1L) {
 
   axis <- vec_cast(axis, integer())
-  validate_axis(axis, vec_dims(x))
+  validate_axis(axis, x)
 
   if (identical(axis, 1L)) {
     return(vec_unique(x))
@@ -37,7 +37,7 @@ rray_unique <- function(x, axis = 1L) {
 rray_unique_loc <- function(x, axis = 1L) {
 
   axis <- vec_cast(axis, integer())
-  validate_axis(axis, vec_dims(x))
+  validate_axis(axis, x)
 
   if (identical(axis, 1L)) {
     return(vec_unique_loc(x))
@@ -53,7 +53,7 @@ rray_unique_loc <- function(x, axis = 1L) {
 rray_unique_count <- function(x, axis = 1L) {
 
   axis <- vec_cast(axis, integer())
-  validate_axis(axis, vec_dims(x))
+  validate_axis(axis, x)
 
   if (identical(axis, 1L)) {
     return(vec_unique_count(x))

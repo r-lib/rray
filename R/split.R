@@ -67,7 +67,7 @@
 rray_split <- function(x, axes, n = NULL) {
 
   axes <- vec_cast(axes, integer())
-  validate_axes(axes, vec_dims(x))
+  validate_axes(axes, x)
 
   # Default to size of the axes
   if (is_null(n)) {

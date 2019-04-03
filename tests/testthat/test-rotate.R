@@ -164,3 +164,7 @@ test_that("from/to must be different", {
 test_that("rotating a vector is an error", {
   expect_error(rray_rotate(1), "`x` must have at least 2 dimensions")
 })
+
+test_that("can call rray_rotate() with `NULL` input", {
+  expect_equal(rray_rotate(NULL), NULL)
+})

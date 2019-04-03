@@ -26,7 +26,7 @@
 rray_max_pos <- function(x, axis = NULL) {
 
   axis <- vec_cast(axis, integer())
-  validate_axis(axis, vec_dims(x))
+  validate_axis(axis, x)
 
   res <- rray_max_pos_impl(x, axis)
 
