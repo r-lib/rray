@@ -24,3 +24,38 @@ rray_unique_count(x, axis = 1L)
 \item \code{rray_unique_count()}: the number of unique values.
 }
 }
+\examples{
+x <- rray(c(1, 1, 2, 2), c(2, 2))
+x <- set_row_names(x, c("r1", "r2"))
+x <- set_col_names(x, c("c1", "c2"))
+
+# Unique rows. The first unique
+# row is used
+rray_unique(x, 1L)
+
+# Create a 3d version of x
+# where the columns are not unique
+y <- rray_expand_dims(x, 1)
+
+# All of the rows are unique...
+rray_unique(y, 1L)
+
+# ...but the columns are not
+rray_unique(y, 2L)
+
+# The 3rd dimension is unique
+rray_unique(y, 3L)
+
+# rray_unique_loc() returns an
+# integer vector you can use
+# to subset out the unique values along
+# the axis you are interested in
+y[, rray_unique_loc(y, 2L)]
+
+# Only 1 unique column
+rray_unique_count(y, 2L)
+
+# 2 unique 3D slices
+rray_unique_count(y, 3L)
+
+}
