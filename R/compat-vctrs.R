@@ -209,10 +209,6 @@ vec_cast.vctrs_rray <- function(x, to) UseMethod("vec_cast.vctrs_rray")
 #' @export
 vec_cast.vctrs_rray.default <- function(x, to) stop_incompatible_cast(x, to)
 
-#' @method vec_cast.vctrs_rray logical
-#' @export
-vec_cast.vctrs_rray.logical <- function(x, to) vec_unspecified_cast(x, to)
-
 # vec_cast vctrs_rray <-> vctrs_rray -------------------------------------------
 
 # like vec_type2, vec_cast is ONLY about casting to a new type (class + shape)
