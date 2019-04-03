@@ -61,7 +61,6 @@ as.logical.vctrs_rray <- function(x, ...) {
   dim <- vec_dim(x)
   to <- new_ptype_array(logical(), dim)
 
-
   new_array(
     .data = vec_cast(vec_data(x), to),
     dim = to,
