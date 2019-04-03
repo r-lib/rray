@@ -63,7 +63,7 @@ as.logical.vctrs_rray <- function(x, ...) {
 
   new_array(
     .data = vec_cast(vec_data(x), to),
-    dim = to,
+    dim = dim,
     dimnames = dim_names(x)
   )
 }
