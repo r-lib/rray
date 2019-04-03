@@ -57,11 +57,11 @@ rray_unique <- function(x, axis = 1L) {
   }
 
   # Make the axis of interest the rows
-  x <- rray_rotate(x, from = 1L, to = axis)
+  x <- rray_rotate(x, from = axis, to = 1L)
   x <- vec_unique(x)
 
   # Rotate back to get the result
-  x <- rray_rotate(x, from = axis, to = 1L)
+  x <- rray_rotate(x, from = 1L, to = axis)
 
   x
 }
@@ -77,7 +77,7 @@ rray_unique_loc <- function(x, axis = 1L) {
     return(vec_unique_loc(x))
   }
 
-  x <- rray_rotate(x, from = 1L, to = axis)
+  x <- rray_rotate(x, from = axis, to = 1L)
 
   vec_unique_loc(x)
 }
@@ -93,7 +93,7 @@ rray_unique_count <- function(x, axis = 1L) {
     return(vec_unique_count(x))
   }
 
-  x <- rray_rotate(x, from = 1L, to = axis)
+  x <- rray_rotate(x, from = axis, to = 1L)
 
   vec_unique_count(x)
 }
