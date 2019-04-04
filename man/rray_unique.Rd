@@ -15,7 +15,17 @@ rray_unique_count(x, axis = 1L)
 \arguments{
 \item{x}{A vector, matrix, array, or rray.}
 
-\item{axis}{A single integer.}
+\item{axis}{A single integer. The axis to look for unique values over.}
+}
+\value{
+\itemize{
+\item \code{rray_unique()}: an array the same type as \code{x} containing only
+unique values.
+\item \code{rray_unique_loc()}: an integer vector, giving locations of
+the unique values.
+\item \code{rray_unique_count()}: an integer vector of length 1, giving the number
+of unique values.
+}
 }
 \description{
 \itemize{
@@ -62,4 +72,11 @@ rray_unique_count(y, 2L)
 # 2 unique 3D slices
 rray_unique_count(y, 3L)
 
+}
+\seealso{
+\code{\link[=rray_duplicate_any]{rray_duplicate_any()}} for functions that work with the dual of
+unique values: duplicated values.
+
+\code{\link[vctrs:vec_unique]{vctrs::vec_unique()}} for functions that detect unique values among
+any type of vector object.
 }

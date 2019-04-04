@@ -10,6 +10,9 @@
 #' @importFrom vctrs vec_unique
 #' @importFrom vctrs vec_unique_loc
 #' @importFrom vctrs vec_unique_count
+#' @importFrom vctrs vec_duplicate_any
+#' @importFrom vctrs vec_duplicate_detect
+#' @importFrom vctrs vec_duplicate_id
 #'
 #' @importFrom vctrs vec_ptype_full
 #' @importFrom vctrs vec_ptype_abbr
