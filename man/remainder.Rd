@@ -65,7 +65,7 @@ rray_remainder(x, t(x))
 # I get -5.551115e-17
 rray_remainder(1, .2)
 
-More serious limitations with rray_fmod()
+# More serious limitations with rray_fmod()
 # 1 / .1 = 10 -> n = 10
 # (1 - 10 * .1) = 0
 # I get 0.1
@@ -85,6 +85,7 @@ rray_abs(result) * sign(x)
 
 }
 \seealso{
-Other math functions: \code{\link{rray_abs}}
+Other math functions: \code{\link{rray_abs}},
+  \code{\link{rray_multiply_add}}
 }
 \concept{math functions}

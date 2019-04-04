@@ -27,6 +27,7 @@ rray_abs(TRUE)
 
 }
 \seealso{
-Other math functions: \code{\link{remainder}}
+Other math functions: \code{\link{remainder}},
+  \code{\link{rray_multiply_add}}
 }
 \concept{math functions}

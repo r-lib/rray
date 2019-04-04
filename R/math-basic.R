@@ -87,7 +87,7 @@ rray_abs <- function(x) {
 #' # I get -5.551115e-17
 #' rray_remainder(1, .2)
 #'
-#' More serious limitations with rray_fmod()
+#' # More serious limitations with rray_fmod()
 #' # 1 / .1 = 10 -> n = 10
 #' # (1 - 10 * .1) = 0
 #' # I get 0.1
@@ -120,6 +120,34 @@ rray_remainder <- function(x, y) {
 
 # ------------------------------------------------------------------------------
 
+#' Fused multiply-add
+#'
+#' `rray_multiply_add()` computes `x * y + z`, with broadcasting.
+#' It is more efficient than simply doing those operations in sequence.
+#'
+#' @param x,y,z A vector, matrix, array or rray.
+#'
+#' @examples
+#' # 2 * 3 + 5
+#' rray_multiply_add(2, 3, 5)
+#'
+#' # Using broadcasting
+#' rray_multiply_add(matrix(1:5), matrix(1:2, nrow = 1L), 3L)
+#'
+#' # ^ Equivalent to:
+#' x <- matrix(rep(1:5, 2), ncol = 2)
+#' y <- matrix(rep(1:2, 5), byrow = TRUE, ncol = 2)
+#' z <- matrix(3L, nrow = 5, ncol = 2)
+#' x * y + z
+#'
+#' @family math functions
+#' @export
+rray_multiply_add <- function(x, y, z) {
+  rray_math_trinary_base("fma", x, y, z)
+}
+
+# ------------------------------------------------------------------------------
+
 rray_math_unary_base <- function(op, x) {
   res <- rray_op_unary_cpp(op, x)
   res <- set_full_dim_names(res, dim_names(x))
@@ -128,4 +156,27 @@ rray_math_unary_base <- function(op, x) {
 
 rray_math_binary_base <- function(op, x, y) {
   rray_arith_base(op, x, y)
+}
+
+rray_math_trinary_base <- function(op, x, y, z) {
+
+  # precompute dimensionality and extend existing dims
+  # xtensor-r issue #57 until we have a fix (if ever)
+  dims <- rray_dims_common(x, y, z)
+  x <- rray_dims_match(x, dims)
+  y <- rray_dims_match(y, dims)
+  z <- rray_dims_match(z, dims)
+
+  # Get common dim_names and type
+  dim_nms <- rray_dim_names_common(x, y, z)
+  restore_type <- vec_type_common(x, y, z)
+
+  # Apply function
+  res <- rray_op_trinary_cpp(op, x, y, z)
+
+  # Add dim names
+  dim_names(res) <- dim_nms
+
+  # Restore type
+  vec_restore(res, restore_type)
 }
