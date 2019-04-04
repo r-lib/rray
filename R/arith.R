@@ -8,21 +8,12 @@ rray_arith_base <- function(op, x, y) {
   x <- rray_dims_match(x, dims)
   y <- rray_dims_match(y, dims)
 
-  # Get op function
-  op_fn <- switch(
-    op,
-    "+" = ,
-    "-" = ,
-    "/" = ,
-    "*" = rray_op_binary_cpp
-  )
-
   # Get common dim_names and type
   dim_nms <- rray_dim_names2(x, y)
   restore_type <- vec_type2(x, y)
 
   # Apply function
-  res <- op_fn(op, x, y)
+  res <- rray_op_binary_cpp(op, x, y)
 
   # Add dim names
   dim_names(res) <- dim_nms
