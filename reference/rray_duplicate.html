@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Find and count unique values in an array — rray_unique • rray</title>
+<title>Find duplicated values in an array — rray_duplicate • rray</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,13 +30,17 @@
 
 
 
-<meta property="og:title" content="Find and count unique values in an array — rray_unique" />
+<meta property="og:title" content="Find duplicated values in an array — rray_duplicate" />
 
 <meta property="og:description" content="
-rray_unique(): the unique values. Equivalent to unique() with the
-MARGIN argument.
-rray_unique_loc(): the locations of the unique values.
-rray_unique_count(): the number of unique values.
+rray_duplicate_any(): detects the presence of duplicated values,
+similar to anyDuplicated() with the MARGIN argument.
+rray_duplicate_detect(): returns a logical vector describing if each
+element of the vector is duplicated elsewhere. It is similar to
+duplicated() with the MARGIN argument, but it reports all duplicated
+values, not just the second and subsequent repetitions.
+rray_duplicate_id(): returns an integer vector giving the location of the
+first occurence of the value.
 " />
 <meta name="twitter:card" content="summary" />
 
@@ -119,27 +123,31 @@ rray_unique_count(): the number of unique values.
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Find and count unique values in an array</h1>
-    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/unique.R'><code>R/unique.R</code></a></small>
-    <div class="hidden name"><code>rray_unique.Rd</code></div>
+    <h1>Find duplicated values in an array</h1>
+    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/duplicate.R'><code>R/duplicate.R</code></a></small>
+    <div class="hidden name"><code>rray_duplicate.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
     <ul>
-<li><p><code>rray_unique()</code>: the unique values. Equivalent to <code><a href='https://www.rdocumentation.org/packages/base/topics/unique'>unique()</a></code> with the
-<code>MARGIN</code> argument.</p></li>
-<li><p><code>rray_unique_loc()</code>: the locations of the unique values.</p></li>
-<li><p><code>rray_unique_count()</code>: the number of unique values.</p></li>
+<li><p><code>rray_duplicate_any()</code>: detects the presence of duplicated values,
+similar to <code><a href='https://www.rdocumentation.org/packages/base/topics/duplicated'>anyDuplicated()</a></code> with the <code>MARGIN</code> argument.</p></li>
+<li><p><code>rray_duplicate_detect()</code>: returns a logical vector describing if each
+element of the vector is duplicated elsewhere. It is similar to
+<code><a href='https://www.rdocumentation.org/packages/base/topics/duplicated'>duplicated()</a></code> with the <code>MARGIN</code> argument, but it reports all duplicated
+values, not just the second and subsequent repetitions.</p></li>
+<li><p><code>rray_duplicate_id()</code>: returns an integer vector giving the location of the
+first occurence of the value.</p></li>
 </ul>
     
     </div>
 
-    <pre class="usage"><span class='fu'>rray_unique</span>(<span class='no'>x</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='fl'>1L</span>)
+    <pre class="usage"><span class='fu'>rray_duplicate_any</span>(<span class='no'>x</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='fl'>1L</span>)
 
-<span class='fu'>rray_unique_loc</span>(<span class='no'>x</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='fl'>1L</span>)
+<span class='fu'>rray_duplicate_detect</span>(<span class='no'>x</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='fl'>1L</span>)
 
-<span class='fu'>rray_unique_count</span>(<span class='no'>x</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='fl'>1L</span>)</pre>
+<span class='fu'>rray_duplicate_id</span>(<span class='no'>x</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='fl'>1L</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -150,7 +158,7 @@ rray_unique_count(): the number of unique values.
     </tr>
     <tr>
       <th>axis</th>
-      <td><p>A single integer. The axis to look for unique values over.</p></td>
+      <td><p>A single integer. The axis to look for duplicate values over.</p></td>
     </tr>
     </table>
     
@@ -158,24 +166,17 @@ rray_unique_count(): the number of unique values.
 
     
 <ul>
-<li><p><code>rray_unique()</code>: an array the same type as <code>x</code> containing only
-unique values.</p></li>
-<li><p><code>rray_unique_loc()</code>: an integer vector, giving locations of
-the unique values.</p></li>
-<li><p><code>rray_unique_count()</code>: an integer vector of length 1, giving the number
-of unique values.</p></li>
+<li><p><code>rray_duplicate_any()</code>: a logical vector of length 1.</p></li>
+<li><p><code>rray_duplicate_detect()</code>: a logical vector the same length as <code>x</code>.</p></li>
+<li><p><code>rray_duplicate_id()</code>: an integer vector the same length as <code>x</code>.</p></li>
 </ul>
 
     
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p>When duplicates are detected, the <em>first</em> one is used in the result.</p>
-    
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><code><a href='rray_duplicate.html'>rray_duplicate_any()</a></code> for functions that work with the dual of
-unique values: duplicated values.</p>
-<p><code><a href='https://www.rdocumentation.org/packages/vctrs/topics/vec_unique'>vctrs::vec_unique()</a></code> for functions that detect unique values among
+    <div class='dont-index'><p><code><a href='rray_unique.html'>rray_unique()</a></code> for functions that work with the dual of duplicated values:
+unique values.</p>
+<p><code><a href='https://www.rdocumentation.org/packages/vctrs/topics/vec_duplicate'>vctrs::vec_duplicate_any()</a></code> for functions that detect duplicates among
 any type of vector object.</p></div>
     
 
@@ -184,70 +185,34 @@ any type of vector object.</p></div>
 <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dim-names.html'>set_row_names</a></span>(<span class='no'>x</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"r1"</span>, <span class='st'>"r2"</span>))
 <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dim-names.html'>set_col_names</a></span>(<span class='no'>x</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"c1"</span>, <span class='st'>"c2"</span>))
 
-<span class='co'># Unique rows. The first unique</span>
-<span class='co'># row is used</span>
-<span class='fu'>rray_unique</span>(<span class='no'>x</span>, <span class='fl'>1L</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,2][2]&gt;
-#&gt;    c1 c2
-#&gt; r1  1  2</div><div class='input'>
+<span class='co'># Are there duplicates along the rows?</span>
+<span class='fu'>rray_duplicate_any</span>(<span class='no'>x</span>, <span class='fl'>1L</span>)</div><div class='output co'>#&gt; [1] TRUE</div><div class='input'>
+<span class='co'># Are there duplicates along the columns?</span>
+<span class='fu'>rray_duplicate_any</span>(<span class='no'>x</span>, <span class='fl'>2L</span>)</div><div class='output co'>#&gt; [1] FALSE</div><div class='input'>
 <span class='co'># Create a 3d version of x</span>
 <span class='co'># where the columns are not unique</span>
 <span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray_expand_dims.html'>rray_expand_dims</a></span>(<span class='no'>x</span>, <span class='fl'>1</span>)
 
 <span class='co'># All of the rows are unique...</span>
-<span class='fu'>rray_unique</span>(<span class='no'>y</span>, <span class='fl'>1L</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,2,2][4]&gt;
-#&gt; , , c1
-#&gt; 
-#&gt;      r1 r2
-#&gt; [1,]  1  1
-#&gt; 
-#&gt; , , c2
-#&gt; 
-#&gt;      r1 r2
-#&gt; [1,]  2  2
-#&gt; </div><div class='input'>
+<span class='fu'>rray_duplicate_any</span>(<span class='no'>y</span>, <span class='fl'>1L</span>)</div><div class='output co'>#&gt; [1] FALSE</div><div class='input'>
 <span class='co'># ...but the columns are not</span>
-<span class='fu'>rray_unique</span>(<span class='no'>y</span>, <span class='fl'>2L</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,1,2][2]&gt;
-#&gt; , , c1
-#&gt; 
-#&gt;      r1
-#&gt; [1,]  1
-#&gt; 
-#&gt; , , c2
-#&gt; 
-#&gt;      r1
-#&gt; [1,]  2
-#&gt; </div><div class='input'>
-<span class='co'># The 3rd dimension is unique</span>
-<span class='fu'>rray_unique</span>(<span class='no'>y</span>, <span class='fl'>3L</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,2,2][4]&gt;
-#&gt; , , c1
-#&gt; 
-#&gt;      r1 r2
-#&gt; [1,]  1  1
-#&gt; 
-#&gt; , , c2
-#&gt; 
-#&gt;      r1 r2
-#&gt; [1,]  2  2
-#&gt; </div><div class='input'>
-<span class='co'># rray_unique_loc() returns an</span>
-<span class='co'># integer vector you can use</span>
-<span class='co'># to subset out the unique values along</span>
-<span class='co'># the axis you are interested in</span>
-<span class='no'>y</span>[, <span class='fu'>rray_unique_loc</span>(<span class='no'>y</span>, <span class='fl'>2L</span>)]</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,1,2][2]&gt;
-#&gt; , , c1
-#&gt; 
-#&gt;      r1
-#&gt; [1,]  1
-#&gt; 
-#&gt; , , c2
-#&gt; 
-#&gt;      r1
-#&gt; [1,]  2
-#&gt; </div><div class='input'>
-<span class='co'># Only 1 unique column</span>
-<span class='fu'>rray_unique_count</span>(<span class='no'>y</span>, <span class='fl'>2L</span>)</div><div class='output co'>#&gt; [1] 1</div><div class='input'>
-<span class='co'># 2 unique 3D slices</span>
-<span class='fu'>rray_unique_count</span>(<span class='no'>y</span>, <span class='fl'>3L</span>)</div><div class='output co'>#&gt; [1] 2</div><div class='input'>
+<span class='fu'>rray_duplicate_any</span>(<span class='no'>y</span>, <span class='fl'>2L</span>)</div><div class='output co'>#&gt; [1] TRUE</div><div class='input'>
+<span class='co'># rray_duplicate_detect() returns</span>
+<span class='co'># `TRUE` if a duplicate is detected</span>
+<span class='co'># anywhere in the array (both</span>
+<span class='co'># columns are registered as</span>
+<span class='co'># duplicates)</span>
+<span class='fu'>rray_duplicate_detect</span>(<span class='no'>y</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; [1] TRUE TRUE</div><div class='input'>
+<span class='co'># duplicated() only returns `TRUE`</span>
+<span class='co'># for the second and all subsequent</span>
+<span class='co'># duplicates</span>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/duplicated'>duplicated</a></span>(<span class='fu'><a href='as_array.html'>as_array</a></span>(<span class='no'>y</span>), <span class='kw'>MARGIN</span> <span class='kw'>=</span> <span class='fl'>2L</span>)</div><div class='output co'>#&gt; [1] FALSE  TRUE</div><div class='input'>
+<span class='co'># Find the location of the</span>
+<span class='co'># first unique values</span>
+<span class='fu'>rray_duplicate_id</span>(<span class='no'>y</span>, <span class='fl'>2L</span>)</div><div class='output co'>#&gt; [1] 1 1</div><div class='input'>
+<span class='co'># Both of the 3rd dimension elements</span>
+<span class='co'># are unique</span>
+<span class='fu'>rray_duplicate_id</span>(<span class='no'>y</span>, <span class='fl'>3L</span>)</div><div class='output co'>#&gt; [1] 1 2</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -256,8 +221,6 @@ any type of vector object.</p></div>
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
-
-      <li><a href="#details">Details</a></li>
 
       <li><a href="#see-also">See also</a></li>
       
