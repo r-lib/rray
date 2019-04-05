@@ -248,7 +248,7 @@ vec_cast.double.vctrs_rray <- function(x, to) {
 
 #' @method vec_cast.vctrs_rray integer
 #' @export
-vec_cast.vctrs_rray.integer <- vec_cast.vctrs_rray.vctrs_rray
+vec_cast.vctrs_rray.integer <- vec_cast.vctrs_rray.double
 
 #' @method vec_cast.integer vctrs_rray
 #' @export
@@ -258,7 +258,7 @@ vec_cast.integer.vctrs_rray <- vec_cast.double.vctrs_rray
 
 #' @method vec_cast.vctrs_rray logical
 #' @export
-vec_cast.vctrs_rray.logical <- vec_cast.vctrs_rray.vctrs_rray
+vec_cast.vctrs_rray.logical <- vec_cast.vctrs_rray.double
 
 #' @method vec_cast.logical vctrs_rray
 #' @export
