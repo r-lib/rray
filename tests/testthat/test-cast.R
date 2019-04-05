@@ -128,3 +128,12 @@ test_that("using base coercing functions", {
   expect_equal(dim(x_lgl), c(1, 2))
   expect_equal(storage.mode(x_lgl), "logical")
 })
+
+test_that("from NULL (handled by vctrs)", {
+  expect_equal(vec_cast(NULL, rray(1)), NULL)
+})
+
+test_that("from unknown types", {
+  expect_error(vec_cast("chr", rray(1)), "Can't cast")
+  expect_error(vec_cast(rray(1), "chr"), "Can't cast")
+})
