@@ -127,12 +127,24 @@ set_full_dim_names <- function(x, value) {
 }
 
 set_full_dim_names.default <- function(x, value) {
-  dimnames(x) <- value
-  x
-}
 
-set_full_dim_names.NULL <- function(x, value) {
-  NULL
+  if (is.null(x)) {
+    return(NULL)
+  }
+
+  if (is_null(value)) {
+    value <- new_empty_dim_names(vec_dims(x))
+  }
+
+  # checks for a dim attribute of positive length
+  if (is.array(x)) {
+    dimnames(x) <- value
+  }
+  else {
+    names(x) <- value[[1]]
+  }
+
+  x
 }
 
 set_full_dim_names.vctrs_rray <- function(x, value) {
