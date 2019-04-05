@@ -217,13 +217,8 @@ vec_cast.vctrs_rray.default <- function(x, to) stop_incompatible_cast(x, to)
 #' @method vec_cast.vctrs_rray vctrs_rray
 #' @export
 vec_cast.vctrs_rray.vctrs_rray <- function(x, to) {
-  dim <- c(vec_size(x), rray_shape(to))
-  res <- rray_broadcast(x, dim)
-  new_rray(
-    .data = vec_cast(vec_data(res), vec_data(to)),
-    size = vec_size(res),
-    shape = rray_shape(res)
-  )
+  x <- rray_cast_inner(x, to)
+  rray_shapecast(x, vec_dim(to))
 }
 
 # vec_cast vctrs_rray <-> double -----------------------------------------------
@@ -232,14 +227,21 @@ vec_cast.vctrs_rray.vctrs_rray <- function(x, to) {
 
 #' @method vec_cast.vctrs_rray double
 #' @export
-vec_cast.vctrs_rray.double <- vec_cast.vctrs_rray.vctrs_rray
+vec_cast.vctrs_rray.double <- function(x, to) {
+  dim <- vec_dim(x)
+  x <- new_rray(vec_data(x), dim[1], dim[-1], dim_names(x))
+  x <- rray_cast_inner(x, to)
+  rray_shapecast(x, vec_dim(to))
+}
 
 # vctrs_rray to double
 
 #' @method vec_cast.double vctrs_rray
 #' @export
 vec_cast.double.vctrs_rray <- function(x, to) {
-  vec_cast_from_rray(x, to, double())
+  x <- rray_cast_inner(x, to)
+  x <- vec_data(x)
+  rray_shapecast(x, vec_dim(to))
 }
 
 # vec_cast vctrs_rray <-> integer -----------------------------------------------
@@ -250,9 +252,7 @@ vec_cast.vctrs_rray.integer <- vec_cast.vctrs_rray.vctrs_rray
 
 #' @method vec_cast.integer vctrs_rray
 #' @export
-vec_cast.integer.vctrs_rray <- function(x, to) {
-  vec_cast_from_rray(x, to, integer())
-}
+vec_cast.integer.vctrs_rray <- vec_cast.double.vctrs_rray
 
 # vec_cast vctrs_rray <-> logical -----------------------------------------------
 
@@ -262,24 +262,11 @@ vec_cast.vctrs_rray.logical <- vec_cast.vctrs_rray.vctrs_rray
 
 #' @method vec_cast.logical vctrs_rray
 #' @export
-vec_cast.logical.vctrs_rray <- function(x, to) {
-  vec_cast_from_rray(x, to, logical())
-}
+vec_cast.logical.vctrs_rray <- vec_cast.double.vctrs_rray
 
-new_ptype_array <- function(data, dim) {
-  new_array(data, dim = c(0L, dim[-1]))
-}
+# ------------------------------------------------------------------------------
 
-vec_cast_from_rray <- function(x, to, inner) {
-  x <- vec_data(x)
-
-  # Inner data type coercion
-  to_inner <- new_ptype_array(inner, vec_dim(x))
-  x <- vec_cast(x, to_inner)
-
-  # New shape specified by shape of `to`
-  # and size of `x`
-  dim <- c(vec_size(x), rray_shape(to))
-
+rray_shapecast <- function(x, dim) {
+  dim[1] <- vec_size(x)
   rray_broadcast(x, dim)
 }

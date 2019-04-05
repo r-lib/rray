@@ -28,11 +28,19 @@ rray_type_inner_common <- function(..., .ptype = NULL) {
   vctrs::vec_type_finalise(ptype)
 }
 
+# - No change in dim/shape
+# - Only changing the inner type of the data
+# - Names are kept
 rray_cast_inner <- function(x, to) {
+
+  to <- rray_type_inner(to)
+
   # same as vctrs:::shape_broadcast() in this case
   to <- rray_reshape(to, shape_dim(x))
 
   res <- vec_cast(vec_data(x), to)
+
+  res <- set_full_dim_names(res, dim_names(x))
 
   vec_restore(res, x)
 }
