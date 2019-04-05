@@ -81,4 +81,9 @@ test_that("using base coercing functions", {
   expect_is(x_int, "matrix")
   expect_equal(dim(x_int), c(1, 2))
   expect_equal(storage.mode(x_int), "integer")
+
+  x_lgl <- as.logical(x)
+  expect_is(x_lgl, "matrix")
+  expect_equal(dim(x_lgl), c(1, 2))
+  expect_equal(storage.mode(x_lgl), "logical")
 })
