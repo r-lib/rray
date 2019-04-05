@@ -27,6 +27,47 @@ test_that("to base types", {
   expect_equal(storage.mode(x_int_matrix), "integer")
 })
 
+test_that("from base types", {
+
+  x <- array(1:4, c(1, 2, 2))
+
+  x_int <- vec_cast(x, rray(1L, dim = c(0, 2, 2)))
+  expect_is(x_int, "vctrs_rray")
+  expect_equal(dim(x_int), c(1, 2, 2))
+  expect_equal(storage.mode(x_int), "integer")
+
+  x_dbl <- vec_cast(x, rray(1, dim = c(0, 2, 2)))
+  expect_equal(storage.mode(x_dbl), "double")
+
+  x_lgl <- vec_cast(matrix(1), rray(TRUE, dim = c(0, 1)))
+  expect_equal(storage.mode(x_lgl), "logical")
+
+})
+
+test_that("names are preserved", {
+
+  nms <- list("foo", "bar")
+  x <- rray(1, c(1, 1), dim_names = nms)
+
+  # to another rray - same shape
+  res <- vec_cast(x, rray(1, c(1, 1)))
+  expect_equal(dim_names(res), nms)
+
+  # to another rray - different shape
+  res <- vec_cast(x, rray(1, c(1, 2)))
+  expect_equal(dim_names(res), list("foo", NULL))
+
+  # to a base type
+  res <- vec_cast(x, array(1, c(1, 2)))
+  expect_equal(dim_names(res), list("foo", NULL))
+
+  # from a base type
+  x <- array(1, c(1, 1), dimnames = nms)
+  res <- vec_cast(x, rray(1, c(1, 1)))
+  expect_equal(dim_names(res), nms)
+
+})
+
 test_that("can broadcast shape", {
   x <- as_rray(array(1, dim = c(1, 2)))
 
