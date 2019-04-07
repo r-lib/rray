@@ -94,26 +94,42 @@ rray_dim_names2 <- function(x, y) {
 # - if x has no names for a dimension, but y does, use them
 coalesce_dim_names <- function(x_dim_names, y_dim_names) {
 
-  map2(x_dim_names, y_dim_names, function(x_nms, y_nms) {
+  new_dim_names <- map2(x_dim_names, y_dim_names, coalesce_single_dim_names)
 
-    n_x <- vec_size(x_nms)
-    n_y <- vec_size(y_nms)
+  x_meta_names <- names(x_dim_names)
+  y_meta_names <- names(y_dim_names)
+  names(new_dim_names) <- coalesce_meta_dim_names(x_meta_names, y_meta_names)
 
-    if (n_x == n_y) {
-      x_nms
-    }
-    else if (n_x == 0L) {
-      y_nms
-    }
-    else if (n_y == 0L) {
-      x_nms
-    }
-    else {
-      abort("Imcompatible dim_name lengths.")
-    }
+  new_dim_names
+}
 
-  })
+coalesce_single_dim_names <- function(x_nms, y_nms) {
 
+  n_x <- vec_size(x_nms)
+  n_y <- vec_size(y_nms)
+
+  if (n_x == n_y) {
+    x_nms
+  }
+  else if (n_x == 0L) {
+    y_nms
+  }
+  else if (n_y == 0L) {
+    x_nms
+  }
+  else {
+    abort("Imcompatible dim_name lengths.")
+  }
+
+}
+
+coalesce_meta_dim_names <- function(x_meta_names, y_meta_names) {
+  if (is.null(x_meta_names)) {
+    y_meta_names
+  }
+  else {
+    x_meta_names
+  }
 }
 
 # Given an object x, and a dim that x is going to be

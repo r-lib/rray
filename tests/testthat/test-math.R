@@ -184,3 +184,42 @@ test_that("multiplication works", {
 test_that("Fallthrough operation throws unsupported operation error", {
   expect_error(rray(1) + "a", "is not permitted")
 })
+
+test_that("meta dim names are kept", {
+  x <- rray(1:2, c(2, 1))
+  y <- rray(1:2, c(2, 1))
+  dim_names(x) <- list(xR = NULL, xC = NULL)
+  dim_names(y) <- list(yR = NULL, yC = NULL)
+
+  expect_equal(
+    names(dim_names(x + y)),
+    names(dim_names(x))
+  )
+
+  expect_equal(
+    names(dim_names(y + x)),
+    names(dim_names(y))
+  )
+
+  names(dim_names(x)) <- NULL
+
+  expect_equal(
+    names(dim_names(x + y)),
+    names(dim_names(y))
+  )
+
+  expect_equal(
+    names(dim_names(y + x)),
+    names(dim_names(y))
+  )
+})
+
+test_that("can assign meta names to `NULL` without affecting dim names", {
+  x <- rray(1:2, c(2, 1))
+  dim_names(x) <- list(R = c("r1", "r2"), C = "c1")
+
+  names(dim_names(x)) <- NULL
+
+  expect_equal(names(dim_names(x)), NULL)
+  expect_equal(dim_names(x), list(c("r1", "r2"), "c1"))
+})
