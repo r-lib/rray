@@ -82,6 +82,36 @@
   eval_bare(expr(x[[i, j, !!! dots]]))
 }
 
+# ------------------------------------------------------------------------------
+
+# Override the vctrs `[<-` because it does not allow you to pass in more than
+# just i AND it calls vec_cast() where `to` is the full x obj, not just on the slice
+# you are casting to
+# If vctrs did: function(x, ..., value) and vec_cast(value, x[...]) then
+# all would be good
+
+#' @export
+`[<-.vctrs_rray` <- function(x, ..., value) {
+  value <- vec_cast(value, x[...])
+  x_array <- as_array(x)
+  x_array[...] <- value
+  res <- vec_restore(x_array, x)
+  dim_names(res) <- dim_names(x)
+  res
+}
+
+#' @export
+`[[<-.vctrs_rray` <- function(x, ..., value) {
+  value <- vec_cast(value, x[[...]])
+  x_array <- as_array(x)
+  x_array[[...]] <- value
+  res <- vec_restore(x_array, x)
+  dim_names(res) <- dim_names(x)
+  res
+}
+
+# ------------------------------------------------------------------------------
+
 #' @export
 head.vctrs_rray <- function (x, n = 6L, ...) {
 

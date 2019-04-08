@@ -88,6 +88,11 @@ rray_dim_common <- function(...) {
 
 }
 
+#' @export
+`dim<-.vctrs_rray` <- function(x, value) {
+  rray_broadcast(x, value)
+}
+
 # vctrs:::dim2
 # x and y are dim values
 dim2 <- function(x, y) {
