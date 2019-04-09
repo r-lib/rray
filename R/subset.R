@@ -1,4 +1,53 @@
-
+#' Subset an array
+#'
+#' `rray_subset()` powers `[` for rray objects. Notably, it _never_ drops
+#' dimensions, and ignores trailing commas. It can also be used with base R
+#' matrices and arrays to get rray subsetting behavior with them.
+#'
+#' @param x An rray.
+#'
+#' @param ... A specification of indices to extract.
+#' - Integer-ish indices extract specific elements of dimensions.
+#' - Logical indices must be length 1, or the length of the dimension you are
+#' subsetting over.
+#' - Character indices are only allowed if `x` has names for the corresponding
+#' dimension.
+#' - `NULL` is treated as `0`.
+#'
+#' @param drop Ignored, but preserved for better error messages with code
+#' that might have used arrays before.
+#'
+#' @examples
+#' x <- rray(1:8, c(2, 2, 2))
+#'
+#' # `rray_subset()` powers `[` so these are identical
+#' rray_subset(x, 1)
+#' x[1]
+#'
+#' # Trailing dots are ignored, so these are identical
+#' x[1]
+#' x[1,]
+#'
+#' # Missing arguments are treated as selecting the
+#' # entire dimension, consistent with base R.
+#' # This selects all of the rows, and the first column.
+#' x[,1]
+#'
+#' # Notice that you can't actually do the above with base
+#' # R. It requires you to fully specify the dimensions of `x`.
+#' # This would throw an error.
+#' x_arr <- as_array(x)
+#' \dontrun{
+#' x_arr[,1]
+#' }
+#'
+#' # To get the same behavior, you have to do:
+#' x_arr[, 1, , drop = FALSE]
+#'
+#' # Note that you can use base R arrays with `rray_subset()`
+#' rray_subset(x_arr, , 1)
+#'
+#' @export
 rray_subset <- function(x, ...) {
   out <- vec_data(x)
 
@@ -9,6 +58,7 @@ rray_subset <- function(x, ...) {
   vec_restore(out, x)
 }
 
+#' @rdname rray_subset
 #' @export
 `[.vctrs_rray` <- function(x, ..., drop = FALSE) {
   maybe_warn_drop(drop)
