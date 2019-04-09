@@ -402,7 +402,7 @@ validate_pluck_indexer <- function(indexer) {
     missing_indexes <- glue::glue_collapse(which(missing_indexes), ", ")
     glubort(
       "Subscript(s) {missing_indexes} must not ",
-      "be missing in a pluck."
+      "be missing."
     )
   }
 
