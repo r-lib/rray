@@ -4,6 +4,8 @@
 #' @importFrom vctrs vec_data
 #' @importFrom vctrs vec_restore
 #' @importFrom vctrs vec_slice
+#' @importFrom vctrs vec_na
+#' @importFrom vctrs vec_c
 #' @importFrom vctrs vec_type
 #' @importFrom vctrs vec_type_common
 #' @importFrom vctrs vec_math
@@ -64,6 +66,7 @@ NULL
 #' @importFrom rlang expr
 #' @importFrom rlang list2
 #' @importFrom rlang set_names
+#' @importFrom rlang maybe_missing
 NULL
 
 #' @importFrom utils head tail

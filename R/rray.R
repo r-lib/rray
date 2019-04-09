@@ -184,21 +184,26 @@ is_reshapeable <- function(x, to_dim) {
   n_x == prod(to_dim)
 }
 
-#' Returns the number of elements in array-like object
+#' Compute the number of elements in an array
 #'
-#' @param x An object. Often a vector, matrix, or array.
+#' `rray_elems()` computes the number of individual elements in an array. It
+#' generally computes the same thing as `length()`, but has a more predictable
+#' name.
+#'
+#' @param x A vector, matrix, array or rray.
 #'
 #' @examples
+#' rray_elems(1:5)
 #'
-#' # rray_elems(1:5)
+#' rray_elems(matrix(1, 2, 2))
 #'
-#' # rray_elems(matrix(1, 2, 2))
+#' # It is different from `vec_size()`,
+#' # which only returns the number of
+#' # observations
+#' library(vctrs)
+#' vec_size(matrix(1, 2, 2))
 #'
-#' # different from vec_size()
-#' # that only returns number of obs
-#' # vec_size(matrix(1, 2, 2))
-#'
-#' @keywords internal
+#' @export
 rray_elems <- function(x) {
   prod(vec_dim(x))
 }
