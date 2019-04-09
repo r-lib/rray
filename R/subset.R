@@ -87,6 +87,7 @@
 #' rray_subset(x_arr, , 1) <- matrix(5)
 #' x_arr
 #'
+#' @family rray subsetters
 #' @export
 rray_subset <- function(x, ...) {
   out <- vec_data(x)
@@ -172,6 +173,7 @@ rray_subset_assign_impl <- function(x, ..., value) {
 #' # for assigning to higher dimensional elements
 #' rray_slice(x, 1, 3) <- matrix(c(99, 100), nrow = 1)
 #'
+#' @family rray subsetters
 #' @export
 rray_slice <- function(x, i, axis) {
   i <- vec_cast(i, integer())

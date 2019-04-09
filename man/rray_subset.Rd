@@ -107,3 +107,7 @@ rray_subset(x_arr, , 1) <- matrix(5)
 x_arr
 
 }
+\seealso{
+Other rray subsetters: \code{\link{rray_slice}}
+}
+\concept{rray subsetters}

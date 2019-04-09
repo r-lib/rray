@@ -46,3 +46,7 @@ x[, , , 2]
 rray_slice(x, 1, 3) <- matrix(c(99, 100), nrow = 1)
 
 }
+\seealso{
+Other rray subsetters: \code{\link{rray_subset}}
+}
+\concept{rray subsetters}
