@@ -42,6 +42,17 @@ dimensions, and ignores trailing commas.
 \code{rray_subset()} and its assignment variant can also be used with base R
 matrices and arrays to get rray subsetting behavior with them.
 }
+\section{Differences from base R}{
+
+\itemize{
+\item \code{rray_subset()} \emph{never} drops dimensions.
+\item \code{rray_subset()} ignores trailing commas. This has the nice property of
+making \code{x[1] == x[1,]}.
+\item \code{rray_subset()<-} casts \code{value} to \code{x}, rather than
+casting \code{x} to \code{value}.
+}
+}
+
 \examples{
 x <- rray(1:8, c(2, 2, 2))
 

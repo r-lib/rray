@@ -24,7 +24,7 @@
 #' `rray_subset()` and its assignment variant can also be used with base R
 #' matrices and arrays to get rray subsetting behavior with them.
 #'
-#' @section Differences from base R
+#' @section Differences from base R:
 #'
 #' - `rray_subset()` _never_ drops dimensions.
 #'
@@ -135,12 +135,56 @@ rray_subset_assign_impl <- function(x, ..., value) {
 
 # ------------------------------------------------------------------------------
 
+#' Get or set a slice of an array
+#'
+#' `rray_slice()` is a shortcut wrapper around `rray_subset()` that is useful
+#' for easily subsetting a single axis.
+#'
+#' @param x A vector, matrix, array or rray.
+#'
+#' @param i An integer vector. The slice of `axis` to subset.
+#'
+#' @param axis An integer. The axis to subset.
+#'
+#' @param value A value to be assigned to the slice of `x` subset by `i`
+#' and `axis`. It will be cast to the type and dimension of the slice of `x`.
+#'
+#' @details
+#'
+#' `rray_slice()` can be used with base R objects as well as rrays.
+#'
+#' @examples
+#' x <- rray(1:16, c(2, 2, 2, 2))
+#'
+#' # Selecting the first column
+#' rray_slice(x, i = 1, axis = 2)
+#'
+#' # rray_slice() is particularly useful for
+#' # subsetting higher dimensions because you don't
+#' # have to worry about the commas
+#' rray_slice(x, i = 2, axis = 4)
+#'
+#' # Compare the above with the equivalent
+#' # using `[`
+#' x[, , , 2]
+#'
+#' # The assignment variation can be useful
+#' # for assigning to higher dimensional elements
+#' rray_slice(x, 1, 3) <- matrix(c(99, 100), nrow = 1)
+#'
+#' @export
 rray_slice <- function(x, i, axis) {
+  i <- vec_cast(i, integer())
+  axis <- vec_cast(axis, integer())
   validate_axis(axis, x)
+
   indexer <- front_pad(i, axis)
+
   rray_subset(x, !!!indexer)
 }
 
+#' @rdname rray_slice
+#' @export
 `rray_slice<-` <- function(x, i, axis, value) {
   rray_slice_assign_impl(x, i = i, axis = axis, value = value)
 }
