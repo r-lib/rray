@@ -240,25 +240,25 @@ rray_yank_assign_impl <- function(x, i, value) {
 
 # can only be used like (with 2D for example)
 # x[[1, 1]] not like x[[1]]
-# (i.e. must fully qualify pluck indices)
+# (i.e. must fully qualify extract indices)
 
-rray_pluck <- function(x, ...) {
-  rray_pluck_impl(x, ..., single = FALSE)
+rray_extract <- function(x, ...) {
+  rray_extract_impl(x, ..., single = FALSE)
 }
 
 #' @export
 `[[.vctrs_rray` <- function(x, ..., exact = TRUE) {
   maybe_warn_exact(exact)
-  rray_pluck_impl(x, ..., single = TRUE)
+  rray_extract_impl(x, ..., single = TRUE)
 }
 
-rray_pluck_impl <- function(x, ..., single = FALSE) {
+rray_extract_impl <- function(x, ..., single = FALSE) {
   out <- vec_data(x)
 
   indexer <- rray_as_index(x, ..., with_drop = FALSE)
 
   if (single) {
-    indexer <- validate_pluck_indexer(indexer)
+    indexer <- validate_extract_indexer(indexer)
   }
 
   out <- eval_bare(expr(out[!!!indexer]))
@@ -268,19 +268,19 @@ rray_pluck_impl <- function(x, ..., single = FALSE) {
   vec_restore(out, x)
 }
 
-`rray_pluck<-` <- function(x, ..., value) {
-  rray_pluck_assign_impl(x, ..., single = FALSE, value = value)
+`rray_extract<-` <- function(x, ..., value) {
+  rray_extract_assign_impl(x, ..., single = FALSE, value = value)
 }
 
 #' @export
 `[[<-.vctrs_rray` <- function(x, ..., value) {
-  rray_pluck_assign_impl(x, ..., single = TRUE, value = value)
+  rray_extract_assign_impl(x, ..., single = TRUE, value = value)
 }
 
-rray_pluck_assign_impl <- function(x, ..., single = FALSE, value) {
-  x_pluck <- rray_pluck_impl(x, ..., single = single)
-  value <- vec_cast(value, x_pluck)
-  value <- rray_broadcast(value, vec_dim(x_pluck))
+rray_extract_assign_impl <- function(x, ..., single = FALSE, value) {
+  x_extract <- rray_extract_impl(x, ..., single = single)
+  value <- vec_cast(value, x_extract)
+  value <- rray_broadcast(value, vec_dim(x_extract))
 
   out <- vec_data(x)
 
@@ -394,7 +394,7 @@ as_yank_indexer_lgl <- function(i, x) {
 
 # ------------------------------------------------------------------------------
 
-validate_pluck_indexer <- function(indexer) {
+validate_extract_indexer <- function(indexer) {
 
   missing_indexes <- map_lgl(indexer, is_missing)
 
