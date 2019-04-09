@@ -172,6 +172,65 @@ test_that("can't subset past the dimensions of x", {
   expect_error(x[,,,1], "dimension 4")
 })
 
+test_that("can use a negative subset", {
+  x <- rray(1:8, dim = c(2, 2, 2))
+  expect_equal(x[-1], x[2])
+  expect_error(x[-3], "length 2")
+})
+
+# ------------------------------------------------------------------------------
+# subset assign
+
+test_that("can use a subset assign", {
+  x <- rray(1:8, dim = c(2, 2, 2))
+  rray_subset(x, 1, 1, 1) <- NA
+  expect_is(x, "vctrs_rray")
+  expect_equal(storage.mode(x), "integer")
+  expect_equal(as.vector(x), c(NA, 2:8))
+})
+
+test_that("value is broadcast in subset assign", {
+  x <- rray(1:8, dim = c(2, 2, 2))
+  rray_subset(x, 1:2, 1) <- NA
+  expect_equal(as.vector(x), c(NA, NA, 3, 4, NA, NA, 7, 8))
+})
+
+test_that("assigning to 0 does nothing", {
+  x <- rray(1:8, dim = c(2, 2, 2))
+  rray_subset(x, 0) <- 1
+  expect_equal(x, rray(1:8, dim = c(2, 2, 2)))
+
+  x <- rray(1:8, dim = c(2, 2, 2))
+  rray_subset(x, 0, 1) <- 1
+  expect_equal(x, rray(1:8, dim = c(2, 2, 2)))
+})
+
+test_that("assigning to NULL does nothing", {
+  x <- rray(1:8, dim = c(2, 2, 2))
+  rray_subset(x, NULL) <- 1
+  expect_equal(x, rray(1:8, dim = c(2, 2, 2)))
+})
+
+test_that("broadcast can fail gracefully in subset assign", {
+  x <- rray(1:8, dim = c(2, 2, 2))
+  expect_error(rray_subset(x, 1, 1) <- c(1, 2), "Non-recyclable")
+})
+
+test_that("can subset assign with shaped input", {
+  x <- rray(1:8, dim = c(2, 2, 2))
+  expect_error(rray_subset(x, , 1) <- matrix(1:2), NA)
+  expect_equal(
+    as.vector(x),
+    c(1:4, 1:2, 7:8)
+  )
+})
+
+test_that("can subset assign with base R objects", {
+  x <- matrix(1:8, nrow = 2)
+  rray_subset(x, 1) <- matrix(4:1, nrow = 1)
+  expect_equal(as.vector(x), c(4, 2, 3, 4, 2, 6, 1, 8))
+})
+
 # ------------------------------------------------------------------------------
 # yank
 
@@ -306,11 +365,6 @@ test_that("can yank assign with base R objects", {
   rray_yank(x, 1:4) <- 4:1
   expect_equal(as.vector(x)[1:4], 4:1)
 })
-
-# ------------------------------------------------------------------------------
-# subset assign
-
-# TODO - more subset assign tests
 
 # ------------------------------------------------------------------------------
 # pluck
