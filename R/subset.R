@@ -66,6 +66,15 @@ rray_subset <- function(x, ...) {
 }
 
 `rray_subset<-` <- function(x, ..., value) {
+  rray_subset_assign_impl(x, ..., value = value)
+}
+
+#' @export
+`[<-.vctrs_rray` <- function(x, ..., value) {
+  rray_subset_assign_impl(x, ..., value = value)
+}
+
+rray_subset_assign_impl <- function(x, ..., value) {
   x_subset <- rray_subset(x, ...)
   value <- vec_cast(value, x_subset)
   value <- rray_broadcast(value, vec_dim(x_subset))
@@ -81,12 +90,6 @@ rray_subset <- function(x, ...) {
   res
 }
 
-#' @export
-`[<-.vctrs_rray` <- function(x, ..., value) {
-  rray_subset(x, ...) <- value
-  x
-}
-
 # ------------------------------------------------------------------------------
 
 rray_slice <- function(x, i, axis) {
@@ -96,6 +99,10 @@ rray_slice <- function(x, i, axis) {
 }
 
 `rray_slice<-` <- function(x, i, axis, value) {
+  rray_slice_assign_impl(x, i = i, axis = axis, value = value)
+}
+
+rray_slice_assign_impl <- function(x, i, axis, value) {
   validate_axis(axis, x)
   indexer <- front_pad(i, axis)
   rray_subset(x, !!!indexer) <- value
@@ -122,6 +129,11 @@ rray_yank <- function(x, i) {
 }
 
 `rray_yank<-` <- function(x, i, value) {
+  rray_yank_assign_impl(x, i = maybe_missing(i), value = value)
+}
+
+# Separate function for easier RStudio debugging
+rray_yank_assign_impl <- function(x, i, value) {
   i <- maybe_missing(i, TRUE)
 
   x_yank <- rray_yank(x, i)
@@ -144,32 +156,44 @@ rray_yank <- function(x, i) {
 # (i.e. must fully qualify pluck indices)
 
 rray_pluck <- function(x, ...) {
-  out <- vec_data(x)
-
-  indexer <- rray_as_index(x, ..., with_drop = FALSE)
-
-  validate_pluck_indexer(indexer)
-
-  out <- eval_bare(expr(out[[!!!indexer]]))
-
-  vec_restore(out, x)
+  rray_pluck_impl(x, ..., single = FALSE)
 }
 
 #' @export
 `[[.vctrs_rray` <- function(x, ..., exact = TRUE) {
   maybe_warn_exact(exact)
-  rray_pluck(x, ...)
+  rray_pluck_impl(x, ..., single = TRUE)
+}
+
+rray_pluck_impl <- function(x, ..., single = FALSE) {
+  out <- vec_data(x)
+
+  indexer <- rray_as_index(x, ..., with_drop = FALSE)
+
+  if (single) {
+    indexer <- validate_pluck_indexer(indexer)
+  }
+
+  out <- eval_bare(expr(out[!!!indexer]))
+
+  out <- as.vector(out)
+
+  vec_restore(out, x)
 }
 
 `rray_pluck<-` <- function(x, ..., value) {
+  rray_pluck_assign_impl(x, ..., single = FALSE, value = value)
+}
 
-  x_pluck <- rray_pluck(x, ...)
+#' @export
+`[[<-.vctrs_rray` <- function(x, ..., value) {
+  rray_pluck_assign_impl(x, ..., single = TRUE, value = value)
+}
+
+rray_pluck_assign_impl <- function(x, ..., single = FALSE, value) {
+  x_pluck <- rray_pluck_impl(x, ..., single = single)
   value <- vec_cast(value, x_pluck)
-
-  value_size <- vec_size(value)
-  if (value_size != 1L) {
-    glubort("The size of `value` must be 1, not {value_size}.")
-  }
+  value <- rray_broadcast(value, vec_dim(x_pluck))
 
   out <- vec_data(x)
 
@@ -178,12 +202,6 @@ rray_pluck <- function(x, ...) {
   eval_bare(expr(out[!!!indexer] <- value))
 
   vec_restore(out, x)
-}
-
-#' @export
-`[[<-.vctrs_rray` <- function(x, ..., value) {
-  rray_pluck(x, ...) <- value
-  x
 }
 
 # ------------------------------------------------------------------------------
