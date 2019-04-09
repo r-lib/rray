@@ -3,11 +3,17 @@
 \name{rray_subset}
 \alias{rray_subset}
 \alias{[.vctrs_rray}
-\title{Subset an array}
+\alias{rray_subset<-}
+\alias{[<-.vctrs_rray}
+\title{Get or set dimensions of an array}
 \usage{
 rray_subset(x, ...)
 
 \method{[}{vctrs_rray}(x, ..., drop = FALSE)
+
+rray_subset(x, ...) <- value
+
+\method{[}{vctrs_rray}(x, ...) <- value
 }
 \arguments{
 \item{x}{An rray.}
@@ -24,10 +30,16 @@ dimension.
 
 \item{drop}{Ignored, but preserved for better error messages with code
 that might have used arrays before.}
+
+\item{value}{The value to assign to the location specified by \code{...}. Before
+assignment, \code{value} is cast to the type and dimension of \code{x[...]}.}
 }
 \description{
 \code{rray_subset()} powers \code{[} for rray objects. Notably, it \emph{never} drops
-dimensions, and ignores trailing commas. It can also be used with base R
+dimensions, and ignores trailing commas.
+}
+\details{
+\code{rray_subset()} and its assignment variant can also be used with base R
 matrices and arrays to get rray subsetting behavior with them.
 }
 \examples{
@@ -59,5 +71,28 @@ x_arr[, 1, , drop = FALSE]
 
 # Note that you can use base R arrays with `rray_subset()`
 rray_subset(x_arr, , 1)
+
+# You can assign to index locations with
+# x[...] <- value
+# This assigns 99 to the entire first row
+x[1] <- 99
+x
+
+# First row in the first
+# element of the 3rd dimension
+x[1, , 1] <- 100
+x
+
+# Note that `value` is broadcast to the shape
+# of `x[...]`. So this...
+x[,1] <- matrix(5)
+
+# ...becomes the same as
+x[,1] <- array(5, c(2, 1, 2))
+
+# You can also use `rray_subset<-()` directly to
+# use these semantics with base R
+rray_subset(x_arr, , 1) <- matrix(5)
+x_arr
 
 }

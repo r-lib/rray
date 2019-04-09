@@ -1,8 +1,7 @@
-#' Subset an array
+#' Get or set dimensions of an array
 #'
 #' `rray_subset()` powers `[` for rray objects. Notably, it _never_ drops
-#' dimensions, and ignores trailing commas. It can also be used with base R
-#' matrices and arrays to get rray subsetting behavior with them.
+#' dimensions, and ignores trailing commas.
 #'
 #' @param x An rray.
 #'
@@ -16,6 +15,24 @@
 #'
 #' @param drop Ignored, but preserved for better error messages with code
 #' that might have used arrays before.
+#'
+#' @param value The value to assign to the location specified by `...`. Before
+#' assignment, `value` is cast to the type and dimension of `x[...]`.
+#'
+#' @details
+#'
+#' `rray_subset()` and its assignment variant can also be used with base R
+#' matrices and arrays to get rray subsetting behavior with them.
+#'
+#' @section Differences from base R
+#'
+#' - `rray_subset()` _never_ drops dimensions.
+#'
+#' - `rray_subset()` ignores trailing commas. This has the nice property of
+#' making `x[1] == x[1,]`.
+#'
+#' - `rray_subset()<-` casts `value` to `x`, rather than
+#' casting `x` to `value`.
 #'
 #' @examples
 #' x <- rray(1:8, c(2, 2, 2))
@@ -47,6 +64,29 @@
 #' # Note that you can use base R arrays with `rray_subset()`
 #' rray_subset(x_arr, , 1)
 #'
+#' # You can assign to index locations with
+#' # x[...] <- value
+#' # This assigns 99 to the entire first row
+#' x[1] <- 99
+#' x
+#'
+#' # First row in the first
+#' # element of the 3rd dimension
+#' x[1, , 1] <- 100
+#' x
+#'
+#' # Note that `value` is broadcast to the shape
+#' # of `x[...]`. So this...
+#' x[,1] <- matrix(5)
+#'
+#' # ...becomes the same as
+#' x[,1] <- array(5, c(2, 1, 2))
+#'
+#' # You can also use `rray_subset<-()` directly to
+#' # use these semantics with base R
+#' rray_subset(x_arr, , 1) <- matrix(5)
+#' x_arr
+#'
 #' @export
 rray_subset <- function(x, ...) {
   out <- vec_data(x)
@@ -65,10 +105,13 @@ rray_subset <- function(x, ...) {
   rray_subset(x, ...)
 }
 
+#' @rdname rray_subset
+#' @export
 `rray_subset<-` <- function(x, ..., value) {
   rray_subset_assign_impl(x, ..., value = value)
 }
 
+#' @rdname rray_subset
 #' @export
 `[<-.vctrs_rray` <- function(x, ..., value) {
   rray_subset_assign_impl(x, ..., value = value)
