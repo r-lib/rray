@@ -64,6 +64,7 @@ NULL
 #' @importFrom rlang expr
 #' @importFrom rlang list2
 #' @importFrom rlang set_names
+#' @importFrom rlang maybe_missing
 NULL
 
 #' @importFrom utils head tail
