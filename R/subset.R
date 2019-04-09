@@ -1,85 +1,204 @@
-#' @export
-`[.vctrs_rray` <- function(x, i, j, ..., drop = FALSE) {
-  x <- as_array(x)
-  d <- vec_dims(x)
 
-  # for differentiating x[1] from x[1,]
-  n_real_args <- nargs() - !missing(drop)
+rray_subset <- function(x, ...) {
+  out <- vec_data(x)
 
-  dots <- dots_list(..., .preserve_empty = TRUE)
+  indexer <- rray_as_index(x, ...)
 
-  # x[i], or just x[]
-  if (n_real_args <= 2) {
+  out <- eval_bare(expr(out[!!!indexer]))
 
-    # x[i]
-    if (!is_missing(i)) {
+  vec_restore(out, x)
+}
 
-      if (d == 1L) {
-        x <- x[i]
-      }
-      else {
-        abort("Use `x[,j]` to select columns, not `x[j]`.")
-      }
+`rray_subset<-` <- function(x, ..., value) {
+  x_subset <- x[...]
+  value <- vec_cast(value, x_subset)
+  value <- rray_broadcast(value, vec_dim(x_subset))
 
-    }
-    # x[]
-    else {
-      # nothing
-    }
+  indexer <- rray_as_index(x, ..., with_drop = FALSE)
 
-    return(as_rray(x))
-  }
+  x_data <- vec_data(x)
 
-  # at this point one of these is returned:
-  # x[i,] x[,j], x[i,j], x[i,,...], x[i,j,...], x[,,...], x[,j,...]
+  eval_bare(expr(x_data[!!!indexer] <- value))
 
-  # x[,j] or x[i,j] or x[i,j,...] or x[,j,...]
-  if (!is_missing(j)) {
-    if (d == 1) abort("incorrect number of dimensions")
-    miss_args <- rep(list(missing_arg()), d - 2)
-    x <- eval_bare(expr(x[, j, !!!miss_args, drop = FALSE]))
-  }
+  res <- vec_restore(x_data, x)
 
-  # x[i,j,...], x[i,,...], x[,,...], x[,j,...]
-  if (!is_empty(dots)) {
-    n_dots <- length(dots)
-    if (d <= (1 + n_dots)) abort("incorrect number of dimensions")
-    miss_args <- rep(list(missing_arg()), d - 2 - n_dots)
-    x <- eval_bare(expr(x[, , !!!c(dots, miss_args), drop = FALSE]))
-  }
+  res
+}
 
-  # x[i,], x[i,j], x[i,,...], x[i,j,...]
-  if (!is_missing(i)) {
+rray_element <- function(x, ...) {
+  out <- vec_data(x)
 
-    if(is_integerish(i)) {
-      i <- vec_cast(i, integer())
-    }
+  indexer <- rray_as_index(x, ..., with_drop = FALSE)
 
-    x <- vec_slice(x, i)
-  }
+  validate_element_indexer(indexer)
 
-  as_rray(x)
+  out <- eval_bare(expr(out[[!!!indexer]]))
+
+  vec_restore(out, x)
 }
 
 #' @export
-`[[.vctrs_rray` <- function(x, i, j, ..., exact = TRUE) {
-  x <- as_array(x)
-  dots <- dots_list(..., .preserve_empty = TRUE)
+`[.vctrs_rray` <- function(x, ..., drop = FALSE) {
+  maybe_warn_drop(drop)
+  rray_subset(x, ...)
+}
+
+#' @export
+`[[.vctrs_rray` <- function(x, ..., exact = TRUE) {
+  maybe_warn_exact(exact)
+  rray_element(x, ...)
+}
+
+# - turn the dots into something to slice x with using expr(x[!!!dots])
+# - optionally add `drop = FALSE` to the end
+rray_as_index <- function(x, ..., with_drop = TRUE) {
+  dots <- dots_list(..., .preserve_empty = TRUE, .ignore_empty = "none")
+  n_dots <- length(dots)
+
+  # 1D subsetting allowed, always flattens
+  if (n_dots == 1L) {
+    indexer <- as_flat_indexer(dots, x)
+  }
+  else {
+    indexer <- as_indexer(dots, x)
+  }
+
+  if (with_drop) {
+    indexer <- c(indexer, drop = FALSE)
+  }
+
+  indexer
+}
+
+as_indexer <- function(dots, x) {
+  proxies <- map(vec_dim(x), seq_len)
+  proxy_names <- dim_names(x)
+  dots <- pad_missing(dots, x)
+
+  # Set names on the proxy if the indexer is by name
+  for (i in seq_along(proxies)) {
+    if (is.character(dots[[i]])) {
+      names(proxies[[i]]) <- proxy_names[[i]]
+    }
+  }
+
+  indexer <- map2(dots, proxies, vec_as_index_wrapper)
+
+  indexer
+}
+
+pad_missing <- function(dots, x) {
+  x_dims <- vec_dims(x)
+  requested_dims <- length(dots)
+
+  if (requested_dims > x_dims) {
+    glubort(
+      "The dimensionality of `x` is {x_dims}. ",
+      "Cannot subset into dimension {requested_dims}."
+    )
+  }
+
+  # n_dots < d, need to pad with missing args
+  # (if n_dots == d this does nothing)
+  n_missing <- x_dims - requested_dims
+  padding <- rep(list(missing_arg()), times = n_missing)
+  dots <- c(dots, padding)
+
+  dots
+}
+
+vec_as_index_wrapper <- function(i, x) {
+  if (is_missing(i)) {
+    missing_arg()
+  }
+  else {
+    vctrs:::vec_as_index(i, x)
+  }
+}
+
+as_flat_indexer <- function(dots, x) {
+
+  i <- dots[[1]]
 
   if (is_missing(i)) {
-    # this errors with a consistent error to base R
-    x[[]]
+    return(list2(missing_arg()))
   }
 
-  if (is_missing(j)) {
-    return(x[[i]])
+  if (is.logical(i)) {
+    i <- as_flat_indexer_lgl(i, x)
+  }
+  else {
+    i <- as_flat_indexer_default(i, x)
   }
 
-  if (is_empty(dots)) {
-    return(x[[i, j]])
+  list(i)
+}
+
+as_flat_indexer_default <- function(i, x) {
+  if (vec_dims(i) > 1L) {
+    glubort("Subscript 1 can only have >1 dimensions if it is a logical.")
   }
 
-  eval_bare(expr(x[[i, j, !!! dots]]))
+  # Not looking at vctrs "size" here
+  proxy <- seq_len(rray_elems(x))
+
+  vctrs:::vec_as_index(i, proxy)
+}
+
+as_flat_indexer_lgl <- function(i, x) {
+  i <- rray_broadcast(i, vec_dim(x))
+  i <- as.vector(i)
+  as_flat_indexer_default(i, x)
+}
+
+validate_element_indexer <- function(indexer) {
+
+  missing_indexes <- map_lgl(indexer, is_missing)
+
+  if (any(missing_indexes)) {
+    missing_indexes <- glue::glue_collapse(which(missing_indexes), ", ")
+    glubort(
+      "Subscript(s) {missing_indexes} must not ",
+      "be missing in single element subsetting."
+    )
+  }
+
+  lengths <- map_int(indexer, length)
+  is_one <- map_lgl(lengths, identical, 1L)
+
+  # Allow for multiple bad subscripts
+  if (any(!is_one)) {
+    bad_subscript <- which(!is_one)
+    bad_lengths <- lengths[!is_one]
+    msg <- glue::glue(
+      "Subscript {bad_subscript} must have size 1, not {bad_lengths}."
+    )
+    msg <- glue::glue_collapse(msg, sep ="\n")
+    glubort(msg)
+  }
+
+  invisible(indexer)
+}
+
+maybe_warn_exact <- function(exact) {
+  if (!exact) {
+    warn_exact()
+  }
+}
+
+warn_exact <- function() {
+  rlang::warn("`exact` ignored.")
+}
+
+maybe_warn_drop <- function(drop) {
+  if (drop) {
+    warn_drop()
+  }
+  invisible(drop)
+}
+
+warn_drop <- function() {
+  rlang::warn("`drop` ignored.")
 }
 
 # ------------------------------------------------------------------------------
@@ -92,12 +211,8 @@
 
 #' @export
 `[<-.vctrs_rray` <- function(x, ..., value) {
-  value <- vec_cast(value, x[...])
-  x_array <- as_array(x)
-  x_array[...] <- value
-  res <- vec_restore(x_array, x)
-  dim_names(res) <- dim_names(x)
-  res
+  rray_subset(x, ...) <- value
+  x
 }
 
 #' @export
