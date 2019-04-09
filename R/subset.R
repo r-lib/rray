@@ -206,11 +206,11 @@ front_pad <- function(i, axis) {
 
 # ------------------------------------------------------------------------------
 
-#' Get or set elements of an array
+#' Get or set elements of an array by position
 #'
-#' `rray_yank()` extracts elements from an array _by position_. It _always_
-#' drops dimensions (unlike [rray_subset()]), and a 1D vector is
-#' always returned.
+#' `rray_yank()` is the counterpart to [rray_extract()]. It extracts elements
+#' from an array _by position_. It _always_ drops dimensions
+#' (unlike [rray_subset()]), and a 1D vector is always returned.
 #'
 #' @param x A vector, matrix, array or rray.
 #'
@@ -302,13 +302,68 @@ rray_yank_assign_impl <- function(x, i, single = FALSE, value) {
 
 # ------------------------------------------------------------------------------
 
+#' Get or set elements of an array by index
+#'
+#' `rray_extract()` is the counterpart to [rray_yank()]. It extracts elements
+#' from an array _by index_. It _always_ drops dimensions
+#' (unlike [rray_subset()]), and a 1D object is always returned.
+#'
+#' @inheritParams rray_subset
+#'
+#' @param value The value to assign to the location specified by `...`.
+#' Before assignment, `value` is cast to the type and dimension of `x` after
+#' extracting elements with `...`.
+#'
+#' @param exact Ignored, but preserved for better error messages with code
+#' that might have used arrays before.
+#'
+#' @details
+#'
+#' Like `[[`, `rray_extract()` will _never_ keep dimension names.
+#'
+#' `rray_extract()` works with base R objects as well.
+#'
+#' `rray_extract()` is similar to the traditional behavior of
+#' `x[[i, j, ...]]`, but allows each subscript to have length >1.
+#'
+#' The `[[` method for rrays is a stricter combination of [rray_yank()] and
+#' `rray_extract()`.
+#' - It utilizes `rray_yank()` for `x[[i]]` and
+#' `rray_extract()` for `x[[i, j, ...]]`.
+#' - It never keeps dimension names.
+#' - Each subscript can only have length 1.
+#'
+#' @examples
+#'
+#' x <- rray(1:16, c(2, 4, 2), dim_names = list(c("r1", "r2"), NULL, NULL))
+#'
+#' # Extract the first row and flatten it
+#' rray_extract(x, 1)
+#'
+#' # Extract the first row and first two columns
+#' rray_extract(x, 1, 1:2)
+#'
+#' # You can assign directly to these elements
+#' rray_extract(x, 1, 1:2) <- NA
+#' x
+#'
+#' # `[[` for rray objects is powered by
+#' # rray_extract() and rray_yank().
+#' # These are equivalent ways to get at
+#' # a flattened version of `x[2, 2, 1]`
+#' x[[4]]
+#' x[[2, 2, 1]]
+#'
+#' # Both ways can be used in assignment
+#' x[[4]] <- 100
+#' x[[2, 2, 1]] <- 99
+#'
+#' @export
 rray_extract <- function(x, ...) {
   rray_extract_impl(x, ..., single = FALSE)
 }
 
-# Allow both x[[i]] and x[[i,j,...]] since both are type stable
-# and return 1D output
-
+#' @rdname rray_extract
 #' @export
 `[[.vctrs_rray` <- function(x, ..., exact = TRUE) {
   maybe_warn_exact(exact)
@@ -317,11 +372,17 @@ rray_extract <- function(x, ...) {
   n_dots <- length(dots)
 
   if (n_dots == 1L) {
+
+    # `rray_yank()` maintains dim names if `x` is 1D.
+    # `[[` should never keep them
+    dim_names(x) <- NULL
+
     rray_yank_impl(x, dots[[1]], single = TRUE)
   }
   else {
     rray_extract_impl(x, !!!dots, single = TRUE)
   }
+
 }
 
 rray_extract_impl <- function(x, ..., single = FALSE) {
@@ -340,13 +401,28 @@ rray_extract_impl <- function(x, ..., single = FALSE) {
   vec_restore(out, x)
 }
 
+#' @rdname rray_extract
+#' @export
 `rray_extract<-` <- function(x, ..., value) {
   rray_extract_assign_impl(x, ..., single = FALSE, value = value)
 }
 
+#' @rdname rray_extract
 #' @export
 `[[<-.vctrs_rray` <- function(x, ..., value) {
-  rray_extract_assign_impl(x, ..., single = TRUE, value = value)
+
+  dots <- dots_list(..., .preserve_empty = TRUE, .ignore_empty = "trailing")
+  n_dots <- length(dots)
+
+  # Allow both x[[i]]<- and x[[i,j,...]]<- since both are type stable
+  # and allow length 1 1D input
+  if (n_dots == 1L) {
+    rray_yank_assign_impl(x, dots[[1]], single = TRUE, value = value)
+  }
+  else {
+    rray_extract_assign_impl(x, !!!dots, single = TRUE, value = value)
+  }
+
 }
 
 rray_extract_assign_impl <- function(x, ..., single = FALSE, value) {
@@ -502,7 +578,7 @@ validate_single_yank_indexer <- function(indexer) {
   n_i <- length(i)
 
   if (n_i != 1L) {
-    glubort("Subscript must result in an index with size 1, not {n_i}.")
+    glubort("Subscript 1 must result in an index with size 1, not {n_i}.")
   }
 
   invisible(indexer)

@@ -3,7 +3,7 @@
 \name{rray_yank}
 \alias{rray_yank}
 \alias{rray_yank<-}
-\title{Get or set elements of an array}
+\title{Get or set elements of an array by position}
 \usage{
 rray_yank(x, i)
 
@@ -23,9 +23,9 @@ rray_yank(x, i) <- value
 be cast to the type and length of \code{x} after being yanked by \code{i}.}
 }
 \description{
-\code{rray_yank()} extracts elements from an array \emph{by position}. It \emph{always}
-drops dimensions (unlike \code{\link[=rray_subset]{rray_subset()}}), and a 1D vector is
-always returned.
+\code{rray_yank()} is the counterpart to \code{\link[=rray_extract]{rray_extract()}}. It extracts elements
+from an array \emph{by position}. It \emph{always} drops dimensions
+(unlike \code{\link[=rray_subset]{rray_subset()}}), and a 1D vector is always returned.
 }
 \details{
 Dimension names are \emph{only} kept in the special case of calling \code{rray_yank()}
