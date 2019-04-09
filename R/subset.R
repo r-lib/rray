@@ -368,7 +368,8 @@ rray_extract <- function(x, ...) {
 `[[.vctrs_rray` <- function(x, ..., exact = TRUE) {
   maybe_warn_exact(exact)
 
-  dots <- dots_list(..., .preserve_empty = TRUE, .ignore_empty = "trailing")
+  # Don't ignore trailing dots. x[[i,]] should be an error
+  dots <- dots_list(..., .preserve_empty = TRUE, .ignore_empty = "none")
   n_dots <- length(dots)
 
   if (n_dots == 1L) {
@@ -411,7 +412,8 @@ rray_extract_impl <- function(x, ..., single = FALSE) {
 #' @export
 `[[<-.vctrs_rray` <- function(x, ..., value) {
 
-  dots <- dots_list(..., .preserve_empty = TRUE, .ignore_empty = "trailing")
+  # Don't ignore trailing dots. x[[i,]]<- should be an error
+  dots <- dots_list(..., .preserve_empty = TRUE, .ignore_empty = "none")
   n_dots <- length(dots)
 
   # Allow both x[[i]]<- and x[[i,j,...]]<- since both are type stable
