@@ -2,25 +2,27 @@
 % Please edit documentation in R/rray.R
 \name{rray_elems}
 \alias{rray_elems}
-\title{Returns the number of elements in array-like object}
+\title{Compute the number of elements in an array}
 \usage{
 rray_elems(x)
 }
 \arguments{
-\item{x}{An object. Often a vector, matrix, or array.}
+\item{x}{A vector, matrix, array or rray.}
 }
 \description{
-Returns the number of elements in array-like object
+\code{rray_elems()} computes the number of individual elements in an array. It
+generally computes the same thing as \code{length()}, but has a more predictable
+name.
 }
 \examples{
+rray_elems(1:5)
 
-# rray_elems(1:5)
+rray_elems(matrix(1, 2, 2))
 
-# rray_elems(matrix(1, 2, 2))
-
-# different from vec_size()
-# that only returns number of obs
-# vec_size(matrix(1, 2, 2))
+# It is different from `vec_size()`,
+# which only returns the number of
+# observations
+library(vctrs)
+vec_size(matrix(1, 2, 2))
 
 }
-\keyword{internal}
