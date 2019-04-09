@@ -258,11 +258,19 @@ front_pad <- function(i, axis) {
 #' @family rray subsetters
 #' @export
 rray_yank <- function(x, i) {
+  rray_yank_impl(x, maybe_missing(i), single = FALSE)
+}
+
+rray_yank_impl <- function(x, i, single = FALSE) {
   i <- maybe_missing(i, TRUE)
 
   out <- vec_data(x)
 
   indexer <- as_yank_indexer(i, x)
+
+  if (single) {
+    validate_single_yank_indexer(indexer)
+  }
 
   out <- eval_bare(expr(out[!!!indexer]))
 
@@ -272,14 +280,14 @@ rray_yank <- function(x, i) {
 #' @rdname rray_yank
 #' @export
 `rray_yank<-` <- function(x, i, value) {
-  rray_yank_assign_impl(x, i = maybe_missing(i), value = value)
+  rray_yank_assign_impl(x, i = maybe_missing(i), single = FALSE, value = value)
 }
 
 # Separate function for easier RStudio debugging
-rray_yank_assign_impl <- function(x, i, value) {
+rray_yank_assign_impl <- function(x, i, single = FALSE, value) {
   i <- maybe_missing(i, TRUE)
 
-  x_yank <- rray_yank(x, i)
+  x_yank <- rray_yank_impl(x, i, single = single)
   value <- vec_cast(value, x_yank)
   value <- rray_broadcast(value, vec_dim(x_yank))
 
@@ -294,18 +302,26 @@ rray_yank_assign_impl <- function(x, i, value) {
 
 # ------------------------------------------------------------------------------
 
-# can only be used like (with 2D for example)
-# x[[1, 1]] not like x[[1]]
-# (i.e. must fully qualify extract indices)
-
 rray_extract <- function(x, ...) {
   rray_extract_impl(x, ..., single = FALSE)
 }
 
+# Allow both x[[i]] and x[[i,j,...]] since both are type stable
+# and return 1D output
+
 #' @export
 `[[.vctrs_rray` <- function(x, ..., exact = TRUE) {
   maybe_warn_exact(exact)
-  rray_extract_impl(x, ..., single = TRUE)
+
+  dots <- dots_list(..., .preserve_empty = TRUE, .ignore_empty = "trailing")
+  n_dots <- length(dots)
+
+  if (n_dots == 1L) {
+    rray_yank_impl(x, dots[[1]], single = TRUE)
+  }
+  else {
+    rray_extract_impl(x, !!!dots, single = TRUE)
+  }
 }
 
 rray_extract_impl <- function(x, ..., single = FALSE) {
@@ -314,7 +330,7 @@ rray_extract_impl <- function(x, ..., single = FALSE) {
   indexer <- rray_as_index(x, ..., with_drop = FALSE)
 
   if (single) {
-    indexer <- validate_extract_indexer(indexer)
+    validate_single_extract_indexer(indexer)
   }
 
   out <- eval_bare(expr(out[!!!indexer]))
@@ -450,7 +466,7 @@ as_yank_indexer_lgl <- function(i, x) {
 
 # ------------------------------------------------------------------------------
 
-validate_extract_indexer <- function(indexer) {
+validate_single_extract_indexer <- function(indexer) {
 
   missing_indexes <- map_lgl(indexer, is_missing)
 
@@ -470,10 +486,23 @@ validate_extract_indexer <- function(indexer) {
     bad_subscript <- which(!is_one)
     bad_lengths <- lengths[!is_one]
     msg <- glue::glue(
-      "Subscript {bad_subscript} must have size 1, not {bad_lengths}."
+      "Subscript {bad_subscript} must result in an ",
+      "index with size 1, not {bad_lengths}."
     )
     msg <- glue::glue_collapse(msg, sep ="\n")
     glubort(msg)
+  }
+
+  invisible(indexer)
+}
+
+validate_single_yank_indexer <- function(indexer) {
+
+  i <- indexer[[1]]
+  n_i <- length(i)
+
+  if (n_i != 1L) {
+    glubort("Subscript must result in an index with size 1, not {n_i}.")
   }
 
   invisible(indexer)
