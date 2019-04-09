@@ -593,3 +593,71 @@ test_that("names are never kept with [[", {
   names(x) <- c("a", "b")
   expect_equal(dim_names(x[[1]]), new_empty_dim_names(1))
 })
+
+test_that("cannot use >1 length subscripts with `[[`", {
+  x <- rray(1:2)
+  expect_error(x[[c(1, 2)]], "1, not 2")
+})
+
+test_that("can use positional [[", {
+  x <- rray(1:8, c(2, 2, 2))
+  expect_equal(x[[3]], rray(3L))
+})
+
+test_that("can use index extraction [[", {
+  x <- rray(1:8, c(2, 2, 2))
+  expect_equal(x[[1, 2, 1]], rray(3L))
+})
+
+test_that("partial indexes are not allowed", {
+  x <- rray(1:8, c(2, 2, 2))
+  expect_error(x[[1, 2]], "3 must not be missing")
+})
+
+test_that("trailing dots are not ignored", {
+  x <- rray(1:8, c(2, 2, 2))
+  expect_error(x[[1,]], "2, 3 must not be missing")
+
+  x <- rray(1:4, c(2, 2))
+  expect_error(x[[1,]], "2 must not be missing")
+})
+
+# ------------------------------------------------------------------------------
+# `[[<-`
+
+test_that("can use a [[ position assign", {
+  x <- rray(1:8, dim = c(2, 2, 2))
+  x[[1]] <- NA
+  expect_is(x, "vctrs_rray")
+  expect_equal(as.vector(x), c(NA, 2:8))
+})
+
+test_that("can use a [[ index assign", {
+  x <- rray(1:8, dim = c(2, 2, 2))
+  x[[1, 1, 1]] <- NA
+  expect_is(x, "vctrs_rray")
+  expect_equal(as.vector(x), c(NA, 2:8))
+})
+
+test_that("cannot use >1 length subscripts with `[[<-`", {
+  x <- rray(1:2)
+  expect_error(x[[c(1, 2)]] <- c(1, 2), "1, not 2")
+})
+
+test_that("partial indexes are not allowed in `[[<-", {
+  x <- rray(1:8, c(2, 2, 2))
+  expect_error(x[[1, 2]] <- 1, "3 must not be missing")
+})
+
+test_that("trailing dots are not ignored in `[[<-`", {
+  x <- rray(1:8, c(2, 2, 2))
+  expect_error(x[[1,]] <- 1, "2, 3 must not be missing")
+
+  x <- rray(1:4, c(2, 2))
+  expect_error(x[[1,]] <- 1, "2 must not be missing")
+})
+
+test_that("assigning NULL in `[[<-` is an error", {
+  x <- rray(1:8, dim = c(2, 2, 2))
+  expect_error(x[[1]] <- NULL, "replacement has length zero")
+})
