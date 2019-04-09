@@ -9,8 +9,14 @@ rray_subset <- function(x, ...) {
   vec_restore(out, x)
 }
 
+#' @export
+`[.vctrs_rray` <- function(x, ..., drop = FALSE) {
+  maybe_warn_drop(drop)
+  rray_subset(x, ...)
+}
+
 `rray_subset<-` <- function(x, ..., value) {
-  x_subset <- x[...]
+  x_subset <- rray_subset(x, ...)
   value <- vec_cast(value, x_subset)
   value <- rray_broadcast(value, vec_dim(x_subset))
 
@@ -25,12 +31,74 @@ rray_subset <- function(x, ...) {
   res
 }
 
-rray_element <- function(x, ...) {
+#' @export
+`[<-.vctrs_rray` <- function(x, ..., value) {
+  rray_subset(x, ...) <- value
+  x
+}
+
+# ------------------------------------------------------------------------------
+
+rray_slice <- function(x, i, axis) {
+  validate_axis(axis, x)
+  indexer <- front_pad(i, axis)
+  rray_subset(x, !!!indexer)
+}
+
+`rray_slice<-` <- function(x, i, axis, value) {
+  validate_axis(axis, x)
+  indexer <- front_pad(i, axis)
+  rray_subset(x, !!!indexer) <- value
+  x
+}
+
+front_pad <- function(i, axis) {
+  padding <- rep(list(missing_arg()), times = axis - 1L)
+  c(padding, list(i))
+}
+
+# ------------------------------------------------------------------------------
+
+rray_yank <- function(x, i) {
+  i <- maybe_missing(i, TRUE)
+
+  out <- vec_data(x)
+
+  indexer <- as_yank_indexer(i, x)
+
+  out <- eval_bare(expr(out[!!!indexer]))
+
+  vec_restore(out, x)
+}
+
+`rray_yank<-` <- function(x, i, value) {
+  i <- maybe_missing(i, TRUE)
+
+  x_yank <- rray_yank(x, i)
+  value <- vec_cast(value, x_yank)
+  value <- rray_broadcast(value, vec_dim(x_yank))
+
+  out <- vec_data(x)
+
+  indexer <- as_yank_indexer(i, x)
+
+  eval_bare(expr(out[!!!indexer] <- value))
+
+  vec_restore(out, x)
+}
+
+# ------------------------------------------------------------------------------
+
+# can only be used like (with 2D for example)
+# x[[1, 1]] not like x[[1]]
+# (i.e. must fully qualify pluck indices)
+
+rray_pluck <- function(x, ...) {
   out <- vec_data(x)
 
   indexer <- rray_as_index(x, ..., with_drop = FALSE)
 
-  validate_element_indexer(indexer)
+  validate_pluck_indexer(indexer)
 
   out <- eval_bare(expr(out[[!!!indexer]]))
 
@@ -38,30 +106,42 @@ rray_element <- function(x, ...) {
 }
 
 #' @export
-`[.vctrs_rray` <- function(x, ..., drop = FALSE) {
-  maybe_warn_drop(drop)
-  rray_subset(x, ...)
+`[[.vctrs_rray` <- function(x, ..., exact = TRUE) {
+  maybe_warn_exact(exact)
+  rray_pluck(x, ...)
+}
+
+`rray_pluck<-` <- function(x, ..., value) {
+
+  x_pluck <- rray_pluck(x, ...)
+  value <- vec_cast(value, x_pluck)
+
+  value_size <- vec_size(value)
+  if (value_size != 1L) {
+    glubort("The size of `value` must be 1, not {value_size}.")
+  }
+
+  out <- vec_data(x)
+
+  indexer <- rray_as_index(x, ..., with_drop = FALSE)
+
+  eval_bare(expr(out[!!!indexer] <- value))
+
+  vec_restore(out, x)
 }
 
 #' @export
-`[[.vctrs_rray` <- function(x, ..., exact = TRUE) {
-  maybe_warn_exact(exact)
-  rray_element(x, ...)
+`[[<-.vctrs_rray` <- function(x, ..., value) {
+  rray_pluck(x, ...) <- value
+  x
 }
 
-# - turn the dots into something to slice x with using expr(x[!!!dots])
-# - optionally add `drop = FALSE` to the end
-rray_as_index <- function(x, ..., with_drop = TRUE) {
-  dots <- dots_list(..., .preserve_empty = TRUE, .ignore_empty = "none")
-  n_dots <- length(dots)
+# ------------------------------------------------------------------------------
 
-  # 1D subsetting allowed, always flattens
-  if (n_dots == 1L) {
-    indexer <- as_flat_indexer(dots, x)
-  }
-  else {
-    indexer <- as_indexer(dots, x)
-  }
+rray_as_index <- function(x, ..., with_drop = TRUE) {
+  dots <- dots_list(..., .preserve_empty = TRUE, .ignore_empty = "trailing")
+
+  indexer <- as_indexer(dots, x)
 
   if (with_drop) {
     indexer <- c(indexer, drop = FALSE)
@@ -116,27 +196,27 @@ vec_as_index_wrapper <- function(i, x) {
   }
 }
 
-as_flat_indexer <- function(dots, x) {
+# ------------------------------------------------------------------------------
 
-  i <- dots[[1]]
-
-  if (is_missing(i)) {
-    return(list2(missing_arg()))
-  }
+as_yank_indexer <- function(i, x) {
 
   if (is.logical(i)) {
-    i <- as_flat_indexer_lgl(i, x)
+    i <- as_yank_indexer_lgl(i, x)
+  }
+  else if (is.character(i)) {
+    glubort("Cannot yank with a character `i`.")
   }
   else {
-    i <- as_flat_indexer_default(i, x)
+    i <- as_yank_indexer_default(i, x)
   }
 
   list(i)
 }
 
-as_flat_indexer_default <- function(i, x) {
+as_yank_indexer_default <- function(i, x) {
+
   if (vec_dims(i) > 1L) {
-    glubort("Subscript 1 can only have >1 dimensions if it is a logical.")
+    glubort("`i` can only have >1 dimensions if it is a logical.")
   }
 
   # Not looking at vctrs "size" here
@@ -145,13 +225,21 @@ as_flat_indexer_default <- function(i, x) {
   vctrs:::vec_as_index(i, proxy)
 }
 
-as_flat_indexer_lgl <- function(i, x) {
-  i <- rray_broadcast(i, vec_dim(x))
+as_yank_indexer_lgl <- function(i, x) {
+
+  ok <- vec_dims(i) == 1L || identical(vec_dim(i), vec_dim(x))
+  if (!ok) {
+    glubort("A logical `i` must be 1D or have dimensions identical to `x`.")
+  }
+
   i <- as.vector(i)
-  as_flat_indexer_default(i, x)
+
+  as_yank_indexer_default(i, x)
 }
 
-validate_element_indexer <- function(indexer) {
+# ------------------------------------------------------------------------------
+
+validate_pluck_indexer <- function(indexer) {
 
   missing_indexes <- map_lgl(indexer, is_missing)
 
@@ -159,7 +247,7 @@ validate_element_indexer <- function(indexer) {
     missing_indexes <- glue::glue_collapse(which(missing_indexes), ", ")
     glubort(
       "Subscript(s) {missing_indexes} must not ",
-      "be missing in single element subsetting."
+      "be missing in a pluck."
     )
   }
 
@@ -180,6 +268,8 @@ validate_element_indexer <- function(indexer) {
   invisible(indexer)
 }
 
+# ------------------------------------------------------------------------------
+
 maybe_warn_exact <- function(exact) {
   if (!exact) {
     warn_exact()
@@ -199,30 +289,6 @@ maybe_warn_drop <- function(drop) {
 
 warn_drop <- function() {
   rlang::warn("`drop` ignored.")
-}
-
-# ------------------------------------------------------------------------------
-
-# Override the vctrs `[<-` because it does not allow you to pass in more than
-# just i AND it calls vec_cast() where `to` is the full x obj, not just on the slice
-# you are casting to
-# If vctrs did: function(x, ..., value) and vec_cast(value, x[...]) then
-# all would be good
-
-#' @export
-`[<-.vctrs_rray` <- function(x, ..., value) {
-  rray_subset(x, ...) <- value
-  x
-}
-
-#' @export
-`[[<-.vctrs_rray` <- function(x, ..., value) {
-  value <- vec_cast(value, x[[...]])
-  x_array <- as_array(x)
-  x_array[[...]] <- value
-  res <- vec_restore(x_array, x)
-  dim_names(res) <- dim_names(x)
-  res
 }
 
 # ------------------------------------------------------------------------------
