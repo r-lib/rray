@@ -35,8 +35,9 @@ that might have used arrays before.}
 assignment, \code{value} is cast to the type and dimension of \code{x[...]}.}
 }
 \description{
-\code{rray_subset()} powers \code{[} for rray objects. Notably, it \emph{never} drops
-dimensions, and ignores trailing commas.
+\code{rray_subset()} extracts dimensions from an array \emph{by index}. It powers \code{[}
+for rray objects. Notably, it \emph{never} drops dimensions, and ignores
+trailing commas.
 }
 \details{
 \code{rray_subset()} and its assignment variant can also be used with base R
@@ -108,6 +109,7 @@ x_arr
 
 }
 \seealso{
-Other rray subsetters: \code{\link{rray_slice}}
+Other rray subsetters: \code{\link{rray_slice}},
+  \code{\link{rray_yank}}
 }
 \concept{rray subsetters}

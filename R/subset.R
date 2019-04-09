@@ -1,7 +1,8 @@
 #' Get or set dimensions of an array
 #'
-#' `rray_subset()` powers `[` for rray objects. Notably, it _never_ drops
-#' dimensions, and ignores trailing commas.
+#' `rray_subset()` extracts dimensions from an array _by index_. It powers `[`
+#' for rray objects. Notably, it _never_ drops dimensions, and ignores
+#' trailing commas.
 #'
 #' @param x An rray.
 #'
@@ -205,6 +206,57 @@ front_pad <- function(i, axis) {
 
 # ------------------------------------------------------------------------------
 
+#' Get or set elements of an array
+#'
+#' `rray_yank()` extracts elements from an array _by position_. It _always_
+#' drops dimensions (unlike [rray_subset()]), and a 1D vector is
+#' always returned.
+#'
+#' @param x A vector, matrix, array or rray.
+#'
+#' @param i One of the following:
+#' - An integer vector specifying the positions of the elements to yank.
+#' - A 1D logical vector of length 1, or `rray_elems(x)`.
+#' - A logical with the same dimension as `x`.
+#'
+#' @param value A 1D value to be assigned to the location yanked by `i`. It will
+#' be cast to the type and length of `x` after being yanked by `i`.
+#'
+#' @details
+#'
+#' Dimension names are _only_ kept in the special case of calling `rray_yank()`
+#' on a 1D object. Otherwise, the method of keeping them is not well defined.
+#'
+#' `rray_yank()` works with base R objects.
+#'
+#' `rray_yank()` is meant as a replacement for the traditional behavior of
+#' `x[i]` since `[` for rray objects is much stricter. Separating this special
+#' behavior into a different function is less surprising.
+#'
+#' @examples
+#'
+#' x <- rray(10:17, c(2, 2, 2))
+#'
+#' # Resulting dimension is always 1D
+#' rray_yank(x, 1:3)
+#'
+#' # With logical
+#' rray_yank(x, FALSE)
+#' rray_yank(x, rep(c(TRUE, FALSE), times = rray_elems(x) / 2))
+#'
+#' # You can assign a 1D vector to these yanked selections
+#' rray_yank(x, c(1, 3, 5)) <- 9
+#'
+#' # Logicals with the same dim as `x`
+#' # can also be used as a yank indexer
+#' lgl <- rray(c(TRUE, FALSE), c(2, 2, 2))
+#' rray_yank(x, lgl)
+#'
+#' # And you can set elements in these locations
+#' rray_yank(x, lgl) <- NA
+#'
+#' @family rray subsetters
+#' @export
 rray_yank <- function(x, i) {
   i <- maybe_missing(i, TRUE)
 
@@ -217,6 +269,8 @@ rray_yank <- function(x, i) {
   vec_restore(out, x)
 }
 
+#' @rdname rray_yank
+#' @export
 `rray_yank<-` <- function(x, i, value) {
   rray_yank_assign_impl(x, i = maybe_missing(i), value = value)
 }
