@@ -89,7 +89,7 @@ rray_broadcast <- function(x, dim) {
 
   res <- rray_broadcast_impl(x, dim)
 
-  new_dim_names <- restore_dim_names(x, dim)
+  new_dim_names <- restore_dim_names(dim_names(x), dim)
   res <- set_full_dim_names(res, new_dim_names)
 
   vec_restore(res, x)
