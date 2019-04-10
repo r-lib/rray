@@ -26,4 +26,8 @@ test_that("common dim", {
   expect_equal(rray_dim2(vec_dim(x_1x5), vec_dim(x_6x1x3)), c(6, 5, 3))
 })
 
-
+test_that("`dim<-` can expand a 0 dimension if another dimension is 0", {
+  x <- rray(numeric(), c(0, 1, 0))
+  dim(x) <- c(2, 1, 0)
+  expect_equal(vec_dim(x), c(2, 1, 0))
+})

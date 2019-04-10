@@ -71,9 +71,10 @@ rray_dim_names_common <- function(...) {
 
   .dim <- rray_dim_common(!!! args)
 
-  args_dim_names <- map(args, restore_dim_names, to_dim = .dim)
+  arg_dim_names <- map(args, dim_names)
+  arg_dim_names <- map(arg_dim_names, restore_dim_names, to_dim = .dim)
 
-  reduce(args_dim_names, coalesce_dim_names)
+  reduce(arg_dim_names, coalesce_dim_names)
 }
 
 #' @export
@@ -82,8 +83,8 @@ rray_dim_names2 <- function(x, y) {
 
   .dim <- rray_dim2(vec_dim(x), vec_dim(y))
 
-  x_nms_list <- restore_dim_names(x, .dim)
-  y_nms_list <- restore_dim_names(y, .dim)
+  x_nms_list <- restore_dim_names(dim_names(x), .dim)
+  y_nms_list <- restore_dim_names(dim_names(y), .dim)
 
   coalesce_dim_names(x_nms_list, y_nms_list)
 }
@@ -137,12 +138,10 @@ coalesce_meta_dim_names <- function(x_meta_names, y_meta_names) {
 # - if there are names for that dimension already, ensures they are the same
 #   length as the dimension, or nukes them
 # - if there are no names for that dimension, adds a character() for it
-restore_dim_names <- function(x, to_dim) {
+restore_dim_names <- function(dim_names, to_dim) {
 
   dims <- vec_size(to_dim)
-
-  from_dims <- vec_dims(x)
-  dim_names <- dim_names(x)
+  from_dims <- length(dim_names)
 
   restored_dim_names <- new_empty_dim_names(dims)
 

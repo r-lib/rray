@@ -12,7 +12,7 @@ rray_reducer_base <- function(reducer, x, axes) {
 
   res <- keep_dims(res, x, axes)
 
-  new_dim_names <- restore_dim_names(x, vec_dim(res))
+  new_dim_names <- restore_dim_names(dim_names(x), vec_dim(res))
   res <- set_full_dim_names(res, new_dim_names)
 
 

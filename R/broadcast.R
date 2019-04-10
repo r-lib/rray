@@ -89,7 +89,7 @@ rray_broadcast <- function(x, dim) {
 
   res <- rray_broadcast_impl(x, dim)
 
-  new_dim_names <- restore_dim_names(x, dim)
+  new_dim_names <- restore_dim_names(dim_names(x), dim)
   res <- set_full_dim_names(res, new_dim_names)
 
   vec_restore(res, x)
@@ -132,8 +132,12 @@ pre_recycle_zeros <- function(from_dim, to_dim) {
 # xtensor doesn't reduce dimensions down to 0D
 # if the broadcasts requests it so we do that ahead of time
 pre_zero_slice <- function(x, dim) {
-  slicer <- map(dim, get_zero_slicer)
-  eval_bare(expr(x[!!!slicer, drop = FALSE]))
+  if (any(dim == 0L)) {
+    slicer <- map(dim, get_zero_slicer)
+    x <- rray_subset(x, !!!slicer)
+  }
+
+  x
 }
 
 get_zero_slicer <- function(single_dim) {
