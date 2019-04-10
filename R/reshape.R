@@ -9,6 +9,10 @@ rray_reshape <- function(x, dim) {
 
   dim <- vec_cast(dim, integer())
 
+  if (identical(vec_dim(x), dim)) {
+    return(x)
+  }
+
   validate_reshape(x, dim)
 
   res <- rray_reshape_impl(x, dim)

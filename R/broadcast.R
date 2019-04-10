@@ -73,6 +73,10 @@
 rray_broadcast <- function(x, dim) {
   dim <- vec_cast(dim, integer())
 
+  if (identical(vec_dim(x), dim)) {
+    return(x)
+  }
+
   # Expand dimensionality of `x` as needed
   x <- rray_dims_match(x, vec_size(dim))
 
@@ -103,6 +107,10 @@ rray_broadcast_impl <- function(x, dim) {
 # by adding 1s to the dim of x and assigning it to x
 # this helper is good with broadcasting
 rray_dims_match <- function(x, dims) {
+
+  if (identical(vec_dims(x), dims)) {
+    return(x)
+  }
 
   x_dim <- vec_dim(x)
 
