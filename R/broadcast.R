@@ -132,8 +132,12 @@ pre_recycle_zeros <- function(from_dim, to_dim) {
 # xtensor doesn't reduce dimensions down to 0D
 # if the broadcasts requests it so we do that ahead of time
 pre_zero_slice <- function(x, dim) {
-  slicer <- map(dim, get_zero_slicer)
-  eval_bare(expr(x[!!!slicer, drop = FALSE]))
+  if (any(dim == 0L)) {
+    slicer <- map(dim, get_zero_slicer)
+    x <- rray_subset(x, !!!slicer)
+  }
+
+  x
 }
 
 get_zero_slicer <- function(single_dim) {
