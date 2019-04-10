@@ -189,7 +189,7 @@ SEXP rray_flip_cpp(const xt::rarray<T>& x, SEXP arg) {
 // Switch on the op
 
 template <typename T1>
-SEXP rray_op_unary_one_cpp_impl(std::string op, xt::rarray<T1> x, SEXP arg) {
+SEXP rray_op_unary_one_cpp_impl(std::string op, const xt::rarray<T1>& x, SEXP arg) {
 
   switch(str2int(op.c_str())) {
 
