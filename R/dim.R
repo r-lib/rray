@@ -90,7 +90,7 @@ rray_dim_common <- function(...) {
 
 #' @export
 `dim<-.vctrs_rray` <- function(x, value) {
-  rray_broadcast(x, value)
+  rray_reshape(x, value)
 }
 
 # vctrs:::dim2
