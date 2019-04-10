@@ -81,7 +81,7 @@ test_that("vectors can be bound to other vectors", {
 
   expect_equal(
     rray_bind(a, b),
-    new_array(1:4)
+    1:4
   )
 
   expect_equal(
@@ -116,12 +116,6 @@ test_that("dim names along the axis are combined", {
   a <- 1:2
   b <- 3:4
   names(a) <- c("a_r1", "a_r2")
-
-  expect_equal(
-    dim_names(rray_bind(a, b)),
-    list(c(names(a), "", ""))
-  )
-
   names(b) <- c("b_r1", "b_r2")
 
   expect_equal(
@@ -143,6 +137,26 @@ test_that("dim names along the axis are combined", {
     matrix(c(2, 1), dimnames = list(y = c("y_r1", "x_r1")))
   )
 
+})
+
+test_that("names along the axis must be fully supplied", {
+  a <- 1:2
+  b <- 3:4
+  names(a) <- c("a_r1", "a_r2")
+
+  expect_error(rray_bind(a, b), "If any elements along axis 1 are named")
+})
+
+test_that("names can be supplied using outer names", {
+
+  a <- 1:2
+  b <- 3:4
+  names(a) <- c("a_r1", "a_r2")
+
+  expect_equal(
+    n_dim_names(rray_bind(a, x = b), 1),
+    c("a_r1", "a_r2", "x1", "x2")
+  )
 })
 
 test_that("dim names off the axis follow standard rules", {
@@ -173,11 +187,6 @@ test_that("outer dim names are used", {
   names(a) <- c("a_r1", "a_r2")
 
   expect_equal(
-    dim_names(rray_bind(x = a, b, axis = 1)),
-    list(c(paste0("x..", names(a)), rlang::names2(b)))
-  )
-
-  expect_equal(
     dim_names(rray_bind(x = a, y = b, axis = 1)),
     list(c(paste0("x..", names(a)), "y1", "y2"))
   )
@@ -199,11 +208,11 @@ test_that("outer dim names are used", {
 test_that("outer dim names are only added to `axis` dimension", {
 
   x <- matrix(1, dimnames = list("x", "y"))
-  y <- matrix(2)
+  y <- matrix(2, dimnames = list("a", NULL))
 
   expect_equal(
     dim_names(rray_bind(x = x, y)),
-    list(c("x..x", ""), "y")
+    list(c("x..x", "a"), "y")
   )
 
 })
@@ -246,13 +255,26 @@ test_that("can bind with 1 input", {
     new_matrix(numeric())
   )
 
+  x <- 1
+  names(x) <- "a"
+
+  expect_equal(
+    rray_bind(x),
+    new_array(x, dimnames = list("a"))
+  )
+
+  expect_equal(
+    rray_bind(x, axis = 2),
+    new_matrix(1, c(1, 1), dimnames = list("a", NULL))
+  )
+
 })
 
 test_that("can bind with NA values", {
 
   expect_equal(
     rray_bind(NA, 1),
-    new_array(c(NA, 1))
+    c(NA, 1)
   )
 
   expect_equal(
@@ -268,11 +290,6 @@ test_that("can bind with NA values", {
   expect_equal(
     rray_bind(NA, matrix(1)),
     new_array(c(NA, 1), c(2, 1))
-  )
-
-  expect_equal(
-    row_names(rray_bind(x = NA, matrix(1))),
-    c("x", "")
   )
 
 })
@@ -303,7 +320,58 @@ test_that("can rray_rbind() and rray_cbind()", {
   )
 })
 
-# TODO - https://github.com/QuantStack/xtensor-r/issues/103
+test_that("can rray_bind() with unspecified input", {
+
+  expect_equal(rray_bind(NA), new_array(NA))
+  expect_equal(rray_bind(NA, axis = 2), new_matrix(NA, c(1, 1)))
+
+  expect_equal(rray_bind(vctrs::unspecified()), new_array(logical()))
+  expect_equal(rray_bind(vctrs::unspecified(1)), new_array(NA))
+
+  expect_equal(rray_bind(NA, 1, vctrs::unspecified(1)), c(NA, 1, NA))
+})
+
+test_that("can rray_bind() with length 0 input", {
+
+  expect_equal(
+    rray_bind(integer(), integer()),
+    integer()
+  )
+
+  expect_equal(
+    rray_bind(integer(), integer(), axis = 2),
+    new_matrix(integer(), c(0, 2))
+  )
+
+  # type of double() is used to determine output
+  expect_identical(
+    rray_bind(double(), 1L),
+    1
+  )
+
+})
+
+test_that("length 0 input outer names are ignored", {
+
+  expect <- 1
+  names(expect) <- "y"
+
+  expect_identical(
+    rray_bind(x = double(), y = 1L),
+    expect
+  )
+
+  # but input names are used as applicable
+  x <- matrix(integer(), ncol = 2, dimnames = list(NULL, c("c1", "c2")))
+
+  expect_identical(
+    rray_bind(y = x, z = 1),
+    new_matrix(c(1, 1), c(1, 2), list("z", c("c1", "c2")))
+  )
+
+})
+
+# https://github.com/QuantStack/xtensor-r/issues/103
 test_that("broadcasting to same shape internally is fine", {
   a <- matrix(1:4, ncol = 2)
   b <- matrix(5L, ncol = 1)
@@ -311,5 +379,18 @@ test_that("broadcasting to same shape internally is fine", {
   expect_equal(
     rray_bind(a, b),
     new_matrix(c(1L, 2L, 5L, 3L, 4L, 5L), c(3, 2))
+  )
+})
+
+test_that("rows are broadcast when column binding (#74)", {
+  x <- array(1:3, c(1, 3), dimnames = list(A = "a1", B = c("b1", "b2", "b3")))
+  y <- array(1:4, c(2, 2), dimnames = list(A = c("a1", "a2"), B = c("b1", "b2")))
+
+  expect <- cbind(rbind(x, x), y)
+  dimnames(expect) <- list(A = c("a1", "a2"), B = c("b1", "b2", "b3", "b1", "b2"))
+
+  expect_equal(
+    rray_bind(x, y, axis = 2),
+    expect
   )
 })
