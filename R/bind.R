@@ -95,7 +95,7 @@ rray_bind <- function(..., axis = 1L) {
   }
 
   # `axis` is currently 0, `size` is also 0 (could be the same axis)
-  out_partial <- vec_type_common(!!! arg_types)
+  out_partial <- reduce(arg_types, vec_type2)
 
   if (axis != 1L) {
     dim(out_partial)[axis] <- out_axis_size
