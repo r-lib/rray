@@ -8,6 +8,7 @@
 #' @importFrom vctrs vec_c
 #' @importFrom vctrs vec_type
 #' @importFrom vctrs vec_type_common
+#' @importFrom vctrs vec_size_common
 #' @importFrom vctrs vec_math
 #' @importFrom vctrs vec_unique
 #' @importFrom vctrs vec_unique_loc
@@ -15,6 +16,7 @@
 #' @importFrom vctrs vec_duplicate_any
 #' @importFrom vctrs vec_duplicate_detect
 #' @importFrom vctrs vec_duplicate_id
+#' @importFrom vctrs vec_type_finalise
 #'
 #' @importFrom vctrs vec_ptype_full
 #' @importFrom vctrs vec_ptype_abbr
@@ -67,6 +69,7 @@ NULL
 #' @importFrom rlang list2
 #' @importFrom rlang set_names
 #' @importFrom rlang maybe_missing
+#' @importFrom rlang names2
 NULL
 
 #' @importFrom utils head tail
