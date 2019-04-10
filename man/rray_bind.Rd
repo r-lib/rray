@@ -52,19 +52,25 @@ y <- matrix(
  dimnames = list(NULL, c("b_c1"))
 )
 
-# dimension names come along for the ride
+# Dimension names come along for the ride
 # following rray name handling
-rray_bind(x, y)
-
 rray_bind(x, y, axis = 2)
+
+# But, if any inputs are named
+# along the dimension you are binding on
+# then all of them must be. This errors
+# because `y` doesn't have row names
+\dontrun{
+rray_bind(x, y)
+}
 
 # You can add "outer" names to the
 # axis you are binding along
 rray_bind(outer = x, y, axis = 2)
 
 # They are added to existing names with `..`
-# and if names did not exist they are added
-# along with a number
+# Outer names can be used to get around the
+# fact that `y` isn't named.
 rray_bind(outer = x, outer_y = y, axis = 1)
 
 }
