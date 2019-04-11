@@ -35,6 +35,10 @@ rray_cast_inner <- function(x, to) {
 
   to <- rray_type_inner(to)
 
+  if (identical(rray_type_inner(x), to)) {
+    return(x)
+  }
+
   # same as vctrs:::shape_broadcast() in this case
   to <- rray_reshape(to, shape_dim(x))
 
