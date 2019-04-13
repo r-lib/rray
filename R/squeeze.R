@@ -48,6 +48,11 @@ rray_squeeze <- function(x, axes = NULL) {
   if (is.null(axes)) {
     dim <- vec_dim(x)
     axes <- which(dim == 1L)
+
+    # No axes are length 1
+    if (length(axes) == 0L) {
+      return(x)
+    }
   }
 
   axes <- vec_cast(axes, integer())
@@ -55,7 +60,8 @@ rray_squeeze <- function(x, axes = NULL) {
 
   res <- squeeze_impl(x, axes)
 
-  new_dim_names <- restore_dim_names(dim_names(x), vec_dim(res))
+  new_dim_names <- squeeze_dim_names(x, axes)
+
   res <- set_full_dim_names(res, new_dim_names)
 
   vec_restore(res, x)
@@ -63,4 +69,29 @@ rray_squeeze <- function(x, axes = NULL) {
 
 squeeze_impl <- function(x, axes) {
   rray_op_unary_one_cpp("squeeze", x, as_cpp_idx(axes))
+}
+
+squeeze_dim_names <- function(x, axes) {
+
+  x_dim_names <- dim_names(x)
+
+  # Generally, names will come from the non `axes` axes
+  new_dim_names <- x_dim_names[-axes]
+
+  # If squeezing every axis, that means they all had size 1.
+  # Take the names from the first dimension with names
+  if (vec_size(axes) == vec_dims(x)) {
+
+    non_null_dim_names <- discard(x_dim_names, is.null)
+
+    if (is_empty(non_null_dim_names)) {
+      new_dim_names <- new_empty_dim_names(1L)
+    }
+    else {
+      new_dim_names <- non_null_dim_names[1L]
+    }
+
+  }
+
+  new_dim_names
 }
