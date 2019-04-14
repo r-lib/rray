@@ -30,24 +30,24 @@ test_that("various squeeze variations work", {
 
 })
 
-test_that("dimension names behavior is consistent", {
+test_that("dimension names are dropped from the squeezed axis", {
 
   x <- rray(1:10, c(1, 10))
   x <- set_col_names(x, letters[1:10])
   y <- t(x)
 
-  # when it makes sense, names are kept
+  # (10, 1) -> (10)
+  # drop 2nd dimension names
   expect_equal(
     n_dim_names(rray_squeeze(y), 1),
     letters[1:10]
   )
 
-  # it doesn't make sense to keep dim names
-  # because the corresponding dim size changes
-  # (i.e. size 1 to 10)
+  # (1, 10) -> (10)
+  # drop first dimension names
   expect_equal(
     n_dim_names(rray_squeeze(x), 1),
-    NULL
+    letters[1:10]
   )
 
 })
@@ -74,7 +74,6 @@ test_that("can squeeze base objects", {
   x_arr2 <- array(1:8, c(8, 1, 1))
 
   x_base <- drop(x_arr)
-  x_base <- set_col_names(x_base, character())
 
   expect_equal(
     rray_squeeze(x_arr, 2),
@@ -91,4 +90,39 @@ test_that("can squeeze base objects", {
     array(1:8, dimnames = list(NULL))
   )
 
+})
+
+test_that("nothing happens when all dims have size >1", {
+
+  x <- rray(1:4, c(2, 2, 1))
+  x <- rray_broadcast(x, c(2, 2, 2))
+  x <- set_row_names(x, c("r1", "r2"))
+  x <- set_col_names(x, c("c1", "c2"))
+  x <- set_dim_names(x, 3, c("d1", "d2"))
+
+  # (2, 2, 2) -> (2, 2, 2)
+  expect_equal(rray_squeeze(x), x)
+
+  y <- rray(1:2, dim_names = list(c("r1", "r2")))
+
+  # (2) -> (2)
+  expect_equal(rray_squeeze(y), y)
+})
+
+test_that("squeezing all dimensions keeps names from the first names found", {
+
+  x <- array(1, dimnames = list("r1"))
+
+  # (1) -> (1)
+  expect_equal(names(rray_squeeze(x)), names(x))
+
+  x <- array(1, c(1, 1), dimnames = list(NULL, "c1"))
+
+  # (1, 1) -> (1) names in the columns
+  expect_equal(names(rray_squeeze(x)), col_names(x))
+})
+
+test_that("squeeze fails with bad input", {
+  expect_error(rray_squeeze(1, "i"))
+  expect_error(rray_squeeze(1, 2), "is 1")
 })
