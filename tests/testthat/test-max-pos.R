@@ -16,12 +16,10 @@ test_that("can compute max positions", {
     rray(5L, c(1, 1))
   )
 
-  # TODO - https://github.com/QuantStack/xtensor/issues/1487
-  expect_failure(
-    expect_equal(
-      rray_max_pos(xx, 1),
-      rray(5L, c(1, 1))
-    )
+  # https://github.com/QuantStack/xtensor/issues/1487
+  expect_equal(
+    rray_max_pos(xx, 1),
+    rray(5L, c(1, 1))
   )
 
   expect_equal(

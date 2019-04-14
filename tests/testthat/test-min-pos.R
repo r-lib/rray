@@ -31,11 +31,9 @@ test_that("can compute min positions", {
   y <- rray_flip(xx, 1)
 
   # TODO - https://github.com/QuantStack/xtensor/issues/1487
-  expect_failure(
-    expect_equal(
-      rray_min_pos(y, 1),
-      rray(5L, c(1, 1))
-    )
+  expect_equal(
+    rray_min_pos(y, 1),
+    rray(5L, c(1, 1))
   )
 
 })
