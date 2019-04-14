@@ -7,7 +7,7 @@
 rray_squeeze(x, axes = NULL)
 }
 \arguments{
-\item{x}{An rray.}
+\item{x}{A vector, matrix, array or rray.}
 
 \item{axes}{An integer vector specifying the size 1 dimensions to drop. If
 \code{NULL}, all size 1 dimensions are dropped.}
@@ -17,18 +17,18 @@ rray_squeeze(x, axes = NULL)
 for the specification of specific dimensions to squeeze.
 }
 \details{
-The dimension name handling of \code{rray_squeeze()} is slightly different from
-what happens with \code{drop()}. When a \code{(1, 10)} matrix is squeezed to a 1-D
-array with dimension \code{(10)}, if there were \emph{column names} on the matrix,
-they do not appear in the resulting 1-D array. While this might seem
-intuitive at first, it is not consistent with the treatment of 1-D arrays
-as 1 column matrices. On the other hand, a \code{(10, 1)} matrix with row names
-will keep it's dimension names when squeezed as this is consistent with the
-above-mentioned treatment of 1-D arrays. \code{\link[base:drop]{base::drop()}} will attempt to keep
-names in both situations.
+The dimension name handling of \code{rray_squeeze()} is essentially identical to
+\code{drop()}, but some explanation is always helpful:
+\itemize{
+\item Dimension names are removed from the axes that are squeezed. So squeezing
+a \code{(2, 1, 2)} object results in a \code{(2, 2)} object using the dimension names
+from the original first and third dimensions.
+\item When all dimensions are squeezed, as in the case of \code{(1, 1, 1)}, then
+the first dimension names that are found are the ones that are used in the
+\code{(1)} result.
+}
 }
 \examples{
-
 # (10, 1) -> (10)
 x <- rray(1:10, c(10, 1))
 rray_squeeze(x)
@@ -43,10 +43,12 @@ rray_squeeze(y)
 rray_squeeze(y, axes = 2)
 
 # Dimension names are kept here
+# (10, 1) -> (10)
 x <- set_row_names(x, letters[1:10])
 rray_squeeze(x)
 
-# But not here
+# And they are kept here
+# (1, 10) -> (10)
 rray_squeeze(t(x))
 
 }

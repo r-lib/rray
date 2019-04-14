@@ -5,23 +5,23 @@
 #'
 #' @details
 #'
-#' The dimension name handling of `rray_squeeze()` is slightly different from
-#' what happens with `drop()`. When a `(1, 10)` matrix is squeezed to a 1-D
-#' array with dimension `(10)`, if there were _column names_ on the matrix,
-#' they do not appear in the resulting 1-D array. While this might seem
-#' intuitive at first, it is not consistent with the treatment of 1-D arrays
-#' as 1 column matrices. On the other hand, a `(10, 1)` matrix with row names
-#' will keep it's dimension names when squeezed as this is consistent with the
-#' above-mentioned treatment of 1-D arrays. [base::drop()] will attempt to keep
-#' names in both situations.
+#' The dimension name handling of `rray_squeeze()` is essentially identical to
+#' `drop()`, but some explanation is always helpful:
 #'
-#' @param x An rray.
+#' - Dimension names are removed from the axes that are squeezed. So squeezing
+#' a `(2, 1, 2)` object results in a `(2, 2)` object using the dimension names
+#' from the original first and third dimensions.
+#'
+#' - When all dimensions are squeezed, as in the case of `(1, 1, 1)`, then
+#' the first dimension names that are found are the ones that are used in the
+#' `(1)` result.
+#'
+#' @param x A vector, matrix, array or rray.
 #'
 #' @param axes An integer vector specifying the size 1 dimensions to drop. If
 #' `NULL`, all size 1 dimensions are dropped.
 #'
 #' @examples
-#'
 #' # (10, 1) -> (10)
 #' x <- rray(1:10, c(10, 1))
 #' rray_squeeze(x)
@@ -36,10 +36,12 @@
 #' rray_squeeze(y, axes = 2)
 #'
 #' # Dimension names are kept here
+#' # (10, 1) -> (10)
 #' x <- set_row_names(x, letters[1:10])
 #' rray_squeeze(x)
 #'
-#' # But not here
+#' # And they are kept here
+#' # (1, 10) -> (10)
 #' rray_squeeze(t(x))
 #'
 #' @export
