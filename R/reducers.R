@@ -182,6 +182,10 @@ validate_axes <- function(axes, x, n = NULL, nm = "axes", dims = NULL) {
     return(invisible(NULL))
   }
 
+  if (length(axes) == 0L) {
+    glubort("`axes` must have size >=1, not 0.")
+  }
+
   if (is.null(x)) {
     return(invisible(NULL))
   }
