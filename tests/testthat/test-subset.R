@@ -594,32 +594,23 @@ test_that("names are never kept with [[", {
   expect_equal(dim_names(x[[1]]), new_empty_dim_names(1))
 })
 
-test_that("cannot use >1 length subscripts with `[[`", {
-  x <- rray(1:2)
-  expect_error(x[[c(1, 2)]], "1, not 2")
+test_that("cannot use >1 indexer", {
+  x <- rray(1:8, c(2, 4))
+  expect_error(x[[c(1, 2), c(1, 2)]], "but 2 indexers")
 })
 
 test_that("can use positional [[", {
   x <- rray(1:8, c(2, 2, 2))
   expect_equal(x[[3]], rray(3L))
-})
-
-test_that("can use index extraction [[", {
-  x <- rray(1:8, c(2, 2, 2))
-  expect_equal(x[[1, 2, 1]], rray(3L))
-})
-
-test_that("partial indexes are not allowed", {
-  x <- rray(1:8, c(2, 2, 2))
-  expect_error(x[[1, 2]], "3 must not be missing")
+  expect_equal(x[[c(3, 4)]], rray(c(3L, 4L)))
 })
 
 test_that("trailing dots are not ignored", {
   x <- rray(1:8, c(2, 2, 2))
-  expect_error(x[[1,]], "2, 3 must not be missing")
+  expect_error(x[[1,]], "but 2 indexers")
 
   x <- rray(1:4, c(2, 2))
-  expect_error(x[[1,]], "2 must not be missing")
+  expect_error(x[[1,]], "but 2 indexers")
 })
 
 # ------------------------------------------------------------------------------
@@ -632,29 +623,41 @@ test_that("can use a [[ position assign", {
   expect_equal(as.vector(x), c(NA, 2:8))
 })
 
-test_that("can use a [[ index assign", {
+test_that("can assign to non-contiguous positions", {
   x <- rray(1:8, dim = c(2, 2, 2))
-  x[[1, 1, 1]] <- NA
+  x[[c(1, 3)]] <- NA
   expect_is(x, "vctrs_rray")
-  expect_equal(as.vector(x), c(NA, 2:8))
+  expect_equal(as.vector(x), c(NA, 2, NA, 4:8))
 })
 
-test_that("cannot use >1 length subscripts with `[[<-`", {
-  x <- rray(1:2)
-  expect_error(x[[c(1, 2)]] <- c(1, 2), "1, not 2")
+test_that("can assign with a logical matrix", {
+  x <- rray(1:8, dim = c(2, 2, 2))
+  idx <- rray(c(FALSE, TRUE, rep(FALSE, 6)), c(2, 2, 2))
+  x[[idx]] <- NA
+  expect_is(x, "vctrs_rray")
+  expect_equal(as.vector(x), c(1, NA, 3:8))
 })
 
-test_that("partial indexes are not allowed in `[[<-", {
-  x <- rray(1:8, c(2, 2, 2))
-  expect_error(x[[1, 2]] <- 1, "3 must not be missing")
+test_that("can assign with a logical vector", {
+  x <- rray(1:8, dim = c(2, 2, 2))
+  idx <- c(FALSE, TRUE, rep(FALSE, 6))
+  x[[idx]] <- NA
+  expect_is(x, "vctrs_rray")
+  expect_equal(as.vector(x), c(1, NA, 3:8))
+})
+
+test_that("cannot use a [[ index assign", {
+  x <- rray(1:8, dim = c(2, 2, 2))
+  expect_error(x[[1, 1, 1]] <- NA, "but 3 indexers")
+  expect_error(x[[1, 1, 1]] <- NA, "value")
 })
 
 test_that("trailing dots are not ignored in `[[<-`", {
   x <- rray(1:8, c(2, 2, 2))
-  expect_error(x[[1,]] <- 1, "2, 3 must not be missing")
+  expect_error(x[[1,]] <- 1, "2 indexers")
 
   x <- rray(1:4, c(2, 2))
-  expect_error(x[[1,]] <- 1, "2 must not be missing")
+  expect_error(x[[1,]] <- 1, "2 indexers")
 })
 
 test_that("assigning NULL in `[[<-` is an error", {
