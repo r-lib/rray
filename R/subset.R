@@ -375,6 +375,7 @@ rray_yank_assign_impl <- function(x, i, value) {
 #' rray_extract(x, 1, 1:2) <- NA
 #' x
 #'
+#' @family rray subsetters
 #' @export
 rray_extract <- function(x, ...) {
   rray_extract_impl(x, ...)

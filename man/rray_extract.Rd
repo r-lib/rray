@@ -53,3 +53,8 @@ rray_extract(x, 1, 1:2) <- NA
 x
 
 }
+\seealso{
+Other rray subsetters: \code{\link{rray_slice}},
+  \code{\link{rray_subset}}, \code{\link{rray_yank}}
+}
+\concept{rray subsetters}
