@@ -2,12 +2,18 @@
 % Please edit documentation in R/subset.R
 \name{rray_yank}
 \alias{rray_yank}
+\alias{[[.vctrs_rray}
 \alias{rray_yank<-}
+\alias{[[<-.vctrs_rray}
 \title{Get or set elements of an array by position}
 \usage{
 rray_yank(x, i)
 
+\method{[[}{vctrs_rray}(x, i, ...)
+
 rray_yank(x, i) <- value
+
+\method{[[}{vctrs_rray}(x, i, ...) <- value
 }
 \arguments{
 \item{x}{A vector, matrix, array or rray.}
@@ -19,13 +25,16 @@ rray_yank(x, i) <- value
 \item A logical with the same dimension as \code{x}.
 }}
 
+\item{...}{Not used. An error is thrown if extra arguments are supplied here.}
+
 \item{value}{A 1D value to be assigned to the location yanked by \code{i}. It will
 be cast to the type and length of \code{x} after being yanked by \code{i}.}
 }
 \description{
 \code{rray_yank()} is the counterpart to \code{\link[=rray_extract]{rray_extract()}}. It extracts elements
 from an array \emph{by position}. It \emph{always} drops dimensions
-(unlike \code{\link[=rray_subset]{rray_subset()}}), and a 1D vector is always returned.
+(unlike \code{\link[=rray_subset]{rray_subset()}}), and a 1D vector is always returned. It powers
+the \code{[[} method for rrays.
 }
 \details{
 Dimension names are \emph{only} kept in the special case of calling \code{rray_yank()}
@@ -36,9 +45,15 @@ on a 1D object. Otherwise, the method of keeping them is not well defined.
 \code{rray_yank()} is meant as a replacement for the traditional behavior of
 \code{x[i]} since \code{[} for rray objects is much stricter. Separating this special
 behavior into a different function is less surprising.
+
+Additionally, base R has \code{x[[i]]} which restricts \code{i} to be length 1.
+For rray objects, \code{[[} acts more like \code{x[i]}, always dropping to 1D, but
+allowing for the selection of multiple positions.
+
+You \emph{cannot} do \code{x[[i, j, ...]]} with rrays. For that behavior,
+see \code{\link[=rray_extract]{rray_extract()}}.
 }
 \examples{
-
 x <- rray(10:17, c(2, 2, 2))
 
 # Resulting dimension is always 1D
@@ -58,6 +73,20 @@ rray_yank(x, lgl)
 
 # And you can set elements in these locations
 rray_yank(x, lgl) <- NA
+
+# `[[` for rray objects is powered by
+# rray_yank().
+# This can be very useful for
+# performing assignment
+# by position.
+x[[c(1, 3)]] <- NA
+
+# Logical arrays with the same shape as `x`
+# can be assigned to. This is a useful way
+# to get rid of NA values.
+idx <- array(is.na(as.vector(x)), c(2, 2, 2))
+
+x[[idx]] <- 0
 
 }
 \seealso{

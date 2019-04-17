@@ -210,7 +210,8 @@ front_pad <- function(i, axis) {
 #'
 #' `rray_yank()` is the counterpart to [rray_extract()]. It extracts elements
 #' from an array _by position_. It _always_ drops dimensions
-#' (unlike [rray_subset()]), and a 1D vector is always returned.
+#' (unlike [rray_subset()]), and a 1D vector is always returned. It powers
+#' the `[[` method for rrays.
 #'
 #' @param x A vector, matrix, array or rray.
 #'
@@ -221,6 +222,8 @@ front_pad <- function(i, axis) {
 #'
 #' @param value A 1D value to be assigned to the location yanked by `i`. It will
 #' be cast to the type and length of `x` after being yanked by `i`.
+#'
+#' @param ... Not used. An error is thrown if extra arguments are supplied here.
 #'
 #' @details
 #'
@@ -233,8 +236,14 @@ front_pad <- function(i, axis) {
 #' `x[i]` since `[` for rray objects is much stricter. Separating this special
 #' behavior into a different function is less surprising.
 #'
-#' @examples
+#' Additionally, base R has `x[[i]]` which restricts `i` to be length 1.
+#' For rray objects, `[[` acts more like `x[i]`, always dropping to 1D, but
+#' allowing for the selection of multiple positions.
 #'
+#' You _cannot_ do `x[[i, j, ...]]` with rrays. For that behavior,
+#' see [rray_extract()].
+#'
+#' @examples
 #' x <- rray(10:17, c(2, 2, 2))
 #'
 #' # Resulting dimension is always 1D
@@ -255,10 +264,38 @@ front_pad <- function(i, axis) {
 #' # And you can set elements in these locations
 #' rray_yank(x, lgl) <- NA
 #'
+#' # `[[` for rray objects is powered by
+#' # rray_yank().
+#' # This can be very useful for
+#' # performing assignment
+#' # by position.
+#' x[[c(1, 3)]] <- NA
+#'
+#' # Logical arrays with the same shape as `x`
+#' # can be assigned to. This is a useful way
+#' # to get rid of NA values.
+#' idx <- array(is.na(as.vector(x)), c(2, 2, 2))
+#'
+#' x[[idx]] <- 0
+#'
 #' @family rray subsetters
 #' @export
 rray_yank <- function(x, i) {
   rray_yank_impl(x, maybe_missing(i))
+}
+
+#' @rdname rray_yank
+#' @export
+`[[.vctrs_rray` <- function(x, i, ...) {
+
+  validate_empty_yank_dots(...)
+
+  # TODO - is this inconsistent behavior ok?
+  # `rray_yank()` maintains dim names if `x` is 1D.
+  # `[[` should never keep them
+  dim_names(x) <- NULL
+
+  rray_yank_impl(x, i)
 }
 
 rray_yank_impl <- function(x, i) {
@@ -277,6 +314,13 @@ rray_yank_impl <- function(x, i) {
 #' @export
 `rray_yank<-` <- function(x, i, value) {
   rray_yank_assign_impl(x, i = maybe_missing(i), value = value)
+}
+
+#' @rdname rray_yank
+#' @export
+`[[<-.vctrs_rray` <- function(x, i, ..., value) {
+  validate_empty_yank_assign_dots(...)
+  rray_yank_assign_impl(x, i = i, value = value)
 }
 
 rray_yank_assign_impl <- function(x, i, value) {
@@ -309,9 +353,6 @@ rray_yank_assign_impl <- function(x, i, value) {
 #' Before assignment, `value` is cast to the type and dimension of `x` after
 #' extracting elements with `...`.
 #'
-#' @param exact Ignored, but preserved for better error messages with code
-#' that might have used arrays before.
-#'
 #' @details
 #'
 #' Like `[[`, `rray_extract()` will _never_ keep dimension names.
@@ -321,15 +362,7 @@ rray_yank_assign_impl <- function(x, i, value) {
 #' `rray_extract()` is similar to the traditional behavior of
 #' `x[[i, j, ...]]`, but allows each subscript to have length >1.
 #'
-#' The `[[` method for rrays is a stricter combination of [rray_yank()] and
-#' `rray_extract()`.
-#' - It utilizes `rray_yank()` for `x[[i]]` and
-#' `rray_extract()` for `x[[i, j, ...]]`.
-#' - It never keeps dimension names.
-#' - Each subscript can only have length 1.
-#'
 #' @examples
-#'
 #' x <- rray(1:16, c(2, 4, 2), dim_names = list(c("r1", "r2"), NULL, NULL))
 #'
 #' # Extract the first row and flatten it
@@ -342,34 +375,9 @@ rray_yank_assign_impl <- function(x, i, value) {
 #' rray_extract(x, 1, 1:2) <- NA
 #' x
 #'
-#' # `[[` for rray objects is powered by
-#' # rray_extract() and rray_yank().
-#' # These are equivalent ways to get at
-#' # a flattened version of `x[2, 2, 1]`
-#' x[[4]]
-#' x[[2, 2, 1]]
-#'
-#' # Both ways can be used in assignment
-#' x[[4]] <- 100
-#' x[[2, 2, 1]] <- 99
-#'
 #' @export
 rray_extract <- function(x, ...) {
   rray_extract_impl(x, ...)
-}
-
-#' @rdname rray_extract
-#' @export
-`[[.vctrs_rray` <- function(x, i, ...) {
-
-  validate_empty_yank_dots(...)
-
-  # TODO - is this inconsistent behavior ok?
-  # `rray_yank()` maintains dim names if `x` is 1D.
-  # `[[` should never keep them
-  dim_names(x) <- NULL
-
-  rray_yank_impl(x, i)
 }
 
 rray_extract_impl <- function(x, ...) {
@@ -388,13 +396,6 @@ rray_extract_impl <- function(x, ...) {
 #' @export
 `rray_extract<-` <- function(x, ..., value) {
   rray_extract_assign_impl(x, ..., value = value)
-}
-
-#' @rdname rray_extract
-#' @export
-`[[<-.vctrs_rray` <- function(x, i, ..., value) {
-  validate_empty_yank_assign_dots(...)
-  rray_yank_assign_impl(x, i = i, value = value)
 }
 
 rray_extract_assign_impl <- function(x, ..., value) {

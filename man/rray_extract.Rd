@@ -2,18 +2,12 @@
 % Please edit documentation in R/subset.R
 \name{rray_extract}
 \alias{rray_extract}
-\alias{[[.vctrs_rray}
 \alias{rray_extract<-}
-\alias{[[<-.vctrs_rray}
 \title{Get or set elements of an array by index}
 \usage{
 rray_extract(x, ...)
 
-\method{[[}{vctrs_rray}(x, ..., exact = TRUE)
-
 rray_extract(x, ...) <- value
-
-\method{[[}{vctrs_rray}(x, ...) <- value
 }
 \arguments{
 \item{x}{An rray.}
@@ -27,9 +21,6 @@ subsetting over.
 dimension.
 \item \code{NULL} is treated as \code{0}.
 }}
-
-\item{exact}{Ignored, but preserved for better error messages with code
-that might have used arrays before.}
 
 \item{value}{The value to assign to the location specified by \code{...}.
 Before assignment, \code{value} is cast to the type and dimension of \code{x} after
@@ -47,18 +38,8 @@ Like \code{[[}, \code{rray_extract()} will \emph{never} keep dimension names.
 
 \code{rray_extract()} is similar to the traditional behavior of
 \code{x[[i, j, ...]]}, but allows each subscript to have length >1.
-
-The \code{[[} method for rrays is a stricter combination of \code{\link[=rray_yank]{rray_yank()}} and
-\code{rray_extract()}.
-\itemize{
-\item It utilizes \code{rray_yank()} for \code{x[[i]]} and
-\code{rray_extract()} for \code{x[[i, j, ...]]}.
-\item It never keeps dimension names.
-\item Each subscript can only have length 1.
-}
 }
 \examples{
-
 x <- rray(1:16, c(2, 4, 2), dim_names = list(c("r1", "r2"), NULL, NULL))
 
 # Extract the first row and flatten it
@@ -70,16 +51,5 @@ rray_extract(x, 1, 1:2)
 # You can assign directly to these elements
 rray_extract(x, 1, 1:2) <- NA
 x
-
-# `[[` for rray objects is powered by
-# rray_extract() and rray_yank().
-# These are equivalent ways to get at
-# a flattened version of `x[2, 2, 1]`
-x[[4]]
-x[[2, 2, 1]]
-
-# Both ways can be used in assignment
-x[[4]] <- 100
-x[[2, 2, 1]] <- 99
 
 }
