@@ -258,19 +258,15 @@ front_pad <- function(i, axis) {
 #' @family rray subsetters
 #' @export
 rray_yank <- function(x, i) {
-  rray_yank_impl(x, maybe_missing(i), single = FALSE)
+  rray_yank_impl(x, maybe_missing(i))
 }
 
-rray_yank_impl <- function(x, i, single = FALSE) {
+rray_yank_impl <- function(x, i) {
   i <- maybe_missing(i, TRUE)
 
   out <- vec_data(x)
 
   indexer <- as_yank_indexer(i, x)
-
-  if (single) {
-    validate_single_yank_indexer(indexer)
-  }
 
   out <- eval_bare(expr(out[!!!indexer]))
 
@@ -280,14 +276,13 @@ rray_yank_impl <- function(x, i, single = FALSE) {
 #' @rdname rray_yank
 #' @export
 `rray_yank<-` <- function(x, i, value) {
-  rray_yank_assign_impl(x, i = maybe_missing(i), single = FALSE, value = value)
+  rray_yank_assign_impl(x, i = maybe_missing(i), value = value)
 }
 
-# Separate function for easier RStudio debugging
-rray_yank_assign_impl <- function(x, i, single = FALSE, value) {
+rray_yank_assign_impl <- function(x, i, value) {
   i <- maybe_missing(i, TRUE)
 
-  x_yank <- rray_yank_impl(x, i, single = single)
+  x_yank <- rray_yank_impl(x, i)
   value <- vec_cast(value, x_yank)
   value <- rray_broadcast(value, vec_dim(x_yank))
 
@@ -360,40 +355,27 @@ rray_yank_assign_impl <- function(x, i, single = FALSE, value) {
 #'
 #' @export
 rray_extract <- function(x, ...) {
-  rray_extract_impl(x, ..., single = FALSE)
+  rray_extract_impl(x, ...)
 }
 
 #' @rdname rray_extract
 #' @export
-`[[.vctrs_rray` <- function(x, ..., exact = TRUE) {
-  maybe_warn_exact(exact)
+`[[.vctrs_rray` <- function(x, i, ...) {
 
-  # Don't ignore trailing dots. x[[i,]] should be an error
-  dots <- dots_list(..., .preserve_empty = TRUE, .ignore_empty = "none")
-  n_dots <- length(dots)
+  validate_empty_yank_dots(...)
 
-  if (n_dots == 1L) {
+  # TODO - is this inconsistent behavior ok?
+  # `rray_yank()` maintains dim names if `x` is 1D.
+  # `[[` should never keep them
+  dim_names(x) <- NULL
 
-    # `rray_yank()` maintains dim names if `x` is 1D.
-    # `[[` should never keep them
-    dim_names(x) <- NULL
-
-    rray_yank_impl(x, dots[[1]], single = TRUE)
-  }
-  else {
-    rray_extract_impl(x, !!!dots, single = TRUE)
-  }
-
+  rray_yank_impl(x, i)
 }
 
-rray_extract_impl <- function(x, ..., single = FALSE) {
+rray_extract_impl <- function(x, ...) {
   out <- vec_data(x)
 
   indexer <- rray_as_index(x, ..., with_drop = FALSE)
-
-  if (single) {
-    validate_single_extract_indexer(indexer)
-  }
 
   out <- eval_bare(expr(out[!!!indexer]))
 
@@ -405,30 +387,18 @@ rray_extract_impl <- function(x, ..., single = FALSE) {
 #' @rdname rray_extract
 #' @export
 `rray_extract<-` <- function(x, ..., value) {
-  rray_extract_assign_impl(x, ..., single = FALSE, value = value)
+  rray_extract_assign_impl(x, ..., value = value)
 }
 
 #' @rdname rray_extract
 #' @export
-`[[<-.vctrs_rray` <- function(x, ..., value) {
-
-  # Don't ignore trailing dots. x[[i,]]<- should be an error
-  dots <- dots_list(..., .preserve_empty = TRUE, .ignore_empty = "none")
-  n_dots <- length(dots)
-
-  # Allow both x[[i]]<- and x[[i,j,...]]<- since both are type stable
-  # and allow length 1 1D input
-  if (n_dots == 1L) {
-    rray_yank_assign_impl(x, dots[[1]], single = TRUE, value = value)
-  }
-  else {
-    rray_extract_assign_impl(x, !!!dots, single = TRUE, value = value)
-  }
-
+`[[<-.vctrs_rray` <- function(x, i, ..., value) {
+  validate_empty_yank_assign_dots(...)
+  rray_yank_assign_impl(x, i = i, value = value)
 }
 
-rray_extract_assign_impl <- function(x, ..., single = FALSE, value) {
-  x_extract <- rray_extract_impl(x, ..., single = single)
+rray_extract_assign_impl <- function(x, ..., value) {
+  x_extract <- rray_extract_impl(x, ...)
   value <- vec_cast(value, x_extract)
   value <- rray_broadcast(value, vec_dim(x_extract))
 
@@ -542,61 +512,37 @@ as_yank_indexer_lgl <- function(i, x) {
   as_yank_indexer_default(i, x)
 }
 
-# ------------------------------------------------------------------------------
+validate_empty_yank_dots <- function(...) {
 
-validate_single_extract_indexer <- function(indexer) {
+  dots <- dots_list(..., .preserve_empty = TRUE, .ignore_empty = "none")
 
-  missing_indexes <- map_lgl(indexer, is_missing)
-
-  if (any(missing_indexes)) {
-    missing_indexes <- glue::glue_collapse(which(missing_indexes), ", ")
+  if (length(dots) > 0L) {
     glubort(
-      "Subscript(s) {missing_indexes} must not ",
-      "be missing."
+      "`[[` selects elements by position. ",
+      "Only `x[[i]]` is supported, but {length(dots) + 1} ",
+      "indexers were supplied."
     )
   }
 
-  lengths <- map_int(indexer, length)
-  is_one <- map_lgl(lengths, identical, 1L)
-
-  # Allow for multiple bad subscripts
-  if (any(!is_one)) {
-    bad_subscript <- which(!is_one)
-    bad_lengths <- lengths[!is_one]
-    msg <- glue::glue(
-      "Subscript {bad_subscript} must result in an ",
-      "index with size 1, not {bad_lengths}."
-    )
-    msg <- glue::glue_collapse(msg, sep ="\n")
-    glubort(msg)
-  }
-
-  invisible(indexer)
+  invisible()
 }
 
-validate_single_yank_indexer <- function(indexer) {
+validate_empty_yank_assign_dots <- function(...) {
 
-  i <- indexer[[1]]
-  n_i <- length(i)
+  dots <- dots_list(..., .preserve_empty = TRUE, .ignore_empty = "none")
 
-  if (n_i != 1L) {
-    glubort("Subscript 1 must result in an index with size 1, not {n_i}.")
+  if (length(dots) > 0L) {
+    glubort(
+      "`[[<-` assigns elements by position. ",
+      "Only `x[[i]] <- value` is supported, but {length(dots) + 1} ",
+      "indexers were supplied."
+    )
   }
 
-  invisible(indexer)
+  invisible()
 }
 
 # ------------------------------------------------------------------------------
-
-maybe_warn_exact <- function(exact) {
-  if (!exact) {
-    warn_exact()
-  }
-}
-
-warn_exact <- function() {
-  rlang::warn("`exact` ignored.")
-}
 
 maybe_warn_drop <- function(drop) {
   if (drop) {
