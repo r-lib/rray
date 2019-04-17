@@ -6,7 +6,7 @@
 \alias{rray_cbind}
 \title{Combine many arrays together into one array}
 \usage{
-rray_bind(..., axis = 1L)
+rray_bind(..., axis)
 
 rray_rbind(...)
 
@@ -61,7 +61,7 @@ rray_bind(x, y, axis = 2)
 # then all of them must be. This errors
 # because `y` doesn't have row names
 \dontrun{
-rray_bind(x, y)
+rray_bind(x, y, axis = 1)
 }
 
 # You can add "outer" names to the

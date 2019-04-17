@@ -47,7 +47,7 @@
 #' # then all of them must be. This errors
 #' # because `y` doesn't have row names
 #' \dontrun{
-#' rray_bind(x, y)
+#' rray_bind(x, y, axis = 1)
 #' }
 #'
 #' # You can add "outer" names to the
@@ -60,7 +60,7 @@
 #' rray_bind(outer = x, outer_y = y, axis = 1)
 #'
 #' @export
-rray_bind <- function(..., axis = 1L) {
+rray_bind <- function(..., axis) {
 
   axis <- vec_cast(axis, integer())
   validate_axis(axis, x = numeric(), dims = Inf)

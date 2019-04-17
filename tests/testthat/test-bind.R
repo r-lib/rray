@@ -68,7 +68,7 @@ test_that("vectors are cast to matrices before binding", {
   b <- matrix(1L)
 
   expect_equal(
-    rray_bind(a, b),
+    rray_bind(a, b, axis = 1),
     new_matrix(c(1L, 2L, 1L), c(3, 1))
   )
 
@@ -80,7 +80,7 @@ test_that("vectors can be bound to other vectors", {
   b <- 3:4
 
   expect_equal(
-    rray_bind(a, b),
+    rray_bind(a, b, axis = 1),
     1:4
   )
 
@@ -97,7 +97,7 @@ test_that("a cast to a common type is made", {
   b <- c(3, 4)
 
   expect_equal(
-    storage.mode(rray_bind(a, b)),
+    storage.mode(rray_bind(a, b, axis = 1)),
     "double"
   )
 
@@ -105,7 +105,7 @@ test_that("a cast to a common type is made", {
   b <- matrix(2)
 
   expect_equal(
-    rray_bind(a, b),
+    rray_bind(a, b, axis = 1),
     rray(c(1, 2), c(2, 1))
   )
 
@@ -119,7 +119,7 @@ test_that("dim names along the axis are combined", {
   names(b) <- c("b_r1", "b_r2")
 
   expect_equal(
-    dim_names(rray_bind(a, b)),
+    dim_names(rray_bind(a, b, axis = 1)),
     list(c(names(a), names(b)))
   )
 
@@ -128,12 +128,12 @@ test_that("dim names along the axis are combined", {
   y <- matrix(2, dimnames = list(y = "y_r1"))
 
   expect_equal(
-    rray_bind(x, y),
+    rray_bind(x, y, axis = 1),
     matrix(c(1, 2), dimnames = list(x = c("x_r1", "y_r1")))
   )
 
   expect_equal(
-    rray_bind(y, x),
+    rray_bind(y, x, axis = 1),
     matrix(c(2, 1), dimnames = list(y = c("y_r1", "x_r1")))
   )
 
@@ -144,7 +144,10 @@ test_that("names along the axis must be fully supplied", {
   b <- 3:4
   names(a) <- c("a_r1", "a_r2")
 
-  expect_error(rray_bind(a, b), "If any elements along axis 1 are named")
+  expect_error(
+    rray_bind(a, b, axis = 1),
+    "If any elements along axis 1 are named"
+  )
 })
 
 test_that("names can be supplied using outer names", {
@@ -154,7 +157,7 @@ test_that("names can be supplied using outer names", {
   names(a) <- c("a_r1", "a_r2")
 
   expect_equal(
-    n_dim_names(rray_bind(a, x = b), 1),
+    n_dim_names(rray_bind(a, x = b, axis = 1), 1),
     c("a_r1", "a_r2", "x1", "x2")
   )
 })
@@ -211,7 +214,7 @@ test_that("outer dim names are only added to `axis` dimension", {
   y <- matrix(2, dimnames = list("a", NULL))
 
   expect_equal(
-    dim_names(rray_bind(x = x, y)),
+    dim_names(rray_bind(x = x, y, axis = 1)),
     list(c("x..x", "a"), "y")
   )
 
@@ -231,12 +234,12 @@ test_that("outer dim names on new axis dimension are added", {
 test_that("can bind with 1 input", {
 
   expect_equal(
-    rray_bind(1),
+    rray_bind(1, axis = 1),
     new_array(1)
   )
 
   expect_equal(
-    rray_bind(matrix(1)),
+    rray_bind(matrix(1), axis = 1),
     new_matrix(1)
   )
 
@@ -246,7 +249,7 @@ test_that("can bind with 1 input", {
   )
 
   expect_equal(
-    rray_bind(numeric()),
+    rray_bind(numeric(), axis = 1),
     new_array(numeric())
   )
 
@@ -259,7 +262,7 @@ test_that("can bind with 1 input", {
   names(x) <- "a"
 
   expect_equal(
-    rray_bind(x),
+    rray_bind(x, axis = 1),
     new_array(x, dimnames = list("a"))
   )
 
@@ -273,12 +276,12 @@ test_that("can bind with 1 input", {
 test_that("can bind with NA values", {
 
   expect_equal(
-    rray_bind(NA, 1),
+    rray_bind(NA, 1, axis = 1),
     c(NA, 1)
   )
 
   expect_equal(
-    rray_bind(NA),
+    rray_bind(NA, axis = 1),
     new_array(NA)
   )
 
@@ -288,7 +291,7 @@ test_that("can bind with NA values", {
   )
 
   expect_equal(
-    rray_bind(NA, matrix(1)),
+    rray_bind(NA, matrix(1), axis = 1),
     new_array(c(NA, 1), c(2, 1))
   )
 
@@ -300,12 +303,12 @@ test_that("cant use a bad `axis`", {
 })
 
 test_that("can rray_bind() with no input", {
-  expect_equal(rray_bind(), NULL)
+  expect_equal(rray_bind(axis = 1), NULL)
 })
 
 test_that("can rray_bind() with `NULL`", {
-  expect_equal(rray_bind(NULL), NULL)
-  expect_equal(rray_bind(NULL, 1L), new_array(1L))
+  expect_equal(rray_bind(NULL, axis = 1), NULL)
+  expect_equal(rray_bind(NULL, 1L, axis = 1), new_array(1L))
 })
 
 test_that("can rray_rbind() and rray_cbind()", {
@@ -322,19 +325,19 @@ test_that("can rray_rbind() and rray_cbind()", {
 
 test_that("can rray_bind() with unspecified input", {
 
-  expect_equal(rray_bind(NA), new_array(NA))
+  expect_equal(rray_bind(NA, axis = 1), new_array(NA))
   expect_equal(rray_bind(NA, axis = 2), new_matrix(NA, c(1, 1)))
 
-  expect_equal(rray_bind(vctrs::unspecified()), new_array(logical()))
-  expect_equal(rray_bind(vctrs::unspecified(1)), new_array(NA))
+  expect_equal(rray_bind(vctrs::unspecified(), axis = 1), new_array(logical()))
+  expect_equal(rray_bind(vctrs::unspecified(1), axis = 1), new_array(NA))
 
-  expect_equal(rray_bind(NA, 1, vctrs::unspecified(1)), c(NA, 1, NA))
+  expect_equal(rray_bind(NA, 1, vctrs::unspecified(1), axis = 1), c(NA, 1, NA))
 })
 
 test_that("can rray_bind() with length 0 input", {
 
   expect_equal(
-    rray_bind(integer(), integer()),
+    rray_bind(integer(), integer(), axis = 1),
     integer()
   )
 
@@ -345,7 +348,7 @@ test_that("can rray_bind() with length 0 input", {
 
   # type of double() is used to determine output
   expect_identical(
-    rray_bind(double(), 1L),
+    rray_bind(double(), 1L, axis = 1),
     1
   )
 
@@ -357,7 +360,7 @@ test_that("length 0 input outer names are ignored", {
   names(expect) <- "y"
 
   expect_identical(
-    rray_bind(x = double(), y = 1L),
+    rray_bind(x = double(), y = 1L, axis = 1),
     expect
   )
 
@@ -365,7 +368,7 @@ test_that("length 0 input outer names are ignored", {
   x <- matrix(integer(), ncol = 2, dimnames = list(NULL, c("c1", "c2")))
 
   expect_identical(
-    rray_bind(y = x, z = 1),
+    rray_bind(y = x, z = 1, axis = 1),
     new_matrix(c(1, 1), c(1, 2), list("z", c("c1", "c2")))
   )
 
@@ -377,7 +380,7 @@ test_that("broadcasting to same shape internally is fine", {
   b <- matrix(5L, ncol = 1)
 
   expect_equal(
-    rray_bind(a, b),
+    rray_bind(a, b, axis = 1),
     new_matrix(c(1L, 2L, 5L, 3L, 4L, 5L), c(3, 2))
   )
 })
