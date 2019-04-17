@@ -28,11 +28,14 @@ rray_det <- function(x) {
     )
   }
 
-  # non matrix axes
-  # done in (correct) reverse order
-  axes <- rev(seq_len(dims)[-c(1L ,2L)])
-
-  x_split <- rray_split(x, axes)
+  if (dims == 2L) {
+    x_split <- list(x)
+  }
+  else {
+    # non matrix axes, split in (correct) reverse order
+    axes <- rev(seq_len(dims)[-c(1L ,2L)])
+    x_split <- rray_split(x, axes)
+  }
 
   res <- map_dbl(x_split, rray_det_single)
 
