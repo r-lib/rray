@@ -35,7 +35,6 @@ SEXP rray_argsort_cpp(xt::rarray<T> x, SEXP arg) {
   std::ptrdiff_t axis = as<std::ptrdiff_t>(arg);
   xt::rarray<int> res = xt::argsort(x, axis);
   return as_r_idx(res);
-  return res;
 }
 
 // Waiting on the ability to specify the layout for argmax / argmin
