@@ -1,5 +1,5 @@
-#ifndef rray_errors_hpp
-#define rray_errors_hpp
+#ifndef rray_errors_h
+#define rray_errors_h
 
 #include <rray.h>
 
