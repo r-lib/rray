@@ -39,7 +39,7 @@ before_install:
 # Can't rely on Remotes b/c Xtensor.R dynamically pulls in
 # underlying headers
 before_script:
-  - Rscript -e 'remotes::install_github("DavisVaughan/Xtensor.R@dev", force = TRUE)'
+  - Rscript -e 'remotes::install_github("QuantStack/Xtensor.R", force = TRUE)'
 
 matrix:
   include:
