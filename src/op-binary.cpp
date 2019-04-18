@@ -1,6 +1,5 @@
 #include <rray.h>
-#include <tools/errors.hpp>
-#include <tools/utils.hpp>
+#include <tools/tools.hpp>
 using namespace rray;
 
 // -----------------------------------------------------------------------------

@@ -1,8 +1,8 @@
 #include <xtensor/xstrided_view.hpp>
 #include <xtensor/xmanipulation.hpp>
-#include <tools/errors.hpp>
-#include <tools/utils.hpp>
+
 #include <rray.h>
+#include <tools/tools.hpp>
 using namespace rray;
 
 // -----------------------------------------------------------------------------

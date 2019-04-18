@@ -1,6 +1,5 @@
-#include <tools/errors.hpp>
-#include <tools/utils.hpp>
 #include <rray.h>
+#include <tools/tools.hpp>
 using namespace rray;
 
 template <typename T>

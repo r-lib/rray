@@ -1,9 +1,9 @@
 // this header seems necessary for full_like() rather than xbuilder.hpp
 #include <xtensor/xarray.hpp>
 #include <xtensor/xmath.hpp>
-#include <tools/errors.hpp>
-#include <tools/utils.hpp>
+
 #include <rray.h>
+#include <tools/tools.hpp>
 using namespace rray;
 
 // -----------------------------------------------------------------------------
