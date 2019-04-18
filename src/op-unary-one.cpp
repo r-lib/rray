@@ -19,9 +19,6 @@ SEXP rray_broadcast_cpp(const xt::rarray<T>& x, SEXP arg) {
 // -----------------------------------------------------------------------------
 // Sort / arg*
 
-// TODO - sort and argsort seem somewhat broken.
-// https://github.com/QuantStack/xtensor-r/issues/88
-
 template <typename T>
 SEXP rray_sort_cpp(xt::rarray<T> x, SEXP arg) {
   std::ptrdiff_t axis = Rcpp::as<std::ptrdiff_t>(arg);
@@ -35,10 +32,6 @@ SEXP rray_argsort_cpp(xt::rarray<T> x, SEXP arg) {
   xt::rarray<int> res = xt::argsort(x, axis);
   return as_r_idx(res);
 }
-
-// Waiting on the ability to specify the layout for argmax / argmin
-// especially when arg = NULL
-// https://github.com/QuantStack/xtensor-r/issues/89
 
 template <typename T>
 SEXP rray_argmax_cpp(xt::rarray<T> x, SEXP arg) {
