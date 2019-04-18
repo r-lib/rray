@@ -13,10 +13,11 @@ Encoding: UTF-8
 LazyData: true
 Remotes:
     r-lib/vctrs,
+    r-lib/rlang,
     DavisVaughan/Xtensor.R@dev,
     RcppCore/Rcpp
 Imports: 
-    rlang,
+    rlang (>= 0.3.4.9002),
     vctrs,
     Rcpp,
     glue,
