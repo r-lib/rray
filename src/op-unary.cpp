@@ -43,13 +43,13 @@ SEXP rray_not_cpp(xt::rarray<T> x) {
 
 template <typename T>
 SEXP rray_any_cpp(xt::rarray<T> x) {
-  LogicalVector res = Rcpp::LogicalVector::create(xt::any(x));
+  Rcpp::LogicalVector res = Rcpp::LogicalVector::create(xt::any(x));
   return res;
 }
 
 template <typename T>
 SEXP rray_all_cpp(xt::rarray<T> x) {
-  LogicalVector res = Rcpp::LogicalVector::create(xt::all(x));
+  Rcpp::LogicalVector res = Rcpp::LogicalVector::create(xt::all(x));
   return res;
 }
 
@@ -512,7 +512,7 @@ SEXP rray_op_unary_cpp_impl(std::string op, xt::rarray<T1> x) {
   }
 
   default: {
-    stop("Unknown unary operation.");
+    Rcpp::stop("Unknown unary operation.");
   }
 
   }

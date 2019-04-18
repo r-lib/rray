@@ -11,12 +11,12 @@ using namespace rray;
 template <typename T>
 SEXP rray_split_cpp(const xt::rarray<T>& x, SEXP arg1, SEXP arg2) {
 
-  std::size_t n = as<std::size_t>(arg1);
-  std::size_t axis = as<std::size_t>(arg2);
+  std::size_t n = Rcpp::as<std::size_t>(arg1);
+  std::size_t axis = Rcpp::as<std::size_t>(arg2);
 
   auto res = xt::split(x, n, axis);
 
-  List out(n);
+  Rcpp::List out(n);
 
   // For whatever reason, we have to cast to rarray<T> first
   // before going to SEXP
@@ -44,7 +44,7 @@ SEXP rray_op_unary_two_cpp_impl(std::string op, xt::rarray<T1> x, SEXP arg1, SEX
   }
 
   default: {
-    stop("Unknown unary operation.");
+    Rcpp::stop("Unknown unary operation.");
   }
 
   }

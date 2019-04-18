@@ -12,12 +12,12 @@ template <typename T>
 SEXP rray_rotate_cpp(const xt::rarray<T>& x, SEXP arg1, SEXP arg2, SEXP arg3) {
 
   // Axes
-  std::ptrdiff_t from = as<std::ptrdiff_t>(arg1);
-  std::ptrdiff_t to = as<std::ptrdiff_t>(arg2);
+  std::ptrdiff_t from = Rcpp::as<std::ptrdiff_t>(arg1);
+  std::ptrdiff_t to = Rcpp::as<std::ptrdiff_t>(arg2);
   std::array<std::ptrdiff_t, 2> axes = {from, to};
 
   // Number of rotations
-  int n = as<int>(arg3);
+  int n = Rcpp::as<int>(arg3);
 
   if (n == 1) {
     const xt::rarray<T>& res = xt::rot90<1>(x, axes);
@@ -53,7 +53,7 @@ SEXP rray_op_unary_three_cpp_impl(std::string op, const xt::rarray<T1>& x, SEXP 
   }
 
   default: {
-    stop("Unknown operation.");
+    Rcpp::stop("Unknown operation.");
   }
 
   }

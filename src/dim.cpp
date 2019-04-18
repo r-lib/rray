@@ -1,10 +1,5 @@
 #include <rray.h>
 
-// This registers ALL exported functions as callable from other C++
-// packages. It is done on a per-source file basis.
-
-// [[Rcpp::interfaces(r, cpp)]]
-
 // [[Rcpp::export]]
 Rcpp::IntegerVector rray_dim(Rcpp::RObject x) {
 

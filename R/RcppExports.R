@@ -49,7 +49,3 @@ rray_reducer_cpp <- function(op, x, axes) {
     .Call(`_rray_rray_reducer_cpp`, op, x, axes)
 }
 
-# Register entry points for exported C++ functions
-methods::setLoadAction(function(ns) {
-    .Call('_rray_RcppExport_registerCCallable', PACKAGE = 'rray')
-})

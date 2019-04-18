@@ -1,5 +1,4 @@
 #include <rray.h>
-using namespace rray;
 
 // [[Rcpp::export]]
 SEXP rray_ones_cpp(const std::vector<std::size_t>& shape) {

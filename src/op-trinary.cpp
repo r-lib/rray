@@ -66,7 +66,7 @@ SEXP rray_op_trinary_cpp_impl(const std::string& op,
   }
 
   default: {
-    stop("Unknown trinary operation.");
+    Rcpp::stop("Unknown trinary operation.");
   }
 
   }
