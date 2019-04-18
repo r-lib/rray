@@ -43,10 +43,11 @@ new_rray <- function(.data = numeric(0),
                      subclass = character(0)
                      ) {
 
-  stopifnot(is_rray_type(.data))
   stopifnot(is_bare_integer(size))
   stopifnot(is_bare_integer(shape))
   .dim <- c(size, shape)
+
+  sub_type <- rray_sub_type(.data)
 
   # enforce list of empty characters
   if (is_null(dim_names)) {
@@ -72,7 +73,7 @@ new_rray <- function(.data = numeric(0),
     dim = .dim,
     dimnames = dim_names,
     ...,
-    class = c(subclass, "vctrs_rray")
+    class = c(subclass, sub_type, "vctrs_rray")
   )
 
 }
@@ -171,6 +172,21 @@ validate_equal_size_or_no_names <- function(n_x, n_names) {
 
 is_rray_type <- function(x) {
   is_integer(x) || is_double(x) || is_logical(x)
+}
+
+rray_sub_type <- function(x) {
+  if (is_integer(x)) {
+    "vctrs_rray_int"
+  }
+  else if (is_double(x)) {
+    "vctrs_rray_dbl"
+  }
+  else if (is_logical(x)) {
+    "vctrs_rray_lgl"
+  }
+  else {
+    glubort("Cannot create an rray from a {class(x)[1]}.")
+  }
 }
 
 #' Check if `x` can be reshaped
