@@ -98,3 +98,7 @@ test_that("Can broadcast on the way in", {
   expect_equal(vec_dim(rray(x_6x1, c(6, 2, 1))), c(6, 2, 1))
 })
 
+test_that("can test if objects are rrays", {
+  expect_true(is_rray(rray(1:5)))
+  expect_false(is_rray(1:5))
+})

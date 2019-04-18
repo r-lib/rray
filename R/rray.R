@@ -224,3 +224,31 @@ rray_elems <- function(x) {
   prod(vec_dim(x))
 }
 
+#' Is `x` an rray?
+#'
+#' `is_rray()` tests if `x` is an rray object.
+#'
+#' @param x An object.
+#'
+#' @examples
+#'
+#' is_rray(rray(1:5))
+#'
+#' is_rray(1:5)
+#'
+#' @export
+is_rray <- function(x) {
+  inherits(x, "vctrs_rray")
+}
+
+is_rray_int <- function(x) {
+  inherits(x, "vctrs_rray_int")
+}
+
+is_rray_dbl <- function(x) {
+  inherits(x, "vctrs_rray_dbl")
+}
+
+is_rray_lgl <- function(x) {
+  inherits(x, "vctrs_rray_lgl")
+}
