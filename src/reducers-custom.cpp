@@ -17,12 +17,11 @@
  */
 
 
-// #include <rray_types.h>
 // #include <tools/errors.hpp>
 // #include <tools/utils.hpp>
 // #include <xtensor/xreducer.hpp>
 // #include <xtensor/xarray.hpp>
-// #include <Rcpp.h>
+// #include <rray.h>
 // using namespace Rcpp;
 // using namespace rray;
 //
@@ -106,7 +105,7 @@
 //
 //
 // template <typename ELEM_R_T, typename RET_R_T>
-// SEXP rray_custom_reducer_impl(SEXP x, Rcpp::Function f, rray::axes_t axes) {
+// SEXP rray_custom_reducer_impl(SEXP x, Rcpp::Function f, std::vector<std::size_t> axes) {
 //
 //   // Underlying Cpp type. This helper is necessary because it converts
 //   // rlogical->int
@@ -134,7 +133,7 @@
 // }
 //
 // // [[Rcpp::export]]
-// SEXP rray_custom_reducer_cpp(SEXP x, Rcpp::Function f, rray::axes_t axes, SEXP type_) {
+// SEXP rray_custom_reducer_cpp(SEXP x, Rcpp::Function f, std::vector<std::size_t> axes, SEXP type_) {
 //
 //   // Collect the char from the string type ("double", "integer", "logical")
 //   const char* type = CHAR(Rf_asChar(type_));

@@ -17,6 +17,10 @@ rray_eye_square_cpp <- function(n, k = 0L) {
     .Call(`_rray_rray_eye_square_cpp`, n, k)
 }
 
+rray_dim <- function(x) {
+    .Call(`_rray_rray_dim`, x)
+}
+
 rray_op_binary_cpp <- function(op, x, y) {
     .Call(`_rray_rray_op_binary_cpp`, op, x, y)
 }

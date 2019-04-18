@@ -1,8 +1,5 @@
-#include <rray_types.h>
-#include <tools/errors.hpp>
-#include <tools/utils.hpp>
-#include <Rcpp.h>
-using namespace Rcpp;
+#include <rray.h>
+#include <tools/tools.hpp>
 using namespace rray;
 
 // -----------------------------------------------------------------------------
@@ -69,7 +66,7 @@ SEXP rray_op_trinary_cpp_impl(const std::string& op,
   }
 
   default: {
-    stop("Unknown trinary operation.");
+    Rcpp::stop("Unknown trinary operation.");
   }
 
   }

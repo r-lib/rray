@@ -1,8 +1,5 @@
-#include <rray_types.h>
-#include <tools/errors.hpp>
-#include <tools/utils.hpp>
-#include <Rcpp.h>
-using namespace Rcpp;
+#include <rray.h>
+#include <tools/tools.hpp>
 using namespace rray;
 
 template <typename T>
@@ -12,7 +9,7 @@ xt::rarray<T> rray_sum_cpp(const xt::rarray<T>& x, SEXP axes) {
     return xt::sum(x);
   }
 
-  rray::axes_t axes_cpp = as<std::vector<std::size_t>>(axes);
+  std::vector<std::size_t> axes_cpp = Rcpp::as<std::vector<std::size_t>>(axes);
   return xt::sum(x, axes_cpp);
 }
 
@@ -23,7 +20,7 @@ xt::rarray<T> rray_prod_cpp(const xt::rarray<T>& x, SEXP axes) {
     return xt::prod(x);
   }
 
-  rray::axes_t axes_cpp = as<std::vector<std::size_t>>(axes);
+  std::vector<std::size_t> axes_cpp = Rcpp::as<std::vector<std::size_t>>(axes);
   return xt::prod(x, axes_cpp);
 }
 
@@ -35,7 +32,7 @@ xt::rarray<T> rray_mean_cpp(const xt::rarray<T>& x, SEXP axes) {
     return xt::mean(x);
   }
 
-  rray::axes_t axes_cpp = as<std::vector<std::size_t>>(axes);
+  std::vector<std::size_t> axes_cpp = Rcpp::as<std::vector<std::size_t>>(axes);
   return xt::mean(x, axes_cpp);
 }
 
@@ -46,7 +43,7 @@ xt::rarray<T> rray_mean_cpp(const xt::rarray<T>& x, SEXP axes) {
 //     return xt::variance(x);
 //   }
 //
-//   rray::axes_t axes_cpp = as<std::vector<std::size_t>>(axes);
+//   std::vector<std::size_t> axes_cpp = as<std::vector<std::size_t>>(axes);
 //   return xt::variance(x, axes_cpp);
 // }
 //
@@ -57,7 +54,7 @@ xt::rarray<T> rray_mean_cpp(const xt::rarray<T>& x, SEXP axes) {
 //     return xt::stddev(x);
 //   }
 //
-//   rray::axes_t axes_cpp = as<std::vector<std::size_t>>(axes);
+//   std::vector<std::size_t> axes_cpp = as<std::vector<std::size_t>>(axes);
 //   return xt::stddev(x, axes_cpp);
 // }
 
@@ -68,7 +65,7 @@ xt::rarray<T> rray_amax_cpp(const xt::rarray<T>& x, SEXP axes) {
     return xt::amax(x);
   }
 
-  rray::axes_t axes_cpp = as<std::vector<std::size_t>>(axes);
+  std::vector<std::size_t> axes_cpp = Rcpp::as<std::vector<std::size_t>>(axes);
   return xt::amax(x, axes_cpp);
 }
 
@@ -79,7 +76,7 @@ xt::rarray<T> rray_amin_cpp(const xt::rarray<T>& x, SEXP axes) {
     return xt::amin(x);
   }
 
-  rray::axes_t axes_cpp = as<std::vector<std::size_t>>(axes);
+  std::vector<std::size_t> axes_cpp = Rcpp::as<std::vector<std::size_t>>(axes);
   return xt::amin(x, axes_cpp);
 }
 
@@ -120,7 +117,7 @@ SEXP rray_reducer_cpp_impl(std::string op, xt::rarray<T> x, SEXP axes) {
   }
 
   default: {
-    stop("Unknown reducing operation.");
+    Rcpp::stop("Unknown reducing operation.");
   }
 
   }
@@ -168,7 +165,7 @@ SEXP rray_int_reducer_cpp_impl(std::string op, xt::rarray<int> x, SEXP axes) {
   }
 
   default: {
-    stop("Unknown reducing operation.");
+    Rcpp::stop("Unknown reducing operation.");
   }
 
   }

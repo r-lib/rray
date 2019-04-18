@@ -1,8 +1,5 @@
-#include <rray_types.h>
-#include <tools/errors.hpp>
-#include <tools/utils.hpp>
-#include <Rcpp.h>
-using namespace Rcpp;
+#include <rray.h>
+#include <tools/tools.hpp>
 using namespace rray;
 
 // -----------------------------------------------------------------------------
@@ -98,13 +95,13 @@ SEXP rray_gte_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
 
 template <typename T1, typename T2>
 SEXP rray_equality_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
-  LogicalVector res = Rcpp::LogicalVector::create(x == y);
+  Rcpp::LogicalVector res = Rcpp::LogicalVector::create(x == y);
   return res;
 }
 
 template <typename T1, typename T2>
 SEXP rray_inequality_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
-  LogicalVector res = Rcpp::LogicalVector::create(x != y);
+  Rcpp::LogicalVector res = Rcpp::LogicalVector::create(x != y);
   return res;
 }
 
@@ -330,7 +327,7 @@ SEXP rray_op_binary_cpp_impl(const std::string& op,
   }
 
   default: {
-    stop("Unknown binary operation.");
+    Rcpp::stop("Unknown binary operation.");
   }
 
   }

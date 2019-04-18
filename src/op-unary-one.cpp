@@ -1,11 +1,9 @@
-#include <rray_types.h>
 // this header seems necessary for full_like() rather than xbuilder.hpp
 #include <xtensor/xarray.hpp>
 #include <xtensor/xsort.hpp>
-#include <tools/errors.hpp>
-#include <tools/utils.hpp>
-#include <Rcpp.h>
-using namespace Rcpp;
+
+#include <rray.h>
+#include <tools/tools.hpp>
 using namespace rray;
 
 // -----------------------------------------------------------------------------
@@ -13,7 +11,7 @@ using namespace rray;
 
 template <typename T>
 SEXP rray_broadcast_cpp(const xt::rarray<T>& x, SEXP arg) {
-  rray::dim_t dim = as<std::vector<std::size_t>>(arg);
+  std::vector<std::size_t> dim = Rcpp::as<std::vector<std::size_t>>(arg);
   const xt::rarray<T>& res = xt::broadcast(x, dim);
   return(res);
 }
@@ -21,27 +19,19 @@ SEXP rray_broadcast_cpp(const xt::rarray<T>& x, SEXP arg) {
 // -----------------------------------------------------------------------------
 // Sort / arg*
 
-// TODO - sort and argsort seem somewhat broken.
-// https://github.com/QuantStack/xtensor-r/issues/88
-
 template <typename T>
 SEXP rray_sort_cpp(xt::rarray<T> x, SEXP arg) {
-  std::ptrdiff_t axis = as<std::ptrdiff_t>(arg);
+  std::ptrdiff_t axis = Rcpp::as<std::ptrdiff_t>(arg);
   xt::rarray<T> res = xt::sort(x, axis);
   return res;
 }
 
 template <typename T>
 SEXP rray_argsort_cpp(xt::rarray<T> x, SEXP arg) {
-  std::ptrdiff_t axis = as<std::ptrdiff_t>(arg);
+  std::ptrdiff_t axis = Rcpp::as<std::ptrdiff_t>(arg);
   xt::rarray<int> res = xt::argsort(x, axis);
   return as_r_idx(res);
-  return res;
 }
-
-// Waiting on the ability to specify the layout for argmax / argmin
-// especially when arg = NULL
-// https://github.com/QuantStack/xtensor-r/issues/89
 
 template <typename T>
 SEXP rray_argmax_cpp(xt::rarray<T> x, SEXP arg) {
@@ -80,7 +70,7 @@ SEXP rray_full_like_cpp(const xt::rarray<T>& x, SEXP arg) {
   // Coerce arg to the underlying type T
   // (rlogical is really int so we need the underlying int type)
   using underlying_type = typename xt::r_detail::get_underlying_value_type_r<T>::type;
-  underlying_type fill_value = as<underlying_type>(arg);
+  underlying_type fill_value = Rcpp::as<underlying_type>(arg);
 
   const xt::rarray<T>& res = xt::full_like(x, fill_value);
   return res;
@@ -106,7 +96,7 @@ SEXP rray_cumsum_cpp(const xt::rarray<T>& x, SEXP arg) {
     return res;
   }
 
-  std::ptrdiff_t axis = as<std::ptrdiff_t>(arg);
+  std::ptrdiff_t axis = Rcpp::as<std::ptrdiff_t>(arg);
   const xt::rarray<double>& res = xt::cumsum(x, axis);
   return res;
 }
@@ -119,7 +109,7 @@ SEXP rray_cumprod_cpp(const xt::rarray<T>& x, SEXP arg) {
     return res;
   }
 
-  std::ptrdiff_t axis = as<std::ptrdiff_t>(arg);
+  std::ptrdiff_t axis = Rcpp::as<std::ptrdiff_t>(arg);
   const xt::rarray<double>& res = xt::cumprod(x, axis);
   return res;
 }
@@ -130,7 +120,7 @@ SEXP rray_cumprod_cpp(const xt::rarray<T>& x, SEXP arg) {
 template <typename T>
 SEXP rray_reshape_cpp(const xt::rarray<T>& x, SEXP arg) {
 
-  std::vector<std::size_t> dim = as<std::vector<std::size_t>>(arg);
+  std::vector<std::size_t> dim = Rcpp::as<std::vector<std::size_t>>(arg);
 
   // needs a copy, otherwise modifying x
   xt::rarray<T> res(x);
@@ -151,7 +141,7 @@ SEXP rray_transpose_cpp(const xt::rarray<T>& x, SEXP arg) {
     return res;
   }
 
-  std::vector<std::ptrdiff_t> permutation = as<std::vector<std::ptrdiff_t>>(arg);
+  std::vector<std::ptrdiff_t> permutation = Rcpp::as<std::vector<std::ptrdiff_t>>(arg);
 
   const xt::rarray<T>& res = xt::transpose(x, permutation, xt::check_policy::full());
   return res;
@@ -166,21 +156,21 @@ SEXP rray_transpose_cpp(const xt::rarray<T>& x, SEXP arg) {
 
 template <typename T>
 SEXP rray_squeeze_cpp(const xt::rarray<T>& x, SEXP arg) {
-  std::vector<std::size_t> axes = as<std::vector<std::size_t>>(arg);
+  std::vector<std::size_t> axes = Rcpp::as<std::vector<std::size_t>>(arg);
   xt::rarray<T> res = xt::squeeze(x, axes, xt::check_policy::full());
   return res;
 }
 
 template <typename T>
 SEXP rray_expand_dims_cpp(const xt::rarray<T>& x, SEXP arg) {
-  std::size_t axis = as<std::size_t>(arg);
+  std::size_t axis = Rcpp::as<std::size_t>(arg);
   xt::rarray<T> res = xt::expand_dims(x, axis);
   return res;
 }
 
 template <typename T>
 SEXP rray_flip_cpp(const xt::rarray<T>& x, SEXP arg) {
-  std::size_t axis = as<std::size_t>(arg);
+  std::size_t axis = Rcpp::as<std::size_t>(arg);
   xt::rarray<T> res = xt::flip(x, axis);
   return res;
 }
@@ -268,7 +258,7 @@ SEXP rray_op_unary_one_cpp_impl(std::string op, const xt::rarray<T1>& x, SEXP ar
   }
 
   default: {
-    stop("Unknown unary operation.");
+    Rcpp::stop("Unknown unary operation.");
   }
 
   }

@@ -1,10 +1,4 @@
-#include <rray_types.h>
-#include <xtensor-r/rarray.hpp>
-#include <tools/errors.hpp>
-#include <tools/utils.hpp>
-#include <Rcpp.h>
-using namespace Rcpp;
-using namespace rray;
+#include <rray.h>
 
 // [[Rcpp::export]]
 SEXP rray_ones_cpp(const std::vector<std::size_t>& shape) {
