@@ -5,6 +5,6 @@
 #include <vector>
 
 // xtensor-r headers containing R <-> Rcpp <-> xtensor conversion
-#include "xtensor-r/rarray.hpp"
+#include <xtensor-r/rarray.hpp>
 
 #endif // RCPP_rray_H_GEN_
