@@ -1,4 +1,4 @@
-#include <rray.h>
+#include <api.h>
 
 // [[Rcpp::export]]
 Rcpp::IntegerVector rray_dim(Rcpp::RObject x) {
