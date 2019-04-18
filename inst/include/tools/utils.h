@@ -1,5 +1,5 @@
-#ifndef rray_helpers_hpp
-#define rray_helpers_hpp
+#ifndef rray_utils_h
+#define rray_utils_h
 
 #include <rray.h>
 

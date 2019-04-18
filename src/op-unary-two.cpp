@@ -2,7 +2,7 @@
 #include <xtensor/xmanipulation.hpp>
 
 #include <rray.h>
-#include <tools/tools.hpp>
+#include <tools/tools.h>
 using namespace rray;
 
 // -----------------------------------------------------------------------------
