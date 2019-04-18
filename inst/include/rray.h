@@ -7,4 +7,7 @@
 // xtensor-r headers containing R <-> Rcpp <-> xtensor conversion
 #include <xtensor-r/rarray.hpp>
 
+// Cross file API
+#include "api.h"
+
 #endif
