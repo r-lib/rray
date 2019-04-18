@@ -6,8 +6,8 @@
 
 // xtensor-r headers containing R <-> Rcpp <-> xtensor conversion
 #include "xtensor-r/rarray.hpp"
-#include "xtensor-r/rvectorize.hpp"
 
+// Includes the rray user facing c++ library
 #include "rray_RcppExports.h"
 
 #endif // RCPP_rray_H_GEN_
