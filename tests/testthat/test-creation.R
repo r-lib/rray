@@ -12,7 +12,7 @@ test_that("Can create rrays", {
       c(1, 2, 3),
       dim = c(3L, 1L),
       dimnames = list(NULL, NULL),
-      class = c("vctrs_rray", "vctrs_vctr")
+      class = c("vctrs_rray_dbl", "vctrs_rray", "vctrs_vctr")
     )
   )
 
@@ -23,7 +23,7 @@ test_that("Can create rrays", {
       c(1, 2, 3),
       dim = c(3L, 1L),
       dimnames = list(c("r1", "r2", "r3"), "c1"),
-      class = c("vctrs_rray", "vctrs_vctr")
+      class = c("vctrs_rray_dbl", "vctrs_rray", "vctrs_vctr")
     )
   )
 
@@ -34,7 +34,7 @@ test_that("Can create rrays", {
       c(1, 2, 3),
       dim = c(3L, 1L, 1L),
       dimnames = list(NULL, NULL, NULL),
-      class = c("vctrs_rray", "vctrs_vctr")
+      class = c("vctrs_rray_dbl", "vctrs_rray", "vctrs_vctr")
     )
   )
 
@@ -45,7 +45,7 @@ test_that("Can create rrays", {
       c(1, 2, 3),
       dim = c(3L, 1L, 1L),
       dimnames = list(NULL, "c1", "depth1"),
-      class = c("vctrs_rray", "vctrs_vctr")
+      class = c("vctrs_rray_dbl", "vctrs_rray", "vctrs_vctr")
     )
   )
 
