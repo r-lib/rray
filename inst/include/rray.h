@@ -1,5 +1,5 @@
-#ifndef RCPP_rray_H_GEN_
-#define RCPP_rray_H_GEN_
+#ifndef rray_h
+#define rray_h
 
 // for std::vector & std::size_t
 #include <vector>
@@ -7,4 +7,4 @@
 // xtensor-r headers containing R <-> Rcpp <-> xtensor conversion
 #include <xtensor-r/rarray.hpp>
 
-#endif // RCPP_rray_H_GEN_
+#endif
