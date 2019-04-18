@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Compute the number of elements in an array — rray_elems • rray</title>
+<title>Get or set elements of an array by index — rray_extract • rray</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,11 +30,11 @@
 
 
 
-<meta property="og:title" content="Compute the number of elements in an array — rray_elems" />
+<meta property="og:title" content="Get or set elements of an array by index — rray_extract" />
 
-<meta property="og:description" content="rray_elems() computes the number of individual elements in an array. It
-generally computes the same thing as length(), but has a more predictable
-name." />
+<meta property="og:description" content="rray_extract() is the counterpart to rray_yank(). It extracts elements
+from an array by index. It always drops dimensions
+(unlike rray_subset()), and a 1D object is always returned." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -116,46 +116,97 @@ name." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Compute the number of elements in an array</h1>
-    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/rray.R'><code>R/rray.R</code></a></small>
-    <div class="hidden name"><code>rray_elems.Rd</code></div>
+    <h1>Get or set elements of an array by index</h1>
+    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/subset.R'><code>R/subset.R</code></a></small>
+    <div class="hidden name"><code>rray_extract.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p><code>rray_elems()</code> computes the number of individual elements in an array. It
-generally computes the same thing as <code><a href='https://www.rdocumentation.org/packages/base/topics/length'>length()</a></code>, but has a more predictable
-name.</p>
+    <p><code>rray_extract()</code> is the counterpart to <code><a href='rray_yank.html'>rray_yank()</a></code>. It extracts elements
+from an array <em>by index</em>. It <em>always</em> drops dimensions
+(unlike <code><a href='rray_subset.html'>rray_subset()</a></code>), and a 1D object is always returned.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>rray_elems</span>(<span class='no'>x</span>)</pre>
+    <pre class="usage"><span class='fu'>rray_extract</span>(<span class='no'>x</span>, <span class='no'>...</span>)
+
+<span class='fu'>rray_extract</span>(<span class='no'>x</span>, <span class='no'>...</span>) <span class='kw'>&lt;-</span> <span class='no'>value</span></pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>A vector, matrix, array or rray.</p></td>
+      <td><p>An rray.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>A specification of indices to extract.</p><ul>
+<li><p>Integer-ish indices extract specific elements of dimensions.</p></li>
+<li><p>Logical indices must be length 1, or the length of the dimension you are
+subsetting over.</p></li>
+<li><p>Character indices are only allowed if <code>x</code> has names for the corresponding
+dimension.</p></li>
+<li><p><code>NULL</code> is treated as <code>0</code>.</p></li>
+</ul></td>
+    </tr>
+    <tr>
+      <th>value</th>
+      <td><p>The value to assign to the location specified by <code>...</code>.
+Before assignment, <code>value</code> is cast to the type and dimension of <code>x</code> after
+extracting elements with <code>...</code>.</p></td>
     </tr>
     </table>
     
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Like <code>[[</code>, <code>rray_extract()</code> will <em>never</em> keep dimension names.</p>
+<p><code>rray_extract()</code> works with base R objects as well.</p>
+<p><code>rray_extract()</code> is similar to the traditional behavior of
+<code>x[[i, j, ...]]</code>, but allows each subscript to have length &gt;1.</p>
+    
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p>Other rray subsetters: <code><a href='rray_slice.html'>rray_slice</a></code>,
+  <code><a href='rray_subset.html'>rray_subset</a></code>, <code><a href='rray_yank.html'>rray_yank</a></code></p></div>
+    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>rray_elems</span>(<span class='fl'>1</span>:<span class='fl'>5</span>)</div><div class='output co'>#&gt; [1] 5</div><div class='input'>
-<span class='fu'>rray_elems</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>2</span>))</div><div class='output co'>#&gt; [1] 4</div><div class='input'>
-<span class='co'># It is different from `vec_size()`,</span>
-<span class='co'># which only returns the number of</span>
-<span class='co'># observations</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>library</a></span>(<span class='no'>vctrs</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/vctrs/topics/vec_size'>vec_size</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>2</span>))</div><div class='output co'>#&gt; [1] 2</div><div class='input'>
+    <pre class="examples"><div class='input'><span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>16</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>4</span>, <span class='fl'>2</span>), <span class='kw'>dim_names</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"r1"</span>, <span class='st'>"r2"</span>), <span class='kw'>NULL</span>, <span class='kw'>NULL</span>))
+
+<span class='co'># Extract the first row and flatten it</span>
+<span class='fu'>rray_extract</span>(<span class='no'>x</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[8]&gt;
+#&gt; [1]  1  3  5  7  9 11 13 15</div><div class='input'>
+<span class='co'># Extract the first row and first two columns</span>
+<span class='fu'>rray_extract</span>(<span class='no'>x</span>, <span class='fl'>1</span>, <span class='fl'>1</span>:<span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[4]&gt;
+#&gt; [1]  1  3  9 11</div><div class='input'>
+<span class='co'># You can assign directly to these elements</span>
+<span class='fu'>rray_extract</span>(<span class='no'>x</span>, <span class='fl'>1</span>, <span class='fl'>1</span>:<span class='fl'>2</span>) <span class='kw'>&lt;-</span> <span class='fl'>NA</span>
+<span class='no'>x</span></div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,4,2][16]&gt;
+#&gt; , , 1
+#&gt; 
+#&gt;    [,1] [,2] [,3] [,4]
+#&gt; r1   NA   NA    5    7
+#&gt; r2    2    4    6    8
+#&gt; 
+#&gt; , , 2
+#&gt; 
+#&gt;    [,1] [,2] [,3] [,4]
+#&gt; r1   NA   NA   13   15
+#&gt; r2   10   12   14   16
+#&gt; </div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-            
+      
+      <li><a href="#details">Details</a></li>
+
+      <li><a href="#see-also">See also</a></li>
+      
       <li><a href="#examples">Examples</a></li>
     </ul>
 

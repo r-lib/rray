@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Compute the number of elements in an array — rray_elems • rray</title>
+<title>Get or set a slice of an array — rray_slice • rray</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,11 +30,10 @@
 
 
 
-<meta property="og:title" content="Compute the number of elements in an array — rray_elems" />
+<meta property="og:title" content="Get or set a slice of an array — rray_slice" />
 
-<meta property="og:description" content="rray_elems() computes the number of individual elements in an array. It
-generally computes the same thing as length(), but has a more predictable
-name." />
+<meta property="og:description" content="rray_slice() is a shortcut wrapper around rray_subset() that is useful
+for easily subsetting a single axis." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -116,20 +115,21 @@ name." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Compute the number of elements in an array</h1>
-    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/rray.R'><code>R/rray.R</code></a></small>
-    <div class="hidden name"><code>rray_elems.Rd</code></div>
+    <h1>Get or set a slice of an array</h1>
+    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/subset.R'><code>R/subset.R</code></a></small>
+    <div class="hidden name"><code>rray_slice.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p><code>rray_elems()</code> computes the number of individual elements in an array. It
-generally computes the same thing as <code><a href='https://www.rdocumentation.org/packages/base/topics/length'>length()</a></code>, but has a more predictable
-name.</p>
+    <p><code>rray_slice()</code> is a shortcut wrapper around <code><a href='rray_subset.html'>rray_subset()</a></code> that is useful
+for easily subsetting a single axis.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>rray_elems</span>(<span class='no'>x</span>)</pre>
+    <pre class="usage"><span class='fu'>rray_slice</span>(<span class='no'>x</span>, <span class='no'>i</span>, <span class='no'>axis</span>)
+
+<span class='fu'>rray_slice</span>(<span class='no'>x</span>, <span class='no'>i</span>, <span class='no'>axis</span>) <span class='kw'>&lt;-</span> <span class='no'>value</span></pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -138,24 +138,104 @@ name.</p>
       <th>x</th>
       <td><p>A vector, matrix, array or rray.</p></td>
     </tr>
+    <tr>
+      <th>i</th>
+      <td><p>An integer vector. The slice of <code>axis</code> to subset.</p></td>
+    </tr>
+    <tr>
+      <th>axis</th>
+      <td><p>An integer. The axis to subset.</p></td>
+    </tr>
+    <tr>
+      <th>value</th>
+      <td><p>A value to be assigned to the slice of <code>x</code> subset by <code>i</code>
+and <code>axis</code>. It will be cast to the type and dimension of the slice of <code>x</code>.</p></td>
+    </tr>
     </table>
+    
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p><code>rray_slice()</code> can be used with base R objects as well as rrays.</p>
+    
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p>Other rray subsetters: <code><a href='rray_extract.html'>rray_extract</a></code>,
+  <code><a href='rray_subset.html'>rray_subset</a></code>, <code><a href='rray_yank.html'>rray_yank</a></code></p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'>rray_elems</span>(<span class='fl'>1</span>:<span class='fl'>5</span>)</div><div class='output co'>#&gt; [1] 5</div><div class='input'>
-<span class='fu'>rray_elems</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>2</span>))</div><div class='output co'>#&gt; [1] 4</div><div class='input'>
-<span class='co'># It is different from `vec_size()`,</span>
-<span class='co'># which only returns the number of</span>
-<span class='co'># observations</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>library</a></span>(<span class='no'>vctrs</span>)
-<span class='fu'><a href='https://www.rdocumentation.org/packages/vctrs/topics/vec_size'>vec_size</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>2</span>))</div><div class='output co'>#&gt; [1] 2</div><div class='input'>
-</div></pre>
+    <pre class="examples"><div class='input'><span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>16</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>2</span>))
+
+<span class='co'># Selecting the first column</span>
+<span class='fu'>rray_slice</span>(<span class='no'>x</span>, <span class='kw'>i</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,1,2,2][8]&gt;
+#&gt; , , 1, 1
+#&gt; 
+#&gt;      [,1]
+#&gt; [1,]    1
+#&gt; [2,]    2
+#&gt; 
+#&gt; , , 2, 1
+#&gt; 
+#&gt;      [,1]
+#&gt; [1,]    5
+#&gt; [2,]    6
+#&gt; 
+#&gt; , , 1, 2
+#&gt; 
+#&gt;      [,1]
+#&gt; [1,]    9
+#&gt; [2,]   10
+#&gt; 
+#&gt; , , 2, 2
+#&gt; 
+#&gt;      [,1]
+#&gt; [1,]   13
+#&gt; [2,]   14
+#&gt; </div><div class='input'>
+<span class='co'># rray_slice() is particularly useful for</span>
+<span class='co'># subsetting higher dimensions because you don't</span>
+<span class='co'># have to worry about the commas</span>
+<span class='fu'>rray_slice</span>(<span class='no'>x</span>, <span class='kw'>i</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='fl'>4</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,2,2,1][8]&gt;
+#&gt; , , 1, 1
+#&gt; 
+#&gt;      [,1] [,2]
+#&gt; [1,]    9   11
+#&gt; [2,]   10   12
+#&gt; 
+#&gt; , , 2, 1
+#&gt; 
+#&gt;      [,1] [,2]
+#&gt; [1,]   13   15
+#&gt; [2,]   14   16
+#&gt; </div><div class='input'>
+<span class='co'># Compare the above with the equivalent</span>
+<span class='co'># using `[`</span>
+<span class='no'>x</span>[, , , <span class='fl'>2</span>]</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,2,2,1][8]&gt;
+#&gt; , , 1, 1
+#&gt; 
+#&gt;      [,1] [,2]
+#&gt; [1,]    9   11
+#&gt; [2,]   10   12
+#&gt; 
+#&gt; , , 2, 1
+#&gt; 
+#&gt;      [,1] [,2]
+#&gt; [1,]   13   15
+#&gt; [2,]   14   16
+#&gt; </div><div class='input'>
+<span class='co'># The assignment variation can be useful</span>
+<span class='co'># for assigning to higher dimensional elements</span>
+<span class='fu'>rray_slice</span>(<span class='no'>x</span>, <span class='fl'>1</span>, <span class='fl'>3</span>) <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>99</span>, <span class='fl'>100</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='fl'>1</span>)</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-            
+      
+      <li><a href="#details">Details</a></li>
+
+      <li><a href="#see-also">See also</a></li>
+      
       <li><a href="#examples">Examples</a></li>
     </ul>
 

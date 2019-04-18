@@ -134,7 +134,7 @@ for the specification of specific dimensions to squeeze.</p>
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>An rray.</p></td>
+      <td><p>A vector, matrix, array or rray.</p></td>
     </tr>
     <tr>
       <th>axes</th>
@@ -145,20 +145,19 @@ for the specification of specific dimensions to squeeze.</p>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>The dimension name handling of <code>rray_squeeze()</code> is slightly different from
-what happens with <code><a href='https://www.rdocumentation.org/packages/base/topics/drop'>drop()</a></code>. When a <code>(1, 10)</code> matrix is squeezed to a 1-D
-array with dimension <code>(10)</code>, if there were <em>column names</em> on the matrix,
-they do not appear in the resulting 1-D array. While this might seem
-intuitive at first, it is not consistent with the treatment of 1-D arrays
-as 1 column matrices. On the other hand, a <code>(10, 1)</code> matrix with row names
-will keep it's dimension names when squeezed as this is consistent with the
-above-mentioned treatment of 1-D arrays. <code><a href='https://www.rdocumentation.org/packages/base/topics/drop'>base::drop()</a></code> will attempt to keep
-names in both situations.</p>
+    <p>The dimension name handling of <code>rray_squeeze()</code> is essentially identical to
+<code><a href='https://www.rdocumentation.org/packages/base/topics/drop'>drop()</a></code>, but some explanation is always helpful:</p><ul>
+<li><p>Dimension names are removed from the axes that are squeezed. So squeezing
+a <code>(2, 1, 2)</code> object results in a <code>(2, 2)</code> object using the dimension names
+from the original first and third dimensions.</p></li>
+<li><p>When all dimensions are squeezed, as in the case of <code>(1, 1, 1)</code>, then
+the first dimension names that are found are the ones that are used in the
+<code>(1)</code> result.</p></li>
+</ul>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-<span class='co'># (10, 1) -&gt; (10)</span>
+    <pre class="examples"><div class='input'><span class='co'># (10, 1) -&gt; (10)</span>
 <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>10</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>10</span>, <span class='fl'>1</span>))
 <span class='fu'>rray_squeeze</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[10]&gt;
 #&gt;  [1]  1  2  3  4  5  6  7  8  9 10</div><div class='input'>
@@ -182,13 +181,16 @@ names in both situations.</p>
 #&gt;  [9,]    9
 #&gt; [10,]   10</div><div class='input'>
 <span class='co'># Dimension names are kept here</span>
+<span class='co'># (10, 1) -&gt; (10)</span>
 <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dim-names.html'>set_row_names</a></span>(<span class='no'>x</span>, <span class='no'>letters</span>[<span class='fl'>1</span>:<span class='fl'>10</span>])
 <span class='fu'>rray_squeeze</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[10]&gt;
 #&gt;  a  b  c  d  e  f  g  h  i  j 
 #&gt;  1  2  3  4  5  6  7  8  9 10 </div><div class='input'>
-<span class='co'># But not here</span>
+<span class='co'># And they are kept here</span>
+<span class='co'># (1, 10) -&gt; (10)</span>
 <span class='fu'>rray_squeeze</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/t'>t</a></span>(<span class='no'>x</span>))</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[10]&gt;
-#&gt;  [1]  1  2  3  4  5  6  7  8  9 10</div><div class='input'>
+#&gt;  a  b  c  d  e  f  g  h  i  j 
+#&gt;  1  2  3  4  5  6  7  8  9 10 </div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
