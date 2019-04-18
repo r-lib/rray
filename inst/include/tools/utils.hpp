@@ -1,7 +1,7 @@
 #ifndef rray_helpers_hpp
 #define rray_helpers_hpp
 
-#include <rray_types.h>
+#include <rray.h>
 
 namespace rray {
 

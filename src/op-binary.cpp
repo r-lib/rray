@@ -1,7 +1,6 @@
-#include <rray_types.h>
+#include <rray.h>
 #include <tools/errors.hpp>
 #include <tools/utils.hpp>
-#include <Rcpp.h>
 using namespace Rcpp;
 using namespace rray;
 

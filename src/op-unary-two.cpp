@@ -1,9 +1,8 @@
-#include <rray_types.h>
 #include <xtensor/xstrided_view.hpp>
 #include <xtensor/xmanipulation.hpp>
 #include <tools/errors.hpp>
 #include <tools/utils.hpp>
-#include <Rcpp.h>
+#include <rray.h>
 using namespace Rcpp;
 using namespace rray;
 

@@ -1,10 +1,9 @@
-#include <rray_types.h>
 // this header seems necessary for full_like() rather than xbuilder.hpp
 #include <xtensor/xarray.hpp>
 #include <xtensor/xsort.hpp>
 #include <tools/errors.hpp>
 #include <tools/utils.hpp>
-#include <Rcpp.h>
+#include <rray.h>
 using namespace Rcpp;
 using namespace rray;
 
@@ -13,7 +12,7 @@ using namespace rray;
 
 template <typename T>
 SEXP rray_broadcast_cpp(const xt::rarray<T>& x, SEXP arg) {
-  rray::dim_t dim = as<std::vector<std::size_t>>(arg);
+  std::vector<std::size_t> dim = as<std::vector<std::size_t>>(arg);
   const xt::rarray<T>& res = xt::broadcast(x, dim);
   return(res);
 }
