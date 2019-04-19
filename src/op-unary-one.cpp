@@ -36,7 +36,7 @@ SEXP rray_broadcast_cpp(const xt::rarray<T>& x, SEXP arg) {
     }
   }
 
-  Rcpp::LogicalVector ok = (x_dim == to_dim | x_dim == 1 | to_dim == 0 | x_dim == 0);
+  Rcpp::LogicalVector ok = (x_dim == to_dim | x_dim == 1 | to_dim == 0);
   if (Rcpp::is_true(Rcpp::any(!ok))) {
     Rcpp::stop("Non-recyclable dimensions.");
   }
