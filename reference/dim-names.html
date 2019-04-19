@@ -178,7 +178,7 @@ will return the names of the vector as the row names, if it has any.</p>
     <pre class="examples"><div class='input'>
 <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>10</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>5</span>, <span class='fl'>2</span>))
 <span class='fu'>dim_names</span>(<span class='no'>x</span>) <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='no'>letters</span>[<span class='fl'>1</span>:<span class='fl'>5</span>], <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/character'>character</a></span>())
-<span class='no'>x</span></div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,2][10]&gt;
+<span class='no'>x</span></div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2][10]&gt;
 #&gt;   [,1] [,2]
 #&gt; a    1    6
 #&gt; b    2    7
@@ -226,7 +226,7 @@ will return the names of the vector as the row names, if it has any.</p>
 <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>1</span>)) <span class='kw'>%&gt;%</span>
   <span class='fu'>set_dim_names</span>(<span class='fl'>1</span>, <span class='st'>"r1"</span>) <span class='kw'>%&gt;%</span>
   <span class='fu'>set_dim_names</span>(<span class='fl'>2</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"c1"</span>, <span class='st'>"c2"</span>)) <span class='kw'>%&gt;%</span>
-  <span class='fu'>set_dim_names</span>(<span class='fl'>3</span>, <span class='st'>"3rd dim"</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,2,1][2]&gt;
+  <span class='fu'>set_dim_names</span>(<span class='fl'>3</span>, <span class='st'>"3rd dim"</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2,1][2]&gt;
 #&gt; , , 3rd dim
 #&gt; 
 #&gt;    c1 c2

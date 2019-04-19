@@ -169,13 +169,13 @@ it currently does not accept character strings for <code>perm</code>.</p>
 )
 
 <span class='co'># A standard transpose</span>
-<span class='fu'>rray_transpose</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,3][6]&gt;
+<span class='fu'>rray_transpose</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,3][6]&gt;
 #&gt;     rows
 #&gt; cols r1 r2 r3
 #&gt;   c1  1  2  3
 #&gt;   c2  4  5  6</div><div class='input'>
 <span class='co'># Identical to</span>
-<span class='fu'>rray_transpose</span>(<span class='no'>x</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rev'>rev</a></span>(<span class='fl'>1</span>:<span class='fl'>2</span>))</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,3][6]&gt;
+<span class='fu'>rray_transpose</span>(<span class='no'>x</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rev'>rev</a></span>(<span class='fl'>1</span>:<span class='fl'>2</span>))</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,3][6]&gt;
 #&gt;     rows
 #&gt; cols r1 r2 r3
 #&gt;   c1  1  2  3
@@ -186,7 +186,7 @@ it currently does not accept character strings for <code>perm</code>.</p>
 <span class='co'># `permutation = c(3, 2, 1)`</span>
 <span class='co'># so the result should change _shape_ like:</span>
 <span class='co'># (3, 2, 2) -&gt; (2, 2, 3)</span>
-<span class='fu'>rray_transpose</span>(<span class='no'>x_3d</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,2,3][12]&gt;
+<span class='fu'>rray_transpose</span>(<span class='no'>x_3d</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,3][12]&gt;
 #&gt; , , rows = r1
 #&gt; 
 #&gt;       cols
@@ -211,7 +211,7 @@ it currently does not accept character strings for <code>perm</code>.</p>
 <span class='co'># This transposes the "inner" matrices</span>
 <span class='co'># (flips the first and second dimension)</span>
 <span class='co'># and leaves the 3rd dimension alone</span>
-<span class='fu'>rray_transpose</span>(<span class='no'>x_3d</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>3</span>))</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,3,2][12]&gt;
+<span class='fu'>rray_transpose</span>(<span class='no'>x_3d</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>3</span>))</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,3,2][12]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;     rows
@@ -237,7 +237,7 @@ it currently does not accept character strings for <code>perm</code>.</p>
 <span class='co'># rray_transpose() powers t.vctrs_rray()</span>
 <span class='co'># so you get the same behavior when you</span>
 <span class='co'># pass t() an rray</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/t'>t</a></span>(<span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>5</span>))</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[5]&gt;
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/t'>t</a></span>(<span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>5</span>))</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[5]&gt;
 #&gt; [1] 1 2 3 4 5</div><div class='input'>
 </div></pre>
   </div>

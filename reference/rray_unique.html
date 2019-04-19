@@ -186,7 +186,7 @@ any type of vector object.</p></div>
 
 <span class='co'># Unique rows. The first unique</span>
 <span class='co'># row is used</span>
-<span class='fu'>rray_unique</span>(<span class='no'>x</span>, <span class='fl'>1L</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,2][2]&gt;
+<span class='fu'>rray_unique</span>(<span class='no'>x</span>, <span class='fl'>1L</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2][2]&gt;
 #&gt;    c1 c2
 #&gt; r1  1  2</div><div class='input'>
 <span class='co'># Create a 3d version of x</span>
@@ -194,7 +194,7 @@ any type of vector object.</p></div>
 <span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray_expand_dims.html'>rray_expand_dims</a></span>(<span class='no'>x</span>, <span class='fl'>1</span>)
 
 <span class='co'># All of the rows are unique...</span>
-<span class='fu'>rray_unique</span>(<span class='no'>y</span>, <span class='fl'>1L</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,2,2][4]&gt;
+<span class='fu'>rray_unique</span>(<span class='no'>y</span>, <span class='fl'>1L</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2,2][4]&gt;
 #&gt; , , c1
 #&gt; 
 #&gt;      r1 r2
@@ -206,7 +206,7 @@ any type of vector object.</p></div>
 #&gt; [1,]  2  2
 #&gt; </div><div class='input'>
 <span class='co'># ...but the columns are not</span>
-<span class='fu'>rray_unique</span>(<span class='no'>y</span>, <span class='fl'>2L</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,1,2][2]&gt;
+<span class='fu'>rray_unique</span>(<span class='no'>y</span>, <span class='fl'>2L</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,1,2][2]&gt;
 #&gt; , , c1
 #&gt; 
 #&gt;      r1
@@ -218,7 +218,7 @@ any type of vector object.</p></div>
 #&gt; [1,]  2
 #&gt; </div><div class='input'>
 <span class='co'># The 3rd dimension is unique</span>
-<span class='fu'>rray_unique</span>(<span class='no'>y</span>, <span class='fl'>3L</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,2,2][4]&gt;
+<span class='fu'>rray_unique</span>(<span class='no'>y</span>, <span class='fl'>3L</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2,2][4]&gt;
 #&gt; , , c1
 #&gt; 
 #&gt;      r1 r2
@@ -233,7 +233,7 @@ any type of vector object.</p></div>
 <span class='co'># integer vector you can use</span>
 <span class='co'># to subset out the unique values along</span>
 <span class='co'># the axis you are interested in</span>
-<span class='no'>y</span>[, <span class='fu'>rray_unique_loc</span>(<span class='no'>y</span>, <span class='fl'>2L</span>)]</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;double&gt;[,1,2][2]&gt;
+<span class='no'>y</span>[, <span class='fu'>rray_unique_loc</span>(<span class='no'>y</span>, <span class='fl'>2L</span>)]</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,1,2][2]&gt;
 #&gt; , , c1
 #&gt; 
 #&gt;      r1

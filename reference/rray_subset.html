@@ -195,7 +195,7 @@ casting <code>x</code> to <code>value</code>.</p></li>
     <pre class="examples"><div class='input'><span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>8</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>2</span>))
 
 <span class='co'># `rray_subset()` powers `[` so these are identical</span>
-<span class='fu'>rray_subset</span>(<span class='no'>x</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,2,2][4]&gt;
+<span class='fu'>rray_subset</span>(<span class='no'>x</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][4]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1] [,2]
@@ -205,7 +205,7 @@ casting <code>x</code> to <code>value</code>.</p></li>
 #&gt; 
 #&gt;      [,1] [,2]
 #&gt; [1,]    5    7
-#&gt; </div><div class='input'><span class='no'>x</span>[<span class='fl'>1</span>]</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,2,2][4]&gt;
+#&gt; </div><div class='input'><span class='no'>x</span>[<span class='fl'>1</span>]</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][4]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1] [,2]
@@ -217,7 +217,7 @@ casting <code>x</code> to <code>value</code>.</p></li>
 #&gt; [1,]    5    7
 #&gt; </div><div class='input'>
 <span class='co'># Trailing dots are ignored, so these are identical</span>
-<span class='no'>x</span>[<span class='fl'>1</span>]</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,2,2][4]&gt;
+<span class='no'>x</span>[<span class='fl'>1</span>]</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][4]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1] [,2]
@@ -227,7 +227,7 @@ casting <code>x</code> to <code>value</code>.</p></li>
 #&gt; 
 #&gt;      [,1] [,2]
 #&gt; [1,]    5    7
-#&gt; </div><div class='input'><span class='no'>x</span>[<span class='fl'>1</span>,]</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,2,2][4]&gt;
+#&gt; </div><div class='input'><span class='no'>x</span>[<span class='fl'>1</span>,]</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][4]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1] [,2]
@@ -241,7 +241,7 @@ casting <code>x</code> to <code>value</code>.</p></li>
 <span class='co'># Missing arguments are treated as selecting the</span>
 <span class='co'># entire dimension, consistent with base R.</span>
 <span class='co'># This selects all of the rows, and the first column.</span>
-<span class='no'>x</span>[,<span class='fl'>1</span>]</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,1,2][4]&gt;
+<span class='no'>x</span>[,<span class='fl'>1</span>]</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,1,2][4]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1]
@@ -290,7 +290,7 @@ casting <code>x</code> to <code>value</code>.</p></li>
 <span class='co'># x[...] &lt;- value</span>
 <span class='co'># This assigns 99 to the entire first row</span>
 <span class='no'>x</span>[<span class='fl'>1</span>] <span class='kw'>&lt;-</span> <span class='fl'>99</span>
-<span class='no'>x</span></div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,2,2][8]&gt;
+<span class='no'>x</span></div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][8]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1] [,2]
@@ -306,7 +306,7 @@ casting <code>x</code> to <code>value</code>.</p></li>
 <span class='co'># First row in the first</span>
 <span class='co'># element of the 3rd dimension</span>
 <span class='no'>x</span>[<span class='fl'>1</span>, , <span class='fl'>1</span>] <span class='kw'>&lt;-</span> <span class='fl'>100</span>
-<span class='no'>x</span></div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,2,2][8]&gt;
+<span class='no'>x</span></div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][8]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1] [,2]

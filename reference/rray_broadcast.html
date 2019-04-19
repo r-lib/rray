@@ -180,7 +180,7 @@ the different structure for arithmetic operations.</p>
 <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>5</span>)
 
 <span class='co'># ...to 5x2</span>
-<span class='fu'>rray_broadcast</span>(<span class='no'>x</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>5</span>, <span class='fl'>2</span>))</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,2][10]&gt;
+<span class='fu'>rray_broadcast</span>(<span class='no'>x</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>5</span>, <span class='fl'>2</span>))</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2][10]&gt;
 #&gt;      [,1] [,2]
 #&gt; [1,]    1    1
 #&gt; [2,]    2    2
@@ -190,7 +190,7 @@ the different structure for arithmetic operations.</p>
 <span class='co'># Internally, rray() uses broadcasting</span>
 <span class='co'># for convenience so you could have also</span>
 <span class='co'># done this with:</span>
-<span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>5</span>, <span class='kw'>dim</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>5</span>, <span class='fl'>2</span>))</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,2][10]&gt;
+<span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>5</span>, <span class='kw'>dim</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>5</span>, <span class='fl'>2</span>))</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2][10]&gt;
 #&gt;      [,1] [,2]
 #&gt; [1,]    1    1
 #&gt; [2,]    2    2
@@ -198,7 +198,7 @@ the different structure for arithmetic operations.</p>
 #&gt; [4,]    4    4
 #&gt; [5,]    5    5</div><div class='input'>
 <span class='co'># Moar dimensions</span>
-<span class='fu'>rray_broadcast</span>(<span class='no'>x</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>5</span>, <span class='fl'>2</span>, <span class='fl'>3</span>))</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,2,3][30]&gt;
+<span class='fu'>rray_broadcast</span>(<span class='no'>x</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>5</span>, <span class='fl'>2</span>, <span class='fl'>3</span>))</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,3][30]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1] [,2]

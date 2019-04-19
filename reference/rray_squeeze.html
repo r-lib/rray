@@ -159,16 +159,16 @@ the first dimension names that are found are the ones that are used in the
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># (10, 1) -&gt; (10)</span>
 <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>10</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>10</span>, <span class='fl'>1</span>))
-<span class='fu'>rray_squeeze</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[10]&gt;
+<span class='fu'>rray_squeeze</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[10]&gt;
 #&gt;  [1]  1  2  3  4  5  6  7  8  9 10</div><div class='input'>
 <span class='co'># Multiple squeezed dimensions</span>
 <span class='co'># (10, 1, 1) -&gt; (10)</span>
 <span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray_reshape.html'>rray_reshape</a></span>(<span class='no'>x</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>10</span>, <span class='fl'>1</span>, <span class='fl'>1</span>))
-<span class='fu'>rray_squeeze</span>(<span class='no'>y</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[10]&gt;
+<span class='fu'>rray_squeeze</span>(<span class='no'>y</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[10]&gt;
 #&gt;  [1]  1  2  3  4  5  6  7  8  9 10</div><div class='input'>
 <span class='co'># Use `axes` to specify dimensions to drop</span>
 <span class='co'># (10, 1, 1) -&gt; drop 2 -&gt; (10, 1)</span>
-<span class='fu'>rray_squeeze</span>(<span class='no'>y</span>, <span class='kw'>axes</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,1][10]&gt;
+<span class='fu'>rray_squeeze</span>(<span class='no'>y</span>, <span class='kw'>axes</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,1][10]&gt;
 #&gt;       [,1]
 #&gt;  [1,]    1
 #&gt;  [2,]    2
@@ -183,12 +183,12 @@ the first dimension names that are found are the ones that are used in the
 <span class='co'># Dimension names are kept here</span>
 <span class='co'># (10, 1) -&gt; (10)</span>
 <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dim-names.html'>set_row_names</a></span>(<span class='no'>x</span>, <span class='no'>letters</span>[<span class='fl'>1</span>:<span class='fl'>10</span>])
-<span class='fu'>rray_squeeze</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[10]&gt;
+<span class='fu'>rray_squeeze</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[10]&gt;
 #&gt;  a  b  c  d  e  f  g  h  i  j 
 #&gt;  1  2  3  4  5  6  7  8  9 10 </div><div class='input'>
 <span class='co'># And they are kept here</span>
 <span class='co'># (1, 10) -&gt; (10)</span>
-<span class='fu'>rray_squeeze</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/t'>t</a></span>(<span class='no'>x</span>))</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[10]&gt;
+<span class='fu'>rray_squeeze</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/t'>t</a></span>(<span class='no'>x</span>))</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[10]&gt;
 #&gt;  a  b  c  d  e  f  g  h  i  j 
 #&gt;  1  2  3  4  5  6  7  8  9 10 </div><div class='input'>
 </div></pre>

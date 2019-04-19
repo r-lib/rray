@@ -151,14 +151,14 @@ The default of <code>NULL</code> first flattens <code>x</code> to 1-D.</p></td>
 <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>:<span class='fl'>10</span>, <span class='fl'>20</span>:<span class='fl'>11</span>), <span class='kw'>dim</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>5</span>, <span class='fl'>2</span>, <span class='fl'>2</span>))
 
 <span class='co'># Flatten x, then find the position of the max value</span>
-<span class='fu'>rray_max_pos</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,1,1][1]&gt;
+<span class='fu'>rray_max_pos</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,1,1][1]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1]
 #&gt; [1,]   11
 #&gt; </div><div class='input'>
 <span class='co'># Compute along the rows</span>
-<span class='fu'>rray_max_pos</span>(<span class='no'>x</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,2,2][4]&gt;
+<span class='fu'>rray_max_pos</span>(<span class='no'>x</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][4]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1] [,2]
@@ -170,7 +170,7 @@ The default of <code>NULL</code> first flattens <code>x</code> to 1-D.</p></td>
 #&gt; [1,]    1    1
 #&gt; </div><div class='input'>
 <span class='co'># Compute along the columns</span>
-<span class='fu'>rray_max_pos</span>(<span class='no'>x</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;vctrs_rray&lt;integer&gt;[,1,2][10]&gt;
+<span class='fu'>rray_max_pos</span>(<span class='no'>x</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,1,2][10]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1]
