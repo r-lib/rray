@@ -73,15 +73,6 @@
 rray_broadcast <- function(x, dim) {
   dim <- vec_cast(dim, integer())
 
-  # pre-subset where any `dim == 0L` is requested
-  #x <- pre_zero_slice(x, dim)
-
-  x_dim <- vec_dim(x)
-
-  # If any `x_dim == 0`, it can't be recycled,
-  # so set `dim == 0` in those positions
-  #dim <- pre_recycle_zeros(x_dim, dim)
-
   res <- rray_broadcast_impl(x, dim)
 
   new_dim_names <- restore_dim_names(dim_names(x), dim)
