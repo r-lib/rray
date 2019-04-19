@@ -60,31 +60,6 @@ new_rray <- function(.data = numeric(0),
     dim_names <- new_empty_dim_names(vec_size(.dim))
   }
 
-  ok_dim_names <- map_lgl(dim_names, is_character_or_null)
-  if (!all(ok_dim_names)) {
-    glubort("`dim_names` must be a list containing characters, or `NULL`.")
-  }
-
-  # n shape dims and n elements of shape name list
-  dims <- vec_size(.dim)
-  n_dim_names <- vec_size(dim_names)
-  if (dims != n_dim_names) {
-    glubort(
-      "The dimensionality of the object ({dims}) must be equal ",
-      "to the size of the `dim_names` ({n_dim_names})."
-    )
-  }
-
-  # dim & dim_names
-  dim_name_lengths <- map_int(dim_names, vec_size)
-  ok_dim_name_lengths <- map2_lgl(.dim, dim_name_lengths, validate_equal_size_or_no_names)
-  if (!all(ok_dim_name_lengths)) {
-    glubort(
-      "The size of each dimension's names must be equal to the ",
-      "size of the corresponding dimension."
-    )
-  }
-
   # new_rray() takes size and shape for compat with vctrs but we lie a bit
   # and actually only store the `dim`. We also store the `dimnames` not
   # `dim_names` because vctrs treats `dim` and `dimnames` special in
@@ -98,10 +73,6 @@ new_rray <- function(.data = numeric(0),
     class = c(subclass, sub_type, "vctrs_rray")
   )
 
-}
-
-is_character_or_null <- function(x) {
-  is_null(x) || is_character(x)
 }
 
 #' Build a rray object
@@ -167,9 +138,11 @@ rray <- function(x = numeric(0), dim = NULL, dim_names = NULL) {
 
   dim <- vec_cast(dim, integer())
 
-  if (!all(dim >= 0L)) {
-    abort("`dim` must be a non-negative vector.")
+  if (is_null(dim_names)) {
+    dim_names <- new_empty_dim_names(vec_size(dim))
   }
+
+  validate_rray_attributes(dim, dim_names)
 
   x_dim <- vec_dim(x)
 
@@ -186,6 +159,44 @@ rray <- function(x = numeric(0), dim = NULL, dim_names = NULL) {
     dim_names = dim_names
   )
 
+}
+
+validate_rray_attributes <- function(dim, dim_names) {
+
+  if (!all(dim >= 0L)) {
+    abort("`dim` must be a non-negative vector.")
+  }
+
+  ok_dim_names <- map_lgl(dim_names, is_character_or_null)
+  if (!all(ok_dim_names)) {
+    glubort("`dim_names` must be a list containing characters, or `NULL`.")
+  }
+
+  # n shape dims and n elements of shape name list
+  dims <- vec_size(dim)
+  n_dim_names <- vec_size(dim_names)
+  if (dims != n_dim_names) {
+    glubort(
+      "The dimensionality of the object ({dims}) must be equal ",
+      "to the size of the `dim_names` ({n_dim_names})."
+    )
+  }
+
+  # dim & dim_names
+  dim_name_lengths <- map_int(dim_names, vec_size)
+  ok_dim_name_lengths <- map2_lgl(dim, dim_name_lengths, validate_equal_size_or_no_names)
+  if (!all(ok_dim_name_lengths)) {
+    glubort(
+      "The size of each dimension's names must be equal to the ",
+      "size of the corresponding dimension."
+    )
+  }
+
+  invisible()
+}
+
+is_character_or_null <- function(x) {
+  is_null(x) || is_character(x)
 }
 
 validate_equal_size_or_no_names <- function(n_x, n_names) {
