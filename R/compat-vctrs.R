@@ -182,7 +182,9 @@ vec_type2.logical.vctrs_rray_int <- vec_type2.vctrs_rray_int.vctrs_rray_int
 #' @rdname vctrs-compat
 #' @method vec_type2 vctrs_rray_lgl
 #' @export vec_type2.vctrs_rray_lgl
-vec_type2.vctrs_rray_lgl <- function(x, y, ...) UseMethod("vec_type2.vctrs_rray_lgl", y)
+vec_type2.vctrs_rray_lgl <- function(x, y, ...) {
+  UseMethod("vec_type2.vctrs_rray_lgl", y)
+}
 
 #' @method vec_type2.vctrs_rray_lgl default
 #' @export
