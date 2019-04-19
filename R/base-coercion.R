@@ -1,8 +1,3 @@
-# vctrs doesn't quite do what I want here.
-# see vctrs issue 136
-# Personally, I think it is appropriate to do elementwise conversion
-# but keep the dimensionality. That preserves the invariants mentioned there
-
 new_array <- function(.data, dim = NULL, dimnames = NULL) {
 
   dim <- dim %||% length(.data)
@@ -31,15 +26,15 @@ at_least_2D <- function(x, elem) {
 
 #' @export
 as.double.vctrs_rray <- function(x, ...) {
-  vec_cast(x, new_shape(double(), rray_shape(x)))
+  as.vector(vec_cast(x, new_shape(double(), rray_shape(x))))
 }
 
 #' @export
 as.integer.vctrs_rray <- function(x, ...) {
-  vec_cast(x, new_shape(integer(), rray_shape(x)))
+  as.vector(vec_cast(x, new_shape(integer(), rray_shape(x))))
 }
 
 #' @export
 as.logical.vctrs_rray <- function(x, ...) {
-  vec_cast(x, new_shape(logical(), rray_shape(x)))
+  as.vector(vec_cast(x, new_shape(logical(), rray_shape(x))))
 }

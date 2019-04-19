@@ -113,20 +113,21 @@ test_that("casting updates inner types", {
 test_that("using base coercing functions", {
   x <- as_rray(array(1, dim = c(1, 2)))
 
-  # different behavior from vctrs
   x_dbl <- as.double(x)
-  expect_is(x_dbl, "matrix")
-  expect_equal(dim(x_dbl), c(1, 2))
+  expect_is(x_dbl, "numeric")
+  expect_equal(dim(x_dbl), NULL)
 
   x_int <- as.integer(x)
-  expect_is(x_int, "matrix")
-  expect_equal(dim(x_int), c(1, 2))
-  expect_equal(storage.mode(x_int), "integer")
+  expect_is(x_int, "integer")
+  expect_equal(dim(x_int), NULL)
 
   x_lgl <- as.logical(x)
-  expect_is(x_lgl, "matrix")
-  expect_equal(dim(x_lgl), c(1, 2))
-  expect_equal(storage.mode(x_lgl), "logical")
+  expect_is(x_lgl, "logical")
+  expect_equal(dim(x_lgl), NULL)
+
+  # names are not kept
+  x_nm <- set_row_names(x, "foo")
+  expect_equal(dim_names(as.double(x_nm)), new_empty_dim_names(1))
 })
 
 test_that("from NULL (handled by vctrs)", {
