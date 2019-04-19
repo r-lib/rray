@@ -73,16 +73,6 @@
 rray_broadcast <- function(x, dim) {
   dim <- vec_cast(dim, integer())
 
-  # Expand dimensionality of `x` as needed
-  x <- rray_dims_match(x, vec_size(dim))
-
-  # Check if identical after dimensionality has
-  # been expanded, so we capture cases where
-  # only dimensionality changes
-  if (identical(vec_dim(x), dim)) {
-    return(x)
-  }
-
   # pre-subset where any `dim == 0L` is requested
   x <- pre_zero_slice(x, dim)
 
@@ -91,8 +81,6 @@ rray_broadcast <- function(x, dim) {
   # If any `x_dim == 0`, it can't be recycled,
   # so set `dim == 0` in those positions
   dim <- pre_recycle_zeros(x_dim, dim)
-
-  validate_recyclable(x_dim, dim)
 
   res <- rray_broadcast_impl(x, dim)
 

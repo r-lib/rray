@@ -1,6 +1,7 @@
 // this header seems necessary for full_like() rather than xbuilder.hpp
 #include <xtensor/xarray.hpp>
 #include <xtensor/xsort.hpp>
+#include <xtensor/xview.hpp>
 
 #include <rray.h>
 #include <tools/tools.h>
@@ -11,8 +12,41 @@ using namespace rray;
 
 template <typename T>
 SEXP rray_broadcast_cpp(const xt::rarray<T>& x, SEXP arg) {
-  std::vector<std::size_t> dim = Rcpp::as<std::vector<std::size_t>>(arg);
-  const xt::rarray<T>& res = xt::broadcast(x, dim);
+
+  Rcpp::IntegerVector x_dim = rray_dim(SEXP(x));
+  Rcpp::IntegerVector to_dim = Rcpp::as<Rcpp::IntegerVector>(arg);
+
+  // Early exit if identical dimensions
+  // (15 is equal to the default settings of identical())
+  bool identical_dim = R_compute_identical(x_dim, to_dim, 15);
+  if (identical_dim) {
+    return(x);
+  }
+
+  if (x_dim.size() > to_dim.size()) {
+    Rcpp::stop("Cannot decrease dimensions of `x`.");
+  }
+
+  // Reshape to add dimensionality as required (get's around xtensor
+  // prepending dimension behavior)
+  int n_missing_dims = to_dim.size() - x_dim.size();
+  if (n_missing_dims > 0) {
+    for (int i = 0; i < n_missing_dims; ++i) {
+      x_dim.push_back(1);
+    }
+  }
+
+  Rcpp::LogicalVector ok = (x_dim == to_dim | x_dim == 1 | to_dim == 0 | x_dim == 0);
+  if (Rcpp::is_true(Rcpp::any(!ok))) {
+    Rcpp::stop("Non-recyclable dimensions.");
+  }
+
+  const std::vector<std::size_t> x_reshape_dim = Rcpp::as<std::vector<std::size_t>>(x_dim);
+  auto x_reshaped = xt::reshape_view(x, x_reshape_dim);
+
+  const std::vector<std::size_t> to_dim_xt = Rcpp::as<std::vector<std::size_t>>(to_dim);
+  const xt::rarray<T>& res = xt::broadcast(x_reshaped, to_dim_xt);
+
   return(res);
 }
 
