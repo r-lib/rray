@@ -43,8 +43,14 @@ new_rray <- function(.data = numeric(0),
                      subclass = character(0)
                      ) {
 
-  stopifnot(is_bare_integer(size))
-  stopifnot(is_bare_integer(shape))
+  if (!is_bare_integer(size)) {
+    glubort("`size` must be a bare integer.")
+  }
+
+  if (!is_bare_integer(shape)) {
+    glubort("`shape` must be a bare integer.")
+  }
+
   .dim <- c(size, shape)
 
   sub_type <- rray_sub_type(.data)
@@ -54,14 +60,30 @@ new_rray <- function(.data = numeric(0),
     dim_names <- new_empty_dim_names(vec_size(.dim))
   }
 
-  stopifnot(map_lgl(dim_names, is_character_or_null))
+  ok_dim_names <- map_lgl(dim_names, is_character_or_null)
+  if (!all(ok_dim_names)) {
+    glubort("`dim_names` must be a list containing characters, or `NULL`.")
+  }
 
   # n shape dims and n elements of shape name list
-  stopifnot(vec_size(.dim) == vec_size(dim_names))
+  dims <- vec_size(.dim)
+  n_dim_names <- vec_size(dim_names)
+  if (dims != n_dim_names) {
+    glubort(
+      "The dimensionality of the object ({dims}) must be equal ",
+      "to the size of the `dim_names` ({n_dim_names})."
+    )
+  }
 
   # dim & dim_names
   dim_name_lengths <- map_int(dim_names, vec_size)
-  stopifnot(map2_lgl(.dim, dim_name_lengths, validate_equal_size_or_no_names))
+  ok_dim_name_lengths <- map2_lgl(.dim, dim_name_lengths, validate_equal_size_or_no_names)
+  if (!all(ok_dim_name_lengths)) {
+    glubort(
+      "The size of each dimension's names must be equal to the ",
+      "size of the corresponding dimension."
+    )
+  }
 
   # new_rray() takes size and shape for compat with vctrs but we lie a bit
   # and actually only store the `dim`. We also store the `dimnames` not
