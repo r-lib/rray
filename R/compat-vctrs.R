@@ -24,6 +24,8 @@ vec_restore.vctrs_rray <- function(x, to, ..., i = NULL) {
 #' @param x,y Objects.
 #' @param to Type to cast to.
 #' @param op An arithmetic operator as a string.
+#' @param ... Used to pass along error message information.
+#' @inheritParams vec_type2
 #'
 #' @name vctrs-compat
 #'
