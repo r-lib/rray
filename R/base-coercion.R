@@ -31,18 +31,15 @@ at_least_2D <- function(x, elem) {
 
 #' @export
 as.double.vctrs_rray <- function(x, ...) {
-  x <- vec_data(x)
-  rray_cast_inner(x, double())
+  vec_cast(x, new_shape(double(), rray_shape(x)))
 }
 
 #' @export
 as.integer.vctrs_rray <- function(x, ...) {
-  x <- vec_data(x)
-  rray_cast_inner(x, integer())
+  vec_cast(x, new_shape(integer(), rray_shape(x)))
 }
 
 #' @export
 as.logical.vctrs_rray <- function(x, ...) {
-  x <- vec_data(x)
-  rray_cast_inner(x, logical())
+  vec_cast(x, new_shape(logical(), rray_shape(x)))
 }

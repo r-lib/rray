@@ -1,3 +1,6 @@
+# ------------------------------------------------------------------------------
+# Find a common inner type
+
 rray_type_inner <- function(x) {
   vec_data(vec_type(x))
 }
@@ -28,25 +31,28 @@ rray_type_inner_common <- function(..., .ptype = NULL) {
   vctrs::vec_type_finalise(ptype)
 }
 
+# ------------------------------------------------------------------------------
+# Cast to a common inner type
+
+# NOTE - These are RAW inner casts. All attributes are stripped from the results.
+# These are internal functions, and are generally called from something that
+# restores attributes. If these called `vec_restore()` at the end, an extra copy
+# would be done. It is necessary to call `vec_cast()` and not use our own version
+# of `vec_coerce_bare()` because `vec_cast()` will warn of any lossy casts.
+
 # - No change in dim/shape
 # - Only changing the inner type of the data
-# - Names are kept
+# - Names are NOT kept, something else should do that
+# - Outer type is not kept, should be restored by something else
 rray_cast_inner <- function(x, to) {
 
   to <- rray_type_inner(to)
 
-  if (identical(rray_type_inner(x), to)) {
-    return(x)
-  }
-
-  # same as vctrs:::shape_broadcast() in this case
-  to <- rray_reshape(to, shape_dim(x))
+  to <- new_shape(to, rray_shape(x))
 
   res <- vec_cast(vec_data(x), to)
 
-  res <- set_full_dim_names(res, dim_names(x))
-
-  vec_restore(res, x)
+  res
 }
 
 # Cast inputs to the same _inner_ types
@@ -59,8 +65,11 @@ rray_cast_inner_common <- function(..., .to = NULL) {
   map(args, rray_cast_inner, to = inner_type)
 }
 
-shape_dim <- function(x) {
-  dim <- vec_dim(x)
-  dim[1] <- 0L
-  dim
+new_shape <- function(type, shape = NULL) {
+  if (length(shape) == 0L) {
+    type
+  }
+  else {
+    structure(type, dim = c(0L, shape))
+  }
 }
