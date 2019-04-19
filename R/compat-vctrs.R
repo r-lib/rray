@@ -36,21 +36,25 @@ NULL
 #' @rdname vctrs-compat
 #' @method vec_type2 vctrs_rray_dbl
 #' @export vec_type2.vctrs_rray_dbl
-vec_type2.vctrs_rray_dbl <- function(x, y) UseMethod("vec_type2.vctrs_rray_dbl", y)
+vec_type2.vctrs_rray_dbl <- function(x, y, ...) {
+  UseMethod("vec_type2.vctrs_rray_dbl", y)
+}
 
 #' @method vec_type2.vctrs_rray_dbl default
 #' @export
-vec_type2.vctrs_rray_dbl.default <- function(x, y) stop_incompatible_type(x, y)
+vec_type2.vctrs_rray_dbl.default <- function(x, y, ..., x_arg = "", y_arg = "") {
+  stop_incompatible_type(x, y, ..., x_arg = x_arg, y_arg = y_arg)
+}
 
 #' @method vec_type2.vctrs_rray_dbl vctrs_unspecified
 #' @export
-vec_type2.vctrs_rray_dbl.vctrs_unspecified <- function(x, y) x
+vec_type2.vctrs_rray_dbl.vctrs_unspecified <- function(x, y, ...) x
 
 # vec_type2 vctrs_rray_dbl <-> vctrs_rray_dbl ----------------------------------
 
 #' @method vec_type2.vctrs_rray_dbl vctrs_rray_dbl
 #' @export
-vec_type2.vctrs_rray_dbl.vctrs_rray_dbl <- function(x, y) {
+vec_type2.vctrs_rray_dbl.vctrs_rray_dbl <- function(x, y, ...) {
   new_rray(double(), shape = rray_shape2(x, y))
 }
 
@@ -103,21 +107,25 @@ vec_type2.logical.vctrs_rray_dbl <- vec_type2.vctrs_rray_dbl.vctrs_rray_dbl
 #' @rdname vctrs-compat
 #' @method vec_type2 vctrs_rray_int
 #' @export vec_type2.vctrs_rray_int
-vec_type2.vctrs_rray_int <- function(x, y) UseMethod("vec_type2.vctrs_rray_int", y)
+vec_type2.vctrs_rray_int <- function(x, y, ...) {
+  UseMethod("vec_type2.vctrs_rray_int", y)
+}
 
 #' @method vec_type2.vctrs_rray_int default
 #' @export
-vec_type2.vctrs_rray_int.default <- function(x, y) stop_incompatible_type(x, y)
+vec_type2.vctrs_rray_int.default <- function(x, y, ..., x_arg = "", y_arg = "") {
+  stop_incompatible_type(x, y, ..., x_arg = x_arg, y_arg = y_arg)
+}
 
 #' @method vec_type2.vctrs_rray_int vctrs_unspecified
 #' @export
-vec_type2.vctrs_rray_int.vctrs_unspecified <- function(x, y) x
+vec_type2.vctrs_rray_int.vctrs_unspecified <- function(x, y, ...) x
 
 # vec_type2 vctrs_rray_int <-> vctrs_rray_int ----------------------------------
 
 #' @method vec_type2.vctrs_rray_int vctrs_rray_int
 #' @export
-vec_type2.vctrs_rray_int.vctrs_rray_int <- function(x, y) {
+vec_type2.vctrs_rray_int.vctrs_rray_int <- function(x, y, ...) {
   new_rray(integer(), shape = rray_shape2(x, y))
 }
 
@@ -170,21 +178,23 @@ vec_type2.logical.vctrs_rray_int <- vec_type2.vctrs_rray_int.vctrs_rray_int
 #' @rdname vctrs-compat
 #' @method vec_type2 vctrs_rray_lgl
 #' @export vec_type2.vctrs_rray_lgl
-vec_type2.vctrs_rray_lgl <- function(x, y) UseMethod("vec_type2.vctrs_rray_lgl", y)
+vec_type2.vctrs_rray_lgl <- function(x, y, ...) UseMethod("vec_type2.vctrs_rray_lgl", y)
 
 #' @method vec_type2.vctrs_rray_lgl default
 #' @export
-vec_type2.vctrs_rray_lgl.default <- function(x, y) stop_incompatible_type(x, y)
+vec_type2.vctrs_rray_lgl.default <- function(x, y, ..., x_arg = "", y_arg = "") {
+  stop_incompatible_type(x, y, ..., x_arg = x_arg, y_arg = y_arg)
+}
 
 #' @method vec_type2.vctrs_rray_lgl vctrs_unspecified
 #' @export
-vec_type2.vctrs_rray_lgl.vctrs_unspecified <- function(x, y) x
+vec_type2.vctrs_rray_lgl.vctrs_unspecified <- function(x, y, ...) x
 
 # vec_type2 vctrs_rray_lgl <-> vctrs_rray_lgl ----------------------------------
 
 #' @method vec_type2.vctrs_rray_lgl vctrs_rray_lgl
 #' @export
-vec_type2.vctrs_rray_lgl.vctrs_rray_lgl <- function(x, y) {
+vec_type2.vctrs_rray_lgl.vctrs_rray_lgl <- function(x, y, ...) {
   new_rray(logical(), shape = rray_shape2(x, y))
 }
 
