@@ -44,27 +44,27 @@ test_that("from base types", {
 
 })
 
-test_that("names are preserved", {
+test_that("names are lost", {
 
   nms <- list("foo", "bar")
   x <- rray(1, c(1, 1), dim_names = nms)
 
   # to another rray - same shape
   res <- vec_cast(x, rray(1, c(1, 1)))
-  expect_equal(dim_names(res), nms)
+  expect_equal(dim_names(res), new_empty_dim_names(2))
 
   # to another rray - different shape
   res <- vec_cast(x, rray(1, c(1, 2)))
-  expect_equal(dim_names(res), list("foo", NULL))
+  expect_equal(dim_names(res), new_empty_dim_names(2))
 
   # to a base type
   res <- vec_cast(x, array(1, c(1, 2)))
-  expect_equal(dim_names(res), list("foo", NULL))
+  expect_equal(dim_names(res), new_empty_dim_names(2))
 
   # from a base type
   x <- array(1, c(1, 1), dimnames = nms)
   res <- vec_cast(x, rray(1, c(1, 1)))
-  expect_equal(dim_names(res), nms)
+  expect_equal(dim_names(res), new_empty_dim_names(2))
 
 })
 
@@ -101,12 +101,12 @@ test_that("casting updates inner types", {
 
   expect_equal(
     vec_cast(x_int, matrix(1)),
-    new_matrix(1)
+    matrix(1)
   )
 
   expect_equal(
     vec_cast(x_int, matrix(FALSE)),
-    new_matrix(TRUE)
+    matrix(TRUE)
   )
 })
 

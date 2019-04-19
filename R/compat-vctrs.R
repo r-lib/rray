@@ -268,7 +268,7 @@ vec_cast.vctrs_rray_int.default <- function(x, to) stop_incompatible_cast(x, to)
 #' @method vec_cast.vctrs_rray_int vctrs_rray_int
 #' @export
 vec_cast.vctrs_rray_int.vctrs_rray_int <- function(x, to) {
-  rray_shapecast(x, vec_dim(to))
+  rray_shapecast(unname(x), rray_shape(to))
 }
 
 # vec_cast vctrs_rray_int <-> vctrs_rray_dbl -----------------------------------
@@ -276,11 +276,10 @@ vec_cast.vctrs_rray_int.vctrs_rray_int <- function(x, to) {
 #' @method vec_cast.vctrs_rray_int vctrs_rray_dbl
 #' @export
 vec_cast.vctrs_rray_int.vctrs_rray_dbl <- function(x, to) {
-  dim <- c(vec_size(x), rray_shape(to))
-  dim_names <- restore_dim_names(dim_names(x), dim)
-  ptype <- rray_shapecast(integer(), dim)
+  shape <- rray_shape(to)
+  ptype <- rray_shapecast(integer(), shape)
   x <- vec_cast(vec_data(x), ptype)
-  new_rray(x, dim[1], dim[-1], dim_names)
+  new_rray(x, vec_size(x), shape)
 }
 
 # vec_cast vctrs_rray_int <-> vctrs_rray_lgl -----------------------------------
@@ -288,11 +287,10 @@ vec_cast.vctrs_rray_int.vctrs_rray_dbl <- function(x, to) {
 #' @method vec_cast.vctrs_rray_int vctrs_rray_lgl
 #' @export
 vec_cast.vctrs_rray_int.vctrs_rray_lgl <- function(x, to) {
-  dim <- c(vec_size(x), rray_shape(to))
-  dim_names <- restore_dim_names(dim_names(x), dim)
-  ptype <- rray_shapecast(integer(), dim)
+  shape <- rray_shape(to)
+  ptype <- rray_shapecast(integer(), shape)
   x <- vec_cast(vec_data(x), ptype)
-  new_rray(x, dim[1], dim[-1], dim_names)
+  new_rray(x, vec_size(x), shape)
 }
 
 # vec_cast vctrs_rray_int <-> double -------------------------------------------
@@ -300,21 +298,17 @@ vec_cast.vctrs_rray_int.vctrs_rray_lgl <- function(x, to) {
 #' @method vec_cast.vctrs_rray_int double
 #' @export
 vec_cast.vctrs_rray_int.double <- function(x, to) {
-  dim <- c(vec_size(x), rray_shape(to))
-  dim_names <- restore_dim_names(dim_names(x), dim)
-  ptype <- rray_shapecast(integer(), dim)
+  shape <- rray_shape(to)
+  ptype <- rray_shapecast(integer(), shape)
   x <- vec_cast(x, ptype)
-  new_rray(x, dim[1], dim[-1], dim_names)
+  new_rray(x, vec_size(x), shape)
 }
 
 #' @method vec_cast.double vctrs_rray_int
 #' @export
 vec_cast.double.vctrs_rray_int <- function(x, to) {
-  dim <- c(vec_size(x), rray_shape(to))
-  dim_names <- restore_dim_names(dim_names(x), dim)
-  ptype <- rray_shapecast(double(), dim)
-  x <- vec_cast(vec_data(x), ptype)
-  new_array(x, dim = dim, dimnames = dim_names)
+  ptype <- rray_shapecast(double(), rray_shape(to))
+  vec_cast(vec_data(x), ptype)
 }
 
 # vec_cast vctrs_rray_int <-> integer ------------------------------------------
@@ -322,15 +316,15 @@ vec_cast.double.vctrs_rray_int <- function(x, to) {
 #' @method vec_cast.vctrs_rray_int integer
 #' @export
 vec_cast.vctrs_rray_int.integer <- function(x, to) {
-  dim <- vec_dim(x)
-  x <- new_rray(x, dim[1], dim[-1], dim_names(x))
-  rray_shapecast(x, vec_dim(to))
+  shape <- rray_shape(to)
+  x <- rray_shapecast(x, shape)
+  new_rray(x, vec_size(x), shape)
 }
 
 #' @method vec_cast.integer vctrs_rray_int
 #' @export
 vec_cast.integer.vctrs_rray_int <- function(x, to) {
-  rray_shapecast(unclass(x), vec_dim(to))
+  rray_shapecast(unname(unclass(x)), rray_shape(to))
 }
 
 # vec_cast vctrs_rray_int <-> logical ------------------------------------------
@@ -342,11 +336,8 @@ vec_cast.vctrs_rray_int.logical <- vec_cast.vctrs_rray_int.double
 #' @method vec_cast.logical vctrs_rray_int
 #' @export
 vec_cast.logical.vctrs_rray_int <- function(x, to) {
-  dim <- c(vec_size(x), rray_shape(to))
-  dim_names <- restore_dim_names(dim_names(x), dim)
-  ptype <- rray_shapecast(logical(), dim)
-  x <- vec_cast(vec_data(x), ptype)
-  new_array(x, dim = dim, dimnames = dim_names)
+  ptype <- rray_shapecast(logical(), rray_shape(to))
+  vec_cast(vec_data(x), ptype)
 }
 
 # ##############################################################################
@@ -366,20 +357,17 @@ vec_cast.vctrs_rray_dbl.default <- function(x, to) stop_incompatible_cast(x, to)
 
 #' @method vec_cast.vctrs_rray_dbl vctrs_rray_dbl
 #' @export
-vec_cast.vctrs_rray_dbl.vctrs_rray_dbl <- function(x, to) {
-  rray_shapecast(x, vec_dim(to))
-}
+vec_cast.vctrs_rray_dbl.vctrs_rray_dbl <- vec_cast.vctrs_rray_int.vctrs_rray_int
 
 # vec_cast vctrs_rray_dbl <-> vctrs_rray_int -----------------------------------
 
 #' @method vec_cast.vctrs_rray_dbl vctrs_rray_int
 #' @export
 vec_cast.vctrs_rray_dbl.vctrs_rray_int <- function(x, to) {
-  dim <- c(vec_size(x), rray_shape(to))
-  dim_names <- restore_dim_names(dim_names(x), dim)
-  ptype <- rray_shapecast(double(), dim)
+  shape <- rray_shape(to)
+  ptype <- rray_shapecast(double(), shape)
   x <- vec_cast(vec_data(x), ptype)
-  new_rray(x, dim[1], dim[-1], dim_names)
+  new_rray(x, vec_size(x), shape)
 }
 
 # vec_cast vctrs_rray_dbl <-> vctrs_rray_lgl -----------------------------------
@@ -403,21 +391,17 @@ vec_cast.double.vctrs_rray_dbl <- vec_cast.integer.vctrs_rray_int
 #' @method vec_cast.vctrs_rray_dbl integer
 #' @export
 vec_cast.vctrs_rray_dbl.integer <- function(x, to) {
-  dim <- c(vec_size(x), rray_shape(to))
-  dim_names <- restore_dim_names(dim_names(x), dim)
-  ptype <- rray_shapecast(double(), dim)
+  shape <- rray_shape(to)
+  ptype <- rray_shapecast(double(), shape)
   x <- vec_cast(x, ptype)
-  new_rray(x, dim[1], dim[-1], dim_names)
+  new_rray(x, vec_size(x), shape)
 }
 
 #' @method vec_cast.integer vctrs_rray_dbl
 #' @export
 vec_cast.integer.vctrs_rray_dbl <- function(x, to) {
-  dim <- c(vec_size(x), rray_shape(to))
-  dim_names <- restore_dim_names(dim_names(x), dim)
-  ptype <- rray_shapecast(integer(), dim)
-  x <- vec_cast(vec_data(x), ptype)
-  new_array(x, dim = dim, dimnames = dim_names)
+  ptype <- rray_shapecast(integer(), rray_shape(to))
+  vec_cast(vec_data(x), ptype)
 }
 
 # vec_cast vctrs_rray_dbl <-> logical ------------------------------------------
@@ -429,11 +413,8 @@ vec_cast.vctrs_rray_dbl.logical <- vec_cast.vctrs_rray_dbl.integer
 #' @method vec_cast.logical vctrs_rray_dbl
 #' @export
 vec_cast.logical.vctrs_rray_dbl <- function(x, to) {
-  dim <- c(vec_size(x), rray_shape(to))
-  dim_names <- restore_dim_names(dim_names(x), dim)
-  ptype <- rray_shapecast(logical(), dim)
-  x <- vec_cast(vec_data(x), ptype)
-  new_array(x, dim = dim, dimnames = dim_names)
+  ptype <- rray_shapecast(logical(), rray_shape(to))
+  vec_cast(vec_data(x), ptype)
 }
 
 # ##############################################################################
@@ -453,20 +434,17 @@ vec_cast.vctrs_rray_lgl.default <- function(x, to) stop_incompatible_cast(x, to)
 
 #' @method vec_cast.vctrs_rray_lgl vctrs_rray_lgl
 #' @export
-vec_cast.vctrs_rray_lgl.vctrs_rray_lgl <- function(x, to) {
-  rray_shapecast(x, vec_dim(to))
-}
+vec_cast.vctrs_rray_lgl.vctrs_rray_lgl <- vec_cast.vctrs_rray_int.vctrs_rray_int
 
 # vec_cast vctrs_rray_lgl <-> vctrs_rray_dbl -----------------------------------
 
 #' @method vec_cast.vctrs_rray_lgl vctrs_rray_dbl
 #' @export
 vec_cast.vctrs_rray_lgl.vctrs_rray_dbl <- function(x, to) {
-  dim <- c(vec_size(x), rray_shape(to))
-  dim_names <- restore_dim_names(dim_names(x), dim)
-  ptype <- rray_shapecast(logical(), dim)
+  shape <- rray_shape(to)
+  ptype <- rray_shapecast(logical(), shape)
   x <- vec_cast(vec_data(x), ptype)
-  new_rray(x, dim[1], dim[-1], dim_names)
+  new_rray(x, vec_size(x), shape)
 }
 
 # vec_cast vctrs_rray_lgl <-> vctrs_rray_int -----------------------------------
@@ -480,11 +458,10 @@ vec_cast.vctrs_rray_lgl.vctrs_rray_int <- vec_cast.vctrs_rray_lgl.vctrs_rray_dbl
 #' @method vec_cast.vctrs_rray_lgl double
 #' @export
 vec_cast.vctrs_rray_lgl.double <- function(x, to) {
-  dim <- c(vec_size(x), rray_shape(to))
-  dim_names <- restore_dim_names(dim_names(x), dim)
-  ptype <- rray_shapecast(logical(), dim)
+  shape <- rray_shape(to)
+  ptype <- rray_shapecast(logical(), shape)
   x <- vec_cast(x, ptype)
-  new_rray(x, dim[1], dim[-1], dim_names)
+  new_rray(x, vec_size(x), shape)
 }
 
 #' @method vec_cast.double vctrs_rray_lgl
@@ -513,7 +490,6 @@ vec_cast.logical.vctrs_rray_lgl <- vec_cast.integer.vctrs_rray_int
 
 # ------------------------------------------------------------------------------
 
-rray_shapecast <- function(x, dim) {
-  dim[1] <- vec_size(x)
-  rray_broadcast(x, dim)
+rray_shapecast <- function(x, shape) {
+  rray_broadcast(x, c(vec_size(x), shape))
 }
