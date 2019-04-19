@@ -1,5 +1,5 @@
 rray_type_inner <- function(x) {
-  vec_data(x)[0]
+  vec_data(vec_type(x))
 }
 
 rray_type_inner2 <- function(x, y) {
