@@ -30,7 +30,7 @@ vec_ptype_abbr.vctrs_rray <- function(x) {
 
 #' @export
 vec_ptype_full.vctrs_rray <- function(x) {
-  paste0("vctrs_rray<", typeof(x), ">", vec_ptype_shape(x))
+  paste0("rray<", rray_inner_ptype_abbr(x), ">", vec_ptype_shape(x))
 }
 
 # from vctrs
@@ -40,6 +40,21 @@ vec_ptype_shape <- function(x) {
     ""
   } else {
     paste0("[,", paste(dim[-1], collapse = ","), "]")
+  }
+}
+
+rray_inner_ptype_abbr <- function(x) {
+  if (is_rray_int(x)) {
+    "int"
+  }
+  else if (is_rray_dbl(x)) {
+    "dbl"
+  }
+  else if (is_rray_lgl(x)) {
+    "lgl"
+  }
+  else {
+    "unknown"
   }
 }
 

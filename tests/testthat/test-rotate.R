@@ -129,7 +129,7 @@ test_that("rotations work on higher dimensions", {
 
   # from = 1, to = 3, times = 1
   nms_rot_2 <- rlang::list2(NULL, !!!nms[c(2, 1)])
-  x_rot_2 <- rray(NA_real_, c(1, 2, 3), dim_names = nms_rot_2)
+  x_rot_2 <- rray(NA_integer_, c(1, 2, 3), dim_names = nms_rot_2)
   x_rot_2[1,,1] <- matrix(c(1L, 4L), nrow = 1)
   x_rot_2[1,,2] <- matrix(c(2L, 5L), nrow = 1)
   x_rot_2[1,,3] <- matrix(c(3L, 6L), nrow = 1)
@@ -142,7 +142,7 @@ test_that("rotations work on higher dimensions", {
   # from = 3, to = 1, times = 1
   nms_rot_3 <- rlang::list2(NULL, !!!nms[c(2, 1)])
   nms_rot_3[[3]] <- rev(nms_rot_3[[3]])
-  x_rot_3 <- rray(NA_real_, c(1, 2, 3), dim_names = nms_rot_3)
+  x_rot_3 <- rray(NA_integer_, c(1, 2, 3), dim_names = nms_rot_3)
   x_rot_3[1,,1] <- matrix(c(3L, 6L), nrow = 1)
   x_rot_3[1,,2] <- matrix(c(2L, 5L), nrow = 1)
   x_rot_3[1,,3] <- matrix(c(1L, 4L), nrow = 1)

@@ -73,12 +73,15 @@
 rray_broadcast <- function(x, dim) {
   dim <- vec_cast(dim, integer())
 
+  # Expand dimensionality of `x` as needed
+  x <- rray_dims_match(x, vec_size(dim))
+
+  # Check if identical after dimensionality has
+  # been expanded, so we capture cases where
+  # only dimensionality changes
   if (identical(vec_dim(x), dim)) {
     return(x)
   }
-
-  # Expand dimensionality of `x` as needed
-  x <- rray_dims_match(x, vec_size(dim))
 
   # pre-subset where any `dim == 0L` is requested
   x <- pre_zero_slice(x, dim)

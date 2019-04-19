@@ -43,10 +43,11 @@ new_rray <- function(.data = numeric(0),
                      subclass = character(0)
                      ) {
 
-  stopifnot(is_rray_type(.data))
   stopifnot(is_bare_integer(size))
   stopifnot(is_bare_integer(shape))
   .dim <- c(size, shape)
+
+  sub_type <- rray_sub_type(.data)
 
   # enforce list of empty characters
   if (is_null(dim_names)) {
@@ -72,7 +73,7 @@ new_rray <- function(.data = numeric(0),
     dim = .dim,
     dimnames = dim_names,
     ...,
-    class = c(subclass, "vctrs_rray")
+    class = c(subclass, sub_type, "vctrs_rray")
   )
 
 }
@@ -173,6 +174,21 @@ is_rray_type <- function(x) {
   is_integer(x) || is_double(x) || is_logical(x)
 }
 
+rray_sub_type <- function(x) {
+  if (is_integer(x)) {
+    "vctrs_rray_int"
+  }
+  else if (is_double(x)) {
+    "vctrs_rray_dbl"
+  }
+  else if (is_logical(x)) {
+    "vctrs_rray_lgl"
+  }
+  else {
+    glubort("Cannot create an rray from a {class(x)[1]}.")
+  }
+}
+
 #' Check if `x` can be reshaped
 #'
 #' `x` is reshapeable to `to_dim` if the number of elements in `x` equal
@@ -208,3 +224,31 @@ rray_elems <- function(x) {
   prod(vec_dim(x))
 }
 
+#' Is `x` an rray?
+#'
+#' `is_rray()` tests if `x` is an rray object.
+#'
+#' @param x An object.
+#'
+#' @examples
+#'
+#' is_rray(rray(1:5))
+#'
+#' is_rray(1:5)
+#'
+#' @export
+is_rray <- function(x) {
+  inherits(x, "vctrs_rray")
+}
+
+is_rray_int <- function(x) {
+  inherits(x, "vctrs_rray_int")
+}
+
+is_rray_dbl <- function(x) {
+  inherits(x, "vctrs_rray_dbl")
+}
+
+is_rray_lgl <- function(x) {
+  inherits(x, "vctrs_rray_lgl")
+}

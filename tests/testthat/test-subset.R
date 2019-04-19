@@ -266,7 +266,7 @@ test_that("names are kept with yank and a 1D array", {
 test_that("can yank with a logical", {
   x <- rray(1:8, dim = c(2, 2, 2))
   idx <- rray(rep(c(TRUE, FALSE), 4), c(2, 2, 2))
-  expect_equal(rray_yank(x, idx), rray(c(1, 3, 5, 7)))
+  expect_equal(rray_yank(x, idx), rray(c(1L, 3L, 5L, 7L)))
 })
 
 test_that("shaped logicals with non-identical shape fail with yank", {
@@ -350,7 +350,7 @@ test_that("can use a yank assign", {
 test_that("value is broadcast in integer yank assign", {
   x <- rray(1:8, dim = c(2, 2, 2))
   rray_yank(x, 1:7) <- NA
-  expect_equal(x, rray(c(rep(NA, 7), 8), c(2, 2, 2)))
+  expect_equal(x, rray(c(rep(NA_integer_, 7), 8L), c(2, 2, 2)))
 })
 
 test_that("assigning to 0 does nothing", {
@@ -459,7 +459,7 @@ test_that("can extract with a logical", {
 
   expect_error(rray_extract(x, c(TRUE, TRUE, TRUE)), "must have length 1 or")
 
-  expect_equal(rray_extract(x, c(TRUE, FALSE)), rray(c(1, 3, 5, 7)))
+  expect_equal(rray_extract(x, c(TRUE, FALSE)), rray(c(1L, 3L, 5L, 7L)))
 })
 
 test_that("extract with NA (lgl)", {

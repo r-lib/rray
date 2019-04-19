@@ -343,13 +343,6 @@ test_that("reducing base types maintains type", {
   expect_equal(col_names(rray_max(x_mat_cnames, 2)), "x")
 })
 
-test_that("rray_max() with integers gives doubles to prevent overflow", {
-  expect_equal(
-    vec_type(rray_max(rray(1L))),
-    vec_type(rray(1))
-  )
-})
-
 # ------------------------------------------------------------------------------
 # amin
 
@@ -430,13 +423,6 @@ test_that("reducing base types maintains type", {
 
   expect_equal(col_names(rray_min(x_mat_cnames, 1)), "x")
   expect_equal(col_names(rray_min(x_mat_cnames, 2)), "x")
-})
-
-test_that("rray_min() with integers gives doubles to prevent overflow", {
-  expect_equal(
-    vec_type(rray_min(rray(1L))),
-    vec_type(rray(1))
-  )
 })
 
 # ------------------------------------------------------------------------------

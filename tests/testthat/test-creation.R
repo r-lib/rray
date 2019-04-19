@@ -12,7 +12,7 @@ test_that("Can create rrays", {
       c(1, 2, 3),
       dim = c(3L, 1L),
       dimnames = list(NULL, NULL),
-      class = c("vctrs_rray", "vctrs_vctr")
+      class = c("vctrs_rray_dbl", "vctrs_rray", "vctrs_vctr")
     )
   )
 
@@ -23,7 +23,7 @@ test_that("Can create rrays", {
       c(1, 2, 3),
       dim = c(3L, 1L),
       dimnames = list(c("r1", "r2", "r3"), "c1"),
-      class = c("vctrs_rray", "vctrs_vctr")
+      class = c("vctrs_rray_dbl", "vctrs_rray", "vctrs_vctr")
     )
   )
 
@@ -34,7 +34,7 @@ test_that("Can create rrays", {
       c(1, 2, 3),
       dim = c(3L, 1L, 1L),
       dimnames = list(NULL, NULL, NULL),
-      class = c("vctrs_rray", "vctrs_vctr")
+      class = c("vctrs_rray_dbl", "vctrs_rray", "vctrs_vctr")
     )
   )
 
@@ -45,7 +45,7 @@ test_that("Can create rrays", {
       c(1, 2, 3),
       dim = c(3L, 1L, 1L),
       dimnames = list(NULL, "c1", "depth1"),
-      class = c("vctrs_rray", "vctrs_vctr")
+      class = c("vctrs_rray_dbl", "vctrs_rray", "vctrs_vctr")
     )
   )
 
@@ -98,3 +98,7 @@ test_that("Can broadcast on the way in", {
   expect_equal(vec_dim(rray(x_6x1, c(6, 2, 1))), c(6, 2, 1))
 })
 
+test_that("can test if objects are rrays", {
+  expect_true(is_rray(rray(1:5)))
+  expect_false(is_rray(1:5))
+})
