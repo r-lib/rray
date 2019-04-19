@@ -176,6 +176,20 @@ set_full_dim_names.vctrs_rray <- function(x, value) {
   x
 }
 
+#' @export
+`names<-.vctrs_rray` <- function(x, value) {
+
+  if (vec_dims(x) > 1L) {
+    glubort("Cannot set `names` on a 2D+ object. Use `dim_names<-()` instead.")
+  }
+
+  if (!is.null(value)) {
+    value <- list(value)
+  }
+
+  set_full_dim_names(x, value)
+}
+
 # ------------------------------------------------------------------------------
 
 #' @export
