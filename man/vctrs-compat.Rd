@@ -3,21 +3,27 @@
 \name{vec_arith.vctrs_rray}
 \alias{vec_arith.vctrs_rray}
 \alias{vctrs-compat}
-\alias{vec_type2.vctrs_rray_int}
 \alias{vec_type2.vctrs_rray_dbl}
+\alias{vec_type2.vctrs_rray_int}
 \alias{vec_type2.vctrs_rray_lgl}
-\alias{vec_cast.vctrs_rray}
+\alias{vec_cast.vctrs_rray_int}
+\alias{vec_cast.vctrs_rray_dbl}
+\alias{vec_cast.vctrs_rray_lgl}
 \title{vctrs compatibility functions}
 \usage{
 \method{vec_arith}{vctrs_rray}(op, x, y)
 
-\method{vec_type2}{vctrs_rray_int}(x, y)
-
 \method{vec_type2}{vctrs_rray_dbl}(x, y)
+
+\method{vec_type2}{vctrs_rray_int}(x, y)
 
 \method{vec_type2}{vctrs_rray_lgl}(x, y)
 
-\method{vec_cast}{vctrs_rray}(x, to)
+\method{vec_cast}{vctrs_rray_int}(x, to)
+
+\method{vec_cast}{vctrs_rray_dbl}(x, to)
+
+\method{vec_cast}{vctrs_rray_lgl}(x, to)
 }
 \arguments{
 \item{op}{An arithmetic operator as a string.}

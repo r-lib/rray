@@ -30,83 +30,6 @@ vec_restore.vctrs_rray <- function(x, to, ..., i = NULL) {
 NULL
 
 # ##############################################################################
-# vec_type2 - vctrs_rray_int
-
-#' @export
-#' @rdname vctrs-compat
-#' @method vec_type2 vctrs_rray_int
-#' @export vec_type2.vctrs_rray_int
-vec_type2.vctrs_rray_int <- function(x, y) UseMethod("vec_type2.vctrs_rray_int", y)
-
-#' @method vec_type2.vctrs_rray_int default
-#' @export
-vec_type2.vctrs_rray_int.default <- function(x, y) stop_incompatible_type(x, y)
-
-#' @method vec_type2.vctrs_rray_int vctrs_unspecified
-#' @export
-vec_type2.vctrs_rray_int.vctrs_unspecified <- function(x, y) x
-
-# vec_type2 vctrs_rray_int <-> vctrs_rray_int ----------------------------------
-
-#' @method vec_type2.vctrs_rray_int vctrs_rray_int
-#' @export
-vec_type2.vctrs_rray_int.vctrs_rray_int <- function(x, y) {
-  new_rray(integer(), shape = rray_shape2(x, y))
-}
-
-# vec_type2 vctrs_rray_int <-> vctrs_rray_dbl ----------------------------------
-
-#' @method vec_type2.vctrs_rray_int vctrs_rray_dbl
-#' @export
-vec_type2.vctrs_rray_int.vctrs_rray_dbl <- function(x, y) {
-  new_rray(double(), shape = rray_shape2(x, y))
-}
-
-#' @method vec_type2.vctrs_rray_dbl vctrs_rray_int
-#' @export
-vec_type2.vctrs_rray_dbl.vctrs_rray_int <- vec_type2.vctrs_rray_int.vctrs_rray_dbl
-
-# vec_type2 vctrs_rray_int <-> vctrs_rray_lgl ----------------------------------
-
-#' @method vec_type2.vctrs_rray_int vctrs_rray_lgl
-#' @export
-vec_type2.vctrs_rray_int.vctrs_rray_lgl <- vec_type2.vctrs_rray_int.vctrs_rray_int
-
-#' @method vec_type2.vctrs_rray_lgl vctrs_rray_int
-#' @export
-vec_type2.vctrs_rray_lgl.vctrs_rray_int <- vec_type2.vctrs_rray_int.vctrs_rray_int
-
-# vec_type2 vctrs_rray_int <-> double/matrix/array -----------------------------
-
-#' @method vec_type2.vctrs_rray_int double
-#' @export
-vec_type2.vctrs_rray_int.double <- vec_type2.vctrs_rray_int.vctrs_rray_dbl
-
-#' @method vec_type2.double vctrs_rray_int
-#' @export
-vec_type2.double.vctrs_rray_int <- vec_type2.vctrs_rray_int.vctrs_rray_dbl
-
-# vec_type2 vctrs_rray_int <-> integer/matrix/array ----------------------------
-
-#' @method vec_type2.vctrs_rray_int integer
-#' @export
-vec_type2.vctrs_rray_int.integer <- vec_type2.vctrs_rray_int.vctrs_rray_int
-
-#' @method vec_type2.integer vctrs_rray_int
-#' @export
-vec_type2.integer.vctrs_rray_int <- vec_type2.vctrs_rray_int.vctrs_rray_int
-
-# vec_type2 vctrs_rray_int <-> logical/matrix/array ----------------------------
-
-#' @method vec_type2.vctrs_rray_int logical
-#' @export
-vec_type2.vctrs_rray_int.logical <- vec_type2.vctrs_rray_int.vctrs_rray_int
-
-#' @method vec_type2.logical vctrs_rray_int
-#' @export
-vec_type2.logical.vctrs_rray_int <- vec_type2.vctrs_rray_int.vctrs_rray_int
-
-# ##############################################################################
 # vec_type2 - vctrs_rray_dbl
 
 #' @export
@@ -137,19 +60,11 @@ vec_type2.vctrs_rray_dbl.vctrs_rray_dbl <- function(x, y) {
 #' @export
 vec_type2.vctrs_rray_dbl.vctrs_rray_int <- vec_type2.vctrs_rray_dbl.vctrs_rray_dbl
 
-#' @method vec_type2.vctrs_rray_int vctrs_rray_dbl
-#' @export
-vec_type2.vctrs_rray_int.vctrs_rray_dbl <- vec_type2.vctrs_rray_dbl.vctrs_rray_dbl
-
 # vec_type2 vctrs_rray_dbl <-> vctrs_rray_lgl ----------------------------------
 
 #' @method vec_type2.vctrs_rray_dbl vctrs_rray_lgl
 #' @export
 vec_type2.vctrs_rray_dbl.vctrs_rray_lgl <- vec_type2.vctrs_rray_dbl.vctrs_rray_dbl
-
-#' @method vec_type2.vctrs_rray_lgl vctrs_rray_dbl
-#' @export
-vec_type2.vctrs_rray_lgl.vctrs_rray_dbl <- vec_type2.vctrs_rray_dbl.vctrs_rray_dbl
 
 # vec_type2 vctrs_rray_dbl <-> double/matrix/array -----------------------------
 
@@ -182,6 +97,73 @@ vec_type2.vctrs_rray_dbl.logical <- vec_type2.vctrs_rray_dbl.vctrs_rray_dbl
 vec_type2.logical.vctrs_rray_dbl <- vec_type2.vctrs_rray_dbl.vctrs_rray_dbl
 
 # ##############################################################################
+# vec_type2 - vctrs_rray_int
+
+#' @export
+#' @rdname vctrs-compat
+#' @method vec_type2 vctrs_rray_int
+#' @export vec_type2.vctrs_rray_int
+vec_type2.vctrs_rray_int <- function(x, y) UseMethod("vec_type2.vctrs_rray_int", y)
+
+#' @method vec_type2.vctrs_rray_int default
+#' @export
+vec_type2.vctrs_rray_int.default <- function(x, y) stop_incompatible_type(x, y)
+
+#' @method vec_type2.vctrs_rray_int vctrs_unspecified
+#' @export
+vec_type2.vctrs_rray_int.vctrs_unspecified <- function(x, y) x
+
+# vec_type2 vctrs_rray_int <-> vctrs_rray_int ----------------------------------
+
+#' @method vec_type2.vctrs_rray_int vctrs_rray_int
+#' @export
+vec_type2.vctrs_rray_int.vctrs_rray_int <- function(x, y) {
+  new_rray(integer(), shape = rray_shape2(x, y))
+}
+
+# vec_type2 vctrs_rray_int <-> vctrs_rray_dbl ----------------------------------
+
+#' @method vec_type2.vctrs_rray_int vctrs_rray_dbl
+#' @export
+vec_type2.vctrs_rray_int.vctrs_rray_dbl <- vec_type2.vctrs_rray_dbl.vctrs_rray_dbl
+
+# vec_type2 vctrs_rray_int <-> vctrs_rray_lgl ----------------------------------
+
+#' @method vec_type2.vctrs_rray_int vctrs_rray_lgl
+#' @export
+vec_type2.vctrs_rray_int.vctrs_rray_lgl <- vec_type2.vctrs_rray_int.vctrs_rray_int
+
+# vec_type2 vctrs_rray_int <-> double/matrix/array -----------------------------
+
+#' @method vec_type2.vctrs_rray_int double
+#' @export
+vec_type2.vctrs_rray_int.double <- vec_type2.vctrs_rray_dbl.vctrs_rray_dbl
+
+#' @method vec_type2.double vctrs_rray_int
+#' @export
+vec_type2.double.vctrs_rray_int <- vec_type2.vctrs_rray_dbl.vctrs_rray_dbl
+
+# vec_type2 vctrs_rray_int <-> integer/matrix/array ----------------------------
+
+#' @method vec_type2.vctrs_rray_int integer
+#' @export
+vec_type2.vctrs_rray_int.integer <- vec_type2.vctrs_rray_int.vctrs_rray_int
+
+#' @method vec_type2.integer vctrs_rray_int
+#' @export
+vec_type2.integer.vctrs_rray_int <- vec_type2.vctrs_rray_int.vctrs_rray_int
+
+# vec_type2 vctrs_rray_int <-> logical/matrix/array ----------------------------
+
+#' @method vec_type2.vctrs_rray_int logical
+#' @export
+vec_type2.vctrs_rray_int.logical <- vec_type2.vctrs_rray_int.vctrs_rray_int
+
+#' @method vec_type2.logical vctrs_rray_int
+#' @export
+vec_type2.logical.vctrs_rray_int <- vec_type2.vctrs_rray_int.vctrs_rray_int
+
+# ##############################################################################
 # vec_type2 - vctrs_rray_lgl
 
 #' @export
@@ -210,45 +192,33 @@ vec_type2.vctrs_rray_lgl.vctrs_rray_lgl <- function(x, y) {
 
 #' @method vec_type2.vctrs_rray_lgl vctrs_rray_int
 #' @export
-vec_type2.vctrs_rray_lgl.vctrs_rray_int <- function(x, y) {
-  new_rray(integer(), shape = rray_shape2(x, y))
-}
-
-#' @method vec_type2.vctrs_rray_int vctrs_rray_lgl
-#' @export
-vec_type2.vctrs_rray_int.vctrs_rray_lgl <- vec_type2.vctrs_rray_lgl.vctrs_rray_int
+vec_type2.vctrs_rray_lgl.vctrs_rray_int <- vec_type2.vctrs_rray_int.vctrs_rray_int
 
 # vec_type2 vctrs_rray_lgl <-> vctrs_rray_dbl ----------------------------------
 
 #' @method vec_type2.vctrs_rray_lgl vctrs_rray_dbl
 #' @export
-vec_type2.vctrs_rray_lgl.vctrs_rray_dbl <- function(x, y) {
-  new_rray(double(), shape = rray_shape2(x, y))
-}
-
-#' @method vec_type2.vctrs_rray_dbl vctrs_rray_lgl
-#' @export
-vec_type2.vctrs_rray_dbl.vctrs_rray_lgl <- vec_type2.vctrs_rray_lgl.vctrs_rray_dbl
+vec_type2.vctrs_rray_lgl.vctrs_rray_dbl <- vec_type2.vctrs_rray_dbl.vctrs_rray_dbl
 
 # vec_type2 vctrs_rray_lgl <-> double/matrix/array -----------------------------
 
 #' @method vec_type2.vctrs_rray_lgl double
 #' @export
-vec_type2.vctrs_rray_lgl.double <- vec_type2.vctrs_rray_lgl.vctrs_rray_dbl
+vec_type2.vctrs_rray_lgl.double <- vec_type2.vctrs_rray_dbl.vctrs_rray_dbl
 
 #' @method vec_type2.double vctrs_rray_lgl
 #' @export
-vec_type2.double.vctrs_rray_lgl <- vec_type2.vctrs_rray_lgl.vctrs_rray_dbl
+vec_type2.double.vctrs_rray_lgl <- vec_type2.vctrs_rray_dbl.vctrs_rray_dbl
 
 # vec_type2 vctrs_rray_lgl <-> integer/matrix/array ----------------------------
 
 #' @method vec_type2.vctrs_rray_lgl integer
 #' @export
-vec_type2.vctrs_rray_lgl.integer <- vec_type2.vctrs_rray_lgl.vctrs_rray_int
+vec_type2.vctrs_rray_lgl.integer <- vec_type2.vctrs_rray_int.vctrs_rray_int
 
 #' @method vec_type2.integer vctrs_rray_lgl
 #' @export
-vec_type2.integer.vctrs_rray_lgl <- vec_type2.vctrs_rray_lgl.vctrs_rray_int
+vec_type2.integer.vctrs_rray_lgl <- vec_type2.vctrs_rray_int.vctrs_rray_int
 
 # vec_type2 vctrs_rray_lgl <-> logical/matrix/array ----------------------------
 
@@ -261,72 +231,265 @@ vec_type2.vctrs_rray_lgl.logical <- vec_type2.vctrs_rray_lgl.vctrs_rray_lgl
 vec_type2.logical.vctrs_rray_lgl <- vec_type2.vctrs_rray_lgl.vctrs_rray_lgl
 
 # ##############################################################################
-# vec_cast boilerplate
+# vec_cast - vctrs_rray_int
 
 #' @export
 #' @rdname vctrs-compat
-#' @method vec_cast vctrs_rray
-#' @export vec_cast.vctrs_rray
-vec_cast.vctrs_rray <- function(x, to) UseMethod("vec_cast.vctrs_rray")
+#' @method vec_cast vctrs_rray_int
+#' @export vec_cast.vctrs_rray_int
+vec_cast.vctrs_rray_int <- function(x, to) UseMethod("vec_cast.vctrs_rray_int")
 
-#' @method vec_cast.vctrs_rray default
+#' @method vec_cast.vctrs_rray_int default
 #' @export
-vec_cast.vctrs_rray.default <- function(x, to) stop_incompatible_cast(x, to)
+vec_cast.vctrs_rray_int.default <- function(x, to) stop_incompatible_cast(x, to)
 
-# vec_cast vctrs_rray <-> vctrs_rray -------------------------------------------
+# vec_cast vctrs_rray_int <-> vctrs_rray_int -----------------------------------
 
-# like vec_type2, vec_cast is ONLY about casting to a new type (class + shape)
-# and has no regard for names
-
-#' @method vec_cast.vctrs_rray vctrs_rray
+#' @method vec_cast.vctrs_rray_int vctrs_rray_int
 #' @export
-vec_cast.vctrs_rray.vctrs_rray <- function(x, to) {
-  x <- rray_cast_inner(x, to)
+vec_cast.vctrs_rray_int.vctrs_rray_int <- function(x, to) {
   rray_shapecast(x, vec_dim(to))
 }
 
-# vec_cast vctrs_rray <-> double -----------------------------------------------
+# vec_cast vctrs_rray_int <-> vctrs_rray_dbl -----------------------------------
 
-# double to vctrs_rray
-
-#' @method vec_cast.vctrs_rray double
+#' @method vec_cast.vctrs_rray_int vctrs_rray_dbl
 #' @export
-vec_cast.vctrs_rray.double <- function(x, to) {
+vec_cast.vctrs_rray_int.vctrs_rray_dbl <- function(x, to) {
+  dim <- c(vec_size(x), rray_shape(to))
+  dim_names <- restore_dim_names(dim_names(x), dim)
+  ptype <- rray_shapecast(integer(), dim)
+  x <- vec_cast(vec_data(x), ptype)
+  new_rray(x, dim[1], dim[-1], dim_names)
+}
+
+# vec_cast vctrs_rray_int <-> vctrs_rray_lgl -----------------------------------
+
+#' @method vec_cast.vctrs_rray_int vctrs_rray_lgl
+#' @export
+vec_cast.vctrs_rray_int.vctrs_rray_lgl <- function(x, to) {
+  dim <- c(vec_size(x), rray_shape(to))
+  dim_names <- restore_dim_names(dim_names(x), dim)
+  ptype <- rray_shapecast(integer(), dim)
+  x <- vec_cast(vec_data(x), ptype)
+  new_rray(x, dim[1], dim[-1], dim_names)
+}
+
+# vec_cast vctrs_rray_int <-> double -------------------------------------------
+
+#' @method vec_cast.vctrs_rray_int double
+#' @export
+vec_cast.vctrs_rray_int.double <- function(x, to) {
+  dim <- c(vec_size(x), rray_shape(to))
+  dim_names <- restore_dim_names(dim_names(x), dim)
+  ptype <- rray_shapecast(integer(), dim)
+  x <- vec_cast(x, ptype)
+  new_rray(x, dim[1], dim[-1], dim_names)
+}
+
+#' @method vec_cast.double vctrs_rray_int
+#' @export
+vec_cast.double.vctrs_rray_int <- function(x, to) {
+  dim <- c(vec_size(x), rray_shape(to))
+  dim_names <- restore_dim_names(dim_names(x), dim)
+  ptype <- rray_shapecast(double(), dim)
+  x <- vec_cast(vec_data(x), ptype)
+  new_array(x, dim = dim, dimnames = dim_names)
+}
+
+# vec_cast vctrs_rray_int <-> integer ------------------------------------------
+
+#' @method vec_cast.vctrs_rray_int integer
+#' @export
+vec_cast.vctrs_rray_int.integer <- function(x, to) {
   dim <- vec_dim(x)
-  x <- new_rray(vec_data(x), dim[1], dim[-1], dim_names(x))
-  x <- rray_cast_inner(x, to)
+  x <- new_rray(x, dim[1], dim[-1], dim_names(x))
   rray_shapecast(x, vec_dim(to))
 }
 
-# vctrs_rray to double
-
-#' @method vec_cast.double vctrs_rray
+#' @method vec_cast.integer vctrs_rray_int
 #' @export
-vec_cast.double.vctrs_rray <- function(x, to) {
-  x <- rray_cast_inner(x, to)
-  x <- vec_data(x)
+vec_cast.integer.vctrs_rray_int <- function(x, to) {
+  rray_shapecast(unclass(x), vec_dim(to))
+}
+
+# vec_cast vctrs_rray_int <-> logical ------------------------------------------
+
+#' @method vec_cast.vctrs_rray_int logical
+#' @export
+vec_cast.vctrs_rray_int.logical <- vec_cast.vctrs_rray_int.double
+
+#' @method vec_cast.logical vctrs_rray_int
+#' @export
+vec_cast.logical.vctrs_rray_int <- function(x, to) {
+  dim <- c(vec_size(x), rray_shape(to))
+  dim_names <- restore_dim_names(dim_names(x), dim)
+  ptype <- rray_shapecast(logical(), dim)
+  x <- vec_cast(vec_data(x), ptype)
+  new_array(x, dim = dim, dimnames = dim_names)
+}
+
+# ##############################################################################
+# vec_cast - vctrs_rray_dbl
+
+#' @export
+#' @rdname vctrs-compat
+#' @method vec_cast vctrs_rray_dbl
+#' @export vec_cast.vctrs_rray_dbl
+vec_cast.vctrs_rray_dbl <- function(x, to) UseMethod("vec_cast.vctrs_rray_dbl")
+
+#' @method vec_cast.vctrs_rray_dbl default
+#' @export
+vec_cast.vctrs_rray_dbl.default <- function(x, to) stop_incompatible_cast(x, to)
+
+# vec_cast vctrs_rray_dbl <-> vctrs_rray_dbl -----------------------------------
+
+#' @method vec_cast.vctrs_rray_dbl vctrs_rray_dbl
+#' @export
+vec_cast.vctrs_rray_dbl.vctrs_rray_dbl <- function(x, to) {
   rray_shapecast(x, vec_dim(to))
 }
 
-# vec_cast vctrs_rray <-> integer -----------------------------------------------
+# vec_cast vctrs_rray_dbl <-> vctrs_rray_int -----------------------------------
 
-#' @method vec_cast.vctrs_rray integer
+#' @method vec_cast.vctrs_rray_dbl vctrs_rray_int
 #' @export
-vec_cast.vctrs_rray.integer <- vec_cast.vctrs_rray.double
+vec_cast.vctrs_rray_dbl.vctrs_rray_int <- function(x, to) {
+  dim <- c(vec_size(x), rray_shape(to))
+  dim_names <- restore_dim_names(dim_names(x), dim)
+  ptype <- rray_shapecast(double(), dim)
+  x <- vec_cast(vec_data(x), ptype)
+  new_rray(x, dim[1], dim[-1], dim_names)
+}
 
-#' @method vec_cast.integer vctrs_rray
+# vec_cast vctrs_rray_dbl <-> vctrs_rray_lgl -----------------------------------
+
+#' @method vec_cast.vctrs_rray_dbl vctrs_rray_lgl
 #' @export
-vec_cast.integer.vctrs_rray <- vec_cast.double.vctrs_rray
+vec_cast.vctrs_rray_dbl.vctrs_rray_lgl <- vec_cast.vctrs_rray_dbl.vctrs_rray_int
 
-# vec_cast vctrs_rray <-> logical -----------------------------------------------
+# vec_cast vctrs_rray_dbl <-> double -------------------------------------------
 
-#' @method vec_cast.vctrs_rray logical
+#' @method vec_cast.vctrs_rray_dbl double
 #' @export
-vec_cast.vctrs_rray.logical <- vec_cast.vctrs_rray.double
+vec_cast.vctrs_rray_dbl.double <- vec_cast.vctrs_rray_int.integer
 
-#' @method vec_cast.logical vctrs_rray
+#' @method vec_cast.double vctrs_rray_dbl
 #' @export
-vec_cast.logical.vctrs_rray <- vec_cast.double.vctrs_rray
+vec_cast.double.vctrs_rray_dbl <- vec_cast.integer.vctrs_rray_int
+
+# vec_cast vctrs_rray_dbl <-> integer ------------------------------------------
+
+#' @method vec_cast.vctrs_rray_dbl integer
+#' @export
+vec_cast.vctrs_rray_dbl.integer <- function(x, to) {
+  dim <- c(vec_size(x), rray_shape(to))
+  dim_names <- restore_dim_names(dim_names(x), dim)
+  ptype <- rray_shapecast(double(), dim)
+  x <- vec_cast(x, ptype)
+  new_rray(x, dim[1], dim[-1], dim_names)
+}
+
+#' @method vec_cast.integer vctrs_rray_dbl
+#' @export
+vec_cast.integer.vctrs_rray_dbl <- function(x, to) {
+  dim <- c(vec_size(x), rray_shape(to))
+  dim_names <- restore_dim_names(dim_names(x), dim)
+  ptype <- rray_shapecast(integer(), dim)
+  x <- vec_cast(vec_data(x), ptype)
+  new_array(x, dim = dim, dimnames = dim_names)
+}
+
+# vec_cast vctrs_rray_dbl <-> logical ------------------------------------------
+
+#' @method vec_cast.vctrs_rray_dbl logical
+#' @export
+vec_cast.vctrs_rray_dbl.logical <- vec_cast.vctrs_rray_dbl.integer
+
+#' @method vec_cast.logical vctrs_rray_dbl
+#' @export
+vec_cast.logical.vctrs_rray_dbl <- function(x, to) {
+  dim <- c(vec_size(x), rray_shape(to))
+  dim_names <- restore_dim_names(dim_names(x), dim)
+  ptype <- rray_shapecast(logical(), dim)
+  x <- vec_cast(vec_data(x), ptype)
+  new_array(x, dim = dim, dimnames = dim_names)
+}
+
+# ##############################################################################
+# vec_cast - vctrs_rray_lgl
+
+#' @export
+#' @rdname vctrs-compat
+#' @method vec_cast vctrs_rray_lgl
+#' @export vec_cast.vctrs_rray_lgl
+vec_cast.vctrs_rray_lgl <- function(x, to) UseMethod("vec_cast.vctrs_rray_lgl")
+
+#' @method vec_cast.vctrs_rray_lgl default
+#' @export
+vec_cast.vctrs_rray_lgl.default <- function(x, to) stop_incompatible_cast(x, to)
+
+# vec_cast vctrs_rray_lgl <-> vctrs_rray_lgl -----------------------------------
+
+#' @method vec_cast.vctrs_rray_lgl vctrs_rray_lgl
+#' @export
+vec_cast.vctrs_rray_lgl.vctrs_rray_lgl <- function(x, to) {
+  rray_shapecast(x, vec_dim(to))
+}
+
+# vec_cast vctrs_rray_lgl <-> vctrs_rray_dbl -----------------------------------
+
+#' @method vec_cast.vctrs_rray_lgl vctrs_rray_dbl
+#' @export
+vec_cast.vctrs_rray_lgl.vctrs_rray_dbl <- function(x, to) {
+  dim <- c(vec_size(x), rray_shape(to))
+  dim_names <- restore_dim_names(dim_names(x), dim)
+  ptype <- rray_shapecast(logical(), dim)
+  x <- vec_cast(vec_data(x), ptype)
+  new_rray(x, dim[1], dim[-1], dim_names)
+}
+
+# vec_cast vctrs_rray_lgl <-> vctrs_rray_int -----------------------------------
+
+#' @method vec_cast.vctrs_rray_lgl vctrs_rray_int
+#' @export
+vec_cast.vctrs_rray_lgl.vctrs_rray_int <- vec_cast.vctrs_rray_lgl.vctrs_rray_dbl
+
+# vec_cast vctrs_rray_lgl <-> double -------------------------------------------
+
+#' @method vec_cast.vctrs_rray_lgl double
+#' @export
+vec_cast.vctrs_rray_lgl.double <- function(x, to) {
+  dim <- c(vec_size(x), rray_shape(to))
+  dim_names <- restore_dim_names(dim_names(x), dim)
+  ptype <- rray_shapecast(logical(), dim)
+  x <- vec_cast(x, ptype)
+  new_rray(x, dim[1], dim[-1], dim_names)
+}
+
+#' @method vec_cast.double vctrs_rray_lgl
+#' @export
+vec_cast.double.vctrs_rray_lgl <- vec_cast.double.vctrs_rray_int
+
+# vec_cast vctrs_rray_lgl <-> integer ------------------------------------------
+
+#' @method vec_cast.vctrs_rray_lgl integer
+#' @export
+vec_cast.vctrs_rray_lgl.integer <- vec_cast.vctrs_rray_lgl.double
+
+#' @method vec_cast.integer vctrs_rray_lgl
+#' @export
+vec_cast.integer.vctrs_rray_lgl <- vec_cast.integer.vctrs_rray_dbl
+
+# vec_cast vctrs_rray_lgl <-> logical ------------------------------------------
+
+#' @method vec_cast.vctrs_rray_lgl logical
+#' @export
+vec_cast.vctrs_rray_lgl.logical <- vec_cast.vctrs_rray_int.integer
+
+#' @method vec_cast.logical vctrs_rray_lgl
+#' @export
+vec_cast.logical.vctrs_rray_lgl <- vec_cast.integer.vctrs_rray_int
 
 # ------------------------------------------------------------------------------
 
