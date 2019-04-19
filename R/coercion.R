@@ -30,7 +30,7 @@ as_array.matrix <- function(x, ...) {
 #' @export
 as_array.double <- function(x, ...) {
   new_array(
-    .data = as.vector(x),
+    .data = x,
     dim = vec_dim(x),
     dimnames = dim_names(x)
   )
@@ -43,7 +43,9 @@ as_array.integer <- as_array.double
 as_array.logical <- as_array.double
 
 #' @export
-as_array.vctrs_rray <- as_array.double
+as_array.vctrs_rray <- function(x, ...) {
+  vec_data(x)
+}
 
 #' @export
 as.array.vctrs_rray <- as_array.vctrs_rray
@@ -74,8 +76,6 @@ as_matrix.matrix <- function(x, ...) {
 
 #' @export
 as_matrix.double <- function(x, ...) {
-  .data <- as.vector(x)
-
   dim <- vec_dim(x)
 
   validate_matrix_coercible_dim(dim)
@@ -87,7 +87,7 @@ as_matrix.double <- function(x, ...) {
   new_dim_names <- restore_dim_names(dim_names(x), dim)
 
   new_matrix(
-    .data = .data,
+    .data = x,
     dim = dim,
     dimnames = new_dim_names
   )
