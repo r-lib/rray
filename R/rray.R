@@ -43,11 +43,11 @@ new_rray <- function(.data = numeric(0),
                      subclass = character(0)
                      ) {
 
-  if (!is_bare_integer(size)) {
+  if (!is_integer(size)) {
     glubort("`size` must be a bare integer.")
   }
 
-  if (!is_bare_integer(shape)) {
+  if (!is_integer(shape)) {
     glubort("`shape` must be a bare integer.")
   }
 
@@ -208,18 +208,13 @@ is_rray_type <- function(x) {
 }
 
 rray_sub_type <- function(x) {
-  if (is_integer(x)) {
-    "vctrs_rray_int"
-  }
-  else if (is_double(x)) {
-    "vctrs_rray_dbl"
-  }
-  else if (is_logical(x)) {
-    "vctrs_rray_lgl"
-  }
-  else {
+  switch(
+    typeof(x),
+    integer = "vctrs_rray_int",
+    double = "vctrs_rray_dbl",
+    logical = "vctrs_rray_lgl",
     glubort("Cannot create an rray from a {class(x)[1]}.")
-  }
+  )
 }
 
 #' Check if `x` can be reshaped
