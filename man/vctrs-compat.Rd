@@ -13,11 +13,11 @@
 \usage{
 \method{vec_arith}{vctrs_rray}(op, x, y)
 
-\method{vec_type2}{vctrs_rray_dbl}(x, y)
+\method{vec_type2}{vctrs_rray_dbl}(x, y, ...)
 
-\method{vec_type2}{vctrs_rray_int}(x, y)
+\method{vec_type2}{vctrs_rray_int}(x, y, ...)
 
-\method{vec_type2}{vctrs_rray_lgl}(x, y)
+\method{vec_type2}{vctrs_rray_lgl}(x, y, ...)
 
 \method{vec_cast}{vctrs_rray_int}(x, to)
 
@@ -29,6 +29,8 @@
 \item{op}{An arithmetic operator as a string.}
 
 \item{x, y}{Objects.}
+
+\item{...}{Used to pass along error message information.}
 
 \item{to}{Type to cast to.}
 }
