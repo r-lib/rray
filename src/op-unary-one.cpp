@@ -11,13 +11,6 @@ using namespace rray;
 // Sort / arg*
 
 template <typename T>
-SEXP rray_sort_cpp(xt::rarray<T> x, SEXP arg) {
-  std::ptrdiff_t axis = Rcpp::as<std::ptrdiff_t>(arg);
-  xt::rarray<T> res = xt::sort(x, axis);
-  return res;
-}
-
-template <typename T>
 SEXP rray_argsort_cpp(xt::rarray<T> x, SEXP arg) {
   std::ptrdiff_t axis = Rcpp::as<std::ptrdiff_t>(arg);
   xt::rarray<int> res = xt::argsort(x, axis);
@@ -176,10 +169,6 @@ SEXP rray_op_unary_one_cpp_impl(std::string op, const xt::rarray<T1>& x, SEXP ar
 
   // ---------------------------------------------------------------------------
   // Sort / arg*
-
-  case str2int("sort"): {
-    return rray_sort_cpp(x, arg);
-  }
 
   case str2int("argsort"): {
     return rray_argsort_cpp(x, arg);

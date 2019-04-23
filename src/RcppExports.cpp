@@ -179,6 +179,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray__sort
+Rcpp::RObject rray__sort(Rcpp::RObject x, Rcpp::IntegerVector axis);
+RcppExport SEXP _rray_rray__sort(SEXP xSEXP, SEXP axisSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type axis(axisSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__sort(x, axis));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray_reducer_cpp
 SEXP rray_reducer_cpp(std::string op, SEXP x, SEXP axes);
 RcppExport SEXP _rray_rray_reducer_cpp(SEXP opSEXP, SEXP xSEXP, SEXP axesSEXP) {
@@ -208,6 +220,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray_op_unary_three_cpp", (DL_FUNC) &_rray_rray_op_unary_three_cpp, 5},
     {"_rray_rray_op_unary_two_cpp", (DL_FUNC) &_rray_rray_op_unary_two_cpp, 4},
     {"_rray_rray_op_unary_cpp", (DL_FUNC) &_rray_rray_op_unary_cpp, 2},
+    {"_rray_rray__sort", (DL_FUNC) &_rray_rray__sort, 2},
     {"_rray_rray_reducer_cpp", (DL_FUNC) &_rray_rray_reducer_cpp, 3},
     {NULL, NULL, 0}
 };

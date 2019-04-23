@@ -57,6 +57,10 @@ rray_op_unary_cpp <- function(op, x) {
     .Call(`_rray_rray_op_unary_cpp`, op, x)
 }
 
+rray__sort <- function(x, axis) {
+    .Call(`_rray_rray__sort`, x, axis)
+}
+
 rray_reducer_cpp <- function(op, x, axes) {
     .Call(`_rray_rray_reducer_cpp`, op, x, axes)
 }
