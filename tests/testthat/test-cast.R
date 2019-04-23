@@ -31,15 +31,15 @@ test_that("from base types", {
 
   x <- array(1:4, c(1, 2, 2))
 
-  x_int <- vec_cast(x, rray(1L, dim = c(0, 2, 2)))
+  x_int <- vec_cast(x, rray(integer(), dim = c(0, 2, 2)))
   expect_is(x_int, "vctrs_rray")
   expect_equal(dim(x_int), c(1, 2, 2))
   expect_equal(storage.mode(x_int), "integer")
 
-  x_dbl <- vec_cast(x, rray(1, dim = c(0, 2, 2)))
+  x_dbl <- vec_cast(x, rray(double(), dim = c(0, 2, 2)))
   expect_equal(storage.mode(x_dbl), "double")
 
-  x_lgl <- vec_cast(matrix(1), rray(TRUE, dim = c(0, 1)))
+  x_lgl <- vec_cast(matrix(1), rray(logical(), dim = c(0, 1)))
   expect_equal(storage.mode(x_lgl), "logical")
 
 })

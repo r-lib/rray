@@ -1,6 +1,7 @@
 // this header seems necessary for full_like() rather than xbuilder.hpp
 #include <xtensor/xarray.hpp>
 #include <xtensor/xsort.hpp>
+#include <xtensor/xview.hpp>
 
 #include <rray.h>
 #include <tools/tools.h>
@@ -9,10 +10,71 @@ using namespace rray;
 // -----------------------------------------------------------------------------
 // Broadcast
 
+Rcpp::IntegerVector rray_increase_dims(const Rcpp::IntegerVector& dim,
+                                       const int& dims) {
+
+  int current_dims = dim.size();
+
+  // Early exit
+  if (current_dims == dims) {
+    return dim;
+  }
+
+  if (current_dims > dims) {
+    Rcpp::stop("Cannot decrease dimensions.");
+  }
+
+  // At this point, we know we are missing dims
+  int n_missing_dims = dims - current_dims;
+
+  // Copy dim since we change it
+  Rcpp::IntegerVector out = Rcpp::clone(dim);
+
+  for (int i = 0; i < n_missing_dims; ++i) {
+    out.push_back(1);
+  }
+
+  return out;
+}
+
+// (15 is equal to the default settings of identical())
+bool r_identical(SEXP x, SEXP y) {
+  return R_compute_identical(x, y, 15);
+}
+
 template <typename T>
 SEXP rray_broadcast_cpp(const xt::rarray<T>& x, SEXP arg) {
-  std::vector<std::size_t> dim = Rcpp::as<std::vector<std::size_t>>(arg);
-  const xt::rarray<T>& res = xt::broadcast(x, dim);
+
+  using vec_size_t = typename std::vector<std::size_t>;
+
+  Rcpp::IntegerVector x_dim = rray_dim(SEXP(x));
+  Rcpp::IntegerVector to_dim = Rcpp::as<Rcpp::IntegerVector>(arg);
+  int to_dims = to_dim.size();
+
+  // Cheap early exit
+  if (r_identical(x_dim, to_dim)) {
+    return(x);
+  }
+
+  // Match dimensionality before comparison
+  x_dim = rray_increase_dims(x_dim, to_dims);
+
+  // 3 cases where broadcasting works:
+  // - Dimensions are the same (no change is made)
+  // - Dimension of x is 1 (broadcast to new dimension)
+  // - New dimension is 0 (no change is made)
+  Rcpp::LogicalVector ok = (x_dim == to_dim | x_dim == 1 | to_dim == 0);
+  if (Rcpp::is_true(Rcpp::any(!ok))) {
+    Rcpp::stop("Non-broadcastable dimensions.");
+  }
+
+  // Must reshape to match dimensionality first b/c of QuantStack/xtensor-r#57
+  const vec_size_t& x_view_dim = Rcpp::as<vec_size_t>(x_dim);
+  auto x_view = xt::reshape_view(x, x_view_dim);
+
+  const vec_size_t& to_dim_xt = Rcpp::as<vec_size_t>(to_dim);
+  xt::rarray<T> res = xt::broadcast(x_view, to_dim_xt);
+
   return(res);
 }
 
