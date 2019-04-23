@@ -213,7 +213,7 @@ test_that("assigning to NULL does nothing", {
 
 test_that("broadcast can fail gracefully in subset assign", {
   x <- rray(1:8, dim = c(2, 2, 2))
-  expect_error(rray_subset(x, 1, 1) <- c(1, 2), "Non-recyclable")
+  expect_error(rray_subset(x, 1, 1) <- c(1, 2), "Non-broadcastable")
 })
 
 test_that("can subset assign with shaped input", {
@@ -367,7 +367,7 @@ test_that("assigning to NULL does nothing", {
 
 test_that("broadcast can fail gracefully in yank assign", {
   x <- rray(1:8, dim = c(2, 2, 2))
-  expect_error(rray_yank(x, 1) <- c(1, 2), "Non-recyclable")
+  expect_error(rray_yank(x, 1) <- c(1, 2), "Non-broadcastable")
 })
 
 test_that("can yank assign with base R objects", {
@@ -576,7 +576,7 @@ test_that("assigning to NULL does nothing", {
 
 test_that("broadcast can fail gracefully in extract assign", {
   x <- rray(1:8, dim = c(2, 2, 2))
-  expect_error(rray_extract(x, 1) <- c(1, 2), "Non-recyclable")
+  expect_error(rray_extract(x, 1) <- c(1, 2), "Non-broadcastable")
 })
 
 test_that("can extract assign with base R objects", {

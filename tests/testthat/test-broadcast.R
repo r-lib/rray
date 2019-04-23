@@ -72,7 +72,7 @@ test_that("0 row input broadcasting", {
     rray_broadcast(x, c(1, 2))
   )
 
-  expect_error(rray_broadcast(x, c(0, 4)), "Non-recyclable")
+  expect_error(rray_broadcast(x, c(0, 4)), "Non-broadcastable")
 
 })
 
@@ -95,12 +95,12 @@ test_that("0 col input broadcasting", {
   # Cannot start with 0 and go up to 1 column
   expect_error(
     rray_broadcast(x, c(2, 1)),
-    "Non-recyclable"
+    "Non-broadcastable"
   )
 
   expect_error(
     rray_broadcast(x, c(4, 0)),
-    "Non-recyclable"
+    "Non-broadcastable"
   )
 
 })
