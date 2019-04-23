@@ -445,7 +445,7 @@ as_indexer <- function(dots, x) {
 }
 
 pad_missing <- function(dots, x) {
-  x_dims <- vec_dims(x)
+  x_dims <- rray_dims(x)
   requested_dims <- length(dots)
 
   if (requested_dims > x_dims) {
@@ -492,7 +492,7 @@ as_yank_indexer <- function(i, x) {
 
 as_yank_indexer_default <- function(i, x) {
 
-  if (vec_dims(i) > 1L) {
+  if (rray_dims(i) > 1L) {
     glubort("`i` can only have >1 dimensions if it is a logical.")
   }
 
@@ -504,7 +504,7 @@ as_yank_indexer_default <- function(i, x) {
 
 as_yank_indexer_lgl <- function(i, x) {
 
-  ok <- vec_dims(i) == 1L || identical(rray_dim(i), rray_dim(x))
+  ok <- rray_dims(i) == 1L || identical(rray_dim(i), rray_dim(x))
   if (!ok) {
     glubort("A logical `i` must be 1D or have dimensions identical to `x`.")
   }

@@ -145,7 +145,7 @@ rray_cbind <- function(...) {
 # Helpers
 
 pull_axis_dim <- function(x, axis) {
-  if (vec_dims(x) < axis) {
+  if (rray_dims(x) < axis) {
     1L
   }
   else {

@@ -86,7 +86,7 @@ rray_broadcast <- function(x, dim) {
 # this helper is good with broadcasting
 rray_dims_match <- function(x, dims) {
 
-  if (identical(vec_dims(x), dims)) {
+  if (identical(rray_dims(x), dims)) {
     return(x)
   }
 

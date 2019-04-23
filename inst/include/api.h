@@ -8,6 +8,8 @@
 
 Rcpp::IntegerVector rray__dim(const Rcpp::RObject& x);
 
+int rray__dims(const Rcpp::RObject& x);
+
 Rcpp::IntegerVector rray__increase_dims(const Rcpp::IntegerVector& dim,
                                         const int& dims);
 

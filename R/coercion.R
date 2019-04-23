@@ -80,7 +80,7 @@ as_matrix.double <- function(x, ...) {
 
   validate_matrix_coercible_dim(dim)
 
-  if (vec_dims(x) > 2L) {
+  if (rray_dims(x) > 2L) {
     dim <- dim[c(1L, 2L)]
   }
 

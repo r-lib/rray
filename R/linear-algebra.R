@@ -20,11 +20,11 @@
 #' @export
 rray_det <- function(x) {
 
-  dims <- vec_dims(x)
+  dims <- rray_dims(x)
 
   if (dims < 2) {
     glubort(
-      "Cannot compute the determinant of a {vec_dims(x)}D object."
+      "Cannot compute the determinant of a {rray_dims(x)}D object."
     )
   }
 

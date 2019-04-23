@@ -191,7 +191,7 @@ validate_axes <- function(axes, x, n = NULL, nm = "axes", dims = NULL) {
   }
 
   if (is.null(dims)) {
-    dims <- vec_dims(x)
+    dims <- rray_dims(x)
   }
 
   if (is.null(n)) {

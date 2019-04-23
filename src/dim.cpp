@@ -16,6 +16,20 @@ Rcpp::IntegerVector rray__dim(const Rcpp::RObject& x) {
 }
 
 // [[Rcpp::export]]
+int rray__dims(const Rcpp::RObject& x) {
+
+  Rcpp::RObject d = x.attr("dim");
+
+  if (Rf_isNull(d)) {
+    return 1;
+  }
+  else {
+    return Rf_length(d);
+  }
+
+}
+
+// [[Rcpp::export]]
 Rcpp::IntegerVector rray__increase_dims(const Rcpp::IntegerVector& dim,
                                         const int& dims) {
 
