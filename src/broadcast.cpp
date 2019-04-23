@@ -7,7 +7,7 @@ xt::rarray<T> rray__broadcast_impl(const xt::rarray<T>& x,
 
   using vec_size_t = typename std::vector<std::size_t>;
 
-  Rcpp::IntegerVector x_dim = rray_dim(SEXP(x));
+  Rcpp::IntegerVector x_dim = rray__dim(SEXP(x));
   int dims = dim.size();
 
   // Cheap early exit
@@ -16,7 +16,7 @@ xt::rarray<T> rray__broadcast_impl(const xt::rarray<T>& x,
   }
 
   // Match dimensionality before comparison
-  x_dim = rray_increase_dims(x_dim, dims);
+  x_dim = rray__increase_dims(x_dim, dims);
 
   // 3 cases where broadcasting works:
   // - Dimensions are the same (no change is made)
