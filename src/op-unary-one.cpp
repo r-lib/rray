@@ -8,45 +8,6 @@
 using namespace rray;
 
 // -----------------------------------------------------------------------------
-// Broadcast
-
-template <typename T>
-SEXP rray_broadcast_cpp(const xt::rarray<T>& x, SEXP arg) {
-
-  using vec_size_t = typename std::vector<std::size_t>;
-
-  Rcpp::IntegerVector x_dim = rray_dim(SEXP(x));
-  Rcpp::IntegerVector to_dim = Rcpp::as<Rcpp::IntegerVector>(arg);
-  int to_dims = to_dim.size();
-
-  // Cheap early exit
-  if (r_identical(x_dim, to_dim)) {
-    return(x);
-  }
-
-  // Match dimensionality before comparison
-  x_dim = rray_increase_dims(x_dim, to_dims);
-
-  // 3 cases where broadcasting works:
-  // - Dimensions are the same (no change is made)
-  // - Dimension of x is 1 (broadcast to new dimension)
-  // - New dimension is 0 (no change is made)
-  Rcpp::LogicalVector ok = (x_dim == to_dim | x_dim == 1 | to_dim == 0);
-  if (Rcpp::is_true(Rcpp::any(!ok))) {
-    Rcpp::stop("Non-broadcastable dimensions.");
-  }
-
-  // Must reshape to match dimensionality first b/c of QuantStack/xtensor-r#57
-  const vec_size_t& x_view_dim = Rcpp::as<vec_size_t>(x_dim);
-  auto x_view = xt::reshape_view(x, x_view_dim);
-
-  const vec_size_t& to_dim_xt = Rcpp::as<vec_size_t>(to_dim);
-  xt::rarray<T> res = xt::broadcast(x_view, to_dim_xt);
-
-  return(res);
-}
-
-// -----------------------------------------------------------------------------
 // Sort / arg*
 
 template <typename T>
@@ -212,13 +173,6 @@ template <typename T1>
 SEXP rray_op_unary_one_cpp_impl(std::string op, const xt::rarray<T1>& x, SEXP arg) {
 
   switch(str2int(op.c_str())) {
-
-  // ---------------------------------------------------------------------------
-  // Broadcast
-
-  case str2int("broadcast"): {
-    return rray_broadcast_cpp(x, arg);
-  }
 
   // ---------------------------------------------------------------------------
   // Sort / arg*

@@ -7,13 +7,13 @@
 using namespace Rcpp;
 
 // rray__broadcast
-SEXP rray__broadcast(SEXP x, SEXP dim);
+SEXP rray__broadcast(SEXP x, Rcpp::IntegerVector dim);
 RcppExport SEXP _rray_rray__broadcast(SEXP xSEXP, SEXP dimSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type dim(dimSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type dim(dimSEXP);
     rcpp_result_gen = Rcpp::wrap(rray__broadcast(x, dim));
     return rcpp_result_gen;
 END_RCPP
