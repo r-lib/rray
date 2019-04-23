@@ -90,7 +90,7 @@ rray_dims_match <- function(x, dims) {
     return(x)
   }
 
-  x_dim <- vec_dim(x)
+  x_dim <- rray_dim(x)
 
   if (vec_size(x_dim) > dims) {
     abort("Cannot decrease dimensions of `x`")

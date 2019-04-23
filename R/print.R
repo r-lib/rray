@@ -35,7 +35,7 @@ vec_ptype_full.vctrs_rray <- function(x) {
 
 # from vctrs
 vec_ptype_shape <- function(x) {
-  dim <- vec_dim(x)
+  dim <- rray_dim(x)
   if (length(dim) == 1) {
     ""
   } else {

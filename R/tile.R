@@ -25,7 +25,7 @@ rray_tile <- function(x, times) {
   size_times <- vec_size(times)
 
   if (dims < size_times) {
-    new_dim <- rray_increase_dims(vec_dim(x), size_times)
+    new_dim <- rray_increase_dims(rray_dim(x), size_times)
     x <- rray_reshape(x, new_dim)
   }
 
@@ -33,7 +33,7 @@ rray_tile <- function(x, times) {
     times <- rray_increase_dims(times, dims)
   }
 
-  dim <- vec_dim(x)
+  dim <- rray_dim(x)
 
   slicer <- map2(times, dim, get_tile_index)
 

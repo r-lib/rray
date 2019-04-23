@@ -161,7 +161,7 @@ set_full_dim_names.vctrs_rray <- function(x, value) {
   # dim & dim_names
   dim_name_lengths <- map_int(value, vec_size)
   stopifnot(
-    map2_lgl(vec_dim(x), dim_name_lengths, validate_equal_size_or_no_names)
+    map2_lgl(rray_dim(x), dim_name_lengths, validate_equal_size_or_no_names)
   )
 
   attr(x, "dimnames") <- value
@@ -196,7 +196,7 @@ set_full_dim_names.vctrs_rray <- function(x, value) {
 #' @rdname dim-names
 set_dim_names <- function(x, n, nms) {
 
-  dim <- vec_dim(x)
+  dim <- rray_dim(x)
 
   n <- vec_cast(n, integer())
   validate_scalar_n(n)

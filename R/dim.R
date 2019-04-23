@@ -83,7 +83,7 @@ rray_dims_common <- function(...) {
 rray_dim_common <- function(...) {
   args <- compact(list2(...))
 
-  dim_lst <- map(args, vec_dim)
+  dim_lst <- map(args, rray_dim)
   reduce(dim_lst, rray_dim2)
 
 }
@@ -106,6 +106,10 @@ dim2 <- function(x, y) {
   } else {
     list(x = x, y = c(y, rep(1L, nx - ny)))
   }
+}
+
+rray_dim <- function(x) {
+  rray__dim(x)
 }
 
 rray_increase_dims <- function(dim, dims) {

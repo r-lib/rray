@@ -133,7 +133,7 @@ new_rray <- function(.data = numeric(0),
 rray <- function(x = numeric(0), dim = NULL, dim_names = NULL) {
 
   if (is_null(dim)) {
-    dim <- vec_dim(x)
+    dim <- rray_dim(x)
   }
 
   dim <- vec_cast(dim, integer())
@@ -144,7 +144,7 @@ rray <- function(x = numeric(0), dim = NULL, dim_names = NULL) {
 
   validate_rray_attributes(dim, dim_names)
 
-  x_dim <- vec_dim(x)
+  x_dim <- rray_dim(x)
 
   # only broadcast if new dim is different than current dim
   # and you can't reshape to match
@@ -249,7 +249,7 @@ is_reshapeable <- function(x, to_dim) {
 #'
 #' @export
 rray_elems <- function(x) {
-  prod(vec_dim(x))
+  prod(rray_dim(x))
 }
 
 #' Is `x` an rray?

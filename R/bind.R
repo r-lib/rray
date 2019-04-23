@@ -124,7 +124,7 @@ rray_bind <- function(..., axis) {
     pos <- pos + arg_axis_size
   }
 
-  dim_names(out) <- rray_dim_names_common_along_axis(!!!args, axis = axis, dim = vec_dim(out))
+  dim_names(out) <- rray_dim_names_common_along_axis(!!!args, axis = axis, dim = rray_dim(out))
 
   out
 }
@@ -149,7 +149,7 @@ pull_axis_dim <- function(x, axis) {
     1L
   }
   else {
-    vec_dim(x)[axis]
+    rray_dim(x)[axis]
   }
 }
 

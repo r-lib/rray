@@ -71,7 +71,7 @@ rray_split <- function(x, axes, n = NULL) {
 
   # Default to size of the axes
   if (is_null(n)) {
-    n <- vec_dim(x)[axes]
+    n <- rray_dim(x)[axes]
   }
 
   n <- vec_cast(n, integer())
@@ -81,7 +81,7 @@ rray_split <- function(x, axes, n = NULL) {
   res <- rray_multi_split(x, axes, n)
 
   # All dim names should be the same
-  new_dim_names <- restore_dim_names(dim_names(x), vec_dim(res[[1]]))
+  new_dim_names <- restore_dim_names(dim_names(x), rray_dim(res[[1]]))
 
   # Use anonymous function to work around dispatch bug with internal generics
   res <- map(res, function(x) {set_full_dim_names(x, new_dim_names)})

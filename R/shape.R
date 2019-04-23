@@ -1,6 +1,6 @@
 rray_shape <- function(x) {
   # removes vctrs is.object() restriction
-  vec_dim(x)[-1]
+  rray_dim(x)[-1]
 }
 
 rray_shape2 <- function(x, y) {

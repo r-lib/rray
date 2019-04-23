@@ -8,7 +8,7 @@
 # https://github.com/QuantStack/xtensor-r/issues/75
 keep_dims <- function(res, x, axis) {
 
-  new_dim <- vec_dim(x)
+  new_dim <- rray_dim(x)
 
   if (is.null(axis)) {
     new_dim[] <- 1L

@@ -1,6 +1,6 @@
 #' @export
 vec_restore.vctrs_rray <- function(x, to, ..., i = NULL) {
-  x_dim <- vec_dim(x)
+  x_dim <- rray_dim(x)
 
   new_rray(
     .data = vec_data(x),

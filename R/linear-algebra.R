@@ -41,7 +41,7 @@ rray_det <- function(x) {
 
   res <- keep_dims(res, x, c(1L, 2L))
 
-  new_dim_names <- restore_dim_names(dim_names(x), vec_dim(res))
+  new_dim_names <- restore_dim_names(dim_names(x), rray_dim(res))
   res <- set_full_dim_names(res, new_dim_names)
 
   vec_restore(res, x)

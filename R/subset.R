@@ -122,7 +122,7 @@ rray_subset <- function(x, ...) {
 rray_subset_assign_impl <- function(x, ..., value) {
   x_subset <- rray_subset(x, ...)
   value <- vec_cast(value, x_subset)
-  value <- rray_broadcast(value, vec_dim(x_subset))
+  value <- rray_broadcast(value, rray_dim(x_subset))
 
   indexer <- rray_as_index(x, ..., with_drop = FALSE)
 
@@ -328,7 +328,7 @@ rray_yank_assign_impl <- function(x, i, value) {
 
   x_yank <- rray_yank_impl(x, i)
   value <- vec_cast(value, x_yank)
-  value <- rray_broadcast(value, vec_dim(x_yank))
+  value <- rray_broadcast(value, rray_dim(x_yank))
 
   out <- vec_data(x)
 
@@ -402,7 +402,7 @@ rray_extract_impl <- function(x, ...) {
 rray_extract_assign_impl <- function(x, ..., value) {
   x_extract <- rray_extract_impl(x, ...)
   value <- vec_cast(value, x_extract)
-  value <- rray_broadcast(value, vec_dim(x_extract))
+  value <- rray_broadcast(value, rray_dim(x_extract))
 
   out <- vec_data(x)
 
@@ -428,7 +428,7 @@ rray_as_index <- function(x, ..., with_drop = TRUE) {
 }
 
 as_indexer <- function(dots, x) {
-  proxies <- map(vec_dim(x), seq_len)
+  proxies <- map(rray_dim(x), seq_len)
   proxy_names <- dim_names(x)
   dots <- pad_missing(dots, x)
 
@@ -504,7 +504,7 @@ as_yank_indexer_default <- function(i, x) {
 
 as_yank_indexer_lgl <- function(i, x) {
 
-  ok <- vec_dims(i) == 1L || identical(vec_dim(i), vec_dim(x))
+  ok <- vec_dims(i) == 1L || identical(rray_dim(i), rray_dim(x))
   if (!ok) {
     glubort("A logical `i` must be 1D or have dimensions identical to `x`.")
   }

@@ -81,7 +81,7 @@ rray_dim_names_common <- function(...) {
 #' @rdname common-dim-names
 rray_dim_names2 <- function(x, y) {
 
-  .dim <- rray_dim2(vec_dim(x), vec_dim(y))
+  .dim <- rray_dim2(rray_dim(x), rray_dim(y))
 
   x_nms_list <- restore_dim_names(dim_names(x), .dim)
   y_nms_list <- restore_dim_names(dim_names(y), .dim)

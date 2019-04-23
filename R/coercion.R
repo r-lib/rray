@@ -31,7 +31,7 @@ as_array.matrix <- function(x, ...) {
 as_array.double <- function(x, ...) {
   new_array(
     .data = x,
-    dim = vec_dim(x),
+    dim = rray_dim(x),
     dimnames = dim_names(x)
   )
 }
@@ -76,7 +76,7 @@ as_matrix.matrix <- function(x, ...) {
 
 #' @export
 as_matrix.double <- function(x, ...) {
-  dim <- vec_dim(x)
+  dim <- rray_dim(x)
 
   validate_matrix_coercible_dim(dim)
 

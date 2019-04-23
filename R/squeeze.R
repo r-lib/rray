@@ -48,7 +48,7 @@
 rray_squeeze <- function(x, axes = NULL) {
 
   if (is.null(axes)) {
-    dim <- vec_dim(x)
+    dim <- rray_dim(x)
     axes <- which(dim == 1L)
 
     # No axes are length 1

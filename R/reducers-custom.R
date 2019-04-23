@@ -75,7 +75,7 @@
 #   res <- rray_custom_reducer_cpp(.x, f, as_cpp_idx(axes), type)
 #
 #   # until we get keepdims = True
-#   new_dim <- vec_dim(.x)
+#   new_dim <- rray_dim(.x)
 #   new_dim[axes] <- 1L
 #   res <- rray_reshape(res, new_dim)
 #

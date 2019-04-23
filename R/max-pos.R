@@ -32,7 +32,7 @@ rray_max_pos <- function(x, axis = NULL) {
 
   res <- keep_dims(res, x, axis)
 
-  new_dim_names <- restore_dim_names(dim_names(x), vec_dim(res))
+  new_dim_names <- restore_dim_names(dim_names(x), rray_dim(res))
   res <- set_full_dim_names(res, new_dim_names)
 
   vec_restore(res, x)
