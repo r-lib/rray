@@ -17,6 +17,7 @@
 #' @importFrom vctrs vec_duplicate_detect
 #' @importFrom vctrs vec_duplicate_id
 #' @importFrom vctrs vec_type_finalise
+#' @importFrom vctrs vec_assert
 #'
 #' @importFrom vctrs vec_ptype_full
 #' @importFrom vctrs vec_ptype_abbr

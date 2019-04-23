@@ -99,7 +99,7 @@ rray_dims_match <- function(x, dims) {
   # Capture dim names before setting new `dim`
   new_dim_nms <- dim_names_extend(dim_names(x), dims)
 
-  dim <- dim_extend(x_dim, dims)
+  dim <- rray_increase_dims(x_dim, dims)
 
   x <- set_dim(x, dim)
   x <- set_full_dim_names(x, new_dim_nms)

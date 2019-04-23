@@ -25,12 +25,12 @@ rray_tile <- function(x, times) {
   size_times <- vec_size(times)
 
   if (dims < size_times) {
-    new_dim <- dim_extend(vec_dim(x), size_times)
+    new_dim <- rray_increase_dims(vec_dim(x), size_times)
     x <- rray_reshape(x, new_dim)
   }
 
   if (dims > size_times) {
-    times <- dim_extend(times, dims)
+    times <- rray_increase_dims(times, dims)
   }
 
   dim <- vec_dim(x)

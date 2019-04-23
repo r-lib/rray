@@ -108,17 +108,9 @@ dim2 <- function(x, y) {
   }
 }
 
-# Similar to dim2 but takes dim and extends
-# it to match the number of dims
-dim_extend <- function(dim, dims) {
-  x_dims <- length(dim)
-
-  if (x_dims == dims) {
-    dim
-  } else if (x_dims < dims) {
-    c(dim, rep(1L, dims - x_dims))
-  } else {
-    abort("Can not decrease dimensions")
-  }
-
+rray_increase_dims <- function(dim, dims) {
+  dim <- vec_cast(dim, integer())
+  dims <- vec_cast(dims, integer())
+  vec_assert(dims, size = 1L)
+  rray__increase_dims(dim, dims)
 }
