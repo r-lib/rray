@@ -10,42 +10,70 @@ using namespace rray;
 // -----------------------------------------------------------------------------
 // Broadcast
 
+Rcpp::IntegerVector rray_increase_dims(const Rcpp::IntegerVector& dim,
+                                       const int& dims) {
+
+  int current_dims = dim.size();
+
+  // Early exit
+  if (current_dims == dims) {
+    return dim;
+  }
+
+  if (current_dims > dims) {
+    Rcpp::stop("Cannot decrease dimensions.");
+  }
+
+  // At this point, we know we are missing dims
+  int n_missing_dims = dims - current_dims;
+
+  // Copy dim since we change it
+  Rcpp::IntegerVector out = Rcpp::clone(dim);
+
+  for (int i = 0; i < n_missing_dims; ++i) {
+    out.push_back(1);
+  }
+
+  return out;
+}
+
+// (15 is equal to the default settings of identical())
+bool r_identical(SEXP x, SEXP y) {
+  return R_compute_identical(x, y, 15);
+}
+
 template <typename T>
 SEXP rray_broadcast_cpp(const xt::rarray<T>& x, SEXP arg) {
 
+  using vec_size_t = typename std::vector<std::size_t>;
+
   Rcpp::IntegerVector x_dim = rray_dim(SEXP(x));
   Rcpp::IntegerVector to_dim = Rcpp::as<Rcpp::IntegerVector>(arg);
+  int to_dims = to_dim.size();
 
-  // Early exit if identical dimensions
-  // (15 is equal to the default settings of identical())
-  bool identical_dim = R_compute_identical(x_dim, to_dim, 15);
-  if (identical_dim) {
+  // Cheap early exit
+  if (r_identical(x_dim, to_dim)) {
     return(x);
   }
 
-  if (x_dim.size() > to_dim.size()) {
-    Rcpp::stop("Cannot decrease dimensions of `x`.");
-  }
+  // Match dimensionality before comparison
+  x_dim = rray_increase_dims(x_dim, to_dims);
 
-  // Reshape to add dimensionality as required (get's around xtensor
-  // prepending dimension behavior)
-  int n_missing_dims = to_dim.size() - x_dim.size();
-  if (n_missing_dims > 0) {
-    for (int i = 0; i < n_missing_dims; ++i) {
-      x_dim.push_back(1);
-    }
-  }
-
+  // 3 cases where broadcasting works:
+  // - Dimensions are the same (no change is made)
+  // - Dimension of x is 1 (broadcast to new dimension)
+  // - New dimension is 0 (no change is made)
   Rcpp::LogicalVector ok = (x_dim == to_dim | x_dim == 1 | to_dim == 0);
   if (Rcpp::is_true(Rcpp::any(!ok))) {
-    Rcpp::stop("Non-recyclable dimensions.");
+    Rcpp::stop("Non-broadcastable dimensions.");
   }
 
-  const std::vector<std::size_t> x_reshape_dim = Rcpp::as<std::vector<std::size_t>>(x_dim);
-  auto x_reshaped = xt::reshape_view(x, x_reshape_dim);
+  // Must reshape to match dimensionality first b/c of QuantStack/xtensor-r#57
+  const vec_size_t& x_view_dim = Rcpp::as<vec_size_t>(x_dim);
+  auto x_view = xt::reshape_view(x, x_view_dim);
 
-  const std::vector<std::size_t> to_dim_xt = Rcpp::as<std::vector<std::size_t>>(to_dim);
-  const xt::rarray<T>& res = xt::broadcast(x_reshaped, to_dim_xt);
+  const vec_size_t& to_dim_xt = Rcpp::as<vec_size_t>(to_dim);
+  xt::rarray<T> res = xt::broadcast(x_view, to_dim_xt);
 
   return(res);
 }
