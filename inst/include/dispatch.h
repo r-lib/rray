@@ -3,30 +3,35 @@
 
 #include <rray.h>
 #include <tools/tools.h>
-using namespace rray;
 
 // -----------------------------------------------------------------------------
 // Unary + 1 argument
 
-#define DISPATCH_UNARY_ONE(FUN, X, ARG)                          \
-  if (Rf_isNull(X)) {                                            \
-    return R_NilValue;                                           \
-  }                                                              \
-                                                                 \
-  int x_type = TYPEOF(X);                                        \
-                                                                 \
-  if (x_type == REALSXP) {                                       \
-    return FUN(xt::rarray<double>(X), ARG);                      \
-  }                                                              \
-  else if (x_type == INTSXP) {                                   \
-    return FUN(xt::rarray<int>(X), ARG);                         \
-  }                                                              \
-  else if (x_type == LGLSXP) {                                   \
-    return FUN(xt::rarray<rlogical>(X), ARG);                    \
-  }                                                              \
-                                                                 \
+#define DISPATCH_UNARY_ONE(FUN, X, ARG)                        \
+  if (Rf_isNull(X)) {                                          \
+    return Rcpp::as<Rcpp::RObject>(R_NilValue);                \
+  }                                                            \
+                                                               \
+  int x_type = TYPEOF(X);                                      \
+                                                               \
+  if (x_type == REALSXP) {                                     \
+    return Rcpp::as<Rcpp::RObject>(                            \
+      FUN(xt::rarray<double>(X), ARG)                          \
+    );                                                         \
+  }                                                            \
+  else if (x_type == INTSXP) {                                 \
+    return Rcpp::as<Rcpp::RObject>(                            \
+      FUN(xt::rarray<int>(X), ARG)                             \
+    );                                                         \
+  }                                                            \
+  else if (x_type == LGLSXP) {                                 \
+    return Rcpp::as<Rcpp::RObject>(                            \
+      FUN(xt::rarray<rlogical>(X), ARG)                        \
+    );                                                         \
+  }                                                            \
+                                                               \
   rray::error_unknown_type()
 
-
+// -----------------------------------------------------------------------------
 
 #endif
