@@ -2,8 +2,8 @@
 #include <dispatch.h>
 
 template <typename T>
-const xt::rarray<T> rray__broadcast_impl(const xt::rarray<T>& x,
-                                         Rcpp::IntegerVector dim) {
+xt::rarray<T> rray__broadcast_impl(const xt::rarray<T>& x,
+                                   Rcpp::IntegerVector dim) {
 
   using vec_size_t = typename std::vector<std::size_t>;
 
