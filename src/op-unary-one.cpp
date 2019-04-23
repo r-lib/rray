@@ -10,38 +10,6 @@ using namespace rray;
 // -----------------------------------------------------------------------------
 // Broadcast
 
-Rcpp::IntegerVector rray_increase_dims(const Rcpp::IntegerVector& dim,
-                                       const int& dims) {
-
-  int current_dims = dim.size();
-
-  // Early exit
-  if (current_dims == dims) {
-    return dim;
-  }
-
-  if (current_dims > dims) {
-    Rcpp::stop("Cannot decrease dimensions.");
-  }
-
-  // At this point, we know we are missing dims
-  int n_missing_dims = dims - current_dims;
-
-  // Copy dim since we change it
-  Rcpp::IntegerVector out = Rcpp::clone(dim);
-
-  for (int i = 0; i < n_missing_dims; ++i) {
-    out.push_back(1);
-  }
-
-  return out;
-}
-
-// (15 is equal to the default settings of identical())
-bool r_identical(SEXP x, SEXP y) {
-  return R_compute_identical(x, y, 15);
-}
-
 template <typename T>
 SEXP rray_broadcast_cpp(const xt::rarray<T>& x, SEXP arg) {
 

@@ -25,6 +25,10 @@ rray_dim <- function(x) {
     .Call(`_rray_rray_dim`, x)
 }
 
+rray_increase_dims <- function(dim, dims) {
+    .Call(`_rray_rray_increase_dims`, dim, dims)
+}
+
 rray_op_binary_cpp <- function(op, x, y) {
     .Call(`_rray_rray_op_binary_cpp`, op, x, y)
 }

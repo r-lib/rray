@@ -75,6 +75,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray_increase_dims
+Rcpp::IntegerVector rray_increase_dims(const Rcpp::IntegerVector& dim, const int& dims);
+RcppExport SEXP _rray_rray_increase_dims(SEXP dimSEXP, SEXP dimsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::IntegerVector& >::type dim(dimSEXP);
+    Rcpp::traits::input_parameter< const int& >::type dims(dimsSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray_increase_dims(dim, dims));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray_op_binary_cpp
 SEXP rray_op_binary_cpp(const std::string& op, SEXP x, SEXP y);
 RcppExport SEXP _rray_rray_op_binary_cpp(SEXP opSEXP, SEXP xSEXP, SEXP ySEXP) {
@@ -177,6 +189,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray_eye_cpp", (DL_FUNC) &_rray_rray_eye_cpp, 2},
     {"_rray_rray_eye_square_cpp", (DL_FUNC) &_rray_rray_eye_square_cpp, 2},
     {"_rray_rray_dim", (DL_FUNC) &_rray_rray_dim, 1},
+    {"_rray_rray_increase_dims", (DL_FUNC) &_rray_rray_increase_dims, 2},
     {"_rray_rray_op_binary_cpp", (DL_FUNC) &_rray_rray_op_binary_cpp, 3},
     {"_rray_rray_op_trinary_cpp", (DL_FUNC) &_rray_rray_op_trinary_cpp, 4},
     {"_rray_rray_op_unary_one_cpp", (DL_FUNC) &_rray_rray_op_unary_one_cpp, 3},
