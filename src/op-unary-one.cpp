@@ -1,4 +1,4 @@
-// this header seems necessary for full_like() rather than xbuilder.hpp
+// Both required for cumsum() / cumprod()
 #include <xtensor/xarray.hpp>
 #include <xtensor/xview.hpp>
 
