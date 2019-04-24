@@ -150,7 +150,7 @@ The default of <code>NULL</code> first flattens <code>x</code> to 1-D.</p></td>
     <pre class="examples"><div class='input'>
 <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>:<span class='fl'>10</span>, <span class='fl'>20</span>:<span class='fl'>11</span>), <span class='kw'>dim</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>5</span>, <span class='fl'>2</span>, <span class='fl'>2</span>))
 
-<span class='co'># Flatten x, then find the position of the max value</span>
+<span class='co'># Find the max position over all of x</span>
 <span class='fu'>rray_max_pos</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,1,1][1]&gt;
 #&gt; , , 1
 #&gt; 
