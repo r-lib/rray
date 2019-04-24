@@ -61,12 +61,12 @@ rray__sort <- function(x, axis) {
     .Call(`_rray_rray__sort`, x, axis)
 }
 
-rray__argmax <- function(x, axis) {
-    .Call(`_rray_rray__argmax`, x, axis)
+rray__max_pos <- function(x, axis) {
+    .Call(`_rray_rray__max_pos`, x, axis)
 }
 
-rray__argmin <- function(x, axis) {
-    .Call(`_rray_rray__argmin`, x, axis)
+rray__min_pos <- function(x, axis) {
+    .Call(`_rray_rray__min_pos`, x, axis)
 }
 
 rray_reducer_cpp <- function(op, x, axes) {

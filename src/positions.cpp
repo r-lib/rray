@@ -45,7 +45,7 @@ Rcpp::RObject rray__sort(Rcpp::RObject x, Rcpp::RObject axis) {
 // https://github.com/QuantStack/xtensor/issues/1537
 
 // template <typename T>
-// xt::rarray<int> rray__argsort_impl(const xt::rarray<T>& x, Rcpp::RObject axis) {
+// xt::rarray<int> rray__sort_pos_impl(const xt::rarray<T>& x, Rcpp::RObject axis) {
 //
 //   if (r_is_null(axis)) {
 //     // TODO - Temporarily go through xarray for argsort() to work
@@ -74,8 +74,8 @@ Rcpp::RObject rray__sort(Rcpp::RObject x, Rcpp::RObject axis) {
 // }
 //
 // // [[Rcpp::export]]
-// Rcpp::RObject rray__argsort(Rcpp::RObject x, Rcpp::RObject axis) {
-//   DISPATCH_UNARY_ONE(rray__argsort_impl, x, axis);
+// Rcpp::RObject rray__sort_pos(Rcpp::RObject x, Rcpp::RObject axis) {
+//   DISPATCH_UNARY_ONE(rray__sort_pos_impl, x, axis);
 // }
 
 // -----------------------------------------------------------------------------
@@ -96,7 +96,7 @@ Rcpp::RObject rray__sort(Rcpp::RObject x, Rcpp::RObject axis) {
 // then looks at the first row of the 2nd element in the third dim.
 
 template <typename T>
-xt::rarray<int> rray__argmax_impl(xt::rarray<T> x, Rcpp::RObject axis) {
+xt::rarray<int> rray__max_pos_impl(xt::rarray<T> x, Rcpp::RObject axis) {
 
   if (Rf_isNull(axis)) {
     // purposefully do column major here
@@ -115,14 +115,14 @@ xt::rarray<int> rray__argmax_impl(xt::rarray<T> x, Rcpp::RObject axis) {
 }
 
 // [[Rcpp::export]]
-Rcpp::RObject rray__argmax(Rcpp::RObject x, Rcpp::RObject axis) {
-  DISPATCH_UNARY_ONE(rray__argmax_impl, x, axis);
+Rcpp::RObject rray__max_pos(Rcpp::RObject x, Rcpp::RObject axis) {
+  DISPATCH_UNARY_ONE(rray__max_pos_impl, x, axis);
 }
 
 // -----------------------------------------------------------------------------
 
 template <typename T>
-xt::rarray<int> rray__argmin_impl(xt::rarray<T> x, Rcpp::RObject axis) {
+xt::rarray<int> rray__min_pos_impl(xt::rarray<T> x, Rcpp::RObject axis) {
 
   if (Rf_isNull(axis)) {
     // purposefully do column major here
@@ -141,6 +141,6 @@ xt::rarray<int> rray__argmin_impl(xt::rarray<T> x, Rcpp::RObject axis) {
 }
 
 // [[Rcpp::export]]
-Rcpp::RObject rray__argmin(Rcpp::RObject x, Rcpp::RObject axis) {
-  DISPATCH_UNARY_ONE(rray__argmin_impl, x, axis);
+Rcpp::RObject rray__min_pos(Rcpp::RObject x, Rcpp::RObject axis) {
+  DISPATCH_UNARY_ONE(rray__min_pos_impl, x, axis);
 }
