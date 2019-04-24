@@ -18,4 +18,6 @@ Rcpp::IntegerVector rray__increase_dims(const Rcpp::IntegerVector& dim,
 
 bool r_identical(SEXP x, SEXP y);
 
+bool r_is_null(SEXP x);
+
 #endif
