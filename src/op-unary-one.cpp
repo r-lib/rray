@@ -1,33 +1,9 @@
-// this header seems necessary for full_like() rather than xbuilder.hpp
+// Both required for cumsum() / cumprod()
 #include <xtensor/xarray.hpp>
 #include <xtensor/xview.hpp>
 
 #include <rray.h>
 #include <tools/tools.h>
-
-// -----------------------------------------------------------------------------
-// Builders
-
-// type of arg has to be the same as the type of T
-
-template <typename T>
-SEXP rray_full_like_cpp(const xt::rarray<T>& x, SEXP arg) {
-
-  // Coerce arg to the underlying type T
-  // (rlogical is really int so we need the underlying int type)
-  using underlying_type = typename xt::r_detail::get_underlying_value_type_r<T>::type;
-  underlying_type fill_value = Rcpp::as<underlying_type>(arg);
-
-  const xt::rarray<T>& res = xt::full_like(x, fill_value);
-  return res;
-}
-
-template <typename T>
-SEXP rray_diag_cpp(const xt::rarray<T>& x, SEXP arg) {
-  int k = Rcpp::as<int>(arg);
-  const xt::rarray<T>& res = xt::diag(x, k);
-  return res;
-}
 
 // -----------------------------------------------------------------------------
 // Accumulators
@@ -112,17 +88,6 @@ template <typename T1>
 SEXP rray_op_unary_one_cpp_impl(std::string op, const xt::rarray<T1>& x, SEXP arg) {
 
   switch(str2int(op.c_str())) {
-
-  // ---------------------------------------------------------------------------
-  // Builders
-
-  case str2int("full_like"): {
-    return rray_full_like_cpp(x, arg);
-  }
-
-  case str2int("diag"): {
-    return rray_diag_cpp(x, arg);
-  }
 
   // ---------------------------------------------------------------------------
   // Accumulator
