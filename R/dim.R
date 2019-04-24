@@ -74,7 +74,7 @@ rray_dim2 <- function(x_dim, y_dim) {
 rray_dims_common <- function(...) {
   args <- compact(list2(...))
 
-  dims_lst <- map(args, vec_dims)
+  dims_lst <- map(args, rray_dims)
   reduce(dims_lst, rray_dims2)
 }
 
@@ -83,7 +83,7 @@ rray_dims_common <- function(...) {
 rray_dim_common <- function(...) {
   args <- compact(list2(...))
 
-  dim_lst <- map(args, vec_dim)
+  dim_lst <- map(args, rray_dim)
   reduce(dim_lst, rray_dim2)
 
 }
@@ -108,17 +108,17 @@ dim2 <- function(x, y) {
   }
 }
 
-# Similar to dim2 but takes dim and extends
-# it to match the number of dims
-dim_extend <- function(dim, dims) {
-  x_dims <- length(dim)
+rray_dims <- function(x) {
+  rray__dims(x)
+}
 
-  if (x_dims == dims) {
-    dim
-  } else if (x_dims < dims) {
-    c(dim, rep(1L, dims - x_dims))
-  } else {
-    abort("Can not decrease dimensions")
-  }
+rray_dim <- function(x) {
+  rray__dim(x)
+}
 
+rray_increase_dims <- function(dim, dims) {
+  dim <- vec_cast(dim, integer())
+  dims <- vec_cast(dims, integer())
+  vec_assert(dims, size = 1L)
+  rray__increase_dims(dim, dims)
 }

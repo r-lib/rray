@@ -9,7 +9,7 @@ rray_reshape <- function(x, dim) {
 
   dim <- vec_cast(dim, integer())
 
-  if (identical(vec_dim(x), dim)) {
+  if (identical(rray_dim(x), dim)) {
     return(x)
   }
 
@@ -37,7 +37,7 @@ validate_reshape <- function(x, to) {
 
   validate_dim(to)
 
-  from <- vec_dim(x)
+  from <- rray_dim(x)
 
   size_from <- prod(from)
   size_to   <- prod(to)

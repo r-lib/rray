@@ -1,6 +1,5 @@
 #include <rray.h>
 #include <tools/tools.h>
-using namespace rray;
 
 template <typename T>
 xt::rarray<T> rray_sum_cpp(const xt::rarray<T>& x, SEXP axes) {
@@ -197,7 +196,7 @@ SEXP rray_reducer_cpp(std::string op, SEXP x, SEXP axes) {
     }
 
     default: {
-      rray::error_unknown_type();
+      error_unknown_type();
     }
 
   }

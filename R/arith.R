@@ -4,7 +4,7 @@ rray_arith_base <- function(op, x, y) {
 
   # precompute dimensionality and extend existing dims
   # xtensor-r issue #57 until we have a fix (if ever)
-  dims <- rray_dims2(vec_dims(x), vec_dims(y))
+  dims <- rray_dims2(rray_dims(x), rray_dims(y))
   x <- rray_dims_match(x, dims)
   y <- rray_dims_match(y, dims)
 

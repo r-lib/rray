@@ -3,6 +3,21 @@
 
 #include <Rcpp.h>
 
-Rcpp::IntegerVector rray_dim(Rcpp::RObject x);
+// -----------------------------------------------------------------------------
+// Dimensions / dimensionality
+
+Rcpp::IntegerVector rray__dim(const Rcpp::RObject& x);
+
+int rray__dims(const Rcpp::RObject& x);
+
+Rcpp::IntegerVector rray__increase_dims(const Rcpp::IntegerVector& dim,
+                                        const int& dims);
+
+// -----------------------------------------------------------------------------
+// Re-exposed R API
+
+bool r_identical(SEXP x, SEXP y);
+
+bool r_is_null(SEXP x);
 
 #endif

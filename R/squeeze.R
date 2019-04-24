@@ -48,7 +48,7 @@
 rray_squeeze <- function(x, axes = NULL) {
 
   if (is.null(axes)) {
-    dim <- vec_dim(x)
+    dim <- rray_dim(x)
     axes <- which(dim == 1L)
 
     # No axes are length 1
@@ -82,7 +82,7 @@ squeeze_dim_names <- function(x, axes) {
 
   # If squeezing every axis, that means they all had size 1.
   # Take the names from the first dimension with names
-  if (vec_size(axes) == vec_dims(x)) {
+  if (vec_size(axes) == rray_dims(x)) {
 
     non_null_dim_names <- discard(x_dim_names, is.null)
 

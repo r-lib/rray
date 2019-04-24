@@ -73,7 +73,7 @@
 rray_broadcast <- function(x, dim) {
   dim <- vec_cast(dim, integer())
 
-  res <- rray_broadcast_impl(x, dim)
+  res <- rray__broadcast(x, dim)
 
   new_dim_names <- restore_dim_names(dim_names(x), dim)
   res <- set_full_dim_names(res, new_dim_names)
@@ -81,20 +81,16 @@ rray_broadcast <- function(x, dim) {
   vec_restore(res, x)
 }
 
-rray_broadcast_impl <- function(x, dim) {
-  rray_op_unary_one_cpp("broadcast", x, dim)
-}
-
 # Match up the dims of x with the dims of y
 # by adding 1s to the dim of x and assigning it to x
 # this helper is good with broadcasting
 rray_dims_match <- function(x, dims) {
 
-  if (identical(vec_dims(x), dims)) {
+  if (identical(rray_dims(x), dims)) {
     return(x)
   }
 
-  x_dim <- vec_dim(x)
+  x_dim <- rray_dim(x)
 
   if (vec_size(x_dim) > dims) {
     abort("Cannot decrease dimensions of `x`")
@@ -103,7 +99,7 @@ rray_dims_match <- function(x, dims) {
   # Capture dim names before setting new `dim`
   new_dim_nms <- dim_names_extend(dim_names(x), dims)
 
-  dim <- dim_extend(x_dim, dims)
+  dim <- rray_increase_dims(x_dim, dims)
 
   x <- set_dim(x, dim)
   x <- set_full_dim_names(x, new_dim_nms)

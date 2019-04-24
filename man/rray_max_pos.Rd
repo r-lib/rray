@@ -22,7 +22,7 @@ axis.
 
 x <- rray(c(1:10, 20:11), dim = c(5, 2, 2))
 
-# Flatten x, then find the position of the max value
+# Find the max position over all of x
 rray_max_pos(x)
 
 # Compute along the rows

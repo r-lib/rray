@@ -47,7 +47,7 @@
 #' @export
 rray_expand_dims <- function(x, axis) {
 
-  dims <- vec_dims(x)
+  dims <- rray_dims(x)
 
   # axis allowed to be max of dims + 1 here
   axis <- vec_cast(axis, integer())

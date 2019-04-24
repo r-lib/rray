@@ -6,6 +6,18 @@
 
 using namespace Rcpp;
 
+// rray__broadcast
+Rcpp::RObject rray__broadcast(Rcpp::RObject x, Rcpp::IntegerVector dim);
+RcppExport SEXP _rray_rray__broadcast(SEXP xSEXP, SEXP dimSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type dim(dimSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__broadcast(x, dim));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray_ones_cpp
 SEXP rray_ones_cpp(const std::vector<std::size_t>& shape);
 RcppExport SEXP _rray_rray_ones_cpp(SEXP shapeSEXP) {
@@ -52,14 +64,37 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rray_dim
-Rcpp::IntegerVector rray_dim(Rcpp::RObject x);
-RcppExport SEXP _rray_rray_dim(SEXP xSEXP) {
+// rray__dim
+Rcpp::IntegerVector rray__dim(const Rcpp::RObject& x);
+RcppExport SEXP _rray_rray__dim(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray_dim(x));
+    Rcpp::traits::input_parameter< const Rcpp::RObject& >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__dim(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__dims
+int rray__dims(const Rcpp::RObject& x);
+RcppExport SEXP _rray_rray__dims(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::RObject& >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__dims(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__increase_dims
+Rcpp::IntegerVector rray__increase_dims(const Rcpp::IntegerVector& dim, const int& dims);
+RcppExport SEXP _rray_rray__increase_dims(SEXP dimSEXP, SEXP dimsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::IntegerVector& >::type dim(dimSEXP);
+    Rcpp::traits::input_parameter< const int& >::type dims(dimsSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__increase_dims(dim, dims));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -144,6 +179,42 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray__sort
+Rcpp::RObject rray__sort(Rcpp::RObject x, Rcpp::RObject axis);
+RcppExport SEXP _rray_rray__sort(SEXP xSEXP, SEXP axisSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type axis(axisSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__sort(x, axis));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__max_pos
+Rcpp::RObject rray__max_pos(Rcpp::RObject x, Rcpp::RObject axis);
+RcppExport SEXP _rray_rray__max_pos(SEXP xSEXP, SEXP axisSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type axis(axisSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__max_pos(x, axis));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__min_pos
+Rcpp::RObject rray__min_pos(Rcpp::RObject x, Rcpp::RObject axis);
+RcppExport SEXP _rray_rray__min_pos(SEXP xSEXP, SEXP axisSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type axis(axisSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__min_pos(x, axis));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray_reducer_cpp
 SEXP rray_reducer_cpp(std::string op, SEXP x, SEXP axes);
 RcppExport SEXP _rray_rray_reducer_cpp(SEXP opSEXP, SEXP xSEXP, SEXP axesSEXP) {
@@ -159,17 +230,23 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_rray_rray__broadcast", (DL_FUNC) &_rray_rray__broadcast, 2},
     {"_rray_rray_ones_cpp", (DL_FUNC) &_rray_rray_ones_cpp, 1},
     {"_rray_rray_zeros_cpp", (DL_FUNC) &_rray_rray_zeros_cpp, 1},
     {"_rray_rray_eye_cpp", (DL_FUNC) &_rray_rray_eye_cpp, 2},
     {"_rray_rray_eye_square_cpp", (DL_FUNC) &_rray_rray_eye_square_cpp, 2},
-    {"_rray_rray_dim", (DL_FUNC) &_rray_rray_dim, 1},
+    {"_rray_rray__dim", (DL_FUNC) &_rray_rray__dim, 1},
+    {"_rray_rray__dims", (DL_FUNC) &_rray_rray__dims, 1},
+    {"_rray_rray__increase_dims", (DL_FUNC) &_rray_rray__increase_dims, 2},
     {"_rray_rray_op_binary_cpp", (DL_FUNC) &_rray_rray_op_binary_cpp, 3},
     {"_rray_rray_op_trinary_cpp", (DL_FUNC) &_rray_rray_op_trinary_cpp, 4},
     {"_rray_rray_op_unary_one_cpp", (DL_FUNC) &_rray_rray_op_unary_one_cpp, 3},
     {"_rray_rray_op_unary_three_cpp", (DL_FUNC) &_rray_rray_op_unary_three_cpp, 5},
     {"_rray_rray_op_unary_two_cpp", (DL_FUNC) &_rray_rray_op_unary_two_cpp, 4},
     {"_rray_rray_op_unary_cpp", (DL_FUNC) &_rray_rray_op_unary_cpp, 2},
+    {"_rray_rray__sort", (DL_FUNC) &_rray_rray__sort, 2},
+    {"_rray_rray__max_pos", (DL_FUNC) &_rray_rray__max_pos, 2},
+    {"_rray_rray__min_pos", (DL_FUNC) &_rray_rray__min_pos, 2},
     {"_rray_rray_reducer_cpp", (DL_FUNC) &_rray_rray_reducer_cpp, 3},
     {NULL, NULL, 0}
 };

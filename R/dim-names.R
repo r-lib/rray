@@ -69,7 +69,7 @@ dim_names.array <- function(x) {
   dim_nms <- dimnames(x)
 
   if (is.null(dim_nms)) {
-    dims <- vec_dims(x)
+    dims <- rray_dims(x)
     return(new_empty_dim_names(dims))
   }
 
@@ -133,7 +133,7 @@ set_full_dim_names.default <- function(x, value) {
   }
 
   if (is_null(value)) {
-    value <- new_empty_dim_names(vec_dims(x))
+    value <- new_empty_dim_names(rray_dims(x))
   }
 
   # checks for a dim attribute of positive length
@@ -150,18 +150,18 @@ set_full_dim_names.default <- function(x, value) {
 set_full_dim_names.vctrs_rray <- function(x, value) {
 
   if (is_null(value)) {
-    value <- new_empty_dim_names(vec_dims(x))
+    value <- new_empty_dim_names(rray_dims(x))
   }
 
   stopifnot(map_lgl(value, is_character_or_null))
 
   # n shape dims and n elements of shape name list
-  stopifnot(vec_dims(x) == vec_size(value))
+  stopifnot(rray_dims(x) == vec_size(value))
 
   # dim & dim_names
   dim_name_lengths <- map_int(value, vec_size)
   stopifnot(
-    map2_lgl(vec_dim(x), dim_name_lengths, validate_equal_size_or_no_names)
+    map2_lgl(rray_dim(x), dim_name_lengths, validate_equal_size_or_no_names)
   )
 
   attr(x, "dimnames") <- value
@@ -179,7 +179,7 @@ set_full_dim_names.vctrs_rray <- function(x, value) {
 #' @export
 `names<-.vctrs_rray` <- function(x, value) {
 
-  if (vec_dims(x) > 1L) {
+  if (rray_dims(x) > 1L) {
     glubort("Cannot set `names` on a 2D+ object. Use `dim_names<-()` instead.")
   }
 
@@ -196,7 +196,7 @@ set_full_dim_names.vctrs_rray <- function(x, value) {
 #' @rdname dim-names
 set_dim_names <- function(x, n, nms) {
 
-  dim <- vec_dim(x)
+  dim <- rray_dim(x)
 
   n <- vec_cast(n, integer())
   validate_scalar_n(n)
@@ -276,7 +276,7 @@ validate_scalar_n <- function(n) {
 
 validate_requested_dims <- function(x, n) {
 
-  dims <- vec_dims(x)
+  dims <- rray_dims(x)
   if (dims < n) {
     glubort(
       "The dimensionality of `x` ({dims}) must be ",

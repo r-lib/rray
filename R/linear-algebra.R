@@ -20,11 +20,11 @@
 #' @export
 rray_det <- function(x) {
 
-  dims <- vec_dims(x)
+  dims <- rray_dims(x)
 
   if (dims < 2) {
     glubort(
-      "Cannot compute the determinant of a {vec_dims(x)}D object."
+      "Cannot compute the determinant of a {rray_dims(x)}D object."
     )
   }
 
@@ -41,7 +41,7 @@ rray_det <- function(x) {
 
   res <- keep_dims(res, x, c(1L, 2L))
 
-  new_dim_names <- restore_dim_names(dim_names(x), vec_dim(res))
+  new_dim_names <- restore_dim_names(dim_names(x), rray_dim(res))
   res <- set_full_dim_names(res, new_dim_names)
 
   vec_restore(res, x)

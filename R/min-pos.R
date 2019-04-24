@@ -24,16 +24,10 @@ rray_min_pos <- function(x, axis = NULL) {
   axis <- vec_cast(axis, integer())
   validate_axis(axis, x)
 
-  res <- rray_min_pos_impl(x, axis)
+  res <- rray__min_pos(x, as_cpp_idx(axis))
 
-  res <- keep_dims(res, x, axis)
-
-  new_dim_names <- restore_dim_names(dim_names(x), vec_dim(res))
+  new_dim_names <- restore_dim_names(dim_names(x), rray_dim(res))
   res <- set_full_dim_names(res, new_dim_names)
 
   vec_restore(res, x)
-}
-
-rray_min_pos_impl <- function(x, axis) {
-  rray_op_unary_one_cpp("argmin", x, as_cpp_idx(axis))
 }
