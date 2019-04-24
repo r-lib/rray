@@ -54,3 +54,25 @@ test_that("dimension names are kept", {
   )
 })
 
+# Confirming that the row major + column major iteration
+# combination results in correct behavior
+test_that("3D objects are iterated over correctly", {
+
+  x <- rray(c(1, 5, 3, 6, 10, 2, 5, 12, 8, 21, 1, 4, 20, 5, 7, 18, 3, 9), c(3, 3, 2))
+
+  # fully column major iteration over all axes
+  expect_equal(rray_max_pos(x), rray(10, c(1, 1, 1)))
+
+  # argmax() is row major iteration, then the
+  # keep dims reshape is column major
+  expect_equal(
+    rray_max_pos(x, 1),
+    rray(c(2, 2, 2, 1, 1, 1), c(1, 3, 2))
+  )
+
+  expect_equal(
+    rray_max_pos(x, 2),
+    rray(c(2, 3, 3, 1, 2, 3), c(3, 1, 2))
+  )
+
+})
