@@ -150,3 +150,28 @@ Rcpp::RObject rray__argmax(Rcpp::RObject x, Rcpp::RObject axis) {
   DISPATCH_UNARY_ONE(rray__argmax_impl, x, axis);
 }
 
+// -----------------------------------------------------------------------------
+
+template <typename T>
+xt::rarray<int> rray__argmin_impl(xt::rarray<T> x, Rcpp::RObject axis) {
+
+  if (Rf_isNull(axis)) {
+    // purposefully do column major here
+    auto x_argmin = xt::argmin<xt::layout_type::column_major>(x);
+    auto x_reshape = rray__keep_dims_view(x_argmin, rray__dim(SEXP(x)), axis);
+    auto out = rray__as_r_idx(x_reshape);
+    return out;
+  }
+
+  std::size_t xt_axis = Rcpp::as<std::size_t>(axis);
+  // purposefully do row major here
+  auto x_argmin = xt::argmin<xt::layout_type::row_major>(x, xt_axis);
+  auto x_reshape = rray__keep_dims_view(x_argmin, rray__dim(SEXP(x)), axis);
+  auto out = rray__as_r_idx(x_reshape);
+  return out;
+}
+
+// [[Rcpp::export]]
+Rcpp::RObject rray__argmin(Rcpp::RObject x, Rcpp::RObject axis) {
+  DISPATCH_UNARY_ONE(rray__argmin_impl, x, axis);
+}

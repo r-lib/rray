@@ -1,27 +1,10 @@
 // this header seems necessary for full_like() rather than xbuilder.hpp
 #include <xtensor/xarray.hpp>
-#include <xtensor/xsort.hpp>
 #include <xtensor/xview.hpp>
 
 #include <rray.h>
 #include <tools/tools.h>
 using namespace rray;
-
-// -----------------------------------------------------------------------------
-// Sort / arg*
-
-template <typename T>
-SEXP rray_argmin_cpp(xt::rarray<T> x, SEXP arg) {
-
-  if (Rf_isNull(arg)) {
-    xt::rarray<int> res = xt::argmin<xt::layout_type::column_major>(x);
-    return as_r_idx(res);
-  }
-
-  std::size_t axis = Rcpp::as<std::size_t>(arg);
-  xt::rarray<int> res = xt::argmin<xt::layout_type::column_major>(x, axis);
-  return as_r_idx(res);
-}
 
 // -----------------------------------------------------------------------------
 // Builders
@@ -146,13 +129,6 @@ template <typename T1>
 SEXP rray_op_unary_one_cpp_impl(std::string op, const xt::rarray<T1>& x, SEXP arg) {
 
   switch(str2int(op.c_str())) {
-
-  // ---------------------------------------------------------------------------
-  // Sort / arg*
-
-  case str2int("argmin"): {
-    return rray_argmin_cpp(x, arg);
-  }
 
   // ---------------------------------------------------------------------------
   // Builders
