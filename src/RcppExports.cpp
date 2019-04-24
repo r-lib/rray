@@ -98,6 +98,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray__reshape
+Rcpp::RObject rray__reshape(Rcpp::RObject x, Rcpp::IntegerVector dim);
+RcppExport SEXP _rray_rray__reshape(SEXP xSEXP, SEXP dimSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type dim(dimSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__reshape(x, dim));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray_op_binary_cpp
 SEXP rray_op_binary_cpp(const std::string& op, SEXP x, SEXP y);
 RcppExport SEXP _rray_rray_op_binary_cpp(SEXP opSEXP, SEXP xSEXP, SEXP ySEXP) {
@@ -228,6 +240,27 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray__validate_dim
+void rray__validate_dim(Rcpp::IntegerVector dim);
+RcppExport SEXP _rray_rray__validate_dim(SEXP dimSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type dim(dimSEXP);
+    rray__validate_dim(dim);
+    return R_NilValue;
+END_RCPP
+}
+// rray__validate_reshape
+void rray__validate_reshape(Rcpp::RObject x, Rcpp::IntegerVector dim);
+RcppExport SEXP _rray_rray__validate_reshape(SEXP xSEXP, SEXP dimSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type dim(dimSEXP);
+    rray__validate_reshape(x, dim);
+    return R_NilValue;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__broadcast", (DL_FUNC) &_rray_rray__broadcast, 2},
@@ -238,6 +271,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__dim", (DL_FUNC) &_rray_rray__dim, 1},
     {"_rray_rray__dims", (DL_FUNC) &_rray_rray__dims, 1},
     {"_rray_rray__increase_dims", (DL_FUNC) &_rray_rray__increase_dims, 2},
+    {"_rray_rray__reshape", (DL_FUNC) &_rray_rray__reshape, 2},
     {"_rray_rray_op_binary_cpp", (DL_FUNC) &_rray_rray_op_binary_cpp, 3},
     {"_rray_rray_op_trinary_cpp", (DL_FUNC) &_rray_rray_op_trinary_cpp, 4},
     {"_rray_rray_op_unary_one_cpp", (DL_FUNC) &_rray_rray_op_unary_one_cpp, 3},
@@ -248,6 +282,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__max_pos", (DL_FUNC) &_rray_rray__max_pos, 2},
     {"_rray_rray__min_pos", (DL_FUNC) &_rray_rray__min_pos, 2},
     {"_rray_rray_reducer_cpp", (DL_FUNC) &_rray_rray_reducer_cpp, 3},
+    {"_rray_rray__validate_dim", (DL_FUNC) &_rray_rray__validate_dim, 1},
+    {"_rray_rray__validate_reshape", (DL_FUNC) &_rray_rray__validate_reshape, 2},
     {NULL, NULL, 0}
 };
 

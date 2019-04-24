@@ -14,6 +14,18 @@ Rcpp::IntegerVector rray__increase_dims(const Rcpp::IntegerVector& dim,
                                         const int& dims);
 
 // -----------------------------------------------------------------------------
+// Miscellaneous
+
+int rray__prod(Rcpp::IntegerVector x);
+
+// -----------------------------------------------------------------------------
+// Validation
+
+void rray__validate_dim(Rcpp::IntegerVector dim);
+
+void rray__validate_reshape(Rcpp::RObject x, Rcpp::IntegerVector dim);
+
+// -----------------------------------------------------------------------------
 // Re-exposed R API
 
 bool r_identical(SEXP x, SEXP y);
