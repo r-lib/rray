@@ -33,6 +33,10 @@ rray__increase_dims <- function(dim, dims) {
     .Call(`_rray_rray__increase_dims`, dim, dims)
 }
 
+rray__reshape <- function(x, dim) {
+    .Call(`_rray_rray__reshape`, x, dim)
+}
+
 rray_op_binary_cpp <- function(op, x, y) {
     .Call(`_rray_rray_op_binary_cpp`, op, x, y)
 }
@@ -71,5 +75,13 @@ rray__min_pos <- function(x, axis) {
 
 rray_reducer_cpp <- function(op, x, axes) {
     .Call(`_rray_rray_reducer_cpp`, op, x, axes)
+}
+
+rray__validate_dim <- function(dim) {
+    invisible(.Call(`_rray_rray__validate_dim`, dim))
+}
+
+rray__validate_reshape <- function(x, dim) {
+    invisible(.Call(`_rray_rray__validate_reshape`, x, dim))
 }
 

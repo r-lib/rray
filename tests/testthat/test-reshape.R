@@ -92,3 +92,8 @@ test_that("can reshape 0 column input", {
 test_that("can reshape with `NULL` input", {
   expect_equal(rray_reshape(NULL, c(1, 2)), NULL)
 })
+
+test_that("errors are thrown when reshaping to the wrong size", {
+  expect_error(rray_reshape(numeric(), 1), "The size you are reshaping from")
+  expect_error(rray_reshape(1, c(1, 2)), "The size you are reshaping from")
+})
