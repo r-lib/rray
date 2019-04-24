@@ -8,20 +8,6 @@
 // -----------------------------------------------------------------------------
 // Builders
 
-// type of arg has to be the same as the type of T
-
-template <typename T>
-SEXP rray_full_like_cpp(const xt::rarray<T>& x, SEXP arg) {
-
-  // Coerce arg to the underlying type T
-  // (rlogical is really int so we need the underlying int type)
-  using underlying_type = typename xt::r_detail::get_underlying_value_type_r<T>::type;
-  underlying_type fill_value = Rcpp::as<underlying_type>(arg);
-
-  const xt::rarray<T>& res = xt::full_like(x, fill_value);
-  return res;
-}
-
 template <typename T>
 SEXP rray_diag_cpp(const xt::rarray<T>& x, SEXP arg) {
   int k = Rcpp::as<int>(arg);
@@ -115,10 +101,6 @@ SEXP rray_op_unary_one_cpp_impl(std::string op, const xt::rarray<T1>& x, SEXP ar
 
   // ---------------------------------------------------------------------------
   // Builders
-
-  case str2int("full_like"): {
-    return rray_full_like_cpp(x, arg);
-  }
 
   case str2int("diag"): {
     return rray_diag_cpp(x, arg);
