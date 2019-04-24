@@ -3,6 +3,10 @@
 #include <dispatch.h>
 #include <tools/tools.h>
 
+// TODO - Until this is fixed:
+// https://github.com/QuantStack/xtensor-r/issues/113
+#include <xtensor/xarray.hpp>
+
 // -----------------------------------------------------------------------------
 
 template <class E>
@@ -49,16 +53,46 @@ Rcpp::RObject rray__sort(Rcpp::RObject x, std::ptrdiff_t axis) {
 
 // -----------------------------------------------------------------------------
 
-template <typename T>
-xt::rarray<int> rray__argsort_impl(const xt::rarray<T>& x, std::ptrdiff_t axis) {
-  xt::rarray<int> res = xt::argsort(x, axis);
-  return rray::as_r_idx(res);
-}
+// TODO - simplify this after this is fixed
+// https://github.com/QuantStack/xtensor-r/issues/113
 
-// [[Rcpp::export]]
-Rcpp::RObject rray__argsort(Rcpp::RObject x, std::ptrdiff_t axis) {
-  DISPATCH_UNARY_ONE(rray__argsort_impl, x, axis);
-}
+/// TODO - Flattening argsort() is broken for column major xarrays
+// (and by extension rarrays)
+// https://github.com/QuantStack/xtensor/issues/1537
+
+// template <typename T>
+// xt::rarray<int> rray__argsort_impl(const xt::rarray<T>& x, Rcpp::RObject axis) {
+//
+//   if (r_is_null(axis)) {
+//     // TODO - Temporarily go through xarray for argsort() to work
+//     using underlying_type = typename xt::r_detail::get_underlying_value_type_r<T>::type;
+//     xt::xarray<underlying_type, xt::layout_type::column_major> x_xarray(x);
+//
+//     auto x_sort = xt::argsort(x_xarray, xt::placeholders::xtuph());
+//     auto x_r_idx = rray__as_r_idx(x_sort);
+//     xt::xarray<int, xt::layout_type::column_major> out_xarray(x_r_idx);
+//     xt::rarray<int> out(out_xarray);
+//
+//     return out;
+//   }
+//
+//   // TODO - Temporarily go through xarray for argsort() to work
+//   using underlying_type = typename xt::r_detail::get_underlying_value_type_r<T>::type;
+//   xt::xarray<underlying_type, xt::layout_type::column_major> x_xarray(x);
+//
+//   std::ptrdiff_t xt_axis = Rcpp::as<std::ptrdiff_t>(axis);
+//   auto x_sort = xt::argsort(x_xarray, xt_axis);
+//   auto x_r_idx = rray__as_r_idx(x_sort);
+//   xt::xarray<int, xt::layout_type::column_major> out_xarray(x_r_idx);
+//   xt::rarray<int> out(out_xarray);
+//
+//   return out;
+// }
+//
+// // [[Rcpp::export]]
+// Rcpp::RObject rray__argsort(Rcpp::RObject x, Rcpp::RObject axis) {
+//   DISPATCH_UNARY_ONE(rray__argsort_impl, x, axis);
+// }
 
 // -----------------------------------------------------------------------------
 
@@ -100,16 +134,4 @@ xt::rarray<int> rray__argmax_impl(xt::rarray<T> x, Rcpp::RObject axis) {
 Rcpp::RObject rray__argmax(Rcpp::RObject x, Rcpp::RObject axis) {
   DISPATCH_UNARY_ONE(rray__argmax_impl, x, axis);
 }
-
-// template <typename T>
-// xt::rarray<int> rray__unravel_indices_impl(const xt::rarray<T>& x, Rcpp::RObject shape) {
-//   const std::vector<int>& idx = Rcpp::as<std::vector<int>>(x);
-//   xt::rarray<int> x_idx = xt::ravel_indices(idx, x.shape(), xt::layout_type::column_major);
-//   return x_idx;
-// }
-//
-// // [[Rcpp::export]]
-// Rcpp::RObject rray__unravel_indices(Rcpp::RObject x, Rcpp::RObject shape) {
-//   DISPATCH_UNARY_ONE(rray__unravel_indices_impl, x, shape);
-// }
 
