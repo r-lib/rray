@@ -36,3 +36,31 @@ test_that("error is thrown when trying to sort on unknown axis", {
   x <- 1:10
   expect_error(rray_sort(x, 2))
 })
+
+test_that("sorting drops the names along the axis", {
+
+  x <- rray(
+    c(2, 1, 1, 2),
+    dim = c(2, 2),
+    dim_names = list(
+      r = c("r1", "r2"),
+      c = c("c1", "c2")
+    )
+  )
+
+  expect_equal(
+    dim_names(rray_sort(x, axis = 1L)),
+    list(r = NULL, c = c("c1", "c2"))
+  )
+
+  expect_equal(
+    dim_names(rray_sort(x, axis = 2L)),
+    list(r = c("r1", "r2"), c = NULL)
+  )
+
+  # dropped along all axes
+  expect_equal(
+    dim_names(rray_sort(x)),
+    list(r = NULL, c = NULL)
+  )
+})
