@@ -1,6 +1,5 @@
 #include <rray.h>
 #include <tools/tools.h>
-using namespace rray;
 
 // -----------------------------------------------------------------------------
 // Operators

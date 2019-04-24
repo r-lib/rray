@@ -23,7 +23,6 @@
 // #include <xtensor/xarray.hpp>
 // #include <rray.h>
 // using namespace Rcpp;
-// using namespace rray;
 //
 // // How does this work?
 // // 1) rray_custom_reducer_cpp() takes x, a function with 2 args, the axes, and the return type
@@ -163,7 +162,7 @@
 //         }
 //
 //         default: {
-//           rray::error_unknown_type();
+//           error_unknown_type();
 //         }
 //
 //       }
@@ -187,7 +186,7 @@
 //         }
 //
 //         default: {
-//           rray::error_unknown_type();
+//           error_unknown_type();
 //         }
 //
 //       }
@@ -210,7 +209,7 @@
 //         }
 //
 //         default: {
-//           rray::error_unknown_type();
+//           error_unknown_type();
 //         }
 //
 //       }
