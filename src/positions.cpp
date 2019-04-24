@@ -40,14 +40,29 @@ inline auto rray__as_r_idx(E&& x) {
 
 // -----------------------------------------------------------------------------
 
+// Might get a false alarm on the xt::reshape_view()
+
 template <typename T>
-xt::rarray<T> rray__sort_impl(const xt::rarray<T>& x, std::ptrdiff_t axis) {
-  xt::rarray<T> res = xt::sort(x, axis);
+xt::rarray<T> rray__sort_impl(const xt::rarray<T>& x, Rcpp::RObject axis) {
+
+  using vec_size_t = typename std::vector<std::size_t>;
+  xt::rarray<T> res;
+
+  if (r_is_null(axis)) {
+    auto flat_res = xt::sort(x, xt::placeholders::xtuph());
+    const vec_size_t& shape = Rcpp::as<vec_size_t>(rray__dim(SEXP(x)));
+    res = xt::reshape_view(flat_res, shape, xt::layout_type::column_major);
+  }
+  else {
+    std::ptrdiff_t xt_axis = Rcpp::as<std::ptrdiff_t>(axis);
+    res = xt::sort(x, xt_axis);
+  }
+
   return res;
 }
 
 // [[Rcpp::export]]
-Rcpp::RObject rray__sort(Rcpp::RObject x, std::ptrdiff_t axis) {
+Rcpp::RObject rray__sort(Rcpp::RObject x, Rcpp::RObject axis) {
   DISPATCH_UNARY_ONE(rray__sort_impl, x, axis);
 }
 

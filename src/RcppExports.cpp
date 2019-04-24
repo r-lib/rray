@@ -180,13 +180,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // rray__sort
-Rcpp::RObject rray__sort(Rcpp::RObject x, std::ptrdiff_t axis);
+Rcpp::RObject rray__sort(Rcpp::RObject x, Rcpp::RObject axis);
 RcppExport SEXP _rray_rray__sort(SEXP xSEXP, SEXP axisSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    Rcpp::traits::input_parameter< std::ptrdiff_t >::type axis(axisSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type axis(axisSEXP);
     rcpp_result_gen = Rcpp::wrap(rray__sort(x, axis));
     return rcpp_result_gen;
 END_RCPP
