@@ -28,6 +28,24 @@ Rcpp::RObject rray__full_like(Rcpp::RObject x, Rcpp::RObject value) {
 
 // -----------------------------------------------------------------------------
 
+template <typename T>
+xt::rarray<T> rray__diag_impl(const xt::rarray<T>& x, int k) {
+
+  if (x.dimension() > 1) {
+    Rcpp::stop("`x` must be 1D, not %iD.", x.dimension());
+  }
+
+  xt::rarray<T> out = xt::diag(x, k);
+  return out;
+}
+
+// [[Rcpp::export]]
+Rcpp::RObject rray__diag(Rcpp::RObject x, int k) {
+  DISPATCH_UNARY_ONE(rray__diag_impl, x, k);
+}
+
+// -----------------------------------------------------------------------------
+
 // [[Rcpp::export]]
 SEXP rray_ones_cpp(const std::vector<std::size_t>& shape) {
   xt::rarray<int> res = xt::ones<int>(shape);

@@ -30,6 +30,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray__diag
+Rcpp::RObject rray__diag(Rcpp::RObject x, int k);
+RcppExport SEXP _rray_rray__diag(SEXP xSEXP, SEXP kSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< int >::type k(kSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__diag(x, k));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray_ones_cpp
 SEXP rray_ones_cpp(const std::vector<std::size_t>& shape);
 RcppExport SEXP _rray_rray_ones_cpp(SEXP shapeSEXP) {
@@ -277,6 +289,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__broadcast", (DL_FUNC) &_rray_rray__broadcast, 2},
     {"_rray_rray__full_like", (DL_FUNC) &_rray_rray__full_like, 2},
+    {"_rray_rray__diag", (DL_FUNC) &_rray_rray__diag, 2},
     {"_rray_rray_ones_cpp", (DL_FUNC) &_rray_rray_ones_cpp, 1},
     {"_rray_rray_zeros_cpp", (DL_FUNC) &_rray_rray_zeros_cpp, 1},
     {"_rray_rray_eye_cpp", (DL_FUNC) &_rray_rray_eye_cpp, 2},

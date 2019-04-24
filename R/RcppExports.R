@@ -9,6 +9,10 @@ rray__full_like <- function(x, value) {
     .Call(`_rray_rray__full_like`, x, value)
 }
 
+rray__diag <- function(x, k) {
+    .Call(`_rray_rray__diag`, x, k)
+}
+
 rray_ones_cpp <- function(shape) {
     .Call(`_rray_rray_ones_cpp`, shape)
 }

@@ -6,16 +6,6 @@
 #include <tools/tools.h>
 
 // -----------------------------------------------------------------------------
-// Builders
-
-template <typename T>
-SEXP rray_diag_cpp(const xt::rarray<T>& x, SEXP arg) {
-  int k = Rcpp::as<int>(arg);
-  const xt::rarray<T>& res = xt::diag(x, k);
-  return res;
-}
-
-// -----------------------------------------------------------------------------
 // Accumulators
 
 // To prevent overflow, return doubles
@@ -98,13 +88,6 @@ template <typename T1>
 SEXP rray_op_unary_one_cpp_impl(std::string op, const xt::rarray<T1>& x, SEXP arg) {
 
   switch(str2int(op.c_str())) {
-
-  // ---------------------------------------------------------------------------
-  // Builders
-
-  case str2int("diag"): {
-    return rray_diag_cpp(x, arg);
-  }
 
   // ---------------------------------------------------------------------------
   // Accumulator
