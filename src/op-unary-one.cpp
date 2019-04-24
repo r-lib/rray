@@ -11,26 +11,6 @@ using namespace rray;
 // Sort / arg*
 
 template <typename T>
-SEXP rray_argsort_cpp(xt::rarray<T> x, SEXP arg) {
-  std::ptrdiff_t axis = Rcpp::as<std::ptrdiff_t>(arg);
-  xt::rarray<int> res = xt::argsort(x, axis);
-  return as_r_idx(res);
-}
-
-template <typename T>
-SEXP rray_argmax_cpp(xt::rarray<T> x, SEXP arg) {
-
-  if (Rf_isNull(arg)) {
-    xt::rarray<int> res = xt::argmax<xt::layout_type::column_major>(x);
-    return as_r_idx(res);
-  }
-
-  std::size_t axis = Rcpp::as<std::size_t>(arg);
-  xt::rarray<int> res = xt::argmax<xt::layout_type::column_major>(x, axis);
-  return as_r_idx(res);
-}
-
-template <typename T>
 SEXP rray_argmin_cpp(xt::rarray<T> x, SEXP arg) {
 
   if (Rf_isNull(arg)) {
@@ -169,14 +149,6 @@ SEXP rray_op_unary_one_cpp_impl(std::string op, const xt::rarray<T1>& x, SEXP ar
 
   // ---------------------------------------------------------------------------
   // Sort / arg*
-
-  case str2int("argsort"): {
-    return rray_argsort_cpp(x, arg);
-  }
-
-  case str2int("argmax"): {
-    return rray_argmax_cpp(x, arg);
-  }
 
   case str2int("argmin"): {
     return rray_argmin_cpp(x, arg);
