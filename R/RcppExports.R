@@ -85,6 +85,22 @@ rray_reducer_cpp <- function(op, x, axes) {
     .Call(`_rray_rray_reducer_cpp`, op, x, axes)
 }
 
+is_contiguous_increasing <- function(x) {
+    .Call(`_rray_is_contiguous_increasing`, x)
+}
+
+convert_ranges <- function(x) {
+    .Call(`_rray_convert_ranges`, x)
+}
+
+is_stridable <- function(x) {
+    .Call(`_rray_is_stridable`, x)
+}
+
+rray__subset <- function(x, slice_indices) {
+    .Call(`_rray_rray__subset`, x, slice_indices)
+}
+
 rray__validate_dim <- function(dim) {
     invisible(.Call(`_rray_rray__validate_dim`, dim))
 }
