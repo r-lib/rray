@@ -1,23 +1,20 @@
-rray_subset2 <- function(x, ...) {
+rray_subset <- function(x, ...) {
   indexer <- rray_as_index2(x, ...)
 
+  # TODO
+  if (is_any_na_int(indexer)) {
+    abort("`NA` indices are not yet supported.")
+  }
+
   out <- rray__subset(x, indexer)
+
+  new_dim_names <- subset_dim_names(dim_names(x), indexer)
+  out <- set_full_dim_names(out, new_dim_names)
+
   vec_restore(out, x)
 }
 
 # ------------------------------------------------------------------------------
-
-is_slice_range <- function(x) {
-  inherits(x, "vctrs_slice_range")
-}
-
-as_xt_range <- function(x) {
-  x <- unclass(x)
-  # xt::range(start, stop) is [start, stop)
-  start <- x$start - 1L
-  stop <- x$stop # - 1L + 1L
-  list(start = start, stop = stop)
-}
 
 slice_range <- function(start, stop) {
   start <- vec_cast(start, integer())
@@ -59,6 +56,18 @@ format.vctrs_slice_range <- function(x, ...) {
   format(vec_data(x))
 }
 
+is_slice_range <- function(x) {
+  inherits(x, "vctrs_slice_range")
+}
+
+as_xt_range <- function(x) {
+  x <- unclass(x)
+  # xt::range(start, stop) is [start, stop)
+  start <- x$start - 1L
+  stop <- x$stop # - 1L + 1L
+  list(start = start, stop = stop)
+}
+
 # ------------------------------------------------------------------------------
 
 # This returns a list of correct C indices with one of:
@@ -67,9 +76,17 @@ format.vctrs_slice_range <- function(x, ...) {
 # - A list of length 2 representing (start, stop) positions for an xt::range()
 rray_as_index2 <- function(x, ...) {
   indexer <- dots_list(..., .preserve_empty = TRUE, .ignore_empty = "trailing")
-
   dim <- rray_dim(x)
+  dims <- rray_dims(x)
+  requested_dims <- vec_size(indexer)
   proxy_names <- dim_names(x)
+
+  if (requested_dims > dims) {
+    glubort(
+      "The dimensionality of `x` is {dims}. ",
+      "Cannot subset into dimension {requested_dims}."
+    )
+  }
 
   for (i in seq_along(indexer)) {
 
@@ -107,28 +124,21 @@ rray_as_index2 <- function(x, ...) {
 
   # After the loop, append any missing indices to the back side
   # to fill out the dimensionality
-  indexer <- append_missing(indexer, x)
+  indexer <- append_missing(indexer, dims)
 
   indexer
 }
 
-append_missing <- function(indexer, x) {
-  x_dims <- rray_dims(x)
-  requested_dims <- length(indexer)
+append_missing <- function(indexer, dims) {
 
-  if (requested_dims > x_dims) {
-    glubort(
-      "The dimensionality of `x` is {x_dims}. ",
-      "Cannot subset into dimension {requested_dims}."
-    )
-  }
+  requested_dims <- vec_size(indexer)
 
-  if (requested_dims == x_dims) {
+  if (requested_dims == dims) {
     return(indexer)
   }
 
   # n_dots < d, need to pad with missing args
-  n_missing <- x_dims - requested_dims
+  n_missing <- dims - vec_size(indexer)
   padding <- rep(list(missing_arg()), times = n_missing)
   indexer <- c(indexer, padding)
 

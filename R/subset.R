@@ -90,7 +90,7 @@
 #'
 #' @family rray subsetters
 #' @export
-rray_subset <- function(x, ...) {
+rray_subset_old <- function(x, ...) {
   out <- vec_data(x)
 
   indexer <- rray_as_index(x, ...)

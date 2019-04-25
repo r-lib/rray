@@ -63,7 +63,7 @@ test_that("subset works with `NULL` as dimension", {
 })
 
 test_that("subset works with base R", {
-  x <- array(1:8, dim = c(2, 2, 2))
+  x <- array(1:8, dim = c(2, 2, 2), dimnames = list(NULL, NULL, NULL))
 
   expect_equal(
     rray_subset(x, 1),
@@ -72,7 +72,7 @@ test_that("subset works with base R", {
 
   expect_equal(
     rray_subset(x, 1:2, 1:2, 1),
-    array(x[1:2, 1:2, 1], c(2, 2, 1))
+    new_array(x[1:2, 1:2, 1], c(2, 2, 1))
   )
 })
 
