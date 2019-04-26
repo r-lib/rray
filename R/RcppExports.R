@@ -93,10 +93,6 @@ is_contiguous_increasing <- function(x) {
     .Call(`_rray_is_contiguous_increasing`, x)
 }
 
-is_stridable <- function(x) {
-    .Call(`_rray_is_stridable`, x)
-}
-
 subset_dim_names <- function(dim_names, indexer) {
     .Call(`_rray_subset_dim_names`, dim_names, indexer)
 }

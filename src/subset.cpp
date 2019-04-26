@@ -68,7 +68,6 @@ bool is_contiguous_increasing(Rcpp::RObject x) {
 
 // This check is done after contiguous vectors have been converted to lists of ranges
 
-// [[Rcpp::export]]
 bool is_stridable(Rcpp::List x) {
   bool stridable = true;
   int x_size = x.size();
