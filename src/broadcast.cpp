@@ -15,21 +15,10 @@ xt::rarray<T> rray__broadcast_impl(const xt::rarray<T>& x,
     return(x);
   }
 
-  // Match dimensionality before comparison
-  x_dim = rray__increase_dims(x_dim, dims);
-
-  // 3 cases where broadcasting works:
-  // - Dimensions are the same (no change is made)
-  // - Dimension of x is 1 (broadcast to new dimension)
-  // - New dimension is 0 (no change is made)
-  Rcpp::LogicalVector ok = (x_dim == dim | x_dim == 1 | dim == 0);
-  if (Rcpp::is_true(Rcpp::any(!ok))) {
-    Rcpp::stop("Non-broadcastable dimensions.");
-  }
-
   // Must reshape to match dimensionality first b/c of QuantStack/xtensor-r#57
-  const vec_size_t& x_view_dim = Rcpp::as<vec_size_t>(x_dim);
-  auto x_view = xt::reshape_view(x, x_view_dim, xt::layout_type::column_major);
+  auto x_view = rray__increase_dims_view(x, dims);
+
+  rray__validate_broadcastable(x_dim, dim);
 
   const vec_size_t& dim_vec = Rcpp::as<vec_size_t>(dim);
   xt::rarray<T> res = xt::broadcast(x_view, dim_vec);
