@@ -128,31 +128,15 @@ Rcpp::List subset_dim_names(Rcpp::List dim_names, Rcpp::List indexer) {
 // -----------------------------------------------------------------------------
 
 template <typename T>
-xt::rarray<T> rray__subset_strided(const xt::rarray<T>& x, Rcpp::List indexer) {
-  xt::xstrided_slice_vector sv = build_strided_slice_vector(indexer);
-  auto out = xt::strided_view(x, sv);
-  return out;
-}
-
-template <typename T>
-xt::rarray<T> rray__subset_dynamic(const xt::rarray<T>& x, Rcpp::List indexer) {
-  xt::xdynamic_slice_vector sv = build_dynamic_slice_vector(indexer);
-  auto out = xt::dynamic_view(x, sv);
-  return out;
-}
-
-// -----------------------------------------------------------------------------
-
-template <typename T>
 xt::rarray<T> rray__subset_impl(const xt::rarray<T>& x, Rcpp::List indexer) {
 
   xt::rarray<T> out;
 
   if (is_stridable(indexer)) {
-    out = rray__subset_strided(x, indexer);
+    out = xt::strided_view(x, build_strided_slice_vector(indexer));
   }
   else {
-    out = rray__subset_dynamic(x, indexer);
+    out = xt::dynamic_view(x, build_dynamic_slice_vector(indexer));
   }
 
   return out;
