@@ -72,6 +72,8 @@ xt::rarray<T> rray__subset_assign_impl(const xt::rarray<T>& x,
 }
 
 // [[Rcpp::export]]
-Rcpp::RObject rray__subset_assign(Rcpp::RObject x, Rcpp::List indexer, Rcpp::RObject value) {
+Rcpp::RObject rray__subset_assign(Rcpp::RObject x,
+                                  Rcpp::List indexer,
+                                  Rcpp::RObject value) {
   DISPATCH_UNARY_TWO(rray__subset_assign_impl, x, indexer, value);
 }
