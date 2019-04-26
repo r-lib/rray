@@ -65,6 +65,12 @@
 #' # Note that you can use base R arrays with `rray_subset()`
 #' rray_subset(x_arr, , 1)
 #'
+#' # For higher dimensional objects, `pad()` can be
+#' # useful for automatically adding commas. The
+#' # following are equivalent:
+#' x[pad(), 1]
+#' x[, , 1]
+#'
 #' # You can assign to index locations with
 #' # x[...] <- value
 #' # This assigns 99 to the entire first row
@@ -88,6 +94,7 @@
 #' rray_subset(x_arr, , 1) <- matrix(5)
 #' x_arr
 #'
+#' @seealso [pad()]
 #' @family rray subsetters
 #' @export
 rray_subset <- function(x, ...) {

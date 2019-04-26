@@ -84,6 +84,12 @@ x_arr[, 1, , drop = FALSE]
 # Note that you can use base R arrays with `rray_subset()`
 rray_subset(x_arr, , 1)
 
+# For higher dimensional objects, `pad()` can be
+# useful for automatically adding commas. The
+# following are equivalent:
+x[pad(), 1]
+x[, , 1]
+
 # You can assign to index locations with
 # x[...] <- value
 # This assigns 99 to the entire first row
@@ -109,6 +115,8 @@ x_arr
 
 }
 \seealso{
+\code{\link[=pad]{pad()}}
+
 Other rray subsetters: \code{\link{rray_extract}},
   \code{\link{rray_slice}}, \code{\link{rray_yank}}
 }
