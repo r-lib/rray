@@ -25,3 +25,34 @@ void rray__validate_reshape(Rcpp::RObject x, Rcpp::IntegerVector dim) {
   }
 
 }
+
+// 4 cases where broadcasting works:
+// - Dimensions are the same (no change is made)
+// - Dimension of x is 1 (broadcast to new dimension)
+// - New dimension is 0 (no change is made)
+// - Dimensions of x are shorter than `dim` (i.e. x is 3D but dim is 4D)
+//   in that case, we check the 3 first dimensions and assume the 4th will
+//   be reshape-viewed to work
+
+// [[Rcpp::export]]
+void rray__validate_broadcastable(Rcpp::IntegerVector x_dim,
+                                  Rcpp::IntegerVector dim) {
+
+  int n_x = x_dim.size();
+  int n_to = dim.size();
+
+  if (n_x > n_to) {
+    Rcpp::stop("Cannot decrease dimensionality.");
+  }
+
+  for (int i = 0; i < n_x; ++i) {
+    int x_dim_i = x_dim[i];
+    int dim_i = dim[i];
+
+    bool ok = (x_dim_i == dim_i || x_dim_i == 1 || dim_i == 0);
+
+    if (!ok) {
+      Rcpp::stop("Non-broadcastable dimensions.");
+    }
+  }
+}

@@ -25,6 +25,9 @@ void rray__validate_dim(Rcpp::IntegerVector dim);
 
 void rray__validate_reshape(Rcpp::RObject x, Rcpp::IntegerVector dim);
 
+void rray__validate_broadcastable(Rcpp::IntegerVector x_dim,
+                                  Rcpp::IntegerVector dim);
+
 // -----------------------------------------------------------------------------
 // Re-exposed R API
 

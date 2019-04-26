@@ -35,6 +35,22 @@ inline auto rray__keep_dims_view(E&& x,
   return out;
 }
 
+template <typename T>
+inline auto rray__increase_dims_view(const xt::rarray<T>& x, const int& dims) {
+
+  using vec_size_t = typename std::vector<std::size_t>;
+
+  // Reshape `x` to have the dimensionality of `dims`
+  Rcpp::IntegerVector x_dim = rray__dim(SEXP(x));
+
+  Rcpp::IntegerVector x_view_dim = rray__increase_dims(x_dim, dims);
+  const vec_size_t& xt_view_dim = Rcpp::as<vec_size_t>(x_view_dim);
+
+  auto x_view = xt::reshape_view(x, xt_view_dim, xt::layout_type::column_major);
+
+  return x_view;
+}
+
 template <class E>
 inline auto rray__as_r_idx(E&& x) {
   return x + 1;
