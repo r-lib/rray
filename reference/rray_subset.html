@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get or set dimensions of an array — rray_subset • rray</title>
+<title>Get or set dimensions of an array — rray_subset&lt;- • rray</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,7 +30,7 @@
 
 
 
-<meta property="og:title" content="Get or set dimensions of an array — rray_subset" />
+<meta property="og:title" content="Get or set dimensions of an array — rray_subset&lt;-" />
 
 <meta property="og:description" content="rray_subset() extracts dimensions from an array by index. It powers [
 for rray objects. Notably, it never drops dimensions, and ignores
@@ -117,7 +117,7 @@ trailing commas." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Get or set dimensions of an array</h1>
-    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/subset.R'><code>R/subset.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/subset-old.R'><code>R/subset-old.R</code></a>, <a href='https://github.com/DavisVaughan/rray/blob/master/R/subset.R'><code>R/subset.R</code></a></small>
     <div class="hidden name"><code>rray_subset.Rd</code></div>
     </div>
 
@@ -129,15 +129,15 @@ trailing commas.</p>
     
     </div>
 
-    <pre class="usage">rray_subset(x, ...)
+    <pre class="usage">rray_subset(x, ...) <- value
 
 # S3 method for vctrs_rray
-[(x, ..., drop = FALSE)
+[(x, ...) <- value
 
-rray_subset(x, ...) <- value
+rray_subset(x, ...)
 
 # S3 method for vctrs_rray
-[(x, ...) <- value</pre>
+[(x, ..., drop = FALSE)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -158,14 +158,14 @@ dimension.</p></li>
 </ul></td>
     </tr>
     <tr>
-      <th>drop</th>
-      <td><p>Ignored, but preserved for better error messages with code
-that might have used arrays before.</p></td>
-    </tr>
-    <tr>
       <th>value</th>
       <td><p>The value to assign to the location specified by <code>...</code>. Before
 assignment, <code>value</code> is cast to the type and dimension of <code>x[...]</code>.</p></td>
+    </tr>
+    <tr>
+      <th>drop</th>
+      <td><p>Ignored, but preserved for better error messages with code
+that might have used arrays before.</p></td>
     </tr>
     </table>
     
