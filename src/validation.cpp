@@ -42,7 +42,10 @@ void rray__validate_broadcastable(Rcpp::IntegerVector x_dim,
   int n_to = dim.size();
 
   if (n_x > n_to) {
-    Rcpp::stop("Cannot decrease dimensionality.");
+    Rcpp::stop(
+      "Cannot decrease dimensionality from %i to %i.",
+      n_x, n_to
+    );
   }
 
   for (int i = 0; i < n_x; ++i) {

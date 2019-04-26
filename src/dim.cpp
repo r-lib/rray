@@ -41,7 +41,10 @@ Rcpp::IntegerVector rray__increase_dims(const Rcpp::IntegerVector& dim,
   }
 
   if (current_dims > dims) {
-    Rcpp::stop("Cannot decrease dimensions.");
+    Rcpp::stop(
+      "Cannot decrease dimensionality from %i to %i.",
+      current_dims, dims
+    );
   }
 
   // At this point, we know we are missing dims
