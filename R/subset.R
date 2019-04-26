@@ -90,12 +90,18 @@
 #'
 #' @family rray subsetters
 #' @export
-rray_subset_old <- function(x, ...) {
-  out <- vec_data(x)
+rray_subset <- function(x, ...) {
+  indexer <- rray_as_index2(x, ...)
 
-  indexer <- rray_as_index(x, ...)
+  # TODO
+  if (is_any_na_int(indexer)) {
+    abort("`NA` indices are not yet supported.")
+  }
 
-  out <- eval_bare(expr(out[!!!indexer]))
+  out <- rray__subset(x, indexer)
+
+  new_dim_names <- subset_dim_names(dim_names(x), indexer)
+  out <- set_full_dim_names(out, new_dim_names)
 
   vec_restore(out, x)
 }

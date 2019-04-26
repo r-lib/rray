@@ -1,21 +1,3 @@
-rray_subset <- function(x, ...) {
-  indexer <- rray_as_index2(x, ...)
-
-  # TODO
-  if (is_any_na_int(indexer)) {
-    abort("`NA` indices are not yet supported.")
-  }
-
-  out <- rray__subset(x, indexer)
-
-  new_dim_names <- subset_dim_names(dim_names(x), indexer)
-  out <- set_full_dim_names(out, new_dim_names)
-
-  vec_restore(out, x)
-}
-
-# ------------------------------------------------------------------------------
-
 slice_range <- function(start, stop) {
   start <- vec_cast(start, integer())
   stop <- vec_cast(stop, integer())
@@ -24,7 +6,7 @@ slice_range <- function(start, stop) {
     abort("`start` must be less than or equal to `stop`.")
   }
 
-  if (start < 1) {
+  if (start < 1L) {
     abort("`start` must be greater than or equal to 1.")
   }
 
@@ -53,19 +35,13 @@ new_slice_range <- function(start, stop) {
 }
 
 format.vctrs_slice_range <- function(x, ...) {
-  format(vec_data(x))
+  as.character(glue::glue(
+    "[{field(x, 'start')}, {field(x, 'stop')}]"
+  ))
 }
 
 is_slice_range <- function(x) {
   inherits(x, "vctrs_slice_range")
-}
-
-as_xt_range <- function(x) {
-  x <- unclass(x)
-  # xt::range(start, stop) is [start, stop)
-  start <- x$start - 1L
-  stop <- x$stop # - 1L + 1L
-  list(start = start, stop = stop)
 }
 
 # ------------------------------------------------------------------------------
@@ -143,4 +119,11 @@ append_missing <- function(indexer, dims) {
   indexer <- c(indexer, padding)
 
   indexer
+}
+
+as_xt_range <- function(x) {
+  # xt::range(start, stop) is [start, stop)
+  start <- field(x, "start") - 1L
+  stop <- field(x, "stop") # - 1L + 1L
+  list(start = start, stop = stop)
 }
