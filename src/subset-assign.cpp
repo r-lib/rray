@@ -57,79 +57,35 @@ auto rray__increase_dims_view(const xt::rarray<T>& x, const int& dims) {
 }
 
 template <typename T>
-xt::rarray<T> rray__subset_assign_strided(const xt::rarray<T>& x,
-                                 Rcpp::List indexer,
-                                 Rcpp::RObject value) {
-
-  if (any_zero_length_indexer(indexer)) {
-    return x;
-  }
-
-  // Convert `value` to an rarray
-  const xt::rarray<T>& xt_value = SEXP(value);
-
-  // Reshape `xt_value` to have the dimensionality of `x`
-  const int& x_dims = rray__dims(SEXP(x));
-  auto xt_value_view = rray__increase_dims_view(xt_value, x_dims);
-
-  // NOTE - Request a copy of `x` that we can assign to
-  // Currently, `x` is a `const&` that we can't modify directly
-  xt::rarray<T> x_assignable = x;
-
-  xt::xstrided_slice_vector sv = build_strided_slice_vector(indexer);
-  auto x_subset_view = xt::strided_view(x_assignable, sv);
-
-  // Ensure that we can actually perform the assignment so we don't segfault
-  validate_broadcastable_shapes(xt_value_view, x_subset_view);
-
-  x_subset_view = xt_value_view;
-
-  return x_assignable;
-}
-
-template <typename T>
-xt::rarray<T> rray__subset_assign_dynamic(const xt::rarray<T>& x,
-                                 Rcpp::List indexer,
-                                 Rcpp::RObject value) {
-
-  if (any_zero_length_indexer(indexer)) {
-    return x;
-  }
-
-  // Convert `value` to an rarray
-  const xt::rarray<T>& xt_value = SEXP(value);
-
-  // Reshape `xt_value` to have the dimensionality of `x`
-  const int& x_dims = rray__dims(SEXP(x));
-  auto xt_value_view = rray__increase_dims_view(xt_value, x_dims);
-
-  // NOTE - Request a copy of `x` that we can assign to
-  // Currently, `x` is a `const&` that we can't modify directly
-  xt::rarray<T> x_assignable = x;
-
-  xt::xdynamic_slice_vector sv = build_dynamic_slice_vector(indexer);
-  auto x_subset_view = xt::dynamic_view(x_assignable, sv);
-
-  // Ensure that we can actually perform the assignment so we don't segfault
-  validate_broadcastable_shapes(xt_value_view, x_subset_view);
-
-  x_subset_view = xt_value_view;
-
-  return x_assignable;
-}
-
-template <typename T>
 xt::rarray<T> rray__subset_assign_impl(const xt::rarray<T>& x,
                                        Rcpp::List indexer,
-                                       Rcpp::RObject value) {
+                                       Rcpp::RObject value_) {
 
-  xt::rarray<T> out;
+  if (any_zero_length_indexer(indexer)) {
+    return x;
+  }
+
+  xt::rarray<T> value(value_);
+
+  // Reshape `xt_value` to have the dimensionality of `x`
+  const int& x_dims = rray__dims(SEXP(x));
+  auto value_view = rray__increase_dims_view(value, x_dims);
+
+  // Request a copy of `x` that we can assign to
+  // `x` comes in as a `const&` that we can't modify directly
+  xt::rarray<T> out = x;
 
   if (is_stridable(indexer)) {
-    out = rray__subset_assign_strided(x, indexer, value);
+    xt::xstrided_slice_vector sv = build_strided_slice_vector(indexer);
+    auto x_subset_view = xt::strided_view(out, sv);
+    validate_broadcastable_shapes(value_view, x_subset_view);
+    x_subset_view = value_view;
   }
   else {
-    out = rray__subset_assign_dynamic(x, indexer, value);
+    xt::xdynamic_slice_vector sv = build_dynamic_slice_vector(indexer);
+    auto x_subset_view = xt::dynamic_view(out, sv);
+    validate_broadcastable_shapes(value_view, x_subset_view);
+    x_subset_view = value_view;
   }
 
   return out;
