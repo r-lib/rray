@@ -85,6 +85,10 @@ rray_reducer_cpp <- function(op, x, axes) {
     .Call(`_rray_rray_reducer_cpp`, op, x, axes)
 }
 
+rray__subset_assign <- function(x, indexer, value) {
+    .Call(`_rray_rray__subset_assign`, x, indexer, value)
+}
+
 is_any_na_int <- function(x) {
     .Call(`_rray_is_any_na_int`, x)
 }

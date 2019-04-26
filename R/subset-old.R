@@ -1,31 +1,3 @@
-#' @rdname rray_subset
-#' @export
-`rray_subset<-` <- function(x, ..., value) {
-  rray_subset_assign_impl(x, ..., value = value)
-}
-
-#' @rdname rray_subset
-#' @export
-`[<-.vctrs_rray` <- function(x, ..., value) {
-  rray_subset_assign_impl(x, ..., value = value)
-}
-
-rray_subset_assign_impl <- function(x, ..., value) {
-  x_subset <- rray_subset(x, ...)
-  value <- vec_cast(value, x_subset)
-  value <- rray_broadcast(value, rray_dim(x_subset))
-
-  indexer <- rray_as_index(x, ..., with_drop = FALSE)
-
-  x_data <- vec_data(x)
-
-  eval_bare(expr(x_data[!!!indexer] <- value))
-
-  res <- vec_restore(x_data, x)
-
-  res
-}
-
 # ------------------------------------------------------------------------------
 
 #' Get or set a slice of an array

@@ -1,4 +1,4 @@
-#include <api.h>
+#include <r-api.h>
 
 // (15 is equal to the default settings of identical())
 bool r_identical(SEXP x, SEXP y) {

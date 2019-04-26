@@ -28,10 +28,6 @@ void rray__validate_reshape(Rcpp::RObject x, Rcpp::IntegerVector dim);
 // -----------------------------------------------------------------------------
 // Re-exposed R API
 
-bool r_identical(SEXP x, SEXP y);
-
-bool r_is_null(SEXP x);
-
-bool r_is_missing(SEXP x);
+#include <r-api.h>
 
 #endif
