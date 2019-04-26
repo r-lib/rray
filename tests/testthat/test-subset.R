@@ -63,7 +63,7 @@ test_that("subset works with `NULL` as dimension", {
 })
 
 test_that("subset works with base R", {
-  x <- array(1:8, dim = c(2, 2, 2))
+  x <- array(1:8, dim = c(2, 2, 2), dimnames = list(NULL, NULL, NULL))
 
   expect_equal(
     rray_subset(x, 1),
@@ -72,7 +72,7 @@ test_that("subset works with base R", {
 
   expect_equal(
     rray_subset(x, 1:2, 1:2, 1),
-    array(x[1:2, 1:2, 1], c(2, 2, 1))
+    new_array(x[1:2, 1:2, 1], c(2, 2, 1))
   )
 })
 
@@ -98,42 +98,54 @@ test_that("can subset with a logical", {
 test_that("subset with NA (lgl)", {
   x <- rray(1:8, dim = c(2, 2, 2))
 
-  expect_equal(
-    rray_subset(x, NA),
-    vec_na(x, n = 2)
+  expect_error(
+    expect_equal(
+      rray_subset(x, NA),
+      vec_na(x, n = 2)
+    )
   )
 
-  expect_equal(
-    rray_subset(x, c(NA, NA)),
-    vec_na(x, n = 2)
+  expect_error(
+    expect_equal(
+      rray_subset(x, c(NA, NA)),
+      vec_na(x, n = 2)
+    )
   )
 
-  expect_equal(
-    rray_subset(x, c(NA, TRUE)),
-    vec_c(vec_na(x, n = 1), x[2])
+  expect_error(
+    expect_equal(
+      rray_subset(x, c(NA, TRUE)),
+      vec_c(vec_na(x, n = 1), x[2])
+    )
   )
 })
 
 test_that("subset with NA (int)", {
   x <- rray(1:8, dim = c(2, 2, 2))
 
-  expect_equal(
-    rray_subset(x, NA_integer_),
-    vec_na(x, 1)
+  expect_error(
+    expect_equal(
+      rray_subset(x, NA_integer_),
+      vec_na(x, 1)
+    )
   )
 
-  expect_equal(
-    rray_subset(x, c(NA_integer_, NA_integer_, NA_integer_)),
-    vec_na(x, 3)
+  expect_error(
+    expect_equal(
+      rray_subset(x, c(NA_integer_, NA_integer_, NA_integer_)),
+      vec_na(x, 3)
+    )
   )
 })
 
 test_that("subset with NA (real)", {
   x <- rray(1:8, dim = c(2, 2, 2))
 
-  expect_equal(
-    rray_subset(x, NA_real_),
-    rray_subset(x, NA_integer_)
+  expect_error(
+    expect_equal(
+      rray_subset(x, NA_real_),
+      rray_subset(x, NA_integer_)
+    )
   )
 })
 

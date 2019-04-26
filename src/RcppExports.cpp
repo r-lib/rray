@@ -264,6 +264,52 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// is_any_na_int
+bool is_any_na_int(Rcpp::List x);
+RcppExport SEXP _rray_is_any_na_int(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(is_any_na_int(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// is_contiguous_increasing
+bool is_contiguous_increasing(Rcpp::RObject x);
+RcppExport SEXP _rray_is_contiguous_increasing(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(is_contiguous_increasing(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// subset_dim_names
+Rcpp::List subset_dim_names(Rcpp::List dim_names, Rcpp::List indexer);
+RcppExport SEXP _rray_subset_dim_names(SEXP dim_namesSEXP, SEXP indexerSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type dim_names(dim_namesSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type indexer(indexerSEXP);
+    rcpp_result_gen = Rcpp::wrap(subset_dim_names(dim_names, indexer));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__subset
+Rcpp::RObject rray__subset(Rcpp::RObject x, Rcpp::List indexer);
+RcppExport SEXP _rray_rray__subset(SEXP xSEXP, SEXP indexerSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type indexer(indexerSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__subset(x, indexer));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray__validate_dim
 void rray__validate_dim(Rcpp::IntegerVector dim);
 RcppExport SEXP _rray_rray__validate_dim(SEXP dimSEXP) {
@@ -308,6 +354,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__max_pos", (DL_FUNC) &_rray_rray__max_pos, 2},
     {"_rray_rray__min_pos", (DL_FUNC) &_rray_rray__min_pos, 2},
     {"_rray_rray_reducer_cpp", (DL_FUNC) &_rray_rray_reducer_cpp, 3},
+    {"_rray_is_any_na_int", (DL_FUNC) &_rray_is_any_na_int, 1},
+    {"_rray_is_contiguous_increasing", (DL_FUNC) &_rray_is_contiguous_increasing, 1},
+    {"_rray_subset_dim_names", (DL_FUNC) &_rray_subset_dim_names, 2},
+    {"_rray_rray__subset", (DL_FUNC) &_rray_rray__subset, 2},
     {"_rray_rray__validate_dim", (DL_FUNC) &_rray_rray__validate_dim, 1},
     {"_rray_rray__validate_reshape", (DL_FUNC) &_rray_rray__validate_reshape, 2},
     {NULL, NULL, 0}

@@ -85,6 +85,22 @@ rray_reducer_cpp <- function(op, x, axes) {
     .Call(`_rray_rray_reducer_cpp`, op, x, axes)
 }
 
+is_any_na_int <- function(x) {
+    .Call(`_rray_is_any_na_int`, x)
+}
+
+is_contiguous_increasing <- function(x) {
+    .Call(`_rray_is_contiguous_increasing`, x)
+}
+
+subset_dim_names <- function(dim_names, indexer) {
+    .Call(`_rray_subset_dim_names`, dim_names, indexer)
+}
+
+rray__subset <- function(x, indexer) {
+    .Call(`_rray_rray__subset`, x, indexer)
+}
+
 rray__validate_dim <- function(dim) {
     invisible(.Call(`_rray_rray__validate_dim`, dim))
 }

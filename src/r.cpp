@@ -8,3 +8,7 @@ bool r_identical(SEXP x, SEXP y) {
 bool r_is_null(SEXP x) {
   return Rf_isNull(x);
 }
+
+bool r_is_missing(SEXP x) {
+  return r_identical(x, R_MissingArg);
+}
