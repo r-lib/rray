@@ -228,6 +228,11 @@ test_that("broadcast can fail gracefully in subset assign", {
   expect_error(rray_subset(x, 1, 1) <- c(1, 2), "Non-broadcastable")
 })
 
+test_that("cannot assign down in dimensionality", {
+  x <- 1
+  expect_error(rray_subset(x, 1) <- matrix(1), "from 2 to 1")
+})
+
 test_that("can subset assign with shaped input", {
   x <- rray(1:8, dim = c(2, 2, 2))
   expect_error(rray_subset(x, , 1) <- matrix(1:2), NA)
