@@ -123,6 +123,7 @@ rray_as_index2 <- function(x, ...) {
   indexer <- dots_list(..., .preserve_empty = TRUE, .ignore_empty = "trailing")
   dim <- rray_dim(x)
   dims <- rray_dims(x)
+  indexer <- expand_pad(indexer, dims)
   requested_dims <- vec_size(indexer)
   proxy_names <- dim_names(x)
 
@@ -197,3 +198,53 @@ as_xt_range <- function(x) {
   list(start = start, stop = stop)
 }
 
+expand_pad <- function(indexer, dims) {
+
+  has_pad <- map_lgl(indexer, is_pad)
+
+  count_pad <- sum(has_pad)
+
+  if (count_pad == 0L) {
+    return(indexer)
+  }
+
+  if (count_pad > 1) {
+    glubort("Only one `pad()` is allowed in a subset.")
+  }
+
+  pad_loc <- which(has_pad)
+
+  # number of dims without pad
+  requested_dims <- vec_size(indexer)
+  requested_dims_no_pad <- requested_dims - 1L
+
+  n_padding <- dims - requested_dims_no_pad
+
+  # Dimensionality subsetting error will be caught after the padding
+  # (this also ensures the error message has the right dimensionality)
+  if (n_padding < 0L) {
+    n_padding <- 0L
+  }
+
+  padding <- rep_len(list(missing_arg()), n_padding)
+
+  n_before <- pad_loc - 1L
+  if (n_before == 0L) {
+    before <- list()
+  }
+  else {
+    before <- indexer[seq_len(n_before)]
+  }
+
+  n_after <- requested_dims - pad_loc
+  if (n_after == 0L) {
+    after <- list()
+  }
+  else {
+    after <- indexer[(pad_loc + 1):(pad_loc + n_after)]
+  }
+
+  indexer <- c(before, padding, after)
+
+  indexer
+}
