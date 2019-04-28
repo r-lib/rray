@@ -228,6 +228,11 @@ test_that("broadcast can fail gracefully in subset assign", {
   expect_error(rray_subset(x, 1, 1) <- c(1, 2), "Non-broadcastable")
 })
 
+test_that("cannot assign down in dimensionality", {
+  x <- 1
+  expect_error(rray_subset(x, 1) <- matrix(1), "from 2 to 1")
+})
+
 test_that("can subset assign with shaped input", {
   x <- rray(1:8, dim = c(2, 2, 2))
   expect_error(rray_subset(x, , 1) <- matrix(1:2), NA)
@@ -241,6 +246,13 @@ test_that("can subset assign with base R objects", {
   x <- matrix(1:8, nrow = 2)
   rray_subset(x, 1) <- matrix(4:1, nrow = 1)
   expect_equal(as.vector(x), c(4, 2, 3, 4, 2, 6, 1, 8))
+})
+
+test_that("subset assign keeps names", {
+  nms <- list(r = "r1", c = "c1")
+  x <- array(1, c(1, 1), dimnames = nms)
+  rray_subset(x, 1) <- 2
+  expect_equal(dim_names(x), nms)
 })
 
 # ------------------------------------------------------------------------------

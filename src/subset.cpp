@@ -1,10 +1,7 @@
-#include <xtensor/xdynamic_view.hpp>
-#include <xtensor/xstrided_view.hpp>
-#include <xtensor/xarray.hpp>
 #include <rray.h>
 #include <tools/tools.h>
 #include <dispatch.h>
-
+#include <subset-tools.h>
 
 // [[Rcpp::export]]
 bool is_any_na_int(Rcpp::List x) {
@@ -64,33 +61,6 @@ bool is_contiguous_increasing(Rcpp::RObject x) {
   }
 
   return contiguous;
-}
-
-// This check is done after contiguous vectors have been converted to lists of ranges
-
-bool is_stridable(Rcpp::List x) {
-  bool stridable = true;
-  int x_size = x.size();
-
-  for (int i = 0; i < x_size; ++i) {
-
-    Rcpp::RObject idx = x[i];
-
-    if (r_is_missing(idx)) {
-      continue;
-    }
-
-    // Can't check if its a list with Rf_isList() or .inherits("list")
-    // as that doesn't really catch it
-    if (TYPEOF(idx) == VECSXP) {
-      continue;
-    }
-
-    stridable = false;
-    break;
-  }
-
-  return stridable;
 }
 
 // -----------------------------------------------------------------------------
@@ -158,73 +128,15 @@ Rcpp::List subset_dim_names(Rcpp::List dim_names, Rcpp::List indexer) {
 // -----------------------------------------------------------------------------
 
 template <typename T>
-xt::rarray<T> rray__subset_strided(const xt::rarray<T>& x, Rcpp::List indexer) {
-
-  xt::xstrided_slice_vector sv({});
-  int n = indexer.size();
-
-  for (int i = 0; i < n; ++i) {
-
-    Rcpp::RObject index = indexer[i];
-
-    if (r_is_missing(index)) {
-      sv.emplace_back(xt::all());
-      continue;
-    }
-
-    // It was contiguous, and is now a list of the start/stop positions
-    int start = *INTEGER(VECTOR_ELT(index, 0));
-    int stop = *INTEGER(VECTOR_ELT(index, 1));
-    sv.emplace_back(xt::range(start, stop));
-  }
-
-  xt::rarray<T> out = xt::strided_view(x, sv);
-  return out;
-}
-
-template <typename T>
-xt::rarray<T> rray__subset_dynamic(const xt::rarray<T>& x, Rcpp::List indexer) {
-
-  xt::xdynamic_slice_vector sv({});
-  int n = indexer.size();
-
-  for (int i = 0; i < n; ++i) {
-
-    Rcpp::RObject index = indexer[i];
-
-    if (r_is_missing(index)) {
-      sv.emplace_back(xt::all());
-      continue;
-    }
-
-    // It was contiguous, and is now a list of the start/stop positions
-    if (TYPEOF(index) == VECSXP) {
-      int start = *INTEGER(VECTOR_ELT(index, 0));
-      int stop = *INTEGER(VECTOR_ELT(index, 1));
-      sv.emplace_back(xt::range(start, stop));
-      continue;
-    }
-
-    // Else it is a non-contiguous IntegerVector
-    // Use `int` rather than `size_t` to prevent the indices being copied
-    std::vector<int> slice = Rcpp::as<std::vector<int>>(index);
-    sv.emplace_back(xt::keep(slice));
-  }
-
-  xt::rarray<T> out = xt::dynamic_view(x, sv);
-  return out;
-}
-
-template <typename T>
 xt::rarray<T> rray__subset_impl(const xt::rarray<T>& x, Rcpp::List indexer) {
 
   xt::rarray<T> out;
 
   if (is_stridable(indexer)) {
-    out = rray__subset_strided(x, indexer);
+    out = xt::strided_view(x, build_strided_slice_vector(indexer));
   }
   else {
-    out = rray__subset_dynamic(x, indexer);
+    out = xt::dynamic_view(x, build_dynamic_slice_vector(indexer));
   }
 
   return out;

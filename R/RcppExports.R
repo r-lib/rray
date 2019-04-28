@@ -85,6 +85,10 @@ rray_reducer_cpp <- function(op, x, axes) {
     .Call(`_rray_rray_reducer_cpp`, op, x, axes)
 }
 
+rray__subset_assign <- function(x, indexer, value) {
+    .Call(`_rray_rray__subset_assign`, x, indexer, value)
+}
+
 is_any_na_int <- function(x) {
     .Call(`_rray_is_any_na_int`, x)
 }
@@ -107,5 +111,9 @@ rray__validate_dim <- function(dim) {
 
 rray__validate_reshape <- function(x, dim) {
     invisible(.Call(`_rray_rray__validate_reshape`, x, dim))
+}
+
+rray__validate_broadcastable <- function(x_dim, dim) {
+    invisible(.Call(`_rray_rray__validate_broadcastable`, x_dim, dim))
 }
 
