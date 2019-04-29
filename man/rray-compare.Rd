@@ -4,11 +4,17 @@
 \alias{rray-compare}
 \alias{>.vctrs_rray}
 \alias{rray_gt}
+\alias{>=.vctrs_rray}
+\alias{rray_gte}
 \title{Compare arrays}
 \usage{
 \method{>}{vctrs_rray}(e1, e2)
 
 rray_gt(x, y)
+
+\method{>=}{vctrs_rray}(e1, e2)
+
+rray_gte(x, y)
 }
 \arguments{
 \item{e1, e2}{Generally, the same as \code{x} and \code{y}. See Details.}

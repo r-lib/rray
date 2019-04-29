@@ -239,6 +239,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray__gte
+Rcpp::RObject rray__gte(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__gte(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__gte(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray__sort
 Rcpp::RObject rray__sort(Rcpp::RObject x, Rcpp::RObject axis);
 RcppExport SEXP _rray_rray__sort(SEXP xSEXP, SEXP axisSEXP) {
@@ -400,6 +412,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray_op_unary_two_cpp", (DL_FUNC) &_rray_rray_op_unary_two_cpp, 4},
     {"_rray_rray_op_unary_cpp", (DL_FUNC) &_rray_rray_op_unary_cpp, 2},
     {"_rray_rray__gt", (DL_FUNC) &_rray_rray__gt, 2},
+    {"_rray_rray__gte", (DL_FUNC) &_rray_rray__gte, 2},
     {"_rray_rray__sort", (DL_FUNC) &_rray_rray__sort, 2},
     {"_rray_rray__max_pos", (DL_FUNC) &_rray_rray__max_pos, 2},
     {"_rray_rray__min_pos", (DL_FUNC) &_rray_rray__min_pos, 2},

@@ -77,6 +77,10 @@ rray__gt <- function(x, y) {
     .Call(`_rray_rray__gt`, x, y)
 }
 
+rray__gte <- function(x, y) {
+    .Call(`_rray_rray__gte`, x, y)
+}
+
 rray__sort <- function(x, axis) {
     .Call(`_rray_rray__sort`, x, axis)
 }

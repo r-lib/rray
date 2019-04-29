@@ -19,14 +19,20 @@
 #' this. See `?groupGeneric` for more information on this.
 #'
 #' @examples
-#'
 #' x <- rray(1:12, c(2, 2, 3))
+#' y <- matrix(1:2)
 #'
-#' x > matrix(1:2)
+#' # True except in first 2 positions
+#' x > y
+#'
+#' # All true
+#' x >= y
 #'
 #'
 #' @name rray-compare
 NULL
+
+# ------------------------------------------------------------------------------
 
 #' @rdname rray-compare
 #' @export
@@ -39,6 +45,22 @@ NULL
 rray_gt <- function(x, y) {
   cast_compare(rray__gt, x, y)
 }
+
+# ------------------------------------------------------------------------------
+
+#' @rdname rray-compare
+#' @export
+`>=.vctrs_rray` <- function(e1, e2) {
+  rray_gte(e1, e2)
+}
+
+#' @rdname rray-compare
+#' @export
+rray_gte <- function(x, y) {
+  cast_compare(rray__gte, x, y)
+}
+
+# ------------------------------------------------------------------------------
 
 cast_compare <- function(f, x, y) {
 
