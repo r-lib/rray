@@ -81,12 +81,6 @@ SEXP rray_lte_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
 }
 
 template <typename T1, typename T2>
-SEXP rray_gt_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
-  const xt::rarray<rlogical>& res = x > y;
-  return res;
-}
-
-template <typename T1, typename T2>
 SEXP rray_gte_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
   const xt::rarray<rlogical>& res = x >= y;
   return res;
@@ -258,10 +252,6 @@ SEXP rray_op_binary_cpp_impl(const std::string& op,
 
   case str2int("lte"): {
     return rray_lte_cpp(x, y);
-  }
-
-  case str2int("gt"): {
-    return rray_gt_cpp(x, y);
   }
 
   case str2int("gte"): {
