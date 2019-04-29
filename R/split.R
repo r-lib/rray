@@ -80,11 +80,12 @@ rray_split <- function(x, axes, n = NULL) {
 
   res <- rray_multi_split(x, axes, n)
 
-  # All dim names should be the same
-  new_dim_names <- restore_dim_names(dim_names(x), rray_dim(res[[1]]))
+  # All non-axes dim names are the same
+  # axes dim names are split up over the axes
+  new_dim_names_lst <- split_dim_names(dim_names(x), axes, n)
 
   # Use anonymous function to work around dispatch bug with internal generics
-  res <- map(res, function(x) {set_full_dim_names(x, new_dim_names)})
+  res <- map2(res, new_dim_names_lst, function(x, nms) {set_full_dim_names(x, nms)})
 
   res <- map(res, vec_restore, to = x)
 
@@ -124,4 +125,48 @@ validate_axis_n_size <- function(axes, n) {
   }
 
   invisible()
+}
+
+split_dim_names <- function(dim_names, axes, n) {
+
+  # Prep container with existing one
+  # (some names might already be correct)
+  new_dim_names <- rep_len(list(dim_names), prod(n))
+
+  for (i in seq_along(axes)) {
+    axis <- axes[i]
+    n_i <- n[i]
+
+    # Nothing to do if there aren't existing names
+    axis_nms <- dim_names[[axis]]
+    if (is.null(axis_nms)) {
+      next
+    }
+
+    # Split the existing axis names into `n_i` pieces
+    by <- length(axis_nms) / n_i
+    split_axis_nms <- new_list(n_i)
+    k <- 1L
+    for (j in seq_len(n_i)) {
+      split_axis_nms[[j]] <- axis_nms[k:(k + by - 1)]
+      k <- k + by
+    }
+
+    # Assign the split names to their correct location
+    # in the output
+    nms_idx <- 1L
+    for (j in seq_along(new_dim_names)) {
+      new_dim_names[[j]][[axis]] <- split_axis_nms[[nms_idx]]
+
+      if (nms_idx == n_i) {
+        nms_idx <- 1L
+      }
+      else {
+        nms_idx <- nms_idx + 1L
+      }
+    }
+
+  }
+
+  new_dim_names
 }
