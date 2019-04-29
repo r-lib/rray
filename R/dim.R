@@ -63,6 +63,15 @@ NULL
 rray_dims2 <- function(x_dims, y_dims) {
   x_dims <- vec_cast(x_dims, integer())
   y_dims <- vec_cast(y_dims, integer())
+
+  if (is.null(x_dims)) {
+    abort("`x_dims` cannot be `NULL`.")
+  }
+
+  if (is.null(y_dims)) {
+    abort("`y_dims` cannot be `NULL`.")
+  }
+
   rray__dims2(x_dims, y_dims)
 }
 
