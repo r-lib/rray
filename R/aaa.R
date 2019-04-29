@@ -20,6 +20,7 @@
 #' @importFrom vctrs vec_assert
 #' @importFrom vctrs new_rcrd
 #' @importFrom vctrs field
+#' @importFrom vctrs vec_split
 #'
 #' @importFrom vctrs vec_ptype_full
 #' @importFrom vctrs vec_ptype_abbr
@@ -73,6 +74,7 @@ NULL
 #' @importFrom rlang set_names
 #' @importFrom rlang maybe_missing
 #' @importFrom rlang names2
+#' @importFrom rlang new_list
 NULL
 
 #' @importFrom utils head tail
