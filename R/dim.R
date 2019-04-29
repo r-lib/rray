@@ -61,7 +61,9 @@
 NULL
 
 rray_dims2 <- function(x_dims, y_dims) {
-  max(x_dims, y_dims)
+  x_dims <- vec_cast(x_dims, integer())
+  y_dims <- vec_cast(y_dims, integer())
+  rray__dims2(x_dims, y_dims)
 }
 
 rray_dim2 <- function(x_dim, y_dim) {

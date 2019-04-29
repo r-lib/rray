@@ -37,6 +37,10 @@ rray__dims <- function(x) {
     .Call(`_rray_rray__dims`, x)
 }
 
+rray__dims2 <- function(x_dims, y_dims) {
+    .Call(`_rray_rray__dims2`, x_dims, y_dims)
+}
+
 rray__increase_dims <- function(dim, dims) {
     .Call(`_rray_rray__increase_dims`, dim, dims)
 }
@@ -69,8 +73,8 @@ rray_op_unary_cpp <- function(op, x) {
     .Call(`_rray_rray_op_unary_cpp`, op, x)
 }
 
-rray__gt <- function(x, y, dims) {
-    .Call(`_rray_rray__gt`, x, y, dims)
+rray__gt <- function(x, y) {
+    .Call(`_rray_rray__gt`, x, y)
 }
 
 rray__sort <- function(x, axis) {

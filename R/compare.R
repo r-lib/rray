@@ -48,10 +48,7 @@ cast_compare <- function(f, x, y) {
   x <- rray_cast_inner(x, to)
   y <- rray_cast_inner(y, to)
 
-  # For reshape views
-  dims <- rray_dims2(rray_dims(x), rray_dims(y))
-
-  res <- f(x, y, dims)
+  res <- f(x, y)
 
   res <- set_full_dim_names(res, rray_dim_names_common(x, y))
 

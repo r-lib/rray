@@ -110,6 +110,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray__dims2
+int rray__dims2(const int& x_dims, const int& y_dims);
+RcppExport SEXP _rray_rray__dims2(SEXP x_dimsSEXP, SEXP y_dimsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int& >::type x_dims(x_dimsSEXP);
+    Rcpp::traits::input_parameter< const int& >::type y_dims(y_dimsSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__dims2(x_dims, y_dims));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray__increase_dims
 Rcpp::IntegerVector rray__increase_dims(const Rcpp::IntegerVector& dim, const int& dims);
 RcppExport SEXP _rray_rray__increase_dims(SEXP dimSEXP, SEXP dimsSEXP) {
@@ -216,15 +228,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // rray__gt
-Rcpp::RObject rray__gt(Rcpp::RObject x, Rcpp::RObject y, const int& dims);
-RcppExport SEXP _rray_rray__gt(SEXP xSEXP, SEXP ySEXP, SEXP dimsSEXP) {
+Rcpp::RObject rray__gt(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__gt(SEXP xSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
     Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
-    Rcpp::traits::input_parameter< const int& >::type dims(dimsSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__gt(x, y, dims));
+    rcpp_result_gen = Rcpp::wrap(rray__gt(x, y));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -379,6 +390,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray_eye_square_cpp", (DL_FUNC) &_rray_rray_eye_square_cpp, 2},
     {"_rray_rray__dim", (DL_FUNC) &_rray_rray__dim, 1},
     {"_rray_rray__dims", (DL_FUNC) &_rray_rray__dims, 1},
+    {"_rray_rray__dims2", (DL_FUNC) &_rray_rray__dims2, 2},
     {"_rray_rray__increase_dims", (DL_FUNC) &_rray_rray__increase_dims, 2},
     {"_rray_rray__reshape", (DL_FUNC) &_rray_rray__reshape, 2},
     {"_rray_rray_op_binary_cpp", (DL_FUNC) &_rray_rray_op_binary_cpp, 3},
@@ -387,7 +399,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray_op_unary_three_cpp", (DL_FUNC) &_rray_rray_op_unary_three_cpp, 5},
     {"_rray_rray_op_unary_two_cpp", (DL_FUNC) &_rray_rray_op_unary_two_cpp, 4},
     {"_rray_rray_op_unary_cpp", (DL_FUNC) &_rray_rray_op_unary_cpp, 2},
-    {"_rray_rray__gt", (DL_FUNC) &_rray_rray__gt, 3},
+    {"_rray_rray__gt", (DL_FUNC) &_rray_rray__gt, 2},
     {"_rray_rray__sort", (DL_FUNC) &_rray_rray__sort, 2},
     {"_rray_rray__max_pos", (DL_FUNC) &_rray_rray__max_pos, 2},
     {"_rray_rray__min_pos", (DL_FUNC) &_rray_rray__min_pos, 2},
