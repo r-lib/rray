@@ -19,29 +19,6 @@ Rcpp::IntegerVector rray__dim(const Rcpp::RObject& x) {
 
 // -----------------------------------------------------------------------------
 
-// [[Rcpp::export]]
-int rray__dims(const Rcpp::RObject& x) {
-
-  Rcpp::RObject d = x.attr("dim");
-
-  if (Rf_isNull(d)) {
-    return 1;
-  }
-  else {
-    return Rf_length(d);
-  }
-
-}
-
-// -----------------------------------------------------------------------------
-
-// [[Rcpp::export]]
-int rray__dims2(const int& x_dims, const int& y_dims) {
-  return std::max(x_dims, y_dims);
-}
-
-// -----------------------------------------------------------------------------
-
 // c(x, y)
 Rcpp::IntegerVector combine_int(Rcpp::IntegerVector x, Rcpp::IntegerVector y) {
   Rcpp::IntegerVector out(x.size() + y.size());
@@ -86,7 +63,9 @@ Rcpp::List dims_match2(Rcpp::IntegerVector x_dim, Rcpp::IntegerVector y_dim) {
 // applying broadcasting rules.
 
 // [[Rcpp::export]]
-Rcpp::IntegerVector rray__dim2(Rcpp::IntegerVector x_dim, Rcpp::IntegerVector y_dim) {
+Rcpp::IntegerVector rray__dim2(Rcpp::IntegerVector x_dim,
+                               Rcpp::IntegerVector y_dim) {
+
   Rcpp::List matched = dims_match2(x_dim, y_dim);
 
   Rcpp::IntegerVector x = matched["x"];
@@ -124,6 +103,29 @@ Rcpp::IntegerVector rray__dim2(Rcpp::IntegerVector x_dim, Rcpp::IntegerVector y_
   }
 
   return out;
+}
+
+// -----------------------------------------------------------------------------
+
+// [[Rcpp::export]]
+int rray__dims(const Rcpp::RObject& x) {
+
+  Rcpp::RObject d = x.attr("dim");
+
+  if (Rf_isNull(d)) {
+    return 1;
+  }
+  else {
+    return Rf_length(d);
+  }
+
+}
+
+// -----------------------------------------------------------------------------
+
+// [[Rcpp::export]]
+int rray__dims2(const int& x_dims, const int& y_dims) {
+  return std::max(x_dims, y_dims);
 }
 
 // -----------------------------------------------------------------------------
