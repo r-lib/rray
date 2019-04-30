@@ -240,14 +240,6 @@ SEXP rray_op_binary_cpp_impl(const std::string& op,
     return rray_and_cpp(x, y);
   }
 
-  case str2int("lt"): {
-    return rray_lt_cpp(x, y);
-  }
-
-  case str2int("lte"): {
-    return rray_lte_cpp(x, y);
-  }
-
   case str2int("equality"): {
     return rray_equality_cpp(x, y);
   }

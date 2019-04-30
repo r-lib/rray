@@ -28,6 +28,11 @@
 #' # All true
 #' x >= y
 #'
+#' # False everywhere
+#' x < y
+#'
+#' # False except in the first 2 positions
+#' x <= y
 #'
 #' @name rray-compare
 NULL
@@ -58,6 +63,34 @@ rray_greater <- function(x, y) {
 #' @export
 rray_greater_equal <- function(x, y) {
   cast_compare(rray__greater_equal, x, y)
+}
+
+# ------------------------------------------------------------------------------
+
+#' @rdname rray-compare
+#' @export
+`<.vctrs_rray` <- function(e1, e2) {
+  rray_lesser(e1, e2)
+}
+
+#' @rdname rray-compare
+#' @export
+rray_lesser <- function(x, y) {
+  cast_compare(rray__lesser, x, y)
+}
+
+# ------------------------------------------------------------------------------
+
+#' @rdname rray-compare
+#' @export
+`<=.vctrs_rray` <- function(e1, e2) {
+  rray_lesser_equal(e1, e2)
+}
+
+#' @rdname rray-compare
+#' @export
+rray_lesser_equal <- function(x, y) {
+  cast_compare(rray__lesser_equal, x, y)
 }
 
 # ------------------------------------------------------------------------------

@@ -88,6 +88,54 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray__greater
+Rcpp::RObject rray__greater(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__greater(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__greater(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__greater_equal
+Rcpp::RObject rray__greater_equal(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__greater_equal(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__greater_equal(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__lesser
+Rcpp::RObject rray__lesser(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__lesser(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__lesser(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__lesser_equal
+Rcpp::RObject rray__lesser_equal(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__lesser_equal(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__lesser_equal(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray__dim
 Rcpp::IntegerVector rray__dim(const Rcpp::RObject& x);
 RcppExport SEXP _rray_rray__dim(SEXP xSEXP) {
@@ -224,30 +272,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< std::string >::type op(opSEXP);
     Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
     rcpp_result_gen = Rcpp::wrap(rray_op_unary_cpp(op, x));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rray__greater
-Rcpp::RObject rray__greater(Rcpp::RObject x, Rcpp::RObject y);
-RcppExport SEXP _rray_rray__greater(SEXP xSEXP, SEXP ySEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__greater(x, y));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rray__greater_equal
-Rcpp::RObject rray__greater_equal(Rcpp::RObject x, Rcpp::RObject y);
-RcppExport SEXP _rray_rray__greater_equal(SEXP xSEXP, SEXP ySEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__greater_equal(x, y));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -400,6 +424,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray_zeros_cpp", (DL_FUNC) &_rray_rray_zeros_cpp, 1},
     {"_rray_rray_eye_cpp", (DL_FUNC) &_rray_rray_eye_cpp, 2},
     {"_rray_rray_eye_square_cpp", (DL_FUNC) &_rray_rray_eye_square_cpp, 2},
+    {"_rray_rray__greater", (DL_FUNC) &_rray_rray__greater, 2},
+    {"_rray_rray__greater_equal", (DL_FUNC) &_rray_rray__greater_equal, 2},
+    {"_rray_rray__lesser", (DL_FUNC) &_rray_rray__lesser, 2},
+    {"_rray_rray__lesser_equal", (DL_FUNC) &_rray_rray__lesser_equal, 2},
     {"_rray_rray__dim", (DL_FUNC) &_rray_rray__dim, 1},
     {"_rray_rray__dims", (DL_FUNC) &_rray_rray__dims, 1},
     {"_rray_rray__dims2", (DL_FUNC) &_rray_rray__dims2, 2},
@@ -411,8 +439,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray_op_unary_three_cpp", (DL_FUNC) &_rray_rray_op_unary_three_cpp, 5},
     {"_rray_rray_op_unary_two_cpp", (DL_FUNC) &_rray_rray_op_unary_two_cpp, 4},
     {"_rray_rray_op_unary_cpp", (DL_FUNC) &_rray_rray_op_unary_cpp, 2},
-    {"_rray_rray__greater", (DL_FUNC) &_rray_rray__greater, 2},
-    {"_rray_rray__greater_equal", (DL_FUNC) &_rray_rray__greater_equal, 2},
     {"_rray_rray__sort", (DL_FUNC) &_rray_rray__sort, 2},
     {"_rray_rray__max_pos", (DL_FUNC) &_rray_rray__max_pos, 2},
     {"_rray_rray__min_pos", (DL_FUNC) &_rray_rray__min_pos, 2},

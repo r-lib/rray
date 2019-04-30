@@ -6,6 +6,10 @@
 \alias{rray_greater}
 \alias{>=.vctrs_rray}
 \alias{rray_greater_equal}
+\alias{<.vctrs_rray}
+\alias{rray_lesser}
+\alias{<=.vctrs_rray}
+\alias{rray_lesser_equal}
 \title{Compare arrays}
 \usage{
 \method{>}{vctrs_rray}(e1, e2)
@@ -15,6 +19,14 @@ rray_greater(x, y)
 \method{>=}{vctrs_rray}(e1, e2)
 
 rray_greater_equal(x, y)
+
+\method{<}{vctrs_rray}(e1, e2)
+
+rray_lesser(x, y)
+
+\method{<=}{vctrs_rray}(e1, e2)
+
+rray_lesser_equal(x, y)
 }
 \arguments{
 \item{e1, e2}{Generally, the same as \code{x} and \code{y}. See Details.}
@@ -44,5 +56,10 @@ x > y
 # All true
 x >= y
 
+# False everywhere
+x < y
+
+# False except in the first 2 positions
+x <= y
 
 }
