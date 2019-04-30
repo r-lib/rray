@@ -38,6 +38,11 @@ input is passed here.}
 
 \item{na.rm}{Should \code{NA} values be removed? Currently only \code{FALSE} is
 allowed.}
+
+\item{axes}{An integer vector specifying the axes to reduce over.
+\code{1} reduces the number of rows to \code{1}, performing the reduction along the
+way. \code{2} does the same, but with the columns, and so on for higher
+dimensions. The default reduces along all axes.}
 }
 \description{
 These operators perform logical operations on arrays, with broadcasting. The
@@ -51,6 +56,12 @@ base R matrices and arrays, this generally works fine. However, if you
 compare classed objects like \code{factor("x") & rray(1)} then a fall through
 error is thrown. There is nothing we can do about
 this. See \code{?groupGeneric} for more information on this.
+
+The behavior of comparing either an array with a length 0 dimension
+or \code{NULL} with another array is slightly different than base R since
+broadcasting behavior is well defined. If any dimension has length 0, the
+result of the logical operation is an empty logical with the common dimension
+of \code{x} and \code{y}. See the examples section for a few demonstrations.
 }
 \examples{
 x <- rray(TRUE, c(2, 2, 3))
@@ -58,6 +69,24 @@ y <- matrix(c(TRUE, FALSE))
 
 # `TRUE` wherever `y` is broadcasted to be `TRUE`
 x & y
+
+# ---------------------------------------------------------------------------
+# Behavior with edge cases
+
+x <- rray(TRUE, c(2, 2))
+
+# The common dim is (0, 2)
+logical() & x
+
+# You can have empty arrays with shape
+# The common dim is (2, 0, 2)
+y <- array(logical(), c(2, 0, 2))
+x & y
+
+# NULL is treated as logical(0)
+NULL & x
+
+rray_logical_and(NULL, NULL)
 
 
 }

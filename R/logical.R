@@ -14,6 +14,11 @@
 #' @param na.rm Should `NA` values be removed? Currently only `FALSE` is
 #' allowed.
 #'
+#' @param axes An integer vector specifying the axes to reduce over.
+#' `1` reduces the number of rows to `1`, performing the reduction along the
+#' way. `2` does the same, but with the columns, and so on for higher
+#' dimensions. The default reduces along all axes.
+#'
 #' @details
 #'
 #' The operators themselves rely on R's dispatching rules to
@@ -23,12 +28,36 @@
 #' error is thrown. There is nothing we can do about
 #' this. See `?groupGeneric` for more information on this.
 #'
+#' The behavior of comparing either an array with a length 0 dimension
+#' or `NULL` with another array is slightly different than base R since
+#' broadcasting behavior is well defined. If any dimension has length 0, the
+#' result of the logical operation is an empty logical with the common dimension
+#' of `x` and `y`. See the examples section for a few demonstrations.
+#'
 #' @examples
 #' x <- rray(TRUE, c(2, 2, 3))
 #' y <- matrix(c(TRUE, FALSE))
 #'
 #' # `TRUE` wherever `y` is broadcasted to be `TRUE`
 #' x & y
+#'
+#' # ---------------------------------------------------------------------------
+#' # Behavior with edge cases
+#'
+#' x <- rray(TRUE, c(2, 2))
+#'
+#' # The common dim is (0, 2)
+#' logical() & x
+#'
+#' # You can have empty arrays with shape
+#' # The common dim is (2, 0, 2)
+#' y <- array(logical(), c(2, 0, 2))
+#' x & y
+#'
+#' # NULL is treated as logical(0)
+#' NULL & x
+#'
+#' rray_logical_and(NULL, NULL)
 #'
 #'
 #' @name rray-logical
