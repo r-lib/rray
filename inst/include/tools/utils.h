@@ -54,17 +54,17 @@ inline auto rray__increase_dims_view(const xt::rarray<T>& x, const int& dims) {
   return x_view;
 }
 
-// Validate that two xexpressions are broadcastable
+// Validate that `x` is immediately broadcastable to the dimensions of `to`
 
 template <class E1, class E2>
-void rray__validate_broadcastable(E1 x, E2 y) {
+void rray__validate_broadcastable_to(E1 x, E2 to) {
   auto x_shape = x.shape();
   Rcpp::IntegerVector x_dim(x_shape.begin(), x_shape.end());
 
-  auto y_shape = y.shape();
-  Rcpp::IntegerVector y_dim(y_shape.begin(), y_shape.end());
+  auto to_shape = to.shape();
+  Rcpp::IntegerVector to_dim(to_shape.begin(), to_shape.end());
 
-  rray__validate_broadcastable_dim(x_dim, y_dim);
+  rray__validate_broadcastable_to_dim(x_dim, to_dim);
 }
 
 template <class E>

@@ -62,8 +62,8 @@ std::string dim_to_string(Rcpp::IntegerVector dim) {
 //   be reshape-viewed to work
 
 // [[Rcpp::export]]
-void rray__validate_broadcastable_dim(Rcpp::IntegerVector x_dim,
-                                      Rcpp::IntegerVector dim) {
+void rray__validate_broadcastable_to_dim(Rcpp::IntegerVector x_dim,
+                                         Rcpp::IntegerVector dim) {
 
   int n_x = x_dim.size();
   int n_to = dim.size();

@@ -46,13 +46,13 @@ xt::rarray<T> rray__subset_assign_impl(const xt::rarray<T>& x,
   if (is_stridable(indexer)) {
     xt::xstrided_slice_vector sv = build_strided_slice_vector(indexer);
     auto x_subset_view = xt::strided_view(out, sv);
-    rray__validate_broadcastable(value_view, x_subset_view);
+    rray__validate_broadcastable_to(value_view, x_subset_view);
     x_subset_view = value_view;
   }
   else {
     xt::xdynamic_slice_vector sv = build_dynamic_slice_vector(indexer);
     auto x_subset_view = xt::dynamic_view(out, sv);
-    rray__validate_broadcastable(value_view, x_subset_view);
+    rray__validate_broadcastable_to(value_view, x_subset_view);
     x_subset_view = value_view;
   }
 

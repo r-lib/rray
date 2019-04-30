@@ -18,7 +18,7 @@ xt::rarray<T> rray__broadcast_impl(const xt::rarray<T>& x,
   // Must reshape to match dimensionality first b/c of QuantStack/xtensor-r#57
   auto x_view = rray__increase_dims_view(x, dims);
 
-  rray__validate_broadcastable_dim(x_dim, dim);
+  rray__validate_broadcastable_to_dim(x_dim, dim);
 
   const vec_size_t& dim_vec = Rcpp::as<vec_size_t>(dim);
   xt::rarray<T> res = xt::broadcast(x_view, dim_vec);

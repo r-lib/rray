@@ -6,8 +6,6 @@
 template <typename T>
 xt::rarray<rlogical> rray__logical_and_impl(const xt::rarray<T>& x, const xt::rarray<T>& y) {
 
-  rray__validate_broadcastable(x, y);
-
   const int& dims = rray__dims2(rray__dims(SEXP(x)), rray__dims(SEXP(y)));
   auto x_view = rray__increase_dims_view(x, dims);
   auto y_view = rray__increase_dims_view(y, dims);
@@ -24,8 +22,6 @@ Rcpp::RObject rray__logical_and(Rcpp::RObject x, Rcpp::RObject y) {
 
 template <typename T>
 xt::rarray<rlogical> rray__logical_or_impl(const xt::rarray<T>& x, const xt::rarray<T>& y) {
-
-  rray__validate_broadcastable(x, y);
 
   const int& dims = rray__dims2(rray__dims(SEXP(x)), rray__dims(SEXP(y)));
   auto x_view = rray__increase_dims_view(x, dims);
