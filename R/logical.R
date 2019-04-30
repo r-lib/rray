@@ -99,8 +99,22 @@ rray_logical_not <- function(x) {
 
 #' @rdname rray-logical
 #' @export
-rray_any <- function(x) {
-  cast_inner_restore(rray__any, x, logical())
+rray_any <- function(x, axes = NULL) {
+
+  # only integer axes
+  axes <- vec_cast(axes, integer())
+  validate_axes(axes, x)
+
+  # only logicals allowed through
+  x_cast <- rray_cast_inner(x, logical())
+
+  # perform the reduction
+  res <- rray__any(x_cast, as_cpp_idx(axes))
+
+  new_dim_names <- restore_dim_names(dim_names(x), rray_dim(res))
+  res <- set_full_dim_names(res, new_dim_names)
+
+  vec_restore(res, x)
 }
 
 # ------------------------------------------------------------------------------

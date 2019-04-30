@@ -85,8 +85,8 @@ rray__logical_not <- function(x) {
     .Call(`_rray_rray__logical_not`, x)
 }
 
-rray__any <- function(x) {
-    .Call(`_rray_rray__any`, x)
+rray__any <- function(x, axes) {
+    .Call(`_rray_rray__any`, x, axes)
 }
 
 rray_op_binary_cpp <- function(op, x, y) {

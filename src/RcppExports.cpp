@@ -254,13 +254,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // rray__any
-Rcpp::RObject rray__any(const xt::rarray<rlogical>& x);
-RcppExport SEXP _rray_rray__any(SEXP xSEXP) {
+Rcpp::RObject rray__any(const xt::rarray<rlogical>& x, Rcpp::RObject axes);
+RcppExport SEXP _rray_rray__any(SEXP xSEXP, SEXP axesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const xt::rarray<rlogical>& >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__any(x));
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type axes(axesSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__any(x, axes));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -508,7 +509,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__logical_and", (DL_FUNC) &_rray_rray__logical_and, 2},
     {"_rray_rray__logical_or", (DL_FUNC) &_rray_rray__logical_or, 2},
     {"_rray_rray__logical_not", (DL_FUNC) &_rray_rray__logical_not, 1},
-    {"_rray_rray__any", (DL_FUNC) &_rray_rray__any, 1},
+    {"_rray_rray__any", (DL_FUNC) &_rray_rray__any, 2},
     {"_rray_rray_op_binary_cpp", (DL_FUNC) &_rray_rray_op_binary_cpp, 3},
     {"_rray_rray_op_trinary_cpp", (DL_FUNC) &_rray_rray_op_trinary_cpp, 4},
     {"_rray_rray_op_unary_one_cpp", (DL_FUNC) &_rray_rray_op_unary_one_cpp, 3},
