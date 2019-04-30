@@ -92,18 +92,6 @@ SEXP rray_inequality_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
   return res;
 }
 
-template <typename T1, typename T2>
-SEXP rray_equal_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
-  const xt::rarray<rlogical>& res = xt::equal(x, y);
-  return res;
-}
-
-template <typename T1, typename T2>
-SEXP rray_not_equal_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
-  const xt::rarray<rlogical>& res = xt::not_equal(x, y);
-  return res;
-}
-
 // -----------------------------------------------------------------------------
 // Math - Basic
 
@@ -246,14 +234,6 @@ SEXP rray_op_binary_cpp_impl(const std::string& op,
 
   case str2int("inequality"): {
     return rray_inequality_cpp(x, y);
-  }
-
-  case str2int("equal"): {
-    return rray_equal_cpp(x, y);
-  }
-
-  case str2int("not_equal"): {
-    return rray_not_equal_cpp(x, y);
   }
 
   // ---------------------------------------------------------------------------

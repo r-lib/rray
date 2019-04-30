@@ -136,6 +136,30 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray__equal
+Rcpp::RObject rray__equal(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__equal(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__equal(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__not_equal
+Rcpp::RObject rray__not_equal(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__not_equal(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__not_equal(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray__dim
 Rcpp::IntegerVector rray__dim(const Rcpp::RObject& x);
 RcppExport SEXP _rray_rray__dim(SEXP xSEXP) {
@@ -191,6 +215,40 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type dim(dimSEXP);
     rcpp_result_gen = Rcpp::wrap(rray__reshape(x, dim));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__logical_and
+Rcpp::RObject rray__logical_and(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__logical_and(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__logical_and(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__logical_not
+Rcpp::RObject rray__logical_not(const xt::rarray<rlogical>& x);
+RcppExport SEXP _rray_rray__logical_not(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const xt::rarray<rlogical>& >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__logical_not(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__any
+Rcpp::RObject rray__any(const xt::rarray<rlogical>& x);
+RcppExport SEXP _rray_rray__any(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const xt::rarray<rlogical>& >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__any(x));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -428,11 +486,16 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__greater_equal", (DL_FUNC) &_rray_rray__greater_equal, 2},
     {"_rray_rray__lesser", (DL_FUNC) &_rray_rray__lesser, 2},
     {"_rray_rray__lesser_equal", (DL_FUNC) &_rray_rray__lesser_equal, 2},
+    {"_rray_rray__equal", (DL_FUNC) &_rray_rray__equal, 2},
+    {"_rray_rray__not_equal", (DL_FUNC) &_rray_rray__not_equal, 2},
     {"_rray_rray__dim", (DL_FUNC) &_rray_rray__dim, 1},
     {"_rray_rray__dims", (DL_FUNC) &_rray_rray__dims, 1},
     {"_rray_rray__dims2", (DL_FUNC) &_rray_rray__dims2, 2},
     {"_rray_rray__increase_dims", (DL_FUNC) &_rray_rray__increase_dims, 2},
     {"_rray_rray__reshape", (DL_FUNC) &_rray_rray__reshape, 2},
+    {"_rray_rray__logical_and", (DL_FUNC) &_rray_rray__logical_and, 2},
+    {"_rray_rray__logical_not", (DL_FUNC) &_rray_rray__logical_not, 1},
+    {"_rray_rray__any", (DL_FUNC) &_rray_rray__any, 1},
     {"_rray_rray_op_binary_cpp", (DL_FUNC) &_rray_rray_op_binary_cpp, 3},
     {"_rray_rray_op_trinary_cpp", (DL_FUNC) &_rray_rray_op_trinary_cpp, 4},
     {"_rray_rray_op_unary_one_cpp", (DL_FUNC) &_rray_rray_op_unary_one_cpp, 3},

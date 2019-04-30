@@ -7,6 +7,34 @@
 // -----------------------------------------------------------------------------
 // Unary + 1 argument
 
+#define DISPATCH_UNARY(FUN, X)                                 \
+  if (Rf_isNull(X)) {                                          \
+    return Rcpp::as<Rcpp::RObject>(R_NilValue);                \
+  }                                                            \
+                                                               \
+  int x_type = TYPEOF(X);                                      \
+                                                               \
+  if (x_type == REALSXP) {                                     \
+    return Rcpp::as<Rcpp::RObject>(                            \
+      FUN(xt::rarray<double>(X))                               \
+    );                                                         \
+  }                                                            \
+  else if (x_type == INTSXP) {                                 \
+    return Rcpp::as<Rcpp::RObject>(                            \
+      FUN(xt::rarray<int>(X))                                  \
+    );                                                         \
+  }                                                            \
+  else if (x_type == LGLSXP) {                                 \
+    return Rcpp::as<Rcpp::RObject>(                            \
+      FUN(xt::rarray<rlogical>(X))                             \
+    );                                                         \
+  }                                                            \
+                                                               \
+  error_unknown_type()                                         \
+
+// -----------------------------------------------------------------------------
+// Unary + 1 argument
+
 #define DISPATCH_UNARY_ONE(FUN, X, ARG)                        \
   if (Rf_isNull(X)) {                                          \
     return Rcpp::as<Rcpp::RObject>(R_NilValue);                \

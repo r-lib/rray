@@ -45,6 +45,14 @@ rray__lesser_equal <- function(x, y) {
     .Call(`_rray_rray__lesser_equal`, x, y)
 }
 
+rray__equal <- function(x, y) {
+    .Call(`_rray_rray__equal`, x, y)
+}
+
+rray__not_equal <- function(x, y) {
+    .Call(`_rray_rray__not_equal`, x, y)
+}
+
 rray__dim <- function(x) {
     .Call(`_rray_rray__dim`, x)
 }
@@ -63,6 +71,18 @@ rray__increase_dims <- function(dim, dims) {
 
 rray__reshape <- function(x, dim) {
     .Call(`_rray_rray__reshape`, x, dim)
+}
+
+rray__logical_and <- function(x, y) {
+    .Call(`_rray_rray__logical_and`, x, y)
+}
+
+rray__logical_not <- function(x) {
+    .Call(`_rray_rray__logical_not`, x)
+}
+
+rray__any <- function(x) {
+    .Call(`_rray_rray__any`, x)
 }
 
 rray_op_binary_cpp <- function(op, x, y) {

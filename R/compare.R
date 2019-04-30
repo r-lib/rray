@@ -95,6 +95,36 @@ rray_lesser_equal <- function(x, y) {
 
 # ------------------------------------------------------------------------------
 
+# unlike xtensor, let `==` be elementwise equality like base R
+
+#' @rdname rray-compare
+#' @export
+`==.vctrs_rray` <- function(e1, e2) {
+  rray_equal(e1, e2)
+}
+
+#' @rdname rray-compare
+#' @export
+rray_equal <- function(x, y) {
+  cast_compare(rray__equal, x, y)
+}
+
+# ------------------------------------------------------------------------------
+
+#' @rdname rray-compare
+#' @export
+`!=.vctrs_rray` <- function(e1, e2) {
+  rray_not_equal(e1, e2)
+}
+
+#' @rdname rray-compare
+#' @export
+rray_not_equal <- function(x, y) {
+  cast_compare(rray__not_equal, x, y)
+}
+
+# ------------------------------------------------------------------------------
+
 cast_compare <- function(f, x, y) {
 
   # Check for common type early
