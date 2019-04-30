@@ -11,12 +11,12 @@ constexpr unsigned int str2int(const char* str, int h = 0) {
 template <class E>
 inline auto rray__keep_dims_view(E&& x,
                                  Rcpp::IntegerVector dim,
-                                 Rcpp::RObject axis) {
+                                 Rcpp::RObject axes) {
 
   using vec_size_t = typename std::vector<std::size_t>;
   Rcpp::IntegerVector dim_view;
 
-  if (Rf_isNull(axis)) {
+  if (Rf_isNull(axes)) {
     dim_view = Rcpp::IntegerVector(dim.size(), 1);;
   }
   else {
@@ -24,8 +24,11 @@ inline auto rray__keep_dims_view(E&& x,
     // Otherwise we could end up altering the dim
     // of a real object.
     dim_view = Rcpp::clone(dim);
-    int axis_int = Rcpp::as<int>(axis);
-    dim_view[axis_int] = 1;
+
+    Rcpp::IntegerVector axes_vec = Rcpp::as<Rcpp::IntegerVector>(axes);
+    for (Rcpp::IntegerVector::iterator it = axes_vec.begin(); it != axes_vec.end(); ++it) {
+      dim_view[*it] = 1;
+    }
   }
 
   const vec_size_t& dim_view_vec = Rcpp::as<vec_size_t>(dim_view);
