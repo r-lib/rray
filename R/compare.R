@@ -37,13 +37,13 @@ NULL
 #' @rdname rray-compare
 #' @export
 `>.vctrs_rray` <- function(e1, e2) {
-  rray_gt(e1, e2)
+  rray_greater(e1, e2)
 }
 
 #' @rdname rray-compare
 #' @export
-rray_gt <- function(x, y) {
-  cast_compare(rray__gt, x, y)
+rray_greater <- function(x, y) {
+  cast_compare(rray__greater, x, y)
 }
 
 # ------------------------------------------------------------------------------
@@ -51,13 +51,13 @@ rray_gt <- function(x, y) {
 #' @rdname rray-compare
 #' @export
 `>=.vctrs_rray` <- function(e1, e2) {
-  rray_gte(e1, e2)
+  rray_greater_equal(e1, e2)
 }
 
 #' @rdname rray-compare
 #' @export
-rray_gte <- function(x, y) {
-  cast_compare(rray__gte, x, y)
+rray_greater_equal <- function(x, y) {
+  cast_compare(rray__greater_equal, x, y)
 }
 
 # ------------------------------------------------------------------------------

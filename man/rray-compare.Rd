@@ -3,18 +3,18 @@
 \name{rray-compare}
 \alias{rray-compare}
 \alias{>.vctrs_rray}
-\alias{rray_gt}
+\alias{rray_greater}
 \alias{>=.vctrs_rray}
-\alias{rray_gte}
+\alias{rray_greater_equal}
 \title{Compare arrays}
 \usage{
 \method{>}{vctrs_rray}(e1, e2)
 
-rray_gt(x, y)
+rray_greater(x, y)
 
 \method{>=}{vctrs_rray}(e1, e2)
 
-rray_gte(x, y)
+rray_greater_equal(x, y)
 }
 \arguments{
 \item{e1, e2}{Generally, the same as \code{x} and \code{y}. See Details.}
@@ -35,10 +35,14 @@ method is used and a warning is thrown. There is nothing we can do about
 this. See \code{?groupGeneric} for more information on this.
 }
 \examples{
-
 x <- rray(1:12, c(2, 2, 3))
+y <- matrix(1:2)
 
-x > matrix(1:2)
+# True except in first 2 positions
+x > y
+
+# All true
+x >= y
 
 
 }

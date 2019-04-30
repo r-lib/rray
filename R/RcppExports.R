@@ -73,12 +73,12 @@ rray_op_unary_cpp <- function(op, x) {
     .Call(`_rray_rray_op_unary_cpp`, op, x)
 }
 
-rray__gt <- function(x, y) {
-    .Call(`_rray_rray__gt`, x, y)
+rray__greater <- function(x, y) {
+    .Call(`_rray_rray__greater`, x, y)
 }
 
-rray__gte <- function(x, y) {
-    .Call(`_rray_rray__gte`, x, y)
+rray__greater_equal <- function(x, y) {
+    .Call(`_rray_rray__greater_equal`, x, y)
 }
 
 rray__sort <- function(x, axis) {
