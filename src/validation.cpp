@@ -27,7 +27,7 @@ void rray__validate_reshape(Rcpp::RObject x, Rcpp::IntegerVector dim) {
 }
 
 // Convert integer dim to something like '(1, 2, 3)'
-std::string dim_to_string(Rcpp::IntegerVector dim) {
+std::string rray__dim_to_string(Rcpp::IntegerVector dim) {
 
   std::vector<int> dim_vec = Rcpp::as<std::vector<int>>(dim);
 
@@ -84,8 +84,8 @@ void rray__validate_broadcastable_to_dim(Rcpp::IntegerVector x_dim,
     if (!ok) {
       Rcpp::stop(
         "Non-broadcastable dimensions: %s and %s.",
-        dim_to_string(x_dim),
-        dim_to_string(dim)
+        rray__dim_to_string(x_dim),
+        rray__dim_to_string(dim)
       );
     }
   }

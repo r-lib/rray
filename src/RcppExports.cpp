@@ -194,6 +194,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray__dim2
+Rcpp::IntegerVector rray__dim2(Rcpp::IntegerVector x_dim, Rcpp::IntegerVector y_dim);
+RcppExport SEXP _rray_rray__dim2(SEXP x_dimSEXP, SEXP y_dimSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type x_dim(x_dimSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type y_dim(y_dimSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__dim2(x_dim, y_dim));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray__increase_dims
 Rcpp::IntegerVector rray__increase_dims(const Rcpp::IntegerVector& dim, const int& dims);
 RcppExport SEXP _rray_rray__increase_dims(SEXP dimSEXP, SEXP dimsSEXP) {
@@ -504,6 +516,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__dim", (DL_FUNC) &_rray_rray__dim, 1},
     {"_rray_rray__dims", (DL_FUNC) &_rray_rray__dims, 1},
     {"_rray_rray__dims2", (DL_FUNC) &_rray_rray__dims2, 2},
+    {"_rray_rray__dim2", (DL_FUNC) &_rray_rray__dim2, 2},
     {"_rray_rray__increase_dims", (DL_FUNC) &_rray_rray__increase_dims, 2},
     {"_rray_rray__reshape", (DL_FUNC) &_rray_rray__reshape, 2},
     {"_rray_rray__logical_and", (DL_FUNC) &_rray_rray__logical_and, 2},

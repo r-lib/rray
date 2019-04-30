@@ -30,6 +30,8 @@ void rray__validate_reshape(Rcpp::RObject x, Rcpp::IntegerVector dim);
 void rray__validate_broadcastable_to_dim(Rcpp::IntegerVector x_dim,
                                          Rcpp::IntegerVector dim);
 
+std::string rray__dim_to_string(Rcpp::IntegerVector dim);
+
 // -----------------------------------------------------------------------------
 // Re-exposed R API
 
