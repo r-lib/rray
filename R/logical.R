@@ -94,7 +94,7 @@ rray_logical_not <- function(x) {
   x <- map(list2(...), as.vector)
   x <- vec_c(!!! x)
 
-  vctrs::vec_math_base("any", x)
+  vec_math_base("any", x)
 }
 
 #' @rdname rray-logical
