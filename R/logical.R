@@ -8,6 +8,11 @@
 #'
 #' @param e1,e2 Generally, the same as `x` and `y`. See Details.
 #'
+#' @param ... A single rray. An error is currently thrown if more than one
+#' input is passed here.
+#'
+#' @param na.rm Should `NA` values be removed? Currently only `FALSE` is
+#' allowed.
 #'
 #' @details
 #'
@@ -81,6 +86,8 @@ rray_logical_not <- function(x) {
 rray_any <- function(x) {
   cast_inner_restore(rray__any, x, logical())
 }
+
+# ------------------------------------------------------------------------------
 
 cast_inner_restore <- function(f, x, to) {
   res <- rray_cast_inner(x, to)

@@ -26,6 +26,12 @@ rray_any(x)
 \item{e1, e2}{Generally, the same as \code{x} and \code{y}. See Details.}
 
 \item{x, y}{Two vectors, matrices, arrays, or rrays.}
+
+\item{...}{A single rray. An error is currently thrown if more than one
+input is passed here.}
+
+\item{na.rm}{Should \code{NA} values be removed? Currently only \code{FALSE} is
+allowed.}
 }
 \description{
 These operators perform logical operations on arrays, with broadcasting. The
