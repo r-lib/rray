@@ -157,7 +157,7 @@ rray__validate_reshape <- function(x, dim) {
     invisible(.Call(`_rray_rray__validate_reshape`, x, dim))
 }
 
-rray__validate_broadcastable <- function(x_dim, dim) {
-    invisible(.Call(`_rray_rray__validate_broadcastable`, x_dim, dim))
+rray__validate_broadcastable_dim <- function(x_dim, dim) {
+    invisible(.Call(`_rray_rray__validate_broadcastable_dim`, x_dim, dim))
 }
 

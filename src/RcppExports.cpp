@@ -475,14 +475,14 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// rray__validate_broadcastable
-void rray__validate_broadcastable(Rcpp::IntegerVector x_dim, Rcpp::IntegerVector dim);
-RcppExport SEXP _rray_rray__validate_broadcastable(SEXP x_dimSEXP, SEXP dimSEXP) {
+// rray__validate_broadcastable_dim
+void rray__validate_broadcastable_dim(Rcpp::IntegerVector x_dim, Rcpp::IntegerVector dim);
+RcppExport SEXP _rray_rray__validate_broadcastable_dim(SEXP x_dimSEXP, SEXP dimSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type x_dim(x_dimSEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type dim(dimSEXP);
-    rray__validate_broadcastable(x_dim, dim);
+    rray__validate_broadcastable_dim(x_dim, dim);
     return R_NilValue;
 END_RCPP
 }
@@ -527,7 +527,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__subset", (DL_FUNC) &_rray_rray__subset, 2},
     {"_rray_rray__validate_dim", (DL_FUNC) &_rray_rray__validate_dim, 1},
     {"_rray_rray__validate_reshape", (DL_FUNC) &_rray_rray__validate_reshape, 2},
-    {"_rray_rray__validate_broadcastable", (DL_FUNC) &_rray_rray__validate_broadcastable, 2},
+    {"_rray_rray__validate_broadcastable_dim", (DL_FUNC) &_rray_rray__validate_broadcastable_dim, 2},
     {NULL, NULL, 0}
 };
 
