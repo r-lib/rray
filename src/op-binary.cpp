@@ -63,24 +63,6 @@ SEXP rray_or_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
 }
 
 template <typename T1, typename T2>
-SEXP rray_and_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
-  const xt::rarray<rlogical>& res = x && y;
-  return res;
-}
-
-template <typename T1, typename T2>
-SEXP rray_lt_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
-  const xt::rarray<rlogical>& res = x < y;
-  return res;
-}
-
-template <typename T1, typename T2>
-SEXP rray_lte_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
-  const xt::rarray<rlogical>& res = x <= y;
-  return res;
-}
-
-template <typename T1, typename T2>
 SEXP rray_equality_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
   Rcpp::LogicalVector res = Rcpp::LogicalVector::create(x == y);
   return res;
@@ -222,10 +204,6 @@ SEXP rray_op_binary_cpp_impl(const std::string& op,
 
   case str2int("or"): {
     return rray_or_cpp(x, y);
-  }
-
-  case str2int("and"): {
-    return rray_and_cpp(x, y);
   }
 
   case str2int("equality"): {
