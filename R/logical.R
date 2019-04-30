@@ -52,6 +52,20 @@ rray_logical_and <- function(x, y) {
 
 #' @rdname rray-logical
 #' @export
+`|.vctrs_rray` <- function(e1, e2) {
+  rray_logical_or(e1, e2)
+}
+
+#' @rdname rray-logical
+#' @export
+rray_logical_or <- function(x, y) {
+  cast_compare(rray__logical_or, x, y)
+}
+
+# ------------------------------------------------------------------------------
+
+#' @rdname rray-logical
+#' @export
 `!.vctrs_rray` <- function(x) {
   rray_logical_not(x)
 }
@@ -64,21 +78,23 @@ rray_logical_not <- function(x) {
 
 # ------------------------------------------------------------------------------
 
+# `any()` should always be on a flattened version of the input to maintain
+# backwards compat with base R. `rray_any()` should only handle 1 input
+# but should be able to look along an axis.
+# TODO - Think more about this.
+
 #' @rdname rray-logical
 #' @export
 `any.vctrs_rray` <- function(..., na.rm = FALSE) {
-
-  dots <- list2(...)
-
-  if (length(dots) != 1L) {
-    abort("Only 1 input is currently supported in `any()` for rrays.")
-  }
 
   if (!identical(na.rm, FALSE)) {
     abort("`na.rm` currently must be `FALSE` in `any()` for rrays.")
   }
 
-  rray_any(dots[[1]])
+  x <- map(list2(...), as.vector)
+  x <- vec_c(!!! x)
+
+  vctrs::vec_math_base("any", x)
 }
 
 #' @rdname rray-logical

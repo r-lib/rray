@@ -77,6 +77,10 @@ rray__logical_and <- function(x, y) {
     .Call(`_rray_rray__logical_and`, x, y)
 }
 
+rray__logical_or <- function(x, y) {
+    .Call(`_rray_rray__logical_or`, x, y)
+}
+
 rray__logical_not <- function(x) {
     .Call(`_rray_rray__logical_not`, x)
 }

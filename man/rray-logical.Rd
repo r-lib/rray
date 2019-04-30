@@ -4,6 +4,8 @@
 \alias{rray-logical}
 \alias{&.vctrs_rray}
 \alias{rray_logical_and}
+\alias{|.vctrs_rray}
+\alias{rray_logical_or}
 \alias{!.vctrs_rray}
 \alias{rray_logical_not}
 \alias{any.vctrs_rray}
@@ -13,6 +15,10 @@
 \method{&}{vctrs_rray}(e1, e2)
 
 rray_logical_and(x, y)
+
+\method{|}{vctrs_rray}(e1, e2)
+
+rray_logical_or(x, y)
 
 \method{!}{vctrs_rray}(x)
 

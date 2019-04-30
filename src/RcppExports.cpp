@@ -230,6 +230,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray__logical_or
+Rcpp::RObject rray__logical_or(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__logical_or(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__logical_or(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray__logical_not
 Rcpp::RObject rray__logical_not(const xt::rarray<rlogical>& x);
 RcppExport SEXP _rray_rray__logical_not(SEXP xSEXP) {
@@ -494,6 +506,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__increase_dims", (DL_FUNC) &_rray_rray__increase_dims, 2},
     {"_rray_rray__reshape", (DL_FUNC) &_rray_rray__reshape, 2},
     {"_rray_rray__logical_and", (DL_FUNC) &_rray_rray__logical_and, 2},
+    {"_rray_rray__logical_or", (DL_FUNC) &_rray_rray__logical_or, 2},
     {"_rray_rray__logical_not", (DL_FUNC) &_rray_rray__logical_not, 1},
     {"_rray_rray__any", (DL_FUNC) &_rray_rray__any, 1},
     {"_rray_rray_op_binary_cpp", (DL_FUNC) &_rray_rray_op_binary_cpp, 3},
