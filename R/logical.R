@@ -45,7 +45,7 @@ NULL
 #' @rdname rray-logical
 #' @export
 rray_logical_and <- function(x, y) {
-  cast_compare(rray__logical_and, x, y)
+  logical_cast_compare(rray__logical_and, x, y)
 }
 
 # ------------------------------------------------------------------------------
@@ -59,7 +59,7 @@ rray_logical_and <- function(x, y) {
 #' @rdname rray-logical
 #' @export
 rray_logical_or <- function(x, y) {
-  cast_compare(rray__logical_or, x, y)
+  logical_cast_compare(rray__logical_or, x, y)
 }
 
 # ------------------------------------------------------------------------------
@@ -118,6 +118,29 @@ rray_any <- function(x, axes = NULL) {
 }
 
 # ------------------------------------------------------------------------------
+
+logical_cast_compare <- function(f, x, y) {
+
+  # `NULL` are treated like logical()
+  if (is.null(x)) {
+    x <- logical()
+  }
+
+  if (is.null(y)) {
+    y <- logical()
+  }
+
+  x_cast <- rray_cast_inner(x, logical())
+  y_cast <- rray_cast_inner(y, logical())
+
+  to <- vec_type2(x_cast, y_cast)
+
+  res <- f(x_cast, y_cast)
+
+  res <- set_full_dim_names(res, rray_dim_names_common(x, y))
+
+  vec_restore(res, to)
+}
 
 cast_inner_restore <- function(f, x, to) {
   res <- rray_cast_inner(x, to)

@@ -122,7 +122,7 @@
   error_unknown_type()
 
 // -----------------------------------------------------------------------------
-// Binary + 0 argument
+// Binary + 1 argument
 
 #define DISPATCH_BINARY_ONE(FUN, X, Y, ARG)                      \
   if (Rf_isNull(X) || Rf_isNull(Y)) {                            \
