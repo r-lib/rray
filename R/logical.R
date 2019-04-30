@@ -130,10 +130,10 @@ logical_cast_compare <- function(f, x, y) {
     y <- logical()
   }
 
+  to <- vec_type2(x, y)
+
   x_cast <- rray_cast_inner(x, logical())
   y_cast <- rray_cast_inner(y, logical())
-
-  to <- vec_type2(x_cast, y_cast)
 
   res <- f(x_cast, y_cast)
 
