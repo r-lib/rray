@@ -83,9 +83,6 @@ Rcpp::IntegerVector rray__dim2(Rcpp::IntegerVector x_dim,
     if (x_i == y_i) {
       out[i] = x_i;
     }
-    else if (x_i == 0 || y_i == 0) {
-      out[i] = 0;
-    }
     else if (x_i == 1) {
       out[i] = y_i;
     }
@@ -95,8 +92,8 @@ Rcpp::IntegerVector rray__dim2(Rcpp::IntegerVector x_dim,
     else {
       Rcpp::stop(
         "Non-broadcastable dimensions: %s and %s.",
-        rray__dim_to_string(x),
-        rray__dim_to_string(y)
+        rray__dim_to_string(x_dim),
+        rray__dim_to_string(y_dim)
       );
     }
 

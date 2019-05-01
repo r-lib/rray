@@ -79,13 +79,14 @@ void rray__validate_broadcastable_to_dim(Rcpp::IntegerVector x_dim,
     int x_dim_i = x_dim[i];
     int dim_i = dim[i];
 
-    bool ok = (x_dim_i == dim_i || x_dim_i == 1 || dim_i == 0);
+    bool ok = (x_dim_i == dim_i || x_dim_i == 1);
 
     if (!ok) {
       Rcpp::stop(
-        "Non-broadcastable dimensions: %s and %s.",
+        "Cannot broadcast from %s to %s due to dimension %i.",
         rray__dim_to_string(x_dim),
-        rray__dim_to_string(dim)
+        rray__dim_to_string(dim),
+        i + 1
       );
     }
   }
