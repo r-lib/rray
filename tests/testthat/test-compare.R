@@ -61,6 +61,13 @@ test_that("dimension names are kept", {
   )
 })
 
+test_that("Correct error is thrown with base R types", {
+  expect_error(
+    rray_greater(matrix(logical(), 0, 2), matrix(logical(), 0, 3)),
+    "\\(0, 2\\) and \\(0, 3\\)"
+  )
+})
+
 # ------------------------------------------------------------------------------
 
 context("test-greater-equal")
