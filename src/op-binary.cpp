@@ -57,42 +57,6 @@ SEXP rray_divide_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
 }
 
 template <typename T1, typename T2>
-SEXP rray_or_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
-  const xt::rarray<rlogical>& res = x || y;
-  return res;
-}
-
-template <typename T1, typename T2>
-SEXP rray_and_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
-  const xt::rarray<rlogical>& res = x && y;
-  return res;
-}
-
-template <typename T1, typename T2>
-SEXP rray_lt_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
-  const xt::rarray<rlogical>& res = x < y;
-  return res;
-}
-
-template <typename T1, typename T2>
-SEXP rray_lte_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
-  const xt::rarray<rlogical>& res = x <= y;
-  return res;
-}
-
-template <typename T1, typename T2>
-SEXP rray_gt_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
-  const xt::rarray<rlogical>& res = x > y;
-  return res;
-}
-
-template <typename T1, typename T2>
-SEXP rray_gte_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
-  const xt::rarray<rlogical>& res = x >= y;
-  return res;
-}
-
-template <typename T1, typename T2>
 SEXP rray_equality_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
   Rcpp::LogicalVector res = Rcpp::LogicalVector::create(x == y);
   return res;
@@ -101,18 +65,6 @@ SEXP rray_equality_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
 template <typename T1, typename T2>
 SEXP rray_inequality_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
   Rcpp::LogicalVector res = Rcpp::LogicalVector::create(x != y);
-  return res;
-}
-
-template <typename T1, typename T2>
-SEXP rray_equal_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
-  const xt::rarray<rlogical>& res = xt::equal(x, y);
-  return res;
-}
-
-template <typename T1, typename T2>
-SEXP rray_not_equal_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
-  const xt::rarray<rlogical>& res = xt::not_equal(x, y);
   return res;
 }
 
@@ -244,44 +196,12 @@ SEXP rray_op_binary_cpp_impl(const std::string& op,
     return rray_divide_cpp(x, y);
   }
 
-  case str2int("or"): {
-    return rray_or_cpp(x, y);
-  }
-
-  case str2int("and"): {
-    return rray_and_cpp(x, y);
-  }
-
-  case str2int("lt"): {
-    return rray_lt_cpp(x, y);
-  }
-
-  case str2int("lte"): {
-    return rray_lte_cpp(x, y);
-  }
-
-  case str2int("gt"): {
-    return rray_gt_cpp(x, y);
-  }
-
-  case str2int("gte"): {
-    return rray_gte_cpp(x, y);
-  }
-
   case str2int("equality"): {
     return rray_equality_cpp(x, y);
   }
 
   case str2int("inequality"): {
     return rray_inequality_cpp(x, y);
-  }
-
-  case str2int("equal"): {
-    return rray_equal_cpp(x, y);
-  }
-
-  case str2int("not_equal"): {
-    return rray_not_equal_cpp(x, y);
   }
 
   // ---------------------------------------------------------------------------

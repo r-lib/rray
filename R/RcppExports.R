@@ -29,12 +29,44 @@ rray_eye_square_cpp <- function(n, k = 0L) {
     .Call(`_rray_rray_eye_square_cpp`, n, k)
 }
 
+rray__greater <- function(x, y) {
+    .Call(`_rray_rray__greater`, x, y)
+}
+
+rray__greater_equal <- function(x, y) {
+    .Call(`_rray_rray__greater_equal`, x, y)
+}
+
+rray__lesser <- function(x, y) {
+    .Call(`_rray_rray__lesser`, x, y)
+}
+
+rray__lesser_equal <- function(x, y) {
+    .Call(`_rray_rray__lesser_equal`, x, y)
+}
+
+rray__equal <- function(x, y) {
+    .Call(`_rray_rray__equal`, x, y)
+}
+
+rray__not_equal <- function(x, y) {
+    .Call(`_rray_rray__not_equal`, x, y)
+}
+
 rray__dim <- function(x) {
     .Call(`_rray_rray__dim`, x)
 }
 
+rray__dim2 <- function(x_dim, y_dim) {
+    .Call(`_rray_rray__dim2`, x_dim, y_dim)
+}
+
 rray__dims <- function(x) {
     .Call(`_rray_rray__dims`, x)
+}
+
+rray__dims2 <- function(x_dims, y_dims) {
+    .Call(`_rray_rray__dims2`, x_dims, y_dims)
 }
 
 rray__increase_dims <- function(dim, dims) {
@@ -43,6 +75,22 @@ rray__increase_dims <- function(dim, dims) {
 
 rray__reshape <- function(x, dim) {
     .Call(`_rray_rray__reshape`, x, dim)
+}
+
+rray__logical_and <- function(x, y) {
+    .Call(`_rray_rray__logical_and`, x, y)
+}
+
+rray__logical_or <- function(x, y) {
+    .Call(`_rray_rray__logical_or`, x, y)
+}
+
+rray__logical_not <- function(x) {
+    .Call(`_rray_rray__logical_not`, x)
+}
+
+rray__any <- function(x, axes) {
+    .Call(`_rray_rray__any`, x, axes)
 }
 
 rray_op_binary_cpp <- function(op, x, y) {
@@ -113,7 +161,7 @@ rray__validate_reshape <- function(x, dim) {
     invisible(.Call(`_rray_rray__validate_reshape`, x, dim))
 }
 
-rray__validate_broadcastable <- function(x_dim, dim) {
-    invisible(.Call(`_rray_rray__validate_broadcastable`, x_dim, dim))
+rray__validate_broadcastable_to_dim <- function(x_dim, dim) {
+    invisible(.Call(`_rray_rray__validate_broadcastable_to_dim`, x_dim, dim))
 }
 

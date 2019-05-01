@@ -61,18 +61,22 @@ test_that("0 row input broadcasting", {
     x
   )
 
-  # Requesting to go down to 0 columns does nothing
-  expect_equal(
-    rray_broadcast(x, c(0, 0)),
-    x
-  )
-
-  # Cannot start with 0 and go up to 1 row
+  # Cannot broadcast 2 -> 0
   expect_error(
-    rray_broadcast(x, c(1, 2))
+    rray_broadcast(x, c(0, 0)),
+    "\\(0, 2\\) to \\(0, 0\\)"
   )
 
-  expect_error(rray_broadcast(x, c(0, 4)), "Non-broadcastable")
+  # Cannot broadcast 0 -> 1
+  expect_error(
+    rray_broadcast(x, c(1, 2)),
+    "\\(0, 2\\) to \\(1, 2\\)"
+  )
+
+  expect_error(
+    rray_broadcast(x, c(0, 4)),
+    "\\(0, 2\\) to \\(0, 4\\)"
+  )
 
 })
 
@@ -86,21 +90,21 @@ test_that("0 col input broadcasting", {
     x
   )
 
-  # Requesting to go down to 0 rows does nothing
-  expect_equal(
+  # Cannot broadcast 2 -> 0
+  expect_error(
     rray_broadcast(x, c(0, 0)),
-    x
+    "\\(2, 0\\) to \\(0, 0\\)"
   )
 
-  # Cannot start with 0 and go up to 1 column
+  # Cannot broadcast 0 -> 1
   expect_error(
     rray_broadcast(x, c(2, 1)),
-    "Non-broadcastable"
+    "\\(2, 0\\) to \\(2, 1\\)"
   )
 
   expect_error(
     rray_broadcast(x, c(4, 0)),
-    "Non-broadcastable"
+    "\\(2, 0\\) to \\(4, 0\\)"
   )
 
 })

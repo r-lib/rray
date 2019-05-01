@@ -8,7 +8,12 @@
 
 Rcpp::IntegerVector rray__dim(const Rcpp::RObject& x);
 
+Rcpp::IntegerVector rray__dim2(Rcpp::IntegerVector x_dim,
+                               Rcpp::IntegerVector y_dim);
+
 int rray__dims(const Rcpp::RObject& x);
+
+int rray__dims2(const int& x_dims, const int& y_dims);
 
 Rcpp::IntegerVector rray__increase_dims(const Rcpp::IntegerVector& dim,
                                         const int& dims);
@@ -25,8 +30,10 @@ void rray__validate_dim(Rcpp::IntegerVector dim);
 
 void rray__validate_reshape(Rcpp::RObject x, Rcpp::IntegerVector dim);
 
-void rray__validate_broadcastable(Rcpp::IntegerVector x_dim,
-                                  Rcpp::IntegerVector dim);
+void rray__validate_broadcastable_to_dim(Rcpp::IntegerVector x_dim,
+                                         Rcpp::IntegerVector dim);
+
+std::string rray__dim_to_string(Rcpp::IntegerVector dim);
 
 // -----------------------------------------------------------------------------
 // Re-exposed R API

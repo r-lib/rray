@@ -61,12 +61,24 @@
 NULL
 
 rray_dims2 <- function(x_dims, y_dims) {
-  max(x_dims, y_dims)
+  x_dims <- vec_cast(x_dims, integer())
+  y_dims <- vec_cast(y_dims, integer())
+
+  if (is.null(x_dims)) {
+    abort("`x_dims` cannot be `NULL`.")
+  }
+
+  if (is.null(y_dims)) {
+    abort("`y_dims` cannot be `NULL`.")
+  }
+
+  rray__dims2(x_dims, y_dims)
 }
 
 rray_dim2 <- function(x_dim, y_dim) {
-  dims_matched <- dim2(x_dim, y_dim)
-  map2_int(dims_matched$x, dims_matched$y, rray_size2)
+  x_dim <- vec_cast(x_dim, integer())
+  y_dim <- vec_cast(y_dim, integer())
+  rray__dim2(x_dim, y_dim)
 }
 
 #' @rdname common-dim

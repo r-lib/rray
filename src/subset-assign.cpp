@@ -21,18 +21,6 @@ bool any_zero_length(Rcpp::List x) {
   return false;
 }
 
-// Ensure that we can actually perform the assignment so we don't segfault
-template <class E1, class E2>
-void validate_broadcastable_shapes(E1 x, E2 to) {
-  auto x_shape = x.shape();
-  Rcpp::IntegerVector x_dim(x_shape.begin(), x_shape.end());
-
-  auto to_shape = to.shape();
-  Rcpp::IntegerVector to_dim(to_shape.begin(), to_shape.end());
-
-  rray__validate_broadcastable(x_dim, to_dim);
-}
-
 template <typename T>
 xt::rarray<T> rray__subset_assign_impl(const xt::rarray<T>& x,
                                        Rcpp::List indexer,
@@ -58,13 +46,13 @@ xt::rarray<T> rray__subset_assign_impl(const xt::rarray<T>& x,
   if (is_stridable(indexer)) {
     xt::xstrided_slice_vector sv = build_strided_slice_vector(indexer);
     auto x_subset_view = xt::strided_view(out, sv);
-    validate_broadcastable_shapes(value_view, x_subset_view);
+    rray__validate_broadcastable_to(value_view, x_subset_view);
     x_subset_view = value_view;
   }
   else {
     xt::xdynamic_slice_vector sv = build_dynamic_slice_vector(indexer);
     auto x_subset_view = xt::dynamic_view(out, sv);
-    validate_broadcastable_shapes(value_view, x_subset_view);
+    rray__validate_broadcastable_to(value_view, x_subset_view);
     x_subset_view = value_view;
   }
 

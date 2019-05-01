@@ -10,6 +10,7 @@
 #' @importFrom vctrs vec_type_common
 #' @importFrom vctrs vec_size_common
 #' @importFrom vctrs vec_math
+#' @importFrom vctrs vec_math_base
 #' @importFrom vctrs vec_unique
 #' @importFrom vctrs vec_unique_loc
 #' @importFrom vctrs vec_unique_count

@@ -26,6 +26,33 @@ void rray__validate_reshape(Rcpp::RObject x, Rcpp::IntegerVector dim) {
 
 }
 
+// Convert integer dim to something like '(1, 2, 3)'
+std::string rray__dim_to_string(Rcpp::IntegerVector dim) {
+
+  std::vector<int> dim_vec = Rcpp::as<std::vector<int>>(dim);
+
+  std::ostringstream oss;
+
+  oss << "(";
+
+  if (!dim_vec.empty())
+  {
+    // Convert all but the last element to avoid a trailing ","
+    std::copy(
+      dim_vec.begin(),
+      dim_vec.end() - 1,
+      std::ostream_iterator<int>(oss, ", ")
+    );
+
+    // Now add the last element with no delimiter
+    oss << dim_vec.back();
+  }
+
+  oss << ")";
+
+  return oss.str();
+}
+
 // 4 cases where broadcasting works:
 // - Dimensions are the same (no change is made)
 // - Dimension of x is 1 (broadcast to new dimension)
@@ -35,8 +62,8 @@ void rray__validate_reshape(Rcpp::RObject x, Rcpp::IntegerVector dim) {
 //   be reshape-viewed to work
 
 // [[Rcpp::export]]
-void rray__validate_broadcastable(Rcpp::IntegerVector x_dim,
-                                  Rcpp::IntegerVector dim) {
+void rray__validate_broadcastable_to_dim(Rcpp::IntegerVector x_dim,
+                                         Rcpp::IntegerVector dim) {
 
   int n_x = x_dim.size();
   int n_to = dim.size();
@@ -52,10 +79,15 @@ void rray__validate_broadcastable(Rcpp::IntegerVector x_dim,
     int x_dim_i = x_dim[i];
     int dim_i = dim[i];
 
-    bool ok = (x_dim_i == dim_i || x_dim_i == 1 || dim_i == 0);
+    bool ok = (x_dim_i == dim_i || x_dim_i == 1);
 
     if (!ok) {
-      Rcpp::stop("Non-broadcastable dimensions.");
+      Rcpp::stop(
+        "Cannot broadcast from %s to %s due to dimension %i.",
+        rray__dim_to_string(x_dim),
+        rray__dim_to_string(dim),
+        i + 1
+      );
     }
   }
 }
