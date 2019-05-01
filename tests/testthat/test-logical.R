@@ -194,3 +194,59 @@ test_that("! fails when input that can't be cast to logical", {
   x <- rray(1:2)
   expect_error(!x, "<integer> to <logical>")
 })
+
+# ------------------------------------------------------------------------------
+
+context("test-any")
+
+test_that("works with rray objects", {
+
+  x <- rray(c(TRUE, FALSE), c(2, 2, 2))
+
+  expect_equal(rray_any(x), rray(TRUE, c(1, 1, 1)))
+
+  expect_equal(rray_any(x, 1), rray(TRUE, c(1, 2, 2)))
+
+  expect_equal(rray_any(x, 2), rray(c(TRUE, TRUE, FALSE, FALSE), c(2, 1, 2)))
+
+  expect_equal(rray_any(x, 3), rray(c(TRUE, TRUE, FALSE, FALSE), c(2, 2, 1)))
+})
+
+test_that("works over multiple axes", {
+  x <- rray(c(TRUE, FALSE), c(2, 2, 2))
+
+  expect_equal(rray_any(x, c(1, 2)), rray(TRUE, c(1, 1, 2)))
+
+  expect_equal(rray_any(x, c(2, 3)), rray(c(TRUE, FALSE), c(2, 1, 1)))
+
+  expect_equal(rray_any(x, c(1, 3)), rray(c(TRUE, TRUE), c(1, 2, 1)))
+
+  expect_error(rray_any(x, c(2, 1)), "Reducing axes should be sorted")
+})
+
+test_that("works with base R", {
+  expect_equal(rray_any(rep(TRUE, 5)), new_array(TRUE))
+  expect_equal(rray_any(rep(TRUE, 5)), rray_any(rep(TRUE, 5), axes = 1))
+})
+
+test_that("works with NULL input", {
+  expect_equal(rray_any(NULL), new_array(FALSE))
+})
+
+test_that("works with 0-length input", {
+  expect_equal(rray_any(logical()), new_array(FALSE))
+  expect_equal(rray_any(logical(), axes = 1), new_array(FALSE))
+
+  # matches numpy
+  x <- array(logical(), c(0, 2))
+  expect_equal(rray_any(x), new_array(FALSE, c(1, 1)))
+  expect_equal(rray_any(x, 1), new_array(FALSE, c(1, 2)))
+  expect_equal(rray_any(x, 2), new_array(logical(), c(0, 1)))
+
+  # TODO crashes
+  #rray_any(x, c(1, 2))
+})
+
+test_that("fails when can't cast to logical", {
+  expect_error(rray_any(1:5), "<integer> to <logical>")
+})
