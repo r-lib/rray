@@ -59,9 +59,11 @@ this. See \code{?groupGeneric} for more information on this.
 
 The behavior of comparing either an array with a length 0 dimension
 or \code{NULL} with another array is slightly different than base R since
-broadcasting behavior is well defined. If any dimension has length 0, the
-result of the logical operation is an empty logical with the common dimension
-of \code{x} and \code{y}. See the examples section for a few demonstrations.
+broadcasting behavior is well defined. Length 0 dimensions are not exceptions
+to the normal broadcasting rules. Comparing dimensions of \code{0} and \code{1}, the
+common dimension is \code{0} because \code{1} always becomes the other dimension in the
+comparison. On the other hand, comparing dimensions \code{0} and \code{2} is an error
+because neither are one, and they are not identical.
 }
 \examples{
 x <- rray(TRUE, c(2, 2, 3))
@@ -73,14 +75,14 @@ x & y
 # ---------------------------------------------------------------------------
 # Behavior with edge cases
 
-x <- rray(TRUE, c(2, 2))
+x <- rray(TRUE, c(1, 2))
 
 # The common dim is (0, 2)
 logical() & x
 
 # You can have empty arrays with shape
-# The common dim is (2, 0, 2)
-y <- array(logical(), c(2, 0, 2))
+# The common dim is (0, 2, 2)
+y <- array(logical(), c(0, 1, 2))
 x & y
 
 # NULL is treated as logical(0)
@@ -88,5 +90,13 @@ NULL & x
 
 rray_logical_and(NULL, NULL)
 
+# You cannot broadcast dimensions
+# of 2 and 0. Following standard
+# broadcasting rules, they do not
+# match and neither are 1, so an
+# error should be thrown
+\dontrun{
+x & array(logical(), c(1, 0))
+}
 
 }
