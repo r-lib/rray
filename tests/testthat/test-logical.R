@@ -238,13 +238,21 @@ test_that("works with 0-length input", {
   expect_equal(rray_any(logical(), axes = 1), new_array(FALSE))
 
   # matches numpy
+  # essentially, reducing along the 0 axis makes it a 1 in the result so it has a FALSE value
   x <- array(logical(), c(0, 2))
   expect_equal(rray_any(x), new_array(FALSE, c(1, 1)))
   expect_equal(rray_any(x, 1), new_array(FALSE, c(1, 2)))
   expect_equal(rray_any(x, 2), new_array(logical(), c(0, 1)))
+})
 
-  # TODO crashes
+# TODO ensure this doesnt crash R
+test_that("reducing over multiple axes where at least one is size 0", {
+  x <- array(logical(), c(0, 0, 2))
+
+  expect_equal(rray_any(x), new_array(FALSE, c(1, 1, 1)))
+
   #rray_any(x, c(1, 2))
+  #rray_any(x, c(1, 3))
 })
 
 test_that("fails when can't cast to logical", {
