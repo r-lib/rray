@@ -78,6 +78,13 @@ test_that("& fails with non-broadcastable 0-length input", {
   expect_error(x & logical(), "\\(2\\) and \\(0\\)")
 })
 
+test_that("Correct error is thrown with base R types", {
+  expect_error(
+    rray_logical_and(matrix(logical(), 0, 2), matrix(logical(), 0, 3)),
+    "\\(0, 2\\) and \\(0, 3\\)"
+  )
+})
+
 # ------------------------------------------------------------------------------
 
 context("test-or")

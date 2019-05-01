@@ -163,8 +163,6 @@ logical_cast_compare <- function(f, x, y) {
     y <- logical()
   }
 
-  to <- vec_type2(x, y)
-
   x_cast <- rray_cast_inner(x, logical())
   y_cast <- rray_cast_inner(y, logical())
 
@@ -172,7 +170,7 @@ logical_cast_compare <- function(f, x, y) {
 
   res <- set_full_dim_names(res, rray_dim_names_common(x, y))
 
-  vec_restore(res, to)
+  vec_restore(res, vec_type2(x, y))
 }
 
 logical_cast_call <- function(f, x) {
