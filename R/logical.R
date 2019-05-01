@@ -102,7 +102,7 @@ rray_logical_or <- function(x, y) {
 #' @rdname rray-logical
 #' @export
 rray_logical_not <- function(x) {
-  cast_inner_restore(rray__logical_not, x, logical())
+  logical_cast_call(rray__logical_not, x)
 }
 
 # ------------------------------------------------------------------------------
@@ -171,9 +171,17 @@ logical_cast_compare <- function(f, x, y) {
   vec_restore(res, to)
 }
 
-cast_inner_restore <- function(f, x, to) {
-  res <- rray_cast_inner(x, to)
+logical_cast_call <- function(f, x) {
+
+  if (is.null(x)) {
+    x <- logical()
+  }
+
+  res <- rray_cast_inner(x, logical())
+
   res <- f(res)
+
   res <- set_full_dim_names(res, dim_names(x))
+
   vec_restore(res, x)
 }
