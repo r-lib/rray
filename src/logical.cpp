@@ -53,9 +53,6 @@ Rcpp::RObject rray__logical_or(Rcpp::RObject x, Rcpp::RObject y) {
 
 // -----------------------------------------------------------------------------
 
-// Only logical in and out
-// Use rray_cast_inner() at the R level first
-
 xt::rarray<rlogical> rray__logical_not_impl(const xt::rarray<rlogical>& x) {
   return xt::operator!(x);
 }
