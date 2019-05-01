@@ -2,28 +2,17 @@
 #'
 #' @description
 #'
-#' * `rray_dims_common()` finds the common dimensionality
-#' among a set of objects.
-#' * `rray_dim_common()` finds the common size of each dimension
-#' of a set of objects.
+#' * `rray_dim()` finds the dimension of a single object.
+#'
+#' * `rray_dim_common()` finds the common dimensions of a set of objects.
 #'
 #' @details
 #'
-#' `rray_dims_common()` essentially takes the maximum dimensionality of the
-#' inputs. This is the "common" dimensionality. Below is an example of
-#' comparing a 4x5 matrix and a 4x1x2 array to get the common dimensionality.
-#'
-#' ```
-#' (4, 5,  ) <- dimensionality of 2, but a 1 is implicit to match dimensionality
-#' (4, 1, 2) <- dimensionality of 3
-#' ---------
-#' 3         <- resulting dimensionality is 3
-#' ```
-#'
-#' `rray_dim_common()` finds the common dimensionality,
+#' `rray_dim_common()` first finds the common dimensionality,
 #' makes any implicit dimensions explicit, then recycles the size of each
-#' dimension to a common size. With the above example, with implicit `1`
-#' is made to be explicit, and then the dimensions are compared:
+#' dimension to a common size.
+#'
+#' As an example, the common dimensions of `(4, 5)` and `(4, 1, 2)` are:
 #'
 #' ```
 #' (4, 5, 1) <- implicit 1 is made to be explicit, then recycled to 2
@@ -33,17 +22,19 @@
 #' ```
 #'
 #' The resulting dimensions from `rray_dim_common()` are the dimensions that
-#' are used in broadcasted arithmetic operations.
+#' are used in broadcasted operations.
 #'
-#' @param ... Objects to find common dimension/dimensionality for.
+#' @param x An object.
+#'
+#' @param ... Objects to find common dimensions for.
+#'
+#' @seealso [rray_dims()] and [rray_dims_common()]
 #'
 #' @examples
-#'
 #' x_1_by_4 <- rray(c(1, 2, 3, 4), c(1, 4))
 #' x_5_by_1 <- rray(1:5, c(5, 1))
 #'
-#' # these are both 2D
-#' rray_dims_common(x_1_by_4, x_5_by_1)
+#' rray_dim(x_1_by_4)
 #'
 #' # recycle rows: 1 VS 5 = 5
 #' # recycle cols: 4 VS 1 = 4
@@ -57,9 +48,10 @@
 #' # (here, 3rd dim of 1 for the matrix is implicit)
 #' rray_dim_common(x_1_by_4, x_5_by_1_by_3)
 #'
-#' @name common-dim
-NULL
-
+#' # The dimensions of NULL are 0
+#' rray_dim(NULL)
+#'
+#' @export
 rray_dim <- function(x) {
   rray__dim(x)
 }
@@ -70,47 +62,13 @@ rray_dim2 <- function(x_dim, y_dim) {
   rray__dim2(x_dim, y_dim)
 }
 
-#' @rdname common-dim
+#' @rdname rray_dim
 #' @export
 rray_dim_common <- function(...) {
   args <- list2(...)
 
   dim_lst <- map(args, rray_dim)
   reduce(dim_lst, rray_dim2)
-}
-
-# ------------------------------------------------------------------------------
-
-rray_dims <- function(x) {
-  rray__dims(x)
-}
-
-rray_dims2 <- function(x_dims, y_dims) {
-  x_dims <- vec_cast(x_dims, integer())
-  y_dims <- vec_cast(y_dims, integer())
-
-  if (is.null(x_dims)) {
-    abort("`x_dims` cannot be `NULL`.")
-  }
-
-  if (is.null(y_dims)) {
-    abort("`y_dims` cannot be `NULL`.")
-  }
-
-  rray__dims2(x_dims, y_dims)
-}
-
-#' @rdname common-dim
-#' @export
-rray_dims_common <- function(...) {
-  args <- list2(...)
-
-  if (length(args) == 0L) {
-    return(NULL)
-  }
-
-  dims_lst <- map_int(args, rray_dims)
-  reduce(dims_lst, rray_dims2)
 }
 
 # ------------------------------------------------------------------------------
