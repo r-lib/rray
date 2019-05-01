@@ -130,6 +130,10 @@ rray_logical_not <- function(x) {
 #' @export
 rray_any <- function(x, axes = NULL) {
 
+  if (is.null(x)) {
+    x <- logical()
+  }
+
   # only integer axes
   axes <- vec_cast(axes, integer())
   validate_axes(axes, x)
