@@ -174,7 +174,7 @@ SEXP rray_int_reducer_cpp_impl(std::string op, xt::rarray<int> x, SEXP axes) {
 // -----------------------------------------------------------------------------
 // Switch on the type of x
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 SEXP rray_reducer_cpp(std::string op, SEXP x, SEXP axes) {
 
   // Switch on X

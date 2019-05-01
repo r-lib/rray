@@ -62,7 +62,7 @@ SEXP rray_op_unary_three_cpp_impl(std::string op, const xt::rarray<T1>& x, SEXP 
 // -----------------------------------------------------------------------------
 // Switch on the type of x
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 SEXP rray_op_unary_three_cpp(std::string op, SEXP x, SEXP arg1, SEXP arg2, SEXP arg3) {
 
   if (Rf_isNull(x)) {

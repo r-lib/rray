@@ -3,7 +3,7 @@
 #include <dispatch.h>
 #include <subset-tools.h>
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 bool is_any_na_int(Rcpp::List x) {
   int x_size = x.size();
 
@@ -32,7 +32,7 @@ bool is_any_na_int(Rcpp::List x) {
 // but to select the first element you have to do xt::range(5, _, -1)`
 // and make sure to do `using namespace xt::placeholders;`
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 bool is_contiguous_increasing(Rcpp::RObject x) {
 
   if (!Rf_isInteger(x)) {
@@ -81,7 +81,7 @@ Rcpp::CharacterVector subset_names_with_range(Rcpp::CharacterVector names,
   return new_names;
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 Rcpp::List subset_dim_names(Rcpp::List dim_names, Rcpp::List indexer) {
 
   int n_names = dim_names.size();
@@ -142,7 +142,7 @@ xt::rarray<T> rray__subset_impl(const xt::rarray<T>& x, Rcpp::List indexer) {
   return out;
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__subset(Rcpp::RObject x, Rcpp::List indexer) {
   DISPATCH_UNARY_ONE(rray__subset_impl, x, indexer);
 }

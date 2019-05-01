@@ -143,7 +143,7 @@ SEXP rray_op_trinary_cpp_y(const std::string& op,
 // -----------------------------------------------------------------------------
 // Switch on the types of x
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 SEXP rray_op_trinary_cpp(const std::string& op,
                          SEXP x,
                          SEXP y,

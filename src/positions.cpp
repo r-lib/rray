@@ -30,7 +30,7 @@ xt::rarray<T> rray__sort_impl(const xt::rarray<T>& x, Rcpp::RObject axis) {
   return res;
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__sort(Rcpp::RObject x, Rcpp::RObject axis) {
   DISPATCH_UNARY_ONE(rray__sort_impl, x, axis);
 }
@@ -73,7 +73,7 @@ Rcpp::RObject rray__sort(Rcpp::RObject x, Rcpp::RObject axis) {
 //   return out;
 // }
 //
-// // [[Rcpp::export]]
+// // [[Rcpp::export(rng = false)]]
 // Rcpp::RObject rray__sort_pos(Rcpp::RObject x, Rcpp::RObject axis) {
 //   DISPATCH_UNARY_ONE(rray__sort_pos_impl, x, axis);
 // }
@@ -114,7 +114,7 @@ xt::rarray<int> rray__max_pos_impl(xt::rarray<T> x, Rcpp::RObject axis) {
   return out;
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__max_pos(Rcpp::RObject x, Rcpp::RObject axis) {
   DISPATCH_UNARY_ONE(rray__max_pos_impl, x, axis);
 }
@@ -140,7 +140,7 @@ xt::rarray<int> rray__min_pos_impl(xt::rarray<T> x, Rcpp::RObject axis) {
   return out;
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__min_pos(Rcpp::RObject x, Rcpp::RObject axis) {
   DISPATCH_UNARY_ONE(rray__min_pos_impl, x, axis);
 }

@@ -131,7 +131,7 @@
 //   return(res);
 // }
 //
-// // [[Rcpp::export]]
+// // [[Rcpp::export(rng = false)]]
 // SEXP rray_custom_reducer_cpp(SEXP x, Rcpp::Function f, std::vector<std::size_t> axes, SEXP type_) {
 //
 //   // Collect the char from the string type ("double", "integer", "logical")

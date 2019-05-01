@@ -2,7 +2,7 @@
 
 // -----------------------------------------------------------------------------
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 Rcpp::IntegerVector rray__dim(const Rcpp::RObject& x) {
 
   Rcpp::IntegerVector out;
@@ -62,7 +62,7 @@ Rcpp::List dims_match2(Rcpp::IntegerVector x_dim, Rcpp::IntegerVector y_dim) {
 // Determine the "common dimensions" between two sets of dimensions by
 // applying broadcasting rules.
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 Rcpp::IntegerVector rray__dim2(Rcpp::IntegerVector x_dim,
                                Rcpp::IntegerVector y_dim) {
 
@@ -104,7 +104,7 @@ Rcpp::IntegerVector rray__dim2(Rcpp::IntegerVector x_dim,
 
 // -----------------------------------------------------------------------------
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 int rray__dims(const Rcpp::RObject& x) {
 
   Rcpp::RObject d = x.attr("dim");
@@ -120,14 +120,14 @@ int rray__dims(const Rcpp::RObject& x) {
 
 // -----------------------------------------------------------------------------
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 int rray__dims2(const int& x_dims, const int& y_dims) {
   return std::max(x_dims, y_dims);
 }
 
 // -----------------------------------------------------------------------------
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 Rcpp::IntegerVector rray__increase_dims(const Rcpp::IntegerVector& dim,
                                         const int& dims) {
 

@@ -26,7 +26,7 @@ xt::rarray<T> rray__broadcast_impl(const xt::rarray<T>& x,
   return(res);
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__broadcast(Rcpp::RObject x, Rcpp::IntegerVector dim) {
   DISPATCH_UNARY_ONE(rray__broadcast_impl, x, dim);
 }

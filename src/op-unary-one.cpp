@@ -130,7 +130,7 @@ SEXP rray_op_unary_one_cpp_impl(std::string op, const xt::rarray<T1>& x, SEXP ar
 // -----------------------------------------------------------------------------
 // Switch on the type of x
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 SEXP rray_op_unary_one_cpp(std::string op, SEXP x, SEXP arg) {
 
   if (Rf_isNull(x)) {

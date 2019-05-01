@@ -26,7 +26,7 @@ xt::rarray<T> rray__reshape_impl(xt::rarray<T> x, Rcpp::IntegerVector dim) {
   return out;
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__reshape(Rcpp::RObject x, Rcpp::IntegerVector dim) {
   DISPATCH_UNARY_ONE(rray__reshape_impl, x, dim);
 }

@@ -26,7 +26,7 @@ xt::rarray<rlogical> rray__greater_impl(const xt::rarray<T>& x, const xt::rarray
   return x_view > y_view;
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__greater(Rcpp::RObject x, Rcpp::RObject y) {
   DISPATCH_BINARY(rray__greater_impl, x, y);
 }
@@ -51,7 +51,7 @@ xt::rarray<rlogical> rray__greater_equal_impl(const xt::rarray<T>& x, const xt::
   return x_view >= y_view;
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__greater_equal(Rcpp::RObject x, Rcpp::RObject y) {
   DISPATCH_BINARY(rray__greater_equal_impl, x, y);
 }
@@ -76,7 +76,7 @@ xt::rarray<rlogical> rray__lesser_impl(const xt::rarray<T>& x, const xt::rarray<
   return x_view < y_view;
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__lesser(Rcpp::RObject x, Rcpp::RObject y) {
   DISPATCH_BINARY(rray__lesser_impl, x, y);
 }
@@ -101,7 +101,7 @@ xt::rarray<rlogical> rray__lesser_equal_impl(const xt::rarray<T>& x, const xt::r
   return x_view <= y_view;
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__lesser_equal(Rcpp::RObject x, Rcpp::RObject y) {
   DISPATCH_BINARY(rray__lesser_equal_impl, x, y);
 }
@@ -126,7 +126,7 @@ xt::rarray<rlogical> rray__equal_impl(const xt::rarray<T>& x, const xt::rarray<T
   return xt::equal(x_view, y_view);
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__equal(Rcpp::RObject x, Rcpp::RObject y) {
   DISPATCH_BINARY(rray__equal_impl, x, y);
 }
@@ -151,7 +151,7 @@ xt::rarray<rlogical> rray__not_equal_impl(const xt::rarray<T>& x, const xt::rarr
   return xt::not_equal(x_view, y_view);
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__not_equal(Rcpp::RObject x, Rcpp::RObject y) {
   DISPATCH_BINARY(rray__not_equal_impl, x, y);
 }

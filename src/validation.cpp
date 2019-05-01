@@ -1,6 +1,6 @@
 #include <api.h>
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 void rray__validate_dim(Rcpp::IntegerVector dim) {
   bool not_ok = Rcpp::is_true(Rcpp::any(dim < 0));
 
@@ -9,7 +9,7 @@ void rray__validate_dim(Rcpp::IntegerVector dim) {
   }
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 void rray__validate_reshape(Rcpp::RObject x, Rcpp::IntegerVector dim) {
 
   rray__validate_dim(dim);
@@ -61,7 +61,7 @@ std::string rray__dim_to_string(Rcpp::IntegerVector dim) {
 //   in that case, we check the 3 first dimensions and assume the 4th will
 //   be reshape-viewed to work
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 void rray__validate_broadcastable_to_dim(Rcpp::IntegerVector x_dim,
                                          Rcpp::IntegerVector dim) {
 

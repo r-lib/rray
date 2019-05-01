@@ -59,7 +59,7 @@ xt::rarray<T> rray__subset_assign_impl(const xt::rarray<T>& x,
   return out;
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__subset_assign(Rcpp::RObject x,
                                   Rcpp::List indexer,
                                   Rcpp::RObject value) {

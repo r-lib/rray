@@ -21,7 +21,7 @@ xt::rarray<T> rray__full_like_impl(const xt::rarray<T>& x,
   return out;
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__full_like(Rcpp::RObject x, Rcpp::RObject value) {
   DISPATCH_UNARY_ONE(rray__full_like_impl, x, value);
 }
@@ -39,14 +39,14 @@ xt::rarray<T> rray__diag_impl(const xt::rarray<T>& x, int k) {
   return out;
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__diag(Rcpp::RObject x, int k) {
   DISPATCH_UNARY_ONE(rray__diag_impl, x, k);
 }
 
 // -----------------------------------------------------------------------------
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 SEXP rray_ones_cpp(const std::vector<std::size_t>& shape) {
   xt::rarray<int> res = xt::ones<int>(shape);
   return res;
@@ -54,7 +54,7 @@ SEXP rray_ones_cpp(const std::vector<std::size_t>& shape) {
 
 // -----------------------------------------------------------------------------
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 SEXP rray_zeros_cpp(const std::vector<std::size_t>& shape) {
   xt::rarray<int> res = xt::zeros<int>(shape);
   return res;
@@ -67,13 +67,13 @@ SEXP rray_zeros_cpp(const std::vector<std::size_t>& shape) {
 
 // TODO - eye_square with negative k not working?
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 SEXP rray_eye_cpp(const std::vector<std::size_t> shape, int k = 0) {
   xt::rarray<int> res = xt::eye<int>(shape, k);
   return res;
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 SEXP rray_eye_square_cpp(std::size_t n, int k = 0) {
   xt::rarray<int> res = xt::eye<int>(n, k);
   return res;

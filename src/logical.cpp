@@ -26,7 +26,7 @@ xt::rarray<rlogical> rray__logical_and_impl(const xt::rarray<rlogical>& x,
   return xt::operator&&(x_view, y_view);
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__logical_and(Rcpp::RObject x, Rcpp::RObject y) {
   DISPATCH_BINARY(rray__logical_and_impl, x, y);
 }
@@ -51,7 +51,7 @@ xt::rarray<rlogical> rray__logical_or_impl(const xt::rarray<rlogical>& x,
   return xt::operator||(x_view, y_view);
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__logical_or(Rcpp::RObject x, Rcpp::RObject y) {
   DISPATCH_BINARY(rray__logical_or_impl, x, y);
 }
@@ -62,7 +62,7 @@ xt::rarray<rlogical> rray__logical_not_impl(const xt::rarray<rlogical>& x) {
   return xt::operator!(x);
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__logical_not(const xt::rarray<rlogical>& x) {
   return Rcpp::as<Rcpp::RObject>(rray__logical_not_impl(x));
 }
@@ -96,7 +96,7 @@ xt::rarray<rlogical> rray__any_impl(const xt::rarray<rlogical>& x, Rcpp::RObject
   return res;
 }
 
-// [[Rcpp::export]]
+// [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__any(const xt::rarray<rlogical>& x, Rcpp::RObject axes) {
   return Rcpp::as<Rcpp::RObject>(rray__any_impl(x, axes));
 }
