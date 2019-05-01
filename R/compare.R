@@ -127,13 +127,21 @@ rray_not_equal <- function(x, y) {
 
 cast_compare <- function(f, x, y) {
 
-  # Check for common type early
+  # `NULL` are treated like logical()
+  if (is.null(x)) {
+    x <- logical()
+  }
+
+  if (is.null(y)) {
+    y <- logical()
+  }
+
   to <- vec_type2(x, y)
 
-  x <- rray_cast_inner(x, to)
-  y <- rray_cast_inner(y, to)
+  x_cast <- rray_cast_inner(x, to)
+  y_cast <- rray_cast_inner(y, to)
 
-  res <- f(x, y)
+  res <- f(x_cast, y_cast)
 
   res <- set_full_dim_names(res, rray_dim_names_common(x, y))
 

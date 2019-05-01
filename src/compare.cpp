@@ -5,8 +5,16 @@
 
 template <typename T>
 xt::rarray<rlogical> rray__greater_impl(const xt::rarray<T>& x, const xt::rarray<T>& y) {
-  const int& dims = rray__dims2(rray__dims(SEXP(x)), rray__dims(SEXP(y)));
 
+  Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
+
+  // If any dimension is size 0, return an empty logical array with common dim
+  if (Rcpp::is_true(Rcpp::any(dim == 0))) {
+    xt::rarray<rlogical> res(Rcpp::as<std::vector<std::size_t>>(dim));
+    return(res);
+  }
+
+  const int& dims = dim.size();
   auto x_view = rray__increase_dims_view(x, dims);
   auto y_view = rray__increase_dims_view(y, dims);
 
@@ -22,8 +30,16 @@ Rcpp::RObject rray__greater(Rcpp::RObject x, Rcpp::RObject y) {
 
 template <typename T>
 xt::rarray<rlogical> rray__greater_equal_impl(const xt::rarray<T>& x, const xt::rarray<T>& y) {
-  const int& dims = rray__dims2(rray__dims(SEXP(x)), rray__dims(SEXP(y)));
 
+  Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
+
+  // If any dimension is size 0, return an empty logical array with common dim
+  if (Rcpp::is_true(Rcpp::any(dim == 0))) {
+    xt::rarray<rlogical> res(Rcpp::as<std::vector<std::size_t>>(dim));
+    return(res);
+  }
+
+  const int& dims = dim.size();
   auto x_view = rray__increase_dims_view(x, dims);
   auto y_view = rray__increase_dims_view(y, dims);
 
@@ -39,8 +55,16 @@ Rcpp::RObject rray__greater_equal(Rcpp::RObject x, Rcpp::RObject y) {
 
 template <typename T>
 xt::rarray<rlogical> rray__lesser_impl(const xt::rarray<T>& x, const xt::rarray<T>& y) {
-  const int& dims = rray__dims2(rray__dims(SEXP(x)), rray__dims(SEXP(y)));
 
+  Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
+
+  // If any dimension is size 0, return an empty logical array with common dim
+  if (Rcpp::is_true(Rcpp::any(dim == 0))) {
+    xt::rarray<rlogical> res(Rcpp::as<std::vector<std::size_t>>(dim));
+    return(res);
+  }
+
+  const int& dims = dim.size();
   auto x_view = rray__increase_dims_view(x, dims);
   auto y_view = rray__increase_dims_view(y, dims);
 
@@ -56,8 +80,16 @@ Rcpp::RObject rray__lesser(Rcpp::RObject x, Rcpp::RObject y) {
 
 template <typename T>
 xt::rarray<rlogical> rray__lesser_equal_impl(const xt::rarray<T>& x, const xt::rarray<T>& y) {
-  const int& dims = rray__dims2(rray__dims(SEXP(x)), rray__dims(SEXP(y)));
 
+  Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
+
+  // If any dimension is size 0, return an empty logical array with common dim
+  if (Rcpp::is_true(Rcpp::any(dim == 0))) {
+    xt::rarray<rlogical> res(Rcpp::as<std::vector<std::size_t>>(dim));
+    return(res);
+  }
+
+  const int& dims = dim.size();
   auto x_view = rray__increase_dims_view(x, dims);
   auto y_view = rray__increase_dims_view(y, dims);
 
@@ -73,8 +105,16 @@ Rcpp::RObject rray__lesser_equal(Rcpp::RObject x, Rcpp::RObject y) {
 
 template <typename T>
 xt::rarray<rlogical> rray__equal_impl(const xt::rarray<T>& x, const xt::rarray<T>& y) {
-  const int& dims = rray__dims2(rray__dims(SEXP(x)), rray__dims(SEXP(y)));
 
+  Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
+
+  // If any dimension is size 0, return an empty logical array with common dim
+  if (Rcpp::is_true(Rcpp::any(dim == 0))) {
+    xt::rarray<rlogical> res(Rcpp::as<std::vector<std::size_t>>(dim));
+    return(res);
+  }
+
+  const int& dims = dim.size();
   auto x_view = rray__increase_dims_view(x, dims);
   auto y_view = rray__increase_dims_view(y, dims);
 
@@ -90,8 +130,16 @@ Rcpp::RObject rray__equal(Rcpp::RObject x, Rcpp::RObject y) {
 
 template <typename T>
 xt::rarray<rlogical> rray__not_equal_impl(const xt::rarray<T>& x, const xt::rarray<T>& y) {
-  const int& dims = rray__dims2(rray__dims(SEXP(x)), rray__dims(SEXP(y)));
 
+  Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
+
+  // If any dimension is size 0, return an empty logical array with common dim
+  if (Rcpp::is_true(Rcpp::any(dim == 0))) {
+    xt::rarray<rlogical> res(Rcpp::as<std::vector<std::size_t>>(dim));
+    return(res);
+  }
+
+  const int& dims = dim.size();
   auto x_view = rray__increase_dims_view(x, dims);
   auto y_view = rray__increase_dims_view(y, dims);
 
