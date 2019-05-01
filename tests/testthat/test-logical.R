@@ -149,3 +149,48 @@ test_that("| fails when input that can't be cast to logical", {
   x <- rray(1:2)
   expect_error(x | 1, "<integer> to <logical>")
 })
+
+
+# ------------------------------------------------------------------------------
+
+context("test-not")
+
+test_that("can perform element-wise !", {
+  x <- rray(c(TRUE, FALSE), c(2, 2))
+  expect_equal(!x, rray(c(FALSE, TRUE), c(2, 2)))
+})
+
+test_that("can perform ! with 3D", {
+  x <- rray(c(TRUE, FALSE), c(2, 2, 2))
+  expect_equal(!x, rray(c(FALSE, TRUE), c(2, 2, 2)))
+})
+
+test_that("! works with base R", {
+  x <- new_matrix(TRUE, c(2, 2))
+  expect_equal(rray_logical_not(x), new_matrix(FALSE, c(2, 2)))
+})
+
+test_that("! works with non-logicals", {
+  x <- rray(c(1L, 0L))
+  expect_equal(!x, rray(c(FALSE, TRUE)))
+})
+
+# treated as logical(0)
+test_that("! works with NULL input", {
+  expect_equal(rray_logical_not(NULL), new_array(logical()))
+})
+
+test_that("dim names are kept with !", {
+  x <- rray(c(TRUE, FALSE), c(2, 2), dim_names = list(c("r1", "r2"), c("c1", "c2")))
+  expect_equal(dim_names(!x), dim_names(x))
+})
+
+test_that("! works with 0-length input", {
+  expect_equal(rray_logical_not(logical()), new_array(logical()))
+  expect_equal(rray_logical_not(integer()), new_array(logical()))
+})
+
+test_that("! fails when input that can't be cast to logical", {
+  x <- rray(1:2)
+  expect_error(!x, "<integer> to <logical>")
+})
