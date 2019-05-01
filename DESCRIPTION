@@ -19,7 +19,7 @@ Remotes:
 Imports: 
     rlang (>= 0.3.4.9002),
     vctrs,
-    Rcpp,
+    Rcpp (>= 1.0.1),
     glue,
     utils
 Roxygen: list(markdown = TRUE)
