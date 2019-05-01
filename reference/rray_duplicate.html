@@ -206,7 +206,8 @@ any type of vector object.</p></div>
 <span class='co'># duplicated() only returns `TRUE`</span>
 <span class='co'># for the second and all subsequent</span>
 <span class='co'># duplicates</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/duplicated'>duplicated</a></span>(<span class='fu'><a href='as_array.html'>as_array</a></span>(<span class='no'>y</span>), <span class='kw'>MARGIN</span> <span class='kw'>=</span> <span class='fl'>2L</span>)</div><div class='output co'>#&gt; [1] FALSE  TRUE</div><div class='input'>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/duplicated'>duplicated</a></span>(<span class='fu'><a href='as_array.html'>as_array</a></span>(<span class='no'>y</span>), <span class='kw'>MARGIN</span> <span class='kw'>=</span> <span class='fl'>2L</span>)</div><div class='output co'>#&gt;    r1    r2 
+#&gt; FALSE  TRUE </div><div class='input'>
 <span class='co'># Find the location of the</span>
 <span class='co'># first unique values</span>
 <span class='fu'>rray_duplicate_id</span>(<span class='no'>y</span>, <span class='fl'>2L</span>)</div><div class='output co'>#&gt; [1] 1 1</div><div class='input'>
