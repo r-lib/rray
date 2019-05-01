@@ -22,5 +22,6 @@ test_that("corner cases for rray_dims_common()", {
   expect_equal(rray_dims_common(), NULL)
   expect_equal(rray_dims_common(integer()), 1)
   expect_equal(rray_dims_common(integer(), NULL), 1)
-  expect_equal(rray_dims_common(NULL), NULL)
+  expect_equal(rray_dims_common(NULL), 1)
+  expect_equal(rray_dims_common(NULL, matrix()), 2)
 })

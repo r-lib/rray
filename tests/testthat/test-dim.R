@@ -31,3 +31,12 @@ test_that("0 size dim handling", {
   expect_error(rray_dim2(x, c(2, 2)), "\\(0, 2\\) and \\(2, 2\\)")
 })
 
+test_that("corner cases for rray_dim_common()", {
+  expect_equal(rray_dim_common(), NULL)
+  expect_equal(rray_dim_common(integer()), 0)
+  expect_equal(rray_dim_common(matrix(logical(), 0, 1)), c(0, 1))
+  expect_equal(rray_dim_common(matrix(logical(), 0, 0)), c(0, 0))
+  expect_equal(rray_dim_common(integer(), NULL), 0)
+  expect_equal(rray_dim_common(NULL), 0)
+  expect_equal(rray_dim_common(NULL, matrix()), c(0, 1))
+})

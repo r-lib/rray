@@ -60,6 +60,31 @@
 #' @name common-dim
 NULL
 
+rray_dim <- function(x) {
+  rray__dim(x)
+}
+
+rray_dim2 <- function(x_dim, y_dim) {
+  x_dim <- vec_cast(x_dim, integer())
+  y_dim <- vec_cast(y_dim, integer())
+  rray__dim2(x_dim, y_dim)
+}
+
+#' @rdname common-dim
+#' @export
+rray_dim_common <- function(...) {
+  args <- list2(...)
+
+  dim_lst <- map(args, rray_dim)
+  reduce(dim_lst, rray_dim2)
+}
+
+# ------------------------------------------------------------------------------
+
+rray_dims <- function(x) {
+  rray__dims(x)
+}
+
 rray_dims2 <- function(x_dims, y_dims) {
   x_dims <- vec_cast(x_dims, integer())
   y_dims <- vec_cast(y_dims, integer())
@@ -75,35 +100,27 @@ rray_dims2 <- function(x_dims, y_dims) {
   rray__dims2(x_dims, y_dims)
 }
 
-rray_dim2 <- function(x_dim, y_dim) {
-  x_dim <- vec_cast(x_dim, integer())
-  y_dim <- vec_cast(y_dim, integer())
-  rray__dim2(x_dim, y_dim)
-}
-
 #' @rdname common-dim
 #' @export
 rray_dims_common <- function(...) {
-  args <- compact(list2(...))
+  args <- list2(...)
 
-  dims_lst <- map(args, rray_dims)
+  if (length(args) == 0L) {
+    return(NULL)
+  }
+
+  dims_lst <- map_int(args, rray_dims)
   reduce(dims_lst, rray_dims2)
 }
 
-#' @rdname common-dim
-#' @export
-rray_dim_common <- function(...) {
-  args <- compact(list2(...))
-
-  dim_lst <- map(args, rray_dim)
-  reduce(dim_lst, rray_dim2)
-
-}
+# ------------------------------------------------------------------------------
 
 #' @export
 `dim<-.vctrs_rray` <- function(x, value) {
   rray_reshape(x, value)
 }
+
+# ------------------------------------------------------------------------------
 
 # vctrs:::dim2
 # x and y are dim values
@@ -118,14 +135,6 @@ dim2 <- function(x, y) {
   } else {
     list(x = x, y = c(y, rep(1L, nx - ny)))
   }
-}
-
-rray_dims <- function(x) {
-  rray__dims(x)
-}
-
-rray_dim <- function(x) {
-  rray__dim(x)
 }
 
 rray_increase_dims <- function(dim, dims) {
