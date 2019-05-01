@@ -1,6 +1,11 @@
 #include <rray.h>
 #include <dispatch.h>
 
+// TODO - Depending on the adjustment made in this pr, we might be able
+// to remove the early exits calls. Currently xtensor does not match the
+// numpy behavior
+// https://github.com/QuantStack/xtensor/issues/1562
+
 // -----------------------------------------------------------------------------
 
 template <typename T>
