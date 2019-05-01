@@ -14,8 +14,7 @@ LazyData: true
 Remotes:
     r-lib/vctrs,
     r-lib/rlang,
-    QuantStack/Xtensor.R,
-    RcppCore/Rcpp
+    QuantStack/Xtensor.R
 Imports: 
     rlang (>= 0.3.4.9002),
     vctrs,
