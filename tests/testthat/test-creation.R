@@ -91,7 +91,7 @@ test_that("Can broadcast on the way in", {
 
   # can't do this, not valid broadcasting b/x x is treated
   # as having 6 rows (1 col matrix idea).
-  expect_error(rray(x, c(2, 6)), "Non-broadcastable dimensions")
+  expect_error(rray(x, c(2, 6)), "\\(6\\) to \\(2, 6\\)")
 
   x_6x1 <- as.matrix(x)
   expect_equal(vec_dim(rray(x_6x1, c(6, 2))), c(6, 2))

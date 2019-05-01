@@ -33,7 +33,7 @@ test_that("& works with non-logicals", {
 
 # treated as logical(0)
 test_that("& works with NULL input", {
-  x <- rray(c(TRUE, FALSE), c(2, 2))
+  x <- rray(c(TRUE, FALSE), c(1, 2))
   expect_equal(x & NULL, x[0,])
 
   expect_equal(rray_logical_and(NULL, NULL), new_array(logical()))
@@ -42,7 +42,7 @@ test_that("& works with NULL input", {
 })
 
 test_that("dim names are kept with NULL input", {
-  x <- rray(c(TRUE, FALSE), c(2, 2), dim_names = list(c("r1", "r2"), c("c1", "c2")))
+  x <- rray(c(TRUE, FALSE), c(1, 2), dim_names = list(c("r1"), c("c1", "c2")))
   expect_equal(dim_names(x & NULL), dim_names(x[0,]))
 })
 
@@ -53,12 +53,12 @@ test_that("& works with 0-length input", {
 
   # common dim is kept
   x <- matrix(logical(), nrow = 0, ncol = 2)
-  y <- matrix(TRUE, nrow = 5, ncol = 1)
+  y <- matrix(TRUE, nrow = 1, ncol = 1)
   expect_equal(rray_logical_and(x, y), new_array(logical(), c(0, 2)))
 
   # common dim is kept
   x <- array(logical(), c(2, 1, 0))
-  y <- array(logical(), c(1, 0, 2))
+  y <- array(logical(), c(1, 0, 1))
   expect_equal(rray_logical_and(x, y), new_array(logical(), c(2, 0, 0)))
 })
 
@@ -71,6 +71,11 @@ test_that("& errors gracefully on bad broadcast", {
 test_that("& fails when input that can't be cast to logical", {
   x <- rray(1:2)
   expect_error(x & 1, "<integer> to <logical>")
+})
+
+test_that("& fails with non-broadcastable 0-length input", {
+  x <- rray(c(TRUE, FALSE))
+  expect_error(x & logical(), "\\(2\\) and \\(0\\)")
 })
 
 # ------------------------------------------------------------------------------
@@ -110,7 +115,7 @@ test_that("| works with non-logicals", {
 
 # treated as logical(0)
 test_that("| works with NULL input", {
-  x <- rray(c(TRUE, FALSE), c(2, 2))
+  x <- rray(c(TRUE, FALSE), c(1, 2))
   expect_equal(x | NULL, x[0,])
 
   expect_equal(rray_logical_or(NULL, NULL), new_array(logical()))
@@ -119,7 +124,7 @@ test_that("| works with NULL input", {
 })
 
 test_that("dim names are kept with NULL input", {
-  x <- rray(c(TRUE, FALSE), c(2, 2), dim_names = list(c("r1", "r2"), c("c1", "c2")))
+  x <- rray(c(TRUE, FALSE), c(1, 2), dim_names = list(c("r1"), c("c1", "c2")))
   expect_equal(dim_names(x | NULL), dim_names(x[0,]))
 })
 
@@ -130,12 +135,12 @@ test_that("| works with 0-length input", {
 
   # common dim is kept
   x <- matrix(logical(), nrow = 0, ncol = 2)
-  y <- matrix(TRUE, nrow = 5, ncol = 1)
+  y <- matrix(TRUE, nrow = 1, ncol = 1)
   expect_equal(rray_logical_or(x, y), new_array(logical(), c(0, 2)))
 
   # common dim is kept
   x <- array(logical(), c(2, 1, 0))
-  y <- array(logical(), c(1, 0, 2))
+  y <- array(logical(), c(1, 0, 1))
   expect_equal(rray_logical_or(x, y), new_array(logical(), c(2, 0, 0)))
 })
 
@@ -150,6 +155,10 @@ test_that("| fails when input that can't be cast to logical", {
   expect_error(x | 1, "<integer> to <logical>")
 })
 
+test_that("| fails with non-broadcastable 0-length input", {
+  x <- rray(c(TRUE, FALSE))
+  expect_error(x | logical(), "\\(2\\) and \\(0\\)")
+})
 
 # ------------------------------------------------------------------------------
 

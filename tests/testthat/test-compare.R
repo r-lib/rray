@@ -32,28 +32,32 @@ test_that("incompatible types are caught", {
 })
 
 test_that("comparison with NULL return empty common dimension", {
-  expect_equal(rray_greater(c(1, 1), NULL), new_array(logical()))
+  expect_equal(rray_greater(1, NULL), new_array(logical()))
   expect_equal(rray_greater(matrix(1), NULL), new_matrix(logical(), c(0, 1)))
-  expect_equal(rray_greater(array(1, c(2, 2, 2)), NULL), new_array(logical(), c(0, 2, 2)))
+  expect_equal(rray_greater(array(1, c(1, 2, 2)), NULL), new_array(logical(), c(0, 2, 2)))
 })
 
 test_that("0-length dimension behavior", {
-  expect_equal(rray_greater(c(1, 1), logical()), new_array(logical()))
+  expect_equal(rray_greater(1, logical()), new_array(logical()))
   expect_equal(rray_greater(matrix(1), logical()), new_matrix(logical(), c(0, 1)))
-  expect_equal(rray_greater(array(1, c(2, 2, 2)), logical()), new_array(logical(), c(0, 2, 2)))
+  expect_equal(rray_greater(array(1, c(1, 2, 2)), logical()), new_array(logical(), c(0, 2, 2)))
 
   expect_equal(rray_greater(rep(1, 5), matrix(logical(), 1, 0)), new_array(logical(), c(5, 0)))
 })
 
+test_that("common dim of 0 and non-zero/non-one is an error", {
+  expect_error(rray_greater(c(1, 1), logical()), "\\(2\\) and \\(0\\)")
+})
+
 test_that("dimension names are kept", {
-  x <- rray(c(TRUE, FALSE), c(2, 2), dim_names = list(c("r1", "r2"), c("c1", "c2")))
+  x <- rray(c(TRUE, FALSE), c(1, 2), dim_names = list(c("r1"), c("c1", "c2")))
 
   expect_equal(dim_names(rray_greater(x, 2)), dim_names(x))
-  expect_equal(dim_names(rray_greater(matrix(1, 2, 2), x)), dim_names(x))
+  expect_equal(dim_names(rray_greater(matrix(1, 1, 2), x)), dim_names(x))
 
   expect_equal(
-    dim_names(rray_greater(matrix(logical(0), 2, 0), x)),
-    list(c("r1", "r2"), NULL)
+    dim_names(rray_greater(matrix(logical(0), 0, 2), x)),
+    list(NULL, c("c1", "c2"))
   )
 })
 
@@ -93,28 +97,32 @@ test_that("incompatible types are caught", {
 })
 
 test_that("comparison with NULL return empty common dimension", {
-  expect_equal(rray_greater_equal(c(1, 1), NULL), new_array(logical()))
+  expect_equal(rray_greater_equal(1, NULL), new_array(logical()))
   expect_equal(rray_greater_equal(matrix(1), NULL), new_matrix(logical(), c(0, 1)))
-  expect_equal(rray_greater_equal(array(1, c(2, 2, 2)), NULL), new_array(logical(), c(0, 2, 2)))
+  expect_equal(rray_greater_equal(array(1, c(1, 2, 2)), NULL), new_array(logical(), c(0, 2, 2)))
 })
 
 test_that("0-length dimension behavior", {
-  expect_equal(rray_greater_equal(c(1, 1), logical()), new_array(logical()))
+  expect_equal(rray_greater_equal(1, logical()), new_array(logical()))
   expect_equal(rray_greater_equal(matrix(1), logical()), new_matrix(logical(), c(0, 1)))
-  expect_equal(rray_greater_equal(array(1, c(2, 2, 2)), logical()), new_array(logical(), c(0, 2, 2)))
+  expect_equal(rray_greater_equal(array(1, c(1, 2, 2)), logical()), new_array(logical(), c(0, 2, 2)))
 
   expect_equal(rray_greater_equal(rep(1, 5), matrix(logical(), 1, 0)), new_array(logical(), c(5, 0)))
 })
 
+test_that("common dim of 0 and non-zero/non-one is an error", {
+  expect_error(rray_greater_equal(c(1, 1), logical()), "\\(2\\) and \\(0\\)")
+})
+
 test_that("dimension names are kept", {
-  x <- rray(c(TRUE, FALSE), c(2, 2), dim_names = list(c("r1", "r2"), c("c1", "c2")))
+  x <- rray(c(TRUE, FALSE), c(1, 2), dim_names = list(c("r1"), c("c1", "c2")))
 
   expect_equal(dim_names(rray_greater_equal(x, 2)), dim_names(x))
-  expect_equal(dim_names(rray_greater_equal(matrix(1, 2, 2), x)), dim_names(x))
+  expect_equal(dim_names(rray_greater_equal(matrix(1, 1, 2), x)), dim_names(x))
 
   expect_equal(
-    dim_names(rray_greater_equal(matrix(logical(0), 2, 0), x)),
-    list(c("r1", "r2"), NULL)
+    dim_names(rray_greater_equal(matrix(logical(0), 0, 2), x)),
+    list(NULL, c("c1", "c2"))
   )
 })
 
@@ -154,28 +162,32 @@ test_that("incompatible types are caught", {
 })
 
 test_that("comparison with NULL return empty common dimension", {
-  expect_equal(rray_lesser(c(1, 1), NULL), new_array(logical()))
+  expect_equal(rray_lesser(1, NULL), new_array(logical()))
   expect_equal(rray_lesser(matrix(1), NULL), new_matrix(logical(), c(0, 1)))
-  expect_equal(rray_lesser(array(1, c(2, 2, 2)), NULL), new_array(logical(), c(0, 2, 2)))
+  expect_equal(rray_lesser(array(1, c(1, 2, 2)), NULL), new_array(logical(), c(0, 2, 2)))
 })
 
 test_that("0-length dimension behavior", {
-  expect_equal(rray_lesser(c(1, 1), logical()), new_array(logical()))
+  expect_equal(rray_lesser(1, logical()), new_array(logical()))
   expect_equal(rray_lesser(matrix(1), logical()), new_matrix(logical(), c(0, 1)))
-  expect_equal(rray_lesser(array(1, c(2, 2, 2)), logical()), new_array(logical(), c(0, 2, 2)))
+  expect_equal(rray_lesser(array(1, c(1, 2, 2)), logical()), new_array(logical(), c(0, 2, 2)))
 
   expect_equal(rray_lesser(rep(1, 5), matrix(logical(), 1, 0)), new_array(logical(), c(5, 0)))
 })
 
+test_that("common dim of 0 and non-zero/non-one is an error", {
+  expect_error(rray_lesser(c(1, 1), logical()), "\\(2\\) and \\(0\\)")
+})
+
 test_that("dimension names are kept", {
-  x <- rray(c(TRUE, FALSE), c(2, 2), dim_names = list(c("r1", "r2"), c("c1", "c2")))
+  x <- rray(c(TRUE, FALSE), c(1, 2), dim_names = list(c("r1"), c("c1", "c2")))
 
   expect_equal(dim_names(rray_lesser(x, 2)), dim_names(x))
-  expect_equal(dim_names(rray_lesser(matrix(1, 2, 2), x)), dim_names(x))
+  expect_equal(dim_names(rray_lesser(matrix(1, 1, 2), x)), dim_names(x))
 
   expect_equal(
-    dim_names(rray_lesser(matrix(logical(0), 2, 0), x)),
-    list(c("r1", "r2"), NULL)
+    dim_names(rray_lesser(matrix(logical(0), 0, 2), x)),
+    list(NULL, c("c1", "c2"))
   )
 })
 
@@ -216,28 +228,32 @@ test_that("incompatible types are caught", {
 })
 
 test_that("comparison with NULL return empty common dimension", {
-  expect_equal(rray_lesser_equal(c(1, 1), NULL), new_array(logical()))
+  expect_equal(rray_lesser_equal(1, NULL), new_array(logical()))
   expect_equal(rray_lesser_equal(matrix(1), NULL), new_matrix(logical(), c(0, 1)))
-  expect_equal(rray_lesser_equal(array(1, c(2, 2, 2)), NULL), new_array(logical(), c(0, 2, 2)))
+  expect_equal(rray_lesser_equal(array(1, c(1, 2, 2)), NULL), new_array(logical(), c(0, 2, 2)))
 })
 
 test_that("0-length dimension behavior", {
-  expect_equal(rray_lesser_equal(c(1, 1), logical()), new_array(logical()))
+  expect_equal(rray_lesser_equal(1, logical()), new_array(logical()))
   expect_equal(rray_lesser_equal(matrix(1), logical()), new_matrix(logical(), c(0, 1)))
-  expect_equal(rray_lesser_equal(array(1, c(2, 2, 2)), logical()), new_array(logical(), c(0, 2, 2)))
+  expect_equal(rray_lesser_equal(array(1, c(1, 2, 2)), logical()), new_array(logical(), c(0, 2, 2)))
 
   expect_equal(rray_lesser_equal(rep(1, 5), matrix(logical(), 1, 0)), new_array(logical(), c(5, 0)))
 })
 
+test_that("common dim of 0 and non-zero/non-one is an error", {
+  expect_error(rray_lesser_equal(c(1, 1), logical()), "\\(2\\) and \\(0\\)")
+})
+
 test_that("dimension names are kept", {
-  x <- rray(c(TRUE, FALSE), c(2, 2), dim_names = list(c("r1", "r2"), c("c1", "c2")))
+  x <- rray(c(TRUE, FALSE), c(1, 2), dim_names = list(c("r1"), c("c1", "c2")))
 
   expect_equal(dim_names(rray_lesser_equal(x, 2)), dim_names(x))
-  expect_equal(dim_names(rray_lesser_equal(matrix(1, 2, 2), x)), dim_names(x))
+  expect_equal(dim_names(rray_lesser_equal(matrix(1, 1, 2), x)), dim_names(x))
 
   expect_equal(
-    dim_names(rray_lesser_equal(matrix(logical(0), 2, 0), x)),
-    list(c("r1", "r2"), NULL)
+    dim_names(rray_lesser_equal(matrix(logical(0), 0, 2), x)),
+    list(NULL, c("c1", "c2"))
   )
 })
 
@@ -277,28 +293,32 @@ test_that("incompatible types are caught", {
 })
 
 test_that("comparison with NULL return empty common dimension", {
-  expect_equal(rray_equal(c(1, 1), NULL), new_array(logical()))
+  expect_equal(rray_equal(1, NULL), new_array(logical()))
   expect_equal(rray_equal(matrix(1), NULL), new_matrix(logical(), c(0, 1)))
-  expect_equal(rray_equal(array(1, c(2, 2, 2)), NULL), new_array(logical(), c(0, 2, 2)))
+  expect_equal(rray_equal(array(1, c(1, 2, 2)), NULL), new_array(logical(), c(0, 2, 2)))
 })
 
 test_that("0-length dimension behavior", {
-  expect_equal(rray_equal(c(1, 1), logical()), new_array(logical()))
+  expect_equal(rray_equal(1, logical()), new_array(logical()))
   expect_equal(rray_equal(matrix(1), logical()), new_matrix(logical(), c(0, 1)))
-  expect_equal(rray_equal(array(1, c(2, 2, 2)), logical()), new_array(logical(), c(0, 2, 2)))
+  expect_equal(rray_equal(array(1, c(1, 2, 2)), logical()), new_array(logical(), c(0, 2, 2)))
 
   expect_equal(rray_equal(rep(1, 5), matrix(logical(), 1, 0)), new_array(logical(), c(5, 0)))
 })
 
+test_that("common dim of 0 and non-zero/non-one is an error", {
+  expect_error(rray_equal(c(1, 1), logical()), "\\(2\\) and \\(0\\)")
+})
+
 test_that("dimension names are kept", {
-  x <- rray(c(TRUE, FALSE), c(2, 2), dim_names = list(c("r1", "r2"), c("c1", "c2")))
+  x <- rray(c(TRUE, FALSE), c(1, 2), dim_names = list(c("r1"), c("c1", "c2")))
 
   expect_equal(dim_names(rray_equal(x, 2)), dim_names(x))
-  expect_equal(dim_names(rray_equal(matrix(1, 2, 2), x)), dim_names(x))
+  expect_equal(dim_names(rray_equal(matrix(1, 1, 2), x)), dim_names(x))
 
   expect_equal(
-    dim_names(rray_equal(matrix(logical(0), 2, 0), x)),
-    list(c("r1", "r2"), NULL)
+    dim_names(rray_equal(matrix(logical(0), 0, 2), x)),
+    list(NULL, c("c1", "c2"))
   )
 })
 
@@ -340,28 +360,32 @@ test_that("incompatible types are caught", {
 })
 
 test_that("comparison with NULL return empty common dimension", {
-  expect_equal(rray_not_equal(c(1, 1), NULL), new_array(logical()))
+  expect_equal(rray_not_equal(1, NULL), new_array(logical()))
   expect_equal(rray_not_equal(matrix(1), NULL), new_matrix(logical(), c(0, 1)))
-  expect_equal(rray_not_equal(array(1, c(2, 2, 2)), NULL), new_array(logical(), c(0, 2, 2)))
+  expect_equal(rray_not_equal(array(1, c(1, 2, 2)), NULL), new_array(logical(), c(0, 2, 2)))
 })
 
 test_that("0-length dimension behavior", {
-  expect_equal(rray_not_equal(c(1, 1), logical()), new_array(logical()))
+  expect_equal(rray_not_equal(1, logical()), new_array(logical()))
   expect_equal(rray_not_equal(matrix(1), logical()), new_matrix(logical(), c(0, 1)))
-  expect_equal(rray_not_equal(array(1, c(2, 2, 2)), logical()), new_array(logical(), c(0, 2, 2)))
+  expect_equal(rray_not_equal(array(1, c(1, 2, 2)), logical()), new_array(logical(), c(0, 2, 2)))
 
   expect_equal(rray_not_equal(rep(1, 5), matrix(logical(), 1, 0)), new_array(logical(), c(5, 0)))
 })
 
+test_that("common dim of 0 and non-zero/non-one is an error", {
+  expect_error(rray_not_equal(c(1, 1), logical()), "\\(2\\) and \\(0\\)")
+})
+
 test_that("dimension names are kept", {
-  x <- rray(c(TRUE, FALSE), c(2, 2), dim_names = list(c("r1", "r2"), c("c1", "c2")))
+  x <- rray(c(TRUE, FALSE), c(1, 2), dim_names = list(c("r1"), c("c1", "c2")))
 
   expect_equal(dim_names(rray_not_equal(x, 2)), dim_names(x))
-  expect_equal(dim_names(rray_not_equal(matrix(1, 2, 2), x)), dim_names(x))
+  expect_equal(dim_names(rray_not_equal(matrix(1, 1, 2), x)), dim_names(x))
 
   expect_equal(
-    dim_names(rray_not_equal(matrix(logical(0), 2, 0), x)),
-    list(c("r1", "r2"), NULL)
+    dim_names(rray_not_equal(matrix(logical(0), 0, 2), x)),
+    list(NULL, c("c1", "c2"))
   )
 })
 
