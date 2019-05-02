@@ -455,6 +455,36 @@ context("test-arith-pow")
 # })
 
 # ------------------------------------------------------------------------------
+context("test-arith-identity")
+
+test_that("can use identity", {
+  x <- rray(1L)
+  expect_equal(rray_identity(x), x)
+  expect_equal(+x, x)
+
+  y <- matrix(1L)
+  expect_equal(rray_identity(y), new_matrix(1L))
+})
+
+# ------------------------------------------------------------------------------
+context("test-arith-negate")
+
+test_that("can use negate", {
+  x <- rray(1L)
+  expect_equal(rray_negate(x), rray(-1L))
+  expect_equal(-x, rray(-1L))
+
+  y <- matrix(1L)
+  expect_equal(rray_negate(y), new_matrix(-1L))
+})
+
+# TODO fix this somehow or report upstream
+test_that("can negate a logical", {
+  expect_failure(expect_equal(rray_negate(TRUE), new_array(FALSE)))
+})
+
+# ------------------------------------------------------------------------------
+context("test-arith-extra")
 
 test_that("Fallthrough operation throws unsupported operation error", {
   expect_error(rray(1) + "a", "is not permitted")
