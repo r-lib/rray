@@ -228,7 +228,7 @@ test_that("`NULL` arithmetic is an error", {
 
 # TODO Is this right?
 test_that("`NULL` / `NULL` behavior", {
-  expect_equal(rray_subtract(NULL, NULL), NULL)
+  expect_equal(rray_divide(NULL, NULL), NULL)
 })
 
 test_that("length 0 input behavior is defined", {
@@ -323,7 +323,7 @@ test_that("`NULL` arithmetic is an error", {
 
 # TODO Is this right?
 test_that("`NULL` * `NULL` behavior", {
-  expect_equal(rray_subtract(NULL, NULL), NULL)
+  expect_equal(rray_multiply(NULL, NULL), NULL)
 })
 
 test_that("length 0 input behavior is defined", {
@@ -366,6 +366,92 @@ test_that("shortcut operator works", {
 #   min_int <- -2147483647L
 #   expect_equal(rray(min_int) * 2L, rray(NA_integer_))
 #   expect_equal(rray(min_int) * matrix(c(2L, 2L)), rray(NA_integer_, c(2, 1)))
+# })
+
+# ------------------------------------------------------------------------------
+context("test-arith-pow")
+
+# Uncomment after
+# https://github.com/r-lib/vctrs/pull/313
+
+# test_that("works with scalars", {
+#   x_base <- new_matrix(1:4)
+#   x <- as_rray(x_base)
+#
+#   expect_is(x ^ 1L, "vctrs_rray_int")
+#
+#   expect_identical(x ^ 1L, as_rray(x_base ^ 1L))
+# })
+#
+# test_that("works with broadcasting", {
+#   x_base <- new_matrix(1:4)
+#   x <- as_rray(x_base)
+#
+#   expect_identical(
+#     x ^ t(x),
+#     as_rray(apply(x_base, 1, function(x) x_base ^ x))
+#   )
+# })
+#
+# test_that("works with 3D- and broadcasting", {
+#   x <- rray(1:8, c(2, 2, 2))
+#
+#   expect_equal(
+#     x ^ matrix(1:2),
+#     x ^ array(1:2, c(2, 2, 2))
+#   )
+# })
+#
+# test_that("automatic casting occurs", {
+#   x <- rray(1L)
+#
+#   expect_is(x ^ 1, "vctrs_rray_dbl")
+#   expect_is(x ^ TRUE, "vctrs_rray_int")
+# })
+#
+# # TODO Is this right?
+# test_that("`NULL` arithmetic is an error", {
+#   expect_error(rray(1L) ^ NULL, "not permitted")
+# })
+#
+# # TODO Is this right?
+# test_that("`NULL` ^ `NULL` behavior", {
+#   expect_equal(rray_pow(NULL, NULL), NULL)
+# })
+#
+# test_that("length 0 input behavior is defined", {
+#   expect_equal(rray(integer()) ^ integer(), rray(integer()))
+#
+#   # (0, 2) ^ (1, 1) = (0, 2)
+#   x <- rray(integer(), c(0, 2))
+#   y <- rray(1L, c(1, 1))
+#
+#   expect_equal(x ^ y, rray(integer(), c(0, 2)))
+# })
+#
+# test_that("broadcasting fails gracefully", {
+#   expect_error(rray(1:2) ^ 1:3, "\\(2\\) and \\(3\\)")
+# })
+#
+# test_that("broadcasting fails correctly with length 0 input", {
+#   expect_error(rray(1:2) ^ integer(), "\\(2\\) and \\(0\\)")
+# })
+#
+# test_that("dimension names are kept", {
+#   x <- rray(1:2, c(2, 1), dim_names = list(c("r1", "r2"), c("c1")))
+#
+#   expect_equal(dim_names(x ^ 1), dim_names(x))
+#   expect_equal(dim_names(1 ^ x), dim_names(x))
+#   expect_equal(dim_names(x ^ matrix(1, ncol = 2)), list(c("r1", "r2"), NULL))
+#
+#   y <- rray(1, c(1, 1), dim_names = list(NULL, c("y_c1")))
+#
+#   expect_equal(dim_names(x ^ y), dim_names(x))
+#   expect_equal(dim_names(y ^ x), list(row_names(x), col_names(y)))
+# })
+#
+# test_that("shortcut operator works", {
+#   expect_equal(matrix(1L) %b^% matrix(1L), rray_pow(matrix(1L), matrix(1L)))
 # })
 
 # ------------------------------------------------------------------------------
