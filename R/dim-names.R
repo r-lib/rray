@@ -2,20 +2,19 @@
 #'
 #' Extract names of various dimensions.
 #'
-#' Unlike `dimnames()` which can return `NULL` and contain elements that are
-#' `NULL`, `dim_names()` always returns a
+#' Unlike `dimnames()` which can return `NULL`, `dim_names()` always returns a
 #' list the same length as the dimensionality of `x`. If any dimensions do not
-#' have names, `character(0)` is returned for that element of the list. This
-#' results in a type stable result: a list where the elements are character vectors.
-#'
-#' A vector is treated as a 1 column matrix (so, 2 dimensions) and `dim_names()`
-#' will return the names of the vector as the row names, if it has any.
+#' have names, `NULL` is returned for that element of the list. This
+#' results in an object that's length always matches the dimensionality of `x`.
 #'
 #' @param x The object to extract the dimension names for.
+#'
 #' @param n The n-th dimension to use.
+#'
 #' @param nms A character vector of new dimension names for the n-th dimension.
+#'
 #' @param value The new dimension names to use for `x`. This is a list of
-#' character vectors.
+#' either character vectors or `NULL`.
 #'
 #' @name dim-names
 #'

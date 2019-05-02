@@ -32,7 +32,7 @@ n_dim_names(x, n)
 \item{x}{The object to extract the dimension names for.}
 
 \item{value}{The new dimension names to use for \code{x}. This is a list of
-character vectors.}
+either character vectors or \code{NULL}.}
 
 \item{n}{The n-th dimension to use.}
 
@@ -42,14 +42,10 @@ character vectors.}
 Extract names of various dimensions.
 }
 \details{
-Unlike \code{dimnames()} which can return \code{NULL} and contain elements that are
-\code{NULL}, \code{dim_names()} always returns a
+Unlike \code{dimnames()} which can return \code{NULL}, \code{dim_names()} always returns a
 list the same length as the dimensionality of \code{x}. If any dimensions do not
-have names, \code{character(0)} is returned for that element of the list. This
-results in a type stable result: a list where the elements are character vectors.
-
-A vector is treated as a 1 column matrix (so, 2 dimensions) and \code{dim_names()}
-will return the names of the vector as the row names, if it has any.
+have names, \code{NULL} is returned for that element of the list. This
+results in an object that's length always matches the dimensionality of \code{x}.
 }
 \examples{
 
