@@ -1,0 +1,416 @@
+# ------------------------------------------------------------------------------
+context("test-arith-add")
+
+test_that("works with scalars", {
+  x_base <- new_matrix(1:4)
+  x <- as_rray(x_base)
+
+  expect_is(x + 1L, "vctrs_rray_int")
+
+  expect_identical(x + 1L, as_rray(x_base + 1L))
+})
+
+test_that("works with broadcasting", {
+  x_base <- new_matrix(1:4)
+  x <- as_rray(x_base)
+
+  expect_identical(
+    x + t(x),
+    as_rray(apply(x_base, 1, function(x) x_base + x))
+  )
+})
+
+test_that("works with 3D+ and broadcasting", {
+  x <- rray(1:8, c(2, 2, 2))
+
+  expect_equal(
+    x + matrix(1:2),
+    x + array(1:2, c(2, 2, 2))
+  )
+})
+
+test_that("automatic casting occurs", {
+  x <- rray(1L)
+
+  expect_is(x + 0, "vctrs_rray_dbl")
+  expect_is(x + TRUE, "vctrs_rray_int")
+})
+
+# TODO Is this right?
+test_that("`NULL` arithmetic is an error", {
+  expect_error(rray(1L) + NULL, "not permitted")
+})
+
+# TODO Is this right?
+test_that("`NULL` / `NULL` behavior", {
+  expect_equal(rray_add(NULL, NULL), NULL)
+})
+
+test_that("length 0 input behavior is defined", {
+  expect_equal(rray(integer()) + integer(), rray(integer()))
+
+  # (0, 2) + (1, 1) = (0, 2)
+  x <- rray(integer(), c(0, 2))
+  y <- rray(1L, c(1, 1))
+
+  expect_equal(x + y, rray(integer(), c(0, 2)))
+
+  # type of length 0 is used
+  expect_equal(rray(1L, c(1, 1)) + double(), rray(double(), c(0, 1)))
+})
+
+test_that("broadcasting fails gracefully", {
+  expect_error(rray(1:2) + 1:3, "\\(2\\) and \\(3\\)")
+})
+
+test_that("broadcasting fails correctly with length 0 input", {
+  expect_error(rray(1:2) + integer(), "\\(2\\) and \\(0\\)")
+})
+
+test_that("dimension names are kept", {
+  x <- rray(1:2, c(2, 1), dim_names = list(c("r1", "r2"), c("c1")))
+
+  expect_equal(dim_names(x + 1), dim_names(x))
+  expect_equal(dim_names(1 + x), dim_names(x))
+  expect_equal(dim_names(x + matrix(1, ncol = 2)), list(c("r1", "r2"), NULL))
+
+  y <- rray(1, c(1, 1), dim_names = list(NULL, c("y_c1")))
+
+  expect_equal(dim_names(x + y), dim_names(x))
+  expect_equal(dim_names(y + x), list(row_names(x), col_names(y)))
+})
+
+test_that("shortcut operator works", {
+  expect_equal(matrix(1L) %b+% matrix(1L), rray_add(matrix(1L), matrix(1L)))
+})
+
+test_that("+ integer overflow results in NA", {
+  max_int <- 2147483647L
+  expect_equal(rray(max_int) + 1L, rray(NA_integer_))
+  expect_equal(rray(max_int) + matrix(c(1L, 1L)), rray(NA_integer_, c(2, 1)))
+})
+
+# ------------------------------------------------------------------------------
+context("test-arith-subtract")
+
+test_that("works with scalars", {
+  x_base <- new_matrix(1:4)
+  x <- as_rray(x_base)
+
+  expect_is(x - 1L, "vctrs_rray_int")
+
+  expect_identical(x - 1L, as_rray(x_base - 1L))
+})
+
+test_that("works with broadcasting", {
+  x_base <- new_matrix(1:4)
+  x <- as_rray(x_base)
+
+  expect_identical(
+    x - t(x),
+    as_rray(apply(x_base, 1, function(x) x_base - x))
+  )
+})
+
+test_that("works with 3D- and broadcasting", {
+  x <- rray(1:8, c(2, 2, 2))
+
+  expect_equal(
+    x - matrix(1:2),
+    x - array(1:2, c(2, 2, 2))
+  )
+})
+
+test_that("automatic casting occurs", {
+  x <- rray(1L)
+
+  expect_is(x - 0, "vctrs_rray_dbl")
+  expect_is(x - TRUE, "vctrs_rray_int")
+})
+
+# TODO Is this right?
+test_that("`NULL` arithmetic is an error", {
+  expect_error(rray(1L) - NULL, "not permitted")
+})
+
+# TODO Is this right?
+test_that("`NULL` / `NULL` behavior", {
+  expect_equal(rray_subtract(NULL, NULL), NULL)
+})
+
+test_that("length 0 input behavior is defined", {
+  expect_equal(rray(integer()) - integer(), rray(integer()))
+
+  # (0, 2) - (1, 1) = (0, 2)
+  x <- rray(integer(), c(0, 2))
+  y <- rray(1L, c(1, 1))
+
+  expect_equal(x - y, rray(integer(), c(0, 2)))
+
+  # type of length 0 is used
+  expect_equal(rray(1L, c(1, 1)) - double(), rray(double(), c(0, 1)))
+})
+
+test_that("broadcasting fails gracefully", {
+  expect_error(rray(1:2) - 1:3, "\\(2\\) and \\(3\\)")
+})
+
+test_that("broadcasting fails correctly with length 0 input", {
+  expect_error(rray(1:2) - integer(), "\\(2\\) and \\(0\\)")
+})
+
+test_that("dimension names are kept", {
+  x <- rray(1:2, c(2, 1), dim_names = list(c("r1", "r2"), c("c1")))
+
+  expect_equal(dim_names(x - 1), dim_names(x))
+  expect_equal(dim_names(1 - x), dim_names(x))
+  expect_equal(dim_names(x - matrix(1, ncol = 2)), list(c("r1", "r2"), NULL))
+
+  y <- rray(1, c(1, 1), dim_names = list(NULL, c("y_c1")))
+
+  expect_equal(dim_names(x - y), dim_names(x))
+  expect_equal(dim_names(y - x), list(row_names(x), col_names(y)))
+})
+
+test_that("shortcut operator works", {
+  expect_equal(matrix(1L) %b-% matrix(1L), rray_subtract(matrix(1L), matrix(1L)))
+})
+
+test_that("- integer overflow results in NA", {
+  min_int <- -2147483647L
+  expect_equal(rray(min_int) - 1L, rray(NA_integer_))
+  expect_equal(rray(min_int) - matrix(c(1L, 1L)), rray(NA_integer_, c(2, 1)))
+})
+
+# ------------------------------------------------------------------------------
+context("test-arith-divide")
+
+test_that("works with scalars", {
+  x_base <- new_matrix(1:4)
+  x <- as_rray(x_base)
+
+  # always a dbl!
+  expect_is(x / 1L, "vctrs_rray_dbl")
+
+  expect_identical(x / 1L, as_rray(x_base / 1L))
+})
+
+test_that("works with broadcasting", {
+  x_base <- new_matrix(1:4)
+  x <- as_rray(x_base)
+
+  expect_identical(
+    x / t(x),
+    as_rray(apply(x_base, 1, function(x) x_base / x))
+  )
+})
+
+test_that("works with 3D- and broadcasting", {
+  x <- rray(1:8, c(2, 2, 2))
+
+  expect_equal(
+    x / matrix(1:2),
+    x / array(1:2, c(2, 2, 2))
+  )
+})
+
+test_that("automatic casting occurs", {
+  x <- rray(1L)
+
+  expect_is(x / 1, "vctrs_rray_dbl")
+  expect_is(x / TRUE, "vctrs_rray_dbl")
+})
+
+# TODO Is this right?
+test_that("`NULL` arithmetic is an error", {
+  expect_error(rray(1L) / NULL, "not permitted")
+})
+
+# TODO Is this right?
+test_that("`NULL` / `NULL` behavior", {
+  expect_equal(rray_subtract(NULL, NULL), NULL)
+})
+
+test_that("length 0 input behavior is defined", {
+  expect_equal(rray(integer()) / integer(), rray(double()))
+
+  # (0, 2) / (1, 1) = (0, 2)
+  x <- rray(integer(), c(0, 2))
+  y <- rray(1L, c(1, 1))
+
+  expect_equal(x / y, rray(double(), c(0, 2)))
+})
+
+test_that("broadcasting fails gracefully", {
+  expect_error(rray(1:2) / 1:3, "\\(2\\) and \\(3\\)")
+})
+
+test_that("broadcasting fails correctly with length 0 input", {
+  expect_error(rray(1:2) / integer(), "\\(2\\) and \\(0\\)")
+})
+
+test_that("dimension names are kept", {
+  x <- rray(1:2, c(2, 1), dim_names = list(c("r1", "r2"), c("c1")))
+
+  expect_equal(dim_names(x / 1), dim_names(x))
+  expect_equal(dim_names(1 / x), dim_names(x))
+  expect_equal(dim_names(x / matrix(1, ncol = 2)), list(c("r1", "r2"), NULL))
+
+  y <- rray(1, c(1, 1), dim_names = list(NULL, c("y_c1")))
+
+  expect_equal(dim_names(x / y), dim_names(x))
+  expect_equal(dim_names(y / x), list(row_names(x), col_names(y)))
+})
+
+test_that("shortcut operator works", {
+  expect_equal(matrix(1L) %b/% matrix(1L), rray_divide(matrix(1L), matrix(1L)))
+})
+
+test_that("division coerces to double", {
+  expect_equal(rray(1L) / 2L, rray(0.5))
+})
+
+test_that("division by 0 is Inf / -Inf", {
+  expect_equal(rray(1L) / 0, rray(Inf))
+  expect_equal(rray(1L) / -0, rray(-Inf))
+  expect_equal(rray(-1L) / 0, rray(-Inf))
+  expect_equal(rray(-1L) / -0, rray(Inf))
+})
+
+# ------------------------------------------------------------------------------
+
+context("test-arith-multiply")
+
+test_that("works with scalars", {
+  x_base <- new_matrix(1:4)
+  x <- as_rray(x_base)
+
+  expect_is(x * 1L, "vctrs_rray_int")
+
+  expect_identical(x * 1L, as_rray(x_base * 1L))
+})
+
+test_that("works with broadcasting", {
+  x_base <- new_matrix(1:4)
+  x <- as_rray(x_base)
+
+  expect_identical(
+    x * t(x),
+    as_rray(apply(x_base, 1, function(x) x_base * x))
+  )
+})
+
+test_that("works with 3D- and broadcasting", {
+  x <- rray(1:8, c(2, 2, 2))
+
+  expect_equal(
+    x * matrix(1:2),
+    x * array(1:2, c(2, 2, 2))
+  )
+})
+
+test_that("automatic casting occurs", {
+  x <- rray(1L)
+
+  expect_is(x * 1, "vctrs_rray_dbl")
+  expect_is(x * TRUE, "vctrs_rray_int")
+})
+
+# TODO Is this right?
+test_that("`NULL` arithmetic is an error", {
+  expect_error(rray(1L) * NULL, "not permitted")
+})
+
+# TODO Is this right?
+test_that("`NULL` * `NULL` behavior", {
+  expect_equal(rray_subtract(NULL, NULL), NULL)
+})
+
+test_that("length 0 input behavior is defined", {
+  expect_equal(rray(integer()) * integer(), rray(integer()))
+
+  # (0, 2) * (1, 1) = (0, 2)
+  x <- rray(integer(), c(0, 2))
+  y <- rray(1L, c(1, 1))
+
+  expect_equal(x * y, rray(integer(), c(0, 2)))
+})
+
+test_that("broadcasting fails gracefully", {
+  expect_error(rray(1:2) * 1:3, "\\(2\\) and \\(3\\)")
+})
+
+test_that("broadcasting fails correctly with length 0 input", {
+  expect_error(rray(1:2) * integer(), "\\(2\\) and \\(0\\)")
+})
+
+test_that("dimension names are kept", {
+  x <- rray(1:2, c(2, 1), dim_names = list(c("r1", "r2"), c("c1")))
+
+  expect_equal(dim_names(x * 1), dim_names(x))
+  expect_equal(dim_names(1 * x), dim_names(x))
+  expect_equal(dim_names(x * matrix(1, ncol = 2)), list(c("r1", "r2"), NULL))
+
+  y <- rray(1, c(1, 1), dim_names = list(NULL, c("y_c1")))
+
+  expect_equal(dim_names(x * y), dim_names(x))
+  expect_equal(dim_names(y * x), list(row_names(x), col_names(y)))
+})
+
+test_that("shortcut operator works", {
+  expect_equal(matrix(1L) %b*% matrix(1L), rray_multiply(matrix(1L), matrix(1L)))
+})
+
+# TODO this seems wrong, should be overflow
+# test_that("* integer overflow", {
+#   min_int <- -2147483647L
+#   expect_equal(rray(min_int) * 2L, rray(NA_integer_))
+#   expect_equal(rray(min_int) * matrix(c(2L, 2L)), rray(NA_integer_, c(2, 1)))
+# })
+
+# ------------------------------------------------------------------------------
+
+test_that("Fallthrough operation throws unsupported operation error", {
+  expect_error(rray(1) + "a", "is not permitted")
+})
+
+# ------------------------------------------------------------------------------
+
+test_that("meta dim names are kept", {
+  x <- rray(1:2, c(2, 1))
+  y <- rray(1:2, c(2, 1))
+  dim_names(x) <- list(xR = NULL, xC = NULL)
+  dim_names(y) <- list(yR = NULL, yC = NULL)
+
+  expect_equal(
+    names(dim_names(x + y)),
+    names(dim_names(x))
+  )
+
+  expect_equal(
+    names(dim_names(y + x)),
+    names(dim_names(y))
+  )
+
+  names(dim_names(x)) <- NULL
+
+  expect_equal(
+    names(dim_names(x + y)),
+    names(dim_names(y))
+  )
+
+  expect_equal(
+    names(dim_names(y + x)),
+    names(dim_names(y))
+  )
+})
+
+test_that("can assign meta names to `NULL` without affecting dim names", {
+  x <- rray(1:2, c(2, 1))
+  dim_names(x) <- list(R = c("r1", "r2"), C = "c1")
+
+  names(dim_names(x)) <- NULL
+
+  expect_equal(names(dim_names(x)), NULL)
+  expect_equal(dim_names(x), list(c("r1", "r2"), "c1"))
+})
