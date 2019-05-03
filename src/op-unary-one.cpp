@@ -39,20 +39,6 @@ SEXP rray_cumprod_cpp(const xt::rarray<T>& x, SEXP arg) {
 // -----------------------------------------------------------------------------
 // Manipulation
 
-// Call xt::squeeze() but always use xt::check_policy::full()
-// which throws an error if you are trying to drop a dimension
-// with >1 element. You pretty much never want this so we don't
-// expose that option.
-
-// xt::squeeze() docs say it takes `axis` but its really `axes`
-
-template <typename T>
-SEXP rray_squeeze_cpp(const xt::rarray<T>& x, SEXP arg) {
-  std::vector<std::size_t> axes = Rcpp::as<std::vector<std::size_t>>(arg);
-  xt::rarray<T> res = xt::squeeze(x, axes, xt::check_policy::full());
-  return res;
-}
-
 template <typename T>
 SEXP rray_expand_dims_cpp(const xt::rarray<T>& x, SEXP arg) {
   std::size_t axis = Rcpp::as<std::size_t>(arg);
@@ -88,10 +74,6 @@ SEXP rray_op_unary_one_cpp_impl(std::string op, const xt::rarray<T1>& x, SEXP ar
 
   // ---------------------------------------------------------------------------
   // Manipulation
-
-  case str2int("squeeze"): {
-    return rray_squeeze_cpp(x, arg);
-  }
 
   case str2int("expand_dims"): {
     return rray_expand_dims_cpp(x, arg);

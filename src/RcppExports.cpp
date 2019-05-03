@@ -376,6 +376,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray__squeeze
+Rcpp::RObject rray__squeeze(Rcpp::RObject x, std::vector<std::size_t> axes);
+RcppExport SEXP _rray_rray__squeeze(SEXP xSEXP, SEXP axesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::size_t> >::type axes(axesSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__squeeze(x, axes));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray_op_binary_cpp
 SEXP rray_op_binary_cpp(const std::string& op, SEXP x, SEXP y);
 RcppExport SEXP _rray_rray_op_binary_cpp(SEXP opSEXP, SEXP xSEXP, SEXP ySEXP) {
@@ -588,6 +599,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__split", (DL_FUNC) &_rray_rray__split, 3},
     {"_rray_rray__rotate", (DL_FUNC) &_rray_rray__rotate, 4},
     {"_rray_rray__transpose", (DL_FUNC) &_rray_rray__transpose, 2},
+    {"_rray_rray__squeeze", (DL_FUNC) &_rray_rray__squeeze, 2},
     {"_rray_rray_op_binary_cpp", (DL_FUNC) &_rray_rray_op_binary_cpp, 3},
     {"_rray_rray_op_trinary_cpp", (DL_FUNC) &_rray_rray_op_trinary_cpp, 4},
     {"_rray_rray_op_unary_one_cpp", (DL_FUNC) &_rray_rray_op_unary_one_cpp, 3},

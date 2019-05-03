@@ -86,3 +86,20 @@ Rcpp::RObject rray__transpose(Rcpp::RObject x, Rcpp::RObject permutation) {
 }
 
 // -----------------------------------------------------------------------------
+
+// Call xt::squeeze() but always use xt::check_policy::full()
+// which throws an error if you are trying to drop a dimension
+// with >1 element. You pretty much never want this so we don't
+// expose that option.
+
+// xt::squeeze() docs say it takes `axis` but its really `axes`
+
+template <typename T>
+xt::rarray<T> rray__squeeze_impl(const xt::rarray<T>& x, std::vector<std::size_t> axes) {
+  return xt::squeeze(x, axes, xt::check_policy::full());
+}
+
+// [[Rcpp::export(rng = false)]]
+Rcpp::RObject rray__squeeze(Rcpp::RObject x, std::vector<std::size_t> axes) {
+  DISPATCH_UNARY_ONE(rray__squeeze_impl, x, axes);
+}

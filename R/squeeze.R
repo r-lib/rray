@@ -60,17 +60,13 @@ rray_squeeze <- function(x, axes = NULL) {
   axes <- vec_cast(axes, integer())
   validate_axes(axes, x)
 
-  res <- squeeze_impl(x, axes)
+  res <- rray__squeeze(x, as_cpp_idx(axes))
 
   new_dim_names <- squeeze_dim_names(x, axes)
 
   res <- set_full_dim_names(res, new_dim_names)
 
   vec_restore(res, x)
-}
-
-squeeze_impl <- function(x, axes) {
-  rray_op_unary_one_cpp("squeeze", x, as_cpp_idx(axes))
 }
 
 squeeze_dim_names <- function(x, axes) {
