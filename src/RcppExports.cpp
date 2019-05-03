@@ -6,6 +6,28 @@
 
 using namespace Rcpp;
 
+// rray__cumsum
+Rcpp::RObject rray__cumsum(Rcpp::RObject x, Rcpp::RObject axis);
+RcppExport SEXP _rray_rray__cumsum(SEXP xSEXP, SEXP axisSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type axis(axisSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__cumsum(x, axis));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__cumprod
+Rcpp::RObject rray__cumprod(Rcpp::RObject x, Rcpp::RObject axis);
+RcppExport SEXP _rray_rray__cumprod(SEXP xSEXP, SEXP axisSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type axis(axisSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__cumprod(x, axis));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray__add
 Rcpp::RObject rray__add(Rcpp::RObject x, Rcpp::RObject y);
 RcppExport SEXP _rray_rray__add(SEXP xSEXP, SEXP ySEXP) {
@@ -434,18 +456,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rray_op_unary_one_cpp
-SEXP rray_op_unary_one_cpp(std::string op, SEXP x, SEXP arg);
-RcppExport SEXP _rray_rray_op_unary_one_cpp(SEXP opSEXP, SEXP xSEXP, SEXP argSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< std::string >::type op(opSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type arg(argSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray_op_unary_one_cpp(op, x, arg));
-    return rcpp_result_gen;
-END_RCPP
-}
 // rray_op_unary_cpp
 SEXP rray_op_unary_cpp(std::string op, SEXP x);
 RcppExport SEXP _rray_rray_op_unary_cpp(SEXP opSEXP, SEXP xSEXP) {
@@ -587,6 +597,8 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_rray_rray__cumsum", (DL_FUNC) &_rray_rray__cumsum, 2},
+    {"_rray_rray__cumprod", (DL_FUNC) &_rray_rray__cumprod, 2},
     {"_rray_rray__add", (DL_FUNC) &_rray_rray__add, 2},
     {"_rray_rray__subtract", (DL_FUNC) &_rray_rray__subtract, 2},
     {"_rray_rray__divide", (DL_FUNC) &_rray_rray__divide, 2},
@@ -626,7 +638,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__flip", (DL_FUNC) &_rray_rray__flip, 2},
     {"_rray_rray_op_binary_cpp", (DL_FUNC) &_rray_rray_op_binary_cpp, 3},
     {"_rray_rray_op_trinary_cpp", (DL_FUNC) &_rray_rray_op_trinary_cpp, 4},
-    {"_rray_rray_op_unary_one_cpp", (DL_FUNC) &_rray_rray_op_unary_one_cpp, 3},
     {"_rray_rray_op_unary_cpp", (DL_FUNC) &_rray_rray_op_unary_cpp, 2},
     {"_rray_rray__sort", (DL_FUNC) &_rray_rray__sort, 2},
     {"_rray_rray__max_pos", (DL_FUNC) &_rray_rray__max_pos, 2},
