@@ -9,44 +9,6 @@
 // Operators
 
 template <typename T>
-SEXP rray_identity_cpp(xt::rarray<T> x) {
-
-  // +TRUE = 1L , +1L == 1L, +1 == 1
-  using common_type = typename std::common_type<
-    typename xt::r_detail::get_underlying_value_type_r<T>::type,
-    int
-  >::type;
-
-  const xt::rarray<common_type>& res = xt::operator+(x);
-  return res;
-}
-
-template <typename T>
-SEXP rray_opposite_cpp(xt::rarray<T> x) {
-
-  // -TRUE = -1L , -1L == -1L, -1 == -1
-  using common_type = typename std::common_type<
-    typename xt::r_detail::get_underlying_value_type_r<T>::type,
-    int
-  >::type;
-
-  const xt::rarray<common_type>& res = xt::operator-(x);
-  return res;
-}
-
-template <typename T>
-SEXP rray_not_cpp(xt::rarray<T> x) {
-  const xt::rarray<T>& res = xt::operator!(x);
-  return res;
-}
-
-template <typename T>
-SEXP rray_any_cpp(xt::rarray<T> x) {
-  Rcpp::LogicalVector res = Rcpp::LogicalVector::create(xt::any(x));
-  return res;
-}
-
-template <typename T>
 SEXP rray_all_cpp(xt::rarray<T> x) {
   Rcpp::LogicalVector res = Rcpp::LogicalVector::create(xt::all(x));
   return res;
@@ -321,18 +283,6 @@ SEXP rray_op_unary_cpp_impl(std::string op, xt::rarray<T1> x) {
 
   // ---------------------------------------------------------------------------
   // Operators
-
-  case str2int("identity"): {
-    return rray_identity_cpp(x);
-  }
-
-  case str2int("opposite"): {
-    return rray_opposite_cpp(x);
-  }
-
-  case str2int("any"): {
-    return rray_any_cpp(x);
-  }
 
   case str2int("all"): {
     return rray_all_cpp(x);
