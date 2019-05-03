@@ -6,6 +6,92 @@
 
 using namespace Rcpp;
 
+// rray__add
+Rcpp::RObject rray__add(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__add(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__add(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__subtract
+Rcpp::RObject rray__subtract(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__subtract(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__subtract(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__divide
+Rcpp::RObject rray__divide(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__divide(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__divide(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__multiply
+Rcpp::RObject rray__multiply(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__multiply(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__multiply(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__pow
+Rcpp::RObject rray__pow(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__pow(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__pow(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__modulus
+Rcpp::RObject rray__modulus(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__modulus(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__modulus(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__identity
+Rcpp::RObject rray__identity(Rcpp::RObject x);
+RcppExport SEXP _rray_rray__identity(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__identity(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__negate
+Rcpp::RObject rray__negate(Rcpp::RObject x);
+RcppExport SEXP _rray_rray__negate(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__negate(x));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray__broadcast
 Rcpp::RObject rray__broadcast(Rcpp::RObject x, Rcpp::IntegerVector dim);
 RcppExport SEXP _rray_rray__broadcast(SEXP xSEXP, SEXP dimSEXP) {
@@ -459,6 +545,14 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_rray_rray__add", (DL_FUNC) &_rray_rray__add, 2},
+    {"_rray_rray__subtract", (DL_FUNC) &_rray_rray__subtract, 2},
+    {"_rray_rray__divide", (DL_FUNC) &_rray_rray__divide, 2},
+    {"_rray_rray__multiply", (DL_FUNC) &_rray_rray__multiply, 2},
+    {"_rray_rray__pow", (DL_FUNC) &_rray_rray__pow, 2},
+    {"_rray_rray__modulus", (DL_FUNC) &_rray_rray__modulus, 2},
+    {"_rray_rray__identity", (DL_FUNC) &_rray_rray__identity, 1},
+    {"_rray_rray__negate", (DL_FUNC) &_rray_rray__negate, 1},
     {"_rray_rray__broadcast", (DL_FUNC) &_rray_rray__broadcast, 2},
     {"_rray_rray__full_like", (DL_FUNC) &_rray_rray__full_like, 2},
     {"_rray_rray__diag", (DL_FUNC) &_rray_rray__diag, 2},

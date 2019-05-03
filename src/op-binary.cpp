@@ -4,58 +4,6 @@
 // -----------------------------------------------------------------------------
 // Operators
 
-// get_underlying_value_type_r<T1> returns T1 (double, int) in all cases except T1 = rlogical
-// where it returns bool. This was needed to go R logical <-> xtensor of bools
-// because R logicals are int32 values.
-
-template <typename T1, typename T2>
-SEXP rray_add_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
-
-  using common_type = typename std::common_type<
-    typename xt::r_detail::get_underlying_value_type_r<T1>::type,
-    typename xt::r_detail::get_underlying_value_type_r<T2>::type
-  >::type;
-
-  const xt::rarray<common_type>& res = x + y;
-  return res;
-}
-
-template <typename T1, typename T2>
-SEXP rray_subtract_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
-
-  using common_type = typename std::common_type<
-    typename xt::r_detail::get_underlying_value_type_r<T1>::type,
-    typename xt::r_detail::get_underlying_value_type_r<T2>::type
-  >::type;
-
-  const xt::rarray<common_type>& res = x - y;
-  return res;
-}
-
-template <typename T1, typename T2>
-SEXP rray_multiply_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
-
-  using common_type = typename std::common_type<
-    typename xt::r_detail::get_underlying_value_type_r<T1>::type,
-    typename xt::r_detail::get_underlying_value_type_r<T2>::type
-  >::type;
-
-  const xt::rarray<common_type>& res = x * y;
-  return res;
-}
-
-template <typename T1, typename T2>
-SEXP rray_divide_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
-
-  // with division, always coerce to double
-  // We want rray(1L) / 2L to return 0.5 like base R
-  auto x_dbl = xt::cast<double>(x);
-  auto y_dbl = xt::cast<double>(y);
-
-  const xt::rarray<double>& res = x_dbl / y_dbl;
-  return res;
-}
-
 template <typename T1, typename T2>
 SEXP rray_equality_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
   Rcpp::LogicalVector res = Rcpp::LogicalVector::create(x == y);
@@ -135,18 +83,6 @@ SEXP rray_fdim_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
 // Math - Power
 
 template <typename T1, typename T2>
-SEXP rray_pow_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
-
-  using common_type = typename std::common_type<
-    typename xt::r_detail::get_underlying_value_type_r<T1>::type,
-    typename xt::r_detail::get_underlying_value_type_r<T2>::type
-  >::type;
-
-  const xt::rarray<common_type>& res = xt::pow(x, y);
-  return res;
-}
-
-template <typename T1, typename T2>
 SEXP rray_hypot_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
 
   using common_type = typename std::common_type<
@@ -179,22 +115,6 @@ SEXP rray_op_binary_cpp_impl(const std::string& op,
 
   // ---------------------------------------------------------------------------
   // Operators
-
-  case str2int("+"): {
-    return rray_add_cpp(x, y);
-  }
-
-  case str2int("-"): {
-    return rray_subtract_cpp(x, y);
-  }
-
-  case str2int("*"): {
-    return rray_multiply_cpp(x, y);
-  }
-
-  case str2int("/"): {
-    return rray_divide_cpp(x, y);
-  }
 
   case str2int("equality"): {
     return rray_equality_cpp(x, y);
@@ -229,10 +149,6 @@ SEXP rray_op_binary_cpp_impl(const std::string& op,
 
   // ---------------------------------------------------------------------------
   // Math - Power
-
-  case str2int("pow"): {
-    return rray_pow_cpp(x, y);
-  }
 
   case str2int("hypot"): {
     return rray_hypot_cpp(x, y);

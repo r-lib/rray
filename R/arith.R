@@ -1,77 +1,167 @@
-# arithmetic ----------------------------------------------------------------------
+#' Arithmetic operations
+#'
+#' These functions provide the implementations for their underlying infix
+#' operators (i.e. `rray_add()` powers `+`). All operators apply broadcasting
+#' to their input.
+#'
+#' @details
+#'
+#' In case you want to apply arithmetic operations with broadcasting to
+#' purely base R objects using infix operators, custom infix functions have
+#' been exported, such as `%b+%`, which will perform addition with
+#' broadcasting no matter what type the input is.
+#'
+#' @param x,y A pair of vectors.
+#'
+#' @examples
+#' library(magrittr)
+#'
+#' x <- rray(1:8, c(2, 2, 2)) %>%
+#'   set_row_names(c("r1", "r2")) %>%
+#'   set_col_names(c("c1", "c2"))
+#'
+#' y <- matrix(1:2, nrow = 1)
+#'
+#' # All arithmetic functions are applied with broadcasting
+#' rray_add(x, y)
+#'
+#' # And the power `+` when any underlying input
+#' # is an rray
+#' x + y
+#'
+#' # If you happen to only have base R matrices/arrays
+#' # you can use `rray_add()` or `%b+%` to get the
+#' # broadcasting behavior
+#' rray_add(y, matrix(1:2))
+#'
+#' y %b+% matrix(1:2)
+#'
+#' @name rray_arith
+NULL
 
-rray_arith_base <- function(op, x, y) {
+# ------------------------------------------------------------------------------
 
-  # precompute dimensionality and extend existing dims
-  # xtensor-r issue #57 until we have a fix (if ever)
-  dims <- rray_dims2(rray_dims(x), rray_dims(y))
-  x <- rray_dims_match(x, dims)
-  y <- rray_dims_match(y, dims)
-
-  # Get common dim_names and type
-  dim_nms <- rray_dim_names2(x, y)
-  restore_type <- vec_type2(x, y)
-
-  # Apply function
-  res <- rray_op_binary_cpp(op, x, y)
-
-  # Add dim names
-  dim_names(res) <- dim_nms
-
-  # Restore type
-  vec_restore(res, restore_type)
+#' @rdname rray_arith
+#' @export
+`%b+%` <- function(x, y) {
+  rray_add(x, y)
 }
 
+#' @rdname rray_arith
 #' @export
-#' @rdname vctrs-compat
-#' @method vec_arith vctrs_rray
-#' @export vec_arith.vctrs_rray
-vec_arith.vctrs_rray <- function(op, x, y) {
-  UseMethod("vec_arith.vctrs_rray", y)
+rray_add <- function(x, y) {
+  rray_arith_binary_base(rray__add, x, y)
 }
 
-#' @method vec_arith.vctrs_rray default
+# ------------------------------------------------------------------------------
+
+#' @rdname rray_arith
 #' @export
-vec_arith.vctrs_rray.default <- function(op, x, y) {
-  stop_incompatible_op(op, x, y)
+`%b-%` <- function(x, y) {
+  rray_subtract(x, y)
 }
 
-#' @method vec_arith.vctrs_rray vctrs_rray
+#' @rdname rray_arith
 #' @export
-vec_arith.vctrs_rray.vctrs_rray <- function(op, x, y) {
-  rray_arith_base(op, x, y)
+rray_subtract <- function(x, y) {
+  rray_arith_binary_base(rray__subtract, x, y)
 }
 
-#' @method vec_arith.vctrs_rray MISSING
+# ------------------------------------------------------------------------------
+
+#' @rdname rray_arith
 #' @export
-vec_arith.vctrs_rray.MISSING <- function(op, x, y) {
+`%b*%` <- function(x, y) {
+  rray_multiply(x, y)
+}
 
-  res <- switch(op,
-         "+" = +as_array(x),
-         "-" = -as_array(x)
-  )
+#' @rdname rray_arith
+#' @export
+rray_multiply <- function(x, y) {
+  rray_arith_binary_base(rray__multiply, x, y)
+}
 
+# ------------------------------------------------------------------------------
+
+#' @rdname rray_arith
+#' @export
+`%b/%` <- function(x, y) {
+  rray_divide(x, y)
+}
+
+#' @rdname rray_arith
+#' @export
+rray_divide <- function(x, y) {
+  rray_arith_binary_base_typed(rray__divide, x, y, numeric())
+}
+
+# ------------------------------------------------------------------------------
+
+#' @rdname rray_arith
+#' @export
+`%b^%` <- function(x, y) {
+  rray_pow(x, y)
+}
+
+#' @rdname rray_arith
+#' @export
+rray_pow <- function(x, y) {
+  rray_arith_binary_base_typed(rray__pow, x, y, numeric())
+}
+
+# ------------------------------------------------------------------------------
+
+#' @rdname rray_arith
+#' @export
+rray_modulus <- function(x, y) {
+  rray_arith_binary_base_typed(rray__modulus, x, y, integer())
+}
+
+# ------------------------------------------------------------------------------
+
+#' @rdname rray_arith
+#' @export
+rray_identity <- function(x) {
+  rray_arith_unary_base(rray__identity, x)
+}
+
+# ------------------------------------------------------------------------------
+
+#' @rdname rray_arith
+#' @export
+rray_negate <- function(x) {
+  rray_arith_unary_base(rray__negate, x)
+}
+
+# ------------------------------------------------------------------------------
+
+rray_arith_unary_base <- function(f, x) {
+  res <- f(x)
+  res <- set_full_dim_names(res, dim_names(x))
   vec_restore(res, x)
 }
 
-# ------------------------------------------------------------------------------
-# vctrs_rray <-> numeric / matrix / array
+rray_arith_binary_base <- function(f, x, y) {
 
-#' @method vec_arith.vctrs_rray numeric
-#' @export
-vec_arith.vctrs_rray.numeric <- vec_arith.vctrs_rray.vctrs_rray
+  args <- rray_cast_inner_common(x, y)
 
-#' @method vec_arith.numeric vctrs_rray
-#' @export
-vec_arith.numeric.vctrs_rray <- vec_arith.vctrs_rray.vctrs_rray
+  res <- f(args[[1]], args[[2]])
 
-# ------------------------------------------------------------------------------
-# vctrs_rray <-> logical / matrix / array
+  res <- set_full_dim_names(res, rray_dim_names2(x, y))
 
-#' @method vec_arith.vctrs_rray logical
-#' @export
-vec_arith.vctrs_rray.logical <- vec_arith.vctrs_rray.vctrs_rray
+  vec_restore(res, vec_type2(x, y))
+}
 
-#' @method vec_arith.logical vctrs_rray
-#' @export
-vec_arith.logical.vctrs_rray <- vec_arith.vctrs_rray.vctrs_rray
+rray_arith_binary_base_typed <- function(f, x, y, type) {
+
+  args <- list(
+    rray_cast_inner(x, type),
+    rray_cast_inner(y, type)
+  )
+
+  res <- f(args[[1]], args[[2]])
+
+  res <- set_full_dim_names(res, rray_dim_names2(x, y))
+
+  vec_restore(res, vec_type2(x, y))
+}
