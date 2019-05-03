@@ -115,3 +115,17 @@ xt::rarray<T> rray__expand_dims_impl(const xt::rarray<T>& x, std::size_t axis) {
 Rcpp::RObject rray__expand_dims(Rcpp::RObject x, std::size_t axis) {
   DISPATCH_UNARY_ONE(rray__expand_dims_impl, x, axis);
 }
+
+// -----------------------------------------------------------------------------
+
+template <typename T>
+xt::rarray<T> rray__flip_impl(const xt::rarray<T>& x, std::size_t axis) {
+  return xt::flip(x, axis);
+}
+
+// [[Rcpp::export(rng = false)]]
+Rcpp::RObject rray__flip(Rcpp::RObject x, std::size_t axis) {
+  DISPATCH_UNARY_ONE(rray__flip_impl, x, axis);
+}
+
+

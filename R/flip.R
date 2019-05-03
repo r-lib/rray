@@ -26,7 +26,7 @@ rray_flip <- function(x, axis) {
   axis <- vec_cast(axis, integer())
   validate_axis(axis, x)
 
-  res <- rray_flip_impl(x, axis)
+  res <- rray__flip(x, as_cpp_idx(axis))
 
   # Reverse dim names along the specified axis
   x_dim_names <- dim_names(x)
@@ -34,10 +34,6 @@ rray_flip <- function(x, axis) {
   res <- set_full_dim_names(res, x_dim_names)
 
   vec_restore(res, x)
-}
-
-rray_flip_impl <- function(x, axis) {
-  rray_op_unary_one_cpp("flip", x, as_cpp_idx(axis))
 }
 
 rev_dim_names <- function(dim_names, axis) {

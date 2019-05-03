@@ -145,6 +145,10 @@ rray__expand_dims <- function(x, axis) {
     .Call(`_rray_rray__expand_dims`, x, axis)
 }
 
+rray__flip <- function(x, axis) {
+    .Call(`_rray_rray__flip`, x, axis)
+}
+
 rray_op_binary_cpp <- function(op, x, y) {
     .Call(`_rray_rray_op_binary_cpp`, op, x, y)
 }
