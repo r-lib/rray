@@ -162,6 +162,70 @@ rray_any <- function(x, axes = NULL) {
 
 # ------------------------------------------------------------------------------
 
+#' Conditional selection
+#'
+#' `rray_if_else()` is like `ifelse()`, but works with matrices and arrays,
+#' and fully supports broadcasting between the three inputs. Before the
+#' operation is applied, `condition` is cast to a logical, and `true` and
+#' `false` are cast to their common type.
+#'
+#' @param condition A logical vector, matrix, array of rray.
+#'
+#' @param true A vector, matrix, array, or rray. This is the value in the result
+#' when `condition` is `TRUE`.
+#'
+#' @param false A vector, matrix, array, or rray. This is the value in the
+#' result when `condition` is `FALSE`.
+#'
+#' @details
+#'
+#' The dimension names of the output are taken as the common names of `true`
+#' and `false`.
+#'
+#' @examples
+#'
+#' cond <- c(TRUE, FALSE)
+#'
+#' true <- array(
+#'   1:2,
+#'   dimnames = list(c("r1", "r2"))
+#' )
+#'
+#' false <- rray(
+#'   c(3, 4, 5, 6),
+#'   dim = c(2, 2),
+#'   dim_names = list(c("rr1", "rr2"), c("c1", "c2"))
+#' )
+#'
+#' # - All inputs are broadcast to a common
+#' #   shape of (2, 2).
+#' # - The first row of the output comes from
+#' #   `true`, the second row comes from `false`.
+#' # - The names come from both `true` and `false`.
+#' rray_if_else(cond, true, false)
+#'
+#' @export
+rray_if_else <- function(condition, true, false) {
+
+  condition <- rray_cast_inner(condition, logical())
+
+  to <- vec_type2(true, false, x_arg = "true", y_arg = "false")
+  to_inner <- rray_type_inner(to)
+
+  true_cast <- rray_cast_inner(true, to_inner)
+  false_cast <- rray_cast_inner(false, to_inner)
+
+  res <- rray__if_else(condition, true_cast, false_cast)
+
+  # Common dim names of true and false
+  new_dim_names <- rray_dim_names2(true, false)
+  res <- set_full_dim_names(res, new_dim_names)
+
+  vec_restore(res, to)
+}
+
+# ------------------------------------------------------------------------------
+
 logical_cast_compare <- function(f, x, y) {
 
   # `NULL` are treated like logical()

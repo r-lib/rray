@@ -2,24 +2,6 @@
 #include <tools/tools.h>
 
 // -----------------------------------------------------------------------------
-// Operators
-
-template <typename T1, typename T2, typename T3>
-SEXP rray_where_cpp(const xt::rarray<T1>& x,
-                    const xt::rarray<T2>& y,
-                    const xt::rarray<T3>& z) {
-
-  using value_type_T2 = xt::r_detail::get_underlying_value_type_r<T2>;
-  using value_type_T3 = xt::r_detail::get_underlying_value_type_r<T3>;
-
-  using common_type = typename std::common_type<typename value_type_T2::type,
-                                                typename value_type_T3::type>::type;
-
-  const xt::rarray<common_type>& res = xt::where(x, y, z);
-  return res;
-}
-
-// -----------------------------------------------------------------------------
 // Math - Basic
 
 template <typename T1, typename T2, typename T3>
@@ -49,13 +31,6 @@ SEXP rray_op_trinary_cpp_impl(const std::string& op,
                               const xt::rarray<T3>& z) {
 
   switch(str2int(op.c_str())) {
-
-  // ---------------------------------------------------------------------------
-  // Operators
-
-  case str2int("where"): {
-    return rray_where_cpp(x, y, z);
-  }
 
   // ---------------------------------------------------------------------------
   // Math - Basic

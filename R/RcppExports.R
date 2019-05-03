@@ -133,6 +133,10 @@ rray__any <- function(x, axes) {
     .Call(`_rray_rray__any`, x, axes)
 }
 
+rray__if_else <- function(condition, true_, false_) {
+    .Call(`_rray_rray__if_else`, condition, true_, false_)
+}
+
 rray__split <- function(x, n, axis) {
     .Call(`_rray_rray__split`, x, n, axis)
 }

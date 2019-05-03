@@ -274,3 +274,79 @@ test_that("reducing over multiple axes where at least one is size 0", {
 test_that("fails when can't cast to logical", {
   expect_error(rray_any(1:5), "<integer> to <logical>")
 })
+
+# ------------------------------------------------------------------------------
+context("test-if_else")
+
+test_that("broadcasting works among the three inputs", {
+
+  expect_identical(
+    rray_if_else(
+      c(TRUE, FALSE),
+      5,
+      rray(1:4, c(2, 2))
+    ),
+    rray(c(5, 2, 5, 4), c(2, 2))
+  )
+
+  # 3D
+  expect_identical(
+    rray_if_else(
+      rray(c(TRUE, FALSE), c(2, 2, 2)),
+      5,
+      rray(1:4, c(2, 2))
+    ),
+    rray_broadcast(rray(c(5, 2, 5, 4), c(2, 2)), c(2, 2, 2))
+  )
+
+})
+
+test_that("length 0 inputs give correct results", {
+
+  expect_equal(rray_if_else(logical(), 1, 0), new_array(numeric()))
+  expect_equal(rray_if_else(logical(), 1L, 0L), new_array(integer()))
+
+  expect_identical(
+    rray_if_else(
+      matrix(logical(), 5, 0),
+      matrix(1, 5, 1),
+      1
+    ),
+    new_matrix(numeric(), c(5, 0))
+  )
+})
+
+test_that("length 0 broadcasting can fail gracefully", {
+  expect_error(
+    rray_if_else(
+      matrix(logical(), 1, 0),
+      matrix(1, 1, 5),
+      1
+    ),
+    "\\(1, 0\\) and \\(1, 5\\)"
+  )
+})
+
+test_that("broadcasting can fail gracefully", {
+  expect_error(rray_if_else(TRUE, 1:5, 1:2), "\\(5\\) and \\(2\\)")
+
+  # this isn't the best error because the failure comes after the first
+  # set of common dimensions are found, but not much we can do and it isn't
+  # _that_ bad
+  expect_error(
+    rray_if_else(c(TRUE, FALSE), matrix(1, ncol = 2), 1:3),
+    "\\(2, 2\\) and \\(3\\)"
+  )
+})
+
+test_that("result is common type of `true` and `false` even if one isn't used", {
+  expect_identical(rray_if_else(TRUE, 1L, 2), new_array(1))
+})
+
+test_that("`true` and `false` must have a common type", {
+  expect_error(rray_if_else(1, factor(1), 2.5), "No common type")
+})
+
+test_that("`condition` must be castable to a logical", {
+  expect_error(rray_if_else(1.5, 1, 2), "<double> to <logical>")
+})

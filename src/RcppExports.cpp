@@ -362,6 +362,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray__if_else
+Rcpp::RObject rray__if_else(Rcpp::RObject condition, Rcpp::RObject true_, Rcpp::RObject false_);
+RcppExport SEXP _rray_rray__if_else(SEXP conditionSEXP, SEXP true_SEXP, SEXP false_SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type condition(conditionSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type true_(true_SEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type false_(false_SEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__if_else(condition, true_, false_));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray__split
 Rcpp::RObject rray__split(Rcpp::RObject x, std::size_t n, std::size_t axis);
 RcppExport SEXP _rray_rray__split(SEXP xSEXP, SEXP nSEXP, SEXP axisSEXP) {
@@ -630,6 +642,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__logical_or", (DL_FUNC) &_rray_rray__logical_or, 2},
     {"_rray_rray__logical_not", (DL_FUNC) &_rray_rray__logical_not, 1},
     {"_rray_rray__any", (DL_FUNC) &_rray_rray__any, 2},
+    {"_rray_rray__if_else", (DL_FUNC) &_rray_rray__if_else, 3},
     {"_rray_rray__split", (DL_FUNC) &_rray_rray__split, 3},
     {"_rray_rray__rotate", (DL_FUNC) &_rray_rray__rotate, 4},
     {"_rray_rray__transpose", (DL_FUNC) &_rray_rray__transpose, 2},
