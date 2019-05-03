@@ -40,13 +40,6 @@ SEXP rray_cumprod_cpp(const xt::rarray<T>& x, SEXP arg) {
 // Manipulation
 
 template <typename T>
-SEXP rray_expand_dims_cpp(const xt::rarray<T>& x, SEXP arg) {
-  std::size_t axis = Rcpp::as<std::size_t>(arg);
-  xt::rarray<T> res = xt::expand_dims(x, axis);
-  return res;
-}
-
-template <typename T>
 SEXP rray_flip_cpp(const xt::rarray<T>& x, SEXP arg) {
   std::size_t axis = Rcpp::as<std::size_t>(arg);
   xt::rarray<T> res = xt::flip(x, axis);
@@ -74,10 +67,6 @@ SEXP rray_op_unary_one_cpp_impl(std::string op, const xt::rarray<T1>& x, SEXP ar
 
   // ---------------------------------------------------------------------------
   // Manipulation
-
-  case str2int("expand_dims"): {
-    return rray_expand_dims_cpp(x, arg);
-  }
 
   case str2int("flip"): {
     return rray_flip_cpp(x, arg);

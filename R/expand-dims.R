@@ -53,17 +53,13 @@ rray_expand_dims <- function(x, axis) {
   axis <- vec_cast(axis, integer())
   validate_axis(axis, x, dims = dims + 1L)
 
-  res <- rray_expand_dims_impl(x, axis)
+  res <- rray__expand_dims(x, as_cpp_idx(axis))
 
   x_dim_names <- dim_names(x)
   new_dim_names <- rray_expand_dim_names(x_dim_names, axis)
   res <- set_full_dim_names(res, new_dim_names)
 
   vec_restore(res, x)
-}
-
-rray_expand_dims_impl <- function(x, axis) {
-  rray_op_unary_one_cpp("expand_dims", x, as_cpp_idx(axis))
 }
 
 # Adds at least 1 `NULL` dim names at the `axis`
