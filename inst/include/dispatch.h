@@ -89,6 +89,34 @@
   error_unknown_type()
 
 // -----------------------------------------------------------------------------
+// Unary + 3 argument
+
+#define DISPATCH_UNARY_THREE(FUN, X, ARG_1, ARG_2, ARG_3)        \
+  if (Rf_isNull(X)) {                                            \
+    return Rcpp::as<Rcpp::RObject>(R_NilValue);                  \
+  }                                                              \
+                                                                 \
+  int x_type = TYPEOF(X);                                        \
+                                                                 \
+  if (x_type == REALSXP) {                                       \
+    return Rcpp::as<Rcpp::RObject>(                              \
+      FUN(xt::rarray<double>(X), ARG_1, ARG_2, ARG_3)            \
+    );                                                           \
+  }                                                              \
+  else if (x_type == INTSXP) {                                   \
+    return Rcpp::as<Rcpp::RObject>(                              \
+      FUN(xt::rarray<int>(X), ARG_1, ARG_2, ARG_3)               \
+    );                                                           \
+  }                                                              \
+  else if (x_type == LGLSXP) {                                   \
+    return Rcpp::as<Rcpp::RObject>(                              \
+      FUN(xt::rarray<rlogical>(X), ARG_1, ARG_2, ARG_3)          \
+    );                                                           \
+  }                                                              \
+                                                                 \
+  error_unknown_type()
+
+// -----------------------------------------------------------------------------
 // Binary + 0 argument
 
 #define DISPATCH_BINARY(FUN, X, Y)                             \

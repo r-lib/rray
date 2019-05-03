@@ -129,6 +129,10 @@ rray__split <- function(x, n, axis) {
     .Call(`_rray_rray__split`, x, n, axis)
 }
 
+rray__rotate <- function(x, from, to, n) {
+    .Call(`_rray_rray__rotate`, x, from, to, n)
+}
+
 rray_op_binary_cpp <- function(op, x, y) {
     .Call(`_rray_rray_op_binary_cpp`, op, x, y)
 }

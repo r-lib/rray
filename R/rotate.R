@@ -84,17 +84,13 @@ rray_rotate <- function(x, from = 1, to = 2, times = 1) {
   validate_scalar(times, "times")
   times <- normalize_times(times)
 
-  res <- rray_rotate_impl(x, from, to, times)
+  res <- rray__rotate(x, as_cpp_idx(from), as_cpp_idx(to), times)
 
   x_dim_names <- dim_names(x)
   new_dim_names <- rotate_dim_names(x_dim_names, from, to, times)
   res <- set_full_dim_names(res, new_dim_names)
 
   vec_restore(res, x)
-}
-
-rray_rotate_impl <- function(x, from, to, times) {
-  rray_op_unary_three_cpp("rotate", x, as_cpp_idx(from), as_cpp_idx(to), times)
 }
 
 validate_scalar <- function(x, nm) {

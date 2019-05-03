@@ -352,6 +352,19 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray__rotate
+Rcpp::RObject rray__rotate(Rcpp::RObject x, std::ptrdiff_t from, std::ptrdiff_t to, int n);
+RcppExport SEXP _rray_rray__rotate(SEXP xSEXP, SEXP fromSEXP, SEXP toSEXP, SEXP nSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< std::ptrdiff_t >::type from(fromSEXP);
+    Rcpp::traits::input_parameter< std::ptrdiff_t >::type to(toSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__rotate(x, from, to, n));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray_op_binary_cpp
 SEXP rray_op_binary_cpp(const std::string& op, SEXP x, SEXP y);
 RcppExport SEXP _rray_rray_op_binary_cpp(SEXP opSEXP, SEXP xSEXP, SEXP ySEXP) {
@@ -576,6 +589,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__logical_not", (DL_FUNC) &_rray_rray__logical_not, 1},
     {"_rray_rray__any", (DL_FUNC) &_rray_rray__any, 2},
     {"_rray_rray__split", (DL_FUNC) &_rray_rray__split, 3},
+    {"_rray_rray__rotate", (DL_FUNC) &_rray_rray__rotate, 4},
     {"_rray_rray_op_binary_cpp", (DL_FUNC) &_rray_rray_op_binary_cpp, 3},
     {"_rray_rray_op_trinary_cpp", (DL_FUNC) &_rray_rray_op_trinary_cpp, 4},
     {"_rray_rray_op_unary_one_cpp", (DL_FUNC) &_rray_rray_op_unary_one_cpp, 3},
