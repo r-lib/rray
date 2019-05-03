@@ -60,7 +60,7 @@ rray_arith_unary_op_switch <- function(op, x) {
   switch(
     op,
     "+" = rray_identity,
-    "-" = rray_negate,
+    "-" = rray_opposite,
     "!" = rray_logical_not,
     glubort("Unary arithmetic operation not known: {op}.")
   )

@@ -29,8 +29,8 @@ rray__identity <- function(x) {
     .Call(`_rray_rray__identity`, x)
 }
 
-rray__negate <- function(x) {
-    .Call(`_rray_rray__negate`, x)
+rray__opposite <- function(x) {
+    .Call(`_rray_rray__opposite`, x)
 }
 
 rray__broadcast <- function(x, dim) {

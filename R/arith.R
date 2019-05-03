@@ -129,8 +129,8 @@ rray_identity <- function(x) {
 
 #' @rdname rray_arith
 #' @export
-rray_negate <- function(x) {
-  rray_arith_unary_base(rray__negate, x)
+rray_opposite <- function(x) {
+  rray_arith_unary_base(rray__opposite, x)
 }
 
 # ------------------------------------------------------------------------------

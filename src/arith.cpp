@@ -158,6 +158,9 @@ Rcpp::RObject rray__modulus(Rcpp::RObject x, Rcpp::RObject y) {
 
 // -----------------------------------------------------------------------------
 
+// Logicals need to be coerced to integers so we need to dispatch manually
+// with a cast to int if it is a logical
+
 template <typename T>
 xt::rarray<T> rray__identity_impl(const xt::rarray<T>& x) {
   return xt::operator+(x);
@@ -165,17 +168,76 @@ xt::rarray<T> rray__identity_impl(const xt::rarray<T>& x) {
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__identity(Rcpp::RObject x) {
-  DISPATCH_UNARY(rray__identity_impl, x);
+
+  if (Rf_isNull(x)) {
+    return Rcpp::as<Rcpp::RObject>(R_NilValue);
+  }
+
+  int x_type = TYPEOF(x);
+
+  if (x_type == REALSXP) {
+    return Rcpp::as<Rcpp::RObject>(
+      rray__identity_impl(xt::rarray<double>(x))
+    );
+  }
+  else if (x_type == INTSXP) {
+    return Rcpp::as<Rcpp::RObject>(
+      rray__identity_impl(xt::rarray<int>(x))
+    );
+  }
+  else if (x_type == LGLSXP) {
+
+    // Coerce logical to integer!
+    xt::rarray<rlogical> x_logical(x);
+    xt::rarray<int> x_int = xt::cast<int>(x_logical);
+
+    return Rcpp::as<Rcpp::RObject>(
+      rray__identity_impl(x_int)
+    );
+  }
+
+  error_unknown_type();
 }
 
 // -----------------------------------------------------------------------------
 
+// Logicals need to be coerced to integers so we need to dispatch manually
+// with a cast to int if it is a logical
+
 template <typename T>
-xt::rarray<T> rray__negate_impl(const xt::rarray<T>& x) {
+xt::rarray<T> rray__opposite_impl(const xt::rarray<T>& x) {
   return xt::operator-(x);
 }
 
 // [[Rcpp::export(rng = false)]]
-Rcpp::RObject rray__negate(Rcpp::RObject x) {
-  DISPATCH_UNARY(rray__negate_impl, x);
+Rcpp::RObject rray__opposite(Rcpp::RObject x) {
+
+  if (Rf_isNull(x)) {
+    return Rcpp::as<Rcpp::RObject>(R_NilValue);
+  }
+
+  int x_type = TYPEOF(x);
+
+  if (x_type == REALSXP) {
+    return Rcpp::as<Rcpp::RObject>(
+      rray__opposite_impl(xt::rarray<double>(x))
+    );
+  }
+  else if (x_type == INTSXP) {
+    return Rcpp::as<Rcpp::RObject>(
+      rray__opposite_impl(xt::rarray<int>(x))
+    );
+  }
+  else if (x_type == LGLSXP) {
+
+    // Coerce logical to integer!
+    xt::rarray<rlogical> x_logical(x);
+    xt::rarray<int> x_int = xt::cast<int>(x_logical);
+
+    return Rcpp::as<Rcpp::RObject>(
+      rray__opposite_impl(x_int)
+    );
+  }
+
+  error_unknown_type();
 }

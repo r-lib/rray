@@ -82,13 +82,13 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rray__negate
-Rcpp::RObject rray__negate(Rcpp::RObject x);
-RcppExport SEXP _rray_rray__negate(SEXP xSEXP) {
+// rray__opposite
+Rcpp::RObject rray__opposite(Rcpp::RObject x);
+RcppExport SEXP _rray_rray__opposite(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__negate(x));
+    rcpp_result_gen = Rcpp::wrap(rray__opposite(x));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -552,7 +552,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__pow", (DL_FUNC) &_rray_rray__pow, 2},
     {"_rray_rray__modulus", (DL_FUNC) &_rray_rray__modulus, 2},
     {"_rray_rray__identity", (DL_FUNC) &_rray_rray__identity, 1},
-    {"_rray_rray__negate", (DL_FUNC) &_rray_rray__negate, 1},
+    {"_rray_rray__opposite", (DL_FUNC) &_rray_rray__opposite, 1},
     {"_rray_rray__broadcast", (DL_FUNC) &_rray_rray__broadcast, 2},
     {"_rray_rray__full_like", (DL_FUNC) &_rray_rray__full_like, 2},
     {"_rray_rray__diag", (DL_FUNC) &_rray_rray__diag, 2},

@@ -14,7 +14,7 @@
 \alias{rray_pow}
 \alias{rray_modulus}
 \alias{rray_identity}
-\alias{rray_negate}
+\alias{rray_opposite}
 \title{Arithmetic operations}
 \usage{
 x \%b+\% y
@@ -41,7 +41,7 @@ rray_modulus(x, y)
 
 rray_identity(x)
 
-rray_negate(x)
+rray_opposite(x)
 }
 \arguments{
 \item{x, y}{A pair of vectors.}
