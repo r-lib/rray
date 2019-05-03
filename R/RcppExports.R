@@ -125,6 +125,10 @@ rray__any <- function(x, axes) {
     .Call(`_rray_rray__any`, x, axes)
 }
 
+rray__split <- function(x, n, axis) {
+    .Call(`_rray_rray__split`, x, n, axis)
+}
+
 rray_op_binary_cpp <- function(op, x, y) {
     .Call(`_rray_rray_op_binary_cpp`, op, x, y)
 }
@@ -139,10 +143,6 @@ rray_op_unary_one_cpp <- function(op, x, arg) {
 
 rray_op_unary_three_cpp <- function(op, x, arg1, arg2, arg3) {
     .Call(`_rray_rray_op_unary_three_cpp`, op, x, arg1, arg2, arg3)
-}
-
-rray_op_unary_two_cpp <- function(op, x, arg1, arg2) {
-    .Call(`_rray_rray_op_unary_two_cpp`, op, x, arg1, arg2)
 }
 
 rray_op_unary_cpp <- function(op, x) {

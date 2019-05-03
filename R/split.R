@@ -89,16 +89,11 @@ rray_split <- function(x, axes, n = NULL) {
 
   res <- map(res, vec_restore, to = x)
 
-  # # TODO - cant use this because of an issue related to
-  # # https://github.com/DavisVaughan/rray/issues/51
-  # # since as_list_of() calls vec_cast()
-  # vctrs::as_list_of(res)
+  # not using this because it vec_cast()
+  # removes dimension names
+  # as_list_of(res)
 
   res
-}
-
-rray_split_impl <- function(x, n, axis) {
-  rray_op_unary_two_cpp("split", x, n, as_cpp_idx(axis))
 }
 
 rray_multi_split <- function(x, axes, n) {
@@ -106,7 +101,7 @@ rray_multi_split <- function(x, axes, n) {
   x <- list(x)
 
   for(i in idx) {
-    x <- map(x, rray_split_impl, n = n[i], axis = axes[i])
+    x <- map(x, rray__split, n = n[i], axis = as_cpp_idx(axes[i]))
     x <- rlang::squash(x)
   }
 

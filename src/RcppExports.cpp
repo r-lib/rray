@@ -340,6 +340,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray__split
+Rcpp::RObject rray__split(Rcpp::RObject x, std::size_t n, std::size_t axis);
+RcppExport SEXP _rray_rray__split(SEXP xSEXP, SEXP nSEXP, SEXP axisSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< std::size_t >::type n(nSEXP);
+    Rcpp::traits::input_parameter< std::size_t >::type axis(axisSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__split(x, n, axis));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray_op_binary_cpp
 SEXP rray_op_binary_cpp(const std::string& op, SEXP x, SEXP y);
 RcppExport SEXP _rray_rray_op_binary_cpp(SEXP opSEXP, SEXP xSEXP, SEXP ySEXP) {
@@ -388,19 +400,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< SEXP >::type arg2(arg2SEXP);
     Rcpp::traits::input_parameter< SEXP >::type arg3(arg3SEXP);
     rcpp_result_gen = Rcpp::wrap(rray_op_unary_three_cpp(op, x, arg1, arg2, arg3));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rray_op_unary_two_cpp
-SEXP rray_op_unary_two_cpp(std::string op, SEXP x, SEXP arg1, SEXP arg2);
-RcppExport SEXP _rray_rray_op_unary_two_cpp(SEXP opSEXP, SEXP xSEXP, SEXP arg1SEXP, SEXP arg2SEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< std::string >::type op(opSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type arg1(arg1SEXP);
-    Rcpp::traits::input_parameter< SEXP >::type arg2(arg2SEXP);
-    rcpp_result_gen = Rcpp::wrap(rray_op_unary_two_cpp(op, x, arg1, arg2));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -576,11 +575,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__logical_or", (DL_FUNC) &_rray_rray__logical_or, 2},
     {"_rray_rray__logical_not", (DL_FUNC) &_rray_rray__logical_not, 1},
     {"_rray_rray__any", (DL_FUNC) &_rray_rray__any, 2},
+    {"_rray_rray__split", (DL_FUNC) &_rray_rray__split, 3},
     {"_rray_rray_op_binary_cpp", (DL_FUNC) &_rray_rray_op_binary_cpp, 3},
     {"_rray_rray_op_trinary_cpp", (DL_FUNC) &_rray_rray_op_trinary_cpp, 4},
     {"_rray_rray_op_unary_one_cpp", (DL_FUNC) &_rray_rray_op_unary_one_cpp, 3},
     {"_rray_rray_op_unary_three_cpp", (DL_FUNC) &_rray_rray_op_unary_three_cpp, 5},
-    {"_rray_rray_op_unary_two_cpp", (DL_FUNC) &_rray_rray_op_unary_two_cpp, 4},
     {"_rray_rray_op_unary_cpp", (DL_FUNC) &_rray_rray_op_unary_cpp, 2},
     {"_rray_rray__sort", (DL_FUNC) &_rray_rray__sort, 2},
     {"_rray_rray__max_pos", (DL_FUNC) &_rray_rray__max_pos, 2},
