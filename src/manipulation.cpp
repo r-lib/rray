@@ -63,3 +63,26 @@ Rcpp::RObject rray__rotate(Rcpp::RObject x, std::ptrdiff_t from, std::ptrdiff_t 
 }
 
 // -----------------------------------------------------------------------------
+
+template <typename T>
+xt::rarray<T> rray__transpose_impl(const xt::rarray<T>& x,
+                                   Rcpp::RObject permutation) {
+
+  using ptrdiff_vec_t = typename std::vector<std::ptrdiff_t>;
+
+  if (r_is_null(permutation)) {
+    xt::rarray<T> res = xt::transpose(x);
+    return res;
+  }
+
+  ptrdiff_vec_t xt_permutation = Rcpp::as<ptrdiff_vec_t>(permutation);
+
+  return xt::transpose(x, xt_permutation, xt::check_policy::full());
+}
+
+// [[Rcpp::export(rng = false)]]
+Rcpp::RObject rray__transpose(Rcpp::RObject x, Rcpp::RObject permutation) {
+  DISPATCH_UNARY_ONE(rray__transpose_impl, x, permutation);
+}
+
+// -----------------------------------------------------------------------------

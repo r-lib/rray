@@ -39,20 +39,6 @@ SEXP rray_cumprod_cpp(const xt::rarray<T>& x, SEXP arg) {
 // -----------------------------------------------------------------------------
 // Manipulation
 
-template <typename T>
-SEXP rray_transpose_cpp(const xt::rarray<T>& x, SEXP arg) {
-
-  if (Rf_isNull(arg)) {
-    const xt::rarray<T>& res = xt::transpose(x);
-    return res;
-  }
-
-  std::vector<std::ptrdiff_t> permutation = Rcpp::as<std::vector<std::ptrdiff_t>>(arg);
-
-  const xt::rarray<T>& res = xt::transpose(x, permutation, xt::check_policy::full());
-  return res;
-}
-
 // Call xt::squeeze() but always use xt::check_policy::full()
 // which throws an error if you are trying to drop a dimension
 // with >1 element. You pretty much never want this so we don't
@@ -102,10 +88,6 @@ SEXP rray_op_unary_one_cpp_impl(std::string op, const xt::rarray<T1>& x, SEXP ar
 
   // ---------------------------------------------------------------------------
   // Manipulation
-
-  case str2int("transpose"): {
-    return rray_transpose_cpp(x, arg);
-  }
 
   case str2int("squeeze"): {
     return rray_squeeze_cpp(x, arg);

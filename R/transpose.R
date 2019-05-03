@@ -71,7 +71,7 @@ rray_transpose <- function(x, permutation = NULL) {
   validate_permutation(permutation, dims)
   validate_axes(permutation, x, nm = "permutation")
 
-  res <- rray_transpose_impl(x, permutation)
+  res <- rray__transpose(x, as_cpp_idx(permutation))
 
   if (is.null(permutation)) {
     permutation <- rev(seq_len(rray_dims(x)))
@@ -98,10 +98,6 @@ t.vctrs_rray <- function(x) {
 #' @export
 aperm.vctrs_rray <- function(a, perm = NULL, ...) {
   rray_transpose(a, permutation = perm)
-}
-
-rray_transpose_impl <- function(x, permutation) {
-  rray_op_unary_one_cpp("transpose", x, as_cpp_idx(permutation))
 }
 
 validate_permutation <- function(permutation, dims) {

@@ -133,6 +133,10 @@ rray__rotate <- function(x, from, to, n) {
     .Call(`_rray_rray__rotate`, x, from, to, n)
 }
 
+rray__transpose <- function(x, permutation) {
+    .Call(`_rray_rray__transpose`, x, permutation)
+}
+
 rray_op_binary_cpp <- function(op, x, y) {
     .Call(`_rray_rray_op_binary_cpp`, op, x, y)
 }
@@ -143,10 +147,6 @@ rray_op_trinary_cpp <- function(op, x, y, z) {
 
 rray_op_unary_one_cpp <- function(op, x, arg) {
     .Call(`_rray_rray_op_unary_one_cpp`, op, x, arg)
-}
-
-rray_op_unary_three_cpp <- function(op, x, arg1, arg2, arg3) {
-    .Call(`_rray_rray_op_unary_three_cpp`, op, x, arg1, arg2, arg3)
 }
 
 rray_op_unary_cpp <- function(op, x) {
