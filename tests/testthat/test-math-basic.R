@@ -1,10 +1,8 @@
 context("test-abs")
 
 test_that("basic examples", {
-
-  # (not new_array(1) because it uses base R's abs())
-  expect_equal(rray_abs(-1), 1)
-  expect_equal(rray_abs(-1L), 1L)
+  expect_equal(rray_abs(-1), new_array(1))
+  expect_equal(rray_abs(-1L), new_array(1L))
 })
 
 test_that("dimension names are kept", {
@@ -19,18 +17,18 @@ test_that("dimension names are kept", {
 test_that("corner cases", {
 
   # Logicals
-  expect_equal(rray_abs(TRUE), 1L)
-  expect_equal(rray_abs(FALSE), 0L)
+  expect_equal(rray_abs(TRUE), new_array(1L))
+  expect_equal(rray_abs(FALSE), new_array(0L))
 
   # NaN
-  expect_equal(rray_abs(NaN), NaN)
+  expect_equal(rray_abs(NaN), new_array(NaN))
 
   # 0
-  expect_equal(rray_abs(0), 0)
-  expect_equal(rray_abs(0L), 0L)
+  expect_equal(rray_abs(0), new_array(0))
+  expect_equal(rray_abs(0L), new_array(0L))
 
   # Inf
-  expect_equal(rray_abs(-Inf), Inf)
+  expect_equal(rray_abs(-Inf), new_array(Inf))
 })
 
 test_that("vctrs dispatch works", {

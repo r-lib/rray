@@ -32,3 +32,23 @@ xt::rarray<T> rray__multiply_add_impl(const xt::rarray<T>& x,
 Rcpp::RObject rray__multiply_add(Rcpp::RObject x, Rcpp::RObject y, Rcpp::RObject z) {
   DISPATCH_TRINARY_NO_LOGICAL(rray__multiply_add_impl, x, y, z);
 }
+
+// -----------------------------------------------------------------------------
+
+// logicals return integers. this does so with only 1 allocation (so does base R)
+
+template <typename T>
+Rcpp::RObject rray__abs_impl(const xt::rarray<T>& x) {
+  xt::rarray<T> res = xt::abs(x);
+  return Rcpp::as<Rcpp::RObject>(res);
+}
+
+Rcpp::RObject rray__abs_impl(const xt::rarray<rlogical>& x) {
+  xt::rarray<int> res = xt::abs(x);
+  return Rcpp::as<Rcpp::RObject>(res);
+}
+
+// [[Rcpp::export(rng = false)]]
+Rcpp::RObject rray__abs(Rcpp::RObject x) {
+  DISPATCH_UNARY(rray__abs_impl, x);
+}

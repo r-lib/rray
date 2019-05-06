@@ -21,12 +21,7 @@
 #' @family math functions
 #' @export
 rray_abs <- function(x) {
-  # Notes:
-  # - Using `vec_data()` to prevent infinite recursion
-  # - `abs()` should keep dim names automatically
-
-  res <- abs(vec_data(x))
-  vec_restore(res, x)
+  rray_math_unary_base(rray__abs, x)
 }
 
 # ------------------------------------------------------------------------------
