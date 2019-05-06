@@ -7,8 +7,14 @@ vec_math.vctrs_rray <- function(fun, x, ...) {
 rray_math_unary_op_switch <- function(fun) {
   switch(
     fun,
+
+    # basic
     "abs" = rray_abs,
     "sign" = rray_sign,
+
+    # exponential
+    "exp" = rray_exp,
+
     glubort("Unary math function not known: {fun}.")
   )
 }

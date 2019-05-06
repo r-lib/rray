@@ -18,12 +18,6 @@ SEXP rray_all_cpp(xt::rarray<T> x) {
 // Math - Exponential
 
 template <typename T>
-SEXP rray_exp_cpp(xt::rarray<T> x) {
-  const xt::rarray<double>& res = xt::exp(x);
-  return res;
-}
-
-template <typename T>
 SEXP rray_exp2_cpp(xt::rarray<T> x) {
   const xt::rarray<double>& res = xt::exp2(x);
   return res;
@@ -272,10 +266,6 @@ SEXP rray_op_unary_cpp_impl(std::string op, xt::rarray<T1> x) {
 
   // ---------------------------------------------------------------------------
   // Math - Exponential
-
-  case str2int("exp"): {
-    return rray_exp_cpp(x);
-  }
 
   case str2int("exp2"): {
     return rray_exp2_cpp(x);
