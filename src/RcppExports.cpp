@@ -443,6 +443,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray__multiply_add
+Rcpp::RObject rray__multiply_add(Rcpp::RObject x, Rcpp::RObject y, Rcpp::RObject z);
+RcppExport SEXP _rray_rray__multiply_add(SEXP xSEXP, SEXP ySEXP, SEXP zSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type z(zSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__multiply_add(x, y, z));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray_op_binary_cpp
 SEXP rray_op_binary_cpp(const std::string& op, SEXP x, SEXP y);
 RcppExport SEXP _rray_rray_op_binary_cpp(SEXP opSEXP, SEXP xSEXP, SEXP ySEXP) {
@@ -452,19 +464,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
     Rcpp::traits::input_parameter< SEXP >::type y(ySEXP);
     rcpp_result_gen = Rcpp::wrap(rray_op_binary_cpp(op, x, y));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rray_op_trinary_cpp
-SEXP rray_op_trinary_cpp(const std::string& op, SEXP x, SEXP y, SEXP z);
-RcppExport SEXP _rray_rray_op_trinary_cpp(SEXP opSEXP, SEXP xSEXP, SEXP ySEXP, SEXP zSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< const std::string& >::type op(opSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type y(ySEXP);
-    Rcpp::traits::input_parameter< SEXP >::type z(zSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray_op_trinary_cpp(op, x, y, z));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -649,8 +648,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__squeeze", (DL_FUNC) &_rray_rray__squeeze, 2},
     {"_rray_rray__expand_dims", (DL_FUNC) &_rray_rray__expand_dims, 2},
     {"_rray_rray__flip", (DL_FUNC) &_rray_rray__flip, 2},
+    {"_rray_rray__multiply_add", (DL_FUNC) &_rray_rray__multiply_add, 3},
     {"_rray_rray_op_binary_cpp", (DL_FUNC) &_rray_rray_op_binary_cpp, 3},
-    {"_rray_rray_op_trinary_cpp", (DL_FUNC) &_rray_rray_op_trinary_cpp, 4},
     {"_rray_rray_op_unary_cpp", (DL_FUNC) &_rray_rray_op_unary_cpp, 2},
     {"_rray_rray__sort", (DL_FUNC) &_rray_rray__sort, 2},
     {"_rray_rray__max_pos", (DL_FUNC) &_rray_rray__max_pos, 2},
