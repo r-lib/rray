@@ -2,8 +2,9 @@ context("test-abs")
 
 test_that("rray_abs() basics", {
 
-  expect_equal(rray_abs(-1), new_array(1))
-  expect_equal(rray_abs(-1L), new_array(1L))
+  # (not new_array(1) because it uses base R's abs())
+  expect_equal(rray_abs(-1), 1)
+  expect_equal(rray_abs(-1L), 1L)
 
   # with names
   x <- rray(c(-1, -2), c(2, 1), list(c("r1", "r2"), "c1"))
@@ -18,18 +19,23 @@ test_that("rray_abs() basics", {
 test_that("rray_abs() corner cases", {
 
   # Logicals
-  expect_equal(rray_abs(TRUE), new_array(1L))
-  expect_equal(rray_abs(FALSE), new_array(0L))
+  expect_equal(rray_abs(TRUE), 1L)
+  expect_equal(rray_abs(FALSE), 0L)
 
   # NaN
-  expect_equal(rray_abs(NaN), as_array(NaN))
+  expect_equal(rray_abs(NaN), NaN)
 
   # 0
-  expect_equal(rray_abs(0), as_array(0))
-  expect_equal(rray_abs(0L), as_array(0L))
+  expect_equal(rray_abs(0), 0)
+  expect_equal(rray_abs(0L), 0L)
 
   # Inf
-  expect_equal(rray_abs(-Inf), as_array(Inf))
+  expect_equal(rray_abs(-Inf), Inf)
+})
+
+test_that("`abs()` vctrs dispatch works", {
+  expect_equal(abs(rray(TRUE)), rray_abs(rray(TRUE)))
+  expect_equal(abs(rray(1L)), rray_abs(rray(1L)))
 })
 
 # ------------------------------------------------------------------------------

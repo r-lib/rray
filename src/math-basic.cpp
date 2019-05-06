@@ -1,6 +1,8 @@
 #include <rray.h>
 #include <dispatch.h>
 
+// -----------------------------------------------------------------------------
+
 // TODO - handle any integer overflow somehow?
 
 template <typename T>
