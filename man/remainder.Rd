@@ -86,6 +86,6 @@ rray_abs(result) * sign(x)
 }
 \seealso{
 Other math functions: \code{\link{rray_abs}},
-  \code{\link{rray_multiply_add}}
+  \code{\link{rray_multiply_add}}, \code{\link{rray_sign}}
 }
 \concept{math functions}

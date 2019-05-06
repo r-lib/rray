@@ -28,6 +28,6 @@ rray_abs(TRUE)
 }
 \seealso{
 Other math functions: \code{\link{remainder}},
-  \code{\link{rray_multiply_add}}
+  \code{\link{rray_multiply_add}}, \code{\link{rray_sign}}
 }
 \concept{math functions}

@@ -15,15 +15,6 @@ SEXP rray_all_cpp(xt::rarray<T> x) {
 }
 
 // -----------------------------------------------------------------------------
-// Math - Basic
-
-template <typename T>
-SEXP rray_sign_cpp(xt::rarray<T> x) {
-  const xt::rarray<int>& res = xt::sign(x);
-  return res;
-}
-
-// -----------------------------------------------------------------------------
 // Math - Exponential
 
 template <typename T>
@@ -277,13 +268,6 @@ SEXP rray_op_unary_cpp_impl(std::string op, xt::rarray<T1> x) {
 
   case str2int("all"): {
     return rray_all_cpp(x);
-  }
-
-  // ---------------------------------------------------------------------------
-  // Math - Basic
-
-  case str2int("sign"): {
-    return rray_sign_cpp(x);
   }
 
   // ---------------------------------------------------------------------------

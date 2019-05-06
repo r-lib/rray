@@ -1,22 +1,22 @@
 context("test-abs")
 
-test_that("rray_abs() basics", {
+test_that("basic examples", {
 
   # (not new_array(1) because it uses base R's abs())
   expect_equal(rray_abs(-1), 1)
   expect_equal(rray_abs(-1L), 1L)
+})
 
-  # with names
+test_that("dimension names are kept", {
   x <- rray(c(-1, -2), c(2, 1), list(c("r1", "r2"), "c1"))
 
   expect_equal(
     rray_abs(x),
     rray(c(1, 2), c(2, 1), list(c("r1", "r2"), "c1"))
   )
-
 })
 
-test_that("rray_abs() corner cases", {
+test_that("corner cases", {
 
   # Logicals
   expect_equal(rray_abs(TRUE), 1L)
@@ -33,9 +33,52 @@ test_that("rray_abs() corner cases", {
   expect_equal(rray_abs(-Inf), Inf)
 })
 
-test_that("`abs()` vctrs dispatch works", {
+test_that("vctrs dispatch works", {
   expect_equal(abs(rray(TRUE)), rray_abs(rray(TRUE)))
   expect_equal(abs(rray(1L)), rray_abs(rray(1L)))
+})
+
+# ------------------------------------------------------------------------------
+context("test-sign")
+
+test_that("basic examples", {
+  expect_identical(rray_sign(-2), -1)
+  expect_identical(rray_sign(-2L), -1)
+})
+
+test_that("dimension names are kept", {
+  x <- rray(c(-1, -2), c(2, 1), list(c("r1", "r2"), "c1"))
+
+  expect_equal(
+    rray_sign(x),
+    rray(c(-1, -1), c(2, 1), list(c("r1", "r2"), "c1"))
+  )
+})
+
+test_that("corner cases", {
+
+  # Logicals
+  expect_equal(rray_sign(TRUE), 1L)
+  expect_equal(rray_sign(FALSE), 0L)
+
+  # NaN
+  expect_equal(rray_sign(NaN), NaN)
+
+  # NA
+  expect_equal(rray_sign(NA), NA_real_)
+
+  # 0
+  expect_equal(rray_sign(0), 0)
+  expect_equal(rray_sign(0L), 0L)
+
+  # Inf
+  expect_equal(rray_sign(Inf), 1)
+  expect_equal(rray_sign(-Inf), -1)
+})
+
+test_that("vctrs dispatch works", {
+  expect_equal(sign(rray(TRUE)), rray_sign(rray(TRUE)))
+  expect_equal(sign(rray(1L)), rray_sign(rray(1L)))
 })
 
 # ------------------------------------------------------------------------------
