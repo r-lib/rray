@@ -88,7 +88,7 @@ test_that("rray_fmod() + rray_remainder() corner cases", {
 
 # ------------------------------------------------------------------------------
 
-context("test-multiple-add")
+context("test-multiply-add")
 
 test_that("rray_multiply_add() basics", {
 

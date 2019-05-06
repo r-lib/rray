@@ -161,12 +161,12 @@ rray__flip <- function(x, axis) {
     .Call(`_rray_rray__flip`, x, axis)
 }
 
-rray_op_binary_cpp <- function(op, x, y) {
-    .Call(`_rray_rray_op_binary_cpp`, op, x, y)
+rray__multiply_add <- function(x, y, z) {
+    .Call(`_rray_rray__multiply_add`, x, y, z)
 }
 
-rray_op_trinary_cpp <- function(op, x, y, z) {
-    .Call(`_rray_rray_op_trinary_cpp`, op, x, y, z)
+rray_op_binary_cpp <- function(op, x, y) {
+    .Call(`_rray_rray_op_binary_cpp`, op, x, y)
 }
 
 rray_op_unary_cpp <- function(op, x) {

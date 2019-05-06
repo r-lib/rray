@@ -143,7 +143,7 @@ rray_remainder <- function(x, y) {
 #' @family math functions
 #' @export
 rray_multiply_add <- function(x, y, z) {
-  rray_math_trinary_base("fma", x, y, z)
+  rray_math_trinary_base(rray__multiply_add, x, y, z)
 }
 
 # ------------------------------------------------------------------------------
@@ -180,25 +180,21 @@ rray_arith_base_old <- function(op, x, y) {
   vec_restore(res, restore_type)
 }
 
-rray_math_trinary_base <- function(op, x, y, z) {
+rray_math_trinary_base <- function(f, x, y, z) {
 
-  # precompute dimensionality and extend existing dims
-  # xtensor-r issue #57 until we have a fix (if ever)
-  dims <- rray_dims_common(x, y, z)
-  x <- rray_dims_match(x, dims)
-  y <- rray_dims_match(y, dims)
-  z <- rray_dims_match(z, dims)
+  # done before the inner cast
+  new_dim_names <- rray_dim_names_common(x, y, z)
 
-  # Get common dim_names and type
-  dim_nms <- rray_dim_names_common(x, y, z)
-  restore_type <- vec_type_common(x, y, z)
+  to <- vec_type_common(x, y, z)
+  to_inner <- rray_type_inner(to)
 
-  # Apply function
-  res <- rray_op_trinary_cpp(op, x, y, z)
+  x <- rray_cast_inner(x, to_inner)
+  y <- rray_cast_inner(y, to_inner)
+  z <- rray_cast_inner(z, to_inner)
 
-  # Add dim names
-  dim_names(res) <- dim_nms
+  res <- f(x, y, z)
 
-  # Restore type
-  vec_restore(res, restore_type)
+  res <- set_full_dim_names(res, new_dim_names)
+
+  vec_restore(res, to)
 }
