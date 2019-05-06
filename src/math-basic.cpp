@@ -52,3 +52,26 @@ Rcpp::RObject rray__abs_impl(const xt::rarray<rlogical>& x) {
 Rcpp::RObject rray__abs(Rcpp::RObject x) {
   DISPATCH_UNARY(rray__abs_impl, x);
 }
+
+// -----------------------------------------------------------------------------
+
+// - for doubles, this should return a double, not an integer.
+// this is so that `rray_sign(NaN)` correctly returns `NaN`
+// - for ints, we can return an int. base R does not.
+//   e.g. `storage.mode(sign(1L))`
+
+template <typename T>
+Rcpp::RObject rray__sign_impl(const xt::rarray<T>& x) {
+  xt::rarray<T> res = xt::sign(x);
+  return Rcpp::as<Rcpp::RObject>(res);
+}
+
+Rcpp::RObject rray__sign_impl(const xt::rarray<rlogical>& x) {
+  xt::rarray<int> res = xt::sign(x);
+  return Rcpp::as<Rcpp::RObject>(res);
+}
+
+// [[Rcpp::export(rng = false)]]
+Rcpp::RObject rray__sign(Rcpp::RObject x) {
+  DISPATCH_UNARY(rray__sign_impl, x);
+}

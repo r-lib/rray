@@ -56,8 +56,7 @@ rray_abs <- function(x) {
 #' @family math functions
 #' @export
 rray_sign <- function(x) {
-  res <- sign(vec_data(x))
-  vec_restore(res, x)
+  rray_math_unary_base(rray__sign, x)
 }
 
 # ------------------------------------------------------------------------------

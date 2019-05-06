@@ -40,8 +40,8 @@ test_that("vctrs dispatch works", {
 context("test-sign")
 
 test_that("basic examples", {
-  expect_identical(rray_sign(-2), -1)
-  expect_identical(rray_sign(-2L), -1)
+  expect_identical(rray_sign(-2), new_array(-1))
+  expect_identical(rray_sign(-2L), new_array(-1L))
 })
 
 test_that("dimension names are kept", {
@@ -56,27 +56,28 @@ test_that("dimension names are kept", {
 test_that("corner cases", {
 
   # Logicals
-  expect_equal(rray_sign(TRUE), 1L)
-  expect_equal(rray_sign(FALSE), 0L)
+  expect_equal(rray_sign(TRUE), new_array(1L))
+  expect_equal(rray_sign(FALSE), new_array(0L))
 
   # NaN
-  expect_equal(rray_sign(NaN), NaN)
-
-  # NA
-  expect_equal(rray_sign(NA), NA_real_)
+  expect_equal(rray_sign(NaN), new_array(NaN))
 
   # 0
-  expect_equal(rray_sign(0), 0)
-  expect_equal(rray_sign(0L), 0L)
+  expect_equal(rray_sign(0), new_array(0))
+  expect_equal(rray_sign(0L), new_array(0L))
 
   # Inf
-  expect_equal(rray_sign(Inf), 1)
-  expect_equal(rray_sign(-Inf), -1)
+  expect_equal(rray_sign(Inf), new_array(1))
+  expect_equal(rray_sign(-Inf), new_array(-1))
 })
 
 test_that("vctrs dispatch works", {
   expect_equal(sign(rray(TRUE)), rray_sign(rray(TRUE)))
   expect_equal(sign(rray(1L)), rray_sign(rray(1L)))
+})
+
+test_that("return value is integer, not double (unlike base R)", {
+  expect_is(rray_sign(rray(1L)), "vctrs_rray_int")
 })
 
 # ------------------------------------------------------------------------------

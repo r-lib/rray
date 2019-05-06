@@ -169,6 +169,10 @@ rray__abs <- function(x) {
     .Call(`_rray_rray__abs`, x)
 }
 
+rray__sign <- function(x) {
+    .Call(`_rray_rray__sign`, x)
+}
+
 rray__exp <- function(x) {
     .Call(`_rray_rray__exp`, x)
 }
