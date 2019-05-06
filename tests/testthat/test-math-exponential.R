@@ -22,6 +22,11 @@ test_that("corner cases", {
   expect_equal(rray_exp(NaN), new_array(NaN))
 })
 
+test_that("vctrs dispatch works", {
+  expect_equal(exp(rray(1)), rray_exp(rray(1)))
+  expect_equal(exp(rray(1L)), rray_exp(rray(1L)))
+})
+
 # ------------------------------------------------------------------------------
 context("test-exp2")
 
@@ -71,6 +76,11 @@ test_that("corner cases", {
   expect_equal(rray_expm1(NaN), new_array(expm1(NaN)))
 })
 
+test_that("vctrs dispatch works", {
+  expect_equal(expm1(rray(1)), rray_expm1(rray(1)))
+  expect_equal(expm1(rray(1L)), rray_expm1(rray(1L)))
+})
+
 # ------------------------------------------------------------------------------
 context("test-log")
 
@@ -88,7 +98,7 @@ test_that("dim names are kept", {
 
 test_that("corner cases", {
   expect_equal(rray_log(Inf), new_array(log(Inf)))
-  expect_equal(rray_log(-Inf), new_array(log(-Inf)))
+  expect_equal(rray_log(-Inf), new_array(suppressWarnings(log(-Inf))))
 
   expect_equal(rray_log(0), new_array(log(0)))
 
@@ -99,6 +109,10 @@ test_that("different bases", {
   expect_equal(rray_log(rray(100), base = 1), rray(log(100, base = 1)))
   expect_equal(rray_log(rray(5), base = .5), rray(log(5, base = .5)))
   expect_equal(rray_log(rray(5), base = Inf), rray(log(5, base = Inf)))
+})
+
+test_that("vctrs dispatch works", {
+  expect_equal(log(rray(1)), rray_log(rray(1)))
 })
 
 # ------------------------------------------------------------------------------
@@ -118,11 +132,15 @@ test_that("dim names are kept", {
 
 test_that("corner cases", {
   expect_equal(rray_log2(Inf), new_array(log2(Inf)))
-  expect_equal(rray_log2(-Inf), new_array(log2(-Inf)))
+  expect_equal(rray_log2(-Inf), new_array(suppressWarnings(log2(-Inf))))
 
   expect_equal(rray_log2(0), new_array(log2(0)))
 
   expect_equal(rray_log2(NaN), new_array(log2(NaN)))
+})
+
+test_that("vctrs dispatch works", {
+  expect_equal(log2(rray(1)), rray_log2(rray(1)))
 })
 
 # ------------------------------------------------------------------------------
@@ -142,11 +160,15 @@ test_that("dim names are kept", {
 
 test_that("corner cases", {
   expect_equal(rray_log10(Inf), new_array(log10(Inf)))
-  expect_equal(rray_log10(-Inf), new_array(log10(-Inf)))
+  expect_equal(rray_log10(-Inf), new_array(suppressWarnings(log10(-Inf))))
 
   expect_equal(rray_log10(0), new_array(log10(0)))
 
   expect_equal(rray_log10(NaN), new_array(log10(NaN)))
+})
+
+test_that("vctrs dispatch works", {
+  expect_equal(log10(rray(1)), rray_log10(rray(1)))
 })
 
 # ------------------------------------------------------------------------------
@@ -166,11 +188,15 @@ test_that("dim names are kept", {
 
 test_that("corner cases", {
   expect_equal(rray_log1p(Inf), new_array(log1p(Inf)))
-  expect_equal(rray_log1p(-Inf), new_array(log1p(-Inf)))
+  expect_equal(rray_log1p(-Inf), new_array(suppressWarnings(log1p(-Inf))))
 
   expect_equal(rray_log1p(0), new_array(log1p(0)))
 
   expect_equal(rray_log1p(NaN), new_array(log1p(NaN)))
+})
+
+test_that("vctrs dispatch works", {
+  expect_equal(log1p(rray(1)), rray_log1p(rray(1)))
 })
 
 # ------------------------------------------------------------------------------

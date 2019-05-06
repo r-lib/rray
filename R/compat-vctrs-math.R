@@ -14,7 +14,21 @@ rray_math_unary_op_switch <- function(fun) {
 
     # exponential
     "exp" = rray_exp,
+    "expm1" = rray_expm1,
+    "log" = rray_log_vctrs_wrapper,
+    "log2" = rray_log2,
+    "log10" = rray_log10,
+    "log1p" = rray_log1p,
 
     glubort("Unary math function not known: {fun}.")
   )
+}
+
+rray_log_vctrs_wrapper <- function(x, base = exp(1)) {
+  if(identical(base, exp(1))) {
+    rray_log(x)
+  }
+  else {
+    rray_log(x, base)
+  }
 }
