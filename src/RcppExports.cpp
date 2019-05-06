@@ -485,6 +485,67 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray__exp2
+Rcpp::RObject rray__exp2(Rcpp::RObject x);
+RcppExport SEXP _rray_rray__exp2(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__exp2(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__expm1
+Rcpp::RObject rray__expm1(Rcpp::RObject x);
+RcppExport SEXP _rray_rray__expm1(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__expm1(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__log
+Rcpp::RObject rray__log(Rcpp::RObject x, Rcpp::RObject base);
+RcppExport SEXP _rray_rray__log(SEXP xSEXP, SEXP baseSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type base(baseSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__log(x, base));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__log2
+Rcpp::RObject rray__log2(Rcpp::RObject x);
+RcppExport SEXP _rray_rray__log2(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__log2(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__log10
+Rcpp::RObject rray__log10(Rcpp::RObject x);
+RcppExport SEXP _rray_rray__log10(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__log10(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__log1p
+Rcpp::RObject rray__log1p(Rcpp::RObject x);
+RcppExport SEXP _rray_rray__log1p(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__log1p(x));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray_op_binary_cpp
 SEXP rray_op_binary_cpp(const std::string& op, SEXP x, SEXP y);
 RcppExport SEXP _rray_rray_op_binary_cpp(SEXP opSEXP, SEXP xSEXP, SEXP ySEXP) {
@@ -682,6 +743,12 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__abs", (DL_FUNC) &_rray_rray__abs, 1},
     {"_rray_rray__sign", (DL_FUNC) &_rray_rray__sign, 1},
     {"_rray_rray__exp", (DL_FUNC) &_rray_rray__exp, 1},
+    {"_rray_rray__exp2", (DL_FUNC) &_rray_rray__exp2, 1},
+    {"_rray_rray__expm1", (DL_FUNC) &_rray_rray__expm1, 1},
+    {"_rray_rray__log", (DL_FUNC) &_rray_rray__log, 2},
+    {"_rray_rray__log2", (DL_FUNC) &_rray_rray__log2, 1},
+    {"_rray_rray__log10", (DL_FUNC) &_rray_rray__log10, 1},
+    {"_rray_rray__log1p", (DL_FUNC) &_rray_rray__log1p, 1},
     {"_rray_rray_op_binary_cpp", (DL_FUNC) &_rray_rray_op_binary_cpp, 3},
     {"_rray_rray_op_unary_cpp", (DL_FUNC) &_rray_rray_op_unary_cpp, 2},
     {"_rray_rray__sort", (DL_FUNC) &_rray_rray__sort, 2},

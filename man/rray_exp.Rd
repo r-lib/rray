@@ -2,21 +2,68 @@
 % Please edit documentation in R/math-exponential.R
 \name{rray_exp}
 \alias{rray_exp}
+\alias{rray_exp2}
+\alias{rray_expm1}
+\alias{rray_log}
+\alias{rray_log2}
+\alias{rray_log10}
+\alias{rray_log1p}
 \title{Logarithms and exponentials}
 \usage{
 rray_exp(x)
+
+rray_exp2(x)
+
+rray_expm1(x)
+
+rray_log(x, base = NULL)
+
+rray_log2(x)
+
+rray_log10(x)
+
+rray_log1p(x)
 }
 \arguments{
 \item{x}{A vector, matrix, array or rray.}
+
+\item{base}{A single positive number. The base that logarithms are computed
+with respect to. The default of \code{NULL} uses a natural log, i.e. \code{exp(1)}.}
 }
 \description{
-\code{rray_exp()} computes the exponential of \code{x}.
+\itemize{
+\item \code{rray_exp()} - computes the natural exponential of \code{x}.
+\item \code{rray_exp2()} - computes the base 2 exponential of \code{x}.
+\item \code{rray_expm1()} - computes \code{exp(x) - 1}.
+\item \code{rray_log()} - computes the natural logarithm of \code{x}.
+\item \code{rray_log2()} - computes the base 2 logarithm of \code{x}.
+\item \code{rray_log10()} - computes the base 10 logarithm of \code{x}.
+\item \code{rray_log1p()} - computes \code{log(1 + x)}.
+}
 }
 \examples{
 
 # Exponential
 rray_exp(1L)
 rray_exp(rray(1:5, c(5, 1)))
+
+# Identical to 2 ^ x
+rray_exp2(5)
+
+# Log with different bases
+rray_log(1) == rray_log(1, exp(1))
+rray_log(100, 2)
+rray_log(100, exp(1))
+
+# From `?log`, the following example shows how `rray_log1p()`
+# and `rray_expm1()` can be more accurate than `rray_log(1 + x)` or
+# `rray_exp(x) - 1` for very small `|x|`.
+x <- 10 ^ -(1 + 2 * 1:9)
+x_base <- cbind(x, log(1+x), log1p(x), exp(x)-1, expm1(x))
+x_rray <- cbind(x, rray_log(1+x), rray_log1p(x), rray_exp(x)-1, rray_expm1(x))
+
+# No difference with base R!
+x_base - x_rray
 
 }
 \concept{exponential math functions}

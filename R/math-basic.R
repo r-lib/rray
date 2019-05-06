@@ -178,8 +178,8 @@ rray_multiply_add <- function(x, y, z) {
 
 # ------------------------------------------------------------------------------
 
-rray_math_unary_base <- function(f, x) {
-  res <- f(x)
+rray_math_unary_base <- function(f, x, ...) {
+  res <- f(x, ...)
   res <- set_full_dim_names(res, dim_names(x))
   vec_restore(res, x)
 }

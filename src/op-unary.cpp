@@ -15,45 +15,6 @@ SEXP rray_all_cpp(xt::rarray<T> x) {
 }
 
 // -----------------------------------------------------------------------------
-// Math - Exponential
-
-template <typename T>
-SEXP rray_exp2_cpp(xt::rarray<T> x) {
-  const xt::rarray<double>& res = xt::exp2(x);
-  return res;
-}
-
-template <typename T>
-SEXP rray_expm1_cpp(xt::rarray<T> x) {
-  const xt::rarray<double>& res = xt::expm1(x);
-  return res;
-}
-
-template <typename T>
-SEXP rray_log_cpp(xt::rarray<T> x) {
-  const xt::rarray<double>& res = xt::log(x);
-  return res;
-}
-
-template <typename T>
-SEXP rray_log2_cpp(xt::rarray<T> x) {
-  const xt::rarray<double>& res = xt::log2(x);
-  return res;
-}
-
-template <typename T>
-SEXP rray_log10_cpp(xt::rarray<T> x) {
-  const xt::rarray<double>& res = xt::log10(x);
-  return res;
-}
-
-template <typename T>
-SEXP rray_log1p_cpp(xt::rarray<T> x) {
-  const xt::rarray<double>& res = xt::log1p(x);
-  return res;
-}
-
-// -----------------------------------------------------------------------------
 // Math - Power
 
 template <typename T>
@@ -265,34 +226,7 @@ SEXP rray_op_unary_cpp_impl(std::string op, xt::rarray<T1> x) {
   }
 
   // ---------------------------------------------------------------------------
-  // Math - Exponential
-
-  case str2int("exp2"): {
-    return rray_exp2_cpp(x);
-  }
-
-  case str2int("expm1"): {
-    return rray_expm1_cpp(x);
-  }
-
-  case str2int("log"): {
-    return rray_log_cpp(x);
-  }
-
-  case str2int("log2"): {
-    return rray_log2_cpp(x);
-  }
-
-  case str2int("log10"): {
-    return rray_log10_cpp(x);
-  }
-
-  case str2int("log1p"): {
-    return rray_log1p_cpp(x);
-  }
-
-  // ---------------------------------------------------------------------------
-  // Math - Exponential
+  // Math - Power
 
   case str2int("square"): {
     return rray_square_cpp(x);
