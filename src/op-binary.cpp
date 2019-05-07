@@ -95,15 +95,6 @@ SEXP rray_hypot_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
 }
 
 // -----------------------------------------------------------------------------
-// Math - Trigonometric
-
-template <typename T1, typename T2>
-SEXP rray_atan2_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
-  const xt::rarray<double>& res = xt::atan2(x, y);
-  return res;
-}
-
-// -----------------------------------------------------------------------------
 // Switch on the op
 
 template <typename T1, typename T2>
@@ -152,13 +143,6 @@ SEXP rray_op_binary_cpp_impl(const std::string& op,
 
   case str2int("hypot"): {
     return rray_hypot_cpp(x, y);
-  }
-
-  // ---------------------------------------------------------------------------
-  // Math - Trigonometric
-
-  case str2int("atan2"): {
-    return rray_atan2_cpp(x, y);
   }
 
   default: {

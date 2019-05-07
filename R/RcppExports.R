@@ -217,6 +217,34 @@ rray__cbrt <- function(x) {
     .Call(`_rray_rray__cbrt`, x)
 }
 
+rray__sin <- function(x) {
+    .Call(`_rray_rray__sin`, x)
+}
+
+rray__cos <- function(x) {
+    .Call(`_rray_rray__cos`, x)
+}
+
+rray__tan <- function(x) {
+    .Call(`_rray_rray__tan`, x)
+}
+
+rray__asin <- function(x) {
+    .Call(`_rray_rray__asin`, x)
+}
+
+rray__acos <- function(x) {
+    .Call(`_rray_rray__acos`, x)
+}
+
+rray__atan <- function(x) {
+    .Call(`_rray_rray__atan`, x)
+}
+
+rray__atan2 <- function(y, x) {
+    .Call(`_rray_rray__atan2`, y, x)
+}
+
 rray_op_binary_cpp <- function(op, x, y) {
     .Call(`_rray_rray_op_binary_cpp`, op, x, y)
 }
