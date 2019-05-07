@@ -37,6 +37,10 @@ function
 }
 \details{
 For more in depth details describing the gamma functions, see \code{?gamma}.
+
+\code{rray_gamma(0)} returns \code{Inf}, while \code{gamma(0)} returns \code{NaN}. The rray
+behavior matches the IEEE standard defined in the error handling section
+of the \href{https://en.cppreference.com/w/cpp/numeric/math/tgamma}{tgamma() C++ definition}.
 }
 \examples{
 x <- matrix(c(2, 4, 6))

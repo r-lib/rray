@@ -21,6 +21,10 @@
 #'
 #' For more in depth details describing the gamma functions, see `?gamma`.
 #'
+#' `rray_gamma(0)` returns `Inf`, while `gamma(0)` returns `NaN`. The rray
+#' behavior matches the IEEE standard defined in the error handling section
+#' of the [`tgamma()` C++ definition](https://en.cppreference.com/w/cpp/numeric/math/tgamma).
+#'
 #' @examples
 #' x <- matrix(c(2, 4, 6))
 #'

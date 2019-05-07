@@ -68,9 +68,17 @@ for (i in seq_along(.fs)) {
 # ------------------------------------------------------------------------------
 
 # gamma(0) = NaN as it is undefined
-# but xtensor gives Inf?
+# but xtensor gives Inf, which matches the C++ IEEE standard
 test_that("rray_gamma(0) is Inf", {
   expect_equal(rray_gamma(0L), new_array(Inf))
 })
 
+test_that("negative integers are undefined", {
+  expect_equal(rray_gamma(-1), new_array(gamma(-1)))
+  expect_equal(rray_gamma(-2), new_array(gamma(-2)))
+})
 
+test_that("Inf value starting at 171.7", {
+  expect_true(rray_gamma(171.7) == Inf)
+  expect_false(rray_gamma(171.6) == Inf)
+})
