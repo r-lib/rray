@@ -15,44 +15,6 @@ SEXP rray_all_cpp(xt::rarray<T> x) {
 }
 
 // -----------------------------------------------------------------------------
-// Math - Trigonometric
-
-template <typename T>
-SEXP rray_sin_cpp(xt::rarray<T> x) {
-  const xt::rarray<double>& res = xt::sin(x);
-  return res;
-}
-
-template <typename T>
-SEXP rray_cos_cpp(xt::rarray<T> x) {
-  const xt::rarray<double>& res = xt::cos(x);
-  return res;
-}
-
-template <typename T>
-SEXP rray_tan_cpp(xt::rarray<T> x) {
-  const xt::rarray<double>& res = xt::tan(x);
-  return res;
-}
-
-template <typename T>
-SEXP rray_asin_cpp(xt::rarray<T> x) {
-  const xt::rarray<double>& res = xt::asin(x);
-  return res;
-}
-template <typename T>
-SEXP rray_acos_cpp(xt::rarray<T> x) {
-  const xt::rarray<double>& res = xt::acos(x);
-  return res;
-}
-
-template <typename T>
-SEXP rray_atan_cpp(xt::rarray<T> x) {
-  const xt::rarray<double>& res = xt::atan(x);
-  return res;
-}
-
-// -----------------------------------------------------------------------------
 // Math - Hyperbolic
 
 template <typename T>
@@ -196,33 +158,6 @@ SEXP rray_op_unary_cpp_impl(std::string op, xt::rarray<T1> x) {
 
   case str2int("all"): {
     return rray_all_cpp(x);
-  }
-
-  // ---------------------------------------------------------------------------
-  // Math - Trigonometric
-
-  case str2int("sin"): {
-    return rray_sin_cpp(x);
-  }
-
-  case str2int("cos"): {
-    return rray_cos_cpp(x);
-  }
-
-  case str2int("tan"): {
-    return rray_tan_cpp(x);
-  }
-
-  case str2int("asin"): {
-    return rray_asin_cpp(x);
-  }
-
-  case str2int("acos"): {
-    return rray_acos_cpp(x);
-  }
-
-  case str2int("atan"): {
-    return rray_atan_cpp(x);
   }
 
   // ---------------------------------------------------------------------------

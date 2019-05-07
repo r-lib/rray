@@ -23,6 +23,17 @@ rray_math_unary_op_switch <- function(fun) {
     # power
     "sqrt" = rray_sqrt,
 
+    # trigonometric
+    "sin" = rray_sin,
+    "cos" = rray_cos,
+    "tan" = rray_tan,
+    "asin" = rray_asin,
+    "acos" = rray_acos,
+    "atan" = rray_atan,
+    "sinpi" = rray_sinpi,
+    "cospi" = rray_cospi,
+    "tanpi" = rray_tanpi,
+
     glubort("Unary math function not known: {fun}.")
   )
 }
