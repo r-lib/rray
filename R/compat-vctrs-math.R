@@ -34,9 +34,19 @@ rray_math_unary_op_switch <- function(fun) {
     "cospi" = rray_cospi,
     "tanpi" = rray_tanpi,
 
+    # hyperbolic
+    "sinh" = rray_sinh,
+    "cosh" = rray_cosh,
+    "tanh" = rray_tanh,
+    "asinh" = rray_asinh,
+    "acosh" = rray_acosh,
+    "atanh" = rray_atanh,
+
     glubort("Unary math function not known: {fun}.")
   )
 }
+
+# ------------------------------------------------------------------------------
 
 rray_log_vctrs_wrapper <- function(x, base = exp(1)) {
   if(identical(base, exp(1))) {

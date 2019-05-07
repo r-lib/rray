@@ -201,6 +201,30 @@ rray__log1p <- function(x) {
     .Call(`_rray_rray__log1p`, x)
 }
 
+rray__sinh <- function(x) {
+    .Call(`_rray_rray__sinh`, x)
+}
+
+rray__cosh <- function(x) {
+    .Call(`_rray_rray__cosh`, x)
+}
+
+rray__tanh <- function(x) {
+    .Call(`_rray_rray__tanh`, x)
+}
+
+rray__asinh <- function(x) {
+    .Call(`_rray_rray__asinh`, x)
+}
+
+rray__acosh <- function(x) {
+    .Call(`_rray_rray__acosh`, x)
+}
+
+rray__atanh <- function(x) {
+    .Call(`_rray_rray__atanh`, x)
+}
+
 rray__square <- function(x) {
     .Call(`_rray_rray__square`, x)
 }

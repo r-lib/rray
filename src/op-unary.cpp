@@ -15,45 +15,6 @@ SEXP rray_all_cpp(xt::rarray<T> x) {
 }
 
 // -----------------------------------------------------------------------------
-// Math - Hyperbolic
-
-template <typename T>
-SEXP rray_sinh_cpp(xt::rarray<T> x) {
-  const xt::rarray<double>& res = xt::sinh(x);
-  return res;
-}
-
-template <typename T>
-SEXP rray_cosh_cpp(xt::rarray<T> x) {
-  const xt::rarray<double>& res = xt::cosh(x);
-  return res;
-}
-
-template <typename T>
-SEXP rray_tanh_cpp(xt::rarray<T> x) {
-  const xt::rarray<double>& res = xt::tanh(x);
-  return res;
-}
-
-template <typename T>
-SEXP rray_asinh_cpp(xt::rarray<T> x) {
-  const xt::rarray<double>& res = xt::asinh(x);
-  return res;
-}
-
-template <typename T>
-SEXP rray_acosh_cpp(xt::rarray<T> x) {
-  const xt::rarray<double>& res = xt::acosh(x);
-  return res;
-}
-
-template <typename T>
-SEXP rray_atanh_cpp(xt::rarray<T> x) {
-  const xt::rarray<double>& res = xt::atanh(x);
-  return res;
-}
-
-// -----------------------------------------------------------------------------
 // Math - Error / Gamma
 
 template <typename T>
@@ -158,33 +119,6 @@ SEXP rray_op_unary_cpp_impl(std::string op, xt::rarray<T1> x) {
 
   case str2int("all"): {
     return rray_all_cpp(x);
-  }
-
-  // ---------------------------------------------------------------------------
-  // Math - Hyperbolic
-
-  case str2int("sinh"): {
-    return rray_sinh_cpp(x);
-  }
-
-  case str2int("cosh"): {
-    return rray_cosh_cpp(x);
-  }
-
-  case str2int("tanh"): {
-    return rray_tanh_cpp(x);
-  }
-
-  case str2int("asinh"): {
-    return rray_asinh_cpp(x);
-  }
-
-  case str2int("acosh"): {
-    return rray_acosh_cpp(x);
-  }
-
-  case str2int("atanh"): {
-    return rray_atanh_cpp(x);
   }
 
   // ---------------------------------------------------------------------------

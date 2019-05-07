@@ -546,6 +546,66 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray__sinh
+Rcpp::RObject rray__sinh(Rcpp::RObject x);
+RcppExport SEXP _rray_rray__sinh(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__sinh(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__cosh
+Rcpp::RObject rray__cosh(Rcpp::RObject x);
+RcppExport SEXP _rray_rray__cosh(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__cosh(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__tanh
+Rcpp::RObject rray__tanh(Rcpp::RObject x);
+RcppExport SEXP _rray_rray__tanh(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__tanh(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__asinh
+Rcpp::RObject rray__asinh(Rcpp::RObject x);
+RcppExport SEXP _rray_rray__asinh(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__asinh(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__acosh
+Rcpp::RObject rray__acosh(Rcpp::RObject x);
+RcppExport SEXP _rray_rray__acosh(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__acosh(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__atanh
+Rcpp::RObject rray__atanh(Rcpp::RObject x);
+RcppExport SEXP _rray_rray__atanh(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__atanh(x));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray__square
 Rcpp::RObject rray__square(Rcpp::RObject x);
 RcppExport SEXP _rray_rray__square(SEXP xSEXP) {
@@ -860,6 +920,12 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__log2", (DL_FUNC) &_rray_rray__log2, 1},
     {"_rray_rray__log10", (DL_FUNC) &_rray_rray__log10, 1},
     {"_rray_rray__log1p", (DL_FUNC) &_rray_rray__log1p, 1},
+    {"_rray_rray__sinh", (DL_FUNC) &_rray_rray__sinh, 1},
+    {"_rray_rray__cosh", (DL_FUNC) &_rray_rray__cosh, 1},
+    {"_rray_rray__tanh", (DL_FUNC) &_rray_rray__tanh, 1},
+    {"_rray_rray__asinh", (DL_FUNC) &_rray_rray__asinh, 1},
+    {"_rray_rray__acosh", (DL_FUNC) &_rray_rray__acosh, 1},
+    {"_rray_rray__atanh", (DL_FUNC) &_rray_rray__atanh, 1},
     {"_rray_rray__square", (DL_FUNC) &_rray_rray__square, 1},
     {"_rray_rray__cube", (DL_FUNC) &_rray_rray__cube, 1},
     {"_rray_rray__sqrt", (DL_FUNC) &_rray_rray__sqrt, 1},
