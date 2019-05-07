@@ -20,6 +20,9 @@ rray_math_unary_op_switch <- function(fun) {
     "log10" = rray_log10,
     "log1p" = rray_log1p,
 
+    # power
+    "sqrt" = rray_sqrt,
+
     glubort("Unary math function not known: {fun}.")
   )
 }

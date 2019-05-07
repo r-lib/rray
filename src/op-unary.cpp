@@ -15,33 +15,6 @@ SEXP rray_all_cpp(xt::rarray<T> x) {
 }
 
 // -----------------------------------------------------------------------------
-// Math - Power
-
-template <typename T>
-SEXP rray_square_cpp(xt::rarray<T> x) {
-  const xt::rarray<double>& res = xt::square(x);
-  return res;
-}
-
-template <typename T>
-SEXP rray_cube_cpp(xt::rarray<T> x) {
-  const xt::rarray<double>& res = xt::cube(x);
-  return res;
-}
-
-template <typename T>
-SEXP rray_sqrt_cpp(xt::rarray<T> x) {
-  const xt::rarray<double>& res = xt::sqrt(x);
-  return res;
-}
-
-template <typename T>
-SEXP rray_cbrt_cpp(xt::rarray<T> x) {
-  const xt::rarray<double>& res = xt::cbrt(x);
-  return res;
-}
-
-// -----------------------------------------------------------------------------
 // Math - Trigonometric
 
 template <typename T>
@@ -223,25 +196,6 @@ SEXP rray_op_unary_cpp_impl(std::string op, xt::rarray<T1> x) {
 
   case str2int("all"): {
     return rray_all_cpp(x);
-  }
-
-  // ---------------------------------------------------------------------------
-  // Math - Power
-
-  case str2int("square"): {
-    return rray_square_cpp(x);
-  }
-
-  case str2int("cube"): {
-    return rray_cube_cpp(x);
-  }
-
-  case str2int("sqrt"): {
-    return rray_sqrt_cpp(x);
-  }
-
-  case str2int("cbrt"): {
-    return rray_cbrt_cpp(x);
   }
 
   // ---------------------------------------------------------------------------

@@ -546,6 +546,46 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray__square
+Rcpp::RObject rray__square(Rcpp::RObject x);
+RcppExport SEXP _rray_rray__square(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__square(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__cube
+Rcpp::RObject rray__cube(Rcpp::RObject x);
+RcppExport SEXP _rray_rray__cube(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__cube(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__sqrt
+Rcpp::RObject rray__sqrt(Rcpp::RObject x);
+RcppExport SEXP _rray_rray__sqrt(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__sqrt(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__cbrt
+Rcpp::RObject rray__cbrt(Rcpp::RObject x);
+RcppExport SEXP _rray_rray__cbrt(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__cbrt(x));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray_op_binary_cpp
 SEXP rray_op_binary_cpp(const std::string& op, SEXP x, SEXP y);
 RcppExport SEXP _rray_rray_op_binary_cpp(SEXP opSEXP, SEXP xSEXP, SEXP ySEXP) {
@@ -749,6 +789,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__log2", (DL_FUNC) &_rray_rray__log2, 1},
     {"_rray_rray__log10", (DL_FUNC) &_rray_rray__log10, 1},
     {"_rray_rray__log1p", (DL_FUNC) &_rray_rray__log1p, 1},
+    {"_rray_rray__square", (DL_FUNC) &_rray_rray__square, 1},
+    {"_rray_rray__cube", (DL_FUNC) &_rray_rray__cube, 1},
+    {"_rray_rray__sqrt", (DL_FUNC) &_rray_rray__sqrt, 1},
+    {"_rray_rray__cbrt", (DL_FUNC) &_rray_rray__cbrt, 1},
     {"_rray_rray_op_binary_cpp", (DL_FUNC) &_rray_rray_op_binary_cpp, 3},
     {"_rray_rray_op_unary_cpp", (DL_FUNC) &_rray_rray_op_unary_cpp, 2},
     {"_rray_rray__sort", (DL_FUNC) &_rray_rray__sort, 2},
