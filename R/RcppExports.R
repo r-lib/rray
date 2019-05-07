@@ -201,6 +201,22 @@ rray__log1p <- function(x) {
     .Call(`_rray_rray__log1p`, x)
 }
 
+rray__square <- function(x) {
+    .Call(`_rray_rray__square`, x)
+}
+
+rray__cube <- function(x) {
+    .Call(`_rray_rray__cube`, x)
+}
+
+rray__sqrt <- function(x) {
+    .Call(`_rray_rray__sqrt`, x)
+}
+
+rray__cbrt <- function(x) {
+    .Call(`_rray_rray__cbrt`, x)
+}
+
 rray_op_binary_cpp <- function(op, x, y) {
     .Call(`_rray_rray_op_binary_cpp`, op, x, y)
 }
