@@ -17,6 +17,9 @@
 #'
 #' @param x A vector, matrix, array or rray.
 #'
+#' @param digits An integer indicating the number of decimal places
+#' or significant digits to be used when rounding.
+#'
 #' @examples
 #' x <- matrix(c(2.22, 4.5, 5.5))
 #'

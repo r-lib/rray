@@ -20,6 +20,9 @@ rray_signif(x, digits = 6)
 }
 \arguments{
 \item{x}{A vector, matrix, array or rray.}
+
+\item{digits}{An integer indicating the number of decimal places
+or significant digits to be used when rounding.}
 }
 \description{
 \itemize{
