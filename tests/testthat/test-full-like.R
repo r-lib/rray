@@ -64,3 +64,15 @@ test_that("`NULL` input returns `NULL`", {
 test_that("0-length input is supported", {
   expect_equal(rray_full_like(numeric(), 1), array(numeric()))
 })
+
+test_that("ones of different types are generated", {
+  expect_identical(rray_ones_like(rray(2L)), rray(1L))
+  expect_identical(rray_ones_like(rray(2)), rray(1))
+  expect_identical(rray_ones_like(rray(FALSE)), rray(TRUE))
+})
+
+test_that("zeroes of different types are generated", {
+  expect_identical(rray_zeros_like(rray(2L)), rray(0L))
+  expect_identical(rray_zeros_like(rray(2)), rray(0))
+  expect_identical(rray_zeros_like(rray(FALSE)), rray(FALSE))
+})

@@ -305,10 +305,6 @@ rray_op_binary_cpp <- function(op, x, y) {
     .Call(`_rray_rray_op_binary_cpp`, op, x, y)
 }
 
-rray_op_unary_cpp <- function(op, x) {
-    .Call(`_rray_rray_op_unary_cpp`, op, x)
-}
-
 rray__sort <- function(x, axis) {
     .Call(`_rray_rray__sort`, x, axis)
 }

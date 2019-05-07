@@ -2,9 +2,15 @@
 % Please edit documentation in R/full-like.R
 \name{rray_full_like}
 \alias{rray_full_like}
+\alias{rray_ones_like}
+\alias{rray_zeros_like}
 \title{Create an array like \code{x}}
 \usage{
 rray_full_like(x, value)
+
+rray_ones_like(x)
+
+rray_zeros_like(x)
 }
 \arguments{
 \item{x}{A vector, matrix, array or rray.}
@@ -14,8 +20,12 @@ used to fill the result (If \code{x} is an integer matrix, then \code{value} wil
 coerced to an integer).}
 }
 \description{
-\code{rray_full_like()} creates an array with the same type and size as \code{x}, but
+\itemize{
+\item \code{rray_full_like()} creates an array with the same type and size as \code{x}, but
 filled with \code{value}.
+\item \code{rray_ones_like()} is \code{rray_full_like()} with \code{value = 1}.
+\item \code{rray_zeros_like()} is \code{rray_full_like()} with \code{value = 0}.
+}
 }
 \details{
 No dimension names will be on the result.
@@ -29,5 +39,14 @@ rray_full_like(x, 1L)
 
 # `fill` is coerced to `x` if it can be
 rray_full_like(x, FALSE)
+
+# `value = 1`
+rray_ones_like(x)
+
+# When logicals are used, it is filled with TRUE
+rray_ones_like(c(FALSE, TRUE))
+
+# `value = 0`
+rray_zeros_like(x)
 
 }

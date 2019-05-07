@@ -1,7 +1,13 @@
 #' Create an array like `x`
 #'
-#' `rray_full_like()` creates an array with the same type and size as `x`, but
+#' @description
+#'
+#' - `rray_full_like()` creates an array with the same type and size as `x`, but
 #' filled with `value`.
+#'
+#' - `rray_ones_like()` is `rray_full_like()` with `value = 1`.
+#'
+#' - `rray_zeros_like()` is `rray_full_like()` with `value = 0`.
 #'
 #' @details
 #'
@@ -23,6 +29,15 @@
 #' # `fill` is coerced to `x` if it can be
 #' rray_full_like(x, FALSE)
 #'
+#' # `value = 1`
+#' rray_ones_like(x)
+#'
+#' # When logicals are used, it is filled with TRUE
+#' rray_ones_like(c(FALSE, TRUE))
+#'
+#' # `value = 0`
+#' rray_zeros_like(x)
+#'
 #' @export
 rray_full_like <- function(x, value) {
 
@@ -40,4 +55,16 @@ rray_full_like <- function(x, value) {
   # no dim names on the result
 
   vec_restore(res, x)
+}
+
+#' @rdname rray_full_like
+#' @export
+rray_ones_like <- function(x) {
+  rray_full_like(x, 1L)
+}
+
+#' @rdname rray_full_like
+#' @export
+rray_zeros_like <- function(x) {
+  rray_full_like(x, 0L)
 }
