@@ -1,4 +1,4 @@
-context("test-trigonometric")
+context("test-math-trigonometric")
 
 .fs <- c(
   rray_sin,
