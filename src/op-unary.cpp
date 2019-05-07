@@ -15,45 +15,6 @@ SEXP rray_all_cpp(xt::rarray<T> x) {
 }
 
 // -----------------------------------------------------------------------------
-// Math - Nearest integer
-
-template <typename T>
-SEXP rray_ceil_cpp(xt::rarray<T> x) {
-  const xt::rarray<int>& res = xt::ceil(x);
-  return res;
-}
-
-template <typename T>
-SEXP rray_floor_cpp(xt::rarray<T> x) {
-  const xt::rarray<int>& res = xt::floor(x);
-  return res;
-}
-
-template <typename T>
-SEXP rray_trunc_cpp(xt::rarray<T> x) {
-  const xt::rarray<int>& res = xt::trunc(x);
-  return res;
-}
-
-template <typename T>
-SEXP rray_round_cpp(xt::rarray<T> x) {
-  const xt::rarray<int>& res = xt::round(x);
-  return res;
-}
-
-template <typename T>
-SEXP rray_nearbyint_cpp(xt::rarray<T> x) {
-  const xt::rarray<int>& res = xt::nearbyint(x);
-  return res;
-}
-
-template <typename T>
-SEXP rray_rint_cpp(xt::rarray<T> x) {
-  const xt::rarray<int>& res = xt::rint(x);
-  return res;
-}
-
-// -----------------------------------------------------------------------------
 // Builder
 
 // Due to some complications with rlogical, we have to
@@ -92,33 +53,6 @@ SEXP rray_op_unary_cpp_impl(std::string op, xt::rarray<T1> x) {
 
   case str2int("all"): {
     return rray_all_cpp(x);
-  }
-
-  // ---------------------------------------------------------------------------
-  // Math - Nearest integer
-
-  case str2int("ceil"): {
-    return rray_ceil_cpp(x);
-  }
-
-  case str2int("floor"): {
-    return rray_floor_cpp(x);
-  }
-
-  case str2int("trunc"): {
-    return rray_trunc_cpp(x);
-  }
-
-  case str2int("round"): {
-    return rray_round_cpp(x);
-  }
-
-  case str2int("nearbyint"): {
-    return rray_nearbyint_cpp(x);
-  }
-
-  case str2int("rint"): {
-    return rray_rint_cpp(x);
   }
 
   // ---------------------------------------------------------------------------

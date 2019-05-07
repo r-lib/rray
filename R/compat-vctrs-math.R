@@ -48,6 +48,13 @@ rray_math_unary_op_switch <- function(fun) {
     "digamma" = rray_digamma,
     "trigamma" = rray_trigamma,
 
+    # rounding
+    "ceiling" = rray_ceiling,
+    "floor" = rray_floor,
+    "trunc" = rray_trunc_vctrs_wrapper,
+    "round" = rray_round,
+    "signif" = rray_signif,
+
     glubort("Unary math function not known: {fun}.")
   )
 }
@@ -61,4 +68,14 @@ rray_log_vctrs_wrapper <- function(x, base = exp(1)) {
   else {
     rray_log(x, base)
   }
+}
+
+# to check for dots
+rray_trunc_vctrs_wrapper <- function(x, ...) {
+  n_dots <- length(list(...))
+  if (n_dots > 0L) {
+    glubort("`trunc()` for rrays does not support arguments passed to `...`.")
+  }
+
+  rray_trunc(x)
 }

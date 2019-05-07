@@ -646,6 +646,36 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray__ceiling
+Rcpp::RObject rray__ceiling(Rcpp::RObject x);
+RcppExport SEXP _rray_rray__ceiling(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__ceiling(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__floor
+Rcpp::RObject rray__floor(Rcpp::RObject x);
+RcppExport SEXP _rray_rray__floor(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__floor(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__trunc
+Rcpp::RObject rray__trunc(Rcpp::RObject x);
+RcppExport SEXP _rray_rray__trunc(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__trunc(x));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray__square
 Rcpp::RObject rray__square(Rcpp::RObject x);
 RcppExport SEXP _rray_rray__square(SEXP xSEXP) {
@@ -970,6 +1000,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__asinh", (DL_FUNC) &_rray_rray__asinh, 1},
     {"_rray_rray__acosh", (DL_FUNC) &_rray_rray__acosh, 1},
     {"_rray_rray__atanh", (DL_FUNC) &_rray_rray__atanh, 1},
+    {"_rray_rray__ceiling", (DL_FUNC) &_rray_rray__ceiling, 1},
+    {"_rray_rray__floor", (DL_FUNC) &_rray_rray__floor, 1},
+    {"_rray_rray__trunc", (DL_FUNC) &_rray_rray__trunc, 1},
     {"_rray_rray__square", (DL_FUNC) &_rray_rray__square, 1},
     {"_rray_rray__cube", (DL_FUNC) &_rray_rray__cube, 1},
     {"_rray_rray__sqrt", (DL_FUNC) &_rray_rray__sqrt, 1},

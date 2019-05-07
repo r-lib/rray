@@ -241,6 +241,18 @@ rray__atanh <- function(x) {
     .Call(`_rray_rray__atanh`, x)
 }
 
+rray__ceiling <- function(x) {
+    .Call(`_rray_rray__ceiling`, x)
+}
+
+rray__floor <- function(x) {
+    .Call(`_rray_rray__floor`, x)
+}
+
+rray__trunc <- function(x) {
+    .Call(`_rray_rray__trunc`, x)
+}
+
 rray__square <- function(x) {
     .Call(`_rray_rray__square`, x)
 }

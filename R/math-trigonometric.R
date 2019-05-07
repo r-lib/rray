@@ -125,10 +125,9 @@ rray_tanpi <- function(x) {
 
 # ------------------------------------------------------------------------------
 
-rray_math_unary_base_raw <- function(f, x) {
-  res <- f(vec_data(x))
-  res <- new_array(res, dim = rray_dim(res))
-  res <- set_full_dim_names(res, dim_names(x))
+rray_math_unary_base_raw <- function(f, x, ...) {
+  res <- f(vec_data(x), ...)
+  res <- new_array(res, dim = rray_dim(res), dimnames = dim_names(x))
   vec_restore(res, x)
 }
 
