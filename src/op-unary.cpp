@@ -15,33 +15,6 @@ SEXP rray_all_cpp(xt::rarray<T> x) {
 }
 
 // -----------------------------------------------------------------------------
-// Math - Error / Gamma
-
-template <typename T>
-SEXP rray_erf_cpp(xt::rarray<T> x) {
-  const xt::rarray<double>& res = xt::erf(x);
-  return res;
-}
-
-template <typename T>
-SEXP rray_erfc_cpp(xt::rarray<T> x) {
-  const xt::rarray<double>& res = xt::erfc(x);
-  return res;
-}
-
-template <typename T>
-SEXP rray_tgamma_cpp(xt::rarray<T> x) {
-  const xt::rarray<double>& res = xt::tgamma(x);
-  return res;
-}
-
-template <typename T>
-SEXP rray_lgamma_cpp(xt::rarray<T> x) {
-  const xt::rarray<double>& res = xt::lgamma(x);
-  return res;
-}
-
-// -----------------------------------------------------------------------------
 // Math - Nearest integer
 
 template <typename T>
@@ -119,25 +92,6 @@ SEXP rray_op_unary_cpp_impl(std::string op, xt::rarray<T1> x) {
 
   case str2int("all"): {
     return rray_all_cpp(x);
-  }
-
-  // ---------------------------------------------------------------------------
-  // Math - Error / Gamma
-
-  case str2int("erf"): {
-    return rray_erf_cpp(x);
-  }
-
-  case str2int("erfc"): {
-    return rray_erfc_cpp(x);
-  }
-
-  case str2int("tgamma"): {
-    return rray_tgamma_cpp(x);
-  }
-
-  case str2int("lgamma"): {
-    return rray_lgamma_cpp(x);
   }
 
   // ---------------------------------------------------------------------------

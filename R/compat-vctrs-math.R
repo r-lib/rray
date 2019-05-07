@@ -42,6 +42,12 @@ rray_math_unary_op_switch <- function(fun) {
     "acosh" = rray_acosh,
     "atanh" = rray_atanh,
 
+    # error and gamma
+    "gamma" = rray_gamma,
+    "lgamma" = rray_lgamma,
+    "digamma" = rray_digamma,
+    "trigamma" = rray_trigamma,
+
     glubort("Unary math function not known: {fun}.")
   )
 }

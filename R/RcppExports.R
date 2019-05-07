@@ -173,6 +173,22 @@ rray__sign <- function(x) {
     .Call(`_rray_rray__sign`, x)
 }
 
+rray__erf <- function(x) {
+    .Call(`_rray_rray__erf`, x)
+}
+
+rray__erfc <- function(x) {
+    .Call(`_rray_rray__erfc`, x)
+}
+
+rray__gamma <- function(x) {
+    .Call(`_rray_rray__gamma`, x)
+}
+
+rray__lgamma <- function(x) {
+    .Call(`_rray_rray__lgamma`, x)
+}
+
 rray__exp <- function(x) {
     .Call(`_rray_rray__exp`, x)
 }
