@@ -6,15 +6,6 @@
 #include <tools/tools.h>
 
 // -----------------------------------------------------------------------------
-// Operators
-
-template <typename T>
-SEXP rray_all_cpp(xt::rarray<T> x) {
-  Rcpp::LogicalVector res = Rcpp::LogicalVector::create(xt::all(x));
-  return res;
-}
-
-// -----------------------------------------------------------------------------
 // Builder
 
 // Due to some complications with rlogical, we have to
@@ -47,13 +38,6 @@ template <typename T1>
 SEXP rray_op_unary_cpp_impl(std::string op, xt::rarray<T1> x) {
 
   switch(str2int(op.c_str())) {
-
-  // ---------------------------------------------------------------------------
-  // Operators
-
-  case str2int("all"): {
-    return rray_all_cpp(x);
-  }
 
   // ---------------------------------------------------------------------------
   // Builders

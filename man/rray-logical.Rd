@@ -10,6 +10,8 @@
 \alias{rray_logical_not}
 \alias{any.vctrs_rray}
 \alias{rray_any}
+\alias{all.vctrs_rray}
+\alias{rray_all}
 \title{Logical operators}
 \usage{
 \method{&}{vctrs_rray}(e1, e2)
@@ -27,6 +29,10 @@ rray_logical_not(x)
 \method{any}{vctrs_rray}(..., na.rm = FALSE)
 
 rray_any(x, axes = NULL)
+
+\method{all}{vctrs_rray}(..., na.rm = FALSE)
+
+rray_all(x, axes = NULL)
 }
 \arguments{
 \item{e1, e2}{Generally, the same as \code{x} and \code{y}. See Details.}

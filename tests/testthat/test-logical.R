@@ -271,8 +271,84 @@ test_that("reducing over multiple axes where at least one is size 0", {
   #rray_any(x, c(1, 3))
 })
 
+test_that("reducing over multiple axes works consistently", {
+  expect_equal(rray_any(matrix(FALSE, 1, 1), c(1, 2)), new_matrix(FALSE, c(1, 1)))
+  expect_equal(rray_any(matrix(FALSE, 2, 2), c(1, 2)), new_matrix(FALSE, c(1, 1)))
+  expect_equal(rray_any(matrix(FALSE, 3, 3), c(1, 2)), new_matrix(FALSE, c(1, 1)))
+})
+
 test_that("fails when can't cast to logical", {
   expect_error(rray_any(1:5), "<integer> to <logical>")
+})
+
+# ------------------------------------------------------------------------------
+
+context("test-all")
+
+test_that("works with rray objects", {
+
+  x <- rray(c(TRUE, FALSE), c(2, 2, 2))
+
+  expect_equal(rray_all(x), rray(FALSE, c(1, 1, 1)))
+
+  expect_equal(rray_all(x, 1), rray(FALSE, c(1, 2, 2)))
+
+  expect_equal(rray_all(x, 2), rray(c(TRUE, TRUE, FALSE, FALSE), c(2, 1, 2)))
+
+  expect_equal(rray_all(x, 3), rray(c(TRUE, TRUE, FALSE, FALSE), c(2, 2, 1)))
+})
+
+test_that("works over multiple axes", {
+  x <- rray(c(TRUE, FALSE), c(2, 2, 2))
+
+  expect_equal(rray_all(x, c(1, 2)), rray(FALSE, c(1, 1, 2)))
+
+  expect_equal(rray_all(x, c(2, 3)), rray(c(TRUE, FALSE), c(2, 1, 1)))
+
+  expect_equal(rray_all(x, c(1, 3)), rray(c(FALSE, FALSE), c(1, 2, 1)))
+
+  expect_error(rray_all(x, c(2, 1)), "Reducing axes should be sorted")
+})
+
+test_that("works with base R", {
+  expect_equal(rray_all(rep(TRUE, 5)), new_array(TRUE))
+  expect_equal(rray_all(rep(TRUE, 5)), rray_all(rep(TRUE, 5), axes = 1))
+})
+
+test_that("works with NULL input", {
+  expect_equal(rray_all(NULL), new_array(TRUE))
+})
+
+test_that("works with 0-length input", {
+  expect_equal(rray_all(logical()), new_array(TRUE))
+  expect_equal(rray_all(logical(), axes = 1), new_array(TRUE))
+
+  # matches numpy
+  # essentially, reducing along the 0 axis makes it a 1 in the result so it has a TRUE value
+  x <- array(logical(), c(0, 2))
+  expect_equal(rray_all(x), new_array(TRUE, c(1, 1)))
+  expect_equal(rray_all(x, 1), new_array(TRUE, c(1, 2)))
+  expect_equal(rray_all(x, 2), new_array(logical(), c(0, 1)))
+})
+
+# TODO ensure this doesnt crash R
+test_that("reducing over multiple axes where at least one is size 0", {
+  x <- array(logical(), c(0, 0, 2))
+
+  expect_equal(rray_all(x), new_array(TRUE, c(1, 1, 1)))
+
+  #rray_all(x, c(1, 2))
+  #rray_all(x, c(1, 3))
+})
+
+test_that("reducing over multiple axes works consistently", {
+  expect_equal(rray_all(matrix(TRUE, 1, 1), c(1, 2)), new_matrix(TRUE, c(1, 1)))
+  expect_equal(rray_all(matrix(TRUE, 2, 2), c(1, 2)), new_matrix(TRUE, c(1, 1)))
+  expect_equal(rray_all(matrix(TRUE, 3, 3), c(1, 2)), new_matrix(TRUE, c(1, 1)))
+})
+
+test_that("fails when can't cast to logical", {
+  expect_error(rray_all(1:5), "<integer> to <logical>")
 })
 
 # ------------------------------------------------------------------------------

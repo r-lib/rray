@@ -162,6 +162,51 @@ rray_any <- function(x, axes = NULL) {
 
 # ------------------------------------------------------------------------------
 
+# `all()` should always be on a flattened version of the input to maintain
+# backwards compat with base R. `rray_all()` should only handle 1 input
+# but should be able to look along an axis.
+# TODO - Think more about this.
+
+#' @rdname rray-logical
+#' @export
+`all.vctrs_rray` <- function(..., na.rm = FALSE) {
+
+  if (!identical(na.rm, FALSE)) {
+    abort("`na.rm` currently must be `FALSE` in `all()` for rrays.")
+  }
+
+  x <- map(list2(...), as.vector)
+  x <- vec_c(!!! x)
+
+  vec_math_base("all", x)
+}
+
+#' @rdname rray-logical
+#' @export
+rray_all <- function(x, axes = NULL) {
+
+  if (is.null(x)) {
+    x <- logical()
+  }
+
+  # only integer axes
+  axes <- vec_cast(axes, integer())
+  validate_axes(axes, x)
+
+  # only logicals allowed through
+  x_cast <- rray_cast_inner(x, logical())
+
+  # perform the reduction
+  res <- rray__all(x_cast, as_cpp_idx(axes))
+
+  new_dim_names <- restore_dim_names(dim_names(x), rray_dim(res))
+  res <- set_full_dim_names(res, new_dim_names)
+
+  vec_restore(res, x)
+}
+
+# ------------------------------------------------------------------------------
+
 #' Conditional selection
 #'
 #' `rray_if_else()` is like `ifelse()`, but works with matrices and arrays,
