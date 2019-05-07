@@ -74,8 +74,10 @@ test_that("rray_gamma(0) is Inf", {
 })
 
 test_that("negative integers are undefined", {
-  expect_equal(rray_gamma(-1), new_array(gamma(-1)))
-  expect_equal(rray_gamma(-2), new_array(gamma(-2)))
+  suppressWarnings({
+    expect_equal(rray_gamma(-1), new_array(gamma(-1)))
+    expect_equal(rray_gamma(-2), new_array(gamma(-2)))
+  })
 })
 
 test_that("Inf value starting at 171.7", {
