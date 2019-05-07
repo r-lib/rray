@@ -9,7 +9,8 @@ erfc <- function(x) 2 * pnorm(x * sqrt(2), lower = FALSE)
   rray_lgamma,
   rray_digamma,
   rray_trigamma,
-  rray_erf
+  rray_erf,
+  rray_erfc
 )
 
 .fs_base <- c(
