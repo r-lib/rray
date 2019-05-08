@@ -333,8 +333,20 @@ rray__sum <- function(x, axes) {
     .Call(`_rray_rray__sum`, x, axes)
 }
 
-rray_reducer_cpp <- function(op, x, axes) {
-    .Call(`_rray_rray_reducer_cpp`, op, x, axes)
+rray__prod <- function(x, axes) {
+    .Call(`_rray_rray__prod`, x, axes)
+}
+
+rray__mean <- function(x, axes) {
+    .Call(`_rray_rray__mean`, x, axes)
+}
+
+rray__amax <- function(x, axes) {
+    .Call(`_rray_rray__amax`, x, axes)
+}
+
+rray__amin <- function(x, axes) {
+    .Call(`_rray_rray__amin`, x, axes)
 }
 
 rray__subset_assign <- function(x, indexer, value) {

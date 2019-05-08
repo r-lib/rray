@@ -156,7 +156,7 @@ test_that("reducing base types maintains type", {
   x_arr <- as.array(x)
 
   expect_is(rray_prod(x_mat, 1), "matrix")
-  expect_is(rray_prod(x_arr, 1), "numeric")
+  expect_equal(storage.mode(rray_prod(x_arr, 1)), "double")
 
   expect_equal(vec_dim(rray_prod(x_mat, 1)), c(1, 1))
 
@@ -246,7 +246,7 @@ test_that("reducing base types maintains type", {
   x_arr <- as.array(x)
 
   expect_is(rray_mean(x_mat, 1), "matrix")
-  expect_is(rray_mean(x_arr, 1), "numeric")
+  expect_equal(storage.mode(rray_mean(x_arr, 1)), "double")
 
   expect_equal(vec_dim(rray_mean(x_mat, 1)), c(1, 1))
 
@@ -335,7 +335,8 @@ test_that("reducing base types maintains type", {
   x_arr <- as.array(x)
 
   expect_is(rray_max(x_mat, 1), "matrix")
-  expect_is(rray_max(x_arr, 1), "integer")
+  expect_equal(storage.mode(rray_max(x_arr, 1)), "integer")
+
 
   expect_equal(vec_dim(rray_max(x_mat, 1)), c(1, 1))
 
@@ -417,7 +418,7 @@ test_that("reducing base types maintains type", {
   x_arr <- as.array(x)
 
   expect_is(rray_min(x_mat, 1), "matrix")
-  expect_is(rray_min(x_arr, 1), "integer")
+  expect_equal(storage.mode(rray_min(x_arr, 1)), "integer")
 
   expect_equal(vec_dim(rray_min(x_mat, 1)), c(1, 1))
 

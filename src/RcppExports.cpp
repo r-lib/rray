@@ -889,15 +889,47 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rray_reducer_cpp
-SEXP rray_reducer_cpp(std::string op, SEXP x, SEXP axes);
-RcppExport SEXP _rray_rray_reducer_cpp(SEXP opSEXP, SEXP xSEXP, SEXP axesSEXP) {
+// rray__prod
+Rcpp::RObject rray__prod(Rcpp::RObject x, Rcpp::RObject axes);
+RcppExport SEXP _rray_rray__prod(SEXP xSEXP, SEXP axesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< std::string >::type op(opSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type axes(axesSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray_reducer_cpp(op, x, axes));
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type axes(axesSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__prod(x, axes));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__mean
+Rcpp::RObject rray__mean(Rcpp::RObject x, Rcpp::RObject axes);
+RcppExport SEXP _rray_rray__mean(SEXP xSEXP, SEXP axesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type axes(axesSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__mean(x, axes));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__amax
+Rcpp::RObject rray__amax(Rcpp::RObject x, Rcpp::RObject axes);
+RcppExport SEXP _rray_rray__amax(SEXP xSEXP, SEXP axesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type axes(axesSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__amax(x, axes));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__amin
+Rcpp::RObject rray__amin(Rcpp::RObject x, Rcpp::RObject axes);
+RcppExport SEXP _rray_rray__amin(SEXP xSEXP, SEXP axesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type axes(axesSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__amin(x, axes));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1069,7 +1101,10 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__max_pos", (DL_FUNC) &_rray_rray__max_pos, 2},
     {"_rray_rray__min_pos", (DL_FUNC) &_rray_rray__min_pos, 2},
     {"_rray_rray__sum", (DL_FUNC) &_rray_rray__sum, 2},
-    {"_rray_rray_reducer_cpp", (DL_FUNC) &_rray_rray_reducer_cpp, 3},
+    {"_rray_rray__prod", (DL_FUNC) &_rray_rray__prod, 2},
+    {"_rray_rray__mean", (DL_FUNC) &_rray_rray__mean, 2},
+    {"_rray_rray__amax", (DL_FUNC) &_rray_rray__amax, 2},
+    {"_rray_rray__amin", (DL_FUNC) &_rray_rray__amin, 2},
     {"_rray_rray__subset_assign", (DL_FUNC) &_rray_rray__subset_assign, 3},
     {"_rray_is_any_na_int", (DL_FUNC) &_rray_is_any_na_int, 1},
     {"_rray_is_contiguous_increasing", (DL_FUNC) &_rray_is_contiguous_increasing, 1},
