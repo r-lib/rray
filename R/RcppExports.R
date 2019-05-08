@@ -193,6 +193,14 @@ rray__remainder <- function(x, y) {
     .Call(`_rray_rray__remainder`, x, y)
 }
 
+rray__maximum <- function(x, y) {
+    .Call(`_rray_rray__maximum`, x, y)
+}
+
+rray__minimum <- function(x, y) {
+    .Call(`_rray_rray__minimum`, x, y)
+}
+
 rray__erf <- function(x) {
     .Call(`_rray_rray__erf`, x)
 }
@@ -319,10 +327,6 @@ rray__atan <- function(x) {
 
 rray__atan2 <- function(y, x) {
     .Call(`_rray_rray__atan2`, y, x)
-}
-
-rray_op_binary_cpp <- function(op, x, y) {
-    .Call(`_rray_rray_op_binary_cpp`, op, x, y)
 }
 
 rray__sort <- function(x, axis) {

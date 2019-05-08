@@ -128,4 +128,56 @@ Rcpp::RObject rray__remainder(Rcpp::RObject x, Rcpp::RObject y) {
   DISPATCH_BINARY(rray__remainder_impl, x, y);
 }
 
+// -----------------------------------------------------------------------------
 
+template <typename T>
+xt::rarray<T> rray__maximum_impl(const xt::rarray<T>& x,
+                                 const xt::rarray<T>& y) {
+
+  Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
+
+  // If any dimension is size 0, return an empty T array with common dim
+  if (Rcpp::is_true(Rcpp::any(dim == 0))) {
+    xt::rarray<T> res(Rcpp::as<std::vector<std::size_t>>(dim));
+    return(res);
+  }
+
+  const int& dims = dim.size();
+  auto x_view = rray__increase_dims_view(x, dims);
+  auto y_view = rray__increase_dims_view(y, dims);
+
+  return xt::maximum(x_view, y_view);
+}
+
+// [[Rcpp::export(rng = false)]]
+Rcpp::RObject rray__maximum(Rcpp::RObject x, Rcpp::RObject y) {
+  DISPATCH_BINARY(rray__maximum_impl, x, y);
+}
+
+// -----------------------------------------------------------------------------
+
+template <typename T>
+xt::rarray<T> rray__minimum_impl(const xt::rarray<T>& x,
+                                 const xt::rarray<T>& y) {
+
+  Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
+
+  // If any dimension is size 0, return an empty T array with common dim
+  if (Rcpp::is_true(Rcpp::any(dim == 0))) {
+    xt::rarray<T> res(Rcpp::as<std::vector<std::size_t>>(dim));
+    return(res);
+  }
+
+  const int& dims = dim.size();
+  auto x_view = rray__increase_dims_view(x, dims);
+  auto y_view = rray__increase_dims_view(y, dims);
+
+  return xt::minimum(x_view, y_view);
+}
+
+// [[Rcpp::export(rng = false)]]
+Rcpp::RObject rray__minimum(Rcpp::RObject x, Rcpp::RObject y) {
+  DISPATCH_BINARY(rray__minimum_impl, x, y);
+}
+
+// -----------------------------------------------------------------------------

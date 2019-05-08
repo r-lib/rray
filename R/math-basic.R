@@ -150,6 +150,40 @@ rray_remainder <- function(x, y) {
 
 # ------------------------------------------------------------------------------
 
+#' Maximum and minimum values
+#'
+#' @description
+#'
+#' `rray_maximum()` and `rray_minimum()` compute the elementwise max / min
+#' between `x` and `y`.
+#'
+#' @param x,y A vector, matrix, array or rray.
+#'
+#' @examples
+#' # Elementwise maximum
+#' rray_maximum(c(1, 2, 3), c(3, 2, 1))
+#'
+#' # Elementwise minimum
+#' rray_minimum(c(1, 2, 3), c(3, 2, 1))
+#'
+#' # With broadcasting
+#' x <- matrix(1:3)
+#' rray_maximum(x, t(x))
+#'
+#' @family math functions
+#' @export
+rray_maximum <- function(x, y) {
+  rray_math_binary_base(rray__maximum, x, y)
+}
+
+#' @rdname rray_maximum
+#' @export
+rray_minimum <- function(x, y) {
+  rray_math_binary_base(rray__minimum, x, y)
+}
+
+# ------------------------------------------------------------------------------
+
 #' Fused multiply-add
 #'
 #' `rray_multiply_add()` computes `x * y + z`, with broadcasting.

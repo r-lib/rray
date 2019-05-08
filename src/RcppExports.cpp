@@ -530,6 +530,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray__maximum
+Rcpp::RObject rray__maximum(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__maximum(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__maximum(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__minimum
+Rcpp::RObject rray__minimum(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__minimum(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__minimum(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray__erf
 Rcpp::RObject rray__erf(Rcpp::RObject x);
 RcppExport SEXP _rray_rray__erf(SEXP xSEXP) {
@@ -853,18 +875,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rray_op_binary_cpp
-SEXP rray_op_binary_cpp(const std::string& op, SEXP x, SEXP y);
-RcppExport SEXP _rray_rray_op_binary_cpp(SEXP opSEXP, SEXP xSEXP, SEXP ySEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< const std::string& >::type op(opSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(rray_op_binary_cpp(op, x, y));
-    return rcpp_result_gen;
-END_RCPP
-}
 // rray__sort
 Rcpp::RObject rray__sort(Rcpp::RObject x, Rcpp::RObject axis);
 RcppExport SEXP _rray_rray__sort(SEXP xSEXP, SEXP axisSEXP) {
@@ -1043,6 +1053,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__sign", (DL_FUNC) &_rray_rray__sign, 1},
     {"_rray_rray__fmod", (DL_FUNC) &_rray_rray__fmod, 2},
     {"_rray_rray__remainder", (DL_FUNC) &_rray_rray__remainder, 2},
+    {"_rray_rray__maximum", (DL_FUNC) &_rray_rray__maximum, 2},
+    {"_rray_rray__minimum", (DL_FUNC) &_rray_rray__minimum, 2},
     {"_rray_rray__erf", (DL_FUNC) &_rray_rray__erf, 1},
     {"_rray_rray__erfc", (DL_FUNC) &_rray_rray__erfc, 1},
     {"_rray_rray__gamma", (DL_FUNC) &_rray_rray__gamma, 1},
@@ -1075,7 +1087,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__acos", (DL_FUNC) &_rray_rray__acos, 1},
     {"_rray_rray__atan", (DL_FUNC) &_rray_rray__atan, 1},
     {"_rray_rray__atan2", (DL_FUNC) &_rray_rray__atan2, 2},
-    {"_rray_rray_op_binary_cpp", (DL_FUNC) &_rray_rray_op_binary_cpp, 3},
     {"_rray_rray__sort", (DL_FUNC) &_rray_rray__sort, 2},
     {"_rray_rray__max_pos", (DL_FUNC) &_rray_rray__max_pos, 2},
     {"_rray_rray__min_pos", (DL_FUNC) &_rray_rray__min_pos, 2},
