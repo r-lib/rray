@@ -116,7 +116,7 @@ rray_mean <- function(x, axes = NULL) {
 #' @export
 #' @family reducers
 rray_max <- function(x, axes = NULL) {
-  rray_reducer_base(rray__amax, x, axes)
+  rray_reducer_base(rray__max, x, axes)
 }
 
 #' Calculate the minimum along an axis
@@ -141,7 +141,7 @@ rray_max <- function(x, axes = NULL) {
 #' @export
 #' @family reducers
 rray_min <- function(x, axes = NULL) {
-  rray_reducer_base(rray__amin, x, axes)
+  rray_reducer_base(rray__min, x, axes)
 }
 
 # ------------------------------------------------------------------------------

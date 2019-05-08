@@ -113,7 +113,7 @@ Rcpp::RObject rray__mean(Rcpp::RObject x, Rcpp::RObject axes) {
 // -----------------------------------------------------------------------------
 
 template <typename T>
-xt::rarray<T> rray__amax_impl(const xt::rarray<T>& x, Rcpp::RObject axes) {
+xt::rarray<T> rray__max_impl(const xt::rarray<T>& x, Rcpp::RObject axes) {
 
   if (r_is_null(axes)) {
     return xt::amax(x, xt::keep_dims);
@@ -126,14 +126,14 @@ xt::rarray<T> rray__amax_impl(const xt::rarray<T>& x, Rcpp::RObject axes) {
 }
 
 // [[Rcpp::export(rng = false)]]
-Rcpp::RObject rray__amax(Rcpp::RObject x, Rcpp::RObject axes) {
-  DISPATCH_UNARY_ONE(rray__amax_impl, x, axes);
+Rcpp::RObject rray__max(Rcpp::RObject x, Rcpp::RObject axes) {
+  DISPATCH_UNARY_ONE(rray__max_impl, x, axes);
 }
 
 // -----------------------------------------------------------------------------
 
 template <typename T>
-xt::rarray<T> rray__amin_impl(const xt::rarray<T>& x, Rcpp::RObject axes) {
+xt::rarray<T> rray__min_impl(const xt::rarray<T>& x, Rcpp::RObject axes) {
 
   if (r_is_null(axes)) {
     return xt::amin(x, xt::keep_dims);
@@ -146,8 +146,8 @@ xt::rarray<T> rray__amin_impl(const xt::rarray<T>& x, Rcpp::RObject axes) {
 }
 
 // [[Rcpp::export(rng = false)]]
-Rcpp::RObject rray__amin(Rcpp::RObject x, Rcpp::RObject axes) {
-  DISPATCH_UNARY_ONE(rray__amin_impl, x, axes);
+Rcpp::RObject rray__min(Rcpp::RObject x, Rcpp::RObject axes) {
+  DISPATCH_UNARY_ONE(rray__min_impl, x, axes);
 }
 
 // -----------------------------------------------------------------------------
