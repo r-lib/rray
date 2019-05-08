@@ -552,6 +552,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray__clip
+Rcpp::RObject rray__clip(Rcpp::RObject x, Rcpp::RObject low, Rcpp::RObject high);
+RcppExport SEXP _rray_rray__clip(SEXP xSEXP, SEXP lowSEXP, SEXP highSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type low(lowSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type high(highSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__clip(x, low, high));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray__erf
 Rcpp::RObject rray__erf(Rcpp::RObject x);
 RcppExport SEXP _rray_rray__erf(SEXP xSEXP) {
@@ -1055,6 +1067,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__remainder", (DL_FUNC) &_rray_rray__remainder, 2},
     {"_rray_rray__maximum", (DL_FUNC) &_rray_rray__maximum, 2},
     {"_rray_rray__minimum", (DL_FUNC) &_rray_rray__minimum, 2},
+    {"_rray_rray__clip", (DL_FUNC) &_rray_rray__clip, 3},
     {"_rray_rray__erf", (DL_FUNC) &_rray_rray__erf, 1},
     {"_rray_rray__erfc", (DL_FUNC) &_rray_rray__erfc, 1},
     {"_rray_rray__gamma", (DL_FUNC) &_rray_rray__gamma, 1},

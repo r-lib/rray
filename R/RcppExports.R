@@ -201,6 +201,10 @@ rray__minimum <- function(x, y) {
     .Call(`_rray_rray__minimum`, x, y)
 }
 
+rray__clip <- function(x, low, high) {
+    .Call(`_rray_rray__clip`, x, low, high)
+}
+
 rray__erf <- function(x) {
     .Call(`_rray_rray__erf`, x)
 }

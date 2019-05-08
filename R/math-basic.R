@@ -212,6 +212,50 @@ rray_multiply_add <- function(x, y, z) {
 
 # ------------------------------------------------------------------------------
 
+#' Bound the values of an array
+#'
+#' `rray_clip()` sets _inclusive_ lower and upper bounds on the values of `x`.
+#'
+#' @param x A vector, matrix, array or rray.
+#'
+#' @param low A single value. The lower bound. `low` is cast to the
+#' inner type of `x`.
+#'
+#' @param high A single value. The upper bound. `high` is cast to the
+#' inner type of `x`.
+#'
+#' @examples
+#'
+#' # bound `x` between 1 and 5
+#' x <- matrix(1:10, ncol = 2)
+#' rray_clip(x, 1, 5)
+#'
+#' @family math functions
+#' @export
+rray_clip <- function(x, low, high) {
+  inner <- rray_type_inner(x)
+  low <- vec_cast(low, inner)
+  high <- vec_cast(high, inner)
+
+  n_low <- vec_size(low)
+  if (n_low != 1L) {
+    glubort("`low` must have size 1, not {n_low}.")
+  }
+
+  n_high <- vec_size(high)
+  if (n_high != 1L) {
+    glubort("`high` must have size 1, not {n_high}.")
+  }
+
+  if (low > high) {
+    glubort("`low` must be less than or equal to `high`.")
+  }
+
+  rray_math_unary_base(rray__clip, x, low = low, high = high)
+}
+
+# ------------------------------------------------------------------------------
+
 rray_math_unary_base <- function(f, x, ...) {
   rray_arith_unary_base(f, x, ...)
 }

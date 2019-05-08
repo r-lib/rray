@@ -34,7 +34,8 @@ rray_sign(x)
 }
 \seealso{
 Other math functions: \code{\link{remainder}},
-  \code{\link{rray_abs}}, \code{\link{rray_maximum}},
+  \code{\link{rray_abs}}, \code{\link{rray_clip}},
+  \code{\link{rray_maximum}},
   \code{\link{rray_multiply_add}}
 }
 \concept{math functions}
