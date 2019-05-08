@@ -55,6 +55,11 @@ rray_math_unary_op_switch <- function(fun) {
     "round" = rray_round,
     "signif" = rray_signif,
 
+    # finite
+    "is.nan" = rray_is_nan,
+    "is.infinite" = rray_is_infinite,
+    "is.finite" = rray_is_finite,
+
     glubort("Unary math function not known: {fun}.")
   )
 }
