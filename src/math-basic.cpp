@@ -75,3 +75,57 @@ Rcpp::RObject rray__sign_impl(const xt::rarray<rlogical>& x) {
 Rcpp::RObject rray__sign(Rcpp::RObject x) {
   DISPATCH_UNARY(rray__sign_impl, x);
 }
+
+// -----------------------------------------------------------------------------
+
+template <typename T>
+xt::rarray<double> rray__fmod_impl(const xt::rarray<T>& x,
+                                   const xt::rarray<T>& y) {
+
+  Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
+
+  // If any dimension is size 0, return an empty double array with common dim
+  if (Rcpp::is_true(Rcpp::any(dim == 0))) {
+    xt::rarray<double> res(Rcpp::as<std::vector<std::size_t>>(dim));
+    return(res);
+  }
+
+  const int& dims = dim.size();
+  auto x_view = rray__increase_dims_view(x, dims);
+  auto y_view = rray__increase_dims_view(y, dims);
+
+  return xt::fmod(x_view, y_view);
+}
+
+// [[Rcpp::export(rng = false)]]
+Rcpp::RObject rray__fmod(Rcpp::RObject x, Rcpp::RObject y) {
+  DISPATCH_BINARY(rray__fmod_impl, x, y);
+}
+
+// -----------------------------------------------------------------------------
+
+template <typename T>
+xt::rarray<double> rray__remainder_impl(const xt::rarray<T>& x,
+                                        const xt::rarray<T>& y) {
+
+  Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
+
+  // If any dimension is size 0, return an empty double array with common dim
+  if (Rcpp::is_true(Rcpp::any(dim == 0))) {
+    xt::rarray<double> res(Rcpp::as<std::vector<std::size_t>>(dim));
+    return(res);
+  }
+
+  const int& dims = dim.size();
+  auto x_view = rray__increase_dims_view(x, dims);
+  auto y_view = rray__increase_dims_view(y, dims);
+
+  return xt::remainder(x_view, y_view);
+}
+
+// [[Rcpp::export(rng = false)]]
+Rcpp::RObject rray__remainder(Rcpp::RObject x, Rcpp::RObject y) {
+  DISPATCH_BINARY(rray__remainder_impl, x, y);
+}
+
+

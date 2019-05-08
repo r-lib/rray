@@ -134,6 +134,14 @@ test_that("rray_fmod() + rray_remainder() corner cases", {
   expect_equal(rray_remainder(Inf, Inf), new_array(NaN))
 })
 
+test_that("rray_fmod() + rray_remainder() 0 length cases", {
+  expect_equal(rray_fmod(logical(), TRUE), new_array(numeric()))
+  expect_equal(rray_fmod(logical(), matrix(1)), new_array(numeric(), c(0, 1)))
+
+  expect_equal(rray_remainder(logical(), TRUE), new_array(numeric()))
+  expect_equal(rray_remainder(logical(), matrix(1)), new_array(numeric(), c(0, 1)))
+})
+
 # ------------------------------------------------------------------------------
 
 context("test-multiply-add")

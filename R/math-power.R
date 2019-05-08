@@ -54,11 +54,5 @@ rray_cbrt <- function(x) {
 #' @rdname rray_square
 #' @export
 rray_hypot <- function(x, y) {
-  rray_math_binary_base2(rray__hypot, x, y)
-}
-
-# ------------------------------------------------------------------------------
-
-rray_math_binary_base2 <- function(f, x, y) {
-  rray_arith_binary_base(f, x, y)
+  rray_math_binary_base(rray__hypot, x, y)
 }

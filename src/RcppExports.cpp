@@ -508,6 +508,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray__fmod
+Rcpp::RObject rray__fmod(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__fmod(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__fmod(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__remainder
+Rcpp::RObject rray__remainder(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__remainder(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__remainder(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray__erf
 Rcpp::RObject rray__erf(Rcpp::RObject x);
 RcppExport SEXP _rray_rray__erf(SEXP xSEXP) {
@@ -1019,6 +1041,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__multiply_add", (DL_FUNC) &_rray_rray__multiply_add, 3},
     {"_rray_rray__abs", (DL_FUNC) &_rray_rray__abs, 1},
     {"_rray_rray__sign", (DL_FUNC) &_rray_rray__sign, 1},
+    {"_rray_rray__fmod", (DL_FUNC) &_rray_rray__fmod, 2},
+    {"_rray_rray__remainder", (DL_FUNC) &_rray_rray__remainder, 2},
     {"_rray_rray__erf", (DL_FUNC) &_rray_rray__erf, 1},
     {"_rray_rray__erfc", (DL_FUNC) &_rray_rray__erfc, 1},
     {"_rray_rray__gamma", (DL_FUNC) &_rray_rray__gamma, 1},

@@ -5,30 +5,6 @@
 // Math - Basic
 
 template <typename T1, typename T2>
-SEXP rray_fmod_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
-
-  using common_type = typename std::common_type<
-    typename xt::r_detail::get_underlying_value_type_r<T1>::type,
-    typename xt::r_detail::get_underlying_value_type_r<T2>::type
-  >::type;
-
-  const xt::rarray<common_type>& res = xt::fmod(x, y);
-  return res;
-}
-
-template <typename T1, typename T2>
-SEXP rray_remainder_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
-
-  using common_type = typename std::common_type<
-    typename xt::r_detail::get_underlying_value_type_r<T1>::type,
-    typename xt::r_detail::get_underlying_value_type_r<T2>::type
-  >::type;
-
-  const xt::rarray<common_type>& res = xt::remainder(x, y);
-  return res;
-}
-
-template <typename T1, typename T2>
 SEXP rray_maximum_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
 
   using common_type = typename std::common_type<
@@ -76,14 +52,6 @@ SEXP rray_op_binary_cpp_impl(const std::string& op,
 
   // ---------------------------------------------------------------------------
   // Math - Basic
-
-  case str2int("fmod"): {
-    return rray_fmod_cpp(x, y);
-  }
-
-  case str2int("remainder"): {
-    return rray_remainder_cpp(x, y);
-  }
 
   case str2int("maximum"): {
     return rray_maximum_cpp(x, y);

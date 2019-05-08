@@ -139,13 +139,13 @@ rray_sign <- function(x) {
 #' @family math functions
 #' @export
 rray_fmod <- function(x, y) {
-  rray_math_binary_base("fmod", x, y)
+  rray_math_binary_base(rray__fmod, x, y)
 }
 
 #' @rdname remainder
 #' @export
 rray_remainder <- function(x, y) {
-  rray_math_binary_base("remainder", x, y)
+  rray_math_binary_base(rray__remainder, x, y)
 }
 
 # ------------------------------------------------------------------------------
@@ -179,35 +179,11 @@ rray_multiply_add <- function(x, y, z) {
 # ------------------------------------------------------------------------------
 
 rray_math_unary_base <- function(f, x, ...) {
-  res <- f(x, ...)
-  res <- set_full_dim_names(res, dim_names(x))
-  vec_restore(res, x)
+  rray_arith_unary_base(f, x, ...)
 }
 
-rray_math_binary_base <- function(op, x, y) {
-  rray_arith_base_old(op, x, y)
-}
-
-rray_arith_base_old <- function(op, x, y) {
-
-  # precompute dimensionality and extend existing dims
-  # xtensor-r issue #57 until we have a fix (if ever)
-  dims <- rray_dims2(rray_dims(x), rray_dims(y))
-  x <- rray_dims_match(x, dims)
-  y <- rray_dims_match(y, dims)
-
-  # Get common dim_names and type
-  dim_nms <- rray_dim_names2(x, y)
-  restore_type <- vec_type2(x, y)
-
-  # Apply function
-  res <- rray_op_binary_cpp(op, x, y)
-
-  # Add dim names
-  dim_names(res) <- dim_nms
-
-  # Restore type
-  vec_restore(res, restore_type)
+rray_math_binary_base <- function(f, x, y) {
+  rray_arith_binary_base(f, x, y)
 }
 
 rray_math_trinary_base <- function(f, x, y, z) {

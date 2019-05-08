@@ -135,8 +135,8 @@ rray_opposite <- function(x) {
 
 # ------------------------------------------------------------------------------
 
-rray_arith_unary_base <- function(f, x) {
-  res <- f(x)
+rray_arith_unary_base <- function(f, x, ...) {
+  res <- f(x, ...)
   res <- set_full_dim_names(res, dim_names(x))
   vec_restore(res, x)
 }
