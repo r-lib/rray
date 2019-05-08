@@ -36,6 +36,11 @@ test_that("automatic casting occurs", {
   expect_is(x + TRUE, "vctrs_rray_int")
 })
 
+test_that("using logicals result in integers", {
+  x <- rray(TRUE)
+  expect_identical(x + TRUE, rray(2L))
+})
+
 # TODO Is this right?
 test_that("`NULL` arithmetic is an error", {
   expect_error(rray(1L) + NULL, "not permitted")
@@ -126,6 +131,11 @@ test_that("automatic casting occurs", {
 
   expect_is(x - 0, "vctrs_rray_dbl")
   expect_is(x - TRUE, "vctrs_rray_int")
+})
+
+test_that("using logicals result in integers", {
+  x <- rray(TRUE)
+  expect_identical(x - TRUE, rray(0L))
 })
 
 # TODO Is this right?
@@ -221,6 +231,11 @@ test_that("automatic casting occurs", {
   expect_is(x / TRUE, "vctrs_rray_dbl")
 })
 
+test_that("using logicals still results in doubles", {
+  x <- rray(TRUE)
+  expect_identical(x / TRUE, rray(1))
+})
+
 # TODO Is this right?
 test_that("`NULL` arithmetic is an error", {
   expect_error(rray(1L) / NULL, "not permitted")
@@ -314,6 +329,11 @@ test_that("automatic casting occurs", {
 
   expect_is(x * 1, "vctrs_rray_dbl")
   expect_is(x * TRUE, "vctrs_rray_int")
+})
+
+test_that("using logicals result in integers", {
+  x <- rray(TRUE)
+  expect_identical(x * TRUE, rray(1L))
 })
 
 # TODO Is this right?
