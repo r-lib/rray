@@ -371,7 +371,7 @@ test_that("shortcut operator works", {
 # ------------------------------------------------------------------------------
 context("test-arith-pow")
 
-# Uncomment after
+# TODO - Uncomment after
 # https://github.com/r-lib/vctrs/pull/313
 
 # test_that("works with scalars", {
