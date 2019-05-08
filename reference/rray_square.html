@@ -37,6 +37,8 @@ rray_square() - computes the elementwise square of x (i.e. x * x).
 rray_cube() - computes the elementwise cube of x (i.e. x * x * x).
 rray_sqrt() - computes the elementwise square root of x.
 rray_cbrt() - computes the elementwise cube root of x.
+rray_hypot() - computes the elementwise square root of the sum
+of squares of x and y.
 " />
 <meta name="twitter:card" content="summary" />
 
@@ -131,6 +133,8 @@ rray_cbrt() - computes the elementwise cube root of x.
 <li><p><code>rray_cube()</code> - computes the elementwise cube of <code>x</code> (i.e. <code>x * x * x</code>).</p></li>
 <li><p><code>rray_sqrt()</code> - computes the elementwise square root of <code>x</code>.</p></li>
 <li><p><code>rray_cbrt()</code> - computes the elementwise cube root of <code>x</code>.</p></li>
+<li><p><code>rray_hypot()</code> - computes the elementwise square root of the sum
+of squares of <code>x</code> and <code>y</code>.</p></li>
 </ul>
     
     </div>
@@ -141,13 +145,15 @@ rray_cbrt() - computes the elementwise cube root of x.
 
 <span class='fu'>rray_sqrt</span>(<span class='no'>x</span>)
 
-<span class='fu'>rray_cbrt</span>(<span class='no'>x</span>)</pre>
+<span class='fu'>rray_cbrt</span>(<span class='no'>x</span>)
+
+<span class='fu'>rray_hypot</span>(<span class='no'>x</span>, <span class='no'>y</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
+      <th>x, y</th>
       <td><p>A vector, matrix, array or rray.</p></td>
     </tr>
     </table>
@@ -170,6 +176,11 @@ rray_cbrt() - computes the elementwise cube root of x.
 #&gt; [1,] 1.259921
 #&gt; [2,] 1.587401
 #&gt; [3,] 1.817121</div><div class='input'>
+<span class='co'># With broadcasting</span>
+<span class='fu'>rray_hypot</span>(<span class='no'>x</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/t'>t</a></span>(<span class='no'>x</span>))</div><div class='output co'>#&gt;          [,1]     [,2]     [,3]
+#&gt; [1,] 2.828427 4.472136 6.324555
+#&gt; [2,] 4.472136 5.656854 7.211103
+#&gt; [3,] 6.324555 7.211103 8.485281</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
