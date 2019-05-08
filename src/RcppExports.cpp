@@ -147,48 +147,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rray_ones_cpp
-SEXP rray_ones_cpp(const std::vector<std::size_t>& shape);
-RcppExport SEXP _rray_rray_ones_cpp(SEXP shapeSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< const std::vector<std::size_t>& >::type shape(shapeSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray_ones_cpp(shape));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rray_zeros_cpp
-SEXP rray_zeros_cpp(const std::vector<std::size_t>& shape);
-RcppExport SEXP _rray_rray_zeros_cpp(SEXP shapeSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< const std::vector<std::size_t>& >::type shape(shapeSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray_zeros_cpp(shape));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rray_eye_cpp
-SEXP rray_eye_cpp(const std::vector<std::size_t> shape, int k);
-RcppExport SEXP _rray_rray_eye_cpp(SEXP shapeSEXP, SEXP kSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< const std::vector<std::size_t> >::type shape(shapeSEXP);
-    Rcpp::traits::input_parameter< int >::type k(kSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray_eye_cpp(shape, k));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rray_eye_square_cpp
-SEXP rray_eye_square_cpp(std::size_t n, int k);
-RcppExport SEXP _rray_rray_eye_square_cpp(SEXP nSEXP, SEXP kSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< std::size_t >::type n(nSEXP);
-    Rcpp::traits::input_parameter< int >::type k(kSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray_eye_square_cpp(n, k));
-    return rcpp_result_gen;
-END_RCPP
-}
 // rray__greater
 Rcpp::RObject rray__greater(Rcpp::RObject x, Rcpp::RObject y);
 RcppExport SEXP _rray_rray__greater(SEXP xSEXP, SEXP ySEXP) {
@@ -1030,10 +988,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__broadcast", (DL_FUNC) &_rray_rray__broadcast, 2},
     {"_rray_rray__full_like", (DL_FUNC) &_rray_rray__full_like, 2},
     {"_rray_rray__diag", (DL_FUNC) &_rray_rray__diag, 2},
-    {"_rray_rray_ones_cpp", (DL_FUNC) &_rray_rray_ones_cpp, 1},
-    {"_rray_rray_zeros_cpp", (DL_FUNC) &_rray_rray_zeros_cpp, 1},
-    {"_rray_rray_eye_cpp", (DL_FUNC) &_rray_rray_eye_cpp, 2},
-    {"_rray_rray_eye_square_cpp", (DL_FUNC) &_rray_rray_eye_square_cpp, 2},
     {"_rray_rray__greater", (DL_FUNC) &_rray_rray__greater, 2},
     {"_rray_rray__greater_equal", (DL_FUNC) &_rray_rray__greater_equal, 2},
     {"_rray_rray__lesser", (DL_FUNC) &_rray_rray__lesser, 2},

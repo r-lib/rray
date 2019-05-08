@@ -46,19 +46,23 @@ Rcpp::RObject rray__diag(Rcpp::RObject x, int k) {
 
 // -----------------------------------------------------------------------------
 
-// [[Rcpp::export(rng = false)]]
-SEXP rray_ones_cpp(const std::vector<std::size_t>& shape) {
-  xt::rarray<int> res = xt::ones<int>(shape);
-  return res;
-}
+// TODO - Blocked by https://github.com/QuantStack/xtensor/issues/1570
 
-// -----------------------------------------------------------------------------
-
-// [[Rcpp::export(rng = false)]]
-SEXP rray_zeros_cpp(const std::vector<std::size_t>& shape) {
-  xt::rarray<int> res = xt::zeros<int>(shape);
-  return res;
-}
+// template <typename T>
+// xt::rarray<T> rray__pull_diagonal_impl(const xt::rarray<T>& x,
+//                                        int offset,
+//                                        std::size_t axis_1,
+//                                        std::size_t axis_2) {
+//   return xt::diagonal(x, offset, axis_1, axis_2);
+// }
+//
+// // [[Rcpp::export(rng = false)]]
+// Rcpp::RObject rray__pull_diagonal(Rcpp::RObject x,
+//                                   int offset,
+//                                   std::size_t axis_1,
+//                                   std::size_t axis_2) {
+//   DISPATCH_UNARY_THREE(rray__pull_diagonal_impl, x, offset, axis_1, axis_2);
+// }
 
 // -----------------------------------------------------------------------------
 
@@ -67,16 +71,16 @@ SEXP rray_zeros_cpp(const std::vector<std::size_t>& shape) {
 
 // TODO - eye_square with negative k not working?
 
-// [[Rcpp::export(rng = false)]]
-SEXP rray_eye_cpp(const std::vector<std::size_t> shape, int k = 0) {
-  xt::rarray<int> res = xt::eye<int>(shape, k);
-  return res;
-}
-
-// [[Rcpp::export(rng = false)]]
-SEXP rray_eye_square_cpp(std::size_t n, int k = 0) {
-  xt::rarray<int> res = xt::eye<int>(n, k);
-  return res;
-}
+// // [[Rcpp::export(rng = false)]]
+// SEXP rray_eye_cpp(const std::vector<std::size_t> shape, int k = 0) {
+//   xt::rarray<int> res = xt::eye<int>(shape, k);
+//   return res;
+// }
+//
+// // [[Rcpp::export(rng = false)]]
+// SEXP rray_eye_square_cpp(std::size_t n, int k = 0) {
+//   xt::rarray<int> res = xt::eye<int>(n, k);
+//   return res;
+// }
 
 // -----------------------------------------------------------------------------

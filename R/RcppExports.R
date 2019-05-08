@@ -53,22 +53,6 @@ rray__diag <- function(x, k) {
     .Call(`_rray_rray__diag`, x, k)
 }
 
-rray_ones_cpp <- function(shape) {
-    .Call(`_rray_rray_ones_cpp`, shape)
-}
-
-rray_zeros_cpp <- function(shape) {
-    .Call(`_rray_rray_zeros_cpp`, shape)
-}
-
-rray_eye_cpp <- function(shape, k = 0L) {
-    .Call(`_rray_rray_eye_cpp`, shape, k)
-}
-
-rray_eye_square_cpp <- function(n, k = 0L) {
-    .Call(`_rray_rray_eye_square_cpp`, n, k)
-}
-
 rray__greater <- function(x, y) {
     .Call(`_rray_rray__greater`, x, y)
 }
