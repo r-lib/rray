@@ -93,6 +93,14 @@ rray__not_equal <- function(x, y) {
     .Call(`_rray_rray__not_equal`, x, y)
 }
 
+rray__all_equal <- function(x, y) {
+    .Call(`_rray_rray__all_equal`, x, y)
+}
+
+rray__any_not_equal <- function(x, y) {
+    .Call(`_rray_rray__any_not_equal`, x, y)
+}
+
 rray__dim <- function(x) {
     .Call(`_rray_rray__dim`, x)
 }

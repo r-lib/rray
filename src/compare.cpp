@@ -155,3 +155,40 @@ xt::rarray<rlogical> rray__not_equal_impl(const xt::rarray<T>& x, const xt::rarr
 Rcpp::RObject rray__not_equal(Rcpp::RObject x, Rcpp::RObject y) {
   DISPATCH_BINARY(rray__not_equal_impl, x, y);
 }
+
+// -----------------------------------------------------------------------------
+// Strict equality
+
+// - No broadcasting is performed (the shape is part of the check)
+// - At the R level, the types are allowed to be different and a FALSE is
+//   returned in those cases before we get here. This checks the actual values
+//   and shape
+
+template <typename T>
+xt::rarray<rlogical> rray__all_equal_impl(const xt::rarray<T>& x,
+                                          const xt::rarray<T>& y) {
+  xt::rarray<rlogical> res = (x == y);
+  return res;
+}
+
+// [[Rcpp::export(rng = false)]]
+Rcpp::RObject rray__all_equal(Rcpp::RObject x, Rcpp::RObject y) {
+  DISPATCH_BINARY(rray__all_equal_impl, x, y);
+}
+
+// -----------------------------------------------------------------------------
+// Strict in-equality
+
+template <typename T>
+xt::rarray<rlogical> rray__any_not_equal_impl(const xt::rarray<T>& x,
+                                              const xt::rarray<T>& y) {
+  xt::rarray<rlogical> res = (x != y);
+  return res;
+}
+
+// [[Rcpp::export(rng = false)]]
+Rcpp::RObject rray__any_not_equal(Rcpp::RObject x, Rcpp::RObject y) {
+  DISPATCH_BINARY(rray__any_not_equal_impl, x, y);
+}
+
+// -----------------------------------------------------------------------------

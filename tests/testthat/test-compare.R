@@ -396,3 +396,82 @@ test_that("dimension names are kept", {
   )
 })
 
+# ------------------------------------------------------------------------------
+context("test-all-equal")
+
+test_that("equality is checked", {
+  expect_true(rray_all_equal(1, 1))
+  expect_true(rray_all_equal(1L, 1L))
+  expect_true(rray_all_equal(matrix(1), matrix(1)))
+
+  expect_false(rray_all_equal(1, 2))
+  expect_false(rray_all_equal(1L, 2L))
+  expect_false(rray_all_equal(matrix(1), matrix(2)))
+})
+
+test_that("dimension names don't matter", {
+  x <- rray(1, dim_names = list("hi"))
+  expect_true(rray_all_equal(x, rray(1)))
+})
+
+test_that("underlying type matters", {
+  expect_false(rray_all_equal(1, 1L))
+})
+
+test_that("class matters", {
+  expect_false(rray_all_equal(rray(1), array(1)))
+})
+
+test_that("broadcasting is not performed", {
+  expect_false(rray_all_equal(c(1, 1), 1))
+})
+
+test_that("works with 0 length input", {
+  expect_true(rray_all_equal(double(), double()))
+  expect_false(rray_all_equal(double(), logical()))
+})
+
+test_that("works with NULL input", {
+  expect_false(rray_all_equal(double(), NULL))
+  expect_equal(rray_all_equal(NULL, NULL), TRUE)
+})
+
+# ------------------------------------------------------------------------------
+context("test-any-not-equal")
+
+test_that("equality is checked", {
+  expect_true(rray_any_not_equal(1, 2))
+  expect_true(rray_any_not_equal(1L, 2L))
+  expect_true(rray_any_not_equal(matrix(1), matrix(2)))
+
+  expect_false(rray_any_not_equal(1, 1))
+  expect_false(rray_any_not_equal(1L, 1L))
+  expect_false(rray_any_not_equal(matrix(1), matrix(1)))
+})
+
+test_that("dimension names don't matter", {
+  x <- rray(1, dim_names = list("hi"))
+  expect_false(rray_any_not_equal(x, rray(1)))
+})
+
+test_that("underlying type matters", {
+  expect_true(rray_any_not_equal(1, 1L))
+})
+
+test_that("class matters", {
+  expect_true(rray_any_not_equal(rray(1), array(1)))
+})
+
+test_that("broadcasting is not performed", {
+  expect_true(rray_any_not_equal(c(1, 1), 1))
+})
+
+test_that("works with 0 length input", {
+  expect_false(rray_any_not_equal(double(), double()))
+  expect_true(rray_any_not_equal(double(), logical()))
+})
+
+test_that("works with NULL input", {
+  expect_true(rray_any_not_equal(double(), NULL))
+  expect_equal(rray_any_not_equal(NULL, NULL), FALSE)
+})

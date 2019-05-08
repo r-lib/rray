@@ -125,6 +125,75 @@ rray_not_equal <- function(x, y) {
 
 # ------------------------------------------------------------------------------
 
+#' Strictly compare arrays
+#'
+#' @description
+#'
+#' Unlike [rray_equal()] and [rray_not_equal()], these functions perform a
+#' strict comparison of two arrays, and return a single logical value.
+#' Specifically:
+#'
+#' - Broadcasting is _not_ performed here, as the shape is part of the comparison.
+#'
+#' - The underlying type of the values matter, and `1` is treated
+#' as different from `1L`.
+#'
+#' - Otherwise, attributes are not compared, so dimension names are ignored.
+#'
+#' @param x,y Vectors, matrices, arrays, or rrays.
+#'
+#' @examples
+#' # This is definitely true!
+#' rray_all_equal(1, 1)
+#'
+#' # Different types!
+#' rray_all_equal(1, 1L)
+#'
+#' # Different types!
+#' rray_all_equal(rray(1), matrix(1))
+#'
+#' # Different shapes!
+#' rray_all_equal(matrix(1), matrix(1, nrow = 2))
+#'
+#' # Are any values different?
+#' rray_any_not_equal(c(1, 1), c(1, 2))
+#'
+#' # Is the shape different?
+#' rray_any_not_equal(1, c(1, 2))
+#'
+#' # Dimension names don't matter
+#' x <- matrix(1, dimnames = list("foo", "bar"))
+#' rray_all_equal(x, matrix(1))
+#'
+#' @export
+rray_all_equal <- function(x, y) {
+  if (!identical(class(x), class(y))) {
+    return(FALSE)
+  }
+
+  if (is.null(x) && is.null(y)) {
+    return(TRUE)
+  }
+
+  rray__all_equal(x, y)
+}
+
+#' @rdname rray_all_equal
+#' @export
+rray_any_not_equal <- function(x, y) {
+  if (!identical(class(x), class(y))) {
+    return(TRUE)
+  }
+
+  if (is.null(x) && is.null(y)) {
+    return(FALSE)
+  }
+
+  rray__any_not_equal(x, y)
+}
+
+# ------------------------------------------------------------------------------
+
 cast_compare <- function(f, x, y) {
 
   # `NULL` are treated like logical()

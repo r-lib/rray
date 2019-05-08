@@ -255,6 +255,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray__all_equal
+Rcpp::RObject rray__all_equal(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__all_equal(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__all_equal(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__any_not_equal
+Rcpp::RObject rray__any_not_equal(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__any_not_equal(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__any_not_equal(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray__dim
 Rcpp::IntegerVector rray__dim(const Rcpp::RObject& x);
 RcppExport SEXP _rray_rray__dim(SEXP xSEXP) {
@@ -963,6 +985,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__lesser_equal", (DL_FUNC) &_rray_rray__lesser_equal, 2},
     {"_rray_rray__equal", (DL_FUNC) &_rray_rray__equal, 2},
     {"_rray_rray__not_equal", (DL_FUNC) &_rray_rray__not_equal, 2},
+    {"_rray_rray__all_equal", (DL_FUNC) &_rray_rray__all_equal, 2},
+    {"_rray_rray__any_not_equal", (DL_FUNC) &_rray_rray__any_not_equal, 2},
     {"_rray_rray__dim", (DL_FUNC) &_rray_rray__dim, 1},
     {"_rray_rray__dim2", (DL_FUNC) &_rray_rray__dim2, 2},
     {"_rray_rray__dims", (DL_FUNC) &_rray_rray__dims, 1},

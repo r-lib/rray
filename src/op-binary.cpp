@@ -2,21 +2,6 @@
 #include <tools/tools.h>
 
 // -----------------------------------------------------------------------------
-// Operators
-
-template <typename T1, typename T2>
-SEXP rray_equality_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
-  Rcpp::LogicalVector res = Rcpp::LogicalVector::create(x == y);
-  return res;
-}
-
-template <typename T1, typename T2>
-SEXP rray_inequality_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
-  Rcpp::LogicalVector res = Rcpp::LogicalVector::create(x != y);
-  return res;
-}
-
-// -----------------------------------------------------------------------------
 // Math - Basic
 
 template <typename T1, typename T2>
@@ -103,17 +88,6 @@ SEXP rray_op_binary_cpp_impl(const std::string& op,
                              const xt::rarray<T2>& y) {
 
   switch(str2int(op.c_str())) {
-
-  // ---------------------------------------------------------------------------
-  // Operators
-
-  case str2int("equality"): {
-    return rray_equality_cpp(x, y);
-  }
-
-  case str2int("inequality"): {
-    return rray_inequality_cpp(x, y);
-  }
 
   // ---------------------------------------------------------------------------
   // Math - Basic
