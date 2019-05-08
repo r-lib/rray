@@ -878,6 +878,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray__sum
+Rcpp::RObject rray__sum(Rcpp::RObject x, Rcpp::RObject axes);
+RcppExport SEXP _rray_rray__sum(SEXP xSEXP, SEXP axesSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type axes(axesSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__sum(x, axes));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray_reducer_cpp
 SEXP rray_reducer_cpp(std::string op, SEXP x, SEXP axes);
 RcppExport SEXP _rray_rray_reducer_cpp(SEXP opSEXP, SEXP xSEXP, SEXP axesSEXP) {
@@ -1057,6 +1068,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__sort", (DL_FUNC) &_rray_rray__sort, 2},
     {"_rray_rray__max_pos", (DL_FUNC) &_rray_rray__max_pos, 2},
     {"_rray_rray__min_pos", (DL_FUNC) &_rray_rray__min_pos, 2},
+    {"_rray_rray__sum", (DL_FUNC) &_rray_rray__sum, 2},
     {"_rray_rray_reducer_cpp", (DL_FUNC) &_rray_rray_reducer_cpp, 3},
     {"_rray_rray__subset_assign", (DL_FUNC) &_rray_rray__subset_assign, 3},
     {"_rray_is_any_na_int", (DL_FUNC) &_rray_is_any_na_int, 1},

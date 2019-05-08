@@ -67,7 +67,7 @@ test_that("reducing base types maintains type", {
   x_arr <- as.array(x)
 
   expect_is(rray_sum(x_mat, 1), "matrix")
-  expect_is(rray_sum(x_arr, 1), "numeric")
+  expect_equal(storage.mode(rray_sum(x_arr, 1)), "double")
 
   expect_equal(vec_dim(rray_sum(x_mat, 1)), c(1, 1))
 

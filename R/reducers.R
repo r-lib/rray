@@ -19,6 +19,19 @@ rray_reducer_base <- function(reducer, x, axes) {
   vec_restore(res, x)
 }
 
+rray_reducer_base_new <- function(f, x, axes) {
+
+  axes <- vec_cast(axes, integer())
+  validate_axes(axes, x)
+
+  res <- f(x, as_cpp_idx(axes))
+
+  new_dim_names <- restore_dim_names(dim_names(x), rray_dim(res))
+  res <- set_full_dim_names(res, new_dim_names)
+
+  vec_restore(res, x)
+}
+
 # ------------------------------------------------------------------------------
 # Reducers
 
@@ -65,7 +78,7 @@ rray_reducer_base <- function(reducer, x, axes) {
 #' @export
 #' @family reducers
 rray_sum <- function(x, axes = NULL) {
-  rray_reducer_base("sum", x, axes = axes)
+  rray_reducer_base_new(rray__sum, x, axes)
 }
 
 #' Calculate the product along an axis

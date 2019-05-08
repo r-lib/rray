@@ -329,6 +329,10 @@ rray__min_pos <- function(x, axis) {
     .Call(`_rray_rray__min_pos`, x, axis)
 }
 
+rray__sum <- function(x, axes) {
+    .Call(`_rray_rray__sum`, x, axes)
+}
+
 rray_reducer_cpp <- function(op, x, axes) {
     .Call(`_rray_rray_reducer_cpp`, op, x, axes)
 }

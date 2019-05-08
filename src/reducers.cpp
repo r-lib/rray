@@ -1,16 +1,30 @@
 #include <rray.h>
+#include <dispatch.h>
 #include <tools/tools.h>
 
-template <typename T>
-xt::rarray<T> rray_sum_cpp(const xt::rarray<T>& x, SEXP axes) {
+// -----------------------------------------------------------------------------
 
-  if (Rf_isNull(axes)) {
-    return xt::sum(x);
+// guard against integer overflow
+
+template <typename T>
+xt::rarray<double> rray__sum_impl(const xt::rarray<T>& x, Rcpp::RObject axes) {
+
+  if (r_is_null(axes)) {
+    return xt::sum(x, xt::keep_dims);
   }
 
-  std::vector<std::size_t> axes_cpp = Rcpp::as<std::vector<std::size_t>>(axes);
-  return xt::sum(x, axes_cpp);
+  using size_vec = typename std::vector<std::size_t>;
+  size_vec xt_axes = Rcpp::as<size_vec>(axes);
+
+  return xt::sum(x, xt_axes, xt::keep_dims);
 }
+
+// [[Rcpp::export(rng = false)]]
+Rcpp::RObject rray__sum(Rcpp::RObject x, Rcpp::RObject axes) {
+  DISPATCH_UNARY_ONE(rray__sum_impl, x, axes);
+}
+
+// -----------------------------------------------------------------------------
 
 template <typename T>
 xt::rarray<T> rray_prod_cpp(const xt::rarray<T>& x, SEXP axes) {
@@ -87,10 +101,6 @@ SEXP rray_reducer_cpp_impl(std::string op, xt::rarray<T> x, SEXP axes) {
 
   switch(str2int(op.c_str())) {
 
-  case str2int("sum"): {
-    return rray_sum_cpp(x, axes);
-  }
-
   case str2int("prod"): {
     return rray_prod_cpp(x, axes);
   }
@@ -134,10 +144,6 @@ SEXP rray_reducer_cpp_impl(std::string op, xt::rarray<T> x, SEXP axes) {
 SEXP rray_int_reducer_cpp_impl(std::string op, xt::rarray<int> x, SEXP axes) {
 
   switch(str2int(op.c_str())) {
-
-  case str2int("sum"): {
-    return rray_sum_cpp(xt::rarray<double>(x), axes);
-  }
 
   case str2int("prod"): {
     return rray_prod_cpp(xt::rarray<double>(x), axes);
