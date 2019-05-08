@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Fused multiply-add — rray_multiply_add • rray</title>
+<title>Bound the values of an array — rray_clip • rray</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,10 +30,9 @@
 
 
 
-<meta property="og:title" content="Fused multiply-add — rray_multiply_add" />
+<meta property="og:title" content="Bound the values of an array — rray_clip" />
 
-<meta property="og:description" content="rray_multiply_add() computes x * y + z, with broadcasting.
-It is more efficient than simply doing those operations in sequence." />
+<meta property="og:description" content="rray_clip() sets inclusive lower and upper bounds on the values of x." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -115,56 +114,55 @@ It is more efficient than simply doing those operations in sequence." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Fused multiply-add</h1>
+    <h1>Bound the values of an array</h1>
     <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/math-basic.R'><code>R/math-basic.R</code></a></small>
-    <div class="hidden name"><code>rray_multiply_add.Rd</code></div>
+    <div class="hidden name"><code>rray_clip.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p><code>rray_multiply_add()</code> computes <code>x * y + z</code>, with broadcasting.
-It is more efficient than simply doing those operations in sequence.</p>
+    <p><code>rray_clip()</code> sets <em>inclusive</em> lower and upper bounds on the values of <code>x</code>.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>rray_multiply_add</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='no'>z</span>)</pre>
+    <pre class="usage"><span class='fu'>rray_clip</span>(<span class='no'>x</span>, <span class='no'>low</span>, <span class='no'>high</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x, y, z</th>
+      <th>x</th>
       <td><p>A vector, matrix, array or rray.</p></td>
+    </tr>
+    <tr>
+      <th>low</th>
+      <td><p>A single value. The lower bound. <code>low</code> is cast to the
+inner type of <code>x</code>.</p></td>
+    </tr>
+    <tr>
+      <th>high</th>
+      <td><p>A single value. The upper bound. <code>high</code> is cast to the
+inner type of <code>x</code>.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p>Other math functions: <code><a href='remainder.html'>remainder</a></code>,
-  <code><a href='rray_abs.html'>rray_abs</a></code>, <code><a href='rray_clip.html'>rray_clip</a></code>,
-  <code><a href='rray_maximum.html'>rray_maximum</a></code>, <code><a href='rray_sign.html'>rray_sign</a></code></p></div>
+  <code><a href='rray_abs.html'>rray_abs</a></code>, <code><a href='rray_maximum.html'>rray_maximum</a></code>,
+  <code><a href='rray_multiply_add.html'>rray_multiply_add</a></code>, <code><a href='rray_sign.html'>rray_sign</a></code></p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># 2 * 3 + 5</span>
-<span class='fu'>rray_multiply_add</span>(<span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>5</span>)</div><div class='output co'>#&gt; [1] 11</div><div class='input'>
-<span class='co'># Using broadcasting</span>
-<span class='fu'>rray_multiply_add</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fl'>1</span>:<span class='fl'>5</span>), <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fl'>1</span>:<span class='fl'>2</span>, <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='fl'>1L</span>), <span class='fl'>3L</span>)</div><div class='output co'>#&gt;      [,1] [,2]
-#&gt; [1,]    4    5
-#&gt; [2,]    5    7
-#&gt; [3,]    6    9
-#&gt; [4,]    7   11
-#&gt; [5,]    8   13</div><div class='input'>
-<span class='co'># ^ Equivalent to:</span>
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fl'>1</span>:<span class='fl'>5</span>, <span class='fl'>2</span>), <span class='kw'>ncol</span> <span class='kw'>=</span> <span class='fl'>2</span>)
-<span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fl'>1</span>:<span class='fl'>2</span>, <span class='fl'>5</span>), <span class='kw'>byrow</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>ncol</span> <span class='kw'>=</span> <span class='fl'>2</span>)
-<span class='no'>z</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fl'>3L</span>, <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='fl'>5</span>, <span class='kw'>ncol</span> <span class='kw'>=</span> <span class='fl'>2</span>)
-<span class='no'>x</span> * <span class='no'>y</span> + <span class='no'>z</span></div><div class='output co'>#&gt;      [,1] [,2]
-#&gt; [1,]    4    5
-#&gt; [2,]    5    7
-#&gt; [3,]    6    9
-#&gt; [4,]    7   11
-#&gt; [5,]    8   13</div><div class='input'>
+    <pre class="examples"><div class='input'>
+<span class='co'># bound `x` between 1 and 5</span>
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fl'>1</span>:<span class='fl'>10</span>, <span class='kw'>ncol</span> <span class='kw'>=</span> <span class='fl'>2</span>)
+<span class='fu'>rray_clip</span>(<span class='no'>x</span>, <span class='fl'>1</span>, <span class='fl'>5</span>)</div><div class='output co'>#&gt;      [,1] [,2]
+#&gt; [1,]    1    5
+#&gt; [2,]    2    5
+#&gt; [3,]    3    5
+#&gt; [4,]    4    5
+#&gt; [5,]    5    5</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
