@@ -281,6 +281,10 @@ rray__cbrt <- function(x) {
     .Call(`_rray_rray__cbrt`, x)
 }
 
+rray__hypot <- function(x, y) {
+    .Call(`_rray_rray__hypot`, x, y)
+}
+
 rray__sin <- function(x) {
     .Call(`_rray_rray__sin`, x)
 }

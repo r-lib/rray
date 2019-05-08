@@ -65,21 +65,6 @@ SEXP rray_fdim_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
 }
 
 // -----------------------------------------------------------------------------
-// Math - Power
-
-template <typename T1, typename T2>
-SEXP rray_hypot_cpp(const xt::rarray<T1>& x, const xt::rarray<T2>& y) {
-
-  using common_type = typename std::common_type<
-    typename xt::r_detail::get_underlying_value_type_r<T1>::type,
-    typename xt::r_detail::get_underlying_value_type_r<T2>::type
-  >::type;
-
-  const xt::rarray<common_type>& res = xt::hypot(x, y);
-  return res;
-}
-
-// -----------------------------------------------------------------------------
 // Switch on the op
 
 template <typename T1, typename T2>
@@ -110,13 +95,6 @@ SEXP rray_op_binary_cpp_impl(const std::string& op,
 
   case str2int("fdim"): {
     return rray_fdim_cpp(x, y);
-  }
-
-  // ---------------------------------------------------------------------------
-  // Math - Power
-
-  case str2int("hypot"): {
-    return rray_hypot_cpp(x, y);
   }
 
   default: {

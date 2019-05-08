@@ -5,6 +5,7 @@
 \alias{rray_cube}
 \alias{rray_sqrt}
 \alias{rray_cbrt}
+\alias{rray_hypot}
 \title{Power functions}
 \usage{
 rray_square(x)
@@ -14,9 +15,11 @@ rray_cube(x)
 rray_sqrt(x)
 
 rray_cbrt(x)
+
+rray_hypot(x, y)
 }
 \arguments{
-\item{x}{A vector, matrix, array or rray.}
+\item{x, y}{A vector, matrix, array or rray.}
 }
 \description{
 \itemize{
@@ -24,6 +27,8 @@ rray_cbrt(x)
 \item \code{rray_cube()} - computes the elementwise cube of \code{x} (i.e. \code{x * x * x}).
 \item \code{rray_sqrt()} - computes the elementwise square root of \code{x}.
 \item \code{rray_cbrt()} - computes the elementwise cube root of \code{x}.
+\item \code{rray_hypot()} - computes the elementwise square root of the sum
+of squares of \code{x} and \code{y}.
 }
 }
 \examples{
@@ -34,6 +39,9 @@ rray_sqrt(x)
 
 rray_cube(x)
 rray_cbrt(x)
+
+# With broadcasting
+rray_hypot(x, t(x))
 
 }
 \concept{power math functions}

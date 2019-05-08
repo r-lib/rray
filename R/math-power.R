@@ -10,7 +10,10 @@
 #'
 #' - `rray_cbrt()` - computes the elementwise cube root of `x`.
 #'
-#' @param x A vector, matrix, array or rray.
+#' - `rray_hypot()` - computes the elementwise square root of the sum
+#' of squares of `x` and `y`.
+#'
+#' @param x,y A vector, matrix, array or rray.
 #'
 #' @examples
 #' x <- matrix(c(2, 4, 6))
@@ -20,6 +23,9 @@
 #'
 #' rray_cube(x)
 #' rray_cbrt(x)
+#'
+#' # With broadcasting
+#' rray_hypot(x, t(x))
 #'
 #' @family power math functions
 #' @export
@@ -45,5 +51,14 @@ rray_cbrt <- function(x) {
   rray_math_unary_base(rray__cbrt, x)
 }
 
+#' @rdname rray_square
+#' @export
+rray_hypot <- function(x, y) {
+  rray_math_binary_base2(rray__hypot, x, y)
+}
+
 # ------------------------------------------------------------------------------
 
+rray_math_binary_base2 <- function(f, x, y) {
+  rray_arith_binary_base(f, x, y)
+}
