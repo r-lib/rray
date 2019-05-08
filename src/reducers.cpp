@@ -1,204 +1,153 @@
 #include <rray.h>
+#include <dispatch.h>
 #include <tools/tools.h>
 
-template <typename T>
-xt::rarray<T> rray_sum_cpp(const xt::rarray<T>& x, SEXP axes) {
-
-  if (Rf_isNull(axes)) {
-    return xt::sum(x);
-  }
-
-  std::vector<std::size_t> axes_cpp = Rcpp::as<std::vector<std::size_t>>(axes);
-  return xt::sum(x, axes_cpp);
-}
-
-template <typename T>
-xt::rarray<T> rray_prod_cpp(const xt::rarray<T>& x, SEXP axes) {
-
-  if (Rf_isNull(axes)) {
-    return xt::prod(x);
-  }
-
-  std::vector<std::size_t> axes_cpp = Rcpp::as<std::vector<std::size_t>>(axes);
-  return xt::prod(x, axes_cpp);
-}
-
-
-template <typename T>
-xt::rarray<T> rray_mean_cpp(const xt::rarray<T>& x, SEXP axes) {
-
-  if (Rf_isNull(axes)) {
-    return xt::mean(x);
-  }
-
-  std::vector<std::size_t> axes_cpp = Rcpp::as<std::vector<std::size_t>>(axes);
-  return xt::mean(x, axes_cpp);
-}
-
-// template <typename T>
-// xt::rarray<T> rray_variance_cpp(const xt::rarray<T>& x, SEXP axes) {
-//
-//   if (Rf_isNull(axes)) {
-//     return xt::variance(x);
-//   }
-//
-//   std::vector<std::size_t> axes_cpp = as<std::vector<std::size_t>>(axes);
-//   return xt::variance(x, axes_cpp);
-// }
-//
-// template <typename T>
-// xt::rarray<T> rray_stddev_cpp(const xt::rarray<T>& x, SEXP axes) {
-//
-//   if (Rf_isNull(axes)) {
-//     return xt::stddev(x);
-//   }
-//
-//   std::vector<std::size_t> axes_cpp = as<std::vector<std::size_t>>(axes);
-//   return xt::stddev(x, axes_cpp);
-// }
-
-template <typename T>
-xt::rarray<T> rray_amax_cpp(const xt::rarray<T>& x, SEXP axes) {
-
-  if (Rf_isNull(axes)) {
-    return xt::amax(x);
-  }
-
-  std::vector<std::size_t> axes_cpp = Rcpp::as<std::vector<std::size_t>>(axes);
-  return xt::amax(x, axes_cpp);
-}
-
-template <typename T>
-xt::rarray<T> rray_amin_cpp(const xt::rarray<T>& x, SEXP axes) {
-
-  if (Rf_isNull(axes)) {
-    return xt::amin(x);
-  }
-
-  std::vector<std::size_t> axes_cpp = Rcpp::as<std::vector<std::size_t>>(axes);
-  return xt::amin(x, axes_cpp);
-}
-
 // -----------------------------------------------------------------------------
-// Switch on the op
+
+// guard against integer overflow
 
 template <typename T>
-SEXP rray_reducer_cpp_impl(std::string op, xt::rarray<T> x, SEXP axes) {
+xt::rarray<double> rray__sum_impl(const xt::rarray<T>& x, Rcpp::RObject axes) {
 
-  switch(str2int(op.c_str())) {
-
-  case str2int("sum"): {
-    return rray_sum_cpp(x, axes);
+  if (r_is_null(axes)) {
+    return xt::sum(x, xt::keep_dims);
   }
 
-  case str2int("prod"): {
-    return rray_prod_cpp(x, axes);
-  }
+  using size_vec = typename std::vector<std::size_t>;
+  size_vec xt_axes = Rcpp::as<size_vec>(axes);
 
-  case str2int("mean"): {
-    return rray_mean_cpp(x, axes);
-  }
-
-  // case str2int("variance"): {
-  //   return rray_variance_cpp(x, axes);
-  // }
-  //
-  // case str2int("stddev"): {
-  //   return rray_stddev_cpp(x, axes);
-  // }
-
-  case str2int("amax"): {
-    return rray_amax_cpp(x, axes);
-  }
-
-  case str2int("amin"): {
-    return rray_amin_cpp(x, axes);
-  }
-
-  default: {
-    Rcpp::stop("Unknown reducing operation.");
-  }
-
-  }
-
+  return xt::sum(x, xt_axes, xt::keep_dims);
 }
-
-// -----------------------------------------------------------------------------
-// Integer input is special cased
-
-// Some reducers need to return a double for stability. This aligns with
-// what base R does as well. (Except for sum, which in base R sometimes
-// gives an int and sometimes a double based on whether overflow is going
-// to happen or not)
-
-SEXP rray_int_reducer_cpp_impl(std::string op, xt::rarray<int> x, SEXP axes) {
-
-  switch(str2int(op.c_str())) {
-
-  case str2int("sum"): {
-    return rray_sum_cpp(xt::rarray<double>(x), axes);
-  }
-
-  case str2int("prod"): {
-    return rray_prod_cpp(xt::rarray<double>(x), axes);
-  }
-
-  case str2int("mean"): {
-    return rray_mean_cpp(xt::rarray<double>(x), axes);
-  }
-
-  // case str2int("variance"): {
-  //   return rray_variance_cpp(xt::rarray<double>(x), axes);
-  // }
-  //
-  // case str2int("stddev"): {
-  //   return rray_stddev_cpp(xt::rarray<double>(x), axes);
-  // }
-
-  case str2int("amax"): {
-    return rray_amax_cpp(x, axes);
-  }
-
-  case str2int("amin"): {
-    return rray_amin_cpp(x, axes);
-  }
-
-  default: {
-    Rcpp::stop("Unknown reducing operation.");
-  }
-
-  }
-
-}
-
-// -----------------------------------------------------------------------------
-// Switch on the type of x
 
 // [[Rcpp::export(rng = false)]]
-SEXP rray_reducer_cpp(std::string op, SEXP x, SEXP axes) {
+Rcpp::RObject rray__sum(Rcpp::RObject x, Rcpp::RObject axes) {
+  DISPATCH_UNARY_ONE(rray__sum_impl, x, axes);
+}
 
-  // Switch on X
-  switch(TYPEOF(x)) {
+// -----------------------------------------------------------------------------
 
-    case REALSXP: {
-      auto x_rray = Rcpp::as<xt::rarray<double>>(x);
-      return rray_reducer_cpp_impl(op, x_rray, axes);
-    }
+template <typename T>
+xt::rarray<double> rray__prod_impl(const xt::rarray<T>& x, Rcpp::RObject axes) {
 
-    case INTSXP: {
-      auto x_rray = Rcpp::as<xt::rarray<int>>(x);
-      return rray_int_reducer_cpp_impl(op, x_rray, axes);
-    }
-
-    case LGLSXP: {
-      auto x_rray = Rcpp::as<xt::rarray<rlogical>>(x);
-      return rray_reducer_cpp_impl(op, x_rray, axes);
-    }
-
-    default: {
-      error_unknown_type();
-    }
-
+  if (r_is_null(axes)) {
+    return xt::prod(x, xt::keep_dims);
   }
 
+  using size_vec = typename std::vector<std::size_t>;
+  size_vec xt_axes = Rcpp::as<size_vec>(axes);
+
+  return xt::prod(x, xt_axes, xt::keep_dims);
 }
+
+// [[Rcpp::export(rng = false)]]
+Rcpp::RObject rray__prod(Rcpp::RObject x, Rcpp::RObject axes) {
+  DISPATCH_UNARY_ONE(rray__prod_impl, x, axes);
+}
+
+// -----------------------------------------------------------------------------
+
+template <typename T>
+xt::rarray<double> rray__mean_impl(const xt::rarray<T>& x, Rcpp::RObject axes) {
+
+  if (r_is_null(axes)) {
+    return xt::mean(x, xt::keep_dims);
+  }
+
+  using size_vec = typename std::vector<std::size_t>;
+  size_vec xt_axes = Rcpp::as<size_vec>(axes);
+
+  return xt::mean(x, xt_axes, xt::keep_dims);
+}
+
+// [[Rcpp::export(rng = false)]]
+Rcpp::RObject rray__mean(Rcpp::RObject x, Rcpp::RObject axes) {
+  DISPATCH_UNARY_ONE(rray__mean_impl, x, axes);
+}
+
+// -----------------------------------------------------------------------------
+
+// TODO - Blocked by
+// https://github.com/DavisVaughan/rray/issues/42
+
+// template <typename T>
+// xt::rarray<double> rray__variance_impl(const xt::rarray<T>& x, Rcpp::RObject axes) {
+//
+//   if (r_is_null(axes)) {
+//     return xt::variance(x, xt::keep_dims);
+//   }
+//
+//   using size_vec = typename std::vector<std::size_t>;
+//   size_vec xt_axes = Rcpp::as<size_vec>(axes);
+//
+//   return xt::variance(x, xt_axes, xt::keep_dims);
+// }
+//
+// // [[Rcpp::export(rng = false)]]
+// Rcpp::RObject rray__variance(Rcpp::RObject x, Rcpp::RObject axes) {
+//   DISPATCH_UNARY_ONE(rray__variance_impl, x, axes);
+// }
+
+// -----------------------------------------------------------------------------
+
+// TODO - Blocked by
+// https://github.com/DavisVaughan/rray/issues/42
+
+// template <typename T>
+// xt::rarray<double> rray__std_dev_impl(const xt::rarray<T>& x, Rcpp::RObject axes) {
+//
+//   if (r_is_null(axes)) {
+//     return xt::stddev(x, xt::keep_dims);
+//   }
+//
+//   using size_vec = typename std::vector<std::size_t>;
+//   size_vec xt_axes = Rcpp::as<size_vec>(axes);
+//
+//   return xt::stddev(x, xt_axes, xt::keep_dims);
+// }
+//
+// // [[Rcpp::export(rng = false)]]
+// Rcpp::RObject rray__std_dev(Rcpp::RObject x, Rcpp::RObject axes) {
+//   DISPATCH_UNARY_ONE(rray__std_dev_impl, x, axes);
+// }
+
+// -----------------------------------------------------------------------------
+
+template <typename T>
+xt::rarray<T> rray__max_impl(const xt::rarray<T>& x, Rcpp::RObject axes) {
+
+  if (r_is_null(axes)) {
+    return xt::amax(x, xt::keep_dims);
+  }
+
+  using size_vec = typename std::vector<std::size_t>;
+  size_vec xt_axes = Rcpp::as<size_vec>(axes);
+
+  return xt::amax(x, xt_axes, xt::keep_dims);
+}
+
+// [[Rcpp::export(rng = false)]]
+Rcpp::RObject rray__max(Rcpp::RObject x, Rcpp::RObject axes) {
+  DISPATCH_UNARY_ONE(rray__max_impl, x, axes);
+}
+
+// -----------------------------------------------------------------------------
+
+template <typename T>
+xt::rarray<T> rray__min_impl(const xt::rarray<T>& x, Rcpp::RObject axes) {
+
+  if (r_is_null(axes)) {
+    return xt::amin(x, xt::keep_dims);
+  }
+
+  using size_vec = typename std::vector<std::size_t>;
+  size_vec xt_axes = Rcpp::as<size_vec>(axes);
+
+  return xt::amin(x, xt_axes, xt::keep_dims);
+}
+
+// [[Rcpp::export(rng = false)]]
+Rcpp::RObject rray__min(Rcpp::RObject x, Rcpp::RObject axes) {
+  DISPATCH_UNARY_ONE(rray__min_impl, x, axes);
+}
+
+// -----------------------------------------------------------------------------

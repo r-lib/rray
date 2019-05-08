@@ -1,27 +1,3 @@
-# ------------------------------------------------------------------------------
-# Base reducer implementation
-
-rray_reducer_base <- function(reducer, x, axes) {
-
-  # only integer axes
-  axes <- vec_cast(axes, integer())
-  validate_axes(axes, x)
-
-  # perform the reduction
-  res <- rray_reducer_cpp(reducer, x, as_cpp_idx(axes))
-
-  res <- keep_dims(res, x, axes)
-
-  new_dim_names <- restore_dim_names(dim_names(x), rray_dim(res))
-  res <- set_full_dim_names(res, new_dim_names)
-
-
-  vec_restore(res, x)
-}
-
-# ------------------------------------------------------------------------------
-# Reducers
-
 #' Calculate the sum along an axis
 #'
 #' `rray_sum()` computes the sum along a given axis or axes. The dimensionality
@@ -65,7 +41,7 @@ rray_reducer_base <- function(reducer, x, axes) {
 #' @export
 #' @family reducers
 rray_sum <- function(x, axes = NULL) {
-  rray_reducer_base("sum", x, axes = axes)
+  rray_reducer_base(rray__sum, x, axes)
 }
 
 #' Calculate the product along an axis
@@ -90,7 +66,7 @@ rray_sum <- function(x, axes = NULL) {
 #' @export
 #' @family reducers
 rray_prod <- function(x, axes = NULL) {
-  rray_reducer_base("prod", x, axes = axes)
+  rray_reducer_base(rray__prod, x, axes)
 }
 
 #' Calculate the mean along an axis
@@ -115,7 +91,7 @@ rray_prod <- function(x, axes = NULL) {
 #' @export
 #' @family reducers
 rray_mean <- function(x, axes = NULL) {
-  rray_reducer_base("mean", x, axes = axes)
+  rray_reducer_base(rray__mean, x, axes)
 }
 
 #' Calculate the maximum along an axis
@@ -140,7 +116,7 @@ rray_mean <- function(x, axes = NULL) {
 #' @export
 #' @family reducers
 rray_max <- function(x, axes = NULL) {
-  rray_reducer_base("amax", x, axes = axes)
+  rray_reducer_base(rray__max, x, axes)
 }
 
 #' Calculate the minimum along an axis
@@ -165,11 +141,25 @@ rray_max <- function(x, axes = NULL) {
 #' @export
 #' @family reducers
 rray_min <- function(x, axes = NULL) {
-  rray_reducer_base("amin", x, axes = axes)
+  rray_reducer_base(rray__min, x, axes)
 }
 
 # ------------------------------------------------------------------------------
-# Helpers
+
+rray_reducer_base <- function(f, x, axes) {
+
+  axes <- vec_cast(axes, integer())
+  validate_axes(axes, x)
+
+  res <- f(x, as_cpp_idx(axes))
+
+  new_dim_names <- restore_dim_names(dim_names(x), rray_dim(res))
+  res <- set_full_dim_names(res, new_dim_names)
+
+  vec_restore(res, x)
+}
+
+# ------------------------------------------------------------------------------
 
 validate_axis <- function(axis, x, dims = NULL) {
   validate_axes(axis, x, n = 1L, nm = "axis", dims = dims)

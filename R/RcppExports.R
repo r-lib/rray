@@ -329,8 +329,24 @@ rray__min_pos <- function(x, axis) {
     .Call(`_rray_rray__min_pos`, x, axis)
 }
 
-rray_reducer_cpp <- function(op, x, axes) {
-    .Call(`_rray_rray_reducer_cpp`, op, x, axes)
+rray__sum <- function(x, axes) {
+    .Call(`_rray_rray__sum`, x, axes)
+}
+
+rray__prod <- function(x, axes) {
+    .Call(`_rray_rray__prod`, x, axes)
+}
+
+rray__mean <- function(x, axes) {
+    .Call(`_rray_rray__mean`, x, axes)
+}
+
+rray__max <- function(x, axes) {
+    .Call(`_rray_rray__max`, x, axes)
+}
+
+rray__min <- function(x, axes) {
+    .Call(`_rray_rray__min`, x, axes)
 }
 
 rray__subset_assign <- function(x, indexer, value) {
