@@ -64,10 +64,14 @@
 #' rray_split(x_4d, c(4, 3))
 #'
 #' @export
-rray_split <- function(x, axes, n = NULL) {
+rray_split <- function(x, axes = NULL, n = NULL) {
 
   axes <- vec_cast(axes, integer())
   validate_axes(axes, x)
+
+  if (is_null(axes)) {
+    axes <- rev(seq_len(rray_dims(x)))
+  }
 
   # Default to size of the axes
   if (is_null(n)) {
