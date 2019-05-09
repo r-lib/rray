@@ -2,28 +2,20 @@
 #'
 #' @description
 #'
-#' * `rray_duplicate_any()`: detects the presence of duplicated values,
-#' similar to [anyDuplicated()] with the `MARGIN` argument.
+#' * `rray_duplicate_any()`: returns a logical with the same shape and type
+#' as `x` except over the `axes`, which will be reduced to length 1. This
+#' function detects the presence of any duplicated values along the `axes`.
 #'
-#' * `rray_duplicate_detect()`: returns a logical vector describing if each
-#' element of the vector is duplicated elsewhere. It is similar to
-#' [duplicated()] with the `MARGIN` argument, but it reports all duplicated
-#' values, not just the second and subsequent repetitions.
+#' * `rray_duplicate_detect()`: returns a logical with the same shape and
+#' type as `x` describing if that element of `x` is duplicated elsewhere.
 #'
-#' * `rray_duplicate_id()`: returns an integer vector giving the location of the
-#' first occurence of the value.
+#' * `rray_duplicate_id()`: returns an integer with the same shape and
+#' type as `x` giving the location of the first occurence of the value.
 #'
 #' @param x A vector, matrix, array, or rray.
 #'
-#' @param axis A single integer. The axis to look for duplicate values over.
-#'
-#' @return
-#'
-#' * `rray_duplicate_any()`: a logical vector of length 1.
-#'
-#' * `rray_duplicate_detect()`: a logical vector the same length as `x`.
-#'
-#' * `rray_duplicate_id()`: an integer vector the same length as `x`.
+#' @param axes An integer vector. The default of `NULL` looks for duplicates
+#' over all axes.
 #'
 #' @seealso
 #'
@@ -48,31 +40,32 @@
 #' # where the columns are not unique
 #' y <- rray_expand_dims(x, 1)
 #'
-#' # All of the rows are unique...
+#' # Along the rows, all the values are unique...
 #' rray_duplicate_any(y, 1L)
 #'
-#' # ...but the columns are not
+#' # ...but along the columns there are duplicates
 #' rray_duplicate_any(y, 2L)
 #'
-#' # rray_duplicate_detect() returns
-#' # `TRUE` if a duplicate is detected
-#' # anywhere in the array (both
-#' # columns are registered as
-#' # duplicates)
-#' rray_duplicate_detect(y, 2)
+#' # ---------------------------------------------------------------------------
 #'
-#' # duplicated() only returns `TRUE`
-#' # for the second and all subsequent
-#' # duplicates
-#' duplicated(as_array(y), MARGIN = 2L)
+#' z <- rray(c(1, 1, 2, 3, 1, 4, 5, 6), c(2, 2, 2))
 #'
-#' # Find the location of the
-#' # first unique values
-#' rray_duplicate_id(y, 2L)
+#' # rray_duplicate_detect() looks for any
+#' # duplicates along the axes of interest
+#' # and returns `TRUE` wherever a duplicate is found
+#' # (including the first location)
+#' rray_duplicate_detect(z, 1)
 #'
-#' # Both of the 3rd dimension elements
-#' # are unique
-#' rray_duplicate_id(y, 3L)
+#' # Positions 1 and 5 are the same!
+#' rray_duplicate_detect(z, 3)
+#'
+#' # ---------------------------------------------------------------------------
+#'
+#' # rray_duplicate_id() returns the location
+#' # of the first occurance along each axis.
+#' # Compare to rray_duplicate_detect()!
+#' rray_duplicate_detect(z, 1)
+#' rray_duplicate_id(z, 1)
 #'
 #' @name rray_duplicate
 #' @export
