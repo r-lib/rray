@@ -107,3 +107,18 @@ test_that("`n` must divide equally", {
   x <- array(1:8, dim = c(2, 4), dimnames = list(NULL))
   expect_error(rray_split(x, 1, n = 3), "does not result in equal division")
 })
+
+test_that("can split with NULL axes", {
+  x <- array(1:8, dim = c(2, 4), dimnames = list(NULL))
+  expect_equal(rray_split(x), rray_split(x, axes = c(2, 1)))
+  expect_equal(rray_split(x, n = c(2, 2)), rray_split(x, axes = c(2, 1), n = c(2, 2)))
+})
+
+test_that("can split with integer(0) axis", {
+  x <- array(1:8, dim = c(2, 4), dimnames = list(NULL))
+  expect_equal(rray_split(x, axes = integer()), list(x))
+  expect_equal(rray_split(x, axes = integer(), n = integer()), list(x))
+})
+
+
+
