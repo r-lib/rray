@@ -1,10 +1,12 @@
-#' Split an array along an axis
+#' Split an array along axes
 #'
-#' `rray_split()` splits `x` into `n` equal pieces, splitting along an `axis`.
+#' `rray_split()` splits `x` into equal pieces, splitting along the `axes`.
 #'
 #' @param x A vector, matrix, array, or rray.
 #'
-#' @param axes An integer vector. The axes to split on.
+#' @param axes An integer vector. The axes to split on. The default splits
+#' along all axes, and does so in reverse order, which produces the most
+#' intuitive result.
 #'
 #' @param n An integer vector, or `NULL`. By default, this is computed as the
 #' dimension size of each axis specified in `axes`. If not `NULL`, it should
@@ -30,12 +32,20 @@
 #' # (i.e. 2 then 1)
 #' rray_split(x, c(2, 1))
 #'
+#' # The above split is what the default behavior does
+#' rray_split(x)
+#'
 #' # Split along rows in chunks of 2
 #' rray_split(x, 1, 2)
 #'
 #' # Split along columns and then
 #' # rows in chunks of 2
 #' rray_split(x, c(2, 1), c(2, 2))
+#'
+#' # You can technically split with a size 0 `axes`
+#' # argument, which essentially requests no axes
+#' # to be split and is the same as `list(x)`
+#' rray_split(x, axes = integer(0))
 #'
 #'
 #' # 4 dimensional example
@@ -64,10 +74,14 @@
 #' rray_split(x_4d, c(4, 3))
 #'
 #' @export
-rray_split <- function(x, axes, n = NULL) {
+rray_split <- function(x, axes = NULL, n = NULL) {
 
   axes <- vec_cast(axes, integer())
   validate_axes(axes, x)
+
+  if (is_null(axes)) {
+    axes <- rev(seq_len(rray_dims(x)))
+  }
 
   # Default to size of the axes
   if (is_null(n)) {

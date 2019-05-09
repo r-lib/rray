@@ -2,14 +2,16 @@
 % Please edit documentation in R/split.R
 \name{rray_split}
 \alias{rray_split}
-\title{Split an array along an axis}
+\title{Split an array along axes}
 \usage{
-rray_split(x, axes, n = NULL)
+rray_split(x, axes = NULL, n = NULL)
 }
 \arguments{
 \item{x}{A vector, matrix, array, or rray.}
 
-\item{axes}{An integer vector. The axes to split on.}
+\item{axes}{An integer vector. The axes to split on. The default splits
+along all axes, and does so in reverse order, which produces the most
+intuitive result.}
 
 \item{n}{An integer vector, or \code{NULL}. By default, this is computed as the
 dimension size of each axis specified in \code{axes}. If not \code{NULL}, it should
@@ -19,7 +21,7 @@ be the same length as \code{axes}.}
 A list of equal pieces of type \code{x}.
 }
 \description{
-\code{rray_split()} splits \code{x} into \code{n} equal pieces, splitting along an \code{axis}.
+\code{rray_split()} splits \code{x} into equal pieces, splitting along the \code{axes}.
 }
 \examples{
 
@@ -37,12 +39,20 @@ rray_split(x, 2)
 # (i.e. 2 then 1)
 rray_split(x, c(2, 1))
 
+# The above split is what the default behavior does
+rray_split(x)
+
 # Split along rows in chunks of 2
 rray_split(x, 1, 2)
 
 # Split along columns and then
 # rows in chunks of 2
 rray_split(x, c(2, 1), c(2, 2))
+
+# You can technically split with a size 0 `axes`
+# argument, which essentially requests no axes
+# to be split and is the same as `list(x)`
+rray_split(x, axes = integer(0))
 
 
 # 4 dimensional example
