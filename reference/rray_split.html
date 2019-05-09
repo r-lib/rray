@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Split an array along an axis — rray_split • rray</title>
+<title>Split an array along axes — rray_split • rray</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,9 +30,9 @@
 
 
 
-<meta property="og:title" content="Split an array along an axis — rray_split" />
+<meta property="og:title" content="Split an array along axes — rray_split" />
 
-<meta property="og:description" content="rray_split() splits x into n equal pieces, splitting along an axis." />
+<meta property="og:description" content="rray_split() splits x into equal pieces, splitting along the axes." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -114,18 +114,18 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Split an array along an axis</h1>
+    <h1>Split an array along axes</h1>
     <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/split.R'><code>R/split.R</code></a></small>
     <div class="hidden name"><code>rray_split.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p><code>rray_split()</code> splits <code>x</code> into <code>n</code> equal pieces, splitting along an <code>axis</code>.</p>
+    <p><code>rray_split()</code> splits <code>x</code> into equal pieces, splitting along the <code>axes</code>.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>rray_split</span>(<span class='no'>x</span>, <span class='no'>axes</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>rray_split</span>(<span class='no'>x</span>, <span class='kw'>axes</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -136,7 +136,9 @@
     </tr>
     <tr>
       <th>axes</th>
-      <td><p>An integer vector. The axes to split on.</p></td>
+      <td><p>An integer vector. The axes to split on. The default splits
+along all axes, and does so in reverse order, which produces the most
+intuitive result.</p></td>
     </tr>
     <tr>
       <th>n</th>
@@ -223,6 +225,39 @@ be the same length as <code>axes</code>.</p></td>
 #&gt;      [,1]
 #&gt; [1,]    8
 #&gt; </div><div class='input'>
+<span class='co'># The above split is what the default behavior does</span>
+<span class='fu'>rray_split</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; [[1]]
+#&gt;      [,1]
+#&gt; [1,]    1
+#&gt; 
+#&gt; [[2]]
+#&gt;      [,1]
+#&gt; [1,]    2
+#&gt; 
+#&gt; [[3]]
+#&gt;      [,1]
+#&gt; [1,]    3
+#&gt; 
+#&gt; [[4]]
+#&gt;      [,1]
+#&gt; [1,]    4
+#&gt; 
+#&gt; [[5]]
+#&gt;      [,1]
+#&gt; [1,]    5
+#&gt; 
+#&gt; [[6]]
+#&gt;      [,1]
+#&gt; [1,]    6
+#&gt; 
+#&gt; [[7]]
+#&gt;      [,1]
+#&gt; [1,]    7
+#&gt; 
+#&gt; [[8]]
+#&gt;      [,1]
+#&gt; [1,]    8
+#&gt; </div><div class='input'>
 <span class='co'># Split along rows in chunks of 2</span>
 <span class='fu'>rray_split</span>(<span class='no'>x</span>, <span class='fl'>1</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; [[1]]
 #&gt;      [,1] [,2]
@@ -255,6 +290,16 @@ be the same length as <code>axes</code>.</p></td>
 #&gt;      [,1]
 #&gt; [1,]    7
 #&gt; [2,]    8
+#&gt; </div><div class='input'>
+<span class='co'># You can technically split with a size 0 `axes`</span>
+<span class='co'># argument, which essentially requests no axes</span>
+<span class='co'># to be split and is the same as `list(x)`</span>
+<span class='fu'>rray_split</span>(<span class='no'>x</span>, <span class='kw'>axes</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/integer'>integer</a></span>(<span class='fl'>0</span>))</div><div class='output co'>#&gt; [[1]]
+#&gt;      [,1] [,2]
+#&gt; [1,]    1    5
+#&gt; [2,]    2    6
+#&gt; [3,]    3    7
+#&gt; [4,]    4    8
 #&gt; </div><div class='input'>
 
 <span class='co'># 4 dimensional example</span>
