@@ -11,9 +11,6 @@
 #' @param ... A single rray. An error is currently thrown if more than one
 #' input is passed here.
 #'
-#' @param na.rm Should `NA` values be removed? Currently only `FALSE` is
-#' allowed.
-#'
 #' @param axes An integer vector specifying the axes to reduce over.
 #' `1` reduces the number of rows to `1`, performing the reduction along the
 #' way. `2` does the same, but with the columns, and so on for higher

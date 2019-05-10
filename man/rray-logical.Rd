@@ -40,9 +40,6 @@ dimensions. The default reduces along all axes.}
 
 \item{...}{A single rray. An error is currently thrown if more than one
 input is passed here.}
-
-\item{na.rm}{Should \code{NA} values be removed? Currently only \code{FALSE} is
-allowed.}
 }
 \description{
 These operators perform logical operations on arrays, with broadcasting. The
