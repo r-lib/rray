@@ -42,3 +42,17 @@ rray_any_vctrs_wrapper <- function(x, na.rm) {
 }
 
 # ------------------------------------------------------------------------------
+
+rray_range_vctrs_wrapper <- function(x, na.rm) {
+  vec_math_base("range", vec_data(x), na.rm = na.rm)
+}
+
+# ------------------------------------------------------------------------------
+
+rray_prod_vctrs_wrapper <- function(x, na.rm) {
+  vec_math_base("prod", vec_data(x), na.rm = na.rm)
+}
+
+rray_sum_vctrs_wrapper <- function(x, na.rm) {
+  vec_math_base("sum", vec_data(x), na.rm = na.rm)
+}

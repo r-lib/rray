@@ -114,3 +114,53 @@ test_that("always uses `na.rm = TRUE`", {
   expect_equal(all(rray(c(NA, 1L, 0L)), na.rm = FALSE), FALSE)
   expect_equal(all(rray(c(NA, 1L, 1L)), na.rm = FALSE), TRUE)
 })
+
+# ------------------------------------------------------------------------------
+context("test-base-range")
+
+test_that("returns same values as base R", {
+  x <- rray(c(TRUE, FALSE), c(2, 2))
+  expect_equal(range(x), range(vec_data(x)))
+  expect_equal(range(x, x), range(vec_data(x), vec_data(x)))
+  expect_equal(range(x, 5), range(vec_data(x), 5))
+})
+
+test_that("always uses `na.rm = TRUE`", {
+  expect_equal(range(rray(c(NA, 1L)), na.rm = FALSE), c(1L, 1L))
+})
+
+# ------------------------------------------------------------------------------
+context("test-base-prod")
+
+test_that("returns same values as base R", {
+  x <- rray(c(5, 6), c(2, 2))
+  expect_equal(prod(x), prod(vec_data(x)))
+  expect_equal(prod(x, x), prod(vec_data(x), vec_data(x)))
+})
+
+test_that("broadcasts input using vctrs", {
+  x <- rray(c(5, 6), c(2, 2))
+  expect_equal(prod(x, 5), prod(x, matrix(5, c(1, 2))))
+})
+
+test_that("always uses `na.rm = TRUE`", {
+  expect_equal(prod(rray(c(NA, 1L)), na.rm = FALSE), 1)
+})
+
+# ------------------------------------------------------------------------------
+context("test-base-sum")
+
+test_that("returns same values as base R", {
+  x <- rray(c(5, 6), c(2, 2))
+  expect_equal(sum(x), sum(vec_data(x)))
+  expect_equal(sum(x, x), sum(vec_data(x), vec_data(x)))
+})
+
+test_that("broadcasts input using vctrs", {
+  x <- rray(c(5, 6), c(2, 2))
+  expect_equal(sum(x, 5), sum(x, matrix(5, c(1, 2))))
+})
+
+test_that("always uses `na.rm = TRUE`", {
+  expect_equal(sum(rray(c(NA, 1L)), na.rm = FALSE), 1)
+})

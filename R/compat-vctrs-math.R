@@ -63,6 +63,9 @@ rray_math_unary_op_switch <- function(fun) {
     # summary
     "all" = rray_all_vctrs_wrapper,
     "any" = rray_any_vctrs_wrapper,
+    "range" = rray_range_vctrs_wrapper,
+    "prod" = rray_prod_vctrs_wrapper,
+    "sum" = rray_sum_vctrs_wrapper,
 
     glubort("Unary math function not known: {fun}.")
   )
