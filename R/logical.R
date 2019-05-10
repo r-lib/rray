@@ -11,9 +11,6 @@
 #' @param ... A single rray. An error is currently thrown if more than one
 #' input is passed here.
 #'
-#' @param na.rm Should `NA` values be removed? Currently only `FALSE` is
-#' allowed.
-#'
 #' @param axes An integer vector specifying the axes to reduce over.
 #' `1` reduces the number of rows to `1`, performing the reduction along the
 #' way. `2` does the same, but with the columns, and so on for higher
@@ -117,25 +114,6 @@ rray_logical_not <- function(x) {
 
 # ------------------------------------------------------------------------------
 
-# `any()` should always be on a flattened version of the input to maintain
-# backwards compat with base R. `rray_any()` should only handle 1 input
-# but should be able to look along an axis.
-# TODO - Think more about this.
-
-#' @rdname rray-logical
-#' @export
-`any.vctrs_rray` <- function(..., na.rm = FALSE) {
-
-  if (!identical(na.rm, FALSE)) {
-    abort("`na.rm` currently must be `FALSE` in `any()` for rrays.")
-  }
-
-  x <- map(list2(...), as.vector)
-  x <- vec_c(!!! x)
-
-  vec_math_base("any", x)
-}
-
 #' @rdname rray-logical
 #' @export
 rray_any <- function(x, axes = NULL) {
@@ -161,25 +139,6 @@ rray_any <- function(x, axes = NULL) {
 }
 
 # ------------------------------------------------------------------------------
-
-# `all()` should always be on a flattened version of the input to maintain
-# backwards compat with base R. `rray_all()` should only handle 1 input
-# but should be able to look along an axis.
-# TODO - Think more about this.
-
-#' @rdname rray-logical
-#' @export
-`all.vctrs_rray` <- function(..., na.rm = FALSE) {
-
-  if (!identical(na.rm, FALSE)) {
-    abort("`na.rm` currently must be `FALSE` in `all()` for rrays.")
-  }
-
-  x <- map(list2(...), as.vector)
-  x <- vec_c(!!! x)
-
-  vec_math_base("all", x)
-}
 
 #' @rdname rray-logical
 #' @export
