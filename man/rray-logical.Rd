@@ -8,9 +8,7 @@
 \alias{rray_logical_or}
 \alias{!.vctrs_rray}
 \alias{rray_logical_not}
-\alias{any.vctrs_rray}
 \alias{rray_any}
-\alias{all.vctrs_rray}
 \alias{rray_all}
 \title{Logical operators}
 \usage{
@@ -26,11 +24,7 @@ rray_logical_or(x, y)
 
 rray_logical_not(x)
 
-\method{any}{vctrs_rray}(..., na.rm = FALSE)
-
 rray_any(x, axes = NULL)
-
-\method{all}{vctrs_rray}(..., na.rm = FALSE)
 
 rray_all(x, axes = NULL)
 }
@@ -39,16 +33,16 @@ rray_all(x, axes = NULL)
 
 \item{x, y}{Two vectors, matrices, arrays, or rrays.}
 
+\item{axes}{An integer vector specifying the axes to reduce over.
+\code{1} reduces the number of rows to \code{1}, performing the reduction along the
+way. \code{2} does the same, but with the columns, and so on for higher
+dimensions. The default reduces along all axes.}
+
 \item{...}{A single rray. An error is currently thrown if more than one
 input is passed here.}
 
 \item{na.rm}{Should \code{NA} values be removed? Currently only \code{FALSE} is
 allowed.}
-
-\item{axes}{An integer vector specifying the axes to reduce over.
-\code{1} reduces the number of rows to \code{1}, performing the reduction along the
-way. \code{2} does the same, but with the columns, and so on for higher
-dimensions. The default reduces along all axes.}
 }
 \description{
 These operators perform logical operations on arrays, with broadcasting. The

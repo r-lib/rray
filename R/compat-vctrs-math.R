@@ -60,6 +60,10 @@ rray_math_unary_op_switch <- function(fun) {
     "is.infinite" = rray_is_infinite,
     "is.finite" = rray_is_finite,
 
+    # summary
+    "all" = rray_all_vctrs_wrapper,
+    "any" = rray_any_vctrs_wrapper,
+
     glubort("Unary math function not known: {fun}.")
   )
 }

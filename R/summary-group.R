@@ -26,3 +26,19 @@ xtfrm.vctrs_rray_lgl <- function(x) {
 }
 
 # ------------------------------------------------------------------------------
+
+# This is a base R compatible version of `all()` and `any()`.
+# It is used in vec_math() dispatch
+
+# Note that `vctrs:::Summary.vctrs_vctr()` is how this is passed through,
+# and `na.rm = TRUE` no matter what there!
+
+rray_all_vctrs_wrapper <- function(x, na.rm) {
+  vec_math_base("all", vec_data(x), na.rm = na.rm)
+}
+
+rray_any_vctrs_wrapper <- function(x, na.rm) {
+  vec_math_base("any", vec_data(x), na.rm = na.rm)
+}
+
+# ------------------------------------------------------------------------------

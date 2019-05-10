@@ -88,3 +88,29 @@ test_that("vctrs `max()` ignores input in `...`", {
 # test_that("NAs are removed", {
 #   max(rray(c(NA, 2)), na.rm = TRUE)
 # })
+
+# ------------------------------------------------------------------------------
+context("test-base-any")
+
+test_that("returns a single value with shaped arrays", {
+  expect_equal(any(rray(c(TRUE, FALSE), c(2, 2))), TRUE)
+  expect_equal(any(rray(c(FALSE, FALSE), c(2, 2))), FALSE)
+})
+
+test_that("always uses `na.rm = TRUE`", {
+  expect_equal(any(rray(c(NA, 1L)), na.rm = FALSE), TRUE)
+  expect_equal(any(rray(c(NA, 0L)), na.rm = FALSE), FALSE)
+})
+
+# ------------------------------------------------------------------------------
+context("test-base-all")
+
+test_that("returns a single value with shaped arrays", {
+  expect_equal(all(rray(c(TRUE, FALSE), c(2, 2))), FALSE)
+  expect_equal(all(rray(c(TRUE, TRUE), c(2, 2))), TRUE)
+})
+
+test_that("always uses `na.rm = TRUE`", {
+  expect_equal(all(rray(c(NA, 1L, 0L)), na.rm = FALSE), FALSE)
+  expect_equal(all(rray(c(NA, 1L, 1L)), na.rm = FALSE), TRUE)
+})
