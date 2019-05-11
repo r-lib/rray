@@ -144,13 +144,7 @@ rray_logical_or(x, y)
 
 rray_logical_not(x)
 
-# S3 method for vctrs_rray
-any(..., na.rm = FALSE)
-
 rray_any(x, axes = NULL)
-
-# S3 method for vctrs_rray
-all(..., na.rm = FALSE)
 
 rray_all(x, axes = NULL)</pre>
     
@@ -166,21 +160,16 @@ rray_all(x, axes = NULL)</pre>
       <td><p>Two vectors, matrices, arrays, or rrays.</p></td>
     </tr>
     <tr>
-      <th>...</th>
-      <td><p>A single rray. An error is currently thrown if more than one
-input is passed here.</p></td>
-    </tr>
-    <tr>
-      <th>na.rm</th>
-      <td><p>Should <code>NA</code> values be removed? Currently only <code>FALSE</code> is
-allowed.</p></td>
-    </tr>
-    <tr>
       <th>axes</th>
       <td><p>An integer vector specifying the axes to reduce over.
 <code>1</code> reduces the number of rows to <code>1</code>, performing the reduction along the
 way. <code>2</code> does the same, but with the columns, and so on for higher
 dimensions. The default reduces along all axes.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>A single rray. An error is currently thrown if more than one
+input is passed here.</p></td>
     </tr>
     </table>
     
