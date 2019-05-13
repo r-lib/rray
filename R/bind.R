@@ -124,7 +124,7 @@ rray_bind <- function(..., axis) {
     pos <- pos + arg_axis_size
   }
 
-  dim_names(out) <- rray_dim_names_common_along_axis(!!!args, axis = axis, dim = rray_dim(out))
+  rray_dim_names(out) <- rray_dim_names_common_along_axis(!!!args, axis = axis, dim = rray_dim(out))
 
   out
 }
@@ -181,7 +181,7 @@ rray_dim_names_common_along_axis <- function(..., axis, dim) {
   dims <- max(rray_dims_common(!!!args), axis)
   axis_sizes <- map_int(args, pull_axis_dim, axis = axis)
 
-  arg_dim_names <- map(args, dim_names)
+  arg_dim_names <- map(args, rray_dim_names)
   arg_dim_names <- map(arg_dim_names, dim_names_extend, dims = dims)
 
   axis_meta_names <- map(arg_dim_names, get_meta_names, axis = axis)

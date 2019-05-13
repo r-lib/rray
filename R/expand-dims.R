@@ -55,7 +55,7 @@ rray_expand_dims <- function(x, axis) {
 
   res <- rray__expand_dims(x, as_cpp_idx(axis))
 
-  x_dim_names <- dim_names(x)
+  x_dim_names <- rray_dim_names(x)
   new_dim_names <- rray_expand_dim_names(x_dim_names, axis)
   res <- set_full_dim_names(res, new_dim_names)
 
@@ -86,7 +86,7 @@ rray_expand_dim_names <- function(dim_names, axis) {
   # New dim names with an empty dimension inserted
   new_dim_names <- c(
     pre_names,
-    new_empty_dim_names(n_empty),
+    rray_empty_dim_names(n_empty),
     post_names
   )
 

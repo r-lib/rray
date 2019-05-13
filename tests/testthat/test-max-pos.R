@@ -36,21 +36,21 @@ test_that("dimension names are kept", {
   x <- set_row_names(x, letters[1:5])
 
   expect_equal(
-    dim_names(rray_max_pos(x, 1)),
-    c(new_empty_dim_names(1), col_names(x))
+    rray_dim_names(rray_max_pos(x, 1)),
+    c(rray_empty_dim_names(1), col_names(x))
   )
 
   expect_equal(
-    dim_names(rray_max_pos(x, 2)),
-    dim_names(x)
+    rray_dim_names(rray_max_pos(x, 2)),
+    rray_dim_names(x)
   )
 
   xx <- rray_broadcast(x, c(5, 2))
   xx <- set_col_names(xx, c("c1", "c2"))
 
   expect_equal(
-    dim_names(rray_max_pos(xx, 2)),
-    c(list(row_names(xx)), new_empty_dim_names(1))
+    rray_dim_names(rray_max_pos(xx, 2)),
+    c(list(row_names(xx)), rray_empty_dim_names(1))
   )
 })
 

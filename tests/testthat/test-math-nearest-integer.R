@@ -18,7 +18,7 @@ test_that("edge cases", {
 test_that("dim names are kept", {
   nms <- list("r1", "c1")
   x <- rray(1, c(1, 1), dim_names = nms)
-  expect_equal(dim_names(rray_ceiling(x)), dim_names(x))
+  expect_equal(rray_dim_names(rray_ceiling(x)), rray_dim_names(x))
 })
 
 test_that("vctrs dispatch works", {
@@ -46,7 +46,7 @@ test_that("edge cases", {
 test_that("dim names are kept", {
   nms <- list("r1", "c1")
   x <- rray(1, c(1, 1), dim_names = nms)
-  expect_equal(dim_names(rray_floor(x)), dim_names(x))
+  expect_equal(rray_dim_names(rray_floor(x)), rray_dim_names(x))
 })
 
 test_that("vctrs dispatch works", {
@@ -74,7 +74,7 @@ test_that("edge cases", {
 test_that("dim names are kept", {
   nms <- list("r1", "c1")
   x <- rray(1, c(1, 1), dim_names = nms)
-  expect_equal(dim_names(rray_trunc(x)), dim_names(x))
+  expect_equal(rray_dim_names(rray_trunc(x)), rray_dim_names(x))
 })
 
 test_that("vctrs dispatch works", {
@@ -106,7 +106,7 @@ test_that("edge cases", {
 test_that("dim names are kept", {
   nms <- list("r1", "c1")
   x <- rray(1, c(1, 1), dim_names = nms)
-  expect_equal(dim_names(rray_round(x)), dim_names(x))
+  expect_equal(rray_dim_names(rray_round(x)), rray_dim_names(x))
 })
 
 test_that("vctrs dispatch works", {
@@ -144,7 +144,7 @@ test_that("edge cases", {
 test_that("dim names are kept", {
   nms <- list("r1", "c1")
   x <- rray(1, c(1, 1), dim_names = nms)
-  expect_equal(dim_names(rray_signif(x)), dim_names(x))
+  expect_equal(rray_dim_names(rray_signif(x)), rray_dim_names(x))
 })
 
 test_that("vctrs dispatch works", {

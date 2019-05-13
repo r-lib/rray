@@ -26,7 +26,7 @@ rray_min_pos <- function(x, axis = NULL) {
 
   res <- rray__min_pos(x, as_cpp_idx(axis))
 
-  new_dim_names <- restore_dim_names(dim_names(x), rray_dim(res))
+  new_dim_names <- restore_dim_names(rray_dim_names(x), rray_dim(res))
   res <- set_full_dim_names(res, new_dim_names)
 
   vec_restore(res, x)

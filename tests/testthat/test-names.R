@@ -7,14 +7,14 @@ test_that("can assign names() on 1D rrays", {
   names(x) <- letters[1:5]
 
   expect_equal(
-    dim_names(x),
+    rray_dim_names(x),
     list(letters[1:5])
   )
 
   expect_is(x, "vctrs_rray")
 
   x_unnamed <- unname(x)
-  expect_equal(attr(x_unnamed, "dimnames"), new_empty_dim_names(1))
+  expect_equal(attr(x_unnamed, "dimnames"), rray_empty_dim_names(1))
 
 })
 

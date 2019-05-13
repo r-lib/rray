@@ -156,7 +156,7 @@ rray_yank <- function(x, i) {
   # TODO - is this inconsistent behavior ok?
   # `rray_yank()` maintains dim names if `x` is 1D.
   # `[[` should never keep them
-  dim_names(x) <- NULL
+  rray_dim_names(x) <- NULL
 
   rray_yank_impl(x, i)
 }
@@ -292,7 +292,7 @@ rray_as_index <- function(x, ..., with_drop = TRUE) {
 
 as_indexer <- function(dots, x) {
   proxies <- map(rray_dim(x), seq_len)
-  proxy_names <- dim_names(x)
+  proxy_names <- rray_dim_names(x)
   dots <- pad_missing(dots, x)
 
   # Set names on the proxy if the indexer is by name

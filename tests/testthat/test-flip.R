@@ -61,8 +61,8 @@ test_that("can flip base types", {
   )
 
   expect_equal(
-    dim_names(rray_flip(y, 3))[[3]],
-    rev(dim_names(y)[[3]])
+    rray_dim_names(rray_flip(y, 3))[[3]],
+    rev(rray_dim_names(y)[[3]])
   )
 
   expect_equal(

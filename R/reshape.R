@@ -13,7 +13,7 @@ rray_reshape <- function(x, dim) {
 
   # Actually going down in dimensions here,
   # but restore_dim_names() can handle that
-  new_dim_names <- restore_dim_names(dim_names(x), dim)
+  new_dim_names <- restore_dim_names(rray_dim_names(x), dim)
   res <- set_full_dim_names(res, new_dim_names)
 
   vec_restore(res, x)

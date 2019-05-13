@@ -79,7 +79,7 @@ rray_duplicate_any <- function(x, axes = NULL) {
 
   res <- keep_dims(flat_res, x, axes)
 
-  new_dim_names <- restore_dim_names(dim_names(x), vec_dim(res))
+  new_dim_names <- restore_dim_names(rray_dim_names(x), vec_dim(res))
   res <- set_full_dim_names(res, new_dim_names)
 
   vec_restore(res, x)
@@ -99,7 +99,7 @@ rray_duplicate_detect <- function(x, axes = NULL) {
 
   res <- restore_shape(res_flat, vec_dim(x), axes)
 
-  res <- set_full_dim_names(res, dim_names(x))
+  res <- set_full_dim_names(res, rray_dim_names(x))
 
   vec_restore(res, x)
 }
@@ -118,7 +118,7 @@ rray_duplicate_id <- function(x, axes = NULL) {
 
   res <- restore_shape(res_flat, vec_dim(x), axes)
 
-  res <- set_full_dim_names(res, dim_names(x))
+  res <- set_full_dim_names(res, rray_dim_names(x))
 
   vec_restore(res, x)
 }

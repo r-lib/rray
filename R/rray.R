@@ -57,7 +57,7 @@ new_rray <- function(.data = numeric(0),
 
   # enforce list of empty characters
   if (is_null(dim_names)) {
-    dim_names <- new_empty_dim_names(vec_size(.dim))
+    dim_names <- rray_empty_dim_names(vec_size(.dim))
   }
 
   # new_rray() takes size and shape for compat with vctrs but we lie a bit
@@ -139,7 +139,7 @@ rray <- function(x = numeric(0), dim = NULL, dim_names = NULL) {
   dim <- vec_cast(dim, integer())
 
   if (is_null(dim_names)) {
-    dim_names <- new_empty_dim_names(vec_size(dim))
+    dim_names <- rray_empty_dim_names(vec_size(dim))
   }
 
   validate_rray_attributes(dim, dim_names)

@@ -157,3 +157,9 @@ Rcpp::IntegerVector rray__increase_dims(const Rcpp::IntegerVector& dim,
 
   return out;
 }
+
+// -----------------------------------------------------------------------------
+
+bool rray__has_dim(const Rcpp::RObject& x) {
+  return x.hasAttribute("dim");
+}

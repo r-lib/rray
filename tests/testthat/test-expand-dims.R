@@ -39,18 +39,18 @@ test_that("dimension names kept on expansion", {
   x <- set_col_names(x, c("c1", "c2"))
 
   expect_equal(
-    dim_names(rray_expand_dims(x, 1)),
-    c(list(NULL), dim_names(x))
+    rray_dim_names(rray_expand_dims(x, 1)),
+    c(list(NULL), rray_dim_names(x))
   )
 
   expect_equal(
-    dim_names(rray_expand_dims(x, 2)),
-    c(dim_names(x)[1], list(NULL), dim_names(x)[2])
+    rray_dim_names(rray_expand_dims(x, 2)),
+    c(rray_dim_names(x)[1], list(NULL), rray_dim_names(x)[2])
   )
 
   expect_equal(
-    dim_names(rray_expand_dims(x, 3)),
-    c(dim_names(x), list(NULL))
+    rray_dim_names(rray_expand_dims(x, 3)),
+    c(rray_dim_names(x), list(NULL))
   )
 
 })

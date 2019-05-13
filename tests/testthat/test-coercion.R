@@ -18,26 +18,26 @@ test_that("vector -> matrix makes a 1 column matrix", {
   expect_equal(vec_dim(as_matrix(x)), c(vec_size(x), 1L))
 })
 
-test_that("names() and dim_names() are kept", {
+test_that("names() and rray_dim_names() are kept", {
 
-  nms <- c(dim_names(x), new_empty_dim_names(1))
+  nms <- c(rray_dim_names(x), rray_empty_dim_names(1))
 
-  expect_equal(dim_names(as_matrix(x)), nms)
-  expect_equal(dim_names(as_matrix(x_array)), nms)
-  expect_equal(dim_names(as_matrix(x_mat)), nms)
+  expect_equal(rray_dim_names(as_matrix(x)), nms)
+  expect_equal(rray_dim_names(as_matrix(x_array)), nms)
+  expect_equal(rray_dim_names(as_matrix(x_mat)), nms)
 })
 
 test_that("meta dim names are kept", {
 
-  x_nms <- dim_names(x_array)
+  x_nms <- rray_dim_names(x_array)
   names(x_nms) <- "meta_nm"
   x_array_meta <- x_array
-  dim_names(x_array_meta) <- x_nms
+  rray_dim_names(x_array_meta) <- x_nms
 
-  nms_with_meta <- c(dim_names(x_array_meta), new_empty_dim_names(1))
+  nms_with_meta <- c(rray_dim_names(x_array_meta), rray_empty_dim_names(1))
 
   expect_equal(
-    dim_names(as_matrix(x_array_meta)),
+    rray_dim_names(as_matrix(x_array_meta)),
     nms_with_meta
   )
 })
@@ -66,27 +66,27 @@ test_that("vector -> array makes a 1D array", {
   expect_equal(vec_dim(as_array(x)), vec_size(x))
 })
 
-test_that("names() and dim_names() are kept", {
+test_that("names() and rray_dim_names() are kept", {
 
-  nms_1D <- dim_names(x)
-  nms_2D <- c(dim_names(x), new_empty_dim_names(1))
+  nms_1D <- rray_dim_names(x)
+  nms_2D <- c(rray_dim_names(x), rray_empty_dim_names(1))
 
-  expect_equal(dim_names(as_array(x)), nms_1D)
-  expect_equal(dim_names(as_array(x_array)), nms_1D)
-  expect_equal(dim_names(as_array(x_mat)), nms_2D)
+  expect_equal(rray_dim_names(as_array(x)), nms_1D)
+  expect_equal(rray_dim_names(as_array(x_array)), nms_1D)
+  expect_equal(rray_dim_names(as_array(x_mat)), nms_2D)
 })
 
 test_that("meta dim names are kept", {
 
   x_rray <- as_rray(x_array)
-  x_nms <- dim_names(x_rray)
+  x_nms <- rray_dim_names(x_rray)
   names(x_nms) <- "meta_nm"
-  dim_names(x_rray) <- x_nms
+  rray_dim_names(x_rray) <- x_nms
 
-  nms_with_meta <- dim_names(x_rray)
+  nms_with_meta <- rray_dim_names(x_rray)
 
   expect_equal(
-    dim_names(as_array(x_rray)),
+    rray_dim_names(as_array(x_rray)),
     nms_with_meta
   )
 })
@@ -104,27 +104,27 @@ test_that("vector -> rray makes a 1D rray", {
   expect_equal(vec_dim(as_rray(x)), vec_size(x))
 })
 
-test_that("names() and dim_names() are kept", {
+test_that("names() and rray_dim_names() are kept", {
 
-  nms_1D <- dim_names(x)
-  nms_2D <- c(dim_names(x), new_empty_dim_names(1))
+  nms_1D <- rray_dim_names(x)
+  nms_2D <- c(rray_dim_names(x), rray_empty_dim_names(1))
 
-  expect_equal(dim_names(as_rray(x)), nms_1D)
-  expect_equal(dim_names(as_rray(x_array)), nms_1D)
-  expect_equal(dim_names(as_rray(x_mat)), nms_2D)
+  expect_equal(rray_dim_names(as_rray(x)), nms_1D)
+  expect_equal(rray_dim_names(as_rray(x_array)), nms_1D)
+  expect_equal(rray_dim_names(as_rray(x_mat)), nms_2D)
 })
 
 test_that("meta dim names are kept", {
 
-  x_nms <- dim_names(x_array)
+  x_nms <- rray_dim_names(x_array)
   names(x_nms) <- "meta_nm"
   x_array_meta <- x_array
-  dim_names(x_array_meta) <- x_nms
+  rray_dim_names(x_array_meta) <- x_nms
 
-  nms_with_meta <- dim_names(x_array_meta)
+  nms_with_meta <- rray_dim_names(x_array_meta)
 
   expect_equal(
-    dim_names(as_rray(x_array_meta)),
+    rray_dim_names(as_rray(x_array_meta)),
     nms_with_meta
   )
 })
@@ -132,8 +132,8 @@ test_that("meta dim names are kept", {
 test_that("4D tests", {
 
   x_4D <- array(1, c(1, 1, 1, 1), dimnames = list("r1", "c1", "..3_1", "..4_1"))
-  nms_4D <- dim_names(x_4D)
+  nms_4D <- rray_dim_names(x_4D)
 
   expect_equal(vec_dim(as_rray(x_4D)), c(1, 1, 1, 1))
-  expect_equal(dim_names(as_rray(x_4D)), nms_4D)
+  expect_equal(rray_dim_names(as_rray(x_4D)), nms_4D)
 })

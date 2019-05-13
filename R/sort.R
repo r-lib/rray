@@ -66,11 +66,11 @@ rray_sort <- function(x, axis = NULL) {
   # but keep meta names. If `axis == NULL`, remove
   # all dimension names
   if (is.null(axis)) {
-    new_dim_names <- new_empty_dim_names(rray_dims(res))
-    names(new_dim_names) <- names(dim_names(x))
+    new_dim_names <- rray_empty_dim_names(rray_dims(res))
+    names(new_dim_names) <- names(rray_dim_names(x))
   }
   else {
-    new_dim_names <- dim_names(x)
+    new_dim_names <- rray_dim_names(x)
     new_dim_names[axis] <- list(NULL)
   }
 

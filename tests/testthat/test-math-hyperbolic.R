@@ -41,7 +41,7 @@ for (i in seq_along(.fs)) {
   test_that(glue::glue("dim names are kept - {.f_name}"), {
     nms <- list("r1", "c1")
     x <- rray(1, c(1, 1), dim_names = nms)
-    expect_equal(dim_names(.f(x)), dim_names(x))
+    expect_equal(rray_dim_names(.f(x)), rray_dim_names(x))
   })
 
   test_that(glue::glue("corner cases - {.f_name}"), {

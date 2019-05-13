@@ -2,8 +2,8 @@
 % Please edit documentation in R/dim-names.R
 \name{dim-names}
 \alias{dim-names}
-\alias{dim_names}
-\alias{dim_names<-}
+\alias{rray_dim_names}
+\alias{rray_dim_names<-}
 \alias{set_dim_names}
 \alias{set_row_names}
 \alias{set_col_names}
@@ -12,9 +12,9 @@
 \alias{n_dim_names}
 \title{Dimension names}
 \usage{
-dim_names(x)
+rray_dim_names(x)
 
-dim_names(x) <- value
+rray_dim_names(x) <- value
 
 set_dim_names(x, n, nms)
 
@@ -42,7 +42,7 @@ either character vectors or \code{NULL}.}
 Extract names of various dimensions.
 }
 \details{
-Unlike \code{dimnames()} which can return \code{NULL}, \code{dim_names()} always returns a
+Unlike \code{dimnames()} which can return \code{NULL}, \code{rray_dim_names()} always returns a
 list the same length as the dimensionality of \code{x}. If any dimensions do not
 have names, \code{NULL} is returned for that element of the list. This
 results in an object that's length always matches the dimensionality of \code{x}.
@@ -50,24 +50,27 @@ results in an object that's length always matches the dimensionality of \code{x}
 \examples{
 
 x <- rray(1:10, c(5, 2))
-dim_names(x) <- list(letters[1:5], character())
+rray_dim_names(x) <- list(letters[1:5], character())
 x
-dim_names(x)
+rray_dim_names(x)
 
 # 1D object, so 1 set of dim names
-dim_names(rray())
+rray_dim_names(rray())
 
 # 2D object, so 2 sets of dim names
-dim_names(rray(1, dim = c(1, 1)))
+rray_dim_names(rray(1, dim = c(1, 1)))
 
 # 3D object, so 3 sets of dim names
-dim_names(rray(1, dim = c(1, 1, 1)))
+rray_dim_names(rray(1, dim = c(1, 1, 1)))
+
+# NULL is technically 1D
+rray_dim_names(NULL)
 
 # Vectors are treated as 1D arrays
-dim_names(1:5)
+rray_dim_names(1:5)
 
 vec <- c(x = 1, y = 2)
-dim_names(vec)
+rray_dim_names(vec)
 
 # You can add dim names more easily
 # using set_dim_names()

@@ -9,7 +9,7 @@ test_that("basic", {
 test_that("dim names are kept", {
   nms <- list("r1", "c1")
   x <- rray(1, c(1, 1), dim_names = nms)
-  expect_equal(dim_names(rray_exp(x)), dim_names(x))
+  expect_equal(rray_dim_names(rray_exp(x)), rray_dim_names(x))
 })
 
 test_that("corner cases", {
@@ -39,7 +39,7 @@ test_that("basic", {
 test_that("dim names are kept", {
   nms <- list("r1", "c1")
   x <- rray(1, c(1, 1), dim_names = nms)
-  expect_equal(dim_names(rray_exp2(x)), dim_names(x))
+  expect_equal(rray_dim_names(rray_exp2(x)), rray_dim_names(x))
 })
 
 test_that("corner cases", {
@@ -64,7 +64,7 @@ test_that("basic", {
 test_that("dim names are kept", {
   nms <- list("r1", "c1")
   x <- rray(1, c(1, 1), dim_names = nms)
-  expect_equal(dim_names(rray_expm1(x)), dim_names(x))
+  expect_equal(rray_dim_names(rray_expm1(x)), rray_dim_names(x))
 })
 
 test_that("corner cases", {
@@ -93,7 +93,7 @@ test_that("basic", {
 test_that("dim names are kept", {
   nms <- list("r1", "c1")
   x <- rray(1, c(1, 1), dim_names = nms)
-  expect_equal(dim_names(rray_log(x)), dim_names(x))
+  expect_equal(rray_dim_names(rray_log(x)), rray_dim_names(x))
 })
 
 test_that("corner cases", {
@@ -127,7 +127,7 @@ test_that("basic", {
 test_that("dim names are kept", {
   nms <- list("r1", "c1")
   x <- rray(1, c(1, 1), dim_names = nms)
-  expect_equal(dim_names(rray_log2(x)), dim_names(x))
+  expect_equal(rray_dim_names(rray_log2(x)), rray_dim_names(x))
 })
 
 test_that("corner cases", {
@@ -155,7 +155,7 @@ test_that("basic", {
 test_that("dim names are kept", {
   nms <- list("r1", "c1")
   x <- rray(1, c(1, 1), dim_names = nms)
-  expect_equal(dim_names(rray_log10(x)), dim_names(x))
+  expect_equal(rray_dim_names(rray_log10(x)), rray_dim_names(x))
 })
 
 test_that("corner cases", {
@@ -183,7 +183,7 @@ test_that("basic", {
 test_that("dim names are kept", {
   nms <- list("r1", "c1")
   x <- rray(1, c(1, 1), dim_names = nms)
-  expect_equal(dim_names(rray_log1p(x)), dim_names(x))
+  expect_equal(rray_dim_names(rray_log1p(x)), rray_dim_names(x))
 })
 
 test_that("corner cases", {

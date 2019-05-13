@@ -46,11 +46,11 @@ test_that("dimension names are kept", {
   )
 
   expect_equal(
-    map(map(rray_split(x, 1L), dim_names), function(x) x[-1]),
-    list(dim_names(x)[-1], dim_names(x)[-1])
+    map(map(rray_split(x, 1L), rray_dim_names), function(x) x[-1]),
+    list(rray_dim_names(x)[-1], rray_dim_names(x)[-1])
   )
 
-  all_nms <- map(rray_split(x, c(3L, 4L)), dim_names)
+  all_nms <- map(rray_split(x, c(3L, 4L)), rray_dim_names)
 
   expect_equal(
     all_nms[[1]],
@@ -97,10 +97,10 @@ test_that("can split with integer(0) axis", {
 test_that("dim names are in the right order (#161)", {
   x <- rray(1:6, 2:3, list(A = c("a1", "a2"), B = c("b1", "b2", "b3")))
   x_split <- rray_split(x, c(1, 2))
-  expect_equal(dim_names(x_split[[1]]), list(A = "a1", B = "b1"))
-  expect_equal(dim_names(x_split[[2]]), list(A = "a2", B = "b1"))
-  expect_equal(dim_names(x_split[[3]]), list(A = "a1", B = "b2"))
-  expect_equal(dim_names(x_split[[5]]), list(A = "a1", B = "b3"))
+  expect_equal(rray_dim_names(x_split[[1]]), list(A = "a1", B = "b1"))
+  expect_equal(rray_dim_names(x_split[[2]]), list(A = "a2", B = "b1"))
+  expect_equal(rray_dim_names(x_split[[3]]), list(A = "a1", B = "b2"))
+  expect_equal(rray_dim_names(x_split[[5]]), list(A = "a1", B = "b3"))
 })
 
 

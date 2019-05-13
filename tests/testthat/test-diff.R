@@ -32,7 +32,7 @@ test_that("diff with too many lags/differences keeps shape", {
 
 test_that("diff keeps names", {
   x <- rray(1:6, c(3, 2), dim_names = list(letters[1:3], letters[4:5]))
-  expect_equal(dim_names(diff(x)), list(letters[2:3], letters[4:5]))
-  expect_equal(dim_names(diff(x, lag = 2)), list(letters[3], letters[4:5]))
-  expect_equal(dim_names(diff(x, differences = 2)), list(letters[3], letters[4:5]))
+  expect_equal(rray_dim_names(diff(x)), list(letters[2:3], letters[4:5]))
+  expect_equal(rray_dim_names(diff(x, lag = 2)), list(letters[3], letters[4:5]))
+  expect_equal(rray_dim_names(diff(x, differences = 2)), list(letters[3], letters[4:5]))
 })

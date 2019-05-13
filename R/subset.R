@@ -107,7 +107,7 @@ rray_subset <- function(x, ...) {
 
   out <- rray__subset(x, indexer)
 
-  new_dim_names <- subset_dim_names(dim_names(x), indexer)
+  new_dim_names <- subset_dim_names(rray_dim_names(x), indexer)
   out <- set_full_dim_names(out, new_dim_names)
 
   vec_restore(out, x)
@@ -132,7 +132,7 @@ rray_as_index2 <- function(x, ...) {
   dims <- rray_dims(x)
   indexer <- expand_pad(indexer, dims)
   requested_dims <- vec_size(indexer)
-  proxy_names <- dim_names(x)
+  proxy_names <- rray_dim_names(x)
 
   if (requested_dims > dims) {
     glubort(

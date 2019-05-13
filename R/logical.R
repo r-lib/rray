@@ -132,7 +132,7 @@ rray_any <- function(x, axes = NULL) {
   # perform the reduction
   res <- rray__any(x_cast, as_cpp_idx(axes))
 
-  new_dim_names <- restore_dim_names(dim_names(x), rray_dim(res))
+  new_dim_names <- restore_dim_names(rray_dim_names(x), rray_dim(res))
   res <- set_full_dim_names(res, new_dim_names)
 
   vec_restore(res, x)
@@ -158,7 +158,7 @@ rray_all <- function(x, axes = NULL) {
   # perform the reduction
   res <- rray__all(x_cast, as_cpp_idx(axes))
 
-  new_dim_names <- restore_dim_names(dim_names(x), rray_dim(res))
+  new_dim_names <- restore_dim_names(rray_dim_names(x), rray_dim(res))
   res <- set_full_dim_names(res, new_dim_names)
 
   vec_restore(res, x)
@@ -261,7 +261,7 @@ logical_cast_call <- function(f, x) {
 
   res <- f(res)
 
-  res <- set_full_dim_names(res, dim_names(x))
+  res <- set_full_dim_names(res, rray_dim_names(x))
 
   vec_restore(res, x)
 }

@@ -9,7 +9,7 @@ test_that("basic", {
 test_that("dim names are kept", {
   nms <- list("r1", "c1")
   x <- rray(1, c(1, 1), dim_names = nms)
-  expect_equal(dim_names(rray_square(x)), dim_names(x))
+  expect_equal(rray_dim_names(rray_square(x)), rray_dim_names(x))
 })
 
 test_that("corner cases", {
@@ -33,7 +33,7 @@ test_that("basic", {
 test_that("dim names are kept", {
   nms <- list("r1", "c1")
   x <- rray(1, c(1, 1), dim_names = nms)
-  expect_equal(dim_names(rray_cube(x)), dim_names(x))
+  expect_equal(rray_dim_names(rray_cube(x)), rray_dim_names(x))
 })
 
 test_that("corner cases", {
@@ -57,7 +57,7 @@ test_that("basic", {
 test_that("dim names are kept", {
   nms <- list("r1", "c1")
   x <- rray(1, c(1, 1), dim_names = nms)
-  expect_equal(dim_names(rray_sqrt(x)), dim_names(x))
+  expect_equal(rray_dim_names(rray_sqrt(x)), rray_dim_names(x))
 })
 
 test_that("corner cases", {
@@ -86,7 +86,7 @@ test_that("basic", {
 test_that("dim names are kept", {
   nms <- list("r1", "c1")
   x <- rray(1, c(1, 1), dim_names = nms)
-  expect_equal(dim_names(rray_cbrt(x)), dim_names(x))
+  expect_equal(rray_dim_names(rray_cbrt(x)), rray_dim_names(x))
 })
 
 test_that("corner cases", {
@@ -125,8 +125,8 @@ test_that("broadcasting is performed", {
 test_that("dimension names are kept", {
   x <- rray(1, dim = c(1, 1), dim_names = list("r1", NULL))
   y <- rray(2, dim = c(1, 1), dim_names = list("rr1", "cc1"))
-  expect_equal(dim_names(rray_hypot(x, y)), list("r1", "cc1"))
-  expect_equal(dim_names(rray_hypot(y, x)), dim_names(y))
+  expect_equal(rray_dim_names(rray_hypot(x, y)), list("r1", "cc1"))
+  expect_equal(rray_dim_names(rray_hypot(y, x)), rray_dim_names(y))
 })
 
 test_that("corner cases", {

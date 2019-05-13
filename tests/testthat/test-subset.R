@@ -43,15 +43,15 @@ test_that("0D slicing", {
 test_that("subset keeps dimension names", {
   x <- rray(1:8, dim = c(2, 2, 2))
   nms <- list(r = c("r1", "r2"), c = c("c1", "c2"), d = c("d1", "d2"))
-  dim_names(x) <- nms
+  rray_dim_names(x) <- nms
 
   nms1 <- nms
   nms1$r <- nms1$r[1]
-  expect_equal(dim_names(rray_subset(x, 1,)), nms1)
+  expect_equal(rray_dim_names(rray_subset(x, 1,)), nms1)
 
   nms2 <- nms
   nms2["r"] <- list(NULL)
-  expect_equal(dim_names(x[0,]), nms2)
+  expect_equal(rray_dim_names(x[0,]), nms2)
 })
 
 # equivalent to 0
@@ -152,7 +152,7 @@ test_that("subset with NA (real)", {
 test_that("subset with character", {
   x <- rray(1:8, dim = c(2, 2, 2))
   nms <- list(r = c("r1", "r2"), c = c("c1", "c2"), d = c("d1", "d2"))
-  dim_names(x) <- nms
+  rray_dim_names(x) <- nms
 
   expect_equal(
     rray_subset(x, "r1"),
@@ -252,7 +252,7 @@ test_that("subset assign keeps names", {
   nms <- list(r = "r1", c = "c1")
   x <- array(1, c(1, 1), dimnames = nms)
   rray_subset(x, 1) <- 2
-  expect_equal(dim_names(x), nms)
+  expect_equal(rray_dim_names(x), nms)
 })
 
 # ------------------------------------------------------------------------------
@@ -275,8 +275,8 @@ test_that("names are generally not kept with yank", {
   x <- rray(1:8, dim = c(2, 2, 2))
   x <- set_row_names(x, c("a", "b"))
   expect_equal(
-    dim_names(rray_yank(x, 1)),
-    new_empty_dim_names(1)
+    rray_dim_names(rray_yank(x, 1)),
+    rray_empty_dim_names(1)
   )
 })
 
@@ -441,8 +441,8 @@ test_that("0D extracting", {
 test_that("extract never keeps dimension names", {
   x <- rray(1:8, dim = c(2, 2, 2))
   nms <- list(r = c("r1", "r2"), c = c("c1", "c2"), d = c("d1", "d2"))
-  dim_names(x) <- nms
-  expect_equal(dim_names(rray_extract(x, 1)), new_empty_dim_names(1))
+  rray_dim_names(x) <- nms
+  expect_equal(rray_dim_names(rray_extract(x, 1)), rray_empty_dim_names(1))
 })
 
 # equivalent to 0
@@ -531,7 +531,7 @@ test_that("extract with NA (real)", {
 test_that("extract with character", {
   x <- rray(1:8, dim = c(2, 2, 2))
   nms <- list(r = c("r1", "r2"), c = c("c1", "c2"), d = c("d1", "d2"))
-  dim_names(x) <- nms
+  rray_dim_names(x) <- nms
 
   expect_equal(
     rray_extract(x, "r1"),
@@ -615,7 +615,7 @@ test_that("can extract assign with base R objects", {
 test_that("names are never kept with [[", {
   x <- rray(1:2)
   names(x) <- c("a", "b")
-  expect_equal(dim_names(x[[1]]), new_empty_dim_names(1))
+  expect_equal(rray_dim_names(x[[1]]), rray_empty_dim_names(1))
 })
 
 test_that("cannot use >1 indexer", {

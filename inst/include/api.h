@@ -18,6 +18,15 @@ int rray__dims2(const int& x_dims, const int& y_dims);
 Rcpp::IntegerVector rray__increase_dims(const Rcpp::IntegerVector& dim,
                                         const int& dims);
 
+bool rray__has_dim(const Rcpp::RObject& x);
+
+// -----------------------------------------------------------------------------
+// Dimension names
+
+Rcpp::List rray__new_empty_dim_names(int n);
+
+Rcpp::List rray__dim_names(const Rcpp::RObject& x);
+
 // -----------------------------------------------------------------------------
 // Miscellaneous
 
