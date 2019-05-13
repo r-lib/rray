@@ -74,66 +74,27 @@
 #' rray_split(x_4d, c(4, 3))
 #'
 #' @export
-rray_split <- function(x, axes = NULL, n = NULL) {
+rray_split <- function(x, axes = NULL) {
 
   axes <- vec_cast(axes, integer())
   validate_axes(axes, x)
 
   if (is_null(axes)) {
-    axes <- rev(seq_len(rray_dims(x)))
+    axes <- seq_len(rray_dims(x))
   }
 
-  # Default to size of the axes
-  if (is_null(n)) {
-    n <- rray_dim(x)[axes]
-  }
-
-  n <- vec_cast(n, integer())
-
-  validate_axis_n_size(axes, n)
-
-  res <- rray_multi_split(x, axes, n)
+  res <- rray__split(x, as_cpp_idx(axes))
 
   # All non-axes dim names are the same
   # axes dim names are split up over the axes
-  new_dim_names_lst <- split_dim_names(dim_names(x), axes, n)
+  # new_dim_names_lst <- split_dim_names(dim_names(x), axes, n)
 
   # Use anonymous function to work around dispatch bug with internal generics
-  res <- map2(res, new_dim_names_lst, function(x, nms) {set_full_dim_names(x, nms)})
+  #res <- map2(res, new_dim_names_lst, function(x, nms) {set_full_dim_names(x, nms)})
 
-  res <- map(res, vec_restore, to = x)
-
-  # not using this because it vec_cast()
-  # removes dimension names
-  # as_list_of(res)
+  #res <- map(res, vec_restore, to = x)
 
   res
-}
-
-rray_multi_split <- function(x, axes, n) {
-  idx <- seq_along(axes)
-  x <- list(x)
-
-  for(i in idx) {
-    x <- map(x, rray__split, n = n[i], axis = as_cpp_idx(axes[i]))
-    x <- rlang::squash(x)
-  }
-
-  x
-}
-
-validate_axis_n_size <- function(axes, n) {
-
-  axes_size <- vec_size(axes)
-  n_size <- vec_size(n)
-
-  if (axes_size != n_size) {
-    glubort(
-      "The size of `axes` ({axes_size}) must be the same as `n` ({n_size})."
-    )
-  }
-
-  invisible()
 }
 
 split_dim_names <- function(dim_names, axes, n) {

@@ -365,15 +365,34 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray__new_empty_dim_names
+Rcpp::List rray__new_empty_dim_names(int n);
+RcppExport SEXP _rray_rray__new_empty_dim_names(SEXP nSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__new_empty_dim_names(n));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__dim_names
+Rcpp::List rray__dim_names(const Rcpp::RObject& x);
+RcppExport SEXP _rray_rray__dim_names(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< const Rcpp::RObject& >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__dim_names(x));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray__split
-Rcpp::RObject rray__split(Rcpp::RObject x, std::size_t n, std::size_t axis);
-RcppExport SEXP _rray_rray__split(SEXP xSEXP, SEXP nSEXP, SEXP axisSEXP) {
+Rcpp::RObject rray__split(Rcpp::RObject x, const std::vector<std::size_t>& axes);
+RcppExport SEXP _rray_rray__split(SEXP xSEXP, SEXP axesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    Rcpp::traits::input_parameter< std::size_t >::type n(nSEXP);
-    Rcpp::traits::input_parameter< std::size_t >::type axis(axisSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__split(x, n, axis));
+    Rcpp::traits::input_parameter< const std::vector<std::size_t>& >::type axes(axesSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__split(x, axes));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1051,7 +1070,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__any", (DL_FUNC) &_rray_rray__any, 2},
     {"_rray_rray__all", (DL_FUNC) &_rray_rray__all, 2},
     {"_rray_rray__if_else", (DL_FUNC) &_rray_rray__if_else, 3},
-    {"_rray_rray__split", (DL_FUNC) &_rray_rray__split, 3},
+    {"_rray_rray__new_empty_dim_names", (DL_FUNC) &_rray_rray__new_empty_dim_names, 1},
+    {"_rray_rray__dim_names", (DL_FUNC) &_rray_rray__dim_names, 1},
+    {"_rray_rray__split", (DL_FUNC) &_rray_rray__split, 2},
     {"_rray_rray__rotate", (DL_FUNC) &_rray_rray__rotate, 4},
     {"_rray_rray__transpose", (DL_FUNC) &_rray_rray__transpose, 2},
     {"_rray_rray__squeeze", (DL_FUNC) &_rray_rray__squeeze, 2},

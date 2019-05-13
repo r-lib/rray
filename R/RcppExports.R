@@ -133,8 +133,16 @@ rray__if_else <- function(condition, true_, false_) {
     .Call(`_rray_rray__if_else`, condition, true_, false_)
 }
 
-rray__split <- function(x, n, axis) {
-    .Call(`_rray_rray__split`, x, n, axis)
+rray__new_empty_dim_names <- function(n) {
+    .Call(`_rray_rray__new_empty_dim_names`, n)
+}
+
+rray__dim_names <- function(x) {
+    .Call(`_rray_rray__dim_names`, x)
+}
+
+rray__split <- function(x, axes) {
+    .Call(`_rray_rray__split`, x, axes)
 }
 
 rray__rotate <- function(x, from, to, n) {
