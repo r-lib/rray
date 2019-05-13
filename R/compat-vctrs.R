@@ -6,7 +6,7 @@ vec_restore.vctrs_rray <- function(x, to, ..., i = NULL) {
     .data = vec_data(x),
     size = x_dim[1],
     shape = x_dim[-1],
-    dim_names = dim_names(x)
+    dim_names = rray_dim_names(x)
   )
 }
 

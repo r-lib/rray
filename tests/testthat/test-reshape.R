@@ -42,13 +42,13 @@ test_that("dimension names are maintained where appropriate", {
   x <- new_matrix(1:5, c(5, 1), list(meta = letters[1:5], "c1"))
 
   expect_equal(
-    dim_names(rray_reshape(x, 5)),
+    rray_dim_names(rray_reshape(x, 5)),
     list(meta = letters[1:5])
   )
 
   expect_equal(
-    dim_names(rray_reshape(x, c(5, 1, 1))),
-    c(dim_names(x), new_empty_dim_names(1))
+    rray_dim_names(rray_reshape(x, c(5, 1, 1))),
+    c(rray_dim_names(x), new_empty_dim_names(1))
   )
 
 })

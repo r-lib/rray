@@ -7,7 +7,7 @@ test_that("can assign names() on 1D rrays", {
   names(x) <- letters[1:5]
 
   expect_equal(
-    dim_names(x),
+    rray_dim_names(x),
     list(letters[1:5])
   )
 

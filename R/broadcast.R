@@ -75,7 +75,7 @@ rray_broadcast <- function(x, dim) {
 
   res <- rray__broadcast(x, dim)
 
-  new_dim_names <- restore_dim_names(dim_names(x), dim)
+  new_dim_names <- restore_dim_names(rray_dim_names(x), dim)
   res <- set_full_dim_names(res, new_dim_names)
 
   vec_restore(res, x)
@@ -97,7 +97,7 @@ rray_dims_match <- function(x, dims) {
   }
 
   # Capture dim names before setting new `dim`
-  new_dim_nms <- dim_names_extend(dim_names(x), dims)
+  new_dim_nms <- dim_names_extend(rray_dim_names(x), dims)
 
   dim <- rray_increase_dims(x_dim, dims)
 

@@ -119,7 +119,7 @@ test_that("dim names along the axis are combined", {
   names(b) <- c("b_r1", "b_r2")
 
   expect_equal(
-    dim_names(rray_bind(a, b, axis = 1)),
+    rray_dim_names(rray_bind(a, b, axis = 1)),
     list(c(names(a), names(b)))
   )
 
@@ -171,13 +171,13 @@ test_that("dim names off the axis follow standard rules", {
 
   # Only dim names of a are used for rows
   expect_equal(
-    dim_names(rray_bind(a, b, axis = 2)),
+    rray_dim_names(rray_bind(a, b, axis = 2)),
     list(names(a), NULL)
   )
 
   # Only dim names of b are used for rows
   expect_equal(
-    dim_names(rray_bind(b, a, axis = 2)),
+    rray_dim_names(rray_bind(b, a, axis = 2)),
     list(names(b), NULL)
   )
 
@@ -190,19 +190,19 @@ test_that("outer dim names are used", {
   names(a) <- c("a_r1", "a_r2")
 
   expect_equal(
-    dim_names(rray_bind(x = a, y = b, axis = 1)),
+    rray_dim_names(rray_bind(x = a, y = b, axis = 1)),
     list(c(paste0("x..", names(a)), "y1", "y2"))
   )
 
   names(b) <- c("b_r1", "b_r2")
 
   expect_equal(
-    dim_names(rray_bind(x = a, b, axis = 1)),
+    rray_dim_names(rray_bind(x = a, b, axis = 1)),
     list(c(paste0("x..", names(a)), names(b)))
   )
 
   expect_equal(
-    dim_names(rray_bind(x = a, y = b, axis = 1)),
+    rray_dim_names(rray_bind(x = a, y = b, axis = 1)),
     list(c(paste0("x..", names(a)), paste0("y..", names(b))))
   )
 
@@ -214,7 +214,7 @@ test_that("outer dim names are only added to `axis` dimension", {
   y <- matrix(2, dimnames = list("a", NULL))
 
   expect_equal(
-    dim_names(rray_bind(x = x, y, axis = 1)),
+    rray_dim_names(rray_bind(x = x, y, axis = 1)),
     list(c("x..x", "a"), "y")
   )
 

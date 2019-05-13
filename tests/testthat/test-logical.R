@@ -43,7 +43,7 @@ test_that("& works with NULL input", {
 
 test_that("dim names are kept with NULL input", {
   x <- rray(c(TRUE, FALSE), c(1, 2), dim_names = list(c("r1"), c("c1", "c2")))
-  expect_equal(dim_names(x & NULL), dim_names(x[0,]))
+  expect_equal(rray_dim_names(x & NULL), rray_dim_names(x[0,]))
 })
 
 test_that("& works with 0-length input", {
@@ -132,7 +132,7 @@ test_that("| works with NULL input", {
 
 test_that("dim names are kept with NULL input", {
   x <- rray(c(TRUE, FALSE), c(1, 2), dim_names = list(c("r1"), c("c1", "c2")))
-  expect_equal(dim_names(x | NULL), dim_names(x[0,]))
+  expect_equal(rray_dim_names(x | NULL), rray_dim_names(x[0,]))
 })
 
 test_that("| works with 0-length input", {
@@ -198,7 +198,7 @@ test_that("! works with NULL input", {
 
 test_that("dim names are kept with !", {
   x <- rray(c(TRUE, FALSE), c(2, 2), dim_names = list(c("r1", "r2"), c("c1", "c2")))
-  expect_equal(dim_names(!x), dim_names(x))
+  expect_equal(rray_dim_names(!x), rray_dim_names(x))
 })
 
 test_that("! works with 0-length input", {

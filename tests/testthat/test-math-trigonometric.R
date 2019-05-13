@@ -50,7 +50,7 @@ for (i in seq_along(.fs)) {
   test_that(glue::glue("dim names are kept - {.f_name}"), {
     nms <- list("r1", "c1")
     x <- rray(1, c(1, 1), dim_names = nms)
-    expect_equal(dim_names(.f(x)), dim_names(x))
+    expect_equal(rray_dim_names(.f(x)), rray_dim_names(x))
   })
 
   test_that(glue::glue("corner cases - {.f_name}"), {
@@ -93,8 +93,8 @@ test_that("dim names are kept - atan2", {
   x <- rray(1, c(1, 1), dim_names = nms)
   y <- rray(1, c(1, 1), dim_names = nms2)
 
-  expect_equal(dim_names(rray_atan2(x, y)), list("r1", "cc1"))
-  expect_equal(dim_names(rray_atan2(y, x)), list("rr1", "cc1"))
+  expect_equal(rray_dim_names(rray_atan2(x, y)), list("r1", "cc1"))
+  expect_equal(rray_dim_names(rray_atan2(y, x)), list("rr1", "cc1"))
 })
 
 test_that("corner cases - atan2", {

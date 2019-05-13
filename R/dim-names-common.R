@@ -71,7 +71,7 @@ rray_dim_names_common <- function(...) {
 
   .dim <- rray_dim_common(!!! args)
 
-  arg_dim_names <- map(args, dim_names)
+  arg_dim_names <- map(args, rray_dim_names)
   arg_dim_names <- map(arg_dim_names, restore_dim_names, to_dim = .dim)
 
   reduce(arg_dim_names, coalesce_dim_names)
@@ -83,8 +83,8 @@ rray_dim_names2 <- function(x, y) {
 
   .dim <- rray_dim2(rray_dim(x), rray_dim(y))
 
-  x_nms_list <- restore_dim_names(dim_names(x), .dim)
-  y_nms_list <- restore_dim_names(dim_names(y), .dim)
+  x_nms_list <- restore_dim_names(rray_dim_names(x), .dim)
+  y_nms_list <- restore_dim_names(rray_dim_names(y), .dim)
 
   coalesce_dim_names(x_nms_list, y_nms_list)
 }

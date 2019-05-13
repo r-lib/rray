@@ -77,7 +77,7 @@ rray_transpose <- function(x, permutation = NULL) {
     permutation <- rev(seq_len(rray_dims(x)))
   }
 
-  res <- set_full_dim_names(res, dim_names(x)[permutation])
+  res <- set_full_dim_names(res, rray_dim_names(x)[permutation])
 
   vec_restore(res, x)
 }

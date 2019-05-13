@@ -71,7 +71,7 @@ rray_squeeze <- function(x, axes = NULL) {
 
 squeeze_dim_names <- function(x, axes) {
 
-  x_dim_names <- dim_names(x)
+  x_dim_names <- rray_dim_names(x)
 
   # Generally, names will come from the non `axes` axes
   new_dim_names <- x_dim_names[-axes]

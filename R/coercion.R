@@ -32,7 +32,7 @@ as_array.double <- function(x, ...) {
   new_array(
     .data = x,
     dim = rray_dim(x),
-    dimnames = dim_names(x)
+    dimnames = rray_dim_names(x)
   )
 }
 
@@ -84,7 +84,7 @@ as_matrix.double <- function(x, ...) {
     dim <- dim[c(1L, 2L)]
   }
 
-  new_dim_names <- restore_dim_names(dim_names(x), dim)
+  new_dim_names <- restore_dim_names(rray_dim_names(x), dim)
 
   new_matrix(
     .data = x,
@@ -164,7 +164,7 @@ as_rray.double <- function(x, ...) {
     .data = unname(vec_data(x)),
     size = vec_size(x),
     shape = rray_shape(x),
-    dim_names = dim_names(x)
+    dim_names = rray_dim_names(x)
   )
 }
 

@@ -52,11 +52,11 @@ test_that("common dim of 0 and non-zero/non-one is an error", {
 test_that("dimension names are kept", {
   x <- rray(c(TRUE, FALSE), c(1, 2), dim_names = list(c("r1"), c("c1", "c2")))
 
-  expect_equal(dim_names(rray_greater(x, 2)), dim_names(x))
-  expect_equal(dim_names(rray_greater(matrix(1, 1, 2), x)), dim_names(x))
+  expect_equal(rray_dim_names(rray_greater(x, 2)), rray_dim_names(x))
+  expect_equal(rray_dim_names(rray_greater(matrix(1, 1, 2), x)), rray_dim_names(x))
 
   expect_equal(
-    dim_names(rray_greater(matrix(logical(0), 0, 2), x)),
+    rray_dim_names(rray_greater(matrix(logical(0), 0, 2), x)),
     list(NULL, c("c1", "c2"))
   )
 })
@@ -124,11 +124,11 @@ test_that("common dim of 0 and non-zero/non-one is an error", {
 test_that("dimension names are kept", {
   x <- rray(c(TRUE, FALSE), c(1, 2), dim_names = list(c("r1"), c("c1", "c2")))
 
-  expect_equal(dim_names(rray_greater_equal(x, 2)), dim_names(x))
-  expect_equal(dim_names(rray_greater_equal(matrix(1, 1, 2), x)), dim_names(x))
+  expect_equal(rray_dim_names(rray_greater_equal(x, 2)), rray_dim_names(x))
+  expect_equal(rray_dim_names(rray_greater_equal(matrix(1, 1, 2), x)), rray_dim_names(x))
 
   expect_equal(
-    dim_names(rray_greater_equal(matrix(logical(0), 0, 2), x)),
+    rray_dim_names(rray_greater_equal(matrix(logical(0), 0, 2), x)),
     list(NULL, c("c1", "c2"))
   )
 })
@@ -189,11 +189,11 @@ test_that("common dim of 0 and non-zero/non-one is an error", {
 test_that("dimension names are kept", {
   x <- rray(c(TRUE, FALSE), c(1, 2), dim_names = list(c("r1"), c("c1", "c2")))
 
-  expect_equal(dim_names(rray_lesser(x, 2)), dim_names(x))
-  expect_equal(dim_names(rray_lesser(matrix(1, 1, 2), x)), dim_names(x))
+  expect_equal(rray_dim_names(rray_lesser(x, 2)), rray_dim_names(x))
+  expect_equal(rray_dim_names(rray_lesser(matrix(1, 1, 2), x)), rray_dim_names(x))
 
   expect_equal(
-    dim_names(rray_lesser(matrix(logical(0), 0, 2), x)),
+    rray_dim_names(rray_lesser(matrix(logical(0), 0, 2), x)),
     list(NULL, c("c1", "c2"))
   )
 })
@@ -255,11 +255,11 @@ test_that("common dim of 0 and non-zero/non-one is an error", {
 test_that("dimension names are kept", {
   x <- rray(c(TRUE, FALSE), c(1, 2), dim_names = list(c("r1"), c("c1", "c2")))
 
-  expect_equal(dim_names(rray_lesser_equal(x, 2)), dim_names(x))
-  expect_equal(dim_names(rray_lesser_equal(matrix(1, 1, 2), x)), dim_names(x))
+  expect_equal(rray_dim_names(rray_lesser_equal(x, 2)), rray_dim_names(x))
+  expect_equal(rray_dim_names(rray_lesser_equal(matrix(1, 1, 2), x)), rray_dim_names(x))
 
   expect_equal(
-    dim_names(rray_lesser_equal(matrix(logical(0), 0, 2), x)),
+    rray_dim_names(rray_lesser_equal(matrix(logical(0), 0, 2), x)),
     list(NULL, c("c1", "c2"))
   )
 })
@@ -320,11 +320,11 @@ test_that("common dim of 0 and non-zero/non-one is an error", {
 test_that("dimension names are kept", {
   x <- rray(c(TRUE, FALSE), c(1, 2), dim_names = list(c("r1"), c("c1", "c2")))
 
-  expect_equal(dim_names(rray_equal(x, 2)), dim_names(x))
-  expect_equal(dim_names(rray_equal(matrix(1, 1, 2), x)), dim_names(x))
+  expect_equal(rray_dim_names(rray_equal(x, 2)), rray_dim_names(x))
+  expect_equal(rray_dim_names(rray_equal(matrix(1, 1, 2), x)), rray_dim_names(x))
 
   expect_equal(
-    dim_names(rray_equal(matrix(logical(0), 0, 2), x)),
+    rray_dim_names(rray_equal(matrix(logical(0), 0, 2), x)),
     list(NULL, c("c1", "c2"))
   )
 })
@@ -387,11 +387,11 @@ test_that("common dim of 0 and non-zero/non-one is an error", {
 test_that("dimension names are kept", {
   x <- rray(c(TRUE, FALSE), c(1, 2), dim_names = list(c("r1"), c("c1", "c2")))
 
-  expect_equal(dim_names(rray_not_equal(x, 2)), dim_names(x))
-  expect_equal(dim_names(rray_not_equal(matrix(1, 1, 2), x)), dim_names(x))
+  expect_equal(rray_dim_names(rray_not_equal(x, 2)), rray_dim_names(x))
+  expect_equal(rray_dim_names(rray_not_equal(matrix(1, 1, 2), x)), rray_dim_names(x))
 
   expect_equal(
-    dim_names(rray_not_equal(matrix(logical(0), 0, 2), x)),
+    rray_dim_names(rray_not_equal(matrix(logical(0), 0, 2), x)),
     list(NULL, c("c1", "c2"))
   )
 })

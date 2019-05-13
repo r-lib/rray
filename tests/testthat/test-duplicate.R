@@ -64,7 +64,7 @@ test_that("length 0 integer axes", {
 
 test_that("names are kept", {
   x <- matrix(1, dimnames = list("c1", "c2"))
-  expect_equal(dim_names(rray_duplicate_any(x)), dim_names(x))
+  expect_equal(rray_dim_names(rray_duplicate_any(x)), rray_dim_names(x))
 })
 
 test_that("`axes` must be ordered and unique", {
@@ -139,7 +139,7 @@ test_that("length 0 integer axes", {
 
 test_that("names are kept", {
   x <- matrix(1, dimnames = list("c1", "c2"))
-  expect_equal(dim_names(rray_duplicate_detect(x)), dim_names(x))
+  expect_equal(rray_dim_names(rray_duplicate_detect(x)), rray_dim_names(x))
 })
 
 test_that("`axes` must be ordered and unique", {
@@ -214,7 +214,7 @@ test_that("length 0 integer axes", {
 
 test_that("names are kept", {
   x <- matrix(1, dimnames = list("c1", "c2"))
-  expect_equal(dim_names(rray_duplicate_id(x)), dim_names(x))
+  expect_equal(rray_dim_names(rray_duplicate_id(x)), rray_dim_names(x))
 })
 
 test_that("`axes` must be ordered and unique", {

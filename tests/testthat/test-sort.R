@@ -49,18 +49,18 @@ test_that("sorting drops the names along the axis", {
   )
 
   expect_equal(
-    dim_names(rray_sort(x, axis = 1L)),
+    rray_dim_names(rray_sort(x, axis = 1L)),
     list(r = NULL, c = c("c1", "c2"))
   )
 
   expect_equal(
-    dim_names(rray_sort(x, axis = 2L)),
+    rray_dim_names(rray_sort(x, axis = 2L)),
     list(r = c("r1", "r2"), c = NULL)
   )
 
   # dropped along all axes
   expect_equal(
-    dim_names(rray_sort(x)),
+    rray_dim_names(rray_sort(x)),
     list(r = NULL, c = NULL)
   )
 })

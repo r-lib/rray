@@ -75,14 +75,14 @@ test_that("broadcasting fails correctly with length 0 input", {
 test_that("dimension names are kept", {
   x <- rray(1:2, c(2, 1), dim_names = list(c("r1", "r2"), c("c1")))
 
-  expect_equal(dim_names(x + 1), dim_names(x))
-  expect_equal(dim_names(1 + x), dim_names(x))
-  expect_equal(dim_names(x + matrix(1, ncol = 2)), list(c("r1", "r2"), NULL))
+  expect_equal(rray_dim_names(x + 1), rray_dim_names(x))
+  expect_equal(rray_dim_names(1 + x), rray_dim_names(x))
+  expect_equal(rray_dim_names(x + matrix(1, ncol = 2)), list(c("r1", "r2"), NULL))
 
   y <- rray(1, c(1, 1), dim_names = list(NULL, c("y_c1")))
 
-  expect_equal(dim_names(x + y), dim_names(x))
-  expect_equal(dim_names(y + x), list(row_names(x), col_names(y)))
+  expect_equal(rray_dim_names(x + y), rray_dim_names(x))
+  expect_equal(rray_dim_names(y + x), list(row_names(x), col_names(y)))
 })
 
 test_that("shortcut operator works", {
@@ -172,14 +172,14 @@ test_that("broadcasting fails correctly with length 0 input", {
 test_that("dimension names are kept", {
   x <- rray(1:2, c(2, 1), dim_names = list(c("r1", "r2"), c("c1")))
 
-  expect_equal(dim_names(x - 1), dim_names(x))
-  expect_equal(dim_names(1 - x), dim_names(x))
-  expect_equal(dim_names(x - matrix(1, ncol = 2)), list(c("r1", "r2"), NULL))
+  expect_equal(rray_dim_names(x - 1), rray_dim_names(x))
+  expect_equal(rray_dim_names(1 - x), rray_dim_names(x))
+  expect_equal(rray_dim_names(x - matrix(1, ncol = 2)), list(c("r1", "r2"), NULL))
 
   y <- rray(1, c(1, 1), dim_names = list(NULL, c("y_c1")))
 
-  expect_equal(dim_names(x - y), dim_names(x))
-  expect_equal(dim_names(y - x), list(row_names(x), col_names(y)))
+  expect_equal(rray_dim_names(x - y), rray_dim_names(x))
+  expect_equal(rray_dim_names(y - x), list(row_names(x), col_names(y)))
 })
 
 test_that("shortcut operator works", {
@@ -267,14 +267,14 @@ test_that("broadcasting fails correctly with length 0 input", {
 test_that("dimension names are kept", {
   x <- rray(1:2, c(2, 1), dim_names = list(c("r1", "r2"), c("c1")))
 
-  expect_equal(dim_names(x / 1), dim_names(x))
-  expect_equal(dim_names(1 / x), dim_names(x))
-  expect_equal(dim_names(x / matrix(1, ncol = 2)), list(c("r1", "r2"), NULL))
+  expect_equal(rray_dim_names(x / 1), rray_dim_names(x))
+  expect_equal(rray_dim_names(1 / x), rray_dim_names(x))
+  expect_equal(rray_dim_names(x / matrix(1, ncol = 2)), list(c("r1", "r2"), NULL))
 
   y <- rray(1, c(1, 1), dim_names = list(NULL, c("y_c1")))
 
-  expect_equal(dim_names(x / y), dim_names(x))
-  expect_equal(dim_names(y / x), list(row_names(x), col_names(y)))
+  expect_equal(rray_dim_names(x / y), rray_dim_names(x))
+  expect_equal(rray_dim_names(y / x), list(row_names(x), col_names(y)))
 })
 
 test_that("shortcut operator works", {
@@ -367,14 +367,14 @@ test_that("broadcasting fails correctly with length 0 input", {
 test_that("dimension names are kept", {
   x <- rray(1:2, c(2, 1), dim_names = list(c("r1", "r2"), c("c1")))
 
-  expect_equal(dim_names(x * 1), dim_names(x))
-  expect_equal(dim_names(1 * x), dim_names(x))
-  expect_equal(dim_names(x * matrix(1, ncol = 2)), list(c("r1", "r2"), NULL))
+  expect_equal(rray_dim_names(x * 1), rray_dim_names(x))
+  expect_equal(rray_dim_names(1 * x), rray_dim_names(x))
+  expect_equal(rray_dim_names(x * matrix(1, ncol = 2)), list(c("r1", "r2"), NULL))
 
   y <- rray(1, c(1, 1), dim_names = list(NULL, c("y_c1")))
 
-  expect_equal(dim_names(x * y), dim_names(x))
-  expect_equal(dim_names(y * x), list(row_names(x), col_names(y)))
+  expect_equal(rray_dim_names(x * y), rray_dim_names(x))
+  expect_equal(rray_dim_names(y * x), list(row_names(x), col_names(y)))
 })
 
 test_that("shortcut operator works", {
@@ -458,16 +458,16 @@ context("test-arith-pow")
 # })
 #
 # test_that("dimension names are kept", {
-#   x <- rray(1:2, c(2, 1), dim_names = list(c("r1", "r2"), c("c1")))
+#   x <- rray(1:2, c(2, 1), rray_dim_names = list(c("r1", "r2"), c("c1")))
 #
-#   expect_equal(dim_names(x ^ 1), dim_names(x))
-#   expect_equal(dim_names(1 ^ x), dim_names(x))
-#   expect_equal(dim_names(x ^ matrix(1, ncol = 2)), list(c("r1", "r2"), NULL))
+#   expect_equal(rray_dim_names(x ^ 1), rray_dim_names(x))
+#   expect_equal(rray_dim_names(1 ^ x), rray_dim_names(x))
+#   expect_equal(rray_dim_names(x ^ matrix(1, ncol = 2)), list(c("r1", "r2"), NULL))
 #
-#   y <- rray(1, c(1, 1), dim_names = list(NULL, c("y_c1")))
+#   y <- rray(1, c(1, 1), rray_dim_names = list(NULL, c("y_c1")))
 #
-#   expect_equal(dim_names(x ^ y), dim_names(x))
-#   expect_equal(dim_names(y ^ x), list(row_names(x), col_names(y)))
+#   expect_equal(rray_dim_names(x ^ y), rray_dim_names(x))
+#   expect_equal(rray_dim_names(y ^ x), list(row_names(x), col_names(y)))
 # })
 #
 # test_that("shortcut operator works", {
@@ -520,38 +520,38 @@ test_that("Fallthrough operation throws unsupported operation error", {
 test_that("meta dim names are kept", {
   x <- rray(1:2, c(2, 1))
   y <- rray(1:2, c(2, 1))
-  dim_names(x) <- list(xR = NULL, xC = NULL)
-  dim_names(y) <- list(yR = NULL, yC = NULL)
+  rray_dim_names(x) <- list(xR = NULL, xC = NULL)
+  rray_dim_names(y) <- list(yR = NULL, yC = NULL)
 
   expect_equal(
-    names(dim_names(x + y)),
-    names(dim_names(x))
+    names(rray_dim_names(x + y)),
+    names(rray_dim_names(x))
   )
 
   expect_equal(
-    names(dim_names(y + x)),
-    names(dim_names(y))
+    names(rray_dim_names(y + x)),
+    names(rray_dim_names(y))
   )
 
-  names(dim_names(x)) <- NULL
+  names(rray_dim_names(x)) <- NULL
 
   expect_equal(
-    names(dim_names(x + y)),
-    names(dim_names(y))
+    names(rray_dim_names(x + y)),
+    names(rray_dim_names(y))
   )
 
   expect_equal(
-    names(dim_names(y + x)),
-    names(dim_names(y))
+    names(rray_dim_names(y + x)),
+    names(rray_dim_names(y))
   )
 })
 
 test_that("can assign meta names to `NULL` without affecting dim names", {
   x <- rray(1:2, c(2, 1))
-  dim_names(x) <- list(R = c("r1", "r2"), C = "c1")
+  rray_dim_names(x) <- list(R = c("r1", "r2"), C = "c1")
 
-  names(dim_names(x)) <- NULL
+  names(rray_dim_names(x)) <- NULL
 
-  expect_equal(names(dim_names(x)), NULL)
-  expect_equal(dim_names(x), list(c("r1", "r2"), "c1"))
+  expect_equal(names(rray_dim_names(x)), NULL)
+  expect_equal(rray_dim_names(x), list(c("r1", "r2"), "c1"))
 })
