@@ -51,20 +51,20 @@ test_that("names are lost", {
 
   # to another rray - same shape
   res <- vec_cast(x, rray(1, c(1, 1)))
-  expect_equal(rray_dim_names(res), new_empty_dim_names(2))
+  expect_equal(rray_dim_names(res), rray_empty_dim_names(2))
 
   # to another rray - different shape
   res <- vec_cast(x, rray(1, c(1, 2)))
-  expect_equal(rray_dim_names(res), new_empty_dim_names(2))
+  expect_equal(rray_dim_names(res), rray_empty_dim_names(2))
 
   # to a base type
   res <- vec_cast(x, array(1, c(1, 2)))
-  expect_equal(rray_dim_names(res), new_empty_dim_names(2))
+  expect_equal(rray_dim_names(res), rray_empty_dim_names(2))
 
   # from a base type
   x <- array(1, c(1, 1), dimnames = nms)
   res <- vec_cast(x, rray(1, c(1, 1)))
-  expect_equal(rray_dim_names(res), new_empty_dim_names(2))
+  expect_equal(rray_dim_names(res), rray_empty_dim_names(2))
 
 })
 
@@ -127,7 +127,7 @@ test_that("using base coercing functions", {
 
   # names are not kept
   x_nm <- set_row_names(x, "foo")
-  expect_equal(rray_dim_names(as.double(x_nm)), new_empty_dim_names(1))
+  expect_equal(rray_dim_names(as.double(x_nm)), rray_empty_dim_names(1))
 })
 
 test_that("from NULL (handled by vctrs)", {

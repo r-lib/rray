@@ -83,7 +83,7 @@ squeeze_dim_names <- function(x, axes) {
     non_null_dim_names <- discard(x_dim_names, is.null)
 
     if (is_empty(non_null_dim_names)) {
-      new_dim_names <- new_empty_dim_names(1L)
+      new_dim_names <- rray_empty_dim_names(1L)
     }
     else {
       new_dim_names <- non_null_dim_names[1L]

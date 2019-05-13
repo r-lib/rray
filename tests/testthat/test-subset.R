@@ -276,7 +276,7 @@ test_that("names are generally not kept with yank", {
   x <- set_row_names(x, c("a", "b"))
   expect_equal(
     rray_dim_names(rray_yank(x, 1)),
-    new_empty_dim_names(1)
+    rray_empty_dim_names(1)
   )
 })
 
@@ -442,7 +442,7 @@ test_that("extract never keeps dimension names", {
   x <- rray(1:8, dim = c(2, 2, 2))
   nms <- list(r = c("r1", "r2"), c = c("c1", "c2"), d = c("d1", "d2"))
   rray_dim_names(x) <- nms
-  expect_equal(rray_dim_names(rray_extract(x, 1)), new_empty_dim_names(1))
+  expect_equal(rray_dim_names(rray_extract(x, 1)), rray_empty_dim_names(1))
 })
 
 # equivalent to 0
@@ -615,7 +615,7 @@ test_that("can extract assign with base R objects", {
 test_that("names are never kept with [[", {
   x <- rray(1:2)
   names(x) <- c("a", "b")
-  expect_equal(rray_dim_names(x[[1]]), new_empty_dim_names(1))
+  expect_equal(rray_dim_names(x[[1]]), rray_empty_dim_names(1))
 })
 
 test_that("cannot use >1 indexer", {

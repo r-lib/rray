@@ -20,7 +20,7 @@ test_that("vector -> matrix makes a 1 column matrix", {
 
 test_that("names() and rray_dim_names() are kept", {
 
-  nms <- c(rray_dim_names(x), new_empty_dim_names(1))
+  nms <- c(rray_dim_names(x), rray_empty_dim_names(1))
 
   expect_equal(rray_dim_names(as_matrix(x)), nms)
   expect_equal(rray_dim_names(as_matrix(x_array)), nms)
@@ -34,7 +34,7 @@ test_that("meta dim names are kept", {
   x_array_meta <- x_array
   rray_dim_names(x_array_meta) <- x_nms
 
-  nms_with_meta <- c(rray_dim_names(x_array_meta), new_empty_dim_names(1))
+  nms_with_meta <- c(rray_dim_names(x_array_meta), rray_empty_dim_names(1))
 
   expect_equal(
     rray_dim_names(as_matrix(x_array_meta)),
@@ -69,7 +69,7 @@ test_that("vector -> array makes a 1D array", {
 test_that("names() and rray_dim_names() are kept", {
 
   nms_1D <- rray_dim_names(x)
-  nms_2D <- c(rray_dim_names(x), new_empty_dim_names(1))
+  nms_2D <- c(rray_dim_names(x), rray_empty_dim_names(1))
 
   expect_equal(rray_dim_names(as_array(x)), nms_1D)
   expect_equal(rray_dim_names(as_array(x_array)), nms_1D)
@@ -107,7 +107,7 @@ test_that("vector -> rray makes a 1D rray", {
 test_that("names() and rray_dim_names() are kept", {
 
   nms_1D <- rray_dim_names(x)
-  nms_2D <- c(rray_dim_names(x), new_empty_dim_names(1))
+  nms_2D <- c(rray_dim_names(x), rray_empty_dim_names(1))
 
   expect_equal(rray_dim_names(as_rray(x)), nms_1D)
   expect_equal(rray_dim_names(as_rray(x_array)), nms_1D)

@@ -86,7 +86,7 @@ rray_expand_dim_names <- function(dim_names, axis) {
   # New dim names with an empty dimension inserted
   new_dim_names <- c(
     pre_names,
-    new_empty_dim_names(n_empty),
+    rray_empty_dim_names(n_empty),
     post_names
   )
 

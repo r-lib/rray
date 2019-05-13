@@ -37,7 +37,7 @@ test_that("dimension names are kept", {
 
   expect_equal(
     rray_dim_names(rray_max_pos(x, 1)),
-    c(new_empty_dim_names(1), col_names(x))
+    c(rray_empty_dim_names(1), col_names(x))
   )
 
   expect_equal(
@@ -50,7 +50,7 @@ test_that("dimension names are kept", {
 
   expect_equal(
     rray_dim_names(rray_max_pos(xx, 2)),
-    c(list(row_names(xx)), new_empty_dim_names(1))
+    c(list(row_names(xx)), rray_empty_dim_names(1))
   )
 })
 

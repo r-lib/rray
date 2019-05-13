@@ -95,7 +95,7 @@ set_full_dim_names.default <- function(x, value) {
   }
 
   if (is_null(value)) {
-    value <- new_empty_dim_names(rray_dims(x))
+    value <- rray_empty_dim_names(rray_dims(x))
   }
 
   # checks for a dim attribute of positive length
@@ -112,7 +112,7 @@ set_full_dim_names.default <- function(x, value) {
 set_full_dim_names.vctrs_rray <- function(x, value) {
 
   if (is_null(value)) {
-    value <- new_empty_dim_names(rray_dims(x))
+    value <- rray_empty_dim_names(rray_dims(x))
   }
 
   stopifnot(map_lgl(value, is_character_or_null))
@@ -255,7 +255,7 @@ dim_names_extend <- function(rray_dim_names, dims) {
   if (nms_dims == dims) {
     rray_dim_names
   } else if (nms_dims < dims) {
-    c(rray_dim_names, new_empty_dim_names(dims - nms_dims))
+    c(rray_dim_names, rray_empty_dim_names(dims - nms_dims))
   } else {
     abort("Can not decrease dimensions")
   }

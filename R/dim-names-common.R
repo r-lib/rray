@@ -143,7 +143,7 @@ restore_dim_names <- function(dim_names, to_dim) {
   dims <- vec_size(to_dim)
   from_dims <- length(dim_names)
 
-  restored_dim_names <- new_empty_dim_names(dims)
+  restored_dim_names <- rray_empty_dim_names(dims)
 
   # If no meta names, returns NULL and we don't add them
   # If any meta names, returns the name for dimensions that have a name, and
@@ -189,7 +189,7 @@ restore_dim_names <- function(dim_names, to_dim) {
 }
 
 # returns a list of n empty characters
-new_empty_dim_names <- function(n) {
+rray_empty_dim_names <- function(n) {
   n <- vec_cast(n, integer())
   rray__new_empty_dim_names(n)
 }

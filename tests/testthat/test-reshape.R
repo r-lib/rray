@@ -48,7 +48,7 @@ test_that("dimension names are maintained where appropriate", {
 
   expect_equal(
     rray_dim_names(rray_reshape(x, c(5, 1, 1))),
-    c(rray_dim_names(x), new_empty_dim_names(1))
+    c(rray_dim_names(x), rray_empty_dim_names(1))
   )
 
 })
