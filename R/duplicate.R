@@ -149,11 +149,7 @@ duplicate_splitter <- function(x, axes) {
 
   axes_complement <- get_axes_complement(vec_dims(x), axes)
 
-  # Get reversed complement of axes
-  # These are used to split with
-  axes_complement_rev <- rev(axes_complement)
-
-  x_split <- rray_split(x, axes_complement_rev)
+  x_split <- rray_split(x, axes_complement)
 
   # Flatten because we need to treat each row as a vector, not as a single row
   # otherwise the vctrs functions return 1 value per row

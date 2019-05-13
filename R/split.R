@@ -5,50 +5,48 @@
 #' @param x A vector, matrix, array, or rray.
 #'
 #' @param axes An integer vector. The axes to split on. The default splits
-#' along all axes, and does so in reverse order, which produces the most
-#' intuitive result.
+#' along all axes.
 #'
-#' @param n An integer vector, or `NULL`. By default, this is computed as the
-#' dimension size of each axis specified in `axes`. If not `NULL`, it should
-#' be the same length as `axes`.
+#' @details
+#'
+#' `rray_split()` works by splitting along the `axes`. The result is a list
+#' of sub arrays, where the `axes` of each sub array have been reduced to
+#' length 1. This is consistent with how reducers like [rray_sum()] work. As
+#' an example, splitting a `(2, 3, 5)` array along `axes = c(2, 3)` would
+#' result in a list of 15 (from `3 * 5`) sub arrays, each with
+#' shape `(2, 1, 1)`.
 #'
 #' @return
 #'
-#' A list of equal pieces of type `x`.
+#' A list of sub arrays of type `x`.
 #'
 #' @examples
 #'
 #' x <- matrix(1:8, ncol = 2)
 #'
 #' # Split the rows
+#' # (4, 2) -> (1, 2)
 #' rray_split(x, 1)
 #'
 #' # Split the columns
+#' # (4, 2) -> (4, 1)
 #' rray_split(x, 2)
 #'
 #' # Split along multiple dimensions
-#' # To have them in the most interpretable
-#' # order, split backwards along the dimensions
-#' # (i.e. 2 then 1)
-#' rray_split(x, c(2, 1))
+#' # (4, 2) -> (1, 1)
+#' rray_split(x, c(1, 2))
 #'
-#' # The above split is what the default behavior does
+#' # The above split is the default behavior
 #' rray_split(x)
-#'
-#' # Split along rows in chunks of 2
-#' rray_split(x, 1, 2)
-#'
-#' # Split along columns and then
-#' # rows in chunks of 2
-#' rray_split(x, c(2, 1), c(2, 2))
 #'
 #' # You can technically split with a size 0 `axes`
 #' # argument, which essentially requests no axes
 #' # to be split and is the same as `list(x)`
 #' rray_split(x, axes = integer(0))
 #'
-#'
+#' # ---------------------------------------------------------------------------
 #' # 4 dimensional example
+#'
 #' x_4d <- rray(
 #'   x = 1:16,
 #'   dim = c(2, 2, 2, 2),
@@ -61,79 +59,33 @@
 #' )
 #'
 #' # Split along the 1st dimension (rows)
-#' # End up with 2 equal sized elements
+#' # (2, 2, 2, 2) -> (1, 2, 2, 2)
 #' rray_split(x_4d, 1)
 #'
 #' # Split along columns
+#' # (2, 2, 2, 2) -> (2, 1, 2, 2)
 #' rray_split(x_4d, 2)
 #'
 #' # Probably the most useful thing you might do
 #' # is use this to split the 4D array into a set
-#' # of 4 2D matrices. To have them in order
-#' # split by the 4th dimension, then the 3rd.
-#' rray_split(x_4d, c(4, 3))
+#' # of 4 2D matrices.
+#' rray_split(x_4d, c(3, 4))
 #'
 #' @export
-rray_split <- function(x, axes = NULL, n = NULL) {
+rray_split <- function(x, axes = NULL) {
 
   axes <- vec_cast(axes, integer())
   validate_axes(axes, x)
 
   if (is_null(axes)) {
-    axes <- rev(seq_len(rray_dims(x)))
+    axes <- seq_len(rray_dims(x))
   }
 
-  # Default to size of the axes
-  if (is_null(n)) {
-    n <- rray_dim(x)[axes]
-  }
-
-  n <- vec_cast(n, integer())
-
-  validate_axis_n_size(axes, n)
-
-  res <- rray_multi_split(x, axes, n)
-
-  # All non-axes dim names are the same
-  # axes dim names are split up over the axes
-  new_dim_names_lst <- split_dim_names(dim_names(x), axes, n)
-
-  # Use anonymous function to work around dispatch bug with internal generics
-  res <- map2(res, new_dim_names_lst, function(x, nms) {set_full_dim_names(x, nms)})
+  res <- rray__split(x, as_cpp_idx(axes))
 
   res <- map(res, vec_restore, to = x)
 
-  # not using this because it vec_cast()
-  # removes dimension names
-  # as_list_of(res)
-
   res
-}
-
-rray_multi_split <- function(x, axes, n) {
-  idx <- seq_along(axes)
-  x <- list(x)
-
-  for(i in idx) {
-    x <- map(x, rray__split, n = n[i], axis = as_cpp_idx(axes[i]))
-    x <- rlang::squash(x)
-  }
-
-  x
-}
-
-validate_axis_n_size <- function(axes, n) {
-
-  axes_size <- vec_size(axes)
-  n_size <- vec_size(n)
-
-  if (axes_size != n_size) {
-    glubort(
-      "The size of `axes` ({axes_size}) must be the same as `n` ({n_size})."
-    )
-  }
-
-  invisible()
 }
 
 split_dim_names <- function(dim_names, axes, n) {

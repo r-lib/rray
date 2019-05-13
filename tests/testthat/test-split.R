@@ -16,34 +16,15 @@ test_that("can split 2D `x`", {
   expect_equal(rray_split(x, axes = 2), expect)
 })
 
-test_that("can set `n`", {
-  x <- array(1:8, dim = c(2, 4), dimnames = list(NULL))
-  expect <- list(rray_subset(x, , 1:2), rray_subset(x, , 3:4))
-  expect_equal(rray_split(x, axes = 2, n = 2), expect)
-})
-
 test_that("can split along multiple axes", {
   x <- array(1:8, dim = c(2, 4), dimnames = list(NULL))
 
   # iteration order matters!
-  expect <- rlang::flatten(map(1:4, function(.x) map(1:2, function(.y) {rray_subset(x, .y, .x)})))
+  expect <- rlang::flatten(map(1:2, function(.x) map(1:4, function(.y) {rray_subset(x, .x, .y)})))
   expect_equal(rray_split(x, axes = c(2, 1)), expect)
 
-  expect <- rlang::flatten(map(1:2, function(.x) map(1:4, function(.y) {rray_subset(x, .x, .y)})))
+  expect <- rlang::flatten(map(1:4, function(.x) map(1:2, function(.y) {rray_subset(x, .y, .x)})))
   expect_equal(rray_split(x, axes = c(1, 2)), expect)
-})
-
-test_that("`n` can be used with a multisplit", {
-  x <- array(1:8, dim = c(2, 4), dimnames = list(NULL))
-
-  expect <- list(
-    rray_subset(x, 1, 1:2),
-    rray_subset(x, 2, 1:2),
-    rray_subset(x, 1, 3:4),
-    rray_subset(x, 2, 3:4)
-  )
-
-  expect_equal(rray_split(x, axes = c(2, 1), n = c(2, 2)), expect)
 })
 
 test_that("dimension names are kept", {
@@ -69,7 +50,7 @@ test_that("dimension names are kept", {
     list(dim_names(x)[-1], dim_names(x)[-1])
   )
 
-  all_nms <- map(rray_split(x, c(4L, 3L)), dim_names)
+  all_nms <- map(rray_split(x, c(3L, 4L)), dim_names)
 
   expect_equal(
     all_nms[[1]],
@@ -103,22 +84,23 @@ test_that("axis is validated", {
   expect_error(rray_split(x, "hi"))
 })
 
-test_that("`n` must divide equally", {
-  x <- array(1:8, dim = c(2, 4), dimnames = list(NULL))
-  expect_error(rray_split(x, 1, n = 3), "does not result in equal division")
-})
-
 test_that("can split with NULL axes", {
   x <- array(1:8, dim = c(2, 4), dimnames = list(NULL))
-  expect_equal(rray_split(x), rray_split(x, axes = c(2, 1)))
-  expect_equal(rray_split(x, n = c(2, 2)), rray_split(x, axes = c(2, 1), n = c(2, 2)))
+  expect_equal(rray_split(x), rray_split(x, axes = c(1, 2)))
 })
 
 test_that("can split with integer(0) axis", {
   x <- array(1:8, dim = c(2, 4), dimnames = list(NULL))
   expect_equal(rray_split(x, axes = integer()), list(x))
-  expect_equal(rray_split(x, axes = integer(), n = integer()), list(x))
 })
 
+test_that("dim names are in the right order (#161)", {
+  x <- rray(1:6, 2:3, list(A = c("a1", "a2"), B = c("b1", "b2", "b3")))
+  x_split <- rray_split(x, c(1, 2))
+  expect_equal(dim_names(x_split[[1]]), list(A = "a1", B = "b1"))
+  expect_equal(dim_names(x_split[[2]]), list(A = "a2", B = "b1"))
+  expect_equal(dim_names(x_split[[3]]), list(A = "a1", B = "b2"))
+  expect_equal(dim_names(x_split[[5]]), list(A = "a1", B = "b3"))
+})
 
 
