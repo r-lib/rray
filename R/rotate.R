@@ -86,9 +86,11 @@ rray_rotate <- function(x, from = 1, to = 2, times = 1) {
 
   res <- rray__rotate(x, as_cpp_idx(from), as_cpp_idx(to), times)
 
-  x_dim_names <- dim_names(x)
-  new_dim_names <- rotate_dim_names(x_dim_names, from, to, times)
-  res <- set_full_dim_names(res, new_dim_names)
+  if (!is.null(x)) {
+    x_dim_names <- dim_names(x)
+    new_dim_names <- rotate_dim_names(x_dim_names, from, to, times)
+    res <- set_full_dim_names(res, new_dim_names)
+  }
 
   vec_restore(res, x)
 }

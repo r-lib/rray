@@ -63,6 +63,9 @@ dim_names(rray(1, dim = c(1, 1)))
 # 3D object, so 3 sets of dim names
 dim_names(rray(1, dim = c(1, 1, 1)))
 
+# NULL is technically 1D
+dim_names(NULL)
+
 # Vectors are treated as 1D arrays
 dim_names(1:5)
 

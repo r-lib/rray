@@ -35,6 +35,9 @@
 #' # 3D object, so 3 sets of dim names
 #' dim_names(rray(1, dim = c(1, 1, 1)))
 #'
+#' # NULL is technically 1D
+#' dim_names(NULL)
+#'
 #' # Vectors are treated as 1D arrays
 #' dim_names(1:5)
 #'
@@ -55,46 +58,8 @@ NULL
 #' @export
 #' @name dim-names
 dim_names <- function(x) {
-  UseMethod("dim_names")
+  rray__dim_names(x)
 }
-
-#' @export
-dim_names.default <- function(x) {
-  dimnames(x)
-}
-
-#' @export
-dim_names.array <- function(x) {
-  dim_nms <- dimnames(x)
-
-  if (is.null(dim_nms)) {
-    dims <- rray_dims(x)
-    return(new_empty_dim_names(dims))
-  }
-
-  dim_nms
-}
-
-#' @export
-dim_names.matrix <- dim_names.array
-
-#' @export
-dim_names.vctrs_rray <- function(x) {
-  attr(x, "dimnames")
-}
-
-#' @export
-dim_names.double <- function(x) {
-  list(names(x))
-}
-
-#' @export
-dim_names.integer <- dim_names.double
-
-#' @export
-dim_names.logical <- dim_names.double
-
-# Base R compat
 
 #' @export
 dimnames.vctrs_rray <- function(x) {
