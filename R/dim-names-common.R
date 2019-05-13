@@ -190,5 +190,6 @@ restore_dim_names <- function(dim_names, to_dim) {
 
 # returns a list of n empty characters
 new_empty_dim_names <- function(n) {
-  rep_len(list(NULL), n)
+  n <- vec_cast(n, integer())
+  rray__new_empty_dim_names(n)
 }
