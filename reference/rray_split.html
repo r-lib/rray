@@ -125,7 +125,7 @@
     
     </div>
 
-    <pre class="usage"><span class='fu'>rray_split</span>(<span class='no'>x</span>, <span class='kw'>axes</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+    <pre class="usage"><span class='fu'>rray_split</span>(<span class='no'>x</span>, <span class='kw'>axes</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -137,20 +137,22 @@
     <tr>
       <th>axes</th>
       <td><p>An integer vector. The axes to split on. The default splits
-along all axes, and does so in reverse order, which produces the most
-intuitive result.</p></td>
-    </tr>
-    <tr>
-      <th>n</th>
-      <td><p>An integer vector, or <code>NULL</code>. By default, this is computed as the
-dimension size of each axis specified in <code>axes</code>. If not <code>NULL</code>, it should
-be the same length as <code>axes</code>.</p></td>
+along all axes.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A list of equal pieces of type <code>x</code>.</p>
+    <p>A list of sub arrays of type <code>x</code>.</p>
+    
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p><code>rray_split()</code> works by splitting along the <code>axes</code>. The result is a list
+of sub arrays, where the <code>axes</code> of each sub array have been reduced to
+length 1. This is consistent with how reducers like <code><a href='rray_sum.html'>rray_sum()</a></code> work. As
+an example, splitting a <code>(2, 3, 5)</code> array along <code>axes = c(2, 3)</code> would
+result in a list of 15 (from <code>3 * 5</code>) sub arrays, each with
+shape <code>(2, 1, 1)</code>.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -158,6 +160,7 @@ be the same length as <code>axes</code>.</p></td>
 <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fl'>1</span>:<span class='fl'>8</span>, <span class='kw'>ncol</span> <span class='kw'>=</span> <span class='fl'>2</span>)
 
 <span class='co'># Split the rows</span>
+<span class='co'># (4, 2) -&gt; (1, 2)</span>
 <span class='fu'>rray_split</span>(<span class='no'>x</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; [[1]]
 #&gt;      [,1] [,2]
 #&gt; [1,]    1    5
@@ -175,6 +178,7 @@ be the same length as <code>axes</code>.</p></td>
 #&gt; [1,]    4    8
 #&gt; </div><div class='input'>
 <span class='co'># Split the columns</span>
+<span class='co'># (4, 2) -&gt; (4, 1)</span>
 <span class='fu'>rray_split</span>(<span class='no'>x</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; [[1]]
 #&gt;      [,1]
 #&gt; [1,]    1
@@ -190,10 +194,8 @@ be the same length as <code>axes</code>.</p></td>
 #&gt; [4,]    8
 #&gt; </div><div class='input'>
 <span class='co'># Split along multiple dimensions</span>
-<span class='co'># To have them in the most interpretable</span>
-<span class='co'># order, split backwards along the dimensions</span>
-<span class='co'># (i.e. 2 then 1)</span>
-<span class='fu'>rray_split</span>(<span class='no'>x</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>1</span>))</div><div class='output co'>#&gt; [[1]]
+<span class='co'># (4, 2) -&gt; (1, 1)</span>
+<span class='fu'>rray_split</span>(<span class='no'>x</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>))</div><div class='output co'>#&gt; [[1]]
 #&gt;      [,1]
 #&gt; [1,]    1
 #&gt; 
@@ -225,7 +227,7 @@ be the same length as <code>axes</code>.</p></td>
 #&gt;      [,1]
 #&gt; [1,]    8
 #&gt; </div><div class='input'>
-<span class='co'># The above split is what the default behavior does</span>
+<span class='co'># The above split is the default behavior</span>
 <span class='fu'>rray_split</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; [[1]]
 #&gt;      [,1]
 #&gt; [1,]    1
@@ -258,39 +260,6 @@ be the same length as <code>axes</code>.</p></td>
 #&gt;      [,1]
 #&gt; [1,]    8
 #&gt; </div><div class='input'>
-<span class='co'># Split along rows in chunks of 2</span>
-<span class='fu'>rray_split</span>(<span class='no'>x</span>, <span class='fl'>1</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; [[1]]
-#&gt;      [,1] [,2]
-#&gt; [1,]    1    5
-#&gt; [2,]    2    6
-#&gt; 
-#&gt; [[2]]
-#&gt;      [,1] [,2]
-#&gt; [1,]    3    7
-#&gt; [2,]    4    8
-#&gt; </div><div class='input'>
-<span class='co'># Split along columns and then</span>
-<span class='co'># rows in chunks of 2</span>
-<span class='fu'>rray_split</span>(<span class='no'>x</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>1</span>), <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>2</span>))</div><div class='output co'>#&gt; [[1]]
-#&gt;      [,1]
-#&gt; [1,]    1
-#&gt; [2,]    2
-#&gt; 
-#&gt; [[2]]
-#&gt;      [,1]
-#&gt; [1,]    3
-#&gt; [2,]    4
-#&gt; 
-#&gt; [[3]]
-#&gt;      [,1]
-#&gt; [1,]    5
-#&gt; [2,]    6
-#&gt; 
-#&gt; [[4]]
-#&gt;      [,1]
-#&gt; [1,]    7
-#&gt; [2,]    8
-#&gt; </div><div class='input'>
 <span class='co'># You can technically split with a size 0 `axes`</span>
 <span class='co'># argument, which essentially requests no axes</span>
 <span class='co'># to be split and is the same as `list(x)`</span>
@@ -301,8 +270,9 @@ be the same length as <code>axes</code>.</p></td>
 #&gt; [3,]    3    7
 #&gt; [4,]    4    8
 #&gt; </div><div class='input'>
-
+<span class='co'># ---------------------------------------------------------------------------</span>
 <span class='co'># 4 dimensional example</span>
+
 <span class='no'>x_4d</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(
   <span class='kw'>x</span> <span class='kw'>=</span> <span class='fl'>1</span>:<span class='fl'>16</span>,
   <span class='kw'>dim</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>2</span>),
@@ -315,7 +285,7 @@ be the same length as <code>axes</code>.</p></td>
 )
 
 <span class='co'># Split along the 1st dimension (rows)</span>
-<span class='co'># End up with 2 equal sized elements</span>
+<span class='co'># (2, 2, 2, 2) -&gt; (1, 2, 2, 2)</span>
 <span class='fu'>rray_split</span>(<span class='no'>x_4d</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; [[1]]
 #&gt; &lt;rray&lt;int&gt;[,2,2,2][8]&gt;
 #&gt; , , d1, e1
@@ -363,6 +333,7 @@ be the same length as <code>axes</code>.</p></td>
 #&gt; 
 #&gt; </div><div class='input'>
 <span class='co'># Split along columns</span>
+<span class='co'># (2, 2, 2, 2) -&gt; (2, 1, 2, 2)</span>
 <span class='fu'>rray_split</span>(<span class='no'>x_4d</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; [[1]]
 #&gt; &lt;rray&lt;int&gt;[,1,2,2][8]&gt;
 #&gt; , , d1, e1
@@ -419,9 +390,8 @@ be the same length as <code>axes</code>.</p></td>
 #&gt; </div><div class='input'>
 <span class='co'># Probably the most useful thing you might do</span>
 <span class='co'># is use this to split the 4D array into a set</span>
-<span class='co'># of 4 2D matrices. To have them in order</span>
-<span class='co'># split by the 4th dimension, then the 3rd.</span>
-<span class='fu'>rray_split</span>(<span class='no'>x_4d</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>4</span>, <span class='fl'>3</span>))</div><div class='output co'>#&gt; [[1]]
+<span class='co'># of 4 2D matrices.</span>
+<span class='fu'>rray_split</span>(<span class='no'>x_4d</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>3</span>, <span class='fl'>4</span>))</div><div class='output co'>#&gt; [[1]]
 #&gt; &lt;rray&lt;int&gt;[,2,1,1][4]&gt;
 #&gt; , , d1, e1
 #&gt; 
@@ -432,7 +402,7 @@ be the same length as <code>axes</code>.</p></td>
 #&gt; 
 #&gt; [[2]]
 #&gt; &lt;rray&lt;int&gt;[,2,1,1][4]&gt;
-#&gt; , , d2, e2
+#&gt; , , d2, e1
 #&gt; 
 #&gt;    c1 c2
 #&gt; r1  5  7
@@ -441,7 +411,7 @@ be the same length as <code>axes</code>.</p></td>
 #&gt; 
 #&gt; [[3]]
 #&gt; &lt;rray&lt;int&gt;[,2,1,1][4]&gt;
-#&gt; , , d1, e1
+#&gt; , , d1, e2
 #&gt; 
 #&gt;    c1 c2
 #&gt; r1  9 11
@@ -465,6 +435,8 @@ be the same length as <code>axes</code>.</p></td>
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#value">Value</a></li>
+
+      <li><a href="#details">Details</a></li>
       
       <li><a href="#examples">Examples</a></li>
     </ul>
