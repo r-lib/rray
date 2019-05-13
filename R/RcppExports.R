@@ -85,6 +85,14 @@ rray__any_not_equal <- function(x, y) {
     .Call(`_rray_rray__any_not_equal`, x, y)
 }
 
+rray__new_empty_dim_names <- function(n) {
+    .Call(`_rray_rray__new_empty_dim_names`, n)
+}
+
+rray__dim_names <- function(x) {
+    .Call(`_rray_rray__dim_names`, x)
+}
+
 rray__dim <- function(x) {
     .Call(`_rray_rray__dim`, x)
 }
@@ -131,14 +139,6 @@ rray__all <- function(x, axes) {
 
 rray__if_else <- function(condition, true_, false_) {
     .Call(`_rray_rray__if_else`, condition, true_, false_)
-}
-
-rray__new_empty_dim_names <- function(n) {
-    .Call(`_rray_rray__new_empty_dim_names`, n)
-}
-
-rray__dim_names <- function(x) {
-    .Call(`_rray_rray__dim_names`, x)
 }
 
 rray__split <- function(x, axes) {

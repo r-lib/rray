@@ -3,44 +3,6 @@
 
 // -----------------------------------------------------------------------------
 
-// [[Rcpp::export(rng = false)]]
-Rcpp::List rray__new_empty_dim_names(int n) {
-  return Rcpp::List(n);
-}
-
-bool has_dim(const Rcpp::RObject& x) {
-  return x.hasAttribute("dim");
-}
-
-// [[Rcpp::export(rng = false)]]
-Rcpp::List rray__dim_names(const Rcpp::RObject& x) {
-
-  Rcpp::RObject x_dim_names;
-
-  if (has_dim(x)) {
-    x_dim_names = x.attr("dimnames");
-
-    if (x_dim_names.isNULL()) {
-      x_dim_names = rray__new_empty_dim_names(rray__dims(x));
-    }
-  }
-  else {
-    x_dim_names = x.attr("names");
-
-    if (x_dim_names.isNULL()) {
-      x_dim_names = rray__new_empty_dim_names(rray__dims(x));
-    }
-    else {
-      // character vector -> list
-      x_dim_names = Rcpp::List::create(x_dim_names);
-    }
-  }
-
-  return Rcpp::as<Rcpp::List>(x_dim_names);
-}
-
-// -----------------------------------------------------------------------------
-
 // xt_split() splits `e` along `axes`. For example, it does:
 // x <- array(1:8, c(2, 2, 2))
 // rray_split(x, c(1, 2)) # (0, 1) cpp axes
