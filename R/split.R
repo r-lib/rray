@@ -85,14 +85,7 @@ rray_split <- function(x, axes = NULL) {
 
   res <- rray__split(x, as_cpp_idx(axes))
 
-  # All non-axes dim names are the same
-  # axes dim names are split up over the axes
-  # new_dim_names_lst <- split_dim_names(dim_names(x), axes, n)
-
-  # Use anonymous function to work around dispatch bug with internal generics
-  #res <- map2(res, new_dim_names_lst, function(x, nms) {set_full_dim_names(x, nms)})
-
-  #res <- map(res, vec_restore, to = x)
+  res <- map(res, vec_restore, to = x)
 
   res
 }
