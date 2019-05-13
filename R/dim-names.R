@@ -83,8 +83,6 @@ dim_names.vctrs_rray <- function(x) {
   attr(x, "dimnames")
 }
 
-# treat vectors as 1 column matrices
-
 #' @export
 dim_names.double <- function(x) {
   list(names(x))
