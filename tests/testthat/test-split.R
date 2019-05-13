@@ -94,5 +94,13 @@ test_that("can split with integer(0) axis", {
   expect_equal(rray_split(x, axes = integer()), list(x))
 })
 
+test_that("dim names are in the right order (#161)", {
+  x <- rray(1:6, 2:3, list(A = c("a1", "a2"), B = c("b1", "b2", "b3")))
+  x_split <- rray_split(x, c(1, 2))
+  expect_equal(dim_names(x_split[[1]]), list(A = "a1", B = "b1"))
+  expect_equal(dim_names(x_split[[2]]), list(A = "a2", B = "b1"))
+  expect_equal(dim_names(x_split[[3]]), list(A = "a1", B = "b2"))
+  expect_equal(dim_names(x_split[[5]]), list(A = "a1", B = "b3"))
+})
 
 
