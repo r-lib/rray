@@ -3,11 +3,6 @@
 
 #include <rray.h>
 
-// Helper for switching on the string op
-constexpr unsigned int str2int(const char* str, int h = 0) {
-  return !str[h] ? 5381 : (str2int(str, h+1) * 33) ^ str[h];
-}
-
 template <class E>
 inline auto rray__keep_dims_view(E&& x,
                                  Rcpp::IntegerVector dim,
