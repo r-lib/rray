@@ -231,7 +231,8 @@ Rcpp::RObject rray__pow(Rcpp::RObject x, Rcpp::RObject y) {
 // c++ modulus ONLY works with integers. see fmod() as well for the floating
 // point version
 
-xt::rarray<int> rray__modulus_impl(const xt::rarray<int>& x, const xt::rarray<int>& y) {
+xt::rarray<int> rray__modulus_impl(const xt::rarray<int>& x,
+                                   const xt::rarray<int>& y) {
 
   Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
 
