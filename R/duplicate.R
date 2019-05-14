@@ -125,6 +125,28 @@ rray_duplicate_id <- function(x, axes = NULL) {
 
 # ------------------------------------------------------------------------------
 
+#' @export
+duplicated.vctrs_rray <- function(x,
+                                  incomparables = FALSE,
+                                  MARGIN = 1,
+                                  fromLast = FALSE,
+                                  ...) {
+
+  dups <- duplicated(
+    vec_data(x),
+    incomparables = incomparables,
+    MARGIN = MARGIN,
+    fromLast = fromLast,
+    ...
+  )
+
+  vec_restore(dups, x)
+}
+
+
+
+# ------------------------------------------------------------------------------
+
 check_duplicate_axes <- function(axes, x) {
   axes <- vec_cast(axes, integer())
   validate_axes(axes, x)

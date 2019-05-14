@@ -226,3 +226,72 @@ test_that("rray class is kept", {
   expect_equal(rray_duplicate_id(rray(1), 1), rray(1L))
 })
 
+# ------------------------------------------------------------------------------
+context("test-duplicate-base-duplicated")
+
+test_that("results are the same as base R", {
+  x <- rray(c(1, 2, 1, 2, 3, 5))
+  x_base <- vec_data(x)
+
+  expect_equal(duplicated(x), as_rray(duplicated(x_base)))
+})
+
+test_that("matrix/array results are the same as base R", {
+  x <- rray(c(1, 2, 1, 2, 3, 5), dim = c(2, 3))
+  x_base <- vec_data(x)
+
+  expect_equal(duplicated(x), as_rray(duplicated(x_base)))
+
+  expect_equal(
+    duplicated(x, MARGIN = 2),
+    as_rray(duplicated(x_base, MARGIN = 2))
+  )
+
+  expect_equal(
+    duplicated(x, MARGIN = c(1, 2)),
+    as_rray(duplicated(x_base, MARGIN = c(1, 2)))
+  )
+
+  expect_equal(
+    duplicated(x, MARGIN = 0),
+    as_rray(duplicated(x_base, MARGIN = 0))
+  )
+})
+
+test_that("incomparables is an error from base R", {
+  expect_error(duplicated(rray(1), incomparables = TRUE))
+})
+
+test_that("dim names are kept with base R rules", {
+  x <- rray(c(1, 2, 1, 2, 3, 5), dim = c(2, 3), dim_names = list(letters[1:2], letters[3:5]))
+  x_base <- vec_data(x)
+
+  expect_equal(
+    rray_dim_names(duplicated(x)),
+    rray_dim_names(duplicated(x_base))
+  )
+
+  expect_equal(
+    rray_dim_names(duplicated(x, MARGIN = c(1, 2))),
+    rray_dim_names(duplicated(x_base, MARGIN = c(1, 2)))
+  )
+})
+
+test_that("fromLast works", {
+  x <- rray(c(1, 2, 1, 2, 3, 5), dim = c(2, 3))
+  x_base <- vec_data(x)
+
+  expect_equal(
+    duplicated(x, MARGIN = 2, fromLast = TRUE),
+    as_rray(duplicated(x_base, MARGIN = 2, fromLast = TRUE))
+  )
+
+  expect_equal(
+    duplicated(x, MARGIN = c(1, 2), fromLast = TRUE),
+    as_rray(duplicated(x_base, MARGIN = c(1, 2), fromLast = TRUE))
+  )
+})
+
+
+
+
