@@ -74,7 +74,7 @@ rray_dim_names_common <- function(...) {
   arg_dim_names <- map(args, rray_dim_names)
   arg_dim_names <- map(arg_dim_names, rray_reshape_dim_names, dim = .dim)
 
-  reduce(arg_dim_names, coalesce_dim_names)
+  reduce(arg_dim_names, rray_coalesce_dim_names)
 }
 
 #' @export
@@ -86,51 +86,15 @@ rray_dim_names2 <- function(x, y) {
   x_nms_list <- rray_reshape_dim_names(rray_dim_names(x), .dim)
   y_nms_list <- rray_reshape_dim_names(rray_dim_names(y), .dim)
 
-  coalesce_dim_names(x_nms_list, y_nms_list)
+  rray_coalesce_dim_names(x_nms_list, y_nms_list)
 }
 
-# Given two sets of equal length dim names, find the
-# actual "common dim names" between them
-# - if x has names for a dimension, use them
-# - if x has no names for a dimension, but y does, use them
-coalesce_dim_names <- function(x_dim_names, y_dim_names) {
-
-  new_dim_names <- map2(x_dim_names, y_dim_names, coalesce_single_dim_names)
-
-  x_meta_names <- names(x_dim_names)
-  y_meta_names <- names(y_dim_names)
-  names(new_dim_names) <- coalesce_meta_dim_names(x_meta_names, y_meta_names)
-
-  new_dim_names
+rray_coalesce_dim_names <- function(x_dim_names, y_dim_names) {
+  rray__coalesce_dim_names(x_dim_names, y_dim_names)
 }
 
-coalesce_single_dim_names <- function(x_nms, y_nms) {
-
-  n_x <- vec_size(x_nms)
-  n_y <- vec_size(y_nms)
-
-  if (n_x == n_y) {
-    x_nms
-  }
-  else if (n_x == 0L) {
-    y_nms
-  }
-  else if (n_y == 0L) {
-    x_nms
-  }
-  else {
-    abort("Imcompatible dim_name lengths.")
-  }
-
-}
-
-coalesce_meta_dim_names <- function(x_meta_names, y_meta_names) {
-  if (is.null(x_meta_names)) {
-    y_meta_names
-  }
-  else {
-    x_meta_names
-  }
+rray_coalesce_meta_dim_names <- function(x_meta_dim_names, y_meta_dim_names) {
+  rray__coalesce_meta_dim_names(x_meta_dim_names, y_meta_dim_names)
 }
 
 rray_reshape_dim_names <- function(dim_names, dim) {

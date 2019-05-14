@@ -185,7 +185,7 @@ rray_dim_names_common_along_axis <- function(..., axis, dim) {
   arg_dim_names <- map(arg_dim_names, dim_names_extend, dims = dims)
 
   axis_meta_names <- map(arg_dim_names, get_meta_names, axis = axis)
-  axis_meta_names <- reduce(axis_meta_names, coalesce_meta_dim_names)
+  axis_meta_names <- reduce(axis_meta_names, rray_coalesce_meta_dim_names)
 
   axis_outer_names <- names2(args)
 
@@ -196,7 +196,7 @@ rray_dim_names_common_along_axis <- function(..., axis, dim) {
 
   non_axis_dim_names <- map(arg_dim_names, delete_axis_names, axis = axis)
   non_axis_dim_names <- map(non_axis_dim_names, rray_reshape_dim_names, dim = dim[-axis])
-  non_axis_dim_names <- reduce(non_axis_dim_names, coalesce_dim_names)
+  non_axis_dim_names <- reduce(non_axis_dim_names, rray_coalesce_dim_names)
 
   out <- rray_expand_dim_names(non_axis_dim_names, axis)
 

@@ -79,3 +79,67 @@ Rcpp::List rray__reshape_dim_names(Rcpp::List dim_names,
 
   return new_dim_names;
 }
+
+// -----------------------------------------------------------------------------
+
+// There is an assumption that the sizes are the same on the way in
+void validate_equal_dim_name_sizes(Rcpp::List x_dim_names, Rcpp::List y_dim_names) {
+  if (x_dim_names.size() != y_dim_names.size()) {
+    Rcpp::stop(
+      "`x_dim_names` size (%i) must match `y_dim_names` size (%i)",
+      x_dim_names.size(),
+      y_dim_names.size()
+    );
+  }
+}
+
+Rcpp::RObject coalesce_axis_names(Rcpp::RObject x_axis_names,
+                                  Rcpp::RObject y_axis_names) {
+
+  int n_x_axis_names = Rf_xlength(x_axis_names);
+  int n_y_axis_names = Rf_xlength(y_axis_names);
+
+  if (n_x_axis_names == n_y_axis_names) {
+    return x_axis_names;
+  }
+  else if (n_x_axis_names == 0) {
+    return y_axis_names;
+  }
+  else if (n_y_axis_names == 0) {
+    return x_axis_names;
+  }
+
+  Rcpp::stop("Incompatible dim_name lengths.");
+}
+
+// [[Rcpp::export(rng = false)]]
+Rcpp::RObject rray__coalesce_meta_dim_names(Rcpp::RObject x_meta_dim_names,
+                                            Rcpp::RObject y_meta_dim_names) {
+
+  if (r_is_null(x_meta_dim_names)) {
+    return y_meta_dim_names;
+  }
+
+  return x_meta_dim_names;
+}
+
+// [[Rcpp::export(rng = false)]]
+Rcpp::List rray__coalesce_dim_names(Rcpp::List x_dim_names,
+                                    Rcpp::List y_dim_names) {
+
+  validate_equal_dim_name_sizes(x_dim_names, y_dim_names);
+
+  int n = x_dim_names.size();
+  Rcpp::List new_dim_names(n);
+
+  for (int i = 0; i < n; ++i) {
+    new_dim_names[i] = coalesce_axis_names(x_dim_names[i], y_dim_names[i]);
+  }
+
+  new_dim_names.names() = rray__coalesce_meta_dim_names(
+    x_dim_names.names(),
+    y_dim_names.names()
+  );
+
+  return new_dim_names;
+}
