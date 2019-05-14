@@ -111,14 +111,6 @@ rray_pow <- function(x, y) {
 
 # ------------------------------------------------------------------------------
 
-#' @rdname rray_arith
-#' @export
-rray_modulus <- function(x, y) {
-  rray_arith_binary_base_typed(rray__modulus, x, y, integer())
-}
-
-# ------------------------------------------------------------------------------
-
 # Integer division could be improved with a custom C++ version, but it is low
 # hanging fruit for now. There is not a complete xtensor function that handles
 # all of the cases for this.

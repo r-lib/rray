@@ -83,17 +83,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rray__modulus
-Rcpp::RObject rray__modulus(Rcpp::RObject x, Rcpp::RObject y);
-RcppExport SEXP _rray_rray__modulus(SEXP xSEXP, SEXP ySEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__modulus(x, y));
-    return rcpp_result_gen;
-END_RCPP
-}
 // rray__identity
 Rcpp::RObject rray__identity(Rcpp::RObject x);
 RcppExport SEXP _rray_rray__identity(SEXP xSEXP) {
@@ -1044,7 +1033,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__divide", (DL_FUNC) &_rray_rray__divide, 2},
     {"_rray_rray__multiply", (DL_FUNC) &_rray_rray__multiply, 2},
     {"_rray_rray__pow", (DL_FUNC) &_rray_rray__pow, 2},
-    {"_rray_rray__modulus", (DL_FUNC) &_rray_rray__modulus, 2},
     {"_rray_rray__identity", (DL_FUNC) &_rray_rray__identity, 1},
     {"_rray_rray__opposite", (DL_FUNC) &_rray_rray__opposite, 1},
     {"_rray_rray__broadcast", (DL_FUNC) &_rray_rray__broadcast, 2},

@@ -29,10 +29,6 @@ rray__pow <- function(x, y) {
     .Call(`_rray_rray__pow`, x, y)
 }
 
-rray__modulus <- function(x, y) {
-    .Call(`_rray_rray__modulus`, x, y)
-}
-
 rray__identity <- function(x) {
     .Call(`_rray_rray__identity`, x)
 }

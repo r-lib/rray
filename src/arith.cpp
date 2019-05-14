@@ -228,31 +228,10 @@ Rcpp::RObject rray__pow(Rcpp::RObject x, Rcpp::RObject y) {
 
 // -----------------------------------------------------------------------------
 
-// c++ modulus ONLY works with integers. see fmod() as well for the floating
-// point version
-
-xt::rarray<int> rray__modulus_impl(const xt::rarray<int>& x,
-                                   const xt::rarray<int>& y) {
-
-  Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
-
-  // If any dimension is size 0, return an empty logical array with common dim
-  if (Rcpp::is_true(Rcpp::any(dim == 0))) {
-    xt::rarray<int> res(Rcpp::as<std::vector<std::size_t>>(dim));
-    return(res);
-  }
-
-  const int& dims = dim.size();
-  auto x_view = rray__increase_dims_view(x, dims);
-  auto y_view = rray__increase_dims_view(y, dims);
-
-  return x_view % y_view;
-}
-
-// [[Rcpp::export(rng = false)]]
-Rcpp::RObject rray__modulus(Rcpp::RObject x, Rcpp::RObject y) {
-  DISPATCH_BINARY(rray__modulus_impl, x, y);
-}
+// Not implementing `rray__modulus()` as it ONLY works with integers
+// and crashes when dividing by 0. It is essentially a less stable
+// `rray_fmod()` which always returns a double, and can handle the
+// dividing by 0 case.
 
 // -----------------------------------------------------------------------------
 

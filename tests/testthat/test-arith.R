@@ -475,6 +475,31 @@ context("test-arith-pow")
 # })
 
 # ------------------------------------------------------------------------------
+context("test-arith-modulus")
+
+# Using `rray_fmod()` which is tested in `test-math-basic.R` as well.
+
+test_that("vctrs dispatch works", {
+  expect_equal(rray(1) %% 2, rray(1 %% 2))
+})
+
+test_that("known differences with base R", {
+  # always returns a double
+  expect_identical(rray(1L) %% 2L, rray(1))
+  expect_identical(rray(1L %% 2L), rray(1L))
+
+  # since it always returns a double, NaN is returned when dividing by 0 rather
+  # than NA_integer_
+  expect_identical(rray(1L) %% 0L, rray(NaN))
+  expect_identical(rray(1L %% 0L), rray(NA_integer_))
+
+  # Known fmod() value when dividing by Inf. Always returns x
+  # base R returns NaN
+  expect_identical(rray(1L) %% Inf, rray(1))
+  expect_identical(rray(1L %% Inf), rray(NaN))
+})
+
+# ------------------------------------------------------------------------------
 context("test-arith-integer-division")
 
 test_that("can use integer division", {
