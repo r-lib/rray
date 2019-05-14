@@ -121,3 +121,24 @@ rray_unique_count <- function(x, axis = 1L) {
 
   vec_unique_count(x)
 }
+
+
+# ------------------------------------------------------------------------------
+
+#' @export
+unique.vctrs_rray <- function(x,
+                              incomparables = FALSE,
+                              MARGIN = 1,
+                              fromLast = FALSE,
+                              ...) {
+
+  unq <- unique(
+    vec_data(x),
+    incomparables = incomparables,
+    MARGIN = MARGIN,
+    fromLast = fromLast,
+    ...
+  )
+
+  vec_restore(unq, x)
+}
