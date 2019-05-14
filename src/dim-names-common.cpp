@@ -161,3 +161,14 @@ Rcpp::List rray__dim_names2(Rcpp::RObject x, Rcpp::RObject y) {
 
   return common_dim_names;
 }
+
+// -----------------------------------------------------------------------------
+
+// Performs the VERY common task of reshaping dim names of `x` to the new
+// dim size of the result, `res`, and assigning those newly reshaped names
+// directly to `res`.
+
+void rray__reshape_and_set_dim_names(Rcpp::RObject res, Rcpp::RObject x) {
+  Rcpp::List new_dim_names = rray__reshape_dim_names(rray__dim_names(x), rray__dim(res));
+  res.attr("dimnames") = new_dim_names;
+}
