@@ -143,3 +143,21 @@ Rcpp::List rray__coalesce_dim_names(Rcpp::List x_dim_names,
 
   return new_dim_names;
 }
+
+// -----------------------------------------------------------------------------
+
+// [[Rcpp::export(rng = false)]]
+Rcpp::List rray__dim_names2(Rcpp::RObject x, Rcpp::RObject y) {
+
+  Rcpp::IntegerVector dim = rray__dim2(rray__dim(x), rray__dim(y));
+
+  Rcpp::List reshaped_x_dim_names = rray__reshape_dim_names(rray__dim_names(x), dim);
+  Rcpp::List reshaped_y_dim_names = rray__reshape_dim_names(rray__dim_names(y), dim);
+
+  Rcpp::List common_dim_names = rray__coalesce_dim_names(
+    reshaped_x_dim_names,
+    reshaped_y_dim_names
+  );
+
+  return common_dim_names;
+}

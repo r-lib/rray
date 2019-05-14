@@ -80,13 +80,7 @@ rray_dim_names_common <- function(...) {
 #' @export
 #' @rdname common-dim-names
 rray_dim_names2 <- function(x, y) {
-
-  .dim <- rray_dim2(rray_dim(x), rray_dim(y))
-
-  x_nms_list <- rray_reshape_dim_names(rray_dim_names(x), .dim)
-  y_nms_list <- rray_reshape_dim_names(rray_dim_names(y), .dim)
-
-  rray_coalesce_dim_names(x_nms_list, y_nms_list)
+  rray__dim_names2(x, y)
 }
 
 rray_coalesce_dim_names <- function(x_dim_names, y_dim_names) {

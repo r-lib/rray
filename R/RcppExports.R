@@ -93,6 +93,10 @@ rray__coalesce_dim_names <- function(x_dim_names, y_dim_names) {
     .Call(`_rray_rray__coalesce_dim_names`, x_dim_names, y_dim_names)
 }
 
+rray__dim_names2 <- function(x, y) {
+    .Call(`_rray_rray__dim_names2`, x, y)
+}
+
 rray__new_empty_dim_names <- function(n) {
     .Call(`_rray_rray__new_empty_dim_names`, n)
 }
