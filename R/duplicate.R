@@ -125,6 +125,9 @@ rray_duplicate_id <- function(x, axes = NULL) {
 
 # ------------------------------------------------------------------------------
 
+# Decided to be consistent with base R here, to match user expectations.
+# If they want the "better" behavior, use the rray functions
+
 #' @export
 duplicated.vctrs_rray <- function(x,
                                   incomparables = FALSE,
@@ -143,7 +146,25 @@ duplicated.vctrs_rray <- function(x,
   vec_restore(dups, x)
 }
 
+# ------------------------------------------------------------------------------
 
+# Just returning the length 1 integer
+
+#' @export
+anyDuplicated.vctrs_rray <- function(x,
+                                     incomparables = FALSE,
+                                     MARGIN = 1,
+                                     fromLast = FALSE,
+                                     ...) {
+
+  anyDuplicated(
+    vec_data(x),
+    incomparables = incomparables,
+    MARGIN = MARGIN,
+    fromLast = fromLast,
+    ...
+  )
+}
 
 # ------------------------------------------------------------------------------
 

@@ -292,6 +292,68 @@ test_that("fromLast works", {
   )
 })
 
+# ------------------------------------------------------------------------------
+context("test-duplicate-base-anyDuplicated")
 
+test_that("results are the same as base R", {
+  x <- rray(c(1, 2, 1, 2, 3, 5))
+  x_base <- vec_data(x)
 
+  expect_equal(anyDuplicated(x), anyDuplicated(x_base))
+})
 
+test_that("matrix/array results are the same as base R", {
+  x <- rray(c(1, 2, 1, 2, 3, 5), dim = c(2, 3))
+  x_base <- vec_data(x)
+
+  expect_equal(anyDuplicated(x), anyDuplicated(x_base))
+
+  expect_equal(
+    anyDuplicated(x, MARGIN = 2),
+    anyDuplicated(x_base, MARGIN = 2)
+  )
+
+  expect_equal(
+    anyDuplicated(x, MARGIN = c(1, 2)),
+    anyDuplicated(x_base, MARGIN = c(1, 2))
+  )
+
+  expect_equal(
+    anyDuplicated(x, MARGIN = 0),
+    anyDuplicated(x_base, MARGIN = 0)
+  )
+})
+
+test_that("incomparables is an error from base R", {
+  expect_error(anyDuplicated(rray(1), incomparables = TRUE))
+})
+
+test_that("dim names are kept with base R rules", {
+  x <- rray(c(1, 2, 1, 2, 3, 5), dim = c(2, 3), dim_names = list(letters[1:2], letters[3:5]))
+  x_base <- vec_data(x)
+
+  expect_equal(
+    rray_dim_names(anyDuplicated(x)),
+    rray_dim_names(anyDuplicated(x_base))
+  )
+
+  expect_equal(
+    rray_dim_names(anyDuplicated(x, MARGIN = c(1, 2))),
+    rray_dim_names(anyDuplicated(x_base, MARGIN = c(1, 2)))
+  )
+})
+
+test_that("fromLast works", {
+  x <- rray(c(1, 2, 1, 2, 3, 5), dim = c(2, 3))
+  x_base <- vec_data(x)
+
+  expect_equal(
+    anyDuplicated(x, MARGIN = 2, fromLast = TRUE),
+    anyDuplicated(x_base, MARGIN = 2, fromLast = TRUE)
+  )
+
+  expect_equal(
+    anyDuplicated(x, MARGIN = c(1, 2), fromLast = TRUE),
+    anyDuplicated(x_base, MARGIN = c(1, 2), fromLast = TRUE)
+  )
+})
