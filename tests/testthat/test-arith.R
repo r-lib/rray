@@ -475,6 +475,43 @@ context("test-arith-pow")
 # })
 
 # ------------------------------------------------------------------------------
+context("test-arith-integer-division")
+
+test_that("can use integer division", {
+  expect_identical(rray(1) %/% 2, rray(1 %/% 2))
+  expect_identical(rray(2) %/% 2, rray(2 %/% 2))
+
+  expect_identical(rray(2L) %/% 2L, rray(2L %/% 2L))
+})
+
+test_that("broadcasting applies", {
+  expect_identical(
+    rray(1:5) %/% matrix(1:2, nrow = 1),
+    rray(
+      matrix(rep(1:5, 2), nrow = 5) %/% matrix(rep(1:2, 5), nrow = 5, byrow = TRUE),
+      c(5, 2)
+    )
+  )
+})
+
+test_that("dim names are kept", {
+  expect_equal(
+    rray(1:2) %/% rray(2L, c(1, 1), dim_names = list(NULL, "c1")),
+    rray(0:1, c(2, 1), dim_names = list(NULL, "c1"))
+  )
+})
+
+test_that("can use integer division with logicals", {
+  expect_identical(rray(TRUE) %/% TRUE, rray(TRUE %/% TRUE))
+})
+
+test_that("can divide by 0 without crashing", {
+  expect_identical(rray(1) %/% 0, rray(1 %/% 0))
+  expect_identical(rray(1L) %/% 0L, rray(1L %/% 0L))
+  expect_identical(rray(TRUE) %/% FALSE, rray(TRUE %/% FALSE))
+})
+
+# ------------------------------------------------------------------------------
 context("test-arith-identity")
 
 test_that("can use identity", {

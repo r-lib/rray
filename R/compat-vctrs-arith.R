@@ -77,7 +77,7 @@ rray_arith_binary_op_switch <- function(op, x, y) {
     "|" = rray_logical_or,
     "^" = rray_pow,
     "%%" = rray_modulus,
-    "%/%" = abort("%/% is not yet implemented"),
+    "%/%" = rray_integer_division_vctrs_wrapper,
     glubort("Binary arithmetic operation not known: {op}.")
   )
 }
