@@ -84,7 +84,7 @@ as_matrix.double <- function(x, ...) {
     dim <- dim[c(1L, 2L)]
   }
 
-  new_dim_names <- restore_dim_names(rray_dim_names(x), dim)
+  new_dim_names <- rray_reshape_dim_names(rray_dim_names(x), dim)
 
   new_matrix(
     .data = x,

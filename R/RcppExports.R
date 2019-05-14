@@ -81,6 +81,10 @@ rray__any_not_equal <- function(x, y) {
     .Call(`_rray_rray__any_not_equal`, x, y)
 }
 
+rray__reshape_dim_names <- function(dim_names, dim) {
+    .Call(`_rray_rray__reshape_dim_names`, dim_names, dim)
+}
+
 rray__new_empty_dim_names <- function(n) {
     .Call(`_rray_rray__new_empty_dim_names`, n)
 }
