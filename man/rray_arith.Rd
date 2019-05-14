@@ -12,7 +12,6 @@
 \alias{rray_divide}
 \alias{\%b^\%}
 \alias{rray_pow}
-\alias{rray_modulus}
 \alias{rray_identity}
 \alias{rray_opposite}
 \title{Arithmetic operations}
@@ -36,8 +35,6 @@ rray_divide(x, y)
 x \%b^\% y
 
 rray_pow(x, y)
-
-rray_modulus(x, y)
 
 rray_identity(x)
 

@@ -111,10 +111,17 @@ rray_pow <- function(x, y) {
 
 # ------------------------------------------------------------------------------
 
-#' @rdname rray_arith
-#' @export
-rray_modulus <- function(x, y) {
-  rray_arith_binary_base_typed(rray__modulus, x, y, integer())
+# Integer division could be improved with a custom C++ version, but it is low
+# hanging fruit for now. There is not a complete xtensor function that handles
+# all of the cases for this.
+
+rray_integer_division_vctrs_wrapper <- function(x, y) {
+  dim <- rray_dim_common(x, y)
+  x <- rray_broadcast(x, dim)
+  y <- rray_broadcast(y, dim)
+  res <- vec_data(x) %/% vec_data(y)
+  res <- set_full_dim_names(res, rray_dim_names2(x, y))
+  vec_restore(res, vec_type2(x, y))
 }
 
 # ------------------------------------------------------------------------------
