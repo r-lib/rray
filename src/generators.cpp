@@ -21,7 +21,7 @@ xt::rarray<T> rray__reshape_impl(xt::rarray<T> x, Rcpp::IntegerVector dim) {
 
   const vec_size_t& xt_dim = Rcpp::as<vec_size_t>(dim);
 
-  xt::rarray<T> out = xt::reshape_view(x, xt_dim, xt::layout_type::column_major);
+  xt::rarray<T> out = xt::reshape_view(x, xt_dim);
 
   return out;
 }
