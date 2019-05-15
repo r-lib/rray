@@ -103,6 +103,30 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// compute_dims
+int compute_dims(Rcpp::List args, const int& axis);
+RcppExport SEXP _rray_compute_dims(SEXP argsSEXP, SEXP axisSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type args(argsSEXP);
+    Rcpp::traits::input_parameter< const int& >::type axis(axisSEXP);
+    rcpp_result_gen = Rcpp::wrap(compute_dims(args, axis));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__bind
+Rcpp::RObject rray__bind(Rcpp::RObject out, Rcpp::List args, const int& axis, const int& dims);
+RcppExport SEXP _rray_rray__bind(SEXP outSEXP, SEXP argsSEXP, SEXP axisSEXP, SEXP dimsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type out(outSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type args(argsSEXP);
+    Rcpp::traits::input_parameter< const int& >::type axis(axisSEXP);
+    Rcpp::traits::input_parameter< const int& >::type dims(dimsSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__bind(out, args, axis, dims));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray__broadcast
 Rcpp::RObject rray__broadcast(Rcpp::RObject x, Rcpp::IntegerVector dim);
 RcppExport SEXP _rray_rray__broadcast(SEXP xSEXP, SEXP dimSEXP) {
@@ -1079,6 +1103,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__pow", (DL_FUNC) &_rray_rray__pow, 2},
     {"_rray_rray__identity", (DL_FUNC) &_rray_rray__identity, 1},
     {"_rray_rray__opposite", (DL_FUNC) &_rray_rray__opposite, 1},
+    {"_rray_compute_dims", (DL_FUNC) &_rray_compute_dims, 2},
+    {"_rray_rray__bind", (DL_FUNC) &_rray_rray__bind, 4},
     {"_rray_rray__broadcast", (DL_FUNC) &_rray_rray__broadcast, 2},
     {"_rray_rray__full_like", (DL_FUNC) &_rray_rray__full_like, 2},
     {"_rray_rray__diag", (DL_FUNC) &_rray_rray__diag, 2},

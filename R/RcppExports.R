@@ -37,6 +37,14 @@ rray__opposite <- function(x) {
     .Call(`_rray_rray__opposite`, x)
 }
 
+compute_dims <- function(args, axis) {
+    .Call(`_rray_compute_dims`, args, axis)
+}
+
+rray__bind <- function(out, args, axis, dims) {
+    .Call(`_rray_rray__bind`, out, args, axis, dims)
+}
+
 rray__broadcast <- function(x, dim) {
     .Call(`_rray_rray__broadcast`, x, dim)
 }
