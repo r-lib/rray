@@ -43,7 +43,7 @@ Rcpp::RObject rray__bind_impl(xt::rarray<T> out,
   out_axis_locs[0] = 0;
   int loc = 0;
   int out_axis_size = 0;
-  Rcpp::IntegerVector out_dim(1, 1);
+  Rcpp::IntegerVector out_dim(dims, 1);
 
   for (int i = 0; i < n_args; ++i) {
     // Must clone, otherwise directly affecting the args `dim`
