@@ -96,13 +96,15 @@ Rcpp::RObject rray__sort(Rcpp::RObject x, Rcpp::RObject axis) {
 // then looks at the first row of the 2nd element in the third dim.
 
 template <typename T>
-xt::rarray<int> rray__max_pos_impl(xt::rarray<T> x, Rcpp::RObject axis) {
+Rcpp::RObject rray__max_pos_impl(xt::rarray<T> x, Rcpp::RObject axis) {
 
   if (Rf_isNull(axis)) {
     // purposefully do column major here
     auto x_argmax = xt::argmax<xt::layout_type::column_major>(x);
     auto x_reshape = rray__keep_dims_view(x_argmax, rray__dim(SEXP(x)), axis);
-    auto out = rray__as_r_idx(x_reshape);
+    xt::rarray<int> xt_out = rray__as_r_idx(x_reshape);
+    Rcpp::RObject out = SEXP(xt_out);
+    rray__reshape_and_set_dim_names(out, SEXP(x));
     return out;
   }
 
@@ -110,7 +112,10 @@ xt::rarray<int> rray__max_pos_impl(xt::rarray<T> x, Rcpp::RObject axis) {
   // purposefully do row major here
   auto x_argmax = xt::argmax<xt::layout_type::row_major>(x, xt_axis);
   auto x_reshape = rray__keep_dims_view(x_argmax, rray__dim(SEXP(x)), axis);
-  auto out = rray__as_r_idx(x_reshape);
+  xt::rarray<int> xt_out = rray__as_r_idx(x_reshape);
+  Rcpp::RObject out = SEXP(xt_out);
+  rray__reshape_and_set_dim_names(out, SEXP(x));
+
   return out;
 }
 
