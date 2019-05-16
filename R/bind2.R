@@ -8,9 +8,34 @@ rray_bind2 <- function(..., axis) {
     return(NULL)
   }
 
-  proxy <- rray_type_inner_common(!!!args)
+  # before the inner cast
+  proxy <- rray_bind_type_common(args)
   args <- map(args, rray_cast_inner, to = proxy)
 
-  rray__bind(proxy, args, as_cpp_idx(axis))
+  res <- rray__bind(proxy, args, as_cpp_idx(axis))
 
+  vec_restore(res, proxy)
+}
+
+# Takes a 0-slice in every dimension but preserves all attributes.
+# We can't call `vec_type_common()` without doing this because
+# the `axis` we bind along might have non-broadcastable dimensions
+# but that's fine
+rray_bind_type_common <- function(args) {
+
+  arg_types <- vector("list", length(args))
+
+  for (i in seq_along(args)) {
+    arg <- args[[i]]
+
+    if (is_rray(arg)) {
+      arg_types[[i]] <- arg[[0]]
+    }
+    else {
+      arg_types[[i]] <- arg[0]
+    }
+
+  }
+
+  vec_type_common(!!! arg_types)
 }
