@@ -8,7 +8,6 @@ rray_bind2 <- function(..., axis) {
     return(NULL)
   }
 
-  # before the inner cast
   proxy <- rray_bind_type_common(args)
   args <- map(args, rray_cast_inner, to = proxy)
 
