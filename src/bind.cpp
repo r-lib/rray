@@ -26,14 +26,12 @@ int compute_dims(Rcpp::List args, const int& axis) {
 }
 
 template <typename T>
-Rcpp::RObject rray__bind_impl(xt::rarray<T> out,
-                              Rcpp::List args,
-                              const int& axis,
-                              const int& dims) {
+Rcpp::RObject rray__bind_impl(Rcpp::List args,
+                              const int& axis) {
 
   const int& n_args = args.size();
 
-  //const int& dims = compute_dims(args, axis);
+  const int& dims = compute_dims(args, axis);
 
   // ---------------------------------------------------------------------------
   // TODO - could this block be extracted into a function that returns a
@@ -64,8 +62,9 @@ Rcpp::RObject rray__bind_impl(xt::rarray<T> out,
 
   // ---------------------------------------------------------------------------
 
-  // Immediately resize `out` container to the `out_dim` shape
-  out.resize(out_dim);
+  // Allocate an empty container of type `T` and shape `out_dim`
+  const std::vector<std::size_t>& shape = Rcpp::as<std::vector<std::size_t>>(out_dim);
+  xt::rarray<T> out(shape);
 
   // Initialize slice vector with `all()`
   xt::xstrided_slice_vector sv(dims, xt::all());
@@ -92,28 +91,27 @@ Rcpp::RObject rray__bind_impl(xt::rarray<T> out,
 
 
 // [[Rcpp::export(rng = false)]]
-Rcpp::RObject rray__bind(Rcpp::RObject out,
+Rcpp::RObject rray__bind(Rcpp::RObject proxy,
                          Rcpp::List args,
-                         const int& axis,
-                         const int& dims) {
+                         const int& axis) {
 
-  if (Rf_isNull(out)) {
+  if (Rf_isNull(proxy)) {
     return R_NilValue;
   }
 
   // Switch on out
-  switch(TYPEOF(out)) {
+  switch(TYPEOF(proxy)) {
 
   case REALSXP: {
-    return rray__bind_impl(xt::rarray<double>(out), args, axis, dims);
+    return rray__bind_impl<double>(args, axis);
   }
 
   case INTSXP: {
-    return rray__bind_impl(xt::rarray<int>(out), args, axis, dims);
+    return rray__bind_impl<int>(args, axis);
   }
 
   case LGLSXP: {
-    return rray__bind_impl(xt::rarray<rlogical>(out), args, axis, dims);
+    return rray__bind_impl<rlogical>(args, axis);
   }
 
   default: {

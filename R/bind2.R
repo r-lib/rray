@@ -8,14 +8,9 @@ rray_bind2 <- function(..., axis) {
     return(NULL)
   }
 
-  out <- rray_type_inner_common(!!!args)
-  args <- map(args, rray_cast_inner, to = out)
+  proxy <- rray_type_inner_common(!!!args)
+  args <- map(args, rray_cast_inner, to = proxy)
 
-  dims <- compute_dims(args, as_cpp_idx(axis))
-
-  # out must have the correct number of dimensions for xt::resize()
-  out <- new_shape(out, shape = rep(1L, times = dims - 1))
-
-  rray__bind(out, args, as_cpp_idx(axis), dims)
+  rray__bind(proxy, args, as_cpp_idx(axis))
 
 }
