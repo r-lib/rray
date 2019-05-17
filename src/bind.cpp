@@ -154,7 +154,11 @@ Rcpp::RObject combine_axis_names(const Rcpp::List& lst_of_axis_names,
   }
 
   if (has_outer_names) {
-    add_outer_names(new_axis_names, Rcpp::as<Rcpp::CharacterVector>(outer_names), axis_sizes);
+    add_outer_names(
+      new_axis_names,
+      Rcpp::as<Rcpp::CharacterVector>(outer_names),
+      axis_sizes
+    );
   }
 
   return new_axis_names;
