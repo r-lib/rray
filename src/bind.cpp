@@ -57,6 +57,7 @@ bool is_empty_string(const Rcpp::String& x) {
   return res;
 }
 
+// Attach outer names to existing `new_axis_names`
 void add_outer_names(Rcpp::CharacterVector& new_axis_names,
                      const Rcpp::CharacterVector& outer_names,
                      const Rcpp::IntegerVector& axis_sizes) {
@@ -164,7 +165,6 @@ Rcpp::RObject combine_axis_names(const Rcpp::List& lst_of_axis_names,
   return new_axis_names;
 }
 
-// [[Rcpp::export(rng = false)]]
 Rcpp::List compute_bind_dim_names(const Rcpp::List& lst_of_dim_names,
                                   const int& axis,
                                   const Rcpp::IntegerVector& dim,
@@ -209,18 +209,11 @@ Rcpp::List compute_bind_dim_names(const Rcpp::List& lst_of_dim_names,
 
 // -----------------------------------------------------------------------------
 
-template <typename T>
-Rcpp::RObject rray__bind_impl(const Rcpp::List& args,
-                              const int& axis,
-                              const Rcpp::List& lst_of_dim_names) {
+Rcpp::List compute_out_info(const Rcpp::List& args,
+                            const int& axis,
+                            const int& dims) {
 
   const int& n_args = args.size();
-
-  const int& dims = compute_dims(args, axis);
-
-  // ---------------------------------------------------------------------------
-  // TODO - could this block be extracted into a function that returns a
-  // list of `out_dim` and `out_axis_locs` and `axis_sizes`?
 
   std::vector<std::size_t> out_axis_locs(n_args + 1);
   out_axis_locs[0] = 0;
@@ -246,7 +239,27 @@ Rcpp::RObject rray__bind_impl(const Rcpp::List& args,
 
   out_dim[axis] = out_axis_size;
 
-  // ---------------------------------------------------------------------------
+  return Rcpp::List::create(
+    Rcpp::Named("out_dim") = out_dim,
+    Rcpp::Named("out_axis_locs") = out_axis_locs,
+    Rcpp::Named("axis_sizes") = axis_sizes
+  );
+}
+
+// -----------------------------------------------------------------------------
+
+template <typename T>
+Rcpp::RObject rray__bind_impl(const Rcpp::List& args,
+                              const int& axis,
+                              const Rcpp::List& lst_of_dim_names) {
+
+  const int& n_args = args.size();
+  const int& dims = compute_dims(args, axis);
+
+  Rcpp::List out_info = compute_out_info(args, axis, dims);
+  Rcpp::IntegerVector out_dim = out_info["out_dim"];
+  std::vector<std::size_t> out_axis_locs = out_info["out_axis_locs"];
+  Rcpp::IntegerVector axis_sizes = out_info["axis_sizes"];
 
   // Allocate an empty container of type `T` and shape `out_dim`
   const std::vector<std::size_t>& shape = Rcpp::as<std::vector<std::size_t>>(out_dim);
