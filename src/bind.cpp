@@ -70,12 +70,82 @@ bool has_only_null_elements_and_no_names(const Rcpp::List& x) {
   return all_null;
 }
 
-// Loop through `all_axis_dim_names`, which is a list of character vectors
+bool is_empty_string(const Rcpp::String& x) {
+  bool res = (x == "");
+  return res;
+}
+
+void add_outer_names(Rcpp::CharacterVector& new_axis_names,
+                     const Rcpp::CharacterVector& outer_names,
+                     const Rcpp::IntegerVector& axis_sizes) {
+
+  int pos = 0;
+  const Rcpp::String& dot_dot = "..";
+  const int& n_sizes = axis_sizes.size();
+
+  for (int i = 0; i < n_sizes; ++i) {
+
+    Rcpp::String outer_name = outer_names[i];
+    const int& size = axis_sizes[i];
+
+    // No outer name, keep existing result
+    if (is_empty_string(outer_name)) {
+      pos = pos + size;
+      continue;
+    }
+
+    // Outer name, and size is 1
+    // Either `outer` or `outer..name`
+    if (size == 1) {
+
+      Rcpp::String new_axis_name = new_axis_names[pos];
+
+      if (is_empty_string(new_axis_name)) {
+        new_axis_names[pos] = outer_name;
+      }
+      else {
+        new_axis_name.push_front(dot_dot);
+        new_axis_name.push_front(outer_name);
+        new_axis_names[pos] = new_axis_name;
+      }
+
+      pos++;
+      continue;
+    }
+
+    // Outer name available, and size > 1
+    // Either `outer..n` or `outer..name`
+    for (int j = 0; j < size; ++j) {
+
+      Rcpp::String new_axis_name = new_axis_names[pos];
+
+      if (is_empty_string(new_axis_name)) {
+        new_axis_name.push_back(outer_name);
+        new_axis_name.push_back(j + 1);
+        new_axis_names[pos] = new_axis_name;
+      }
+      else {
+        new_axis_name.push_front(dot_dot);
+        new_axis_name.push_front(outer_name);
+        new_axis_names[pos] = new_axis_name;
+      }
+
+      pos++;
+    }
+
+  }
+
+}
+
+// Loop through `lst_of_axis_names`, which is a list of character vectors
 // or NULL and combine them into 1 character vector
 Rcpp::RObject combine_axis_names(const Rcpp::List& lst_of_axis_names,
-                                 const Rcpp::IntegerVector& axis_sizes) {
+                                 const Rcpp::IntegerVector& axis_sizes,
+                                 const Rcpp::RObject& outer_names) {
 
-  if (has_only_null_elements_and_no_names(lst_of_axis_names)) {
+  const bool& has_outer_names = !r_is_null(outer_names);
+
+  if (has_only_null_elements_and_no_names(lst_of_axis_names) && !has_outer_names) {
     return R_NilValue;
   }
 
@@ -101,6 +171,10 @@ Rcpp::RObject combine_axis_names(const Rcpp::List& lst_of_axis_names,
 
   }
 
+  if (has_outer_names) {
+    add_outer_names(new_axis_names, Rcpp::as<Rcpp::CharacterVector>(outer_names), axis_sizes);
+  }
+
   return new_axis_names;
 }
 
@@ -116,12 +190,14 @@ Rcpp::List compute_bind_dim_names(const Rcpp::List& lst_of_dim_names,
   Rcpp::List new_dim_names = rray__new_empty_dim_names(dims);
   Rcpp::List lst_of_axis_names(n_args);
 
+  Rcpp::RObject outer_names = lst_of_dim_names.names();
+
   for (int i = 0; i < n_args; ++i) {
 
     Rcpp::List dim_names = lst_of_dim_names[i];
 
     // Store axis dim names or NULL
-    if (dim_names.size() >= dims) {
+    if (dim_names.size() >= axis) {
       lst_of_axis_names[i] = dim_names[axis];
     }
     else {
@@ -140,7 +216,7 @@ Rcpp::List compute_bind_dim_names(const Rcpp::List& lst_of_dim_names,
     new_dim_names = rray__coalesce_dim_names(new_dim_names, dim_names);
   }
 
-  new_dim_names[axis] = combine_axis_names(lst_of_axis_names, axis_sizes);
+  new_dim_names[axis] = combine_axis_names(lst_of_axis_names, axis_sizes, outer_names);
 
   return new_dim_names;
 }
