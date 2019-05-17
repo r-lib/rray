@@ -6,7 +6,6 @@
 
 // -----------------------------------------------------------------------------
 
-// [[Rcpp::export(rng = false)]]
 int compute_dims(Rcpp::List args, const int& axis) {
 
   int dims = 1;
@@ -97,7 +96,7 @@ void add_outer_names(Rcpp::CharacterVector& new_axis_names,
     }
 
     // Outer name available, and size > 1
-    // Either `outer..n` or `outer..name`
+    // Either `outer..(j+1)` or `outer..name`
     for (int j = 0; j < size; ++j) {
 
       Rcpp::String new_axis_name = new_axis_names[pos];
@@ -128,6 +127,7 @@ Rcpp::RObject combine_axis_names(const Rcpp::List& lst_of_axis_names,
 
   const bool& has_outer_names = !r_is_null(outer_names);
 
+  // Early exit in the most common case - no names, no outer names
   if (has_only_null_elements_and_no_names(lst_of_axis_names) && !has_outer_names) {
     return R_NilValue;
   }
@@ -202,7 +202,11 @@ Rcpp::List compute_bind_dim_names(const Rcpp::List& lst_of_dim_names,
     new_dim_names = rray__coalesce_dim_names(new_dim_names, dim_names);
   }
 
-  new_dim_names[axis] = combine_axis_names(lst_of_axis_names, axis_sizes, outer_names);
+  new_dim_names[axis] = combine_axis_names(
+    lst_of_axis_names,
+    axis_sizes,
+    outer_names
+  );
 
   return new_dim_names;
 }
