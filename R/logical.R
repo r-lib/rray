@@ -135,7 +135,7 @@ rray_any <- function(x, axes = NULL) {
   new_dim_names <- rray_reshape_dim_names(rray_dim_names(x), rray_dim(res))
   res <- set_full_dim_names(res, new_dim_names)
 
-  vec_restore(res, x)
+  vec_cast_container(res, x)
 }
 
 # ------------------------------------------------------------------------------
@@ -161,7 +161,7 @@ rray_all <- function(x, axes = NULL) {
   new_dim_names <- rray_reshape_dim_names(rray_dim_names(x), rray_dim(res))
   res <- set_full_dim_names(res, new_dim_names)
 
-  vec_restore(res, x)
+  vec_cast_container(res, x)
 }
 
 # ------------------------------------------------------------------------------
@@ -225,7 +225,7 @@ rray_if_else <- function(condition, true, false) {
   new_dim_names <- rray_dim_names2(true, false)
   res <- set_full_dim_names(res, new_dim_names)
 
-  vec_restore(res, to)
+  vec_cast_container(res, to)
 }
 
 # ------------------------------------------------------------------------------
@@ -248,7 +248,7 @@ logical_cast_compare <- function(f, x, y) {
 
   res <- set_full_dim_names(res, rray_dim_names_common(x, y))
 
-  vec_restore(res, vec_type2(x, y))
+  vec_cast_container(res, vec_type2(x, y))
 }
 
 logical_cast_call <- function(f, x) {
@@ -263,5 +263,5 @@ logical_cast_call <- function(f, x) {
 
   res <- set_full_dim_names(res, rray_dim_names(x))
 
-  vec_restore(res, x)
+  vec_cast_container(res, x)
 }

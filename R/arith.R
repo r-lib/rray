@@ -121,7 +121,7 @@ rray_integer_division_vctrs_wrapper <- function(x, y) {
   y <- rray_broadcast(y, dim)
   res <- vec_data(x) %/% vec_data(y)
   res <- set_full_dim_names(res, rray_dim_names2(x, y))
-  vec_restore(res, vec_type2(x, y))
+  vec_cast_container(res, vec_type2(x, y))
 }
 
 # ------------------------------------------------------------------------------
@@ -145,7 +145,7 @@ rray_opposite <- function(x) {
 rray_arith_unary_base <- function(f, x, ...) {
   res <- f(x, ...)
   res <- set_full_dim_names(res, rray_dim_names(x))
-  vec_restore(res, x)
+  vec_cast_container(res, x)
 }
 
 rray_arith_binary_base <- function(f, x, y) {
@@ -156,7 +156,7 @@ rray_arith_binary_base <- function(f, x, y) {
 
   res <- set_full_dim_names(res, rray_dim_names2(x, y))
 
-  vec_restore(res, vec_type2(x, y))
+  vec_cast_container(res, vec_type2(x, y))
 }
 
 rray_arith_binary_base_typed <- function(f, x, y, type) {
@@ -170,5 +170,5 @@ rray_arith_binary_base_typed <- function(f, x, y, type) {
 
   res <- set_full_dim_names(res, rray_dim_names2(x, y))
 
-  vec_restore(res, vec_type2(x, y))
+  vec_cast_container(res, vec_type2(x, y))
 }

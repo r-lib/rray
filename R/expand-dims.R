@@ -59,7 +59,7 @@ rray_expand_dims <- function(x, axis) {
   new_dim_names <- rray_expand_dim_names(x_dim_names, axis)
   res <- set_full_dim_names(res, new_dim_names)
 
-  vec_restore(res, x)
+  vec_cast_container(res, x)
 }
 
 # Adds at least 1 `NULL` dim names at the `axis`

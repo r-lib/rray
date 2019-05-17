@@ -79,7 +79,7 @@ rray_transpose <- function(x, permutation = NULL) {
 
   res <- set_full_dim_names(res, rray_dim_names(x)[permutation])
 
-  vec_restore(res, x)
+  vec_cast_container(res, x)
 }
 
 #' @rdname rray_transpose

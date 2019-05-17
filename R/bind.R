@@ -75,7 +75,7 @@ rray_bind <- function(..., axis) {
 
   res <- rray__bind(proxy, args, as_cpp_idx(axis), lst_of_dim_names)
 
-  vec_restore(res, proxy)
+  vec_cast_container(res, proxy)
 }
 
 #' @rdname rray_bind

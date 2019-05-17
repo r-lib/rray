@@ -1,14 +1,3 @@
-#' @export
-vec_restore.vctrs_rray <- function(x, to, ..., i = NULL) {
-  x_dim <- rray_dim(x)
-
-  new_rray(
-    .data = vec_data(x),
-    size = x_dim[1],
-    shape = x_dim[-1],
-    dim_names = rray_dim_names(x)
-  )
-}
 
 # ##############################################################################
 # vec_type2 boilerplate

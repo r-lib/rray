@@ -2,7 +2,6 @@
 #' @importFrom vctrs vec_dim
 #' @importFrom vctrs vec_dims
 #' @importFrom vctrs vec_data
-#' @importFrom vctrs vec_restore
 #' @importFrom vctrs vec_slice
 #' @importFrom vctrs vec_na
 #' @importFrom vctrs vec_c
