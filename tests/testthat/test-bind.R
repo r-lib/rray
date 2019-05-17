@@ -338,7 +338,7 @@ test_that("can rray_bind() with length 0 input", {
 
   expect_equal(
     rray_bind(integer(), integer(), axis = 1),
-    integer()
+    new_array(integer())
   )
 
   expect_equal(
