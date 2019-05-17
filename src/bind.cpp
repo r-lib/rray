@@ -212,7 +212,13 @@ Rcpp::RObject rray__bind_impl(const Rcpp::List& args,
 
   Rcpp::RObject out = SEXP(xt_out);
 
-  const Rcpp::List& new_dim_names = compute_bind_dim_names(lst_of_dim_names, axis, out_dim, axis_sizes);
+  const Rcpp::List& new_dim_names = compute_bind_dim_names(
+    lst_of_dim_names,
+    axis,
+    out_dim,
+    axis_sizes
+  );
+
   Rf_setAttrib(out, R_DimNamesSymbol, new_dim_names);
 
   return out;
