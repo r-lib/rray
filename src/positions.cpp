@@ -20,7 +20,7 @@ xt::rarray<T> rray__sort_impl(const xt::rarray<T>& x, Rcpp::RObject axis) {
   if (r_is_null(axis)) {
     auto flat_res = xt::sort(x, xt::placeholders::xtuph());
     const vec_size_t& shape = Rcpp::as<vec_size_t>(rray__dim(SEXP(x)));
-    res = xt::reshape_view(flat_res, shape);
+    res = xt::reshape_view<xt::layout_type::column_major>(flat_res, shape);
   }
   else {
     std::ptrdiff_t xt_axis = Rcpp::as<std::ptrdiff_t>(axis);

@@ -28,7 +28,7 @@ inline auto rray__keep_dims_view(E&& x,
 
   const vec_size_t& dim_view_vec = Rcpp::as<vec_size_t>(dim_view);
 
-  auto out = xt::reshape_view(x, dim_view_vec);
+  auto out = xt::reshape_view<xt::layout_type::column_major>(x, dim_view_vec);
 
   return out;
 }
@@ -44,7 +44,7 @@ inline auto rray__increase_dims_view(const xt::rarray<T>& x, const int& dims) {
   Rcpp::IntegerVector x_view_dim = rray__increase_dims(x_dim, dims);
   const vec_size_t& xt_view_dim = Rcpp::as<vec_size_t>(x_view_dim);
 
-  auto x_view = xt::reshape_view(x, xt_view_dim);
+  auto x_view = xt::reshape_view<xt::layout_type::column_major>(x, xt_view_dim);
 
   return x_view;
 }
