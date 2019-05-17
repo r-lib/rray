@@ -56,21 +56,18 @@ y <- matrix(
 # following rray name handling
 rray_bind(x, y, axis = 2)
 
-# But, if any inputs are named
-# along the dimension you are binding on
-# then all of them must be. This errors
-# because `y` doesn't have row names
-\dontrun{
+# If some inputs are named, and others
+# are not, the non-named inputs get `""`
+# as names
 rray_bind(x, y, axis = 1)
-}
 
 # You can add "outer" names to the
-# axis you are binding along
+# axis you are binding along.
+# They are added to existing names with `..`
 rray_bind(outer = x, y, axis = 2)
 
-# They are added to existing names with `..`
-# Outer names can be used to get around the
-# fact that `y` isn't named.
+# Outer names can be used to give unnamed
+# inputs default names
 rray_bind(outer = x, outer_y = y, axis = 1)
 
 }
