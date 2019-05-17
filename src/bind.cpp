@@ -197,7 +197,7 @@ Rcpp::List compute_bind_dim_names(const Rcpp::List& lst_of_dim_names,
     Rcpp::List dim_names = lst_of_dim_names[i];
 
     // Store axis dim names or NULL
-    if (dim_names.size() >= axis) {
+    if (dim_names.size() >= axis + 1) {
       lst_of_axis_names[i] = dim_names[axis];
     }
     else {
