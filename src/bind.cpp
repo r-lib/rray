@@ -72,8 +72,8 @@ bool has_only_null_elements_and_no_names(const Rcpp::List& x) {
 
 // Loop through `all_axis_dim_names`, which is a list of character vectors
 // or NULL and combine them into 1 character vector
-Rcpp::RObject combine_axis_dim_names(const Rcpp::List& lst_of_axis_names,
-                                     const Rcpp::IntegerVector& axis_sizes) {
+Rcpp::RObject combine_axis_names(const Rcpp::List& lst_of_axis_names,
+                                 const Rcpp::IntegerVector& axis_sizes) {
 
   if (has_only_null_elements_and_no_names(lst_of_axis_names)) {
     return R_NilValue;
@@ -140,7 +140,7 @@ Rcpp::List compute_bind_dim_names(const Rcpp::List& lst_of_dim_names,
     new_dim_names = rray__coalesce_dim_names(new_dim_names, dim_names);
   }
 
-  new_dim_names[axis] = combine_axis_dim_names(lst_of_axis_names, axis_sizes);
+  new_dim_names[axis] = combine_axis_names(lst_of_axis_names, axis_sizes);
 
   return new_dim_names;
 }
