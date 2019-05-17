@@ -47,38 +47,36 @@ void check_all_or_nothing_name_consistency(Rcpp::RObject axis_names,
 
 // Loop through `all_axis_dim_names`, which is a list of character vectors
 // and combine them into 1 character vector
-Rcpp::CharacterVector combine_axis_dim_names(Rcpp::List all_axis_dim_names,
-                                             const int& axis,
-                                             Rcpp::IntegerVector dim) {
-
-  const int& n_args = all_axis_dim_names.size();
-  Rcpp::CharacterVector axis_dim_names(dim[axis]);
+Rcpp::CharacterVector combine_axis_dim_names(Rcpp::List lst_of_axis_names,
+                                             const int& size) {
 
   int pos = 0;
+  const int& n_args = lst_of_axis_names.size();
+  Rcpp::CharacterVector new_axis_names(size);
 
   for (int i = 0; i < n_args; ++i) {
 
-    Rcpp::CharacterVector partial_axis_dim_names = all_axis_dim_names[i];
-    int n_names = Rf_xlength(partial_axis_dim_names);
+    Rcpp::CharacterVector axis_names = lst_of_axis_names[i];
+    R_xlen_t n_names = Rf_xlength(axis_names);
 
     for (int j = 0; j < n_names; ++j) {
-      axis_dim_names[pos] = partial_axis_dim_names[j];
+      new_axis_names[pos] = axis_names[j];
       pos++;
     }
 
   }
 
-  return axis_dim_names;
+  return new_axis_names;
 }
 
 // If all elements are null, nothing to do
 bool has_all_null_dim_names(const Rcpp::List& dim_names) {
 
-  const int& n_arg_i_dim_names = dim_names.size();
+  const int& dims = dim_names.size();
 
   bool all_null = true;
 
-  for (int j = 0; j < n_arg_i_dim_names; ++j) {
+  for (int j = 0; j < dims; ++j) {
 
     if (r_is_null(dim_names[j])) {
       continue;
@@ -92,44 +90,44 @@ bool has_all_null_dim_names(const Rcpp::List& dim_names) {
 }
 
 // [[Rcpp::export(rng = false)]]
-Rcpp::List compute_bind_dim_names(const Rcpp::List& arg_dim_names,
+Rcpp::List compute_bind_dim_names(const Rcpp::List& lst_of_dim_names,
                                   const int& axis,
                                   const Rcpp::IntegerVector& dim) {
 
-  const int& n_args = arg_dim_names.size();
+  const int& n_args = lst_of_dim_names.size();
   const int& dims = dim.size();
 
   Rcpp::List new_dim_names = rray__new_empty_dim_names(dims);
-  Rcpp::List arg_axis_dim_names(n_args);
+  Rcpp::List lst_of_axis_names(n_args);
 
   bool has_axis_dim_names = false;
 
   for (int i = 0; i < n_args; ++i) {
 
-    Rcpp::List arg_i_dim_names = arg_dim_names[i];
+    Rcpp::List dim_names = lst_of_dim_names[i];
 
     // Store axis dim names if applicable
-    if (arg_i_dim_names.size() >= axis) {
-      Rcpp::RObject arg_i_axis_names = arg_i_dim_names[axis];
-      check_all_or_nothing_name_consistency(arg_i_axis_names, has_axis_dim_names);
-      arg_axis_dim_names[i] = arg_i_axis_names;
+    if (dim_names.size() >= axis) {
+      Rcpp::RObject axis_names = dim_names[axis];
+      check_all_or_nothing_name_consistency(axis_names, has_axis_dim_names);
+      lst_of_axis_names[i] = axis_names;
     }
 
     // Check this after the name consistency check
-    if (has_all_null_dim_names(arg_i_dim_names)) {
+    if (has_all_null_dim_names(dim_names)) {
       continue;
     }
 
     // Extend names to the right dimensionality
-    arg_i_dim_names = rray__reshape_dim_names(arg_i_dim_names, dim);
+    dim_names = rray__reshape_dim_names(dim_names, dim);
 
     // Coalesce names and meta names
-    new_dim_names = rray__coalesce_dim_names(new_dim_names, arg_i_dim_names);
+    new_dim_names = rray__coalesce_dim_names(new_dim_names, dim_names);
   }
 
   // Each arg has axis names so we need to combine them
   if (has_axis_dim_names) {
-    new_dim_names[axis] = combine_axis_dim_names(arg_axis_dim_names, axis, dim);
+    new_dim_names[axis] = combine_axis_dim_names(lst_of_axis_names, dim[axis]);
   }
   // No arg has axis names
   else {
@@ -142,9 +140,9 @@ Rcpp::List compute_bind_dim_names(const Rcpp::List& arg_dim_names,
 // -----------------------------------------------------------------------------
 
 template <typename T>
-Rcpp::RObject rray__bind_impl(Rcpp::List args,
+Rcpp::RObject rray__bind_impl(const Rcpp::List& args,
                               const int& axis,
-                              Rcpp::List arg_dim_names) {
+                              const Rcpp::List& lst_of_dim_names) {
 
   const int& n_args = args.size();
 
@@ -205,7 +203,8 @@ Rcpp::RObject rray__bind_impl(Rcpp::List args,
 
   Rcpp::RObject out = SEXP(xt_out);
 
-  Rf_setAttrib(out, R_DimNamesSymbol, compute_bind_dim_names(arg_dim_names, axis, out_dim));
+  const Rcpp::List& new_dim_names = compute_bind_dim_names(lst_of_dim_names, axis, out_dim);
+  Rf_setAttrib(out, R_DimNamesSymbol, new_dim_names);
 
   return out;
 }
@@ -213,33 +212,16 @@ Rcpp::RObject rray__bind_impl(Rcpp::List args,
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__bind(Rcpp::RObject proxy,
-                         Rcpp::List args,
+                         const Rcpp::List& args,
                          const int& axis,
-                         Rcpp::List arg_dim_names) {
+                         const Rcpp::List& lst_of_dim_names) {
 
-  if (Rf_isNull(proxy)) {
-    return R_NilValue;
-  }
-
-  // Switch on out
+  // Dispatch on proxy type
   switch(TYPEOF(proxy)) {
-
-  case REALSXP: {
-    return rray__bind_impl<double>(args, axis, arg_dim_names);
-  }
-
-  case INTSXP: {
-    return rray__bind_impl<int>(args, axis, arg_dim_names);
-  }
-
-  case LGLSXP: {
-    return rray__bind_impl<rlogical>(args, axis, arg_dim_names);
-  }
-
-  default: {
-    error_unknown_type();
-  }
-
+    case REALSXP: return rray__bind_impl<double>(args, axis, lst_of_dim_names);
+    case INTSXP: return rray__bind_impl<int>(args, axis, lst_of_dim_names);
+    case LGLSXP: return rray__bind_impl<rlogical>(args, axis, lst_of_dim_names);
+    default: error_unknown_type();
   }
 
 }

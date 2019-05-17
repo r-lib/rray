@@ -115,27 +115,27 @@ BEGIN_RCPP
 END_RCPP
 }
 // compute_bind_dim_names
-Rcpp::List compute_bind_dim_names(const Rcpp::List& arg_dim_names, const int& axis, const Rcpp::IntegerVector& dim);
-RcppExport SEXP _rray_compute_bind_dim_names(SEXP arg_dim_namesSEXP, SEXP axisSEXP, SEXP dimSEXP) {
+Rcpp::List compute_bind_dim_names(const Rcpp::List& lst_of_dim_names, const int& axis, const Rcpp::IntegerVector& dim);
+RcppExport SEXP _rray_compute_bind_dim_names(SEXP lst_of_dim_namesSEXP, SEXP axisSEXP, SEXP dimSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type arg_dim_names(arg_dim_namesSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type lst_of_dim_names(lst_of_dim_namesSEXP);
     Rcpp::traits::input_parameter< const int& >::type axis(axisSEXP);
     Rcpp::traits::input_parameter< const Rcpp::IntegerVector& >::type dim(dimSEXP);
-    rcpp_result_gen = Rcpp::wrap(compute_bind_dim_names(arg_dim_names, axis, dim));
+    rcpp_result_gen = Rcpp::wrap(compute_bind_dim_names(lst_of_dim_names, axis, dim));
     return rcpp_result_gen;
 END_RCPP
 }
 // rray__bind
-Rcpp::RObject rray__bind(Rcpp::RObject proxy, Rcpp::List args, const int& axis, Rcpp::List arg_dim_names);
-RcppExport SEXP _rray_rray__bind(SEXP proxySEXP, SEXP argsSEXP, SEXP axisSEXP, SEXP arg_dim_namesSEXP) {
+Rcpp::RObject rray__bind(Rcpp::RObject proxy, const Rcpp::List& args, const int& axis, const Rcpp::List& lst_of_dim_names);
+RcppExport SEXP _rray_rray__bind(SEXP proxySEXP, SEXP argsSEXP, SEXP axisSEXP, SEXP lst_of_dim_namesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::RObject >::type proxy(proxySEXP);
-    Rcpp::traits::input_parameter< Rcpp::List >::type args(argsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type args(argsSEXP);
     Rcpp::traits::input_parameter< const int& >::type axis(axisSEXP);
-    Rcpp::traits::input_parameter< Rcpp::List >::type arg_dim_names(arg_dim_namesSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__bind(proxy, args, axis, arg_dim_names));
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type lst_of_dim_names(lst_of_dim_namesSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__bind(proxy, args, axis, lst_of_dim_names));
     return rcpp_result_gen;
 END_RCPP
 }
