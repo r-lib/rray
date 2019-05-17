@@ -31,7 +31,7 @@ Cast to a container type
 # Upcasting to an rray. Still a logical
 vec_cast_container(TRUE, rray(1))
 
-# Downcasting to a logical
+# Downcasting to a double, no longer an rray
 vec_cast_container(rray(1), TRUE)
 
 # Shape of `x` is kept
