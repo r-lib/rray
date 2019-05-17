@@ -140,5 +140,5 @@ unique.vctrs_rray <- function(x,
     ...
   )
 
-  vec_restore(unq, x)
+  vec_cast_container(unq, x)
 }

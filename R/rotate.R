@@ -92,7 +92,7 @@ rray_rotate <- function(x, from = 1, to = 2, times = 1) {
     res <- set_full_dim_names(res, new_dim_names)
   }
 
-  vec_restore(res, x)
+  vec_cast_container(res, x)
 }
 
 validate_scalar <- function(x, nm) {

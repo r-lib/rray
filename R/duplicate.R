@@ -82,7 +82,7 @@ rray_duplicate_any <- function(x, axes = NULL) {
   new_dim_names <- rray_reshape_dim_names(rray_dim_names(x), vec_dim(res))
   res <- set_full_dim_names(res, new_dim_names)
 
-  vec_restore(res, x)
+  vec_cast_container(res, x)
 }
 
 #' @rdname rray_duplicate
@@ -101,7 +101,7 @@ rray_duplicate_detect <- function(x, axes = NULL) {
 
   res <- set_full_dim_names(res, rray_dim_names(x))
 
-  vec_restore(res, x)
+  vec_cast_container(res, x)
 }
 
 #' @rdname rray_duplicate
@@ -120,7 +120,7 @@ rray_duplicate_id <- function(x, axes = NULL) {
 
   res <- set_full_dim_names(res, rray_dim_names(x))
 
-  vec_restore(res, x)
+  vec_cast_container(res, x)
 }
 
 # ------------------------------------------------------------------------------
@@ -143,7 +143,7 @@ duplicated.vctrs_rray <- function(x,
     ...
   )
 
-  vec_restore(dups, x)
+  vec_cast_container(dups, x)
 }
 
 # ------------------------------------------------------------------------------

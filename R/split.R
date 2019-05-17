@@ -83,7 +83,7 @@ rray_split <- function(x, axes = NULL) {
 
   res <- rray__split(x, as_cpp_idx(axes))
 
-  res <- map(res, vec_restore, to = x)
+  res <- map(res, vec_cast_container, to = x)
 
   res
 }

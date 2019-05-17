@@ -78,7 +78,7 @@ rray_broadcast <- function(x, dim) {
   new_dim_names <- rray_reshape_dim_names(rray_dim_names(x), dim)
   res <- set_full_dim_names(res, new_dim_names)
 
-  vec_restore(res, x)
+  vec_cast_container(res, x)
 }
 
 # Match up the dims of x with the dims of y

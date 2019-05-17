@@ -280,5 +280,5 @@ rray_math_trinary_base <- function(f, x, y, z) {
 
   res <- set_full_dim_names(res, new_dim_names)
 
-  vec_restore(res, to)
+  vec_cast_container(res, to)
 }

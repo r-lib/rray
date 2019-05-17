@@ -54,7 +54,7 @@ rray_full_like <- function(x, value) {
 
   # no dim names on the result
 
-  vec_restore(res, x)
+  vec_cast_container(res, x)
 }
 
 #' @rdname rray_full_like

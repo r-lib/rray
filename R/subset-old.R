@@ -170,7 +170,7 @@ rray_yank_impl <- function(x, i) {
 
   out <- eval_bare(expr(out[!!!indexer]))
 
-  vec_restore(out, x)
+  vec_cast_container(out, x)
 }
 
 #' @rdname rray_yank
@@ -199,7 +199,7 @@ rray_yank_assign_impl <- function(x, i, value) {
 
   eval_bare(expr(out[!!!indexer] <- value))
 
-  vec_restore(out, x)
+  vec_cast_container(out, x)
 }
 
 # ------------------------------------------------------------------------------
@@ -253,7 +253,7 @@ rray_extract_impl <- function(x, ...) {
 
   out <- as.vector(out)
 
-  vec_restore(out, x)
+  vec_cast_container(out, x)
 }
 
 #' @rdname rray_extract
@@ -273,7 +273,7 @@ rray_extract_assign_impl <- function(x, ..., value) {
 
   eval_bare(expr(out[!!!indexer] <- value))
 
-  vec_restore(out, x)
+  vec_cast_container(out, x)
 }
 
 # ------------------------------------------------------------------------------

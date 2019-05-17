@@ -110,7 +110,7 @@ rray_subset <- function(x, ...) {
   new_dim_names <- subset_dim_names(rray_dim_names(x), indexer)
   out <- set_full_dim_names(out, new_dim_names)
 
-  vec_restore(out, x)
+  vec_cast_container(out, x)
 }
 
 #' @rdname rray_subset

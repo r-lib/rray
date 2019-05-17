@@ -33,7 +33,7 @@ rray_flip <- function(x, axis) {
   x_dim_names <- rev_dim_names(x_dim_names, axis)
   res <- set_full_dim_names(res, x_dim_names)
 
-  vec_restore(res, x)
+  vec_cast_container(res, x)
 }
 
 rev_dim_names <- function(dim_names, axis) {

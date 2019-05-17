@@ -43,5 +43,5 @@ rray_diag <- function(x, offset = 0) {
 
   # no dim names on the result
 
-  vec_restore(res, x)
+  vec_cast_container(res, x)
 }

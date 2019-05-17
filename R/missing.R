@@ -1,7 +1,7 @@
 #' @export
 is.na.vctrs_rray <- function(x) {
   res <- is.na(vec_data(x))
-  vec_restore(res, x)
+  vec_cast_container(res, x)
 }
 
 # Currently, I am choosing to use the vctrs implementation of

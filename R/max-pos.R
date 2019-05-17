@@ -30,5 +30,5 @@ rray_max_pos <- function(x, axis = NULL) {
 
   res <- rray__max_pos(x, as_cpp_idx(axis))
 
-  vec_restore(res, x)
+  vec_cast_container(res, x)
 }

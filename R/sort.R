@@ -76,5 +76,5 @@ rray_sort <- function(x, axis = NULL) {
 
   res <- set_full_dim_names(res, new_dim_names)
 
-  vec_restore(res, x)
+  vec_cast_container(res, x)
 }
