@@ -139,14 +139,14 @@ test_that("dim names along the axis are combined", {
 
 })
 
-test_that("names along the axis must be fully supplied", {
+test_that("names along the axis don't have to be fully specified", {
   a <- 1:2
   b <- 3:4
   names(a) <- c("a_r1", "a_r2")
 
-  expect_error(
-    rray_bind(a, b, axis = 1),
-    "If any elements along axis 1 are named"
+  expect_equal(
+    rray_dim_names(rray_bind(a, b, axis = 1)),
+    list(c(names(a), "", ""))
   )
 })
 
