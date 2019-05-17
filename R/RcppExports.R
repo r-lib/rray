@@ -41,8 +41,12 @@ compute_dims <- function(args, axis) {
     .Call(`_rray_compute_dims`, args, axis)
 }
 
-rray__bind <- function(proxy, args, axis) {
-    .Call(`_rray_rray__bind`, proxy, args, axis)
+compute_bind_dim_names <- function(arg_dim_names, axis, dim) {
+    .Call(`_rray_compute_bind_dim_names`, arg_dim_names, axis, dim)
+}
+
+rray__bind <- function(proxy, args, axis, arg_dim_names) {
+    .Call(`_rray_rray__bind`, proxy, args, axis, arg_dim_names)
 }
 
 rray__broadcast <- function(x, dim) {

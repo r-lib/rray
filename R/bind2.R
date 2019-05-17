@@ -8,10 +8,13 @@ rray_bind2 <- function(..., axis) {
     return(NULL)
   }
 
+  # outer names from `...` are attached
+  arg_dim_names <- map(args, rray_dim_names)
+
   proxy <- rray_bind_type_common(args)
   args <- map(args, rray_cast_inner, to = proxy)
 
-  res <- rray__bind(proxy, args, as_cpp_idx(axis))
+  res <- rray__bind(proxy, args, as_cpp_idx(axis), arg_dim_names)
 
   vec_restore(res, proxy)
 }
