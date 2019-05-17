@@ -4,8 +4,6 @@
 #include <xtensor/xstrided_view.hpp>
 #include <xtensor/xarray.hpp>
 
-#include <xtensor/xio.hpp>
-
 // -----------------------------------------------------------------------------
 
 // [[Rcpp::export(rng = false)]]
