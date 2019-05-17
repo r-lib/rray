@@ -25,24 +25,6 @@ int compute_dims(Rcpp::List args, const int& axis) {
 
 // -----------------------------------------------------------------------------
 
-// Updates `has_axis_dim_names` if it is currently false, but this `axis_names`
-// is not null.
-void check_all_or_nothing_name_consistency(Rcpp::RObject axis_names,
-                                           bool& has_axis_dim_names) {
-
-  if (r_is_null(axis_names)) {
-    if (has_axis_dim_names) {
-      Rcpp::stop("There are at least some axis names, but this one is NULL.");
-    }
-  }
-  else {
-    if (!has_axis_dim_names) {
-      has_axis_dim_names = true;
-    }
-  }
-
-}
-
 // If all elements are null, and there are no names, nothing to do
 bool has_only_null_elements_and_no_names(const Rcpp::List& x) {
 
@@ -68,6 +50,8 @@ bool has_only_null_elements_and_no_names(const Rcpp::List& x) {
   return all_null;
 }
 
+// -----------------------------------------------------------------------------
+
 bool is_empty_string(const Rcpp::String& x) {
   bool res = (x == "");
   return res;
@@ -83,7 +67,7 @@ void add_outer_names(Rcpp::CharacterVector& new_axis_names,
 
   for (int i = 0; i < n_sizes; ++i) {
 
-    Rcpp::String outer_name = outer_names[i];
+    const Rcpp::String& outer_name = outer_names[i];
     const int& size = axis_sizes[i];
 
     // No outer name, keep existing result
