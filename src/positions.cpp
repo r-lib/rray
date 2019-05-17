@@ -109,8 +109,7 @@ Rcpp::RObject rray__max_pos_impl(xt::rarray<T> x, Rcpp::RObject axis) {
   }
 
   std::size_t xt_axis = Rcpp::as<std::size_t>(axis);
-  // purposefully do row major here
-  auto x_argmax = xt::argmax<xt::layout_type::row_major>(x, xt_axis);
+  auto x_argmax = xt::argmax<xt::layout_type::column_major>(x, xt_axis);
   auto x_reshape = rray__keep_dims_view(x_argmax, rray__dim(SEXP(x)), axis);
   xt::rarray<int> xt_out = rray__as_r_idx(x_reshape);
   Rcpp::RObject out = SEXP(xt_out);
@@ -138,8 +137,7 @@ xt::rarray<int> rray__min_pos_impl(xt::rarray<T> x, Rcpp::RObject axis) {
   }
 
   std::size_t xt_axis = Rcpp::as<std::size_t>(axis);
-  // purposefully do row major here
-  auto x_argmin = xt::argmin<xt::layout_type::row_major>(x, xt_axis);
+  auto x_argmin = xt::argmin<xt::layout_type::column_major>(x, xt_axis);
   auto x_reshape = rray__keep_dims_view(x_argmin, rray__dim(SEXP(x)), axis);
   auto out = rray__as_r_idx(x_reshape);
   return out;
