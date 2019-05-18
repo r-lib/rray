@@ -65,7 +65,7 @@ new_rray <- function(.data = numeric(0),
   # `dim_names` because vctrs treats `dim` and `dimnames` special in
   # `vec_restore()`
 
-  new_vctr(
+  new_vctr2(
     .data = .data,
     dim = .dim,
     dimnames = dim_names,
