@@ -75,9 +75,6 @@ rray_broadcast <- function(x, dim) {
 
   res <- rray__broadcast(x, dim)
 
-  new_dim_names <- rray_reshape_dim_names(rray_dim_names(x), dim)
-  res <- set_full_dim_names(res, new_dim_names)
-
   vec_cast_container(res, x)
 }
 

@@ -2,7 +2,7 @@
 #include <dispatch.h>
 
 template <typename T>
-xt::rarray<T> rray__broadcast_impl(const xt::rarray<T>& x,
+Rcpp::RObject rray__broadcast_impl(const xt::rarray<T>& x,
                                    Rcpp::IntegerVector dim) {
 
   using vec_size_t = typename std::vector<std::size_t>;
@@ -12,7 +12,7 @@ xt::rarray<T> rray__broadcast_impl(const xt::rarray<T>& x,
 
   // Cheap early exit
   if (r_identical(x_dim, dim)) {
-    return(x);
+    return(SEXP(x));
   }
 
   // Must reshape to match dimensionality first b/c of QuantStack/xtensor-r#57
@@ -21,9 +21,12 @@ xt::rarray<T> rray__broadcast_impl(const xt::rarray<T>& x,
   rray__validate_broadcastable_to_dim(x_dim, dim);
 
   const vec_size_t& dim_vec = Rcpp::as<vec_size_t>(dim);
-  xt::rarray<T> res = xt::broadcast(x_view, dim_vec);
+  xt::rarray<T> xt_out = xt::broadcast(x_view, dim_vec);
 
-  return(res);
+  Rcpp::RObject out = SEXP(xt_out);
+  rray__reshape_and_set_dim_names(out, SEXP(x));
+
+  return(out);
 }
 
 // [[Rcpp::export(rng = false)]]
