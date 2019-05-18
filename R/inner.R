@@ -2,7 +2,7 @@
 # Find a common inner type
 
 rray_type_inner <- function(x) {
-  vec_data(x)[0]
+  vec_data_fast(x)[0]
 }
 
 rray_type_inner2 <- function(x, y) {
@@ -50,7 +50,7 @@ rray_cast_inner <- function(x, to) {
 
   to <- new_shape(to, rray_shape(x))
 
-  res <- vec_cast(vec_data(x), to)
+  res <- vec_cast(vec_data_fast(x), to)
 
   res
 }

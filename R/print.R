@@ -66,7 +66,7 @@ rray_inner_ptype_abbr <- function(x) {
 obj_str_data.vctrs_rray <- function(x, ...) {
 
   width <- getOption("width") - 2
-  out <- vec_data(x)
+  out <- vec_data_fast(x)
 
   # Avoid spending too much time formatting elements that won't see
   length <- ceiling(width / 2)

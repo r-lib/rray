@@ -153,7 +153,7 @@ rray <- function(x = numeric(0), dim = NULL, dim_names = NULL) {
   }
 
   new_rray(
-    .data = vec_data(x),
+    .data = vec_data_fast(x),
     size = dim[1],
     shape = dim[-1],
     dim_names = dim_names

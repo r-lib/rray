@@ -25,6 +25,29 @@ validate_names <- function(.data) {
 
 # ------------------------------------------------------------------------------
 
+# TODO - remove this if vctrs improves
+
+vec_data_fast <- function(x) {
+  if (!is_vector(x)) {
+    x
+  }
+  # else if (is_record(x)) {
+  #   attributes(x) <- list(names = fields(x))
+  # }
+  else if (has_dim(x)) {
+    `attributes<-`(x, value = list(dim = dim(x), dimnames = dimnames(x)))
+  }
+  else {
+    `attributes<-`(x, value = list(names = names(x)))
+  }
+}
+
+has_dim <- function (x) {
+  !is.null(attr(x, "dim"))
+}
+
+# ------------------------------------------------------------------------------
+
 # For R < 3.6.0, a shim around `structure()` that doesn't make two
 # copies of `.Data` while setting attributes. It calls `attributes<-()`
 # using the functional form directly rather than `attributes(x) <- list(...)`

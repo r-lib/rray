@@ -1,6 +1,6 @@
 #' @export
 is.na.vctrs_rray <- function(x) {
-  res <- is.na(vec_data(x))
+  res <- is.na(vec_data_fast(x))
   vec_cast_container(res, x)
 }
 
