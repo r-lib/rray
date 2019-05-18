@@ -398,3 +398,12 @@ vec_cast_inner_common <- function(..., .to = NULL) {
 vec_inner_caster <- function(x, inner) {
   vec_cast(x, new_shape(inner, shape = rray_shape(x)))
 }
+
+new_shape <- function(type, shape = NULL) {
+  if (length(shape) == 0L) {
+    type
+  }
+  else {
+    structure(type, dim = c(0L, shape))
+  }
+}
