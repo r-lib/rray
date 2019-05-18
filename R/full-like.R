@@ -48,7 +48,7 @@ rray_full_like <- function(x, value) {
 
   # ensure fill is 1D and cast to inner type of `x`
   value <- value[[1]]
-  value <- vec_cast(value, rray_type_inner(x))
+  value <- vec_cast_inner(value, x)
 
   res <- rray__full_like(x, value)
 

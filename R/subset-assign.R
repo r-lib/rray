@@ -13,7 +13,7 @@
 rray_subset_assign_impl <- function(x, ..., value) {
   indexer <- rray_as_index2(x, ...)
 
-  value <- rray_cast_inner(value, x)
+  value <- vec_cast_inner(value, x)
 
   # TODO
   if (is_any_na_int(indexer)) {

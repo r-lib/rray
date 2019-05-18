@@ -205,7 +205,7 @@ cast_compare <- function(f, x, y) {
     y <- logical()
   }
 
-  args <- rray_cast_inner_common(x, y)
+  args <- vec_cast_inner_common(x, y)
 
   res <- f(args[[1]], args[[2]])
 

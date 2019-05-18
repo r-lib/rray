@@ -127,7 +127,7 @@ rray_any <- function(x, axes = NULL) {
   validate_axes(axes, x)
 
   # only logicals allowed through
-  x_cast <- rray_cast_inner(x, logical())
+  x_cast <- vec_cast_inner(x, logical())
 
   # perform the reduction
   res <- rray__any(x_cast, as_cpp_idx(axes))
@@ -153,7 +153,7 @@ rray_all <- function(x, axes = NULL) {
   validate_axes(axes, x)
 
   # only logicals allowed through
-  x_cast <- rray_cast_inner(x, logical())
+  x_cast <- vec_cast_inner(x, logical())
 
   # perform the reduction
   res <- rray__all(x_cast, as_cpp_idx(axes))
@@ -211,13 +211,12 @@ rray_all <- function(x, axes = NULL) {
 #' @export
 rray_if_else <- function(condition, true, false) {
 
-  condition <- rray_cast_inner(condition, logical())
+  condition <- vec_cast_inner(condition, logical())
 
   to <- vec_type2(true, false, x_arg = "true", y_arg = "false")
-  to_inner <- rray_type_inner(to)
 
-  true_cast <- rray_cast_inner(true, to_inner)
-  false_cast <- rray_cast_inner(false, to_inner)
+  true_cast <- vec_cast_inner(true, to)
+  false_cast <- vec_cast_inner(false, to)
 
   res <- rray__if_else(condition, true_cast, false_cast)
 
@@ -241,8 +240,8 @@ logical_cast_compare <- function(f, x, y) {
     y <- logical()
   }
 
-  x_cast <- rray_cast_inner(x, logical())
-  y_cast <- rray_cast_inner(y, logical())
+  x_cast <- vec_cast_inner(x, logical())
+  y_cast <- vec_cast_inner(y, logical())
 
   res <- f(x_cast, y_cast)
 
@@ -257,7 +256,7 @@ logical_cast_call <- function(f, x) {
     x <- logical()
   }
 
-  res <- rray_cast_inner(x, logical())
+  res <- vec_cast_inner(x, logical())
 
   res <- f(res)
 
