@@ -1,3 +1,5 @@
+# nocov start
+
 #' @importFrom vctrs vec_size
 #' @importFrom vctrs vec_dim
 #' @importFrom vctrs vec_dims
@@ -76,6 +78,9 @@ NULL
 #' @importFrom rlang maybe_missing
 #' @importFrom rlang names2
 #' @importFrom rlang new_list
+#' @importFrom rlang is_vector
+#' @importFrom rlang ns_env
+#' @importFrom rlang env_bind
 NULL
 
 #' @importFrom utils head tail
@@ -86,3 +91,21 @@ NULL
 NULL
 
 utils::globalVariables(c("at", "arg"))
+
+.onLoad <- function(libname, pkgname) {
+
+  ns <- ns_env("rray")
+
+  utils::globalVariables("vec_structure")
+
+  if (getRversion() < "3.6.0") {
+    env_bind(ns, vec_structure = structure_shim)
+  }
+  else {
+    env_bind(ns, vec_structure = structure)
+  }
+
+}
+
+
+# nocov end

@@ -126,7 +126,7 @@ rray_tanpi <- function(x) {
 # ------------------------------------------------------------------------------
 
 rray_math_unary_base_raw <- function(f, x, ...) {
-  res <- f(vec_data(x), ...)
+  res <- f(vec_data_fast(x), ...)
   res <- new_array(res, dim = rray_dim(res), dimnames = rray_dim_names(x))
   vec_cast_container(res, x)
 }

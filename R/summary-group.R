@@ -34,25 +34,25 @@ xtfrm.vctrs_rray_lgl <- function(x) {
 # and `na.rm = TRUE` no matter what there!
 
 rray_all_vctrs_wrapper <- function(x, na.rm) {
-  vec_math_base("all", vec_data(x), na.rm = na.rm)
+  vec_math_base("all", vec_data_fast(x), na.rm = na.rm)
 }
 
 rray_any_vctrs_wrapper <- function(x, na.rm) {
-  vec_math_base("any", vec_data(x), na.rm = na.rm)
+  vec_math_base("any", vec_data_fast(x), na.rm = na.rm)
 }
 
 # ------------------------------------------------------------------------------
 
 rray_range_vctrs_wrapper <- function(x, na.rm) {
-  vec_math_base("range", vec_data(x), na.rm = na.rm)
+  vec_math_base("range", vec_data_fast(x), na.rm = na.rm)
 }
 
 # ------------------------------------------------------------------------------
 
 rray_prod_vctrs_wrapper <- function(x, na.rm) {
-  vec_math_base("prod", vec_data(x), na.rm = na.rm)
+  vec_math_base("prod", vec_data_fast(x), na.rm = na.rm)
 }
 
 rray_sum_vctrs_wrapper <- function(x, na.rm) {
-  vec_math_base("sum", vec_data(x), na.rm = na.rm)
+  vec_math_base("sum", vec_data_fast(x), na.rm = na.rm)
 }
