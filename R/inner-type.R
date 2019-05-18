@@ -19,6 +19,10 @@ vec_type_inner.double <- function(x) {
   double()
 }
 
+vec_type_inner.character <- function(x) {
+  character()
+}
+
 vec_type_inner.vctrs_rray_lgl <- function(x) {
   logical()
 }
