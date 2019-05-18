@@ -128,16 +128,21 @@ Rcpp::List subset_dim_names(Rcpp::List dim_names, Rcpp::List indexer) {
 // -----------------------------------------------------------------------------
 
 template <typename T>
-xt::rarray<T> rray__subset_impl(const xt::rarray<T>& x, Rcpp::List indexer) {
+Rcpp::RObject rray__subset_impl(const xt::rarray<T>& x, Rcpp::List indexer) {
 
-  xt::rarray<T> out;
+  xt::rarray<T> xt_out;
 
   if (is_stridable(indexer)) {
-    out = xt::strided_view(x, build_strided_slice_vector(indexer));
+    xt_out = xt::strided_view(x, build_strided_slice_vector(indexer));
   }
   else {
-    out = xt::dynamic_view(x, build_dynamic_slice_vector(indexer));
+    xt_out = xt::dynamic_view(x, build_dynamic_slice_vector(indexer));
   }
+
+  Rcpp::RObject out = SEXP(xt_out);
+
+  Rcpp::List new_dim_names = subset_dim_names(rray__dim_names(SEXP(x)), indexer);
+  Rf_setAttrib(out, R_DimNamesSymbol, new_dim_names);
 
   return out;
 }
