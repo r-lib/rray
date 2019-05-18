@@ -2,6 +2,7 @@
 % Please edit documentation in R/container-cast.R
 \name{vec_cast_container}
 \alias{vec_cast_container}
+\alias{vec_cast_container.default}
 \alias{vec_cast_container.logical}
 \alias{vec_cast_container.double}
 \alias{vec_cast_container.integer}
@@ -9,6 +10,8 @@
 \title{Cast to a container type}
 \usage{
 vec_cast_container(x, to)
+
+\method{vec_cast_container}{default}(x, to)
 
 \method{vec_cast_container}{logical}(x, to)
 
@@ -24,7 +27,21 @@ vec_cast_container(x, to)
 \item{to}{Container type to cast to.}
 }
 \description{
-Cast to a container type
+\code{vec_cast_container()} casts \code{x} to the "container" type of \code{to}. This should
+make the following assumptions:
+\itemize{
+\item \code{x} has the correct shape.
+\item \code{x} has the correct internal type.
+}
+}
+\details{
+\code{vec_cast_container()} is useful for restoring input that has been modified
+in some way back to its original container type without altering the internal
+type or shape of the modified input. For example, the \code{>} method
+for rrays takes two inputs, finds the common container type between them
+and returns a logical vector wrapped in that container type.
+
+When casting between base R types, this simply returns \code{x}.
 }
 \examples{
 
@@ -32,6 +49,7 @@ Cast to a container type
 vec_cast_container(TRUE, rray(1))
 
 # Downcasting to a double, no longer an rray
+# (the "container" here is just a base R object)
 vec_cast_container(rray(1), TRUE)
 
 # Shape of `x` is kept
