@@ -82,6 +82,22 @@ test_that("rray_sum() with integers gives doubles to prevent overflow", {
   )
 })
 
+test_that("can reduce over multiple axes if one is length 0", {
+  x <- matrix(numeric(), 0, 2)
+  expect_equal(rray_sum(x), new_matrix(0, c(1, 1)))
+  expect_equal(rray_sum(x, c(1, 2)), new_matrix(0, c(1, 1)))
+})
+
+test_that("reducing with length 0 axis produces the correct result dim", {
+  x <- matrix(numeric(), 0, 2)
+
+  # (0, 2) -> (1, 2) b/c reducers always "reduce" `axis` to length 1
+  expect_equal(rray_sum(x, 1L), new_matrix(0, c(1, 2)))
+
+  # (0, 2) -> (0, 1)
+  expect_equal(rray_sum(x, 2L), new_matrix(numeric(), c(0, 1)))
+})
+
 # ------------------------------------------------------------------------------
 # prod
 
@@ -171,6 +187,21 @@ test_that("rray_prod() with integers gives doubles to prevent overflow", {
   )
 })
 
+test_that("can reduce over multiple axes if one is length 0", {
+  x <- matrix(numeric(), 0, 2)
+  expect_equal(rray_prod(x), new_matrix(1, c(1, 1)))
+  expect_equal(rray_prod(x, c(1, 2)), new_matrix(1, c(1, 1)))
+})
+
+test_that("reducing with length 0 axis produces the correct result dim", {
+  x <- matrix(numeric(), 0, 2)
+
+  # (0, 2) -> (1, 2) b/c reducers always "reduce" `axis` to length 1
+  expect_equal(rray_prod(x, 1L), new_matrix(1, c(1, 2)))
+
+  # (0, 2) -> (0, 1)
+  expect_equal(rray_prod(x, 2L), new_matrix(numeric(), c(0, 1)))
+})
 
 # ------------------------------------------------------------------------------
 # mean
@@ -261,6 +292,22 @@ test_that("rray_mean() with integers gives doubles to prevent overflow", {
   )
 })
 
+test_that("can reduce over multiple axes if one is length 0", {
+  x <- matrix(numeric(), 0, 2)
+  expect_equal(rray_mean(x), new_matrix(NaN, c(1, 1)))
+  expect_equal(rray_mean(x, c(1, 2)), new_matrix(NaN, c(1, 1)))
+})
+
+test_that("reducing with length 0 axis produces the correct result dim", {
+  x <- matrix(numeric(), 0, 2)
+
+  # (0, 2) -> (1, 2) b/c reducers always "reduce" `axis` to length 1
+  expect_equal(rray_mean(x, 1L), new_matrix(NaN, c(1, 2)))
+
+  # (0, 2) -> (0, 1)
+  #expect_equal(rray_mean(x, 2L), new_matrix(numeric(), c(0, 1)))
+})
+
 # ------------------------------------------------------------------------------
 # amax
 
@@ -344,6 +391,22 @@ test_that("reducing base types maintains type", {
   expect_equal(col_names(rray_max(x_mat_cnames, 2)), "x")
 })
 
+test_that("can reduce over multiple axes if one is length 0", {
+  x <- matrix(numeric(), 0, 2)
+  expect_equal(rray_max(x), new_matrix(-Inf, c(1, 1)))
+  expect_equal(rray_max(x, c(1, 2)), new_matrix(-Inf, c(1, 1)))
+})
+
+test_that("reducing with length 0 axis produces the correct result dim", {
+  x <- matrix(numeric(), 0, 2)
+
+  # (0, 2) -> (1, 2) b/c reducers always "reduce" `axis` to length 1
+  expect_equal(rray_max(x, 1L), new_matrix(-Inf, c(1, 2)))
+
+  # (0, 2) -> (0, 1)
+  expect_equal(rray_max(x, 2L), new_matrix(numeric(), c(0, 1)))
+})
+
 # ------------------------------------------------------------------------------
 # amin
 
@@ -424,6 +487,22 @@ test_that("reducing base types maintains type", {
 
   expect_equal(col_names(rray_min(x_mat_cnames, 1)), "x")
   expect_equal(col_names(rray_min(x_mat_cnames, 2)), "x")
+})
+
+test_that("can reduce over multiple axes if one is length 0", {
+  x <- matrix(numeric(), 0, 2)
+  expect_equal(rray_min(x), new_matrix(Inf, c(1, 1)))
+  expect_equal(rray_min(x, c(1, 2)), new_matrix(Inf, c(1, 1)))
+})
+
+test_that("reducing with length 0 axis produces the correct result dim", {
+  x <- matrix(numeric(), 0, 2)
+
+  # (0, 2) -> (1, 2) b/c reducers always "reduce" `axis` to length 1
+  expect_equal(rray_min(x, 1L), new_matrix(Inf, c(1, 2)))
+
+  # (0, 2) -> (0, 1)
+  expect_equal(rray_min(x, 2L), new_matrix(numeric(), c(0, 1)))
 })
 
 # ------------------------------------------------------------------------------
