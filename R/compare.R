@@ -205,11 +205,11 @@ cast_compare <- function(f, x, y) {
     y <- logical()
   }
 
-  args <- rray_cast_inner_common(x, y)
+  args <- vec_cast_inner_common(x, y)
 
   res <- f(args[[1]], args[[2]])
 
   res <- set_full_dim_names(res, rray_dim_names_common(x, y))
 
-  vec_cast_container(res, vec_type2(x, y))
+  vec_cast_container(res, vec_type_container2(x, y))
 }

@@ -150,7 +150,7 @@ rray_arith_unary_base <- function(f, x, ...) {
 
 rray_arith_binary_base <- function(f, x, y) {
 
-  args <- rray_cast_inner_common(x, y)
+  args <- vec_cast_inner_common(x, y)
 
   res <- f(args[[1]], args[[2]])
 
@@ -162,8 +162,8 @@ rray_arith_binary_base <- function(f, x, y) {
 rray_arith_binary_base_typed <- function(f, x, y, type) {
 
   args <- list(
-    rray_cast_inner(x, type),
-    rray_cast_inner(y, type)
+    vec_cast_inner(x, type),
+    vec_cast_inner(y, type)
   )
 
   res <- f(args[[1]], args[[2]])

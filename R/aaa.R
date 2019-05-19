@@ -92,6 +92,9 @@ NULL
 
 utils::globalVariables(c("at", "arg"))
 
+# Holder for empty objects so we don't have to repeatedly spend time creating them
+shared <- rlang::new_environment()
+
 .onLoad <- function(libname, pkgname) {
 
   ns <- ns_env("rray")
@@ -105,6 +108,9 @@ utils::globalVariables(c("at", "arg"))
     env_bind(ns, vec_structure = structure)
   }
 
+  shared$empty_rray_int <- new_rray(integer())
+  shared$empty_rray_lgl <- new_rray(logical())
+  shared$empty_rray_dbl <- new_rray(double())
 }
 
 

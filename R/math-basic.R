@@ -233,9 +233,9 @@ rray_multiply_add <- function(x, y, z) {
 #' @family math functions
 #' @export
 rray_clip <- function(x, low, high) {
-  inner <- rray_type_inner(x)
-  low <- vec_cast(low, inner)
-  high <- vec_cast(high, inner)
+  inner <- vec_type_inner(x)
+  low <- vec_cast_inner(low, inner)
+  high <- vec_cast_inner(high, inner)
 
   n_low <- vec_size(low)
   if (n_low != 1L) {
@@ -269,16 +269,11 @@ rray_math_trinary_base <- function(f, x, y, z) {
   # done before the inner cast
   new_dim_names <- rray_dim_names_common(x, y, z)
 
-  to <- vec_type_common(x, y, z)
-  to_inner <- rray_type_inner(to)
+  args <- vec_cast_inner_common(x, y, z)
 
-  x <- rray_cast_inner(x, to_inner)
-  y <- rray_cast_inner(y, to_inner)
-  z <- rray_cast_inner(z, to_inner)
-
-  res <- f(x, y, z)
+  res <- f(args[[1]], args[[2]], args[[3]])
 
   res <- set_full_dim_names(res, new_dim_names)
 
-  vec_cast_container(res, to)
+  vec_cast_container(res, vec_type_container_common(x, y, z))
 }

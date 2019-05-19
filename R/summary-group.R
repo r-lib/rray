@@ -22,7 +22,7 @@ xtfrm.vctrs_rray <- function(x) {
 
 #' @export
 xtfrm.vctrs_rray_lgl <- function(x) {
-  rray_cast_inner(vec_proxy_compare(x), integer())
+  vec_cast_inner(vec_proxy_compare(x), integer())
 }
 
 # ------------------------------------------------------------------------------
