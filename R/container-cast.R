@@ -8,6 +8,9 @@
 #' - `x` has the correct shape.
 #' - `x` has the correct internal type.
 #'
+#' `vec_cast_container_common()` casts multiple vectors to a common container
+#' type.
+#'
 #' @details
 #'
 #' `vec_cast_container()` is useful for restoring input that has been modified
@@ -212,4 +215,14 @@ vec_cast_container.vctrs_rray.double <- vec_cast_container.vctrs_rray.logical
 #' @method vec_cast_container.vctrs_rray vctrs_rray
 vec_cast_container.vctrs_rray.vctrs_rray <- function(x, to) {
   x
+}
+
+# ------------------------------------------------------------------------------
+
+#' @rdname vec_cast_container
+#' @export
+vec_cast_container_common <- function(..., .to = NULL) {
+  args <- list2(...)
+  container <- vec_type_container_common(..., .ptype = .to)
+  map(args, vec_cast_container, to = container)
 }

@@ -1,4 +1,9 @@
-#' Find a common container type
+#' Find the container type of a pair of vectors
+#'
+#' `vec_type_container2()` finds the common container type of two vectors.
+#' Like `vec_type2()`, `vec_type_container2()` powers coercion but should
+#' usually not be called directly. Instead, [vec_type_container_common()]
+#' should be used.
 #'
 #' @param x,y Vectors.
 #'
@@ -36,33 +41,29 @@ vec_type_container2.logical.logical <- function(x, y) {
 
 #' @export
 #' @method vec_type_container2.logical double
-vec_type_container2.logical.double <- function(x, y) {
-  double()
-}
+vec_type_container2.logical.double <- vec_type_container2.logical.logical
 
 #' @export
 #' @method vec_type_container2.logical integer
-vec_type_container2.logical.integer <- function(x, y) {
-  integer()
-}
+vec_type_container2.logical.integer <- vec_type_container2.logical.logical
+
+#' @export
+#' @method vec_type_container2.logical character
+vec_type_container2.logical.character <- vec_type_container2.logical.logical
 
 #' @export
 #' @method vec_type_container2.logical vctrs_rray_int
 vec_type_container2.logical.vctrs_rray_int <- function(x, y) {
-  shared$empty_rray_int
+  shared$empty_rray_lgl
 }
 
 #' @export
 #' @method vec_type_container2.logical vctrs_rray_dbl
-vec_type_container2.logical.vctrs_rray_dbl <- function(x, y) {
-  shared$empty_rray_dbl
-}
+vec_type_container2.logical.vctrs_rray_dbl <- vec_type_container2.logical.vctrs_rray_int
 
 #' @export
 #' @method vec_type_container2.logical vctrs_rray_lgl
-vec_type_container2.logical.vctrs_rray_lgl <- function(x, y) {
-  shared$empty_rray_lgl
-}
+vec_type_container2.logical.vctrs_rray_lgl <- vec_type_container2.logical.vctrs_rray_int
 
 # ------------------------------------------------------------------------------
 
@@ -82,39 +83,31 @@ vec_type_container2.integer.default <- function(x, y) {
 
 #' @export
 #' @method vec_type_container2.integer logical
-vec_type_container2.integer.logical <- function(x, y) {
-  integer()
-}
+vec_type_container2.integer.logical <- vec_type_container2.logical.logical
 
 #' @export
 #' @method vec_type_container2.integer double
-vec_type_container2.integer.double <- function(x, y) {
-  double()
-}
+vec_type_container2.integer.double <- vec_type_container2.logical.logical
 
 #' @export
 #' @method vec_type_container2.integer integer
-vec_type_container2.integer.integer <- function(x, y) {
-  integer()
-}
+vec_type_container2.integer.integer <- vec_type_container2.logical.logical
+
+#' @export
+#' @method vec_type_container2.integer character
+vec_type_container2.integer.character <- vec_type_container2.logical.logical
 
 #' @export
 #' @method vec_type_container2.integer vctrs_rray_int
-vec_type_container2.integer.vctrs_rray_int <- function(x, y) {
-  shared$empty_rray_int
-}
+vec_type_container2.integer.vctrs_rray_int <- vec_type_container2.logical.vctrs_rray_int
 
 #' @export
 #' @method vec_type_container2.integer vctrs_rray_dbl
-vec_type_container2.integer.vctrs_rray_dbl <- function(x, y) {
-  shared$empty_rray_dbl
-}
+vec_type_container2.integer.vctrs_rray_dbl <- vec_type_container2.logical.vctrs_rray_int
 
 #' @export
 #' @method vec_type_container2.integer vctrs_rray_lgl
-vec_type_container2.integer.vctrs_rray_lgl <- function(x, y) {
-  shared$empty_rray_int
-}
+vec_type_container2.integer.vctrs_rray_lgl <- vec_type_container2.logical.vctrs_rray_int
 
 # ------------------------------------------------------------------------------
 
@@ -134,39 +127,75 @@ vec_type_container2.double.default <- function(x, y) {
 
 #' @export
 #' @method vec_type_container2.double logical
-vec_type_container2.double.logical <- function(x, y) {
-  double()
-}
+vec_type_container2.double.logical <- vec_type_container2.logical.logical
 
 #' @export
 #' @method vec_type_container2.double double
-vec_type_container2.double.double <- function(x, y) {
-  double()
-}
+vec_type_container2.double.double <- vec_type_container2.logical.logical
 
 #' @export
 #' @method vec_type_container2.double integer
-vec_type_container2.double.integer <- function(x, y) {
-  double()
-}
+vec_type_container2.double.integer <- vec_type_container2.logical.logical
+
+#' @export
+#' @method vec_type_container2.double character
+vec_type_container2.double.character <- vec_type_container2.logical.logical
 
 #' @export
 #' @method vec_type_container2.double vctrs_rray_int
-vec_type_container2.double.vctrs_rray_int <- function(x, y) {
-  shared$empty_rray_dbl
-}
+vec_type_container2.double.vctrs_rray_int <- vec_type_container2.logical.vctrs_rray_int
 
 #' @export
 #' @method vec_type_container2.double vctrs_rray_dbl
-vec_type_container2.double.vctrs_rray_dbl <- function(x, y) {
-  shared$empty_rray_dbl
-}
+vec_type_container2.double.vctrs_rray_dbl <- vec_type_container2.logical.vctrs_rray_int
 
 #' @export
 #' @method vec_type_container2.double vctrs_rray_lgl
-vec_type_container2.double.vctrs_rray_lgl <- function(x, y) {
-  shared$empty_rray_dbl
+vec_type_container2.double.vctrs_rray_lgl <- vec_type_container2.logical.vctrs_rray_int
+
+# ------------------------------------------------------------------------------
+
+#' @export
+#' @rdname vec_type_container2
+#' @export vec_type_container2.character
+#' @method vec_type_container2 character
+vec_type_container2.character <- function(x, y) {
+  UseMethod("vec_type_container2.character")
 }
+
+#' @export
+#' @method vec_type_container2.character default
+vec_type_container2.character.default <- function(x, y) {
+  stop_incompatible_type(x, y)
+}
+
+#' @export
+#' @method vec_type_container2.character logical
+vec_type_container2.character.logical <- vec_type_container2.logical.logical
+
+#' @export
+#' @method vec_type_container2.character double
+vec_type_container2.character.double <- vec_type_container2.logical.logical
+
+#' @export
+#' @method vec_type_container2.character integer
+vec_type_container2.character.integer <- vec_type_container2.logical.logical
+
+#' @export
+#' @method vec_type_container2.character character
+vec_type_container2.character.character <- vec_type_container2.logical.logical
+
+#' @export
+#' @method vec_type_container2.character vctrs_rray_int
+vec_type_container2.character.vctrs_rray_int <- vec_type_container2.logical.vctrs_rray_int
+
+#' @export
+#' @method vec_type_container2.character vctrs_rray_dbl
+vec_type_container2.character.vctrs_rray_dbl <- vec_type_container2.logical.vctrs_rray_int
+
+#' @export
+#' @method vec_type_container2.character vctrs_rray_lgl
+vec_type_container2.character.vctrs_rray_lgl <- vec_type_container2.logical.vctrs_rray_int
 
 # ------------------------------------------------------------------------------
 
@@ -186,39 +215,31 @@ vec_type_container2.vctrs_rray_lgl.default <- function(x, y) {
 
 #' @export
 #' @method vec_type_container2.vctrs_rray_lgl logical
-vec_type_container2.vctrs_rray_lgl.logical <- function(x, y) {
-  shared$empty_rray_lgl
-}
+vec_type_container2.vctrs_rray_lgl.logical <- vec_type_container2.logical.vctrs_rray_int
 
 #' @export
 #' @method vec_type_container2.vctrs_rray_lgl double
-vec_type_container2.vctrs_rray_lgl.double <- function(x, y) {
-  shared$empty_rray_dbl
-}
+vec_type_container2.vctrs_rray_lgl.double <- vec_type_container2.logical.vctrs_rray_int
 
 #' @export
 #' @method vec_type_container2.vctrs_rray_lgl integer
-vec_type_container2.vctrs_rray_lgl.integer <- function(x, y) {
-  shared$empty_rray_int
-}
+vec_type_container2.vctrs_rray_lgl.integer <- vec_type_container2.logical.vctrs_rray_int
+
+#' @export
+#' @method vec_type_container2.vctrs_rray_lgl character
+vec_type_container2.vctrs_rray_lgl.character <- vec_type_container2.logical.vctrs_rray_int
 
 #' @export
 #' @method vec_type_container2.vctrs_rray_lgl vctrs_rray_int
-vec_type_container2.vctrs_rray_lgl.vctrs_rray_int <- function(x, y) {
-  shared$empty_rray_int
-}
+vec_type_container2.vctrs_rray_lgl.vctrs_rray_int <- vec_type_container2.logical.vctrs_rray_int
 
 #' @export
 #' @method vec_type_container2.vctrs_rray_lgl vctrs_rray_dbl
-vec_type_container2.vctrs_rray_lgl.vctrs_rray_dbl <- function(x, y) {
-  shared$empty_rray_dbl
-}
+vec_type_container2.vctrs_rray_lgl.vctrs_rray_dbl <- vec_type_container2.logical.vctrs_rray_int
 
 #' @export
 #' @method vec_type_container2.vctrs_rray_lgl vctrs_rray_lgl
-vec_type_container2.vctrs_rray_lgl.vctrs_rray_lgl <- function(x, y) {
-  shared$empty_rray_lgl
-}
+vec_type_container2.vctrs_rray_lgl.vctrs_rray_lgl <- vec_type_container2.logical.vctrs_rray_int
 
 # ------------------------------------------------------------------------------
 
@@ -238,39 +259,31 @@ vec_type_container2.vctrs_rray_dbl.default <- function(x, y) {
 
 #' @export
 #' @method vec_type_container2.vctrs_rray_dbl logical
-vec_type_container2.vctrs_rray_dbl.logical <- function(x, y) {
-  shared$empty_rray_dbl
-}
+vec_type_container2.vctrs_rray_dbl.logical <- vec_type_container2.logical.vctrs_rray_int
 
 #' @export
 #' @method vec_type_container2.vctrs_rray_dbl double
-vec_type_container2.vctrs_rray_dbl.double <- function(x, y) {
-  shared$empty_rray_dbl
-}
+vec_type_container2.vctrs_rray_dbl.double <- vec_type_container2.logical.vctrs_rray_int
 
 #' @export
 #' @method vec_type_container2.vctrs_rray_dbl integer
-vec_type_container2.vctrs_rray_dbl.integer <- function(x, y) {
-  shared$empty_rray_dbl
-}
+vec_type_container2.vctrs_rray_dbl.integer <- vec_type_container2.logical.vctrs_rray_int
+
+#' @export
+#' @method vec_type_container2.vctrs_rray_dbl character
+vec_type_container2.vctrs_rray_dbl.character <- vec_type_container2.logical.vctrs_rray_int
 
 #' @export
 #' @method vec_type_container2.vctrs_rray_dbl vctrs_rray_int
-vec_type_container2.vctrs_rray_dbl.vctrs_rray_int <- function(x, y) {
-  shared$empty_rray_dbl
-}
+vec_type_container2.vctrs_rray_dbl.vctrs_rray_int <- vec_type_container2.logical.vctrs_rray_int
 
 #' @export
 #' @method vec_type_container2.vctrs_rray_dbl vctrs_rray_dbl
-vec_type_container2.vctrs_rray_dbl.vctrs_rray_dbl <- function(x, y) {
-  shared$empty_rray_dbl
-}
+vec_type_container2.vctrs_rray_dbl.vctrs_rray_dbl <- vec_type_container2.logical.vctrs_rray_int
 
 #' @export
 #' @method vec_type_container2.vctrs_rray_dbl vctrs_rray_lgl
-vec_type_container2.vctrs_rray_dbl.vctrs_rray_lgl <- function(x, y) {
-  shared$empty_rray_dbl
-}
+vec_type_container2.vctrs_rray_dbl.vctrs_rray_lgl <- vec_type_container2.logical.vctrs_rray_int
 
 # ------------------------------------------------------------------------------
 
@@ -290,39 +303,31 @@ vec_type_container2.vctrs_rray_int.default <- function(x, y) {
 
 #' @export
 #' @method vec_type_container2.vctrs_rray_int logical
-vec_type_container2.vctrs_rray_int.logical <- function(x, y) {
-  shared$empty_rray_int
-}
+vec_type_container2.vctrs_rray_int.logical <- vec_type_container2.logical.vctrs_rray_int
 
 #' @export
 #' @method vec_type_container2.vctrs_rray_int double
-vec_type_container2.vctrs_rray_int.double <- function(x, y) {
-  shared$empty_rray_dbl
-}
+vec_type_container2.vctrs_rray_int.double <- vec_type_container2.logical.vctrs_rray_int
 
 #' @export
 #' @method vec_type_container2.vctrs_rray_int integer
-vec_type_container2.vctrs_rray_int.integer <- function(x, y) {
-  shared$empty_rray_int
-}
+vec_type_container2.vctrs_rray_int.integer <- vec_type_container2.logical.vctrs_rray_int
+
+#' @export
+#' @method vec_type_container2.vctrs_rray_int character
+vec_type_container2.vctrs_rray_int.character <- vec_type_container2.logical.vctrs_rray_int
 
 #' @export
 #' @method vec_type_container2.vctrs_rray_int vctrs_rray_int
-vec_type_container2.vctrs_rray_int.vctrs_rray_int <- function(x, y) {
-  shared$empty_rray_int
-}
+vec_type_container2.vctrs_rray_int.vctrs_rray_int <- vec_type_container2.logical.vctrs_rray_int
 
 #' @export
 #' @method vec_type_container2.vctrs_rray_int vctrs_rray_dbl
-vec_type_container2.vctrs_rray_int.vctrs_rray_dbl <- function(x, y) {
-  shared$empty_rray_dbl
-}
+vec_type_container2.vctrs_rray_int.vctrs_rray_dbl <- vec_type_container2.logical.vctrs_rray_int
 
 #' @export
 #' @method vec_type_container2.vctrs_rray_int vctrs_rray_lgl
-vec_type_container2.vctrs_rray_int.vctrs_rray_lgl <- function(x, y) {
-  shared$empty_rray_int
-}
+vec_type_container2.vctrs_rray_int.vctrs_rray_lgl <- vec_type_container2.logical.vctrs_rray_int
 
 # ------------------------------------------------------------------------------
 

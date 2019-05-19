@@ -95,3 +95,4 @@ test_that("`x` retains dim names", {
   expect_equal(vec_cast_container(x, TRUE), x)
   expect_equal(vec_cast_container(x, rray(TRUE)), rray(1, dim_names = list("foo")))
 })
+

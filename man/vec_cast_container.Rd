@@ -7,6 +7,7 @@
 \alias{vec_cast_container.double}
 \alias{vec_cast_container.integer}
 \alias{vec_cast_container.vctrs_rray}
+\alias{vec_cast_container_common}
 \title{Cast to a container type}
 \usage{
 vec_cast_container(x, to)
@@ -20,6 +21,8 @@ vec_cast_container(x, to)
 \method{vec_cast_container}{integer}(x, to)
 
 \method{vec_cast_container}{vctrs_rray}(x, to)
+
+vec_cast_container_common(..., .to = NULL)
 }
 \arguments{
 \item{x}{Vector to cast.}
@@ -33,6 +36,9 @@ make the following assumptions:
 \item \code{x} has the correct shape.
 \item \code{x} has the correct internal type.
 }
+
+\code{vec_cast_container_common()} casts multiple vectors to a common container
+type.
 }
 \details{
 \code{vec_cast_container()} is useful for restoring input that has been modified
