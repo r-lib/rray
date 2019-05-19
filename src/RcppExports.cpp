@@ -6,28 +6,6 @@
 
 using namespace Rcpp;
 
-// rray__cumsum
-Rcpp::RObject rray__cumsum(Rcpp::RObject x, Rcpp::RObject axis);
-RcppExport SEXP _rray_rray__cumsum(SEXP xSEXP, SEXP axisSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type axis(axisSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__cumsum(x, axis));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rray__cumprod
-Rcpp::RObject rray__cumprod(Rcpp::RObject x, Rcpp::RObject axis);
-RcppExport SEXP _rray_rray__cumprod(SEXP xSEXP, SEXP axisSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type axis(axisSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__cumprod(x, axis));
-    return rcpp_result_gen;
-END_RCPP
-}
 // rray__add
 Rcpp::RObject rray__add(Rcpp::RObject x, Rcpp::RObject y);
 RcppExport SEXP _rray_rray__add(SEXP xSEXP, SEXP ySEXP) {
@@ -1083,8 +1061,6 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_rray_rray__cumsum", (DL_FUNC) &_rray_rray__cumsum, 2},
-    {"_rray_rray__cumprod", (DL_FUNC) &_rray_rray__cumprod, 2},
     {"_rray_rray__add", (DL_FUNC) &_rray_rray__add, 2},
     {"_rray_rray__subtract", (DL_FUNC) &_rray_rray__subtract, 2},
     {"_rray_rray__divide", (DL_FUNC) &_rray_rray__divide, 2},
