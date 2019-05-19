@@ -223,9 +223,9 @@ test_that("works with rray objects", {
 
   expect_equal(rray_any(x, 1), rray(TRUE, c(1, 2, 2)))
 
-  expect_equal(rray_any(x, 2), rray(c(TRUE, TRUE, FALSE, FALSE), c(2, 1, 2)))
+  expect_equal(rray_any(x, 2), rray(c(TRUE, FALSE, TRUE, FALSE), c(2, 1, 2)))
 
-  expect_equal(rray_any(x, 3), rray(c(TRUE, TRUE, FALSE, FALSE), c(2, 2, 1)))
+  expect_equal(rray_any(x, 3), rray(c(TRUE, FALSE, TRUE, FALSE), c(2, 2, 1)))
 })
 
 test_that("works over multiple axes", {
@@ -293,9 +293,9 @@ test_that("works with rray objects", {
 
   expect_equal(rray_all(x, 1), rray(FALSE, c(1, 2, 2)))
 
-  expect_equal(rray_all(x, 2), rray(c(TRUE, TRUE, FALSE, FALSE), c(2, 1, 2)))
+  expect_equal(rray_all(x, 2), rray(c(TRUE, FALSE, TRUE, FALSE), c(2, 1, 2)))
 
-  expect_equal(rray_all(x, 3), rray(c(TRUE, TRUE, FALSE, FALSE), c(2, 2, 1)))
+  expect_equal(rray_all(x, 3), rray(c(TRUE, FALSE, TRUE, FALSE), c(2, 2, 1)))
 })
 
 test_that("works over multiple axes", {

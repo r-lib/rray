@@ -219,11 +219,12 @@ Rcpp::List compute_out_info(const Rcpp::List& args,
 
   const int& n_args = args.size();
 
-  std::vector<std::size_t> out_axis_locs(n_args + 1);
-  out_axis_locs[0] = 0;
   int loc = 0;
   int out_axis_size = 0;
+
   Rcpp::IntegerVector out_dim(dims, 1);
+  Rcpp::IntegerVector axis_starts(n_args);
+  Rcpp::IntegerVector axis_ends(n_args);
   Rcpp::IntegerVector axis_sizes(n_args);
 
   for (int i = 0; i < n_args; ++i) {
@@ -231,21 +232,24 @@ Rcpp::List compute_out_info(const Rcpp::List& args,
     Rcpp::IntegerVector arg_dim_i = Rcpp::clone(rray__dim(args[i]));
     arg_dim_i = rray__increase_dims(arg_dim_i, dims);
 
-    axis_sizes[i] = arg_dim_i[axis];
+    int axis_size_i = arg_dim_i[axis];
+    axis_sizes[i] = axis_size_i;
     arg_dim_i[axis] = 0;
 
     out_dim = rray__dim2(out_dim, arg_dim_i);
-    out_axis_size = out_axis_size + axis_sizes[i];
+    out_axis_size = out_axis_size + axis_size_i;
 
-    out_axis_locs[i + 1] = loc + axis_sizes[i] - 1;
-    loc = loc + axis_sizes[i];
+    axis_starts[i] = loc;
+    loc = loc + axis_size_i;
+    axis_ends[i] = loc;
   }
 
   out_dim[axis] = out_axis_size;
 
   return Rcpp::List::create(
     Rcpp::Named("out_dim") = out_dim,
-    Rcpp::Named("out_axis_locs") = out_axis_locs,
+    Rcpp::Named("axis_starts") = axis_starts,
+    Rcpp::Named("axis_ends") = axis_ends,
     Rcpp::Named("axis_sizes") = axis_sizes
   );
 }
@@ -261,8 +265,10 @@ Rcpp::RObject rray__bind_impl(const Rcpp::List& args,
   const int& dims = compute_dims(args, axis);
 
   Rcpp::List out_info = compute_out_info(args, axis, dims);
+
   Rcpp::IntegerVector out_dim = out_info["out_dim"];
-  std::vector<std::size_t> out_axis_locs = out_info["out_axis_locs"];
+  Rcpp::IntegerVector axis_starts = out_info["axis_starts"];
+  Rcpp::IntegerVector axis_ends = out_info["axis_ends"];
   Rcpp::IntegerVector axis_sizes = out_info["axis_sizes"];
 
   // Allocate an empty container of type `T` and shape `out_dim`
@@ -275,12 +281,7 @@ Rcpp::RObject rray__bind_impl(const Rcpp::List& args,
   for (int i = 0; i < n_args; ++i) {
 
     // Update slice vector positions
-    std::size_t start = out_axis_locs[i];
-    std::size_t end = out_axis_locs[i + 1] + 1;
-    sv[axis] = xt::range(start, end);
-
-    // Bump so it becomes the correct next start position
-    out_axis_locs[i + 1]++;
+    sv[axis] = xt::range(axis_starts[i], axis_ends[i]);
 
     // Reshape view on args[i]
     xt::rarray<T> arg_i = args[i];

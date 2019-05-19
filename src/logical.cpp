@@ -83,7 +83,7 @@ xt::rarray<rlogical> rray__any_impl(const xt::rarray<rlogical>& x, Rcpp::RObject
 
   // If `axes = NULL` we can rely on `xt::any()` which finds a "global" any value
   if (r_is_null(axes)) {
-    auto x_global_any = xt::any(x);
+    xt::xarray<bool> x_global_any = xt::any(x);
     xt::rarray<rlogical> res = rray__keep_dims_view(x_global_any, rray__dim(SEXP(x)), axes);
     return res;
   }
@@ -122,7 +122,7 @@ xt::rarray<rlogical> rray__all_impl(const xt::rarray<rlogical>& x, Rcpp::RObject
 
   // If `axes = NULL` we can rely on `xt::all()` which finds a "global" all value
   if (r_is_null(axes)) {
-    auto x_global_all = xt::all(x);
+    xt::xarray<bool> x_global_all = xt::all(x);
     xt::rarray<rlogical> res = rray__keep_dims_view(x_global_all, rray__dim(SEXP(x)), axes);
     return res;
   }
