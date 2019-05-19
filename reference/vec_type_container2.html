@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Cast to a container type — vec_cast_container • rray</title>
+<title>Find the container type of a pair of vectors — vec_type_container2 • rray</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,16 +30,12 @@
 
 
 
-<meta property="og:title" content="Cast to a container type — vec_cast_container" />
+<meta property="og:title" content="Find the container type of a pair of vectors — vec_type_container2" />
 
-<meta property="og:description" content="vec_cast_container() casts x to the &quot;container&quot; type of to. This should
-make the following assumptions:
-x has the correct shape.
-x has the correct internal type.
-" />
-
-<meta property="og:description" content="vec_cast_container_common() casts multiple vectors to a common container
-type." />
+<meta property="og:description" content="vec_type_container2() finds the common container type of two vectors.
+Like vec_type2(), vec_type_container2() powers coercion but should
+usually not be called directly. Instead, vec_type_container_common()
+should be used." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -121,104 +117,61 @@ type." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Cast to a container type</h1>
-    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/container-cast.R'><code>R/container-cast.R</code></a></small>
-    <div class="hidden name"><code>vec_cast_container.Rd</code></div>
+    <h1>Find the container type of a pair of vectors</h1>
+    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/container-type2.R'><code>R/container-type2.R</code></a></small>
+    <div class="hidden name"><code>vec_type_container2.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p><code>vec_cast_container()</code> casts <code>x</code> to the "container" type of <code>to</code>. This should
-make the following assumptions:</p><ul>
-<li><p><code>x</code> has the correct shape.</p></li>
-<li><p><code>x</code> has the correct internal type.</p></li>
-</ul>
-
-    <p><code>vec_cast_container_common()</code> casts multiple vectors to a common container
-type.</p>
+    <p><code>vec_type_container2()</code> finds the common container type of two vectors.
+Like <code>vec_type2()</code>, <code>vec_type_container2()</code> powers coercion but should
+usually not be called directly. Instead, <code><a href='vec_type_container.html'>vec_type_container_common()</a></code>
+should be used.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>vec_cast_container</span>(<span class='no'>x</span>, <span class='no'>to</span>)
+    <pre class="usage"><span class='fu'>vec_type_container2</span>(<span class='no'>x</span>, <span class='no'>y</span>)
 
 <span class='co'># S3 method for default</span>
-<span class='fu'>vec_cast_container</span>(<span class='no'>x</span>, <span class='no'>to</span>)
+<span class='fu'>vec_type_container2</span>(<span class='no'>x</span>, <span class='no'>y</span>)
 
 <span class='co'># S3 method for logical</span>
-<span class='fu'>vec_cast_container</span>(<span class='no'>x</span>, <span class='no'>to</span>)
-
-<span class='co'># S3 method for double</span>
-<span class='fu'>vec_cast_container</span>(<span class='no'>x</span>, <span class='no'>to</span>)
+<span class='fu'>vec_type_container2</span>(<span class='no'>x</span>, <span class='no'>y</span>)
 
 <span class='co'># S3 method for integer</span>
-<span class='fu'>vec_cast_container</span>(<span class='no'>x</span>, <span class='no'>to</span>)
+<span class='fu'>vec_type_container2</span>(<span class='no'>x</span>, <span class='no'>y</span>)
+
+<span class='co'># S3 method for double</span>
+<span class='fu'>vec_type_container2</span>(<span class='no'>x</span>, <span class='no'>y</span>)
+
+<span class='co'># S3 method for character</span>
+<span class='fu'>vec_type_container2</span>(<span class='no'>x</span>, <span class='no'>y</span>)
 
 <span class='co'># S3 method for vctrs_rray</span>
-<span class='fu'>vec_cast_container</span>(<span class='no'>x</span>, <span class='no'>to</span>)
-
-<span class='fu'>vec_cast_container_common</span>(<span class='no'>...</span>, <span class='kw'>.to</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
+<span class='fu'>vec_type_container2</span>(<span class='no'>x</span>, <span class='no'>y</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>Vector to cast.</p></td>
-    </tr>
-    <tr>
-      <th>to</th>
-      <td><p>Container type to cast to.</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Vectors to cast to a common container type.</p></td>
-    </tr>
-    <tr>
-      <th>.to</th>
-      <td><p>If not <code>NULL</code>, overrides the common container
-type to cast <code>...</code> to.</p></td>
+      <th>x, y</th>
+      <td><p>Vectors.</p></td>
     </tr>
     </table>
-    
-    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-    <p><code>vec_cast_container()</code> is useful for restoring input that has been modified
-in some way back to its original container type without altering the internal
-type or shape of the modified input. For example, the <code>&gt;</code> method
-for rrays takes two inputs, finds the common container type between them
-and returns a logical vector wrapped in that container type.</p>
-<p>When casting between base R types, this simply returns <code>x</code>.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='co'># Upcasting to an rray. Still a logical</span>
-<span class='fu'>vec_cast_container</span>(<span class='fl'>TRUE</span>, <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>))</div><div class='output co'>#&gt; &lt;rray&lt;lgl&gt;[1]&gt;
-#&gt; [1] TRUE</div><div class='input'>
-<span class='co'># Downcasting to a double, no longer an rray</span>
-<span class='co'># (the "container" here is just a base R object)</span>
-<span class='fu'>vec_cast_container</span>(<span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>), <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; [1] 1</div><div class='input'>
-<span class='co'># Shape of `x` is kept</span>
-<span class='fu'>vec_cast_container</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fl'>1</span>:<span class='fl'>5</span>), <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>))</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,1][5]&gt;
-#&gt;      [,1]
-#&gt; [1,]    1
-#&gt; [2,]    2
-#&gt; [3,]    3
-#&gt; [4,]    4
-#&gt; [5,]    5</div><div class='input'>
-<span class='co'># Dim names of `x` are kept</span>
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>2</span>, <span class='kw'>dim_names</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"r1"</span>, <span class='st'>"r2"</span>)))
-<span class='fu'>vec_cast_container</span>(<span class='no'>x</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; r1 r2 
-#&gt;  1  2 </div><div class='input'>
+<span class='fu'>vec_type_container2</span>(<span class='fl'>1</span>, <span class='fl'>2L</span>)</div><div class='output co'>#&gt; logical(0)</div><div class='input'>
+<span class='fu'>vec_type_container2</span>(<span class='fl'>1</span>, <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>2L</span>))</div><div class='output co'>#&gt; &lt;rray&lt;lgl&gt;[0]&gt;</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
-      <li><a href="#details">Details</a></li>
-      
+            
       <li><a href="#examples">Examples</a></li>
     </ul>
 
