@@ -8,13 +8,6 @@ Rcpp::RObject rray__add_impl(const xt::rarray<T>& x,
                              const xt::rarray<T>& y) {
 
   Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
-
-  // If any dimension is size 0, return an empty T array with common dim
-  if (Rcpp::is_true(Rcpp::any(dim == 0))) {
-    xt::rarray<T> res(Rcpp::as<std::vector<std::size_t>>(dim));
-    return(Rcpp::as<Rcpp::RObject>(res));
-  }
-
   const int& dims = dim.size();
   auto x_view = rray__increase_dims_view(x, dims);
   auto y_view = rray__increase_dims_view(y, dims);
@@ -29,13 +22,6 @@ Rcpp::RObject rray__add_impl(const xt::rarray<rlogical>& x,
                              const xt::rarray<rlogical>& y) {
 
   Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
-
-  // If any dimension is size 0, return an empty integer array with common dim
-  if (Rcpp::is_true(Rcpp::any(dim == 0))) {
-    xt::rarray<int> res(Rcpp::as<std::vector<std::size_t>>(dim));
-    return Rcpp::as<Rcpp::RObject>(res);
-  }
-
   const int& dims = dim.size();
   auto x_view = rray__increase_dims_view(x, dims);
   auto y_view = rray__increase_dims_view(y, dims);
@@ -57,13 +43,6 @@ Rcpp::RObject rray__subtract_impl(const xt::rarray<T>& x,
                                   const xt::rarray<T>& y) {
 
   Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
-
-  // If any dimension is size 0, return an empty logical array with common dim
-  if (Rcpp::is_true(Rcpp::any(dim == 0))) {
-    xt::rarray<T> res(Rcpp::as<std::vector<std::size_t>>(dim));
-    return Rcpp::as<Rcpp::RObject>(res);
-  }
-
   const int& dims = dim.size();
   auto x_view = rray__increase_dims_view(x, dims);
   auto y_view = rray__increase_dims_view(y, dims);
@@ -78,13 +57,6 @@ Rcpp::RObject rray__subtract_impl(const xt::rarray<rlogical>& x,
                                   const xt::rarray<rlogical>& y) {
 
   Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
-
-  // If any dimension is size 0, return an empty integer array with common dim
-  if (Rcpp::is_true(Rcpp::any(dim == 0))) {
-    xt::rarray<int> res(Rcpp::as<std::vector<std::size_t>>(dim));
-    return Rcpp::as<Rcpp::RObject>(res);
-  }
-
   const int& dims = dim.size();
   auto x_view = rray__increase_dims_view(x, dims);
   auto y_view = rray__increase_dims_view(y, dims);
@@ -107,13 +79,6 @@ xt::rarray<double> rray__divide_impl(const xt::rarray<double>& x,
                                      const xt::rarray<double>& y) {
 
   Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
-
-  // If any dimension is size 0, return an empty logical array with common dim
-  if (Rcpp::is_true(Rcpp::any(dim == 0))) {
-    xt::rarray<double> res(Rcpp::as<std::vector<std::size_t>>(dim));
-    return(res);
-  }
-
   const int& dims = dim.size();
   auto x_view = rray__increase_dims_view(x, dims);
   auto y_view = rray__increase_dims_view(y, dims);
@@ -133,13 +98,6 @@ Rcpp::RObject rray__multiply_impl(const xt::rarray<T>& x,
                                   const xt::rarray<T>& y) {
 
   Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
-
-  // If any dimension is size 0, return an empty T array with common dim
-  if (Rcpp::is_true(Rcpp::any(dim == 0))) {
-    xt::rarray<T> res(Rcpp::as<std::vector<std::size_t>>(dim));
-    return Rcpp::as<Rcpp::RObject>(res);
-  }
-
   const int& dims = dim.size();
   auto x_view = rray__increase_dims_view(x, dims);
   auto y_view = rray__increase_dims_view(y, dims);
@@ -154,13 +112,6 @@ Rcpp::RObject rray__multiply_impl(const xt::rarray<rlogical>& x,
                                   const xt::rarray<rlogical>& y) {
 
   Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
-
-  // If any dimension is size 0, return an empty integer array with common dim
-  if (Rcpp::is_true(Rcpp::any(dim == 0))) {
-    xt::rarray<int> res(Rcpp::as<std::vector<std::size_t>>(dim));
-    return Rcpp::as<Rcpp::RObject>(res);
-  }
-
   const int& dims = dim.size();
   auto x_view = rray__increase_dims_view(x, dims);
   auto y_view = rray__increase_dims_view(y, dims);
@@ -184,13 +135,6 @@ Rcpp::RObject rray__pow_impl(const xt::rarray<T>& x,
                              const xt::rarray<T>& y) {
 
   Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
-
-  // If any dimension is size 0, return an empty logical array with common dim
-  if (Rcpp::is_true(Rcpp::any(dim == 0))) {
-    xt::rarray<T> res(Rcpp::as<std::vector<std::size_t>>(dim));
-    return Rcpp::as<Rcpp::RObject>(res);
-  }
-
   const int& dims = dim.size();
   auto x_view = rray__increase_dims_view(x, dims);
   auto y_view = rray__increase_dims_view(y, dims);
@@ -205,13 +149,6 @@ Rcpp::RObject rray__pow_impl(const xt::rarray<rlogical>& x,
                              const xt::rarray<rlogical>& y) {
 
   Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
-
-  // If any dimension is size 0, return an empty logical array with common dim
-  if (Rcpp::is_true(Rcpp::any(dim == 0))) {
-    xt::rarray<int> res(Rcpp::as<std::vector<std::size_t>>(dim));
-    return Rcpp::as<Rcpp::RObject>(res);
-  }
-
   const int& dims = dim.size();
   auto x_view = rray__increase_dims_view(x, dims);
   auto y_view = rray__increase_dims_view(y, dims);

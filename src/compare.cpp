@@ -1,24 +1,12 @@
 #include <rray.h>
 #include <dispatch.h>
 
-// TODO - Depending on the adjustment made in this pr, we might be able
-// to remove the early exits calls. Currently xtensor does not match the
-// numpy behavior
-// https://github.com/QuantStack/xtensor/issues/1562
-
 // -----------------------------------------------------------------------------
 
 template <typename T>
 xt::rarray<rlogical> rray__greater_impl(const xt::rarray<T>& x, const xt::rarray<T>& y) {
 
   Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
-
-  // If any dimension is size 0, return an empty logical array with common dim
-  if (Rcpp::is_true(Rcpp::any(dim == 0))) {
-    xt::rarray<rlogical> res(Rcpp::as<std::vector<std::size_t>>(dim));
-    return(res);
-  }
-
   const int& dims = dim.size();
   auto x_view = rray__increase_dims_view(x, dims);
   auto y_view = rray__increase_dims_view(y, dims);
@@ -37,13 +25,6 @@ template <typename T>
 xt::rarray<rlogical> rray__greater_equal_impl(const xt::rarray<T>& x, const xt::rarray<T>& y) {
 
   Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
-
-  // If any dimension is size 0, return an empty logical array with common dim
-  if (Rcpp::is_true(Rcpp::any(dim == 0))) {
-    xt::rarray<rlogical> res(Rcpp::as<std::vector<std::size_t>>(dim));
-    return(res);
-  }
-
   const int& dims = dim.size();
   auto x_view = rray__increase_dims_view(x, dims);
   auto y_view = rray__increase_dims_view(y, dims);
@@ -62,13 +43,6 @@ template <typename T>
 xt::rarray<rlogical> rray__lesser_impl(const xt::rarray<T>& x, const xt::rarray<T>& y) {
 
   Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
-
-  // If any dimension is size 0, return an empty logical array with common dim
-  if (Rcpp::is_true(Rcpp::any(dim == 0))) {
-    xt::rarray<rlogical> res(Rcpp::as<std::vector<std::size_t>>(dim));
-    return(res);
-  }
-
   const int& dims = dim.size();
   auto x_view = rray__increase_dims_view(x, dims);
   auto y_view = rray__increase_dims_view(y, dims);
@@ -87,13 +61,6 @@ template <typename T>
 xt::rarray<rlogical> rray__lesser_equal_impl(const xt::rarray<T>& x, const xt::rarray<T>& y) {
 
   Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
-
-  // If any dimension is size 0, return an empty logical array with common dim
-  if (Rcpp::is_true(Rcpp::any(dim == 0))) {
-    xt::rarray<rlogical> res(Rcpp::as<std::vector<std::size_t>>(dim));
-    return(res);
-  }
-
   const int& dims = dim.size();
   auto x_view = rray__increase_dims_view(x, dims);
   auto y_view = rray__increase_dims_view(y, dims);
@@ -112,13 +79,6 @@ template <typename T>
 xt::rarray<rlogical> rray__equal_impl(const xt::rarray<T>& x, const xt::rarray<T>& y) {
 
   Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
-
-  // If any dimension is size 0, return an empty logical array with common dim
-  if (Rcpp::is_true(Rcpp::any(dim == 0))) {
-    xt::rarray<rlogical> res(Rcpp::as<std::vector<std::size_t>>(dim));
-    return(res);
-  }
-
   const int& dims = dim.size();
   auto x_view = rray__increase_dims_view(x, dims);
   auto y_view = rray__increase_dims_view(y, dims);
@@ -137,13 +97,6 @@ template <typename T>
 xt::rarray<rlogical> rray__not_equal_impl(const xt::rarray<T>& x, const xt::rarray<T>& y) {
 
   Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
-
-  // If any dimension is size 0, return an empty logical array with common dim
-  if (Rcpp::is_true(Rcpp::any(dim == 0))) {
-    xt::rarray<rlogical> res(Rcpp::as<std::vector<std::size_t>>(dim));
-    return(res);
-  }
-
   const int& dims = dim.size();
   auto x_view = rray__increase_dims_view(x, dims);
   auto y_view = rray__increase_dims_view(y, dims);

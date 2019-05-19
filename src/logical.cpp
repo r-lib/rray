@@ -15,13 +15,6 @@ xt::rarray<rlogical> rray__logical_and_impl(const xt::rarray<rlogical>& x,
                                             const xt::rarray<rlogical>& y) {
 
   Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
-
-  // If any dimension is size 0, return an empty logical array with common dim
-  if (Rcpp::is_true(Rcpp::any(dim == 0))) {
-    xt::rarray<rlogical> res(Rcpp::as<std::vector<std::size_t>>(dim));
-    return(res);
-  }
-
   const int& dims = dim.size();
   auto x_view = rray__increase_dims_view(x, dims);
   auto y_view = rray__increase_dims_view(y, dims);
@@ -40,13 +33,6 @@ xt::rarray<rlogical> rray__logical_or_impl(const xt::rarray<rlogical>& x,
                                            const xt::rarray<rlogical>& y) {
 
   Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
-
-  // If any dimension is size 0, return an empty logical array with common dim
-  if (Rcpp::is_true(Rcpp::any(dim == 0))) {
-    xt::rarray<rlogical> res(Rcpp::as<std::vector<std::size_t>>(dim));
-    return(res);
-  }
-
   const int& dims = dim.size();
   auto x_view = rray__increase_dims_view(x, dims);
   auto y_view = rray__increase_dims_view(y, dims);
@@ -160,13 +146,6 @@ xt::rarray<T> rray__if_else_impl(const xt::rarray<rlogical>& condition,
   // Common dim
   Rcpp::IntegerVector tmp_dim = rray__dim2(rray__dim(SEXP(condition)), rray__dim(SEXP(true_)));
   Rcpp::IntegerVector dim = rray__dim2(tmp_dim, rray__dim(SEXP(false_)));
-
-  // If any dimension is size 0, return an empty T array with common dim
-  if (Rcpp::is_true(Rcpp::any(dim == 0))) {
-    xt::rarray<T> res(Rcpp::as<std::vector<std::size_t>>(dim));
-    return(res);
-  }
-
   const int& dims = dim.size();
   auto condition_view = rray__increase_dims_view(condition, dims);
   auto true_view = rray__increase_dims_view(true_, dims);
