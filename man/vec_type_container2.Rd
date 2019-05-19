@@ -2,16 +2,17 @@
 % Please edit documentation in R/container-type2.R
 \name{vec_type_container2}
 \alias{vec_type_container2}
+\alias{vec_type_container2.default}
 \alias{vec_type_container2.logical}
 \alias{vec_type_container2.integer}
 \alias{vec_type_container2.double}
 \alias{vec_type_container2.character}
-\alias{vec_type_container2.vctrs_rray_lgl}
-\alias{vec_type_container2.vctrs_rray_dbl}
-\alias{vec_type_container2.vctrs_rray_int}
+\alias{vec_type_container2.vctrs_rray}
 \title{Find the container type of a pair of vectors}
 \usage{
 vec_type_container2(x, y)
+
+\method{vec_type_container2}{default}(x, y)
 
 \method{vec_type_container2}{logical}(x, y)
 
@@ -21,11 +22,7 @@ vec_type_container2(x, y)
 
 \method{vec_type_container2}{character}(x, y)
 
-\method{vec_type_container2}{vctrs_rray_lgl}(x, y)
-
-\method{vec_type_container2}{vctrs_rray_dbl}(x, y)
-
-\method{vec_type_container2}{vctrs_rray_int}(x, y)
+\method{vec_type_container2}{vctrs_rray}(x, y)
 }
 \arguments{
 \item{x, y}{Vectors.}
@@ -35,4 +32,11 @@ vec_type_container2(x, y)
 Like \code{vec_type2()}, \code{vec_type_container2()} powers coercion but should
 usually not be called directly. Instead, \code{\link[=vec_type_container_common]{vec_type_container_common()}}
 should be used.
+}
+\examples{
+
+vec_type_container2(1, 2L)
+
+vec_type_container2(1, rray(2L))
+
 }
