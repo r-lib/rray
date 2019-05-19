@@ -2,15 +2,20 @@
 % Please edit documentation in R/inner-cast.R
 \name{vec_cast_inner}
 \alias{vec_cast_inner}
+\alias{vec_cast_inner.default}
 \alias{vec_cast_inner.logical}
 \alias{vec_cast_inner.integer}
 \alias{vec_cast_inner.double}
+\alias{vec_cast_inner.character}
 \alias{vec_cast_inner.vctrs_rray_lgl}
 \alias{vec_cast_inner.vctrs_rray_dbl}
 \alias{vec_cast_inner.vctrs_rray_int}
-\title{Cast to a inner type}
+\alias{vec_cast_inner_common}
+\title{Cast to an inner type}
 \usage{
 vec_cast_inner(x, to)
+
+\method{vec_cast_inner}{default}(x, to)
 
 \method{vec_cast_inner}{logical}(x, to)
 
@@ -18,38 +23,57 @@ vec_cast_inner(x, to)
 
 \method{vec_cast_inner}{double}(x, to)
 
+\method{vec_cast_inner}{character}(x, to)
+
 \method{vec_cast_inner}{vctrs_rray_lgl}(x, to)
 
 \method{vec_cast_inner}{vctrs_rray_dbl}(x, to)
 
 \method{vec_cast_inner}{vctrs_rray_int}(x, to)
+
+vec_cast_inner_common(..., .to = NULL)
 }
 \arguments{
 \item{x}{Vector to cast.}
 
 \item{to}{Object with the inner type to cast to.}
+
+\item{...}{Vectors to cast to a common inner type.}
+
+\item{.to}{If not \code{NULL}, the inner type to force all objects in \code{...}
+to be cast to.}
 }
 \description{
-\code{vec_cast_inner()} casts \code{x} to the \code{typeof()} \code{to}. It makes no guarantees
-about the attributes of \code{x} (with the exception of the \code{dim}), only that
-the inner type will be the same after the cast. This function is usually
-called internally by other functions that do the restoration of attributes.
+\code{vec_cast_inner()} casts \code{x} to the "inner" type of \code{to}, maintaining
+the size and shape of \code{x}.
+
+\code{vec_cast_inner_common()} casts its input to a common inner type, maintaining
+the size and shape of each input.
+}
+\details{
+\code{vec_cast_inner()} makes no guarantees that the attributes of \code{x} are
+retained (with the exception of the \code{dim}), only that the inner type will
+be the same after the cast. This function is usually called internally to
+force a common inner type, perform a manipulation, and then other
+functionality restores the attributes and container type.
 
 As opposed to \code{vec_cast()}, the \emph{shape} of \code{x} is maintained.
 }
 \examples{
 
-# Upcasting to an rray. Still a logical
+# Casting from logical to double.
+# Not worrying about the fact that `to`
+# is an rray.
 vec_cast_inner(TRUE, rray(1))
 
-# Downcasting to a double, no longer an rray
+# Casting from a double to a logical
+# Note that the rray attributes are lost.
+# This is expected as the only thing
+# `vec_cast_inner()` cares about is
+# the internal type
 vec_cast_inner(rray(1), TRUE)
 
 # Shape of `x` is kept
-vec_cast_inner(matrix(1:5), rray(1))
-
-# Dim names of `x` are kept
-x <- rray(1:2, dim_names = list(c("r1", "r2")))
-vec_cast_inner(x, 1)
+vec_cast_inner(matrix(c(TRUE, FALSE)), rray(1))
 
 }

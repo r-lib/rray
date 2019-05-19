@@ -223,6 +223,6 @@ vec_cast_container.vctrs_rray.vctrs_rray <- function(x, to) {
 #' @export
 vec_cast_container_common <- function(..., .to = NULL) {
   args <- list2(...)
-  container <- vec_type_container_common(..., .ptype = .to)
+  container <- vec_type_container_common(!!!args, .ptype = .to)
   map(args, vec_cast_container, to = container)
 }

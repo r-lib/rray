@@ -1,31 +1,48 @@
-#' Cast to a inner type
+#' Cast to an inner type
 #'
 #' @description
 #'
-#' `vec_cast_inner()` casts `x` to the `typeof()` `to`. It makes no guarantees
-#' about the attributes of `x` (with the exception of the `dim`), only that
-#' the inner type will be the same after the cast. This function is usually
-#' called internally by other functions that do the restoration of attributes.
+#' `vec_cast_inner()` casts `x` to the "inner" type of `to`, maintaining
+#' the size and shape of `x`.
+#'
+#' `vec_cast_inner_common()` casts its input to a common inner type, maintaining
+#' the size and shape of each input.
+#'
+#' @details
+#'
+#' `vec_cast_inner()` makes no guarantees that the attributes of `x` are
+#' retained (with the exception of the `dim`), only that the inner type will
+#' be the same after the cast. This function is usually called internally to
+#' force a common inner type, perform a manipulation, and then other
+#' functionality restores the attributes and container type.
 #'
 #' As opposed to `vec_cast()`, the _shape_ of `x` is maintained.
 #'
 #' @param x Vector to cast.
+#'
 #' @param to Object with the inner type to cast to.
+#'
+#' @param ... Vectors to cast to a common inner type.
+#'
+#' @param .to If not `NULL`, the inner type to force all objects in `...`
+#' to be cast to.
 #'
 #' @examples
 #'
-#' # Upcasting to an rray. Still a logical
+#' # Casting from logical to double.
+#' # Not worrying about the fact that `to`
+#' # is an rray.
 #' vec_cast_inner(TRUE, rray(1))
 #'
-#' # Downcasting to a double, no longer an rray
+#' # Casting from a double to a logical
+#' # Note that the rray attributes are lost.
+#' # This is expected as the only thing
+#' # `vec_cast_inner()` cares about is
+#' # the internal type
 #' vec_cast_inner(rray(1), TRUE)
 #'
 #' # Shape of `x` is kept
-#' vec_cast_inner(matrix(1:5), rray(1))
-#'
-#' # Dim names of `x` are kept
-#' x <- rray(1:2, dim_names = list(c("r1", "r2")))
-#' vec_cast_inner(x, 1)
+#' vec_cast_inner(matrix(c(TRUE, FALSE)), rray(1))
 #'
 #' @export
 vec_cast_inner <- function(x, to) {
@@ -35,6 +52,16 @@ vec_cast_inner <- function(x, to) {
   }
 
   UseMethod("vec_cast_inner", to)
+}
+
+# ------------------------------------------------------------------------------
+
+#' @export
+#' @rdname vec_cast_inner
+#' @export vec_cast_inner.default
+#' @method vec_cast_inner default
+vec_cast_inner.default <- function(x, to) {
+  stop_incompatible_cast(x, to)
 }
 
 # ------------------------------------------------------------------------------
@@ -215,6 +242,64 @@ vec_cast_inner.double.vctrs_rray_lgl <- function(x, to) {
 
 #' @export
 #' @rdname vec_cast_inner
+#' @export vec_cast_inner.character
+#' @method vec_cast_inner character
+vec_cast_inner.character <- function(x, to) {
+  UseMethod("vec_cast_inner.character")
+}
+
+#' @export
+#' @method vec_cast_inner.character default
+vec_cast_inner.character.default <- function(x, to) {
+  stop_incompatible_cast(x, to)
+}
+
+#' @export
+#' @method vec_cast_inner.character logical
+vec_cast_inner.character.logical <- function(x, to) {
+  vec_inner_caster(x, character())
+}
+
+#' @export
+#' @method vec_cast_inner.character double
+vec_cast_inner.character.double <- function(x, to) {
+  vec_inner_caster(x, character())
+}
+
+#' @export
+#' @method vec_cast_inner.character integer
+vec_cast_inner.character.integer <- function(x, to) {
+  vec_inner_caster(x, character())
+}
+
+#' @export
+#' @method vec_cast_inner.character character
+vec_cast_inner.character.character <- function(x, to) {
+  x
+}
+
+#' @export
+#' @method vec_cast_inner.character vctrs_rray_int
+vec_cast_inner.character.vctrs_rray_int <- function(x, to) {
+  vec_inner_caster(vec_data_fast(x), character())
+}
+
+#' @export
+#' @method vec_cast_inner.character vctrs_rray_dbl
+vec_cast_inner.character.vctrs_rray_dbl <- function(x, to) {
+  vec_inner_caster(vec_data_fast(x), character())
+}
+
+#' @export
+#' @method vec_cast_inner.character vctrs_rray_lgl
+vec_cast_inner.character.vctrs_rray_lgl <- function(x, to) {
+  vec_inner_caster(vec_data_fast(x), character())
+}
+
+# ------------------------------------------------------------------------------
+
+#' @export
+#' @rdname vec_cast_inner
 #' @export vec_cast_inner.vctrs_rray_lgl
 #' @method vec_cast_inner vctrs_rray_lgl
 vec_cast_inner.vctrs_rray_lgl <- function(x, to) {
@@ -387,9 +472,11 @@ vec_cast_inner.vctrs_rray_int.vctrs_rray_lgl <- function(x, to) {
 
 # ------------------------------------------------------------------------------
 
+#' @rdname vec_cast_inner
+#' @export
 vec_cast_inner_common <- function(..., .to = NULL) {
   args <- list2(...)
-  type <- vec_type_inner_common(..., .ptype = .to)
+  type <- vec_type_inner_common(!!!args, .ptype = .to)
   map(args, vec_cast_inner, to = type)
 }
 

@@ -96,3 +96,23 @@ test_that("`x` retains dim names", {
   expect_equal(vec_cast_container(x, rray(TRUE)), rray(1, dim_names = list("foo")))
 })
 
+
+# ------------------------------------------------------------------------------
+# Common container cast
+
+test_that("common container cast can be found", {
+  expect_equal(vec_cast_container_common(1, 1L), list(1, 1L))
+  expect_equal(vec_cast_container_common(1, rray(1L)), list(rray(1), rray(1L)))
+})
+
+test_that("common container cast with 1 input", {
+  expect_equal(vec_cast_container_common(1), list(1))
+})
+
+test_that("common container cast with no input", {
+  expect_equal(vec_cast_container_common(), list())
+})
+
+test_that("can specify ptype", {
+  expect_equal(vec_cast_container_common(1, .to = rray(1L)), list(rray(1)))
+})
