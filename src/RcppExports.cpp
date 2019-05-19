@@ -977,23 +977,23 @@ BEGIN_RCPP
 END_RCPP
 }
 // rray__max
-Rcpp::RObject rray__max(Rcpp::RObject x, Rcpp::RObject axes);
+Rcpp::RObject rray__max(Rcpp::RObject x, Rcpp::Nullable<Rcpp::IntegerVector> axes);
 RcppExport SEXP _rray_rray__max(SEXP xSEXP, SEXP axesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type axes(axesSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::IntegerVector> >::type axes(axesSEXP);
     rcpp_result_gen = Rcpp::wrap(rray__max(x, axes));
     return rcpp_result_gen;
 END_RCPP
 }
 // rray__min
-Rcpp::RObject rray__min(Rcpp::RObject x, Rcpp::RObject axes);
+Rcpp::RObject rray__min(Rcpp::RObject x, Rcpp::Nullable<Rcpp::IntegerVector> axes);
 RcppExport SEXP _rray_rray__min(SEXP xSEXP, SEXP axesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type axes(axesSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::IntegerVector> >::type axes(axesSEXP);
     rcpp_result_gen = Rcpp::wrap(rray__min(x, axes));
     return rcpp_result_gen;
 END_RCPP
