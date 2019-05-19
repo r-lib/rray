@@ -269,15 +269,11 @@ rray_math_trinary_base <- function(f, x, y, z) {
   # done before the inner cast
   new_dim_names <- rray_dim_names_common(x, y, z)
 
-  to <- vec_type_container_common(x, y, z)
+  args <- vec_cast_inner_common(x, y, z)
 
-  x <- vec_cast_inner(x, to)
-  y <- vec_cast_inner(y, to)
-  z <- vec_cast_inner(z, to)
-
-  res <- f(x, y, z)
+  res <- f(args[[1]], args[[2]], args[[3]])
 
   res <- set_full_dim_names(res, new_dim_names)
 
-  vec_cast_container(res, to)
+  vec_cast_container(res, vec_type_container_common(x, y, z))
 }

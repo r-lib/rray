@@ -73,12 +73,12 @@ rray_bind <- function(..., axis) {
   # outer names from `...` are attached
   lst_of_dim_names <- map(args, rray_dim_names)
 
-  proxy <- vec_type_container_common(!!!args)
-  args <- map(args, vec_cast_inner, to = proxy)
+  proxy <- vec_type_inner_common(!!!args)
+  args_cast <- map(args, vec_cast_inner, to = proxy)
 
-  res <- rray__bind(proxy, args, as_cpp_idx(axis), lst_of_dim_names)
+  res <- rray__bind(proxy, args_cast, as_cpp_idx(axis), lst_of_dim_names)
 
-  vec_cast_container(res, proxy)
+  vec_cast_container(res, vec_type_container_common(!!!args))
 }
 
 #' @rdname rray_bind

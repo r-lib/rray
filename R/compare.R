@@ -211,5 +211,5 @@ cast_compare <- function(f, x, y) {
 
   res <- set_full_dim_names(res, rray_dim_names_common(x, y))
 
-  vec_cast_container(res, vec_type2(x, y))
+  vec_cast_container(res, vec_type_container2(x, y))
 }
