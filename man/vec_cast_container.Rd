@@ -28,6 +28,11 @@ vec_cast_container_common(..., .to = NULL)
 \item{x}{Vector to cast.}
 
 \item{to}{Container type to cast to.}
+
+\item{...}{Vectors to cast to a common container type.}
+
+\item{.to}{If not \code{NULL}, overrides the common container
+type to cast \code{...} to.}
 }
 \description{
 \code{vec_cast_container()} casts \code{x} to the "container" type of \code{to}. This should

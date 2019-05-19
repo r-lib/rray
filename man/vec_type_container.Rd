@@ -10,7 +10,11 @@ vec_type_container(x)
 vec_type_container_common(..., .ptype = NULL)
 }
 \arguments{
-\item{x}{Vector to cast.}
+\item{x}{Vector to compute the container type for.}
+
+\item{...}{Vectors to compute the common container type for.}
+
+\item{.ptype}{If not \code{NULL}, overrides the common container type of \code{...}.}
 }
 \description{
 \code{vec_type_container()} finds the container type of a single vector.

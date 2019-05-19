@@ -32,7 +32,11 @@
 #' is an error, `vec_type_container_common(character(), numeric())`
 #' returns `logical()` because they are both base R containers.
 #'
-#' @param x Vector to cast.
+#' @param x Vector to compute the container type for.
+#'
+#' @param ... Vectors to compute the common container type for.
+#'
+#' @param .ptype If not `NULL`, overrides the common container type of `...`.
 #'
 #' @examples
 #' # The container of base R atomics is just logical()

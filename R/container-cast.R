@@ -22,7 +22,13 @@
 #' When casting between base R types, this simply returns `x`.
 #'
 #' @param x Vector to cast.
+#'
 #' @param to Container type to cast to.
+#'
+#' @param ... Vectors to cast to a common container type.
+#'
+#' @param .to If not `NULL`, overrides the common container
+#' type to cast `...` to.
 #'
 #' @examples
 #'
