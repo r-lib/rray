@@ -43,7 +43,7 @@ test_that("using logicals result in integers", {
 
 # TODO Is this right?
 test_that("`NULL` arithmetic is an error", {
-  expect_error(rray(1L) + NULL, "not permitted")
+  expect_error(rray(1L) + NULL, class = "vctrs_error_incompatible_op")
 })
 
 # TODO Is this right?
@@ -140,7 +140,7 @@ test_that("using logicals result in integers", {
 
 # TODO Is this right?
 test_that("`NULL` arithmetic is an error", {
-  expect_error(rray(1L) - NULL, "not permitted")
+  expect_error(rray(1L) - NULL, class = "vctrs_error_incompatible_op")
 })
 
 # TODO Is this right?
@@ -238,7 +238,7 @@ test_that("using logicals still results in doubles", {
 
 # TODO Is this right?
 test_that("`NULL` arithmetic is an error", {
-  expect_error(rray(1L) / NULL, "not permitted")
+  expect_error(rray(1L) / NULL, class = "vctrs_error_incompatible_op")
 })
 
 # TODO Is this right?
@@ -338,7 +338,7 @@ test_that("using logicals result in integers", {
 
 # TODO Is this right?
 test_that("`NULL` arithmetic is an error", {
-  expect_error(rray(1L) * NULL, "not permitted")
+  expect_error(rray(1L) * NULL, class = "vctrs_error_incompatible_op")
 })
 
 # TODO Is this right?
@@ -574,7 +574,7 @@ test_that("can opposite a logical", {
 context("test-arith-extra")
 
 test_that("Fallthrough operation throws unsupported operation error", {
-  expect_error(rray(1) + "a", "is not permitted")
+  expect_error(rray(1) + "a", class = "vctrs_error_incompatible_op")
 })
 
 # ------------------------------------------------------------------------------

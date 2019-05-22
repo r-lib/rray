@@ -135,6 +135,6 @@ test_that("from NULL (handled by vctrs)", {
 })
 
 test_that("from unknown types", {
-  expect_error(vec_cast("chr", rray(1)), "Can't cast")
-  expect_error(vec_cast(rray(1), "chr"), "Can't cast")
+  expect_error(vec_cast("chr", rray(1)), class = "vctrs_error_incompatible_cast")
+  expect_error(vec_cast(rray(1), "chr"), class = "vctrs_error_incompatible_cast")
 })

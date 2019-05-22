@@ -28,7 +28,7 @@ test_that("expect that we can't compare with classed base r", {
 })
 
 test_that("incompatible types are caught", {
-  expect_error(rray_greater(rray(1), "hi"), "No common")
+  expect_error(rray_greater(rray(1), "hi"), class = "vctrs_error_incompatible_type")
 })
 
 test_that("comparison with NULL return empty common dimension", {
@@ -100,7 +100,7 @@ test_that("expect that we can't compare with classed base r", {
 })
 
 test_that("incompatible types are caught", {
-  expect_error(rray_greater_equal(rray(1), "hi"), "No common")
+  expect_error(rray_greater_equal(rray(1), "hi"), class = "vctrs_error_incompatible_type")
 })
 
 test_that("comparison with NULL return empty common dimension", {
@@ -165,7 +165,7 @@ test_that("expect that we can't compare with classed base r", {
 })
 
 test_that("incompatible types are caught", {
-  expect_error(rray_lesser(rray(1), "hi"), "No common")
+  expect_error(rray_lesser(rray(1), "hi"), class = "vctrs_error_incompatible_type")
 })
 
 test_that("comparison with NULL return empty common dimension", {
@@ -231,7 +231,7 @@ test_that("expect that we can't compare with classed base r", {
 })
 
 test_that("incompatible types are caught", {
-  expect_error(rray_lesser_equal(rray(1), "hi"), "No common")
+  expect_error(rray_lesser_equal(rray(1), "hi"), class = "vctrs_error_incompatible_type")
 })
 
 test_that("comparison with NULL return empty common dimension", {
@@ -296,7 +296,7 @@ test_that("expect that we can't compare with classed base r", {
 })
 
 test_that("incompatible types are caught", {
-  expect_error(rray_equal(rray(1), "hi"), "No common")
+  expect_error(rray_equal(rray(1), "hi"), class = "vctrs_error_incompatible_type")
 })
 
 test_that("comparison with NULL return empty common dimension", {
@@ -363,7 +363,7 @@ test_that("expect that we can't compare with classed base r", {
 })
 
 test_that("incompatible types are caught", {
-  expect_error(rray_not_equal(rray(1), "hi"), "No common")
+  expect_error(rray_not_equal(rray(1), "hi"), class = "vctrs_error_incompatible_type")
 })
 
 test_that("comparison with NULL return empty common dimension", {

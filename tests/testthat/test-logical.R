@@ -70,7 +70,7 @@ test_that("& errors gracefully on bad broadcast", {
 
 test_that("& fails when input that can't be cast to logical", {
   x <- rray(1:2)
-  expect_error(x & 1, "<integer> to <logical>")
+  expect_error(x & 1, "<integer> to <logical>", class = "vctrs_error_cast_lossy")
 })
 
 test_that("& fails with non-broadcastable 0-length input", {
@@ -159,7 +159,7 @@ test_that("| errors gracefully on bad broadcast", {
 
 test_that("| fails when input that can't be cast to logical", {
   x <- rray(1:2)
-  expect_error(x | 1, "<integer> to <logical>")
+  expect_error(x | 1, "<integer> to <logical>", class = "vctrs_error_cast_lossy")
 })
 
 test_that("| fails with non-broadcastable 0-length input", {
@@ -208,7 +208,7 @@ test_that("! works with 0-length input", {
 
 test_that("! fails when input that can't be cast to logical", {
   x <- rray(1:2)
-  expect_error(!x, "<integer> to <logical>")
+  expect_error(!x, "<integer> to <logical>", class = "vctrs_error_cast_lossy")
 })
 
 # ------------------------------------------------------------------------------
@@ -237,7 +237,7 @@ test_that("works over multiple axes", {
 
   expect_equal(rray_any(x, c(1, 3)), rray(c(TRUE, TRUE), c(1, 2, 1)))
 
-  expect_error(rray_any(x, c(2, 1)), "Reducing axes should be sorted")
+  expect_error(rray_any(x, c(2, 1)), "Reducing axes should be sorted", class = "std::runtime_error")
 })
 
 test_that("works with base R", {
@@ -278,7 +278,7 @@ test_that("reducing over multiple axes works consistently", {
 })
 
 test_that("fails when can't cast to logical", {
-  expect_error(rray_any(1:5), "<integer> to <logical>")
+  expect_error(rray_any(1:5), "<integer> to <logical>", class = "vctrs_error_cast_lossy")
 })
 
 # ------------------------------------------------------------------------------
@@ -307,7 +307,7 @@ test_that("works over multiple axes", {
 
   expect_equal(rray_all(x, c(1, 3)), rray(c(FALSE, FALSE), c(1, 2, 1)))
 
-  expect_error(rray_all(x, c(2, 1)), "Reducing axes should be sorted")
+  expect_error(rray_all(x, c(2, 1)), "Reducing axes should be sorted", class = "std::runtime_error")
 })
 
 test_that("works with base R", {
@@ -348,7 +348,7 @@ test_that("reducing over multiple axes works consistently", {
 })
 
 test_that("fails when can't cast to logical", {
-  expect_error(rray_all(1:5), "<integer> to <logical>")
+  expect_error(rray_all(1:5), "<integer> to <logical>", class = "vctrs_error_cast_lossy")
 })
 
 # ------------------------------------------------------------------------------
@@ -420,9 +420,9 @@ test_that("result is common type of `true` and `false` even if one isn't used", 
 })
 
 test_that("`true` and `false` must have a common type", {
-  expect_error(rray_if_else(1, factor(1), 2.5), "No common type")
+  expect_error(rray_if_else(1, factor(1), 2.5), class = "vctrs_error_incompatible_type")
 })
 
 test_that("`condition` must be castable to a logical", {
-  expect_error(rray_if_else(1.5, 1, 2), "<double> to <logical>")
+  expect_error(rray_if_else(1.5, 1, 2), "<double> to <logical>", class = "vctrs_error_cast_lossy")
 })

@@ -31,7 +31,7 @@ test_that("can coerce `value` as needed", {
     "vctrs_rray_dbl"
   )
 
-  expect_error(rray_full_like(rray(1), "foo"), "Lossy cast")
+  expect_error(rray_full_like(rray(1), "foo"), class = "vctrs_error_cast_lossy")
 })
 
 test_that("character `value` is supported", {
