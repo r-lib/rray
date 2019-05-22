@@ -3,6 +3,7 @@
 
 #include <xtensor/xstrided_view.hpp>
 #include <xtensor/xarray.hpp>
+#include <xtensor/xnoalias.hpp>
 
 // -----------------------------------------------------------------------------
 
@@ -287,7 +288,8 @@ Rcpp::RObject rray__bind_impl(const Rcpp::List& args,
     xt::rarray<T> arg_i = args[i];
     auto arg_i_view = rray__increase_dims_view(arg_i, dims);
 
-    xt::strided_view(xt_out, sv) = arg_i_view;
+    auto xt_view = xt::strided_view(xt_out, sv);
+    xt::noalias(xt_view) = arg_i_view;
   }
 
   Rcpp::RObject out = SEXP(xt_out);
