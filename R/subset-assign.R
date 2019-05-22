@@ -22,7 +22,5 @@ rray_subset_assign_impl <- function(x, ..., value) {
 
   out <- rray__subset_assign(x, indexer, value)
 
-  out <- set_full_dim_names(out, rray_dim_names(x))
-
   vec_cast_container(out, x)
 }

@@ -22,13 +22,13 @@ bool any_zero_length(Rcpp::List x) {
 }
 
 template <typename T>
-xt::rarray<T> rray__subset_assign_impl(const xt::rarray<T>& x,
+Rcpp::RObject rray__subset_assign_impl(const xt::rarray<T>& x,
                                        Rcpp::List indexer,
                                        Rcpp::RObject value_) {
 
   // Catch this early on
   if (any_zero_length(indexer)) {
-    return x;
+    return SEXP(x);
   }
 
   xt::rarray<T> value(value_);
@@ -41,20 +41,23 @@ xt::rarray<T> rray__subset_assign_impl(const xt::rarray<T>& x,
   // `x` comes in as a `const&` that we can't modify directly
   // (and we don't want to change this. We will have to copy `x` at
   // some point for the assignment. It makes sense to do it here.)
-  xt::rarray<T> out = x;
+  xt::rarray<T> xt_out = x;
 
   if (is_stridable(indexer)) {
     xt::xstrided_slice_vector sv = build_strided_slice_vector(indexer);
-    auto x_subset_view = xt::strided_view(out, sv);
-    rray__validate_broadcastable_to(value_view, x_subset_view);
-    x_subset_view = value_view;
+    auto xt_out_subset_view = xt::strided_view(xt_out, sv);
+    rray__validate_broadcastable_to(value_view, xt_out_subset_view);
+    xt_out_subset_view = value_view;
   }
   else {
     xt::xdynamic_slice_vector sv = build_dynamic_slice_vector(indexer);
-    auto x_subset_view = xt::dynamic_view(out, sv);
-    rray__validate_broadcastable_to(value_view, x_subset_view);
-    x_subset_view = value_view;
+    auto xt_out_subset_view = xt::dynamic_view(xt_out, sv);
+    rray__validate_broadcastable_to(value_view, xt_out_subset_view);
+    xt_out_subset_view = value_view;
   }
+
+  Rcpp::RObject out = SEXP(xt_out);
+  out.attr("dimnames") = rray__dim_names(SEXP(x));
 
   return out;
 }
