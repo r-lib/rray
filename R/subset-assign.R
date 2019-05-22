@@ -1,16 +1,22 @@
 #' @rdname rray_subset
 #' @export
 `rray_subset<-` <- function(x, ..., value) {
-  rray_subset_assign_impl(x, ..., value = value)
+  rray_subset_assign(x, ..., value = value)
 }
 
 #' @rdname rray_subset
 #' @export
 `[<-.vctrs_rray` <- function(x, ..., value) {
-  rray_subset_assign_impl(x, ..., value = value)
+  rray_subset_assign(x, ..., value = value)
 }
 
-rray_subset_assign_impl <- function(x, ..., value) {
+# Internally, using `rray_subset_assign()` rather than `rray_subset<-()` results
+# in only 1 copy rather than 2 when on R < 3.6.0 due to the way the internal
+# R assignment code works
+
+#' @rdname rray_subset
+#' @export
+rray_subset_assign <- function(x, ..., value) {
   indexer <- rray_as_index2(x, ...)
 
   value <- vec_cast_inner(value, x)

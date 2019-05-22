@@ -3,6 +3,7 @@
 \name{rray_subset<-}
 \alias{rray_subset<-}
 \alias{[<-.vctrs_rray}
+\alias{rray_subset_assign}
 \alias{rray_subset}
 \alias{[.vctrs_rray}
 \title{Get or set dimensions of an array}
@@ -10,6 +11,8 @@
 rray_subset(x, ...) <- value
 
 \method{[}{vctrs_rray}(x, ...) <- value
+
+rray_subset_assign(x, ..., value)
 
 rray_subset(x, ...)
 
