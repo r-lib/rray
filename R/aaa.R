@@ -79,8 +79,6 @@ NULL
 #' @importFrom rlang names2
 #' @importFrom rlang new_list
 #' @importFrom rlang is_vector
-#' @importFrom rlang ns_env
-#' @importFrom rlang env_bind
 NULL
 
 #' @importFrom utils head tail
