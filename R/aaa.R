@@ -88,8 +88,6 @@ NULL
 #' @importFrom Rcpp sourceCpp
 NULL
 
-utils::globalVariables(c("at", "arg"))
-
 # Holder for empty objects so we don't have to repeatedly spend time creating them
 shared <- rlang::new_environment()
 
