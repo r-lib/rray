@@ -44,7 +44,7 @@ as_array.logical <- as_array.double
 
 #' @export
 as_array.vctrs_rray <- function(x, ...) {
-  vec_data_fast(x)
+  vec_data(x)
 }
 
 #' @export
@@ -161,7 +161,7 @@ as_rray.vctrs_rray <- function(x, ...) {
 #' @export
 as_rray.double <- function(x, ...) {
   new_rray(
-    .data = unname(vec_data_fast(x)),
+    .data = unname(vec_data(x)),
     size = vec_size(x),
     shape = rray_shape(x),
     dim_names = rray_dim_names(x)

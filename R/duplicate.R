@@ -136,7 +136,7 @@ duplicated.vctrs_rray <- function(x,
                                   ...) {
 
   dups <- duplicated(
-    vec_data_fast(x),
+    vec_data(x),
     incomparables = incomparables,
     MARGIN = MARGIN,
     fromLast = fromLast,
@@ -158,7 +158,7 @@ anyDuplicated.vctrs_rray <- function(x,
                                      ...) {
 
   anyDuplicated(
-    vec_data_fast(x),
+    vec_data(x),
     incomparables = incomparables,
     MARGIN = MARGIN,
     fromLast = fromLast,

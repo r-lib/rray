@@ -103,7 +103,7 @@ vec_cast_container.logical.integer <- function(x, to) {
 #' @export
 #' @method vec_cast_container.logical vctrs_rray
 vec_cast_container.logical.vctrs_rray <- function(x, to) {
-  vec_data_fast(x)
+  vec_data(x)
 }
 
 # ------------------------------------------------------------------------------
@@ -143,7 +143,7 @@ vec_cast_container.double.integer <- function(x, to) {
 #' @export
 #' @method vec_cast_container.double vctrs_rray
 vec_cast_container.double.vctrs_rray <- function(x, to) {
-  vec_data_fast(x)
+  vec_data(x)
 }
 
 # ------------------------------------------------------------------------------
@@ -183,7 +183,7 @@ vec_cast_container.integer.integer <- function(x, to) {
 #' @export
 #' @method vec_cast_container.integer vctrs_rray
 vec_cast_container.integer.vctrs_rray <- function(x, to) {
-  vec_data_fast(x)
+  vec_data(x)
 }
 
 # ------------------------------------------------------------------------------

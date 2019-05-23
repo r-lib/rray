@@ -119,7 +119,7 @@ rray_integer_division_vctrs_wrapper <- function(x, y) {
   dim <- rray_dim_common(x, y)
   x <- rray_broadcast(x, dim)
   y <- rray_broadcast(y, dim)
-  res <- vec_data_fast(x) %/% vec_data_fast(y)
+  res <- vec_data(x) %/% vec_data(y)
   res <- set_full_dim_names(res, rray_dim_names2(x, y))
   vec_cast_container(res, vec_type2(x, y))
 }

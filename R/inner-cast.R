@@ -107,13 +107,13 @@ vec_cast_inner.logical.character <- function(x, to) {
 #' @export
 #' @method vec_cast_inner.logical vctrs_rray_int
 vec_cast_inner.logical.vctrs_rray_int <- function(x, to) {
-  vec_inner_caster(vec_data_fast(x), logical())
+  vec_inner_caster(vec_data(x), logical())
 }
 
 #' @export
 #' @method vec_cast_inner.logical vctrs_rray_dbl
 vec_cast_inner.logical.vctrs_rray_dbl <- function(x, to) {
-  vec_inner_caster(vec_data_fast(x), logical())
+  vec_inner_caster(vec_data(x), logical())
 }
 
 #' @export
@@ -171,13 +171,13 @@ vec_cast_inner.integer.vctrs_rray_int <- function(x, to) {
 #' @export
 #' @method vec_cast_inner.integer vctrs_rray_dbl
 vec_cast_inner.integer.vctrs_rray_dbl <- function(x, to) {
-  vec_inner_caster(vec_data_fast(x), integer())
+  vec_inner_caster(vec_data(x), integer())
 }
 
 #' @export
 #' @method vec_cast_inner.integer vctrs_rray_lgl
 vec_cast_inner.integer.vctrs_rray_lgl <- function(x, to) {
-  vec_inner_caster(vec_data_fast(x), integer())
+  vec_inner_caster(vec_data(x), integer())
 }
 
 # ------------------------------------------------------------------------------
@@ -223,7 +223,7 @@ vec_cast_inner.double.character <- function(x, to) {
 #' @export
 #' @method vec_cast_inner.double vctrs_rray_int
 vec_cast_inner.double.vctrs_rray_int <- function(x, to) {
-  vec_inner_caster(vec_data_fast(x), double())
+  vec_inner_caster(vec_data(x), double())
 }
 
 #' @export
@@ -235,7 +235,7 @@ vec_cast_inner.double.vctrs_rray_dbl <- function(x, to) {
 #' @export
 #' @method vec_cast_inner.double vctrs_rray_lgl
 vec_cast_inner.double.vctrs_rray_lgl <- function(x, to) {
-  vec_inner_caster(vec_data_fast(x), double())
+  vec_inner_caster(vec_data(x), double())
 }
 
 # ------------------------------------------------------------------------------
@@ -281,19 +281,19 @@ vec_cast_inner.character.character <- function(x, to) {
 #' @export
 #' @method vec_cast_inner.character vctrs_rray_int
 vec_cast_inner.character.vctrs_rray_int <- function(x, to) {
-  vec_inner_caster(vec_data_fast(x), character())
+  vec_inner_caster(vec_data(x), character())
 }
 
 #' @export
 #' @method vec_cast_inner.character vctrs_rray_dbl
 vec_cast_inner.character.vctrs_rray_dbl <- function(x, to) {
-  vec_inner_caster(vec_data_fast(x), character())
+  vec_inner_caster(vec_data(x), character())
 }
 
 #' @export
 #' @method vec_cast_inner.character vctrs_rray_lgl
 vec_cast_inner.character.vctrs_rray_lgl <- function(x, to) {
-  vec_inner_caster(vec_data_fast(x), character())
+  vec_inner_caster(vec_data(x), character())
 }
 
 # ------------------------------------------------------------------------------
@@ -339,13 +339,13 @@ vec_cast_inner.vctrs_rray_lgl.character <- function(x, to) {
 #' @export
 #' @method vec_cast_inner.vctrs_rray_lgl vctrs_rray_int
 vec_cast_inner.vctrs_rray_lgl.vctrs_rray_int <- function(x, to) {
-  vec_inner_caster(vec_data_fast(x), logical())
+  vec_inner_caster(vec_data(x), logical())
 }
 
 #' @export
 #' @method vec_cast_inner.vctrs_rray_lgl vctrs_rray_dbl
 vec_cast_inner.vctrs_rray_lgl.vctrs_rray_dbl <- function(x, to) {
-  vec_inner_caster(vec_data_fast(x), logical())
+  vec_inner_caster(vec_data(x), logical())
 }
 
 #' @export
@@ -397,7 +397,7 @@ vec_cast_inner.vctrs_rray_dbl.character <- function(x, to) {
 #' @export
 #' @method vec_cast_inner.vctrs_rray_dbl vctrs_rray_int
 vec_cast_inner.vctrs_rray_dbl.vctrs_rray_int <- function(x, to) {
-  vec_inner_caster(vec_data_fast(x), double())
+  vec_inner_caster(vec_data(x), double())
 }
 
 #' @export
@@ -409,7 +409,7 @@ vec_cast_inner.vctrs_rray_dbl.vctrs_rray_dbl <- function(x, to) {
 #' @export
 #' @method vec_cast_inner.vctrs_rray_dbl vctrs_rray_lgl
 vec_cast_inner.vctrs_rray_dbl.vctrs_rray_lgl <- function(x, to) {
-  vec_inner_caster(vec_data_fast(x), double())
+  vec_inner_caster(vec_data(x), double())
 }
 
 # ------------------------------------------------------------------------------
@@ -461,13 +461,13 @@ vec_cast_inner.vctrs_rray_int.vctrs_rray_int <- function(x, to) {
 #' @export
 #' @method vec_cast_inner.vctrs_rray_int vctrs_rray_dbl
 vec_cast_inner.vctrs_rray_int.vctrs_rray_dbl <- function(x, to) {
-  vec_inner_caster(vec_data_fast(x), integer())
+  vec_inner_caster(vec_data(x), integer())
 }
 
 #' @export
 #' @method vec_cast_inner.vctrs_rray_int vctrs_rray_lgl
 vec_cast_inner.vctrs_rray_int.vctrs_rray_lgl <- function(x, to) {
-  vec_inner_caster(vec_data_fast(x), integer())
+  vec_inner_caster(vec_data(x), integer())
 }
 
 # ------------------------------------------------------------------------------

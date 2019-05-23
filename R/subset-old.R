@@ -164,7 +164,7 @@ rray_yank <- function(x, i) {
 rray_yank_impl <- function(x, i) {
   i <- maybe_missing(i, TRUE)
 
-  out <- vec_data_fast(x)
+  out <- vec_data(x)
 
   indexer <- as_yank_indexer(i, x)
 
@@ -193,7 +193,7 @@ rray_yank_assign_impl <- function(x, i, value) {
   value <- vec_cast(value, x_yank)
   value <- rray_broadcast(value, rray_dim(x_yank))
 
-  out <- vec_data_fast(x)
+  out <- vec_data(x)
 
   indexer <- as_yank_indexer(i, x)
 
@@ -245,7 +245,7 @@ rray_extract <- function(x, ...) {
 }
 
 rray_extract_impl <- function(x, ...) {
-  out <- vec_data_fast(x)
+  out <- vec_data(x)
 
   indexer <- rray_as_index(x, ..., with_drop = FALSE)
 
@@ -267,7 +267,7 @@ rray_extract_assign_impl <- function(x, ..., value) {
   value <- vec_cast(value, x_extract)
   value <- rray_broadcast(value, rray_dim(x_extract))
 
-  out <- vec_data_fast(x)
+  out <- vec_data(x)
 
   indexer <- rray_as_index(x, ..., with_drop = FALSE)
 

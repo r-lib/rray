@@ -133,7 +133,7 @@ unique.vctrs_rray <- function(x,
                               ...) {
 
   unq <- unique(
-    vec_data_fast(x),
+    vec_data(x),
     incomparables = incomparables,
     MARGIN = MARGIN,
     fromLast = fromLast,

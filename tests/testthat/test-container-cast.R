@@ -52,7 +52,7 @@ test_that("container casting allows NULL `to`", {
 
 for (to in tos) {
   test_that(glue::glue("container casting rray to {typeof(to)}."), {
-    expect_equal(vec_cast_container(rray(1), to), vec_data_fast(rray(1)))
+    expect_equal(vec_cast_container(rray(1), to), vec_data(rray(1)))
   })
 }
 

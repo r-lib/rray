@@ -57,8 +57,8 @@ for (x in xs_rray) {
   for (to in tos) {
     test_that(glue::glue("inner casting {class(x)[1]} to {typeof(to)}."), {
       expect_equal(
-        vec_data_fast(vec_cast_inner(x, to)),
-        new_array(vec_cast(vec_data_fast(x), to))
+        vec_data(vec_cast_inner(x, to)),
+        new_array(vec_cast(vec_data(x), to))
       )
     })
   }

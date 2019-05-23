@@ -267,7 +267,7 @@ vec_cast.vctrs_rray_int.vctrs_rray_int <- function(x, to) {
 vec_cast.vctrs_rray_int.vctrs_rray_dbl <- function(x, to) {
   shape <- rray_shape(to)
   ptype <- rray_shapecast(integer(), shape)
-  x <- vec_cast(vec_data_fast(x), ptype)
+  x <- vec_cast(vec_data(x), ptype)
   new_rray(x, vec_size(x), shape)
 }
 
@@ -278,7 +278,7 @@ vec_cast.vctrs_rray_int.vctrs_rray_dbl <- function(x, to) {
 vec_cast.vctrs_rray_int.vctrs_rray_lgl <- function(x, to) {
   shape <- rray_shape(to)
   ptype <- rray_shapecast(integer(), shape)
-  x <- vec_cast(vec_data_fast(x), ptype)
+  x <- vec_cast(vec_data(x), ptype)
   new_rray(x, vec_size(x), shape)
 }
 
@@ -297,7 +297,7 @@ vec_cast.vctrs_rray_int.double <- function(x, to) {
 #' @export
 vec_cast.double.vctrs_rray_int <- function(x, to) {
   ptype <- rray_shapecast(double(), rray_shape(to))
-  vec_cast(vec_data_fast(x), ptype)
+  vec_cast(vec_data(x), ptype)
 }
 
 # vec_cast vctrs_rray_int <-> integer ------------------------------------------
@@ -326,7 +326,7 @@ vec_cast.vctrs_rray_int.logical <- vec_cast.vctrs_rray_int.double
 #' @export
 vec_cast.logical.vctrs_rray_int <- function(x, to) {
   ptype <- rray_shapecast(logical(), rray_shape(to))
-  vec_cast(vec_data_fast(x), ptype)
+  vec_cast(vec_data(x), ptype)
 }
 
 # ##############################################################################
@@ -355,7 +355,7 @@ vec_cast.vctrs_rray_dbl.vctrs_rray_dbl <- vec_cast.vctrs_rray_int.vctrs_rray_int
 vec_cast.vctrs_rray_dbl.vctrs_rray_int <- function(x, to) {
   shape <- rray_shape(to)
   ptype <- rray_shapecast(double(), shape)
-  x <- vec_cast(vec_data_fast(x), ptype)
+  x <- vec_cast(vec_data(x), ptype)
   new_rray(x, vec_size(x), shape)
 }
 
@@ -390,7 +390,7 @@ vec_cast.vctrs_rray_dbl.integer <- function(x, to) {
 #' @export
 vec_cast.integer.vctrs_rray_dbl <- function(x, to) {
   ptype <- rray_shapecast(integer(), rray_shape(to))
-  vec_cast(vec_data_fast(x), ptype)
+  vec_cast(vec_data(x), ptype)
 }
 
 # vec_cast vctrs_rray_dbl <-> logical ------------------------------------------
@@ -403,7 +403,7 @@ vec_cast.vctrs_rray_dbl.logical <- vec_cast.vctrs_rray_dbl.integer
 #' @export
 vec_cast.logical.vctrs_rray_dbl <- function(x, to) {
   ptype <- rray_shapecast(logical(), rray_shape(to))
-  vec_cast(vec_data_fast(x), ptype)
+  vec_cast(vec_data(x), ptype)
 }
 
 # ##############################################################################
@@ -432,7 +432,7 @@ vec_cast.vctrs_rray_lgl.vctrs_rray_lgl <- vec_cast.vctrs_rray_int.vctrs_rray_int
 vec_cast.vctrs_rray_lgl.vctrs_rray_dbl <- function(x, to) {
   shape <- rray_shape(to)
   ptype <- rray_shapecast(logical(), shape)
-  x <- vec_cast(vec_data_fast(x), ptype)
+  x <- vec_cast(vec_data(x), ptype)
   new_rray(x, vec_size(x), shape)
 }
 

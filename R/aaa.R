@@ -96,18 +96,6 @@ utils::globalVariables(c("at", "arg"))
 shared <- rlang::new_environment()
 
 .onLoad <- function(libname, pkgname) {
-
-  ns <- ns_env("rray")
-
-  utils::globalVariables("vec_structure")
-
-  if (getRversion() < "3.6.0") {
-    env_bind(ns, vec_structure = structure_shim)
-  }
-  else {
-    env_bind(ns, vec_structure = structure)
-  }
-
   shared$empty_rray_int <- new_rray(integer())
   shared$empty_rray_lgl <- new_rray(logical())
   shared$empty_rray_dbl <- new_rray(double())
