@@ -85,12 +85,6 @@ test_that("`axis` is validated", {
   expect_error(rray_unique_count(1, axis), "Invalid `axis`")
 })
 
-test_that("`NULL` input", {
-  expect_equal(rray_unique(NULL, 2L), NULL)
-  expect_equal(rray_unique_loc(NULL, 2L), integer(0))
-  expect_equal(rray_unique_count(NULL, 2L), 0L)
-})
-
 # ------------------------------------------------------------------------------
 context("test-base-unique")
 
