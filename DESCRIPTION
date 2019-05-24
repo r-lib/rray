@@ -29,7 +29,7 @@ LinkingTo:
     Rcpp,
     xtensor
 Suggests: 
-    testthat,
+    testthat (>= 2.1.0),
     magrittr,
     knitr,
     rmarkdown,
