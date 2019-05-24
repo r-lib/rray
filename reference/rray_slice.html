@@ -129,7 +129,9 @@ for easily subsetting a single axis.</p>
 
     <pre class="usage"><span class='fu'>rray_slice</span>(<span class='no'>x</span>, <span class='no'>i</span>, <span class='no'>axis</span>)
 
-<span class='fu'>rray_slice</span>(<span class='no'>x</span>, <span class='no'>i</span>, <span class='no'>axis</span>) <span class='kw'>&lt;-</span> <span class='no'>value</span></pre>
+<span class='fu'>rray_slice</span>(<span class='no'>x</span>, <span class='no'>i</span>, <span class='no'>axis</span>) <span class='kw'>&lt;-</span> <span class='no'>value</span>
+
+<span class='fu'>rray_slice_assign</span>(<span class='no'>x</span>, <span class='no'>i</span>, <span class='no'>axis</span>, <span class='no'>value</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -140,7 +142,14 @@ for easily subsetting a single axis.</p>
     </tr>
     <tr>
       <th>i</th>
-      <td><p>An integer vector. The slice of <code>axis</code> to subset.</p></td>
+      <td><p>Indices to extract along a single axis.</p><ul>
+<li><p>Integer-ish indices extract specific elements of dimensions.</p></li>
+<li><p>Logical indices must be length 1, or the length of the dimension you are
+subsetting over.</p></li>
+<li><p>Character indices are only allowed if <code>x</code> has names for the corresponding
+dimension.</p></li>
+<li><p><code>NULL</code> is treated as <code>0</code>.</p></li>
+</ul></td>
     </tr>
     <tr>
       <th>axis</th>
@@ -218,6 +227,21 @@ and <code>axis</code>. It will be cast to the type and dimension of the slice of
 #&gt; [2,]   10   12
 #&gt; 
 #&gt; , , 2, 1
+#&gt; 
+#&gt;      [,1] [,2]
+#&gt; [1,]   13   15
+#&gt; [2,]   14   16
+#&gt; </div><div class='input'>
+<span class='co'># `i` can be a character vector if `x` has names along `axis`</span>
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dim-names.html'>set_dim_names</a></span>(<span class='no'>x</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>4</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"foo"</span>, <span class='st'>"bar"</span>))
+<span class='fu'>rray_slice</span>(<span class='no'>x</span>, <span class='st'>"bar"</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='fl'>4</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2,1][8]&gt;
+#&gt; , , 1, bar
+#&gt; 
+#&gt;      [,1] [,2]
+#&gt; [1,]    9   11
+#&gt; [2,]   10   12
+#&gt; 
+#&gt; , , 2, bar
 #&gt; 
 #&gt;      [,1] [,2]
 #&gt; [1,]   13   15
