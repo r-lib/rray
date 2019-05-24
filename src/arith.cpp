@@ -128,32 +128,17 @@ Rcpp::RObject rray__multiply(Rcpp::RObject x, Rcpp::RObject y) {
 
 // -----------------------------------------------------------------------------
 
-// TODO somehow use the faster template version? pow<N>(x)
+// On the R side, there is a guarantee that both inputs are double.
 
-template <typename T>
-Rcpp::RObject rray__pow_impl(const xt::rarray<T>& x,
-                             const xt::rarray<T>& y) {
-
-  Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
-  const int& dims = dim.size();
-  auto x_view = rray__increase_dims_view(x, dims);
-  auto y_view = rray__increase_dims_view(y, dims);
-
-  xt::rarray<T> res = xt::pow(x_view, y_view);
-
-  return Rcpp::as<Rcpp::RObject>(res);
-}
-
-// Logicals return integers
-Rcpp::RObject rray__pow_impl(const xt::rarray<rlogical>& x,
-                             const xt::rarray<rlogical>& y) {
+Rcpp::RObject rray__pow_impl(const xt::rarray<double>& x,
+                             const xt::rarray<double>& y) {
 
   Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
   const int& dims = dim.size();
   auto x_view = rray__increase_dims_view(x, dims);
   auto y_view = rray__increase_dims_view(y, dims);
 
-  xt::rarray<int> res = xt::pow(x_view, y_view);
+  xt::rarray<double> res = xt::pow(x_view, y_view);
 
   return Rcpp::as<Rcpp::RObject>(res);
 }
