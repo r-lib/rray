@@ -1,6 +1,9 @@
 #include <rray.h>
 #include <dispatch.h>
 
+// Required for xt::flatten() which uses an xtensor_adaptor()
+#include <xtensor/xadapt.hpp>
+
 // -----------------------------------------------------------------------------
 
 // xt_split() splits `e` along `axes`. For example, it does:
@@ -231,4 +234,17 @@ Rcpp::RObject rray__flip(Rcpp::RObject x, std::size_t axis) {
   DISPATCH_UNARY_ONE(rray__flip_impl, x, axis);
 }
 
+// -----------------------------------------------------------------------------
 
+template <typename T>
+Rcpp::RObject rray__flatten_impl(const xt::rarray<T>& x) {
+  xt::rarray<T> xt_out = xt::flatten<xt::layout_type::column_major>(x);
+  Rcpp::RObject out = SEXP(xt_out);
+  rray__reshape_and_set_dim_names(out, SEXP(x));
+  return out;
+}
+
+// [[Rcpp::export(rng = false)]]
+Rcpp::RObject rray__flatten(Rcpp::RObject x) {
+  DISPATCH_UNARY(rray__flatten_impl, x);
+}
