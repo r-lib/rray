@@ -33,8 +33,7 @@
 <meta property="og:title" content="Find and count unique values in an array — rray_unique" />
 
 <meta property="og:description" content="
-rray_unique(): the unique values. Equivalent to unique() with the
-MARGIN argument.
+rray_unique(): the unique values.
 rray_unique_loc(): the locations of the unique values.
 rray_unique_count(): the number of unique values.
 " />
@@ -127,19 +126,18 @@ rray_unique_count(): the number of unique values.
     <div class="ref-description">
     
     <ul>
-<li><p><code>rray_unique()</code>: the unique values. Equivalent to <code><a href='https://www.rdocumentation.org/packages/base/topics/unique'>unique()</a></code> with the
-<code>MARGIN</code> argument.</p></li>
+<li><p><code>rray_unique()</code>: the unique values.</p></li>
 <li><p><code>rray_unique_loc()</code>: the locations of the unique values.</p></li>
 <li><p><code>rray_unique_count()</code>: the number of unique values.</p></li>
 </ul>
     
     </div>
 
-    <pre class="usage"><span class='fu'>rray_unique</span>(<span class='no'>x</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='fl'>1L</span>)
+    <pre class="usage"><span class='fu'>rray_unique</span>(<span class='no'>x</span>, <span class='no'>axis</span>)
 
-<span class='fu'>rray_unique_loc</span>(<span class='no'>x</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='fl'>1L</span>)
+<span class='fu'>rray_unique_loc</span>(<span class='no'>x</span>, <span class='no'>axis</span>)
 
-<span class='fu'>rray_unique_count</span>(<span class='no'>x</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='fl'>1L</span>)</pre>
+<span class='fu'>rray_unique_count</span>(<span class='no'>x</span>, <span class='no'>axis</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -150,7 +148,7 @@ rray_unique_count(): the number of unique values.
     </tr>
     <tr>
       <th>axis</th>
-      <td><p>A single integer. The axis to look for unique values over.</p></td>
+      <td><p>A single integer. The axis to index <code>x</code> by.</p></td>
     </tr>
     </table>
     
@@ -159,7 +157,9 @@ rray_unique_count(): the number of unique values.
     
 <ul>
 <li><p><code>rray_unique()</code>: an array the same type as <code>x</code> containing only
-unique values.</p></li>
+unique values. The dimensions of the return value are the same as
+<code>x</code> except on the <code>axis</code>, which might be smaller than the original
+dimension size if any duplicate entries were removed.</p></li>
 <li><p><code>rray_unique_loc()</code>: an integer vector, giving locations of
 the unique values.</p></li>
 <li><p><code>rray_unique_count()</code>: an integer vector of length 1, giving the number
@@ -169,7 +169,24 @@ of unique values.</p></li>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>When duplicates are detected, the <em>first</em> one is used in the result.</p>
+    <p>The family of unique functions work in the following manner:</p><ol>
+<li><p><code>x</code> is split into pieces using the <code>axis</code> as the dimension to index along.</p></li>
+<li><p>Each of those pieces is flattened to 1D.</p></li>
+<li><p>The uniqueness test is done between those flattened pieces and the
+final output is restored from that result.</p></li>
+</ol>
+    <p>As an example, if <code>x</code> has dimensions of <code>(2, 3, 2)</code> and <code>axis = 2</code>, then
+you can think of <code>x</code> as being broken into <code>x[, 1]</code>, <code>x[, 2]</code> and <code>x[, 3]</code>.
+Each of those three pieces are then flattened, and a vctrs unique function
+is called on the list of those flattened inputs.</p>
+<p>The result of calling <code>rray_unique()</code> will always have the same
+dimensions as <code>x</code>, except along <code>axis</code>, which is allowed to be less than
+the original axis size if any duplicate entries are removed.</p>
+<p>Unlike the duplicate functions, the unique functions only take a singular
+<code>axis</code> argument, rather than <code>axes</code>. The reason for this is that if the
+unique functions were defined in any other way, they would allow for <em>ragged
+arrays</em>, which are not defined in rray.</p>
+<p>When duplicates are detected, the <em>first</em> unique value is used in the result.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
@@ -180,74 +197,70 @@ any type of vector object.</p></div>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>2</span>), <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>2</span>))
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dim-names.html'>set_row_names</a></span>(<span class='no'>x</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"r1"</span>, <span class='st'>"r2"</span>))
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dim-names.html'>set_col_names</a></span>(<span class='no'>x</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"c1"</span>, <span class='st'>"c2"</span>))
+    <pre class="examples"><div class='input'><span class='no'>x_dup_rows</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>3</span>, <span class='fl'>3</span>, <span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>4</span>, <span class='fl'>4</span>), <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>2</span>))
+<span class='no'>x_dup_rows</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dim-names.html'>set_row_names</a></span>(<span class='no'>x_dup_rows</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"r1"</span>, <span class='st'>"r2"</span>))
+<span class='no'>x_dup_rows</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dim-names.html'>set_col_names</a></span>(<span class='no'>x_dup_rows</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"c1"</span>, <span class='st'>"c2"</span>))
 
-<span class='co'># Unique rows. The first unique</span>
-<span class='co'># row is used</span>
-<span class='fu'>rray_unique</span>(<span class='no'>x</span>, <span class='fl'>1L</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2][2]&gt;
+<span class='co'># Duplicate rows</span>
+<span class='co'># x_dup_rows[1] == x_dup_rows[2]</span>
+<span class='fu'>rray_unique</span>(<span class='no'>x_dup_rows</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2,2][4]&gt;
+#&gt; , , 1
+#&gt; 
 #&gt;    c1 c2
-#&gt; r1  1  2</div><div class='input'>
-<span class='co'># Create a 3d version of x</span>
-<span class='co'># where the columns are not unique</span>
-<span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray_expand_dims.html'>rray_expand_dims</a></span>(<span class='no'>x</span>, <span class='fl'>1</span>)
-
-<span class='co'># All of the rows are unique...</span>
-<span class='fu'>rray_unique</span>(<span class='no'>y</span>, <span class='fl'>1L</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2,2][4]&gt;
-#&gt; , , c1
+#&gt; r1  1  3
 #&gt; 
-#&gt;      r1 r2
-#&gt; [1,]  1  1
+#&gt; , , 2
 #&gt; 
-#&gt; , , c2
-#&gt; 
-#&gt;      r1 r2
-#&gt; [1,]  2  2
+#&gt;    c1 c2
+#&gt; r1  2  4
 #&gt; </div><div class='input'>
-<span class='co'># ...but the columns are not</span>
-<span class='fu'>rray_unique</span>(<span class='no'>y</span>, <span class='fl'>2L</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,1,2][2]&gt;
-#&gt; , , c1
+<span class='co'># Duplicate cols</span>
+<span class='co'># x_dup_cols[, 1] == x_dup_cols[, 2]</span>
+<span class='no'>x_dup_cols</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray_transpose.html'>rray_transpose</a></span>(<span class='no'>x_dup_rows</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>3</span>))
+<span class='fu'>rray_unique</span>(<span class='no'>x_dup_cols</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,1,2][4]&gt;
+#&gt; , , 1
 #&gt; 
-#&gt;      r1
-#&gt; [1,]  1
+#&gt;    r1
+#&gt; c1  1
+#&gt; c2  3
 #&gt; 
-#&gt; , , c2
+#&gt; , , 2
 #&gt; 
-#&gt;      r1
-#&gt; [1,]  2
+#&gt;    r1
+#&gt; c1  2
+#&gt; c2  4
 #&gt; </div><div class='input'>
-<span class='co'># The 3rd dimension is unique</span>
-<span class='fu'>rray_unique</span>(<span class='no'>y</span>, <span class='fl'>3L</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2,2][4]&gt;
-#&gt; , , c1
+<span class='co'># Duplicate 3rd dim</span>
+<span class='co'># x_dup_layers[, , 1] == x_dup_layers[, , 2]</span>
+<span class='no'>x_dup_layers</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray_transpose.html'>rray_transpose</a></span>(<span class='no'>x_dup_rows</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>1</span>))
+<span class='fu'>rray_unique</span>(<span class='no'>x_dup_layers</span>, <span class='fl'>3</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2,1][4]&gt;
+#&gt; , , r1
 #&gt; 
-#&gt;      r1 r2
-#&gt; [1,]  1  1
-#&gt; 
-#&gt; , , c2
-#&gt; 
-#&gt;      r1 r2
-#&gt; [1,]  2  2
+#&gt;    [,1] [,2]
+#&gt; c1    1    2
+#&gt; c2    3    4
 #&gt; </div><div class='input'>
 <span class='co'># rray_unique_loc() returns an</span>
 <span class='co'># integer vector you can use</span>
 <span class='co'># to subset out the unique values along</span>
 <span class='co'># the axis you are interested in</span>
-<span class='no'>y</span>[, <span class='fu'>rray_unique_loc</span>(<span class='no'>y</span>, <span class='fl'>2L</span>)]</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,1,2][2]&gt;
-#&gt; , , c1
+<span class='no'>x_dup_cols</span>[, <span class='fu'>rray_unique_loc</span>(<span class='no'>x_dup_cols</span>, <span class='fl'>2L</span>)]</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,1,2][4]&gt;
+#&gt; , , 1
 #&gt; 
-#&gt;      r1
-#&gt; [1,]  1
+#&gt;    r1
+#&gt; c1  1
+#&gt; c2  3
 #&gt; 
-#&gt; , , c2
+#&gt; , , 2
 #&gt; 
-#&gt;      r1
-#&gt; [1,]  2
+#&gt;    r1
+#&gt; c1  2
+#&gt; c2  4
 #&gt; </div><div class='input'>
 <span class='co'># Only 1 unique column</span>
-<span class='fu'>rray_unique_count</span>(<span class='no'>y</span>, <span class='fl'>2L</span>)</div><div class='output co'>#&gt; [1] 1</div><div class='input'>
-<span class='co'># 2 unique 3D slices</span>
-<span class='fu'>rray_unique_count</span>(<span class='no'>y</span>, <span class='fl'>3L</span>)</div><div class='output co'>#&gt; [1] 2</div><div class='input'>
+<span class='fu'>rray_unique_count</span>(<span class='no'>x_dup_cols</span>, <span class='fl'>2L</span>)</div><div class='output co'>#&gt; [1] 1</div><div class='input'>
+<span class='co'># But 2 unique rows</span>
+<span class='fu'>rray_unique_count</span>(<span class='no'>x_dup_cols</span>, <span class='fl'>1L</span>)</div><div class='output co'>#&gt; [1] 2</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
