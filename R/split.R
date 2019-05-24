@@ -83,7 +83,12 @@ rray_split <- function(x, axes = NULL) {
 
   res <- rray__split(x, as_cpp_idx(axes))
 
-  res <- map(res, vec_cast_container, to = x)
+  # # Avoid copy by not calling map()
+  # # map() always copies, even if `vec_cast_container()`
+  # # does no work
+  for (i in seq_along(res)) {
+    res[[i]] <- vec_cast_container(res[[i]], x)
+  }
 
   res
 }
