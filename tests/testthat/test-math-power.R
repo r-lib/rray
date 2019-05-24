@@ -21,6 +21,10 @@ test_that("corner cases", {
   expect_equal(rray_square(NaN), new_array(NaN))
 })
 
+test_that("integer overflow is avoided", {
+  expect_equal(rray_square(500000L), new_array(500000L ^ 2))
+})
+
 # ------------------------------------------------------------------------------
 context("test-cube")
 

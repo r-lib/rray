@@ -5,6 +5,10 @@
 
 template <typename T>
 xt::rarray<double> rray__square_impl(const xt::rarray<T>& x) {
+  return xt::square(xt::cast<double>(x));
+}
+
+xt::rarray<double> rray__square_impl(const xt::rarray<double>& x) {
   return xt::square(x);
 }
 
