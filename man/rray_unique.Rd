@@ -6,21 +6,23 @@
 \alias{rray_unique_count}
 \title{Find and count unique values in an array}
 \usage{
-rray_unique(x, axis = 1L)
+rray_unique(x, axis)
 
-rray_unique_loc(x, axis = 1L)
+rray_unique_loc(x, axis)
 
-rray_unique_count(x, axis = 1L)
+rray_unique_count(x, axis)
 }
 \arguments{
 \item{x}{A vector, matrix, array, or rray.}
 
-\item{axis}{A single integer. The axis to look for unique values over.}
+\item{axis}{A single integer. The axis to index \code{x} by.}
 }
 \value{
 \itemize{
 \item \code{rray_unique()}: an array the same type as \code{x} containing only
-unique values.
+unique values. The dimensions of the return value are the same as
+\code{x} except on the \code{axis}, which might be smaller than the original
+dimension size if any duplicate entries were removed.
 \item \code{rray_unique_loc()}: an integer vector, giving locations of
 the unique values.
 \item \code{rray_unique_count()}: an integer vector of length 1, giving the number
@@ -29,48 +31,66 @@ of unique values.
 }
 \description{
 \itemize{
-\item \code{rray_unique()}: the unique values. Equivalent to \code{\link[=unique]{unique()}} with the
-\code{MARGIN} argument.
+\item \code{rray_unique()}: the unique values.
 \item \code{rray_unique_loc()}: the locations of the unique values.
 \item \code{rray_unique_count()}: the number of unique values.
 }
 }
 \details{
-When duplicates are detected, the \emph{first} one is used in the result.
+The family of unique functions work in the following manner:
+\enumerate{
+\item \code{x} is split into pieces using the \code{axis} as the dimension to index along.
+\item Each of those pieces is flattened to 1D.
+\item The uniqueness test is done between those flattened pieces and the
+final output is restored from that result.
+}
+
+As an example, if \code{x} has dimensions of \code{(2, 3, 2)} and \code{axis = 2}, then
+you can think of \code{x} as being broken into \code{x[, 1]}, \code{x[, 2]} and \code{x[, 3]}.
+Each of those three pieces are then flattened, and a vctrs unique function
+is called on the list of those flattened inputs.
+
+The result of calling \code{rray_unique()} will always have the same
+dimensions as \code{x}, except along \code{axis}, which is allowed to be less than
+the original axis size if any duplicate entries are removed.
+
+Unlike the duplicate functions, the unique functions only take a singular
+\code{axis} argument, rather than \code{axes}. The reason for this is that if the
+unique functions were defined in any other way, they would allow for \emph{ragged
+arrays}, which are not defined in rray.
+
+When duplicates are detected, the \emph{first} unique value is used in the result.
 }
 \examples{
-x <- rray(c(1, 1, 2, 2), c(2, 2))
-x <- set_row_names(x, c("r1", "r2"))
-x <- set_col_names(x, c("c1", "c2"))
+x_dup_rows <- rray(c(1, 1, 3, 3, 2, 2, 4, 4), c(2, 2, 2))
+x_dup_rows <- set_row_names(x_dup_rows, c("r1", "r2"))
+x_dup_rows <- set_col_names(x_dup_rows, c("c1", "c2"))
 
-# Unique rows. The first unique
-# row is used
-rray_unique(x, 1L)
+# Duplicate rows
+# x_dup_rows[1] == x_dup_rows[2]
+rray_unique(x_dup_rows, 1)
 
-# Create a 3d version of x
-# where the columns are not unique
-y <- rray_expand_dims(x, 1)
+# Duplicate cols
+# x_dup_cols[, 1] == x_dup_cols[, 2]
+x_dup_cols <- rray_transpose(x_dup_rows, c(2, 1, 3))
+rray_unique(x_dup_cols, 2)
 
-# All of the rows are unique...
-rray_unique(y, 1L)
-
-# ...but the columns are not
-rray_unique(y, 2L)
-
-# The 3rd dimension is unique
-rray_unique(y, 3L)
+# Duplicate 3rd dim
+# x_dup_layers[, , 1] == x_dup_layers[, , 2]
+x_dup_layers <- rray_transpose(x_dup_rows, c(2, 3, 1))
+rray_unique(x_dup_layers, 3)
 
 # rray_unique_loc() returns an
 # integer vector you can use
 # to subset out the unique values along
 # the axis you are interested in
-y[, rray_unique_loc(y, 2L)]
+x_dup_cols[, rray_unique_loc(x_dup_cols, 2L)]
 
 # Only 1 unique column
-rray_unique_count(y, 2L)
+rray_unique_count(x_dup_cols, 2L)
 
-# 2 unique 3D slices
-rray_unique_count(y, 3L)
+# But 2 unique rows
+rray_unique_count(x_dup_cols, 1L)
 
 }
 \seealso{

@@ -2,8 +2,7 @@
 #'
 #' @description
 #'
-#' * `rray_unique()`: the unique values. Equivalent to [unique()] with the
-#' `MARGIN` argument.
+#' * `rray_unique()`: the unique values.
 #'
 #' * `rray_unique_loc()`: the locations of the unique values.
 #'
@@ -11,12 +10,14 @@
 #'
 #' @param x A vector, matrix, array, or rray.
 #'
-#' @param axis A single integer. The axis to look for unique values over.
+#' @param axis A single integer. The axis to index `x` by.
 #'
 #' @return
 #'
 #' * `rray_unique()`: an array the same type as `x` containing only
-#' unique values.
+#' unique values. The dimensions of the return value are the same as
+#' `x` except on the `axis`, which might be smaller than the original
+#' dimension size if any duplicate entries were removed.
 #'
 #' * `rray_unique_loc()`: an integer vector, giving locations of
 #' the unique values.
@@ -26,7 +27,30 @@
 #'
 #' @details
 #'
-#' When duplicates are detected, the _first_ one is used in the result.
+#' The family of unique functions work in the following manner:
+#'
+#' 1) `x` is split into pieces using the `axis` as the dimension to index along.
+#'
+#' 2) Each of those pieces is flattened to 1D.
+#'
+#' 3) The uniqueness test is done between those flattened pieces and the
+#' final output is restored from that result.
+#'
+#' As an example, if `x` has dimensions of `(2, 3, 2)` and `axis = 2`, then
+#' you can think of `x` as being broken into `x[, 1]`, `x[, 2]` and `x[, 3]`.
+#' Each of those three pieces are then flattened, and a vctrs unique function
+#' is called on the list of those flattened inputs.
+#'
+#' The result of calling `rray_unique()` will always have the same
+#' dimensions as `x`, except along `axis`, which is allowed to be less than
+#' the original axis size if any duplicate entries are removed.
+#'
+#' Unlike the duplicate functions, the unique functions only take a singular
+#' `axis` argument, rather than `axes`. The reason for this is that if the
+#' unique functions were defined in any other way, they would allow for _ragged
+#' arrays_, which are not defined in rray.
+#'
+#' When duplicates are detected, the _first_ unique value is used in the result.
 #'
 #' @seealso
 #'
@@ -37,89 +61,64 @@
 #' any type of vector object.
 #'
 #' @examples
-#' x <- rray(c(1, 1, 2, 2), c(2, 2))
-#' x <- set_row_names(x, c("r1", "r2"))
-#' x <- set_col_names(x, c("c1", "c2"))
+#' x_dup_rows <- rray(c(1, 1, 3, 3, 2, 2, 4, 4), c(2, 2, 2))
+#' x_dup_rows <- set_row_names(x_dup_rows, c("r1", "r2"))
+#' x_dup_rows <- set_col_names(x_dup_rows, c("c1", "c2"))
 #'
-#' # Unique rows. The first unique
-#' # row is used
-#' rray_unique(x, 1L)
+#' # Duplicate rows
+#' # x_dup_rows[1] == x_dup_rows[2]
+#' rray_unique(x_dup_rows, 1)
 #'
-#' # Create a 3d version of x
-#' # where the columns are not unique
-#' y <- rray_expand_dims(x, 1)
+#' # Duplicate cols
+#' # x_dup_cols[, 1] == x_dup_cols[, 2]
+#' x_dup_cols <- rray_transpose(x_dup_rows, c(2, 1, 3))
+#' rray_unique(x_dup_cols, 2)
 #'
-#' # All of the rows are unique...
-#' rray_unique(y, 1L)
-#'
-#' # ...but the columns are not
-#' rray_unique(y, 2L)
-#'
-#' # The 3rd dimension is unique
-#' rray_unique(y, 3L)
+#' # Duplicate 3rd dim
+#' # x_dup_layers[, , 1] == x_dup_layers[, , 2]
+#' x_dup_layers <- rray_transpose(x_dup_rows, c(2, 3, 1))
+#' rray_unique(x_dup_layers, 3)
 #'
 #' # rray_unique_loc() returns an
 #' # integer vector you can use
 #' # to subset out the unique values along
 #' # the axis you are interested in
-#' y[, rray_unique_loc(y, 2L)]
+#' x_dup_cols[, rray_unique_loc(x_dup_cols, 2L)]
 #'
 #' # Only 1 unique column
-#' rray_unique_count(y, 2L)
+#' rray_unique_count(x_dup_cols, 2L)
 #'
-#' # 2 unique 3D slices
-#' rray_unique_count(y, 3L)
+#' # But 2 unique rows
+#' rray_unique_count(x_dup_cols, 1L)
 #'
 #' @export
-rray_unique <- function(x, axis = 1L) {
-
-  axis <- vec_cast(axis, integer())
-  validate_axis(axis, x)
-
-  if (identical(axis, 1L)) {
-    return(vec_unique(x))
-  }
-
-  # Make the axis of interest the rows
-  x <- rray_rotate(x, from = axis, to = 1L)
-  x <- vec_unique(x)
-
-  # Rotate back to get the result
-  x <- rray_rotate(x, from = 1L, to = axis)
-
-  x
+rray_unique <- function(x, axis) {
+  locs <- rray_unique_loc(x, axis)
+  rray_slice(x, locs, axis)
 }
 
 #' @rdname rray_unique
 #' @export
-rray_unique_loc <- function(x, axis = 1L) {
-
+rray_unique_loc <- function(x, axis) {
   axis <- vec_cast(axis, integer())
   validate_axis(axis, x)
 
-  if (identical(axis, 1L)) {
-    return(vec_unique_loc(x))
-  }
+  axes <- get_axes_complement(vec_dims(x), axis)
+  x_split_flat <- duplicate_splitter(x, axes)
 
-  x <- rray_rotate(x, from = axis, to = 1L)
-
-  vec_unique_loc(x)
+  vec_unique_loc(x_split_flat)
 }
 
 #' @rdname rray_unique
 #' @export
-rray_unique_count <- function(x, axis = 1L) {
-
+rray_unique_count <- function(x, axis) {
   axis <- vec_cast(axis, integer())
   validate_axis(axis, x)
 
-  if (identical(axis, 1L)) {
-    return(vec_unique_count(x))
-  }
+  axes <- get_axes_complement(vec_dims(x), axis)
+  x_split_flat <- duplicate_splitter(x, axes)
 
-  x <- rray_rotate(x, from = axis, to = 1L)
-
-  vec_unique_count(x)
+  vec_unique_count(x_split_flat)
 }
 
 

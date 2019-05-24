@@ -1,15 +1,15 @@
 context("test-unique")
 
-test_that("uniqueness along `axis = 1` is equal to vctrs", {
-  x <- c(1, 1, 2, 2, 3)
-  expect_equal(rray_unique(x), vec_unique(x))
-  expect_equal(rray_unique_loc(x), vec_unique_loc(x))
-  expect_equal(rray_unique_count(x), vec_unique_count(x))
+test_that("uniqueness along `axis = 1` is equal to vctrs for 1D / 2D", {
+  x <- new_array(c(1, 1, 2, 2, 3))
+  expect_equal(rray_unique(x, axis = 1), vec_unique(x))
+  expect_equal(rray_unique_loc(x, axis = 1), vec_unique_loc(x))
+  expect_equal(rray_unique_count(x, axis = 1), vec_unique_count(x))
 
   x <- rray(c(1, 1, 2, 2), c(2, 2))
-  expect_equal(rray_unique(x), vec_unique(x))
-  expect_equal(rray_unique_loc(x), vec_unique_loc(x))
-  expect_equal(rray_unique_count(x), vec_unique_count(x))
+  expect_equal(rray_unique(x, axis = 1), vec_unique(x))
+  expect_equal(rray_unique_loc(x, axis = 1), vec_unique_loc(x))
+  expect_equal(rray_unique_count(x, axis = 1), vec_unique_count(x))
 })
 
 test_that("can compute uniqueness along columns", {
@@ -83,6 +83,53 @@ test_that("`axis` is validated", {
   expect_error(rray_unique(1, axis), "Invalid `axis`")
   expect_error(rray_unique_loc(1, axis), "Invalid `axis`")
   expect_error(rray_unique_count(1, axis), "Invalid `axis`")
+})
+
+test_that("rray_unique() is correctly defined over higher dimensions", {
+  x_dup_rows <- rray(c(1, 1, 3, 3, 2, 2, 4, 4), c(2, 2, 2))
+  x_dup_rows <- set_row_names(x_dup_rows, c("r1", "r2"))
+  x_dup_rows <- set_col_names(x_dup_rows, c("c1", "c2"))
+
+  expect_equal(rray_unique(x_dup_rows, 1), x_dup_rows[1,])
+  expect_equal(rray_unique(x_dup_rows, 2), x_dup_rows)
+
+  x_dup_cols <- rray_transpose(x_dup_rows, c(2, 1, 3))
+  expect_equal(rray_unique(x_dup_cols, 1), x_dup_cols)
+  expect_equal(rray_unique(x_dup_cols, 2), x_dup_cols[,1])
+
+  x_dup_layers <- rray_transpose(x_dup_rows, c(2, 3, 1))
+  expect_equal(rray_unique(x_dup_layers, 1), x_dup_layers)
+  expect_equal(rray_unique(x_dup_layers, 3), x_dup_layers[,,1])
+})
+
+test_that("rray_unique_loc() is correctly defined over higher dimensions", {
+  x_dup_rows <- rray(c(1, 1, 3, 3, 2, 2, 4, 4), c(2, 2, 2))
+
+  expect_identical(rray_unique_loc(x_dup_rows, 1), 1L)
+  expect_identical(rray_unique_loc(x_dup_rows, 2), 1:2)
+
+  x_dup_cols <- rray_transpose(x_dup_rows, c(2, 1, 3))
+  expect_identical(rray_unique_loc(x_dup_cols, 1), 1:2)
+  expect_identical(rray_unique_loc(x_dup_cols, 2), 1L)
+
+  x_dup_layers <- rray_transpose(x_dup_rows, c(2, 3, 1))
+  expect_identical(rray_unique_loc(x_dup_layers, 1), 1:2)
+  expect_identical(rray_unique_loc(x_dup_layers, 3), 1L)
+})
+
+test_that("rray_unique_count() is correctly defined over higher dimensions", {
+  x_dup_rows <- rray(c(1, 1, 3, 3, 2, 2, 4, 4), c(2, 2, 2))
+
+  expect_identical(rray_unique_count(x_dup_rows, 1), 1L)
+  expect_identical(rray_unique_count(x_dup_rows, 2), 2L)
+
+  x_dup_cols <- rray_transpose(x_dup_rows, c(2, 1, 3))
+  expect_identical(rray_unique_count(x_dup_cols, 1), 2L)
+  expect_identical(rray_unique_count(x_dup_cols, 2), 1L)
+
+  x_dup_layers <- rray_transpose(x_dup_rows, c(2, 3, 1))
+  expect_identical(rray_unique_count(x_dup_layers, 1), 2L)
+  expect_identical(rray_unique_count(x_dup_layers, 3), 1L)
 })
 
 # ------------------------------------------------------------------------------
