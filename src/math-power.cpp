@@ -17,6 +17,10 @@ Rcpp::RObject rray__square(Rcpp::RObject x) {
 
 template <typename T>
 xt::rarray<double> rray__cube_impl(const xt::rarray<T>& x) {
+  return xt::cube(xt::cast<double>(x));
+}
+
+xt::rarray<double> rray__cube_impl(const xt::rarray<double>& x) {
   return xt::cube(x);
 }
 
