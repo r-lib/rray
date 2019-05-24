@@ -7,7 +7,13 @@
 #'
 #' @param x A vector, matrix, array or rray.
 #'
-#' @param i An integer vector. The slice of `axis` to subset.
+#' @param i Indices to extract along a single axis.
+#' - Integer-ish indices extract specific elements of dimensions.
+#' - Logical indices must be length 1, or the length of the dimension you are
+#' subsetting over.
+#' - Character indices are only allowed if `x` has names for the corresponding
+#' dimension.
+#' - `NULL` is treated as `0`.
 #'
 #' @param axis An integer. The axis to subset.
 #'
@@ -33,6 +39,10 @@
 #' # using `[`
 #' x[, , , 2]
 #'
+#' # `i` can be a character vector if `x` has names along `axis`
+#' x <- set_dim_names(x, n = 4, c("foo", "bar"))
+#' rray_slice(x, "bar", axis = 4)
+#'
 #' # The assignment variation can be useful
 #' # for assigning to higher dimensional elements
 #' rray_slice(x, 1, 3) <- matrix(c(99, 100), nrow = 1)
@@ -40,7 +50,6 @@
 #' @family rray subsetters
 #' @export
 rray_slice <- function(x, i, axis) {
-  i <- vec_cast(i, integer())
   axis <- vec_cast(axis, integer())
   validate_axis(axis, x)
 
@@ -52,14 +61,18 @@ rray_slice <- function(x, i, axis) {
 #' @rdname rray_slice
 #' @export
 `rray_slice<-` <- function(x, i, axis, value) {
-  rray_slice_assign_impl(x, i = i, axis = axis, value = value)
+  rray_slice_assign(x, i = i, axis = axis, value = value)
 }
 
-rray_slice_assign_impl <- function(x, i, axis, value) {
+#' @rdname rray_slice
+#' @export
+rray_slice_assign <- function(x, i, axis, value) {
+  axis <- vec_cast(axis, integer())
   validate_axis(axis, x)
+
   indexer <- front_pad(i, axis)
-  rray_subset(x, !!!indexer) <- value
-  x
+
+  rray_subset_assign(x, !!!indexer, value = value)
 }
 
 front_pad <- function(i, axis) {

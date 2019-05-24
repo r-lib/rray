@@ -3,16 +3,27 @@
 \name{rray_slice}
 \alias{rray_slice}
 \alias{rray_slice<-}
+\alias{rray_slice_assign}
 \title{Get or set a slice of an array}
 \usage{
 rray_slice(x, i, axis)
 
 rray_slice(x, i, axis) <- value
+
+rray_slice_assign(x, i, axis, value)
 }
 \arguments{
 \item{x}{A vector, matrix, array or rray.}
 
-\item{i}{An integer vector. The slice of \code{axis} to subset.}
+\item{i}{Indices to extract along a single axis.
+\itemize{
+\item Integer-ish indices extract specific elements of dimensions.
+\item Logical indices must be length 1, or the length of the dimension you are
+subsetting over.
+\item Character indices are only allowed if \code{x} has names for the corresponding
+dimension.
+\item \code{NULL} is treated as \code{0}.
+}}
 
 \item{axis}{An integer. The axis to subset.}
 
@@ -40,6 +51,10 @@ rray_slice(x, i = 2, axis = 4)
 # Compare the above with the equivalent
 # using `[`
 x[, , , 2]
+
+# `i` can be a character vector if `x` has names along `axis`
+x <- set_dim_names(x, n = 4, c("foo", "bar"))
+rray_slice(x, "bar", axis = 4)
 
 # The assignment variation can be useful
 # for assigning to higher dimensional elements
