@@ -50,3 +50,10 @@ rray_det <- function(x) {
 rray_det_single <- function(x) {
   det(as_matrix(x))
 }
+
+# ------------------------------------------------------------------------------
+
+#' @export
+determinant.vctrs_rray <- function(x, logarithm = TRUE, ...) {
+  determinant(as.matrix(x), logarithm = logarithm, ...)
+}
