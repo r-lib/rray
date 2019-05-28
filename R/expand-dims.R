@@ -55,40 +55,5 @@ rray_expand_dims <- function(x, axis) {
 
   res <- rray__expand_dims(x, as_cpp_idx(axis))
 
-  x_dim_names <- rray_dim_names(x)
-  new_dim_names <- rray_expand_dim_names(x_dim_names, axis)
-  res <- set_full_dim_names(res, new_dim_names)
-
   vec_cast_container(res, x)
-}
-
-# Adds at least 1 `NULL` dim names at the `axis`
-# if axis > length(dim_names) it can add multiple
-# `NULL` elements until length(dim_names) == axis
-rray_expand_dim_names <- function(dim_names, axis) {
-
-  dims <- vec_size(dim_names)
-
-  # Get dimension names after the new axis
-  if (dims >= axis) {
-    post_names <- dim_names[(axis):dims]
-    n_empty <- 1L
-  }
-  else {
-    post_names <- list()
-    n_empty <- axis - dims
-    axis <- min(axis, dims + 1)
-  }
-
-  # Get dimension names before the new axis
-  pre_names <- dim_names[seq_len(axis - 1)]
-
-  # New dim names with an empty dimension inserted
-  new_dim_names <- c(
-    pre_names,
-    rray_empty_dim_names(n_empty),
-    post_names
-  )
-
-  new_dim_names
 }

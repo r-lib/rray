@@ -212,9 +212,36 @@ Rcpp::RObject rray__squeeze(Rcpp::RObject x, std::vector<std::size_t> axes) {
 
 // -----------------------------------------------------------------------------
 
+Rcpp::List rray__expand_dim_names(const Rcpp::List& dim_names,
+                                  const std::size_t& axis) {
+
+  const int& n_dim_names = dim_names.size();
+  const int& n_res_dim_names = n_dim_names + 1;
+
+  Rcpp::List new_dim_names = rray__new_empty_dim_names(n_res_dim_names);
+
+  int offset = 0;
+  for (int i = 0; i < n_dim_names; ++i) {
+    if (i == axis) {
+      offset = 1;
+    }
+    new_dim_names[i + offset] = dim_names[i];
+  }
+
+  return new_dim_names;
+}
+
 template <typename T>
-xt::rarray<T> rray__expand_dims_impl(const xt::rarray<T>& x, std::size_t axis) {
-  return xt::expand_dims(x, axis);
+Rcpp::RObject rray__expand_dims_impl(const xt::rarray<T>& x, std::size_t axis) {
+
+  xt::rarray<T> xt_out = xt::expand_dims(x, axis);
+
+  Rcpp::List new_dim_names = rray__expand_dim_names(rray__dim_names(SEXP(x)), axis);
+
+  Rcpp::RObject out = SEXP(xt_out);
+  out.attr("dimnames") = new_dim_names;
+
+  return out;
 }
 
 // [[Rcpp::export(rng = false)]]
@@ -224,9 +251,36 @@ Rcpp::RObject rray__expand_dims(Rcpp::RObject x, std::size_t axis) {
 
 // -----------------------------------------------------------------------------
 
+Rcpp::List rev_axis_names(const Rcpp::List& dim_names, std::size_t axis) {
+
+  if (r_is_null(dim_names[axis])) {
+    return dim_names;
+  }
+
+  // Shallow duplicate the list since we are only changing 1 element
+  Rcpp::List new_dim_names = Rf_shallow_duplicate(dim_names);
+
+  // Deep copy the element we are altering
+  Rcpp::CharacterVector new_axis_names = Rf_duplicate(new_dim_names[axis]);
+
+  std::reverse(new_axis_names.begin(), new_axis_names.end());
+
+  new_dim_names[axis] = new_axis_names;
+
+  return new_dim_names;
+}
+
 template <typename T>
-xt::rarray<T> rray__flip_impl(const xt::rarray<T>& x, std::size_t axis) {
-  return xt::flip(x, axis);
+Rcpp::RObject rray__flip_impl(const xt::rarray<T>& x, std::size_t axis) {
+
+  xt::rarray<T> xt_out = xt::flip(x, axis);
+
+  Rcpp::List new_dim_names = rev_axis_names(rray__dim_names(SEXP(x)), axis);
+
+  Rcpp::RObject out = SEXP(xt_out);
+  out.attr("dimnames") = new_dim_names;
+
+  return out;
 }
 
 // [[Rcpp::export(rng = false)]]

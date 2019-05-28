@@ -130,10 +130,7 @@ rray_any <- function(x, axes = NULL) {
   x_cast <- vec_cast_inner(x, logical())
 
   # perform the reduction
-  res <- rray__any(x_cast, as_cpp_idx(axes))
-
-  new_dim_names <- rray_reshape_dim_names(rray_dim_names(x), rray_dim(res))
-  res <- set_full_dim_names(res, new_dim_names)
+  res <- rray__any(x_cast, as_cpp_idx(axes), rray_dim_names(x))
 
   vec_cast_container(res, x)
 }
@@ -156,10 +153,7 @@ rray_all <- function(x, axes = NULL) {
   x_cast <- vec_cast_inner(x, logical())
 
   # perform the reduction
-  res <- rray__all(x_cast, as_cpp_idx(axes))
-
-  new_dim_names <- rray_reshape_dim_names(rray_dim_names(x), rray_dim(res))
-  res <- set_full_dim_names(res, new_dim_names)
+  res <- rray__all(x_cast, as_cpp_idx(axes), rray_dim_names(x))
 
   vec_cast_container(res, x)
 }
@@ -243,11 +237,11 @@ logical_cast_compare <- function(f, x, y) {
   x_cast <- vec_cast_inner(x, logical())
   y_cast <- vec_cast_inner(y, logical())
 
-  res <- f(x_cast, y_cast)
+  new_dim_names <- rray_dim_names2(x, y)
 
-  res <- set_full_dim_names(res, rray_dim_names_common(x, y))
+  res <- f(x_cast, y_cast, new_dim_names)
 
-  vec_cast_container(res, vec_type2(x, y))
+  vec_cast_container(res, vec_type_container2(x, y))
 }
 
 logical_cast_call <- function(f, x) {
@@ -258,9 +252,7 @@ logical_cast_call <- function(f, x) {
 
   res <- vec_cast_inner(x, logical())
 
-  res <- f(res)
+  res <- f(res, rray_dim_names(x))
 
-  res <- set_full_dim_names(res, rray_dim_names(x))
-
-  vec_cast_container(res, x)
+  vec_cast_container(res, vec_type_container(x))
 }

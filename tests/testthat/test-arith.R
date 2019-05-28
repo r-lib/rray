@@ -544,8 +544,10 @@ test_that("can use identity", {
   expect_equal(rray_identity(x), x)
   expect_equal(+x, x)
 
+  # rray_identity() on numerics / integers returns
+  # x unchanged, which means dim names don't become rray compliant
   y <- matrix(1L)
-  expect_equal(rray_identity(y), new_matrix(1L))
+  expect_equal(rray_identity(y), matrix(1L))
 })
 
 test_that("can identity a logical", {

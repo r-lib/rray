@@ -110,7 +110,7 @@ vec_type_inner_common <- function(..., .ptype = NULL) {
     return(vec_type_inner(.ptype))
   }
 
-  args <- compact(list2(...))
+  args <- list2(...)
   n_args <- length(args)
 
   if (n_args == 0L) {

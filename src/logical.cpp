@@ -1,59 +1,71 @@
 #include <rray.h>
 #include <dispatch.h>
 
-// TODO - Depending on the adjustment made in this pr, we might be able
-// to remove the early exits calls. Currently xtensor does not match the
-// numpy behavior
-// https://github.com/QuantStack/xtensor/issues/1562
-
 // Required for any() and all()
 #include <xtensor/xarray.hpp>
 
 // -----------------------------------------------------------------------------
 
-xt::rarray<rlogical> rray__logical_and_impl(const xt::rarray<rlogical>& x,
-                                            const xt::rarray<rlogical>& y) {
+Rcpp::RObject rray__logical_and_impl(const xt::rarray<rlogical>& x,
+                                     const xt::rarray<rlogical>& y,
+                                     Rcpp::List new_dim_names) {
 
   Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
   const int& dims = dim.size();
   auto x_view = rray__increase_dims_view(x, dims);
   auto y_view = rray__increase_dims_view(y, dims);
 
-  return xt::operator&&(x_view, y_view);
+  xt::rarray<rlogical> res = xt::operator&&(x_view, y_view);
+  Rf_setAttrib(SEXP(res), R_DimNamesSymbol, new_dim_names);
+
+  return Rcpp::as<Rcpp::RObject>(res);
 }
 
 // [[Rcpp::export(rng = false)]]
-Rcpp::RObject rray__logical_and(Rcpp::RObject x, Rcpp::RObject y) {
-  DISPATCH_BINARY(rray__logical_and_impl, x, y);
+Rcpp::RObject rray__logical_and(Rcpp::RObject x,
+                                Rcpp::RObject y,
+                                Rcpp::List new_dim_names) {
+  DISPATCH_BINARY_ONE(rray__logical_and_impl, x, y, new_dim_names);
 }
 
 // -----------------------------------------------------------------------------
 
-xt::rarray<rlogical> rray__logical_or_impl(const xt::rarray<rlogical>& x,
-                                           const xt::rarray<rlogical>& y) {
+Rcpp::RObject rray__logical_or_impl(const xt::rarray<rlogical>& x,
+                                    const xt::rarray<rlogical>& y,
+                                    Rcpp::List new_dim_names) {
 
   Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
   const int& dims = dim.size();
   auto x_view = rray__increase_dims_view(x, dims);
   auto y_view = rray__increase_dims_view(y, dims);
 
-  return xt::operator||(x_view, y_view);
+  xt::rarray<rlogical> res = xt::operator||(x_view, y_view);
+  Rf_setAttrib(SEXP(res), R_DimNamesSymbol, new_dim_names);
+
+  return Rcpp::as<Rcpp::RObject>(res);
 }
 
 // [[Rcpp::export(rng = false)]]
-Rcpp::RObject rray__logical_or(Rcpp::RObject x, Rcpp::RObject y) {
-  DISPATCH_BINARY(rray__logical_or_impl, x, y);
+Rcpp::RObject rray__logical_or(Rcpp::RObject x, Rcpp::RObject y,
+                               Rcpp::List new_dim_names) {
+  DISPATCH_BINARY_ONE(rray__logical_or_impl, x, y, new_dim_names);
 }
 
 // -----------------------------------------------------------------------------
 
-xt::rarray<rlogical> rray__logical_not_impl(const xt::rarray<rlogical>& x) {
-  return xt::operator!(x);
+Rcpp::RObject rray__logical_not_impl(const xt::rarray<rlogical>& x,
+                                     Rcpp::List new_dim_names) {
+
+  xt::rarray<rlogical> res = xt::operator!(x);
+  Rf_setAttrib(SEXP(res), R_DimNamesSymbol, new_dim_names);
+
+  return Rcpp::as<Rcpp::RObject>(res);
 }
 
 // [[Rcpp::export(rng = false)]]
-Rcpp::RObject rray__logical_not(const xt::rarray<rlogical>& x) {
-  return Rcpp::as<Rcpp::RObject>(rray__logical_not_impl(x));
+Rcpp::RObject rray__logical_not(const xt::rarray<rlogical>& x,
+                                Rcpp::List new_dim_names) {
+  return rray__logical_not_impl(x, new_dim_names);
 }
 
 // -----------------------------------------------------------------------------
@@ -65,13 +77,20 @@ Rcpp::RObject rray__logical_not(const xt::rarray<rlogical>& x) {
 // TODO - it also currently fails with multiple axes when one is size 0
 // https://github.com/QuantStack/xtensor/issues/1563
 
-xt::rarray<rlogical> rray__any_impl(const xt::rarray<rlogical>& x, Rcpp::RObject axes) {
+// [[Rcpp::export(rng = false)]]
+Rcpp::RObject rray__any(const xt::rarray<rlogical>& x,
+                        Rcpp::RObject axes,
+                        Rcpp::List dim_names) {
 
   // If `axes = NULL` we can rely on `xt::any()` which finds a "global" any value
   if (r_is_null(axes)) {
     xt::xarray<bool> x_global_any = xt::any(x);
-    xt::rarray<rlogical> res = rray__keep_dims_view(x_global_any, rray__dim(SEXP(x)), axes);
-    return res;
+
+    xt::rarray<rlogical> xt_out = rray__keep_dims_view(x_global_any, rray__dim(SEXP(x)), axes);
+    Rcpp::RObject out = SEXP(xt_out);
+    out.attr("dimnames") = rray__reshape_dim_names(dim_names, rray__dim(out));
+
+    return out;
   }
 
   // If `axes != NULL` we implement our own custom reducer
@@ -85,14 +104,11 @@ xt::rarray<rlogical> rray__any_impl(const xt::rarray<rlogical>& x, Rcpp::RObject
   // rarray<rlogical>
   xt::xarray<bool> x_reduced = xt::reduce(any_reducer, x, xt_axes);
 
-  xt::rarray<rlogical> res = rray__keep_dims_view(x_reduced, rray__dim(SEXP(x)), axes);
+  xt::rarray<rlogical> xt_out = rray__keep_dims_view(x_reduced, rray__dim(SEXP(x)), axes);
+  Rcpp::RObject out = SEXP(xt_out);
+  out.attr("dimnames") = rray__reshape_dim_names(dim_names, rray__dim(out));
 
-  return res;
-}
-
-// [[Rcpp::export(rng = false)]]
-Rcpp::RObject rray__any(const xt::rarray<rlogical>& x, Rcpp::RObject axes) {
-  return Rcpp::as<Rcpp::RObject>(rray__any_impl(x, axes));
+  return out;
 }
 
 // -----------------------------------------------------------------------------
@@ -104,13 +120,20 @@ Rcpp::RObject rray__any(const xt::rarray<rlogical>& x, Rcpp::RObject axes) {
 // TODO - it also currently fails with multiple axes when one is size 0
 // https://github.com/QuantStack/xtensor/issues/1563
 
-xt::rarray<rlogical> rray__all_impl(const xt::rarray<rlogical>& x, Rcpp::RObject axes) {
+// [[Rcpp::export(rng = false)]]
+Rcpp::RObject rray__all(const xt::rarray<rlogical>& x,
+                        Rcpp::RObject axes,
+                        Rcpp::List dim_names) {
 
   // If `axes = NULL` we can rely on `xt::all()` which finds a "global" all value
   if (r_is_null(axes)) {
     xt::xarray<bool> x_global_all = xt::all(x);
-    xt::rarray<rlogical> res = rray__keep_dims_view(x_global_all, rray__dim(SEXP(x)), axes);
-    return res;
+
+    xt::rarray<rlogical> xt_out = rray__keep_dims_view(x_global_all, rray__dim(SEXP(x)), axes);
+    Rcpp::RObject out = SEXP(xt_out);
+    out.attr("dimnames") = rray__reshape_dim_names(dim_names, rray__dim(out));
+
+    return out;
   }
 
   // If `axes != NULL` we implement our own custom reducer
@@ -124,14 +147,11 @@ xt::rarray<rlogical> rray__all_impl(const xt::rarray<rlogical>& x, Rcpp::RObject
   // rarray<rlogical>
   xt::xarray<bool> x_reduced = xt::reduce(all_reducer, x, xt_axes);
 
-  xt::rarray<rlogical> res = rray__keep_dims_view(x_reduced, rray__dim(SEXP(x)), axes);
+  xt::rarray<rlogical> xt_out = rray__keep_dims_view(x_reduced, rray__dim(SEXP(x)), axes);
+  Rcpp::RObject out = SEXP(xt_out);
+  out.attr("dimnames") = rray__reshape_dim_names(dim_names, rray__dim(out));
 
-  return res;
-}
-
-// [[Rcpp::export(rng = false)]]
-Rcpp::RObject rray__all(const xt::rarray<rlogical>& x, Rcpp::RObject axes) {
-  return Rcpp::as<Rcpp::RObject>(rray__all_impl(x, axes));
+  return out;
 }
 
 // -----------------------------------------------------------------------------
