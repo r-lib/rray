@@ -137,8 +137,8 @@ rray__logical_not <- function(x, new_dim_names) {
     .Call(`_rray_rray__logical_not`, x, new_dim_names)
 }
 
-rray__any <- function(x, axes) {
-    .Call(`_rray_rray__any`, x, axes)
+rray__any <- function(x, axes, dim_names) {
+    .Call(`_rray_rray__any`, x, axes, dim_names)
 }
 
 rray__all <- function(x, axes) {

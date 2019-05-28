@@ -130,10 +130,7 @@ rray_any <- function(x, axes = NULL) {
   x_cast <- vec_cast_inner(x, logical())
 
   # perform the reduction
-  res <- rray__any(x_cast, as_cpp_idx(axes))
-
-  new_dim_names <- rray_reshape_dim_names(rray_dim_names(x), rray_dim(res))
-  res <- set_full_dim_names(res, new_dim_names)
+  res <- rray__any(x_cast, as_cpp_idx(axes), rray_dim_names(x))
 
   vec_cast_container(res, x)
 }
