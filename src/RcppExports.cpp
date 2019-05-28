@@ -466,17 +466,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rray__expand_dim_names
-Rcpp::List rray__expand_dim_names(const Rcpp::List& dim_names, const std::size_t& axis);
-RcppExport SEXP _rray_rray__expand_dim_names(SEXP dim_namesSEXP, SEXP axisSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type dim_names(dim_namesSEXP);
-    Rcpp::traits::input_parameter< const std::size_t& >::type axis(axisSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__expand_dim_names(dim_names, axis));
-    return rcpp_result_gen;
-END_RCPP
-}
 // rray__expand_dims
 Rcpp::RObject rray__expand_dims(Rcpp::RObject x, std::size_t axis);
 RcppExport SEXP _rray_rray__expand_dims(SEXP xSEXP, SEXP axisSEXP) {
@@ -1134,7 +1123,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__rotate", (DL_FUNC) &_rray_rray__rotate, 4},
     {"_rray_rray__transpose", (DL_FUNC) &_rray_rray__transpose, 2},
     {"_rray_rray__squeeze", (DL_FUNC) &_rray_rray__squeeze, 2},
-    {"_rray_rray__expand_dim_names", (DL_FUNC) &_rray_rray__expand_dim_names, 2},
     {"_rray_rray__expand_dims", (DL_FUNC) &_rray_rray__expand_dims, 2},
     {"_rray_rray__flip", (DL_FUNC) &_rray_rray__flip, 2},
     {"_rray_rray__flatten", (DL_FUNC) &_rray_rray__flatten, 1},
