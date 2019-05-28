@@ -257,7 +257,9 @@ rray_clip <- function(x, low, high) {
 # ------------------------------------------------------------------------------
 
 rray_math_unary_base <- function(f, x, ...) {
-  rray_arith_unary_base(f, x, ...)
+  res <- f(x, ...)
+  res <- set_full_dim_names(res, rray_dim_names(x))
+  vec_cast_container(res, x)
 }
 
 rray_math_binary_base <- function(f, x, y) {

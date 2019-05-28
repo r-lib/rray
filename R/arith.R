@@ -129,7 +129,7 @@ rray_integer_division_vctrs_wrapper <- function(x, y) {
 #' @rdname rray_arith
 #' @export
 rray_identity <- function(x) {
-  rray_arith_unary_base(rray__identity, x)
+  vec_cast_container(rray__identity(x), x)
 }
 
 # ------------------------------------------------------------------------------
@@ -137,16 +137,10 @@ rray_identity <- function(x) {
 #' @rdname rray_arith
 #' @export
 rray_opposite <- function(x) {
-  rray_arith_unary_base(rray__opposite, x)
+  vec_cast_container(rray__opposite(x), x)
 }
 
 # ------------------------------------------------------------------------------
-
-rray_arith_unary_base <- function(f, x, ...) {
-  res <- f(x, ...)
-  res <- set_full_dim_names(res, rray_dim_names(x))
-  vec_cast_container(res, x)
-}
 
 rray_arith_binary_base <- function(f, x, y) {
 

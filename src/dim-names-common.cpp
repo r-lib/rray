@@ -172,3 +172,18 @@ void rray__reshape_and_set_dim_names(Rcpp::RObject res, Rcpp::RObject x) {
   Rcpp::List new_dim_names = rray__reshape_dim_names(rray__dim_names(x), rray__dim(res));
   res.attr("dimnames") = new_dim_names;
 }
+
+// -----------------------------------------------------------------------------
+
+// One of the other very common dim names restoration functions. This simply
+// takes the result, and the original x, and puts the original dim names back
+// on the result. It assumes that the dimensions of the result and x are the same
+// It also returns the result as an RObject, which is useful as the return value
+// of other functions.
+
+Rcpp::RObject rray__restore_dim_names(SEXP res, SEXP x) {
+  Rf_setAttrib(res, R_DimNamesSymbol, rray__dim_names(x));
+  return res;
+}
+
+

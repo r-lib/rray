@@ -157,16 +157,18 @@ Rcpp::RObject rray__pow(Rcpp::RObject x, Rcpp::RObject y) {
 
 // -----------------------------------------------------------------------------
 
+// Nothing to do in the case of double / integer x
+
 template <typename T>
 Rcpp::RObject rray__identity_impl(const xt::rarray<T>& x) {
-  xt::rarray<T> res = xt::operator+(x);
-  return Rcpp::as<Rcpp::RObject>(res);
+  return SEXP(x);
 }
 
 // Logicals as integers
 Rcpp::RObject rray__identity_impl(const xt::rarray<rlogical>& x) {
-  xt::rarray<int> res = xt::operator+(x);
-  return Rcpp::as<Rcpp::RObject>(res);
+  xt::rarray<int> xt_res = xt::operator+(x);
+  Rcpp::RObject res = rray__restore_dim_names(xt_res, x);
+  return res;
 }
 
 // [[Rcpp::export(rng = false)]]
@@ -178,14 +180,16 @@ Rcpp::RObject rray__identity(Rcpp::RObject x) {
 
 template <typename T>
 Rcpp::RObject rray__opposite_impl(const xt::rarray<T>& x) {
-  xt::rarray<T> res = xt::operator-(x);
-  return Rcpp::as<Rcpp::RObject>(res);
+  xt::rarray<T> xt_res = xt::operator-(x);
+  Rcpp::RObject res = rray__restore_dim_names(xt_res, x);
+  return res;
 }
 
 // Logicals as integers
 Rcpp::RObject rray__opposite_impl(const xt::rarray<rlogical>& x) {
-  xt::rarray<int> res = xt::operator-(x);
-  return Rcpp::as<Rcpp::RObject>(res);
+  xt::rarray<int> xt_res = xt::operator-(x);
+  Rcpp::RObject res = rray__restore_dim_names(xt_res, x);
+  return res;
 }
 
 // [[Rcpp::export(rng = false)]]
