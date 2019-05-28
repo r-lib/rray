@@ -355,34 +355,37 @@ BEGIN_RCPP
 END_RCPP
 }
 // rray__logical_and
-Rcpp::RObject rray__logical_and(Rcpp::RObject x, Rcpp::RObject y);
-RcppExport SEXP _rray_rray__logical_and(SEXP xSEXP, SEXP ySEXP) {
+Rcpp::RObject rray__logical_and(Rcpp::RObject x, Rcpp::RObject y, Rcpp::List new_dim_names);
+RcppExport SEXP _rray_rray__logical_and(SEXP xSEXP, SEXP ySEXP, SEXP new_dim_namesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
     Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__logical_and(x, y));
+    Rcpp::traits::input_parameter< Rcpp::List >::type new_dim_names(new_dim_namesSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__logical_and(x, y, new_dim_names));
     return rcpp_result_gen;
 END_RCPP
 }
 // rray__logical_or
-Rcpp::RObject rray__logical_or(Rcpp::RObject x, Rcpp::RObject y);
-RcppExport SEXP _rray_rray__logical_or(SEXP xSEXP, SEXP ySEXP) {
+Rcpp::RObject rray__logical_or(Rcpp::RObject x, Rcpp::RObject y, Rcpp::List new_dim_names);
+RcppExport SEXP _rray_rray__logical_or(SEXP xSEXP, SEXP ySEXP, SEXP new_dim_namesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
     Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__logical_or(x, y));
+    Rcpp::traits::input_parameter< Rcpp::List >::type new_dim_names(new_dim_namesSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__logical_or(x, y, new_dim_names));
     return rcpp_result_gen;
 END_RCPP
 }
 // rray__logical_not
-Rcpp::RObject rray__logical_not(const xt::rarray<rlogical>& x);
-RcppExport SEXP _rray_rray__logical_not(SEXP xSEXP) {
+Rcpp::RObject rray__logical_not(const xt::rarray<rlogical>& x, Rcpp::List new_dim_names);
+RcppExport SEXP _rray_rray__logical_not(SEXP xSEXP, SEXP new_dim_namesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< const xt::rarray<rlogical>& >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__logical_not(x));
+    Rcpp::traits::input_parameter< Rcpp::List >::type new_dim_names(new_dim_namesSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__logical_not(x, new_dim_names));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1113,9 +1116,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__dims2", (DL_FUNC) &_rray_rray__dims2, 2},
     {"_rray_rray__increase_dims", (DL_FUNC) &_rray_rray__increase_dims, 2},
     {"_rray_rray__reshape", (DL_FUNC) &_rray_rray__reshape, 2},
-    {"_rray_rray__logical_and", (DL_FUNC) &_rray_rray__logical_and, 2},
-    {"_rray_rray__logical_or", (DL_FUNC) &_rray_rray__logical_or, 2},
-    {"_rray_rray__logical_not", (DL_FUNC) &_rray_rray__logical_not, 1},
+    {"_rray_rray__logical_and", (DL_FUNC) &_rray_rray__logical_and, 3},
+    {"_rray_rray__logical_or", (DL_FUNC) &_rray_rray__logical_or, 3},
+    {"_rray_rray__logical_not", (DL_FUNC) &_rray_rray__logical_not, 2},
     {"_rray_rray__any", (DL_FUNC) &_rray_rray__any, 2},
     {"_rray_rray__all", (DL_FUNC) &_rray_rray__all, 2},
     {"_rray_rray__if_else", (DL_FUNC) &_rray_rray__if_else, 3},

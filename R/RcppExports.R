@@ -125,16 +125,16 @@ rray__reshape <- function(x, dim) {
     .Call(`_rray_rray__reshape`, x, dim)
 }
 
-rray__logical_and <- function(x, y) {
-    .Call(`_rray_rray__logical_and`, x, y)
+rray__logical_and <- function(x, y, new_dim_names) {
+    .Call(`_rray_rray__logical_and`, x, y, new_dim_names)
 }
 
-rray__logical_or <- function(x, y) {
-    .Call(`_rray_rray__logical_or`, x, y)
+rray__logical_or <- function(x, y, new_dim_names) {
+    .Call(`_rray_rray__logical_or`, x, y, new_dim_names)
 }
 
-rray__logical_not <- function(x) {
-    .Call(`_rray_rray__logical_not`, x)
+rray__logical_not <- function(x, new_dim_names) {
+    .Call(`_rray_rray__logical_not`, x, new_dim_names)
 }
 
 rray__any <- function(x, axes) {
