@@ -263,7 +263,15 @@ rray_math_unary_base <- function(f, x, ...) {
 }
 
 rray_math_binary_base <- function(f, x, y) {
-  rray_arith_binary_base(f, x, y)
+
+  args <- vec_cast_inner_common(x, y)
+
+  res <- f(args[[1]], args[[2]])
+
+  res <- set_full_dim_names(res, rray_dim_names2(x, y))
+
+  vec_cast_container(res, vec_type2(x, y))
+
 }
 
 rray_math_trinary_base <- function(f, x, y, z) {
