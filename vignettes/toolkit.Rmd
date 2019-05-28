@@ -1,0 +1,105 @@
+---
+title: "rray as a toolkit"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{rray as a toolkit}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(rray)
+library(magrittr)
+```
+
+## Introduction
+
+One of the big goals for rray is to be a general purpose toolkit for working with arrays. A requirement of this is that you shouldn't have to opt into using rray objects to be able to take advantages of the nice features of broadcasting, or the ability to use any of the `rray_*()` functions. That requirement has been at the core of rray development, and it means that you can use base R vector/matrix/array objects with any of the rray functions, and still get a base R object back out.
+
+```{r}
+x <- matrix(1:6, nrow = 2)
+y <- matrix(1:2, nrow = 2)
+
+rray_sum(x, axes = 1)
+
+rray_bind(x, x, axis = 3)
+
+# You can't add these together with base R!
+rray_add(x, y)
+```
+
+## Axes
+
+The way you specify the dimensions over which a function should be applied is very different in rray compared with base R. With base R, you'll often use the `MARGIN` argument to specify the dimensions. In rray, you use `axes` (or `axis`, depending on the function). In short, these two are _complements_ of one another. Ignoring the fact that rray doesn't drop length 1 dimensions, notice that the values computed here are the same, even though the dimensions to compute over look different.
+
+```{r}
+x <- array(1:8, c(2, 2, 2))
+
+rray_sum(x, axes = 1)
+
+apply(x, MARGIN = c(2, 3), FUN = sum)
+```
+
+If you do want to drop dimensions with rray, you can explictly call `rray_squeeze()` afterwards. It is much easier to drop explictly than it is to recover the dropped dimensions from `apply()`.
+
+```{r}
+x %>%
+  rray_sum(axes = 1) %>%
+  rray_squeeze()
+```
+
+I find that `axes` is a more intuitive way to specify the dimensions, because you are listing the dimensions that you are allowing to change in some way. In the above example with the reducer `rray_sum()`, I specified `axes = 1`. This _guarantees_ that the result will have the same dimensions as `x` everywhere except in the first dimension, which will have length 1, no matter what. In other words, the dimensions go from `(2, 2, 2)` to `(1, 2, 2)`.
+
+For another example, consider `rray_bind()`.
+
+```{r}
+# Bind "along" the first axis
+# rray_bind((2, 2, 2), (2, 2, 2), axis = 1) -> (4, 2, 2)
+rray_bind(x, x, axis = 1)
+
+# rray_bind((2, 2, 2), (2, 2, 2), axis = 2) -> (2, 4, 2)
+rray_bind(x, x, axis = 2)
+
+# rray_bind((2, 2, 2), (2, 2, 2), axis = 3) -> (2, 2, 4)
+rray_bind(x, x, axis = 3)
+```
+
+To determine the resulting dimensions of a bind operation, there are two steps. First, the common dimensions are determined in every dimension except for the `axis` of interest. Then, to determine the dimension size of the `axis`, add the `axis` sizes of the inputs.
+
+```{r}
+axis <- 1
+arg_1 <- rray_slice(x, 0, axis)
+arg_2 <- rray_slice(x, 0, axis)
+
+# make an empty object with `axis` dimensionality to broadcast with
+dummy_dim <- rep(1L, times = axis)
+dummy_dim[axis] <- 0L
+dummy <- array(numeric(), dummy_dim)
+
+# find the common dimensions
+new_dim <- rray_dim_common(arg_1, arg_2, dummy)
+
+new_dim[axis] <- rray_dim(x)[axis] + rray_dim(x)[axis]
+
+new_dim
+```
+
+To determine the resulting dimensions, all you have to do is find the common dimensions, and then add together the dimensions along the `axis` of interest. Again, the only dimension that is allowed to change is the `axis` dimension. You might be surprised to learn that you can actually bind along a higher dimensional axis than what are specified by the inputs in `...`.
+
+```{r}
+# rray_bind((2, 2, 2), (2, 2, 2), axis = 4) -> (2, 4, 2, 2)
+rray_bind(x, x, axis = 4)
+
+rray_bind(x, x, axis = 5)
+```
+
+TODO - insert images showcasing applying a function along an axis. Use a 3D array, and do along 1st, 2nd, and 3rd dimension.
