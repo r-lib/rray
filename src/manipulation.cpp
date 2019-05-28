@@ -252,9 +252,36 @@ Rcpp::RObject rray__expand_dims(Rcpp::RObject x, std::size_t axis) {
 
 // -----------------------------------------------------------------------------
 
+Rcpp::List rev_axis_names(const Rcpp::List& dim_names, std::size_t axis) {
+
+  if (r_is_null(dim_names[axis])) {
+    return dim_names;
+  }
+
+  // Shallow duplicate the list since we are only changing 1 element
+  Rcpp::List new_dim_names = Rf_shallow_duplicate(dim_names);
+
+  // Deep copy the element we are altering
+  Rcpp::CharacterVector new_axis_names = Rf_duplicate(new_dim_names[axis]);
+
+  std::reverse(new_axis_names.begin(), new_axis_names.end());
+
+  new_dim_names[axis] = new_axis_names;
+
+  return new_dim_names;
+}
+
 template <typename T>
-xt::rarray<T> rray__flip_impl(const xt::rarray<T>& x, std::size_t axis) {
-  return xt::flip(x, axis);
+Rcpp::RObject rray__flip_impl(const xt::rarray<T>& x, std::size_t axis) {
+
+  xt::rarray<T> xt_out = xt::flip(x, axis);
+
+  Rcpp::List new_dim_names = rev_axis_names(rray__dim_names(SEXP(x)), axis);
+
+  Rcpp::RObject out = SEXP(xt_out);
+  out.attr("dimnames") = new_dim_names;
+
+  return out;
 }
 
 // [[Rcpp::export(rng = false)]]
