@@ -212,9 +212,37 @@ Rcpp::RObject rray__squeeze(Rcpp::RObject x, std::vector<std::size_t> axes) {
 
 // -----------------------------------------------------------------------------
 
+// [[Rcpp::export(rng = false)]]
+Rcpp::List rray__expand_dim_names(const Rcpp::List& dim_names,
+                                  const std::size_t& axis) {
+
+  const int& n_dim_names = dim_names.size();
+  const int& n_res_dim_names = n_dim_names + 1;
+
+  Rcpp::List new_dim_names = rray__new_empty_dim_names(n_res_dim_names);
+
+  int offset = 0;
+  for (int i = 0; i < n_dim_names; ++i) {
+    if (i == axis) {
+      offset = 1;
+    }
+    new_dim_names[i + offset] = dim_names[i];
+  }
+
+  return new_dim_names;
+}
+
 template <typename T>
-xt::rarray<T> rray__expand_dims_impl(const xt::rarray<T>& x, std::size_t axis) {
-  return xt::expand_dims(x, axis);
+Rcpp::RObject rray__expand_dims_impl(const xt::rarray<T>& x, std::size_t axis) {
+
+  xt::rarray<T> xt_out = xt::expand_dims(x, axis);
+
+  Rcpp::List new_dim_names = rray__expand_dim_names(rray__dim_names(SEXP(x)), axis);
+
+  Rcpp::RObject out = SEXP(xt_out);
+  out.attr("dimnames") = new_dim_names;
+
+  return out;
 }
 
 // [[Rcpp::export(rng = false)]]

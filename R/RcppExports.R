@@ -165,6 +165,10 @@ rray__squeeze <- function(x, axes) {
     .Call(`_rray_rray__squeeze`, x, axes)
 }
 
+rray__expand_dim_names <- function(dim_names, axis) {
+    .Call(`_rray_rray__expand_dim_names`, dim_names, axis)
+}
+
 rray__expand_dims <- function(x, axis) {
     .Call(`_rray_rray__expand_dims`, x, axis)
 }
