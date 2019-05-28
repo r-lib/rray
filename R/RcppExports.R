@@ -45,6 +45,10 @@ rray__diag <- function(x, k) {
     .Call(`_rray_rray__diag`, x, k)
 }
 
+vec__cast_inner <- function(x, to) {
+    .Call(`_rray_vec__cast_inner`, x, to)
+}
+
 rray__greater <- function(x, y, new_dim_names) {
     .Call(`_rray_rray__greater`, x, y, new_dim_names)
 }
@@ -123,6 +127,10 @@ rray__increase_dims <- function(dim, dims) {
 
 rray__reshape <- function(x, dim) {
     .Call(`_rray_rray__reshape`, x, dim)
+}
+
+rray_init <- function(ns) {
+    .Call(`_rray_rray_init`, ns)
 }
 
 rray__logical_and <- function(x, y, new_dim_names) {
@@ -387,6 +395,10 @@ subset_dim_names <- function(dim_names, indexer) {
 
 rray__subset <- function(x, indexer) {
     .Call(`_rray_rray__subset`, x, indexer)
+}
+
+vec__type_inner2 <- function(x, y) {
+    .Call(`_rray_vec__type_inner2`, x, y)
 }
 
 rray__validate_dim <- function(dim) {

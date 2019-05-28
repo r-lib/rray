@@ -1,12 +1,13 @@
 #include <rray.h>
 #include <dispatch.h>
+#include "cast.h"
+#include "type2.h"
 
 // -----------------------------------------------------------------------------
 
 template <typename T>
 Rcpp::RObject rray__add_impl(const xt::rarray<T>& x,
-                             const xt::rarray<T>& y,
-                             Rcpp::List new_dim_names) {
+                             const xt::rarray<T>& y) {
 
   Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
   const int& dims = dim.size();
@@ -14,15 +15,13 @@ Rcpp::RObject rray__add_impl(const xt::rarray<T>& x,
   auto y_view = rray__increase_dims_view(y, dims);
 
   xt::rarray<T> res = x_view + y_view;
-  Rf_setAttrib(SEXP(res), R_DimNamesSymbol, new_dim_names);
 
   return Rcpp::as<Rcpp::RObject>(res);
 }
 
 // Logicals return integers
 Rcpp::RObject rray__add_impl(const xt::rarray<rlogical>& x,
-                             const xt::rarray<rlogical>& y,
-                             Rcpp::List new_dim_names) {
+                             const xt::rarray<rlogical>& y) {
 
   Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
   const int& dims = dim.size();
@@ -30,14 +29,46 @@ Rcpp::RObject rray__add_impl(const xt::rarray<rlogical>& x,
   auto y_view = rray__increase_dims_view(y, dims);
 
   xt::rarray<int> res = x_view + y_view;
-  Rf_setAttrib(SEXP(res), R_DimNamesSymbol, new_dim_names);
 
   return Rcpp::as<Rcpp::RObject>(res);
 }
 
 // [[Rcpp::export(rng = false)]]
-Rcpp::RObject rray__add(Rcpp::RObject x, Rcpp::RObject y, Rcpp::List new_dim_names) {
-  DISPATCH_BINARY_ONE(rray__add_impl, x, y, new_dim_names);
+Rcpp::RObject rray__add(Rcpp::RObject x, Rcpp::RObject y) {
+
+  Rcpp::RObject type = vec__type_inner2(x, y);
+  Rcpp::RObject x_cast = vec__cast_inner(x, type);
+  Rcpp::RObject y_cast = vec__cast_inner(y, type);
+
+  Rcpp::RObject out;
+
+  if (Rf_isNull(x_cast) || Rf_isNull(y_cast)) {
+    return Rcpp::as<Rcpp::RObject>(R_NilValue);
+  }
+
+  int x_type = TYPEOF(x_cast);
+  int y_type = TYPEOF(y_cast);
+
+  if (x_type != y_type) {
+    Rcpp::stop("`x` and `y` must have the same type.");
+  }
+
+  if (x_type == REALSXP) {
+    out = rray__add_impl(xt::rarray<double>(x_cast), xt::rarray<double>(y_cast));
+  }
+  else if (x_type == INTSXP) {
+    out = rray__add_impl(xt::rarray<int>(x_cast), xt::rarray<int>(y_cast));
+  }
+  else if (x_type == LGLSXP) {
+    out = rray__add_impl(xt::rarray<rlogical>(x_cast), xt::rarray<rlogical>(y_cast));
+  }
+  else {
+    error_unknown_type();
+  }
+
+  out.attr("dimnames") = rray__dim_names2(x, y);
+
+  return out;
 }
 
 // -----------------------------------------------------------------------------
