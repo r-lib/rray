@@ -141,8 +141,8 @@ rray__any <- function(x, axes, dim_names) {
     .Call(`_rray_rray__any`, x, axes, dim_names)
 }
 
-rray__all <- function(x, axes) {
-    .Call(`_rray_rray__all`, x, axes)
+rray__all <- function(x, axes, dim_names) {
+    .Call(`_rray_rray__all`, x, axes, dim_names)
 }
 
 rray__if_else <- function(condition, true_, false_) {

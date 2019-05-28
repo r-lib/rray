@@ -120,13 +120,20 @@ Rcpp::RObject rray__any(const xt::rarray<rlogical>& x,
 // TODO - it also currently fails with multiple axes when one is size 0
 // https://github.com/QuantStack/xtensor/issues/1563
 
-xt::rarray<rlogical> rray__all_impl(const xt::rarray<rlogical>& x, Rcpp::RObject axes) {
+// [[Rcpp::export(rng = false)]]
+Rcpp::RObject rray__all(const xt::rarray<rlogical>& x,
+                        Rcpp::RObject axes,
+                        Rcpp::List dim_names) {
 
   // If `axes = NULL` we can rely on `xt::all()` which finds a "global" all value
   if (r_is_null(axes)) {
     xt::xarray<bool> x_global_all = xt::all(x);
-    xt::rarray<rlogical> res = rray__keep_dims_view(x_global_all, rray__dim(SEXP(x)), axes);
-    return res;
+
+    xt::rarray<rlogical> xt_out = rray__keep_dims_view(x_global_all, rray__dim(SEXP(x)), axes);
+    Rcpp::RObject out = SEXP(xt_out);
+    out.attr("dimnames") = rray__reshape_dim_names(dim_names, rray__dim(out));
+
+    return out;
   }
 
   // If `axes != NULL` we implement our own custom reducer
@@ -140,14 +147,11 @@ xt::rarray<rlogical> rray__all_impl(const xt::rarray<rlogical>& x, Rcpp::RObject
   // rarray<rlogical>
   xt::xarray<bool> x_reduced = xt::reduce(all_reducer, x, xt_axes);
 
-  xt::rarray<rlogical> res = rray__keep_dims_view(x_reduced, rray__dim(SEXP(x)), axes);
+  xt::rarray<rlogical> xt_out = rray__keep_dims_view(x_reduced, rray__dim(SEXP(x)), axes);
+  Rcpp::RObject out = SEXP(xt_out);
+  out.attr("dimnames") = rray__reshape_dim_names(dim_names, rray__dim(out));
 
-  return res;
-}
-
-// [[Rcpp::export(rng = false)]]
-Rcpp::RObject rray__all(const xt::rarray<rlogical>& x, Rcpp::RObject axes) {
-  return Rcpp::as<Rcpp::RObject>(rray__all_impl(x, axes));
+  return out;
 }
 
 // -----------------------------------------------------------------------------
