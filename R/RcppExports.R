@@ -45,28 +45,28 @@ rray__diag <- function(x, k) {
     .Call(`_rray_rray__diag`, x, k)
 }
 
-rray__greater <- function(x, y) {
-    .Call(`_rray_rray__greater`, x, y)
+rray__greater <- function(x, y, new_dim_names) {
+    .Call(`_rray_rray__greater`, x, y, new_dim_names)
 }
 
-rray__greater_equal <- function(x, y) {
-    .Call(`_rray_rray__greater_equal`, x, y)
+rray__greater_equal <- function(x, y, new_dim_names) {
+    .Call(`_rray_rray__greater_equal`, x, y, new_dim_names)
 }
 
-rray__lesser <- function(x, y) {
-    .Call(`_rray_rray__lesser`, x, y)
+rray__lesser <- function(x, y, new_dim_names) {
+    .Call(`_rray_rray__lesser`, x, y, new_dim_names)
 }
 
-rray__lesser_equal <- function(x, y) {
-    .Call(`_rray_rray__lesser_equal`, x, y)
+rray__lesser_equal <- function(x, y, new_dim_names) {
+    .Call(`_rray_rray__lesser_equal`, x, y, new_dim_names)
 }
 
-rray__equal <- function(x, y) {
-    .Call(`_rray_rray__equal`, x, y)
+rray__equal <- function(x, y, new_dim_names) {
+    .Call(`_rray_rray__equal`, x, y, new_dim_names)
 }
 
-rray__not_equal <- function(x, y) {
-    .Call(`_rray_rray__not_equal`, x, y)
+rray__not_equal <- function(x, y, new_dim_names) {
+    .Call(`_rray_rray__not_equal`, x, y, new_dim_names)
 }
 
 rray__all_equal <- function(x, y) {
