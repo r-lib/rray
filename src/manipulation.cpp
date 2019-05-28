@@ -212,7 +212,6 @@ Rcpp::RObject rray__squeeze(Rcpp::RObject x, std::vector<std::size_t> axes) {
 
 // -----------------------------------------------------------------------------
 
-// [[Rcpp::export(rng = false)]]
 Rcpp::List rray__expand_dim_names(const Rcpp::List& dim_names,
                                   const std::size_t& axis) {
 
