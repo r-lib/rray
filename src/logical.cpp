@@ -9,66 +9,82 @@
 
 // -----------------------------------------------------------------------------
 
+#define LOGICAL_IMPL(FUN, X, Y)                                  \
+  auto views = rray__increase_dims_view2(X, Y);                  \
+  auto x_view = std::get<0>(views);                              \
+  auto y_view = std::get<1>(views);                              \
+                                                                 \
+  xt::rarray<rlogical> res = FUN(x_view, y_view);                \
+                                                                 \
+  return Rcpp::as<Rcpp::RObject>(res)
+
+// -----------------------------------------------------------------------------
+
+#define DISPATCH_LOGICAL(FUN, X, Y)                              \
+  if (r_is_null(X)) {                                            \
+    X = rray_shared_empty_lgl;                                   \
+  }                                                              \
+                                                                 \
+  if (r_is_null(Y)) {                                            \
+    Y = rray_shared_empty_lgl;                                   \
+  }                                                              \
+                                                                 \
+  Rcpp::List new_dim_names = rray__dim_names2(X, Y);             \
+                                                                 \
+  X = vec__cast_inner(X, rray_shared_empty_lgl);                 \
+  Y = vec__cast_inner(Y, rray_shared_empty_lgl);                 \
+                                                                 \
+  Rcpp::RObject out;                                             \
+  DISPATCH_BINARY_SIMPLE(out, FUN, X, Y);                        \
+                                                                 \
+  out.attr("dimnames") = new_dim_names;                          \
+                                                                 \
+  return out
+
+// -----------------------------------------------------------------------------
+
 Rcpp::RObject rray__logical_and_impl(const xt::rarray<rlogical>& x,
-                                     const xt::rarray<rlogical>& y,
-                                     Rcpp::List new_dim_names) {
-
-  Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
-  const int& dims = dim.size();
-  auto x_view = rray__increase_dims_view(x, dims);
-  auto y_view = rray__increase_dims_view(y, dims);
-
-  xt::rarray<rlogical> res = xt::operator&&(x_view, y_view);
-  Rf_setAttrib(SEXP(res), R_DimNamesSymbol, new_dim_names);
-
-  return Rcpp::as<Rcpp::RObject>(res);
+                                     const xt::rarray<rlogical>& y) {
+  LOGICAL_IMPL(xt::operator&&, x, y);
 }
 
 // [[Rcpp::export(rng = false)]]
-Rcpp::RObject rray__logical_and(Rcpp::RObject x,
-                                Rcpp::RObject y,
-                                Rcpp::List new_dim_names) {
-  DISPATCH_BINARY_ONE(rray__logical_and_impl, x, y, new_dim_names);
+Rcpp::RObject rray__logical_and(Rcpp::RObject x, Rcpp::RObject y) {
+  DISPATCH_LOGICAL(rray__logical_and_impl, x, y);
 }
 
 // -----------------------------------------------------------------------------
 
 Rcpp::RObject rray__logical_or_impl(const xt::rarray<rlogical>& x,
-                                    const xt::rarray<rlogical>& y,
-                                    Rcpp::List new_dim_names) {
-
-  Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
-  const int& dims = dim.size();
-  auto x_view = rray__increase_dims_view(x, dims);
-  auto y_view = rray__increase_dims_view(y, dims);
-
-  xt::rarray<rlogical> res = xt::operator||(x_view, y_view);
-  Rf_setAttrib(SEXP(res), R_DimNamesSymbol, new_dim_names);
-
-  return Rcpp::as<Rcpp::RObject>(res);
+                                    const xt::rarray<rlogical>& y) {
+  LOGICAL_IMPL(xt::operator||, x, y);
 }
 
 // [[Rcpp::export(rng = false)]]
-Rcpp::RObject rray__logical_or(Rcpp::RObject x, Rcpp::RObject y,
-                               Rcpp::List new_dim_names) {
-  DISPATCH_BINARY_ONE(rray__logical_or_impl, x, y, new_dim_names);
+Rcpp::RObject rray__logical_or(Rcpp::RObject x, Rcpp::RObject y) {
+  DISPATCH_LOGICAL(rray__logical_or_impl, x, y);
 }
 
 // -----------------------------------------------------------------------------
 
-Rcpp::RObject rray__logical_not_impl(const xt::rarray<rlogical>& x,
-                                     Rcpp::List new_dim_names) {
-
-  xt::rarray<rlogical> res = xt::operator!(x);
-  Rf_setAttrib(SEXP(res), R_DimNamesSymbol, new_dim_names);
-
-  return Rcpp::as<Rcpp::RObject>(res);
+Rcpp::RObject rray__logical_not_impl(const xt::rarray<rlogical>& x) {
+  xt::rarray<rlogical> out = xt::operator!(x);
+  return Rcpp::as<Rcpp::RObject>(out);
 }
 
 // [[Rcpp::export(rng = false)]]
-Rcpp::RObject rray__logical_not(const xt::rarray<rlogical>& x,
-                                Rcpp::List new_dim_names) {
-  return rray__logical_not_impl(x, new_dim_names);
+Rcpp::RObject rray__logical_not(Rcpp::RObject x) {
+
+  if (r_is_null(x)) {
+    return rray_shared_empty_lgl;
+  }
+
+  x = vec__cast_inner(x, rray_shared_empty_lgl);
+
+  Rcpp::RObject out = rray__logical_not_impl(xt::rarray<rlogical>(x));
+  out.attr("dimnames") = rray__dim_names(x);
+
+  return out;
 }
 
 // -----------------------------------------------------------------------------

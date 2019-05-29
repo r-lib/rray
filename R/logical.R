@@ -81,7 +81,9 @@ NULL
 #' @rdname rray-logical
 #' @export
 rray_logical_and <- function(x, y) {
-  logical_cast_compare(rray__logical_and, x, y)
+  out <- rray__logical_and(x, y)
+  container <- vec_type_container2(x, y)
+  vec_cast_container(out, container)
 }
 
 # ------------------------------------------------------------------------------
@@ -95,7 +97,9 @@ rray_logical_and <- function(x, y) {
 #' @rdname rray-logical
 #' @export
 rray_logical_or <- function(x, y) {
-  logical_cast_compare(rray__logical_or, x, y)
+  out <- rray__logical_or(x, y)
+  container <- vec_type_container2(x, y)
+  vec_cast_container(out, container)
 }
 
 # ------------------------------------------------------------------------------
@@ -109,7 +113,9 @@ rray_logical_or <- function(x, y) {
 #' @rdname rray-logical
 #' @export
 rray_logical_not <- function(x) {
-  logical_cast_call(rray__logical_not, x)
+  out <- rray__logical_not(x)
+  container <- vec_type_container(x)
+  vec_cast_container(out, container)
 }
 
 # ------------------------------------------------------------------------------
@@ -216,40 +222,4 @@ rray_if_else <- function(condition, true, false) {
   res <- set_full_dim_names(res, new_dim_names)
 
   vec_cast_container(res, to)
-}
-
-# ------------------------------------------------------------------------------
-
-logical_cast_compare <- function(f, x, y) {
-
-  # `NULL` are treated like logical()
-  if (is.null(x)) {
-    x <- logical()
-  }
-
-  if (is.null(y)) {
-    y <- logical()
-  }
-
-  x_cast <- vec_cast_inner(x, logical())
-  y_cast <- vec_cast_inner(y, logical())
-
-  new_dim_names <- rray_dim_names2(x, y)
-
-  res <- f(x_cast, y_cast, new_dim_names)
-
-  vec_cast_container(res, vec_type_container2(x, y))
-}
-
-logical_cast_call <- function(f, x) {
-
-  if (is.null(x)) {
-    x <- logical()
-  }
-
-  res <- vec_cast_inner(x, logical())
-
-  res <- f(res, rray_dim_names(x))
-
-  vec_cast_container(res, vec_type_container(x))
 }
