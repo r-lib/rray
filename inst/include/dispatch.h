@@ -341,4 +341,31 @@
 
 // -----------------------------------------------------------------------------
 
+#define DISPATCH_UNARY_THREE_SIMPLE(OUT, FUN, X, ARG1, ARG2, ARG3)   \
+  int x_type = TYPEOF(X);                                            \
+                                                                     \
+  if (x_type == REALSXP) {                                           \
+    OUT = FUN(                                                       \
+      xt::rarray<double>(X),                                         \
+      ARG1, ARG2, ARG3                                               \
+    );                                                               \
+  }                                                                  \
+  else if (x_type == INTSXP) {                                       \
+    OUT = FUN(                                                       \
+      xt::rarray<int>(X),                                            \
+      ARG1, ARG2, ARG3                                               \
+    );                                                               \
+  }                                                                  \
+  else if (x_type == LGLSXP) {                                       \
+    OUT = FUN(                                                       \
+      xt::rarray<rlogical>(X),                                       \
+      ARG1, ARG2, ARG3                                               \
+    );                                                               \
+  }                                                                  \
+  else {                                                             \
+    error_unknown_type();                                            \
+  }
+
+// -----------------------------------------------------------------------------
+
 #endif

@@ -161,8 +161,8 @@ rray__split <- function(x, axes) {
     .Call(`_rray_rray__split`, x, axes)
 }
 
-rray__rotate <- function(x, from, to, n) {
-    .Call(`_rray_rray__rotate`, x, from, to, n)
+rray__rotate <- function(x, from, to, times) {
+    .Call(`_rray_rray__rotate`, x, from, to, times)
 }
 
 rray__transpose <- function(x, permutation) {

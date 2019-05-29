@@ -443,15 +443,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // rray__rotate
-Rcpp::RObject rray__rotate(Rcpp::RObject x, std::ptrdiff_t from, std::ptrdiff_t to, int n);
-RcppExport SEXP _rray_rray__rotate(SEXP xSEXP, SEXP fromSEXP, SEXP toSEXP, SEXP nSEXP) {
+Rcpp::RObject rray__rotate(Rcpp::RObject x, const std::ptrdiff_t& from, const std::ptrdiff_t& to, const int& times);
+RcppExport SEXP _rray_rray__rotate(SEXP xSEXP, SEXP fromSEXP, SEXP toSEXP, SEXP timesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    Rcpp::traits::input_parameter< std::ptrdiff_t >::type from(fromSEXP);
-    Rcpp::traits::input_parameter< std::ptrdiff_t >::type to(toSEXP);
-    Rcpp::traits::input_parameter< int >::type n(nSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__rotate(x, from, to, n));
+    Rcpp::traits::input_parameter< const std::ptrdiff_t& >::type from(fromSEXP);
+    Rcpp::traits::input_parameter< const std::ptrdiff_t& >::type to(toSEXP);
+    Rcpp::traits::input_parameter< const int& >::type times(timesSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__rotate(x, from, to, times));
     return rcpp_result_gen;
 END_RCPP
 }
