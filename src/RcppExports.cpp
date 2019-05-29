@@ -467,12 +467,12 @@ BEGIN_RCPP
 END_RCPP
 }
 // rray__squeeze
-Rcpp::RObject rray__squeeze(Rcpp::RObject x, std::vector<std::size_t> axes);
+Rcpp::RObject rray__squeeze(Rcpp::RObject x, const std::vector<std::size_t>& axes);
 RcppExport SEXP _rray_rray__squeeze(SEXP xSEXP, SEXP axesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    Rcpp::traits::input_parameter< std::vector<std::size_t> >::type axes(axesSEXP);
+    Rcpp::traits::input_parameter< const std::vector<std::size_t>& >::type axes(axesSEXP);
     rcpp_result_gen = Rcpp::wrap(rray__squeeze(x, axes));
     return rcpp_result_gen;
 END_RCPP

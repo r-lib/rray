@@ -323,6 +323,57 @@ Rcpp::RObject rray__transpose(Rcpp::RObject x, Rcpp::RObject permutation) {
 
 // -----------------------------------------------------------------------------
 
+Rcpp::IntegerVector compute_complement(const int& dims,
+                                       const std::vector<std::size_t>& axes) {
+
+  std::vector<std::size_t> axes_seq(dims);
+  for (std::size_t i = 0; i < dims; ++i) {
+    axes_seq[i] = i;
+  }
+
+  // Output container with with the maximum possible size
+  std::vector<std::size_t> axes_complement(dims);
+  std::vector<std::size_t>::iterator it;
+
+  // Set difference
+  it = std::set_difference(
+    axes_seq.begin(), axes_seq.end(),
+    axes.begin(), axes.end(),
+    axes_complement.begin()
+  );
+
+  // Resize to shrink the container
+  axes_complement.resize(it - axes_complement.begin());
+
+  return Rcpp::wrap(axes_complement);
+}
+
+Rcpp::List squeeze_dim_names(const Rcpp::List& dim_names,
+                             const std::vector<std::size_t>& axes) {
+
+  const int& dims = dim_names.size();
+  const bool& squeezing_every_axis = axes.size() == dims;
+
+  // Normally, names are pulled from the non `axes` axes
+  if (!squeezing_every_axis) {
+    Rcpp::IntegerVector axes_complement = compute_complement(dims, axes);
+    return dim_names[axes_complement];
+  }
+
+  // But in this case we are squeezing every axis!
+  // (only possible if all axes have size 1)
+  // So we take the names from the first dimension with names
+  for (int i = 0; i < dims; ++i) {
+    if (!r_is_null(dim_names[i])) {
+      return dim_names[i];
+    }
+  }
+
+  // If no dimensions have names, and we are squeezing them all,
+  // return 1 empty dim name
+  return rray__new_empty_dim_names(1);
+}
+
 // Call xt::squeeze() but always use xt::check_policy::full()
 // which throws an error if you are trying to drop a dimension
 // with >1 element. You pretty much never want this so we don't
@@ -331,13 +382,22 @@ Rcpp::RObject rray__transpose(Rcpp::RObject x, Rcpp::RObject permutation) {
 // xt::squeeze() docs say it takes `axis` but its really `axes`
 
 template <typename T>
-xt::rarray<T> rray__squeeze_impl(const xt::rarray<T>& x, std::vector<std::size_t> axes) {
-  return xt::squeeze(x, axes, xt::check_policy::full());
+Rcpp::RObject rray__squeeze_impl(const xt::rarray<T>& x,
+                                 const std::vector<std::size_t>& axes) {
+  xt::rarray<T> out = xt::squeeze(x, axes, xt::check_policy::full());
+  return Rcpp::as<Rcpp::RObject>(out);
 }
 
 // [[Rcpp::export(rng = false)]]
-Rcpp::RObject rray__squeeze(Rcpp::RObject x, std::vector<std::size_t> axes) {
-  DISPATCH_UNARY_ONE(rray__squeeze_impl, x, axes);
+Rcpp::RObject rray__squeeze(Rcpp::RObject x,
+                            const std::vector<std::size_t>& axes) {
+
+  Rcpp::RObject out;
+  DISPATCH_UNARY_ONE_SIMPLE(out, rray__squeeze_impl, x, axes);
+
+  rray__set_dim_names(out, squeeze_dim_names(rray__dim_names(x), axes));
+
+  return out;
 }
 
 // -----------------------------------------------------------------------------

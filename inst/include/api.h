@@ -42,6 +42,8 @@ void rray__reshape_and_set_dim_names(Rcpp::RObject res, Rcpp::RObject x);
 
 Rcpp::RObject rray__restore_dim_names(SEXP res, SEXP x);
 
+void rray__set_dim_names(Rcpp::RObject x, const Rcpp::List& dim_names);
+
 // -----------------------------------------------------------------------------
 // Miscellaneous
 
