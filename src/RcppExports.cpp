@@ -478,23 +478,23 @@ BEGIN_RCPP
 END_RCPP
 }
 // rray__expand_dims
-Rcpp::RObject rray__expand_dims(Rcpp::RObject x, std::size_t axis);
+Rcpp::RObject rray__expand_dims(Rcpp::RObject x, const std::size_t& axis);
 RcppExport SEXP _rray_rray__expand_dims(SEXP xSEXP, SEXP axisSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    Rcpp::traits::input_parameter< std::size_t >::type axis(axisSEXP);
+    Rcpp::traits::input_parameter< const std::size_t& >::type axis(axisSEXP);
     rcpp_result_gen = Rcpp::wrap(rray__expand_dims(x, axis));
     return rcpp_result_gen;
 END_RCPP
 }
 // rray__flip
-Rcpp::RObject rray__flip(Rcpp::RObject x, std::size_t axis);
+Rcpp::RObject rray__flip(Rcpp::RObject x, const std::size_t& axis);
 RcppExport SEXP _rray_rray__flip(SEXP xSEXP, SEXP axisSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    Rcpp::traits::input_parameter< std::size_t >::type axis(axisSEXP);
+    Rcpp::traits::input_parameter< const std::size_t& >::type axis(axisSEXP);
     rcpp_result_gen = Rcpp::wrap(rray__flip(x, axis));
     return rcpp_result_gen;
 END_RCPP

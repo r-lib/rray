@@ -71,3 +71,7 @@ test_that("can flip base types", {
   )
 
 })
+
+test_that("can flip with NULL", {
+  expect_equal(rray_flip(NULL, 1), NULL)
+})

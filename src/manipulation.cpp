@@ -422,26 +422,29 @@ Rcpp::List rray__expand_dim_names(const Rcpp::List& dim_names,
 }
 
 template <typename T>
-Rcpp::RObject rray__expand_dims_impl(const xt::rarray<T>& x, std::size_t axis) {
+Rcpp::RObject rray__expand_dims_impl(const xt::rarray<T>& x, const std::size_t& axis) {
+  xt::rarray<T> out = xt::expand_dims(x, axis);
+  return Rcpp::as<Rcpp::RObject>(out);
+}
 
-  xt::rarray<T> xt_out = xt::expand_dims(x, axis);
+// [[Rcpp::export(rng = false)]]
+Rcpp::RObject rray__expand_dims(Rcpp::RObject x, const std::size_t& axis) {
 
-  Rcpp::List new_dim_names = rray__expand_dim_names(rray__dim_names(SEXP(x)), axis);
+  if (r_is_null(x)) {
+    return x;
+  }
 
-  Rcpp::RObject out = SEXP(xt_out);
-  out.attr("dimnames") = new_dim_names;
+  Rcpp::RObject out;
+  DISPATCH_UNARY_ONE_SIMPLE(out, rray__expand_dims_impl, x, axis);
+
+  rray__set_dim_names(out, rray__expand_dim_names(rray__dim_names(x), axis));
 
   return out;
 }
 
-// [[Rcpp::export(rng = false)]]
-Rcpp::RObject rray__expand_dims(Rcpp::RObject x, std::size_t axis) {
-  DISPATCH_UNARY_ONE(rray__expand_dims_impl, x, axis);
-}
-
 // -----------------------------------------------------------------------------
 
-Rcpp::List rev_axis_names(const Rcpp::List& dim_names, std::size_t axis) {
+Rcpp::List rev_axis_names(const Rcpp::List& dim_names, const std::size_t& axis) {
 
   if (r_is_null(dim_names[axis])) {
     return dim_names;
@@ -461,34 +464,45 @@ Rcpp::List rev_axis_names(const Rcpp::List& dim_names, std::size_t axis) {
 }
 
 template <typename T>
-Rcpp::RObject rray__flip_impl(const xt::rarray<T>& x, std::size_t axis) {
-
-  xt::rarray<T> xt_out = xt::flip(x, axis);
-
-  Rcpp::List new_dim_names = rev_axis_names(rray__dim_names(SEXP(x)), axis);
-
-  Rcpp::RObject out = SEXP(xt_out);
-  out.attr("dimnames") = new_dim_names;
-
-  return out;
+Rcpp::RObject rray__flip_impl(const xt::rarray<T>& x, const std::size_t& axis) {
+  xt::rarray<T> out = xt::flip(x, axis);
+  return Rcpp::as<Rcpp::RObject>(out);
 }
 
 // [[Rcpp::export(rng = false)]]
-Rcpp::RObject rray__flip(Rcpp::RObject x, std::size_t axis) {
-  DISPATCH_UNARY_ONE(rray__flip_impl, x, axis);
+Rcpp::RObject rray__flip(Rcpp::RObject x, const std::size_t& axis) {
+
+  if (r_is_null(x)) {
+    return x;
+  }
+
+  Rcpp::RObject out;
+  DISPATCH_UNARY_ONE_SIMPLE(out, rray__flip_impl, x, axis);
+
+  rray__set_dim_names(out, rev_axis_names(rray__dim_names(x), axis));
+
+  return out;
 }
 
 // -----------------------------------------------------------------------------
 
 template <typename T>
 Rcpp::RObject rray__flatten_impl(const xt::rarray<T>& x) {
-  xt::rarray<T> xt_out = xt::flatten<xt::layout_type::column_major>(x);
-  Rcpp::RObject out = SEXP(xt_out);
-  rray__reshape_and_set_dim_names(out, SEXP(x));
-  return out;
+  xt::rarray<T> out = xt::flatten<xt::layout_type::column_major>(x);
+  return Rcpp::as<Rcpp::RObject>(out);
 }
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__flatten(Rcpp::RObject x) {
-  DISPATCH_UNARY(rray__flatten_impl, x);
+
+  if (r_is_null(x)) {
+    return x;
+  }
+
+  Rcpp::RObject out;
+  DISPATCH_UNARY_SIMPLE(out, rray__flatten_impl, x);
+
+  rray__reshape_and_set_dim_names(out, x);
+
+  return out;
 }
