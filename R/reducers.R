@@ -147,16 +147,12 @@ rray_min <- function(x, axes = NULL) {
 # ------------------------------------------------------------------------------
 
 rray_reducer_base <- function(f, x, axes) {
-
   axes <- vec_cast(axes, integer())
   validate_axes(axes, x)
 
-  res <- f(x, as_cpp_idx(axes))
+  out <- f(x, as_cpp_idx(axes))
 
-  new_dim_names <- rray_reshape_dim_names(rray_dim_names(x), rray_dim(res))
-  res <- set_full_dim_names(res, new_dim_names)
-
-  vec_cast_container(res, x)
+  vec_cast_container(out, x)
 }
 
 # ------------------------------------------------------------------------------
