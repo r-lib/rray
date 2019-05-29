@@ -62,19 +62,5 @@ rray_sort <- function(x, axis = NULL) {
 
   res <- rray__sort(x, as_cpp_idx(axis))
 
-  # Remove dim names along the axis you sort over,
-  # but keep meta names. If `axis == NULL`, remove
-  # all dimension names
-  if (is.null(axis)) {
-    new_dim_names <- rray_empty_dim_names(rray_dims(res))
-    names(new_dim_names) <- names(rray_dim_names(x))
-  }
-  else {
-    new_dim_names <- rray_dim_names(x)
-    new_dim_names[axis] <- list(NULL)
-  }
-
-  res <- set_full_dim_names(res, new_dim_names)
-
   vec_cast_container(res, x)
 }
