@@ -185,51 +185,40 @@
 // -----------------------------------------------------------------------------
 // Trinary + 0 argument + logicals converted to integer
 
-#define DISPATCH_TRINARY_NO_LOGICAL(FUN, X, Y, Z)                     \
+#define DISPATCH_TRINARY_NO_LOGICAL_SIMPLE(OUT, FUN, X, Y, Z)         \
   if (Rf_isNull(X) || Rf_isNull(Y) || Rf_isNull(Z)) {                 \
     return Rcpp::as<Rcpp::RObject>(R_NilValue);                       \
   }                                                                   \
                                                                       \
   int x_type = TYPEOF(X);                                             \
-  int y_type = TYPEOF(Y);                                             \
-  int z_type = TYPEOF(Z);                                             \
-                                                                      \
-  if (x_type != y_type || x_type != z_type) {                         \
-    Rcpp::stop("`x`, `y`, and `z` must have the same type.");         \
-  }                                                                   \
                                                                       \
   if (x_type == REALSXP) {                                            \
-    return Rcpp::as<Rcpp::RObject>(                                   \
-      FUN(                                                            \
-        xt::rarray<double>(X),                                        \
-        xt::rarray<double>(Y),                                        \
-        xt::rarray<double>(Z)                                         \
-      )                                                               \
+    OUT = FUN(                                                        \
+      xt::rarray<double>(X),                                          \
+      xt::rarray<double>(Y),                                          \
+      xt::rarray<double>(Z)                                           \
     );                                                                \
   }                                                                   \
   else if (x_type == INTSXP) {                                        \
-    return Rcpp::as<Rcpp::RObject>(                                   \
-      FUN(                                                            \
-        xt::rarray<int>(X),                                           \
-        xt::rarray<int>(Y),                                           \
-        xt::rarray<int>(Z)                                            \
-      )                                                               \
+    OUT = FUN(                                                        \
+      xt::rarray<int>(X),                                             \
+      xt::rarray<int>(Y),                                             \
+      xt::rarray<int>(Z)                                              \
     );                                                                \
   }                                                                   \
   else if (x_type == LGLSXP) {                                        \
     xt::rarray<int> X_int = xt::cast<int>(xt::rarray<rlogical>(X));   \
     xt::rarray<int> Y_int = xt::cast<int>(xt::rarray<rlogical>(Y));   \
     xt::rarray<int> Z_int = xt::cast<int>(xt::rarray<rlogical>(Z));   \
-    return Rcpp::as<Rcpp::RObject>(                                   \
-      FUN(                                                            \
-        X_int,                                                        \
-        Y_int,                                                        \
-        Z_int                                                         \
-      )                                                               \
+    OUT = FUN(                                                        \
+      X_int,                                                          \
+      Y_int,                                                          \
+      Z_int                                                           \
     );                                                                \
   }                                                                   \
-                                                                      \
-  error_unknown_type()
+  else {                                                              \
+    error_unknown_type();                                             \
+  }
 
 // -----------------------------------------------------------------------------
 

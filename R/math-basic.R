@@ -215,7 +215,9 @@ rray_minimum <- function(x, y) {
 #' @family math functions
 #' @export
 rray_multiply_add <- function(x, y, z) {
-  rray_math_trinary_base(rray__multiply_add, x, y, z)
+  out <- rray__multiply_add(x, y, z)
+  container <- vec_type_container_common(x, y, z)
+  vec_cast_container(out, container)
 }
 
 # ------------------------------------------------------------------------------
@@ -262,20 +264,4 @@ rray_clip <- function(x, low, high) {
   out <- rray__clip(x, low, high)
 
   vec_cast_container(out, x)
-}
-
-# ------------------------------------------------------------------------------
-
-rray_math_trinary_base <- function(f, x, y, z) {
-
-  # done before the inner cast
-  new_dim_names <- rray_dim_names_common(x, y, z)
-
-  args <- vec_cast_inner_common(x, y, z)
-
-  res <- f(args[[1]], args[[2]], args[[3]])
-
-  res <- set_full_dim_names(res, new_dim_names)
-
-  vec_cast_container(res, vec_type_container_common(x, y, z))
 }

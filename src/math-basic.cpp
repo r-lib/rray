@@ -13,9 +13,14 @@ xt::rarray<T> rray__multiply_add_impl(const xt::rarray<T>& x,
                                       const xt::rarray<T>& z) {
 
   // Common dim
-  Rcpp::IntegerVector tmp_dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
-  Rcpp::IntegerVector dim = rray__dim2(tmp_dim, rray__dim(SEXP(z)));
+  Rcpp::IntegerVector x_dim = rray__dim(SEXP(x));
+  Rcpp::IntegerVector y_dim = rray__dim(SEXP(y));
+  Rcpp::IntegerVector z_dim = rray__dim(SEXP(z));
+
+  Rcpp::IntegerVector dim = rray__dim2(rray__dim2(x_dim, y_dim), z_dim);
+
   const int& dims = dim.size();
+
   auto x_view = rray__increase_dims_view(x, dims);
   auto y_view = rray__increase_dims_view(y, dims);
   auto z_view = rray__increase_dims_view(z, dims);
@@ -25,7 +30,40 @@ xt::rarray<T> rray__multiply_add_impl(const xt::rarray<T>& x,
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__multiply_add(Rcpp::RObject x, Rcpp::RObject y, Rcpp::RObject z) {
-  DISPATCH_TRINARY_NO_LOGICAL(rray__multiply_add_impl, x, y, z);
+
+  Rcpp::IntegerVector x_dim = rray__dim(x);
+  Rcpp::IntegerVector y_dim = rray__dim(y);
+  Rcpp::IntegerVector z_dim = rray__dim(z);
+
+  Rcpp::IntegerVector dim = rray__dim2(rray__dim2(x_dim, y_dim), z_dim);
+
+  Rcpp::List reshaped_x_dim_names = rray__reshape_dim_names(rray__dim_names(x), dim);
+  Rcpp::List reshaped_y_dim_names = rray__reshape_dim_names(rray__dim_names(y), dim);
+  Rcpp::List reshaped_z_dim_names = rray__reshape_dim_names(rray__dim_names(z), dim);
+
+  Rcpp::List new_dim_names;
+
+  new_dim_names = rray__coalesce_dim_names(
+    reshaped_x_dim_names,
+    reshaped_y_dim_names
+  );
+
+  new_dim_names = rray__coalesce_dim_names(
+    new_dim_names,
+    reshaped_z_dim_names
+  );
+
+  Rcpp::RObject type = vec__type_inner2(vec__type_inner2(x, y), z);
+  x = vec__cast_inner(x, type);
+  y = vec__cast_inner(y, type);
+  z = vec__cast_inner(z, type);
+
+  Rcpp::RObject out;
+  DISPATCH_TRINARY_NO_LOGICAL_SIMPLE(out, rray__multiply_add_impl, x, y, z);
+
+  rray__set_dim_names(out, new_dim_names);
+
+  return out;
 }
 
 // -----------------------------------------------------------------------------
