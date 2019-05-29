@@ -2,7 +2,7 @@
 #define rray_tools_h
 
 // Include all relevant tools
-#include "errors.h"
-#include "utils.h"
+#include <tools/errors.h>
+#include <tools/template-utils.h>
 
 #endif

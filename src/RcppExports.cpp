@@ -7,62 +7,57 @@
 using namespace Rcpp;
 
 // rray__add
-Rcpp::RObject rray__add(Rcpp::RObject x, Rcpp::RObject y, Rcpp::List new_dim_names);
-RcppExport SEXP _rray_rray__add(SEXP xSEXP, SEXP ySEXP, SEXP new_dim_namesSEXP) {
+Rcpp::RObject rray__add(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__add(SEXP xSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
     Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
-    Rcpp::traits::input_parameter< Rcpp::List >::type new_dim_names(new_dim_namesSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__add(x, y, new_dim_names));
+    rcpp_result_gen = Rcpp::wrap(rray__add(x, y));
     return rcpp_result_gen;
 END_RCPP
 }
 // rray__subtract
-Rcpp::RObject rray__subtract(Rcpp::RObject x, Rcpp::RObject y, Rcpp::List new_dim_names);
-RcppExport SEXP _rray_rray__subtract(SEXP xSEXP, SEXP ySEXP, SEXP new_dim_namesSEXP) {
+Rcpp::RObject rray__subtract(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__subtract(SEXP xSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
     Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
-    Rcpp::traits::input_parameter< Rcpp::List >::type new_dim_names(new_dim_namesSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__subtract(x, y, new_dim_names));
+    rcpp_result_gen = Rcpp::wrap(rray__subtract(x, y));
     return rcpp_result_gen;
 END_RCPP
 }
 // rray__divide
-Rcpp::RObject rray__divide(Rcpp::RObject x, Rcpp::RObject y, Rcpp::List new_dim_names);
-RcppExport SEXP _rray_rray__divide(SEXP xSEXP, SEXP ySEXP, SEXP new_dim_namesSEXP) {
+Rcpp::RObject rray__divide(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__divide(SEXP xSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
     Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
-    Rcpp::traits::input_parameter< Rcpp::List >::type new_dim_names(new_dim_namesSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__divide(x, y, new_dim_names));
+    rcpp_result_gen = Rcpp::wrap(rray__divide(x, y));
     return rcpp_result_gen;
 END_RCPP
 }
 // rray__multiply
-Rcpp::RObject rray__multiply(Rcpp::RObject x, Rcpp::RObject y, Rcpp::List new_dim_names);
-RcppExport SEXP _rray_rray__multiply(SEXP xSEXP, SEXP ySEXP, SEXP new_dim_namesSEXP) {
+Rcpp::RObject rray__multiply(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__multiply(SEXP xSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
     Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
-    Rcpp::traits::input_parameter< Rcpp::List >::type new_dim_names(new_dim_namesSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__multiply(x, y, new_dim_names));
+    rcpp_result_gen = Rcpp::wrap(rray__multiply(x, y));
     return rcpp_result_gen;
 END_RCPP
 }
 // rray__pow
-Rcpp::RObject rray__pow(Rcpp::RObject x, Rcpp::RObject y, Rcpp::List new_dim_names);
-RcppExport SEXP _rray_rray__pow(SEXP xSEXP, SEXP ySEXP, SEXP new_dim_namesSEXP) {
+Rcpp::RObject rray__pow(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__pow(SEXP xSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
     Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
-    Rcpp::traits::input_parameter< Rcpp::List >::type new_dim_names(new_dim_namesSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__pow(x, y, new_dim_names));
+    rcpp_result_gen = Rcpp::wrap(rray__pow(x, y));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -412,14 +407,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // rray__any
-Rcpp::RObject rray__any(const xt::rarray<rlogical>& x, Rcpp::RObject axes, Rcpp::List dim_names);
-RcppExport SEXP _rray_rray__any(SEXP xSEXP, SEXP axesSEXP, SEXP dim_namesSEXP) {
+Rcpp::RObject rray__any(Rcpp::RObject x, Rcpp::RObject axes);
+RcppExport SEXP _rray_rray__any(SEXP xSEXP, SEXP axesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< const xt::rarray<rlogical>& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
     Rcpp::traits::input_parameter< Rcpp::RObject >::type axes(axesSEXP);
-    Rcpp::traits::input_parameter< Rcpp::List >::type dim_names(dim_namesSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__any(x, axes, dim_names));
+    rcpp_result_gen = Rcpp::wrap(rray__any(x, axes));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1120,11 +1114,11 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_rray_rray__add", (DL_FUNC) &_rray_rray__add, 3},
-    {"_rray_rray__subtract", (DL_FUNC) &_rray_rray__subtract, 3},
-    {"_rray_rray__divide", (DL_FUNC) &_rray_rray__divide, 3},
-    {"_rray_rray__multiply", (DL_FUNC) &_rray_rray__multiply, 3},
-    {"_rray_rray__pow", (DL_FUNC) &_rray_rray__pow, 3},
+    {"_rray_rray__add", (DL_FUNC) &_rray_rray__add, 2},
+    {"_rray_rray__subtract", (DL_FUNC) &_rray_rray__subtract, 2},
+    {"_rray_rray__divide", (DL_FUNC) &_rray_rray__divide, 2},
+    {"_rray_rray__multiply", (DL_FUNC) &_rray_rray__multiply, 2},
+    {"_rray_rray__pow", (DL_FUNC) &_rray_rray__pow, 2},
     {"_rray_rray__identity", (DL_FUNC) &_rray_rray__identity, 1},
     {"_rray_rray__opposite", (DL_FUNC) &_rray_rray__opposite, 1},
     {"_rray_rray__bind", (DL_FUNC) &_rray_rray__bind, 4},
@@ -1156,7 +1150,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__logical_and", (DL_FUNC) &_rray_rray__logical_and, 3},
     {"_rray_rray__logical_or", (DL_FUNC) &_rray_rray__logical_or, 3},
     {"_rray_rray__logical_not", (DL_FUNC) &_rray_rray__logical_not, 2},
-    {"_rray_rray__any", (DL_FUNC) &_rray_rray__any, 3},
+    {"_rray_rray__any", (DL_FUNC) &_rray_rray__any, 2},
     {"_rray_rray__all", (DL_FUNC) &_rray_rray__all, 3},
     {"_rray_rray__if_else", (DL_FUNC) &_rray_rray__if_else, 3},
     {"_rray_rray__split", (DL_FUNC) &_rray_rray__split, 2},

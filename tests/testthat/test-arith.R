@@ -46,9 +46,8 @@ test_that("`NULL` arithmetic is an error", {
   expect_error(rray(1L) + NULL, class = "vctrs_error_incompatible_op")
 })
 
-# TODO Is this right?
-test_that("`NULL` / `NULL` behavior", {
-  expect_equal(rray_add(NULL, NULL), NULL)
+test_that("`NULL` + `NULL` behavior", {
+  expect_equal(rray_add(NULL, NULL), new_array(integer()))
 })
 
 test_that("length 0 input behavior is defined", {
@@ -143,9 +142,8 @@ test_that("`NULL` arithmetic is an error", {
   expect_error(rray(1L) - NULL, class = "vctrs_error_incompatible_op")
 })
 
-# TODO Is this right?
-test_that("`NULL` / `NULL` behavior", {
-  expect_equal(rray_subtract(NULL, NULL), NULL)
+test_that("`NULL` - `NULL` behavior", {
+  expect_equal(rray_subtract(NULL, NULL), new_array(integer()))
 })
 
 test_that("length 0 input behavior is defined", {
@@ -241,9 +239,8 @@ test_that("`NULL` arithmetic is an error", {
   expect_error(rray(1L) / NULL, class = "vctrs_error_incompatible_op")
 })
 
-# TODO Is this right?
 test_that("`NULL` / `NULL` behavior", {
-  expect_equal(rray_divide(NULL, NULL), NULL)
+  expect_equal(rray_divide(NULL, NULL), new_array(numeric()))
 })
 
 test_that("length 0 input behavior is defined", {
@@ -341,9 +338,8 @@ test_that("`NULL` arithmetic is an error", {
   expect_error(rray(1L) * NULL, class = "vctrs_error_incompatible_op")
 })
 
-# TODO Is this right?
 test_that("`NULL` * `NULL` behavior", {
-  expect_equal(rray_multiply(NULL, NULL), NULL)
+  expect_equal(rray_multiply(NULL, NULL), new_array(integer()))
 })
 
 test_that("length 0 input behavior is defined", {
@@ -555,6 +551,10 @@ test_that("can identity a logical", {
   expect_equal(rray_identity(FALSE), new_array(0L))
 })
 
+test_that("cannot identity NULL", {
+  expect_error(rray_identity(NULL))
+})
+
 # ------------------------------------------------------------------------------
 context("test-arith-opposite")
 
@@ -570,6 +570,10 @@ test_that("can use opposite", {
 test_that("can opposite a logical", {
   expect_equal(rray_opposite(TRUE), new_array(-1L))
   expect_equal(rray_opposite(FALSE), new_array(0L))
+})
+
+test_that("cannot opposite NULL", {
+  expect_error(rray_opposite(NULL))
 })
 
 # ------------------------------------------------------------------------------

@@ -1,5 +1,5 @@
-#ifndef rray_utils_h
-#define rray_utils_h
+#ifndef rray_template_utils_h
+#define rray_template_utils_h
 
 #include <rray.h>
 
@@ -47,6 +47,29 @@ inline auto rray__increase_dims_view(const xt::rarray<T>& x, const int& dims) {
   auto x_view = xt::reshape_view<xt::layout_type::column_major>(x, xt_view_dim);
 
   return x_view;
+}
+
+// Validates that x and y can be broadcast together by finding their
+// common dim, then creates reshape views on both to ensure their dimensionality
+// is correct to work with xtensor. Returns them as a tuple.
+
+template <typename T>
+inline auto rray__increase_dims_view2(const xt::rarray<T>& x,
+                                      const xt::rarray<T>& y) {
+
+  Rcpp::IntegerVector x_dim = rray__dim(SEXP(x));
+  Rcpp::IntegerVector y_dim = rray__dim(SEXP(y));
+
+  Rcpp::IntegerVector dim = rray__dim2(x_dim, y_dim);
+  const int& dims = dim.size();
+
+  using x_reshaped_t = decltype(rray__increase_dims_view(x, dims));
+  using y_reshaped_t = decltype(rray__increase_dims_view(y, dims));
+
+  auto x_view = rray__increase_dims_view(x, dims);
+  auto y_view = rray__increase_dims_view(y, dims);
+
+  return std::tuple<x_reshaped_t, y_reshaped_t>(x_view, y_view);
 }
 
 // Validate that `x` is immediately broadcastable to the dimensions of `to`

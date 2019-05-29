@@ -1,5 +1,8 @@
 #include <rray.h>
 #include <dispatch.h>
+#include <cast.h>
+#include <type2.h>
+#include <utils.h>
 
 // Required for any() and all()
 #include <xtensor/xarray.hpp>
@@ -77,39 +80,40 @@ Rcpp::RObject rray__logical_not(const xt::rarray<rlogical>& x,
 // TODO - it also currently fails with multiple axes when one is size 0
 // https://github.com/QuantStack/xtensor/issues/1563
 
-// [[Rcpp::export(rng = false)]]
-Rcpp::RObject rray__any(const xt::rarray<rlogical>& x,
-                        Rcpp::RObject axes,
-                        Rcpp::List dim_names) {
+Rcpp::RObject rray__any_impl(const xt::rarray<rlogical>& x, Rcpp::RObject axes) {
+
+  // Currently required to materialize into a xarray<bool> before going to rarray<rlogical>
+  xt::xarray<bool> x_reduced;
+  xt::rarray<rlogical> out;
 
   // If `axes = NULL` we can rely on `xt::any()` which finds a "global" any value
+  // If `axes != NULL` we implement our own custom reducer
   if (r_is_null(axes)) {
-    xt::xarray<bool> x_global_any = xt::any(x);
+    x_reduced = xt::any(x);
+  }
+  else {
+    auto any_reducer = xt::make_xreducer_functor(
+      [](bool a, bool b) { return a || b; },
+      xt::const_value<bool>(false)
+    );
 
-    xt::rarray<rlogical> xt_out = rray__keep_dims_view(x_global_any, rray__dim(SEXP(x)), axes);
-    Rcpp::RObject out = SEXP(xt_out);
-    out.attr("dimnames") = rray__reshape_dim_names(dim_names, rray__dim(out));
+    std::vector<std::size_t> xt_axes = Rcpp::as<std::vector<std::size_t>>(axes);
 
-    return out;
+    x_reduced = xt::reduce(any_reducer, x, xt_axes);
   }
 
-  // If `axes != NULL` we implement our own custom reducer
-  auto any_reducer = xt::make_xreducer_functor(
-    [](bool a, bool b) { return a || b; },
-    xt::const_value<bool>(false)
-  );
-  std::vector<std::size_t> xt_axes = Rcpp::as<std::vector<std::size_t>>(axes);
+  out = rray__keep_dims_view(x_reduced, rray__dim(SEXP(x)), axes);
+  return Rcpp::as<Rcpp::RObject>(out);;
+}
 
-  // Currently required to materialize into a xarray<bool> before going to
-  // rarray<rlogical>
-  xt::xarray<bool> x_reduced = xt::reduce(any_reducer, x, xt_axes);
-
-  xt::rarray<rlogical> xt_out = rray__keep_dims_view(x_reduced, rray__dim(SEXP(x)), axes);
-  Rcpp::RObject out = SEXP(xt_out);
-  out.attr("dimnames") = rray__reshape_dim_names(dim_names, rray__dim(out));
-
+// [[Rcpp::export(rng = false)]]
+Rcpp::RObject rray__any(Rcpp::RObject x, Rcpp::RObject axes) {
+  Rcpp::RObject x_cast = vec__cast_inner(x, rray_shared_empty_lgl);
+  Rcpp::RObject out = rray__any_impl(xt::rarray<rlogical>(x_cast), axes);
+  rray__reshape_and_set_dim_names(out, x);
   return out;
 }
+
 
 // -----------------------------------------------------------------------------
 

@@ -10,6 +10,10 @@ extern SEXP syms_x;
 extern SEXP syms_y;
 extern SEXP syms_to;
 
+extern SEXP rray_shared_empty_lgl;
+extern SEXP rray_shared_empty_int;
+extern SEXP rray_shared_empty_dbl;
+
 extern SEXP fns_vec_cast_inner;
 extern SEXP fns_vec_type_inner2;
 

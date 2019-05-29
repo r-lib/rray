@@ -11,6 +11,10 @@ SEXP syms_x = NULL;
 SEXP syms_y = NULL;
 SEXP syms_to = NULL;
 
+SEXP rray_shared_empty_lgl = NULL;
+SEXP rray_shared_empty_int = NULL;
+SEXP rray_shared_empty_dbl = NULL;
+
 // -----------------------------------------------------------------------------
 // r_new_environment()
 // ripped from vctrs/src/utils.c
@@ -74,6 +78,18 @@ void rray_init_utils(SEXP ns) {
   syms_x = Rf_install("x");
   syms_y = Rf_install("y");
   syms_to = Rf_install("to");
+
+  rray_shared_empty_lgl = Rf_allocVector(LGLSXP, 0);
+  R_PreserveObject(rray_shared_empty_lgl);
+  MARK_NOT_MUTABLE(rray_shared_empty_lgl);
+
+  rray_shared_empty_int = Rf_allocVector(INTSXP, 0);
+  R_PreserveObject(rray_shared_empty_int);
+  MARK_NOT_MUTABLE(rray_shared_empty_int);
+
+  rray_shared_empty_dbl = Rf_allocVector(REALSXP, 0);
+  R_PreserveObject(rray_shared_empty_dbl);
+  MARK_NOT_MUTABLE(rray_shared_empty_dbl);
 
   new_env_call = r_parse_eval("as.call(list(new.env, TRUE, NULL, NULL))", R_BaseEnv);
   R_PreserveObject(new_env_call);

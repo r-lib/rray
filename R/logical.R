@@ -126,11 +126,8 @@ rray_any <- function(x, axes = NULL) {
   axes <- vec_cast(axes, integer())
   validate_axes(axes, x)
 
-  # only logicals allowed through
-  x_cast <- vec_cast_inner(x, logical())
-
   # perform the reduction
-  res <- rray__any(x_cast, as_cpp_idx(axes), rray_dim_names(x))
+  res <- rray__any(x, as_cpp_idx(axes))
 
   vec_cast_container(res, x)
 }

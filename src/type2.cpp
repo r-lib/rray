@@ -1,5 +1,5 @@
 #include <utils.h>
-#include "type2.h"
+#include <type2.h>
 
 SEXP fns_vec_type_inner2 = NULL;
 

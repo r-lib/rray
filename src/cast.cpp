@@ -1,5 +1,5 @@
 #include <utils.h>
-#include "cast.h"
+#include <cast.h>
 
 SEXP fns_vec_cast_inner = NULL;
 
