@@ -21,7 +21,7 @@
 #' @family math functions
 #' @export
 rray_abs <- function(x) {
-  rray_math_unary_base(rray__abs, x)
+  vec_cast_container(rray__abs(x), x)
 }
 
 # ------------------------------------------------------------------------------
@@ -56,7 +56,7 @@ rray_abs <- function(x) {
 #' @family math functions
 #' @export
 rray_sign <- function(x) {
-  rray_math_unary_base(rray__sign, x)
+  vec_cast_container(rray__sign(x), x)
 }
 
 # ------------------------------------------------------------------------------
@@ -251,16 +251,12 @@ rray_clip <- function(x, low, high) {
     glubort("`low` must be less than or equal to `high`.")
   }
 
-  rray_math_unary_base(rray__clip, x, low = low, high = high)
+  out <- rray__clip(x, low, high)
+
+  vec_cast_container(out, x)
 }
 
 # ------------------------------------------------------------------------------
-
-rray_math_unary_base <- function(f, x, ...) {
-  res <- f(x, ...)
-  res <- set_full_dim_names(res, rray_dim_names(x))
-  vec_cast_container(res, x)
-}
 
 rray_math_binary_base <- function(f, x, y) {
 

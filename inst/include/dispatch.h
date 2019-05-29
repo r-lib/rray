@@ -290,6 +290,37 @@
 
 // -----------------------------------------------------------------------------
 
+#define DISPATCH_BINARY_TWO_SIMPLE(OUT, FUN, X, Y, ARG1, ARG2)   \
+  int x_type = TYPEOF(X);                                        \
+                                                                 \
+  if (x_type == REALSXP) {                                       \
+    OUT = FUN(                                                   \
+      xt::rarray<double>(X),                                     \
+      xt::rarray<double>(Y),                                     \
+      ARG1, ARG2                                                 \
+    );                                                           \
+  }                                                              \
+  else if (x_type == INTSXP) {                                   \
+    OUT = FUN(                                                   \
+      xt::rarray<int>(X),                                        \
+      xt::rarray<int>(Y),                                        \
+      ARG1, ARG2                                                 \
+    );                                                           \
+  }                                                              \
+  else if (x_type == LGLSXP) {                                   \
+    OUT = FUN(                                                   \
+      xt::rarray<rlogical>(X),                                   \
+      xt::rarray<rlogical>(Y),                                   \
+      ARG1, ARG2                                                 \
+    );                                                           \
+  }                                                              \
+  else {                                                         \
+    error_unknown_type();                                        \
+  }
+
+
+// -----------------------------------------------------------------------------
+
 #define DISPATCH_UNARY_SIMPLE(OUT, FUN, X)                         \
   int x_type = TYPEOF(X);                                          \
                                                                    \
@@ -341,6 +372,33 @@
 
 // -----------------------------------------------------------------------------
 
+#define DISPATCH_UNARY_TWO_SIMPLE(OUT, FUN, X, ARG1, ARG2)             \
+  int x_type = TYPEOF(X);                                              \
+                                                                       \
+  if (x_type == REALSXP) {                                             \
+    OUT = FUN(                                                         \
+      xt::rarray<double>(X),                                           \
+      ARG1, ARG2                                                       \
+    );                                                                 \
+  }                                                                    \
+  else if (x_type == INTSXP) {                                         \
+    OUT = FUN(                                                         \
+      xt::rarray<int>(X),                                              \
+      ARG1, ARG2                                                       \
+    );                                                                 \
+  }                                                                    \
+  else if (x_type == LGLSXP) {                                         \
+    OUT = FUN(                                                         \
+      xt::rarray<rlogical>(X),                                         \
+      ARG1, ARG2                                                       \
+    );                                                                 \
+  }                                                                    \
+  else {                                                               \
+    error_unknown_type();                                              \
+  }
+
+// -----------------------------------------------------------------------------
+
 #define DISPATCH_UNARY_THREE_SIMPLE(OUT, FUN, X, ARG1, ARG2, ARG3)   \
   int x_type = TYPEOF(X);                                            \
                                                                      \
@@ -365,6 +423,14 @@
   else {                                                             \
     error_unknown_type();                                            \
   }
+
+// -----------------------------------------------------------------------------
+
+#define DISPATCH_UNARY_MATH(FUN, X)                              \
+  Rcpp::RObject out;                                             \
+  DISPATCH_UNARY_SIMPLE(out, FUN, X);                            \
+  rray__set_dim_names(out, rray__dim_names(X));                  \
+  return out
 
 // -----------------------------------------------------------------------------
 

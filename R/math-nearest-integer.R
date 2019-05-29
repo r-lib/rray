@@ -47,29 +47,31 @@
 #' @family nearest integer math functions
 #' @export
 rray_ceiling <- function(x) {
-  rray_math_unary_base(rray__ceiling, x)
+  vec_cast_container(rray__ceiling(x), x)
 }
 
 #' @rdname rray_ceiling
 #' @export
 rray_floor <- function(x) {
-  rray_math_unary_base(rray__floor, x)
+  vec_cast_container(rray__floor(x), x)
 }
 
 #' @rdname rray_ceiling
 #' @export
 rray_trunc <- function(x) {
-  rray_math_unary_base(rray__trunc, x)
+  vec_cast_container(rray__trunc(x), x)
 }
 
 #' @rdname rray_ceiling
 #' @export
 rray_round <- function(x, digits = 0) {
-  rray_math_unary_base_raw(round, x, digits = digits)
+  out <- round(vec_data(x), digits = digits)
+  vec_cast_container(out, x)
 }
 
 #' @rdname rray_ceiling
 #' @export
 rray_signif <- function(x, digits = 6) {
-  rray_math_unary_base_raw(signif, x, digits = digits)
+  out <- signif(vec_data(x), digits = digits)
+  vec_cast_container(out, x)
 }

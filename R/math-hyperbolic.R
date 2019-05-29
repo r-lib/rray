@@ -26,35 +26,35 @@
 #' @family hyperbolic math functions
 #' @export
 rray_sinh <- function(x) {
-  rray_math_unary_base(rray__sinh, x)
+  vec_cast_container(rray__sinh(x), x)
 }
 
 #' @rdname rray_sinh
 #' @export
 rray_cosh <- function(x) {
-  rray_math_unary_base(rray__cosh, x)
+  vec_cast_container(rray__cosh(x), x)
 }
 
 #' @rdname rray_sinh
 #' @export
 rray_tanh <- function(x) {
-  rray_math_unary_base(rray__tanh, x)
+  vec_cast_container(rray__tanh(x), x)
 }
 
 #' @rdname rray_sinh
 #' @export
 rray_asinh <- function(x) {
-  rray_math_unary_base(rray__asinh, x)
+  vec_cast_container(rray__asinh(x), x)
 }
 
 #' @rdname rray_sinh
 #' @export
 rray_acosh <- function(x) {
-  rray_math_unary_base(rray__acosh, x)
+  vec_cast_container(rray__acosh(x), x)
 }
 
 #' @rdname rray_sinh
 #' @export
 rray_atanh <- function(x) {
-  rray_math_unary_base(rray__atanh, x)
+  vec_cast_container(rray__atanh(x), x)
 }

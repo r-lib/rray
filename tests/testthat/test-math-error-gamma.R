@@ -49,14 +49,14 @@ for (i in seq_along(.fs)) {
   })
 
   test_that(glue::glue("corner cases - {.f_name}"), {
-    expect_equal(suppressWarnings(.f(Inf)), new_array(suppressWarnings(.f_base(Inf))))
-    expect_equal(suppressWarnings(.f(-Inf)), new_array(suppressWarnings(.f_base(-Inf))))
+    expect_equal(suppressWarnings(.f(new_array(Inf))), new_array(suppressWarnings(.f_base(Inf))))
+    expect_equal(suppressWarnings(.f(new_array(-Inf))), new_array(suppressWarnings(.f_base(-Inf))))
 
     if (.f_name != "gamma") {
-      expect_equal(suppressWarnings(.f(0L)), new_array(suppressWarnings(.f_base(0))))
+      expect_equal(suppressWarnings(.f(new_array(0L))), new_array(suppressWarnings(.f_base(0))))
     }
 
-    expect_equal(.f(NaN), new_array(.f_base(NaN)))
+    expect_equal(.f(new_array(NaN)), new_array(.f_base(NaN)))
   })
 
   test_that(glue::glue("vctrs dispatch works - {.f_name}"), {

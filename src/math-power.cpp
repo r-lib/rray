@@ -14,7 +14,7 @@ xt::rarray<double> rray__square_impl(const xt::rarray<double>& x) {
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__square(Rcpp::RObject x) {
-  DISPATCH_UNARY(rray__square_impl, x);
+  DISPATCH_UNARY_MATH(rray__square_impl, x);
 }
 
 // -----------------------------------------------------------------------------
@@ -30,7 +30,7 @@ xt::rarray<double> rray__cube_impl(const xt::rarray<double>& x) {
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__cube(Rcpp::RObject x) {
-  DISPATCH_UNARY(rray__cube_impl, x);
+  DISPATCH_UNARY_MATH(rray__cube_impl, x);
 }
 
 // -----------------------------------------------------------------------------
@@ -42,7 +42,7 @@ xt::rarray<double> rray__sqrt_impl(const xt::rarray<T>& x) {
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__sqrt(Rcpp::RObject x) {
-  DISPATCH_UNARY(rray__sqrt_impl, x);
+  DISPATCH_UNARY_MATH(rray__sqrt_impl, x);
 }
 
 // -----------------------------------------------------------------------------
@@ -54,7 +54,7 @@ xt::rarray<double> rray__cbrt_impl(const xt::rarray<T>& x) {
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__cbrt(Rcpp::RObject x) {
-  DISPATCH_UNARY(rray__cbrt_impl, x);
+  DISPATCH_UNARY_MATH(rray__cbrt_impl, x);
 }
 
 // -----------------------------------------------------------------------------

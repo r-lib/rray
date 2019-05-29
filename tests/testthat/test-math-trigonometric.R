@@ -54,12 +54,12 @@ for (i in seq_along(.fs)) {
   })
 
   test_that(glue::glue("corner cases - {.f_name}"), {
-    expect_equal(suppressWarnings(.f(Inf)), new_array(suppressWarnings(.f_base(Inf))))
-    expect_equal(suppressWarnings(.f(-Inf)), new_array(suppressWarnings(.f_base(-Inf))))
+    expect_equal(suppressWarnings(.f(new_array(Inf))), new_array(suppressWarnings(.f_base(Inf))))
+    expect_equal(suppressWarnings(.f(new_array(-Inf))), new_array(suppressWarnings(.f_base(-Inf))))
 
-    expect_equal(.f(0L), new_array(.f_base(0)))
+    expect_equal(.f(new_array(0L)), new_array(.f_base(0)))
 
-    expect_equal(.f(NaN), new_array(.f_base(NaN)))
+    expect_equal(.f(new_array(NaN)), new_array(.f_base(NaN)))
   })
 
   test_that(glue::glue("vctrs dispatch works - {.f_name}"), {
@@ -72,9 +72,9 @@ for (i in seq_along(.fs)) {
 # Extra corner case tests for specific trig functions
 
 test_that("*pi() functions are more accurate", {
-  expect_equal(rray_sinpi(1), new_array(sinpi(1)))
-  expect_equal(rray_cospi(1), new_array(cospi(1)))
-  expect_equal(rray_tanpi(1), new_array(tanpi(1)))
+  expect_equal(rray_sinpi(1), sinpi(1))
+  expect_equal(rray_cospi(1), cospi(1))
+  expect_equal(rray_tanpi(1), tanpi(1))
 })
 
 # ------------------------------------------------------------------------------

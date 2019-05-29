@@ -59,37 +59,37 @@
 #' @family trigonometric math functions
 #' @export
 rray_sin <- function(x) {
-  rray_math_unary_base(rray__sin, x)
+  vec_cast_container(rray__sin(x), x)
 }
 
 #' @rdname rray_sin
 #' @export
 rray_cos <- function(x) {
-  rray_math_unary_base(rray__cos, x)
+  vec_cast_container(rray__cos(x), x)
 }
 
 #' @rdname rray_sin
 #' @export
 rray_tan <- function(x) {
-  rray_math_unary_base(rray__tan, x)
+  vec_cast_container(rray__tan(x), x)
 }
 
 #' @rdname rray_sin
 #' @export
 rray_asin <- function(x) {
-  rray_math_unary_base(rray__asin, x)
+  vec_cast_container(rray__asin(x), x)
 }
 
 #' @rdname rray_sin
 #' @export
 rray_acos <- function(x) {
-  rray_math_unary_base(rray__acos, x)
+  vec_cast_container(rray__acos(x), x)
 }
 
 #' @rdname rray_sin
 #' @export
 rray_atan <- function(x) {
-  rray_math_unary_base(rray__atan, x)
+  vec_cast_container(rray__atan(x), x)
 }
 
 # atan2() is NOT an internal generic
@@ -108,28 +108,25 @@ rray_atan2 <- function(y, x) {
 #' @rdname rray_sin
 #' @export
 rray_sinpi <- function(x) {
-  rray_math_unary_base_raw(sinpi, x)
+  out <- sinpi(vec_data(x))
+  vec_cast_container(out, x)
 }
 
 #' @rdname rray_sin
 #' @export
 rray_cospi <- function(x) {
-  rray_math_unary_base_raw(cospi, x)
+  out <- cospi(vec_data(x))
+  vec_cast_container(out, x)
 }
 
 #' @rdname rray_sin
 #' @export
 rray_tanpi <- function(x) {
-  rray_math_unary_base_raw(tanpi, x)
+  out <- tanpi(vec_data(x))
+  vec_cast_container(out, x)
 }
 
 # ------------------------------------------------------------------------------
-
-rray_math_unary_base_raw <- function(f, x, ...) {
-  res <- f(vec_data(x), ...)
-  res <- new_array(res, dim = rray_dim(res), dimnames = rray_dim_names(x))
-  vec_cast_container(res, x)
-}
 
 rray_math_binary_base_typed <- function(f, x, y, type) {
 

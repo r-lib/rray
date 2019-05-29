@@ -43,7 +43,7 @@ Rcpp::RObject rray__abs_impl(const xt::rarray<rlogical>& x) {
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__abs(Rcpp::RObject x) {
-  DISPATCH_UNARY(rray__abs_impl, x);
+  DISPATCH_UNARY_MATH(rray__abs_impl, x);
 }
 
 // -----------------------------------------------------------------------------
@@ -66,7 +66,7 @@ Rcpp::RObject rray__sign_impl(const xt::rarray<rlogical>& x) {
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__sign(Rcpp::RObject x) {
-  DISPATCH_UNARY(rray__sign_impl, x);
+  DISPATCH_UNARY_MATH(rray__sign_impl, x);
 }
 
 // -----------------------------------------------------------------------------
@@ -181,6 +181,14 @@ xt::rarray<T> rray__clip_impl(const xt::rarray<T>& x,
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__clip(Rcpp::RObject x, Rcpp::RObject low, Rcpp::RObject high) {
-  DISPATCH_UNARY_TWO(rray__clip_impl, x, low, high);
+
+  if (r_is_null(x)) {
+    return x;
+  }
+
+  Rcpp::RObject out;
+  DISPATCH_UNARY_TWO_SIMPLE(out, rray__clip_impl, x, low, high);
+  rray__set_dim_names(out, rray__dim_names(x));
+  return out;
 }
 
