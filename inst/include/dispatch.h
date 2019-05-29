@@ -284,4 +284,31 @@
 
 // -----------------------------------------------------------------------------
 
+#define DISPATCH_UNARY_ONE_SIMPLE(OUT, FUN, X, ARG)               \
+  int x_type = TYPEOF(X);                                         \
+                                                                  \
+  if (x_type == REALSXP) {                                        \
+    OUT = FUN(                                                    \
+      xt::rarray<double>(X),                                      \
+      ARG                                                         \
+    );                                                            \
+  }                                                               \
+  else if (x_type == INTSXP) {                                    \
+    OUT = FUN(                                                    \
+      xt::rarray<int>(X),                                         \
+      ARG                                                         \
+    );                                                            \
+  }                                                               \
+  else if (x_type == LGLSXP) {                                    \
+    OUT = FUN(                                                    \
+      xt::rarray<rlogical>(X),                                    \
+      ARG                                                         \
+    );                                                            \
+  }                                                               \
+  else {                                                          \
+    error_unknown_type();                                         \
+  }
+
+// -----------------------------------------------------------------------------
+
 #endif
