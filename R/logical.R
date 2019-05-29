@@ -124,10 +124,6 @@ rray_logical_not <- function(x) {
 #' @export
 rray_any <- function(x, axes = NULL) {
 
-  if (is.null(x)) {
-    x <- logical()
-  }
-
   # only integer axes
   axes <- vec_cast(axes, integer())
   validate_axes(axes, x)
@@ -144,19 +140,12 @@ rray_any <- function(x, axes = NULL) {
 #' @export
 rray_all <- function(x, axes = NULL) {
 
-  if (is.null(x)) {
-    x <- logical()
-  }
-
   # only integer axes
   axes <- vec_cast(axes, integer())
   validate_axes(axes, x)
 
-  # only logicals allowed through
-  x_cast <- vec_cast_inner(x, logical())
-
   # perform the reduction
-  res <- rray__all(x_cast, as_cpp_idx(axes), rray_dim_names(x))
+  res <- rray__all(x, as_cpp_idx(axes))
 
   vec_cast_container(res, x)
 }
@@ -207,19 +196,7 @@ rray_all <- function(x, axes = NULL) {
 #'
 #' @export
 rray_if_else <- function(condition, true, false) {
-
-  condition <- vec_cast_inner(condition, logical())
-
-  to <- vec_type2(true, false, x_arg = "true", y_arg = "false")
-
-  true_cast <- vec_cast_inner(true, to)
-  false_cast <- vec_cast_inner(false, to)
-
-  res <- rray__if_else(condition, true_cast, false_cast)
-
-  # Common dim names of true and false
-  new_dim_names <- rray_dim_names2(true, false)
-  res <- set_full_dim_names(res, new_dim_names)
-
-  vec_cast_container(res, to)
+  out <- rray__if_else(condition, true, false)
+  container <- vec_type_container2(true, false)
+  vec_cast_container(out, container)
 }

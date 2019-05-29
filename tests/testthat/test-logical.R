@@ -193,7 +193,7 @@ test_that("! works with non-logicals", {
 
 # treated as logical(0)
 test_that("! works with NULL input", {
-  expect_equal(rray_logical_not(NULL), new_array(logical()))
+  expect_equal(rray_logical_not(NULL), logical())
 })
 
 test_that("dim names are kept with !", {
@@ -420,7 +420,7 @@ test_that("result is common type of `true` and `false` even if one isn't used", 
 })
 
 test_that("`true` and `false` must have a common type", {
-  expect_error(rray_if_else(1, factor(1), 2.5), class = "vctrs_error_incompatible_type")
+  expect_error(rray_if_else(1, factor(1), 2.5), "unknown inner type", class = "rlang_error")
 })
 
 test_that("`condition` must be castable to a logical", {

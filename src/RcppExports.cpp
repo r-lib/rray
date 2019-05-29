@@ -409,14 +409,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // rray__all
-Rcpp::RObject rray__all(const xt::rarray<rlogical>& x, Rcpp::RObject axes, Rcpp::List dim_names);
-RcppExport SEXP _rray_rray__all(SEXP xSEXP, SEXP axesSEXP, SEXP dim_namesSEXP) {
+Rcpp::RObject rray__all(Rcpp::RObject x, Rcpp::RObject axes);
+RcppExport SEXP _rray_rray__all(SEXP xSEXP, SEXP axesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< const xt::rarray<rlogical>& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
     Rcpp::traits::input_parameter< Rcpp::RObject >::type axes(axesSEXP);
-    Rcpp::traits::input_parameter< Rcpp::List >::type dim_names(dim_namesSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__all(x, axes, dim_names));
+    rcpp_result_gen = Rcpp::wrap(rray__all(x, axes));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1142,7 +1141,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__logical_or", (DL_FUNC) &_rray_rray__logical_or, 2},
     {"_rray_rray__logical_not", (DL_FUNC) &_rray_rray__logical_not, 1},
     {"_rray_rray__any", (DL_FUNC) &_rray_rray__any, 2},
-    {"_rray_rray__all", (DL_FUNC) &_rray_rray__all, 3},
+    {"_rray_rray__all", (DL_FUNC) &_rray_rray__all, 2},
     {"_rray_rray__if_else", (DL_FUNC) &_rray_rray__if_else, 3},
     {"_rray_rray__split", (DL_FUNC) &_rray_rray__split, 2},
     {"_rray_rray__rotate", (DL_FUNC) &_rray_rray__rotate, 4},

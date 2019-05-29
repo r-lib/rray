@@ -119,17 +119,24 @@ Rcpp::RObject rray__any_impl(const xt::rarray<rlogical>& x, Rcpp::RObject axes) 
   }
 
   out = rray__keep_dims_view(x_reduced, rray__dim(SEXP(x)), axes);
-  return Rcpp::as<Rcpp::RObject>(out);;
+  return Rcpp::as<Rcpp::RObject>(out);
 }
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__any(Rcpp::RObject x, Rcpp::RObject axes) {
+
+  if (r_is_null(x)) {
+    x = rray_shared_empty_lgl;
+  }
+
   Rcpp::RObject x_cast = vec__cast_inner(x, rray_shared_empty_lgl);
+
   Rcpp::RObject out = rray__any_impl(xt::rarray<rlogical>(x_cast), axes);
+
   rray__reshape_and_set_dim_names(out, x);
+
   return out;
 }
-
 
 // -----------------------------------------------------------------------------
 
@@ -140,36 +147,45 @@ Rcpp::RObject rray__any(Rcpp::RObject x, Rcpp::RObject axes) {
 // TODO - it also currently fails with multiple axes when one is size 0
 // https://github.com/QuantStack/xtensor/issues/1563
 
-// [[Rcpp::export(rng = false)]]
-Rcpp::RObject rray__all(const xt::rarray<rlogical>& x,
-                        Rcpp::RObject axes,
-                        Rcpp::List dim_names) {
+Rcpp::RObject rray__all_impl(const xt::rarray<rlogical>& x,
+                             Rcpp::RObject axes) {
+
+  // Currently required to materialize into a xarray<bool> before going to rarray<rlogical>
+  xt::xarray<bool> x_reduced;
+  xt::rarray<rlogical> out;
 
   // If `axes = NULL` we can rely on `xt::all()` which finds a "global" all value
+  // If `axes != NULL` we implement our own custom reducer
   if (r_is_null(axes)) {
-    xt::xarray<bool> x_global_all = xt::all(x);
+    x_reduced = xt::all(x);
+  }
+  else {
+    auto all_reducer = xt::make_xreducer_functor(
+      [](bool a, bool b) { return a && b; },
+      xt::const_value<bool>(true)
+    );
 
-    xt::rarray<rlogical> xt_out = rray__keep_dims_view(x_global_all, rray__dim(SEXP(x)), axes);
-    Rcpp::RObject out = SEXP(xt_out);
-    out.attr("dimnames") = rray__reshape_dim_names(dim_names, rray__dim(out));
+    std::vector<std::size_t> xt_axes = Rcpp::as<std::vector<std::size_t>>(axes);
 
-    return out;
+    x_reduced = xt::reduce(all_reducer, x, xt_axes);
   }
 
-  // If `axes != NULL` we implement our own custom reducer
-  auto all_reducer = xt::make_xreducer_functor(
-    [](bool a, bool b) { return a && b; },
-    xt::const_value<bool>(true)
-  );
-  std::vector<std::size_t> xt_axes = Rcpp::as<std::vector<std::size_t>>(axes);
+  out = rray__keep_dims_view(x_reduced, rray__dim(SEXP(x)), axes);
+  return Rcpp::as<Rcpp::RObject>(out);
+}
 
-  // Currently required to materialize into a xarray<bool> before going to
-  // rarray<rlogical>
-  xt::xarray<bool> x_reduced = xt::reduce(all_reducer, x, xt_axes);
+// [[Rcpp::export(rng = false)]]
+Rcpp::RObject rray__all(Rcpp::RObject x, Rcpp::RObject axes) {
 
-  xt::rarray<rlogical> xt_out = rray__keep_dims_view(x_reduced, rray__dim(SEXP(x)), axes);
-  Rcpp::RObject out = SEXP(xt_out);
-  out.attr("dimnames") = rray__reshape_dim_names(dim_names, rray__dim(out));
+  if (r_is_null(x)) {
+    x = rray_shared_empty_lgl;
+  }
+
+  Rcpp::RObject x_cast = vec__cast_inner(x, rray_shared_empty_lgl);
+
+  Rcpp::RObject out = rray__all_impl(xt::rarray<rlogical>(x_cast), axes);
+
+  rray__reshape_and_set_dim_names(out, x);
 
   return out;
 }
@@ -179,15 +195,21 @@ Rcpp::RObject rray__all(const xt::rarray<rlogical>& x,
 // Special kind of dispatch for `rray__if_else()`, first value is always logical
 
 template <typename T>
-xt::rarray<T> rray__if_else_impl(const xt::rarray<rlogical>& condition,
-                                 const xt::rarray<T>& true_,
-                                 const xt::rarray<T>& false_) {
+xt::rarray<T> rray__if_else_impl(const xt::rarray<T>& true_,
+                                 const xt::rarray<T>& false_,
+                                 Rcpp::RObject condition) {
 
-  // Common dim
-  Rcpp::IntegerVector tmp_dim = rray__dim2(rray__dim(SEXP(condition)), rray__dim(SEXP(true_)));
-  Rcpp::IntegerVector dim = rray__dim2(tmp_dim, rray__dim(SEXP(false_)));
+  const xt::rarray<rlogical>& condition_ = SEXP(condition);
+
+  Rcpp::IntegerVector dim_condition = rray__dim(condition);
+  Rcpp::IntegerVector dim_true = rray__dim(SEXP(true_));
+  Rcpp::IntegerVector dim_false = rray__dim(SEXP(false_));
+
+  Rcpp::IntegerVector dim = rray__dim2(rray__dim2(dim_condition, dim_true), dim_false);
+
   const int& dims = dim.size();
-  auto condition_view = rray__increase_dims_view(condition, dims);
+
+  auto condition_view = rray__increase_dims_view(condition_, dims);
   auto true_view = rray__increase_dims_view(true_, dims);
   auto false_view = rray__increase_dims_view(false_, dims);
 
@@ -204,47 +226,20 @@ Rcpp::RObject rray__if_else(Rcpp::RObject condition,
     return Rcpp::as<Rcpp::RObject>(R_NilValue);
   }
 
-  int condition_type = TYPEOF(condition);
-  int true_type = TYPEOF(true_);
-  int false_type = TYPEOF(false_);
+  Rcpp::List new_dim_names = rray__dim_names2(true_, false_);
 
-  if (true_type != false_type) {
-    Rcpp::stop("`true` and `false` must have the same type.");
-  }
+  condition = vec__cast_inner(condition, rray_shared_empty_lgl);
 
-  if (condition_type != LGLSXP) {
-    Rcpp::stop("`condition` must be a logical.");
-  }
+  Rcpp::RObject type = vec__type_inner2(true_, false_);
+  true_ = vec__cast_inner(true_, type);
+  false_ = vec__cast_inner(false_, type);
 
-  if (true_type == REALSXP) {
-    return Rcpp::as<Rcpp::RObject>(
-      rray__if_else_impl(
-        xt::rarray<rlogical>(condition),
-        xt::rarray<double>(true_),
-        xt::rarray<double>(false_)
-      )
-    );
-  }
-  else if (true_type == INTSXP) {
-    return Rcpp::as<Rcpp::RObject>(
-      rray__if_else_impl(
-        xt::rarray<rlogical>(condition),
-        xt::rarray<int>(true_),
-        xt::rarray<int>(false_)
-      )
-    );
-  }
-  else if (true_type == LGLSXP) {
-    return Rcpp::as<Rcpp::RObject>(
-      rray__if_else_impl(
-        xt::rarray<rlogical>(condition),
-        xt::rarray<rlogical>(true_),
-        xt::rarray<rlogical>(false_)
-      )
-    );
-  }
+  Rcpp::RObject out;
+  DISPATCH_BINARY_ONE_SIMPLE(out, rray__if_else_impl, true_, false_, condition);
 
-  error_unknown_type();
+  out.attr("dimnames") = new_dim_names;
+
+  return out;
 }
 
 // -----------------------------------------------------------------------------
