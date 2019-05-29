@@ -260,6 +260,36 @@
 
 // -----------------------------------------------------------------------------
 
+#define DISPATCH_BINARY_ONE_SIMPLE(OUT, FUN, X, Y, ARG)        \
+  int x_type = TYPEOF(X);                                      \
+                                                               \
+  if (x_type == REALSXP) {                                     \
+    OUT = FUN(                                                 \
+      xt::rarray<double>(X),                                   \
+      xt::rarray<double>(Y),                                   \
+      ARG                                                      \
+    );                                                         \
+  }                                                            \
+  else if (x_type == INTSXP) {                                 \
+    OUT = FUN(                                                 \
+      xt::rarray<int>(X),                                      \
+      xt::rarray<int>(Y),                                      \
+      ARG                                                      \
+    );                                                         \
+  }                                                            \
+  else if (x_type == LGLSXP) {                                 \
+    OUT = FUN(                                                 \
+      xt::rarray<rlogical>(X),                                 \
+      xt::rarray<rlogical>(Y),                                 \
+      ARG                                                      \
+    );                                                         \
+  }                                                            \
+  else {                                                       \
+    error_unknown_type();                                      \
+  }
+
+// -----------------------------------------------------------------------------
+
 #define DISPATCH_UNARY_SIMPLE(OUT, FUN, X)                         \
   int x_type = TYPEOF(X);                                          \
                                                                    \

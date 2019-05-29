@@ -139,74 +139,68 @@ BEGIN_RCPP
 END_RCPP
 }
 // rray__greater
-Rcpp::RObject rray__greater(Rcpp::RObject x, Rcpp::RObject y, Rcpp::List new_dim_names);
-RcppExport SEXP _rray_rray__greater(SEXP xSEXP, SEXP ySEXP, SEXP new_dim_namesSEXP) {
+Rcpp::RObject rray__greater(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__greater(SEXP xSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
     Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
-    Rcpp::traits::input_parameter< Rcpp::List >::type new_dim_names(new_dim_namesSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__greater(x, y, new_dim_names));
+    rcpp_result_gen = Rcpp::wrap(rray__greater(x, y));
     return rcpp_result_gen;
 END_RCPP
 }
 // rray__greater_equal
-Rcpp::RObject rray__greater_equal(Rcpp::RObject x, Rcpp::RObject y, Rcpp::List new_dim_names);
-RcppExport SEXP _rray_rray__greater_equal(SEXP xSEXP, SEXP ySEXP, SEXP new_dim_namesSEXP) {
+Rcpp::RObject rray__greater_equal(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__greater_equal(SEXP xSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
     Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
-    Rcpp::traits::input_parameter< Rcpp::List >::type new_dim_names(new_dim_namesSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__greater_equal(x, y, new_dim_names));
+    rcpp_result_gen = Rcpp::wrap(rray__greater_equal(x, y));
     return rcpp_result_gen;
 END_RCPP
 }
 // rray__lesser
-Rcpp::RObject rray__lesser(Rcpp::RObject x, Rcpp::RObject y, Rcpp::List new_dim_names);
-RcppExport SEXP _rray_rray__lesser(SEXP xSEXP, SEXP ySEXP, SEXP new_dim_namesSEXP) {
+Rcpp::RObject rray__lesser(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__lesser(SEXP xSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
     Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
-    Rcpp::traits::input_parameter< Rcpp::List >::type new_dim_names(new_dim_namesSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__lesser(x, y, new_dim_names));
+    rcpp_result_gen = Rcpp::wrap(rray__lesser(x, y));
     return rcpp_result_gen;
 END_RCPP
 }
 // rray__lesser_equal
-Rcpp::RObject rray__lesser_equal(Rcpp::RObject x, Rcpp::RObject y, Rcpp::List new_dim_names);
-RcppExport SEXP _rray_rray__lesser_equal(SEXP xSEXP, SEXP ySEXP, SEXP new_dim_namesSEXP) {
+Rcpp::RObject rray__lesser_equal(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__lesser_equal(SEXP xSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
     Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
-    Rcpp::traits::input_parameter< Rcpp::List >::type new_dim_names(new_dim_namesSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__lesser_equal(x, y, new_dim_names));
+    rcpp_result_gen = Rcpp::wrap(rray__lesser_equal(x, y));
     return rcpp_result_gen;
 END_RCPP
 }
 // rray__equal
-Rcpp::RObject rray__equal(Rcpp::RObject x, Rcpp::RObject y, Rcpp::List new_dim_names);
-RcppExport SEXP _rray_rray__equal(SEXP xSEXP, SEXP ySEXP, SEXP new_dim_namesSEXP) {
+Rcpp::RObject rray__equal(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__equal(SEXP xSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
     Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
-    Rcpp::traits::input_parameter< Rcpp::List >::type new_dim_names(new_dim_namesSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__equal(x, y, new_dim_names));
+    rcpp_result_gen = Rcpp::wrap(rray__equal(x, y));
     return rcpp_result_gen;
 END_RCPP
 }
 // rray__not_equal
-Rcpp::RObject rray__not_equal(Rcpp::RObject x, Rcpp::RObject y, Rcpp::List new_dim_names);
-RcppExport SEXP _rray_rray__not_equal(SEXP xSEXP, SEXP ySEXP, SEXP new_dim_namesSEXP) {
+Rcpp::RObject rray__not_equal(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__not_equal(SEXP xSEXP, SEXP ySEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
     Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
-    Rcpp::traits::input_parameter< Rcpp::List >::type new_dim_names(new_dim_namesSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__not_equal(x, y, new_dim_names));
+    rcpp_result_gen = Rcpp::wrap(rray__not_equal(x, y));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1126,12 +1120,12 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__full_like", (DL_FUNC) &_rray_rray__full_like, 2},
     {"_rray_rray__diag", (DL_FUNC) &_rray_rray__diag, 2},
     {"_rray_vec__cast_inner", (DL_FUNC) &_rray_vec__cast_inner, 2},
-    {"_rray_rray__greater", (DL_FUNC) &_rray_rray__greater, 3},
-    {"_rray_rray__greater_equal", (DL_FUNC) &_rray_rray__greater_equal, 3},
-    {"_rray_rray__lesser", (DL_FUNC) &_rray_rray__lesser, 3},
-    {"_rray_rray__lesser_equal", (DL_FUNC) &_rray_rray__lesser_equal, 3},
-    {"_rray_rray__equal", (DL_FUNC) &_rray_rray__equal, 3},
-    {"_rray_rray__not_equal", (DL_FUNC) &_rray_rray__not_equal, 3},
+    {"_rray_rray__greater", (DL_FUNC) &_rray_rray__greater, 2},
+    {"_rray_rray__greater_equal", (DL_FUNC) &_rray_rray__greater_equal, 2},
+    {"_rray_rray__lesser", (DL_FUNC) &_rray_rray__lesser, 2},
+    {"_rray_rray__lesser_equal", (DL_FUNC) &_rray_rray__lesser_equal, 2},
+    {"_rray_rray__equal", (DL_FUNC) &_rray_rray__equal, 2},
+    {"_rray_rray__not_equal", (DL_FUNC) &_rray_rray__not_equal, 2},
     {"_rray_rray__all_equal", (DL_FUNC) &_rray_rray__all_equal, 2},
     {"_rray_rray__any_not_equal", (DL_FUNC) &_rray_rray__any_not_equal, 2},
     {"_rray_rray__reshape_dim_names", (DL_FUNC) &_rray_rray__reshape_dim_names, 2},

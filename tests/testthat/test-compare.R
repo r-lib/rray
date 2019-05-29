@@ -416,6 +416,7 @@ test_that("dimension names don't matter", {
 
 test_that("underlying type matters", {
   expect_false(rray_all_equal(1, 1L))
+  expect_false(rray_all_equal(matrix(1), matrix(1L)))
 })
 
 test_that("class matters", {
