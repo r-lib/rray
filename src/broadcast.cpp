@@ -34,7 +34,7 @@ Rcpp::RObject rray__broadcast(Rcpp::RObject x, Rcpp::IntegerVector dim) {
   rray__validate_broadcastable_to_dim(x_dim, dim);
 
   Rcpp::RObject out;
-  DISPATCH_UNARY_ONE_SIMPLE(out, rray__broadcast_impl, x, dim);
+  DISPATCH_UNARY_ONE(out, rray__broadcast_impl, x, dim);
 
   rray__reshape_and_set_dim_names(out, x);
 

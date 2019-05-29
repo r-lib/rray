@@ -7,7 +7,7 @@
 // -----------------------------------------------------------------------------
 // Trinary + 0 argument + logicals converted to integer
 
-#define DISPATCH_TRINARY_NO_LOGICAL_SIMPLE(OUT, FUN, X, Y, Z)         \
+#define DISPATCH_TRINARY_NO_LOGICAL(OUT, FUN, X, Y, Z)                \
   if (Rf_isNull(X) || Rf_isNull(Y) || Rf_isNull(Z)) {                 \
     return Rcpp::as<Rcpp::RObject>(R_NilValue);                       \
   }                                                                   \
@@ -44,7 +44,7 @@
 
 // -----------------------------------------------------------------------------
 
-#define DISPATCH_BINARY_SIMPLE(OUT, FUN, X, Y)                   \
+#define DISPATCH_BINARY(OUT, FUN, X, Y)                          \
   int x_type = TYPEOF(X);                                        \
                                                                  \
   if (x_type == REALSXP) {                                       \
@@ -71,7 +71,7 @@
 
 // -----------------------------------------------------------------------------
 
-#define DISPATCH_BINARY_ONE_SIMPLE(OUT, FUN, X, Y, ARG)        \
+#define DISPATCH_BINARY_ONE(OUT, FUN, X, Y, ARG)               \
   int x_type = TYPEOF(X);                                      \
                                                                \
   if (x_type == REALSXP) {                                     \
@@ -101,7 +101,7 @@
 
 // -----------------------------------------------------------------------------
 
-#define DISPATCH_BINARY_TWO_SIMPLE(OUT, FUN, X, Y, ARG1, ARG2)   \
+#define DISPATCH_BINARY_TWO(OUT, FUN, X, Y, ARG1, ARG2)          \
   int x_type = TYPEOF(X);                                        \
                                                                  \
   if (x_type == REALSXP) {                                       \
@@ -132,7 +132,7 @@
 
 // -----------------------------------------------------------------------------
 
-#define DISPATCH_UNARY_SIMPLE(OUT, FUN, X)                         \
+#define DISPATCH_UNARY(OUT, FUN, X)                                \
   int x_type = TYPEOF(X);                                          \
                                                                    \
   if (x_type == REALSXP) {                                         \
@@ -156,7 +156,7 @@
 
 // -----------------------------------------------------------------------------
 
-#define DISPATCH_UNARY_ONE_SIMPLE(OUT, FUN, X, ARG)               \
+#define DISPATCH_UNARY_ONE(OUT, FUN, X, ARG)                      \
   int x_type = TYPEOF(X);                                         \
                                                                   \
   if (x_type == REALSXP) {                                        \
@@ -183,7 +183,7 @@
 
 // -----------------------------------------------------------------------------
 
-#define DISPATCH_UNARY_TWO_SIMPLE(OUT, FUN, X, ARG1, ARG2)             \
+#define DISPATCH_UNARY_TWO(OUT, FUN, X, ARG1, ARG2)                    \
   int x_type = TYPEOF(X);                                              \
                                                                        \
   if (x_type == REALSXP) {                                             \
@@ -210,7 +210,7 @@
 
 // -----------------------------------------------------------------------------
 
-#define DISPATCH_UNARY_THREE_SIMPLE(OUT, FUN, X, ARG1, ARG2, ARG3)   \
+#define DISPATCH_UNARY_THREE(OUT, FUN, X, ARG1, ARG2, ARG3)          \
   int x_type = TYPEOF(X);                                            \
                                                                      \
   if (x_type == REALSXP) {                                           \
@@ -243,7 +243,7 @@
   }                                                              \
                                                                  \
   Rcpp::RObject out;                                             \
-  DISPATCH_UNARY_SIMPLE(out, FUN, X);                            \
+  DISPATCH_UNARY(out, FUN, X);                                   \
                                                                  \
   rray__set_dim_names(out, rray__dim_names(X));                  \
   return out
@@ -262,7 +262,7 @@
   Y = vec__cast_inner(Y, type);                                  \
                                                                  \
   Rcpp::RObject out;                                             \
-  DISPATCH_BINARY_SIMPLE(out, FUN, X, Y);                        \
+  DISPATCH_BINARY(out, FUN, X, Y);                               \
                                                                  \
   rray__set_dim_names(out, new_dim_names);                       \
   return out

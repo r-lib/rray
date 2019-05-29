@@ -137,7 +137,7 @@ Rcpp::RObject rray__split(Rcpp::RObject x,
   }
 
   Rcpp::List out;
-  DISPATCH_UNARY_ONE_SIMPLE(out, rray__split_impl, x, axes);
+  DISPATCH_UNARY_ONE(out, rray__split_impl, x, axes);
 
   return out;
 }
@@ -246,7 +246,7 @@ Rcpp::RObject rray__rotate(Rcpp::RObject x,
   }
 
   Rcpp::RObject out;
-  DISPATCH_UNARY_THREE_SIMPLE(out, rray__rotate_impl, x, from, to, times);
+  DISPATCH_UNARY_THREE(out, rray__rotate_impl, x, from, to, times);
 
   out.attr("dimnames") = rotate_dim_names(rray__dim_names(x), from, to, times);
 
@@ -314,7 +314,7 @@ Rcpp::RObject rray__transpose_impl(const xt::rarray<T>& x,
 Rcpp::RObject rray__transpose(Rcpp::RObject x, Rcpp::RObject permutation) {
 
   Rcpp::RObject out;
-  DISPATCH_UNARY_ONE_SIMPLE(out, rray__transpose_impl, x, permutation);
+  DISPATCH_UNARY_ONE(out, rray__transpose_impl, x, permutation);
 
   out.attr("dimnames") = transpose_dim_names(rray__dim_names(x), permutation);
 
@@ -393,7 +393,7 @@ Rcpp::RObject rray__squeeze(Rcpp::RObject x,
                             const std::vector<std::size_t>& axes) {
 
   Rcpp::RObject out;
-  DISPATCH_UNARY_ONE_SIMPLE(out, rray__squeeze_impl, x, axes);
+  DISPATCH_UNARY_ONE(out, rray__squeeze_impl, x, axes);
 
   rray__set_dim_names(out, squeeze_dim_names(rray__dim_names(x), axes));
 
@@ -435,7 +435,7 @@ Rcpp::RObject rray__expand_dims(Rcpp::RObject x, const std::size_t& axis) {
   }
 
   Rcpp::RObject out;
-  DISPATCH_UNARY_ONE_SIMPLE(out, rray__expand_dims_impl, x, axis);
+  DISPATCH_UNARY_ONE(out, rray__expand_dims_impl, x, axis);
 
   rray__set_dim_names(out, rray__expand_dim_names(rray__dim_names(x), axis));
 
@@ -477,7 +477,7 @@ Rcpp::RObject rray__flip(Rcpp::RObject x, const std::size_t& axis) {
   }
 
   Rcpp::RObject out;
-  DISPATCH_UNARY_ONE_SIMPLE(out, rray__flip_impl, x, axis);
+  DISPATCH_UNARY_ONE(out, rray__flip_impl, x, axis);
 
   rray__set_dim_names(out, rev_axis_names(rray__dim_names(x), axis));
 
@@ -500,7 +500,7 @@ Rcpp::RObject rray__flatten(Rcpp::RObject x) {
   }
 
   Rcpp::RObject out;
-  DISPATCH_UNARY_SIMPLE(out, rray__flatten_impl, x);
+  DISPATCH_UNARY(out, rray__flatten_impl, x);
 
   rray__reshape_and_set_dim_names(out, x);
 

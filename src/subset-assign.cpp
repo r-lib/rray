@@ -64,7 +64,7 @@ Rcpp::RObject rray__subset_assign(Rcpp::RObject x,
                                   Rcpp::List indexer,
                                   Rcpp::RObject value) {
   Rcpp::RObject out;
-  DISPATCH_UNARY_TWO_SIMPLE(out, rray__subset_assign_impl, x, indexer, value);
+  DISPATCH_UNARY_TWO(out, rray__subset_assign_impl, x, indexer, value);
 
   rray__set_dim_names(out, rray__dim_names(x));
 

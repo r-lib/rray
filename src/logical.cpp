@@ -35,7 +35,7 @@
   Y = vec__cast_inner(Y, rray_shared_empty_lgl);                 \
                                                                  \
   Rcpp::RObject out;                                             \
-  DISPATCH_BINARY_SIMPLE(out, FUN, X, Y);                        \
+  DISPATCH_BINARY(out, FUN, X, Y);                               \
                                                                  \
   out.attr("dimnames") = new_dim_names;                          \
                                                                  \
@@ -235,7 +235,7 @@ Rcpp::RObject rray__if_else(Rcpp::RObject condition,
   false_ = vec__cast_inner(false_, type);
 
   Rcpp::RObject out;
-  DISPATCH_BINARY_ONE_SIMPLE(out, rray__if_else_impl, true_, false_, condition);
+  DISPATCH_BINARY_ONE(out, rray__if_else_impl, true_, false_, condition);
 
   out.attr("dimnames") = new_dim_names;
 

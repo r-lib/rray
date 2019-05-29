@@ -33,7 +33,7 @@
   Y = vec__cast_inner(Y, type);                                \
                                                                \
   Rcpp::RObject out;                                           \
-  DISPATCH_BINARY_SIMPLE(out, FUN, X, Y);                      \
+  DISPATCH_BINARY(out, FUN, X, Y);                             \
                                                                \
   out.attr("dimnames") = new_dim_names;                        \
                                                                \
@@ -148,7 +148,7 @@ Rcpp::RObject rray__all_equal(Rcpp::RObject x, Rcpp::RObject y) {
   }
 
   Rcpp::RObject out;
-  DISPATCH_BINARY_SIMPLE(out, rray__all_equal_impl, x, y);
+  DISPATCH_BINARY(out, rray__all_equal_impl, x, y);
 
   return out;
 }
@@ -182,7 +182,7 @@ Rcpp::RObject rray__any_not_equal(Rcpp::RObject x, Rcpp::RObject y) {
   }
 
   Rcpp::RObject out;
-  DISPATCH_BINARY_SIMPLE(out, rray__any_not_equal_impl, x, y);
+  DISPATCH_BINARY(out, rray__any_not_equal_impl, x, y);
 
   return out;
 }

@@ -52,7 +52,7 @@ Rcpp::RObject rray__full_like(Rcpp::RObject x, Rcpp::RObject value) {
   value = vec__cast_inner(value, x);
 
   Rcpp::RObject out;
-  DISPATCH_UNARY_ONE_SIMPLE(out, rray__full_like_impl, x, value);
+  DISPATCH_UNARY_ONE(out, rray__full_like_impl, x, value);
 
   return out;
 }
@@ -78,7 +78,7 @@ Rcpp::RObject rray__diag(Rcpp::RObject x, const int& offset) {
   }
 
   Rcpp::RObject out;
-  DISPATCH_UNARY_ONE_SIMPLE(out, rray__diag_impl, x, offset);
+  DISPATCH_UNARY_ONE(out, rray__diag_impl, x, offset);
 
   return out;
 }

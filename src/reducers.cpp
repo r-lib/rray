@@ -10,7 +10,7 @@
   }                                                            \
                                                                \
   Rcpp::RObject out;                                           \
-  DISPATCH_UNARY_ONE_SIMPLE(out, FUN, X, AXES);                \
+  DISPATCH_UNARY_ONE(out, FUN, X, AXES);                       \
                                                                \
   rray__reshape_and_set_dim_names(out, X);                     \
                                                                \

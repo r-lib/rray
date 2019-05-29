@@ -59,7 +59,7 @@ Rcpp::RObject rray__multiply_add(Rcpp::RObject x, Rcpp::RObject y, Rcpp::RObject
   z = vec__cast_inner(z, type);
 
   Rcpp::RObject out;
-  DISPATCH_TRINARY_NO_LOGICAL_SIMPLE(out, rray__multiply_add_impl, x, y, z);
+  DISPATCH_TRINARY_NO_LOGICAL(out, rray__multiply_add_impl, x, y, z);
 
   rray__set_dim_names(out, new_dim_names);
 
@@ -223,7 +223,7 @@ Rcpp::RObject rray__clip(Rcpp::RObject x, Rcpp::RObject low, Rcpp::RObject high)
   }
 
   Rcpp::RObject out;
-  DISPATCH_UNARY_TWO_SIMPLE(out, rray__clip_impl, x, low, high);
+  DISPATCH_UNARY_TWO(out, rray__clip_impl, x, low, high);
   rray__set_dim_names(out, rray__dim_names(x));
   return out;
 }

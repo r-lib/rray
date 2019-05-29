@@ -56,7 +56,7 @@ Rcpp::RObject rray__sort(Rcpp::RObject x, Rcpp::RObject axis) {
   }
 
   Rcpp::RObject out;
-  DISPATCH_UNARY_ONE_SIMPLE(out, rray__sort_impl, x, axis);
+  DISPATCH_UNARY_ONE(out, rray__sort_impl, x, axis);
 
   rray__set_dim_names(out, sort_dim_names(rray__dim_names(x), axis));
 
@@ -143,7 +143,7 @@ Rcpp::RObject rray__max_pos(Rcpp::RObject x, Rcpp::RObject axis) {
   }
 
   Rcpp::RObject out;
-  DISPATCH_UNARY_ONE_SIMPLE(out, rray__max_pos_impl, x, axis);
+  DISPATCH_UNARY_ONE(out, rray__max_pos_impl, x, axis);
 
   rray__reshape_and_set_dim_names(out, x);
 
@@ -180,7 +180,7 @@ Rcpp::RObject rray__min_pos(Rcpp::RObject x, Rcpp::RObject axis) {
   }
 
   Rcpp::RObject out;
-  DISPATCH_UNARY_ONE_SIMPLE(out, rray__min_pos_impl, x, axis);
+  DISPATCH_UNARY_ONE(out, rray__min_pos_impl, x, axis);
 
   rray__reshape_and_set_dim_names(out, x);
 

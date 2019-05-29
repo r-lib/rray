@@ -64,7 +64,7 @@ xt::rarray<double> rray__log_impl(const xt::rarray<T>& x, Rcpp::RObject base) {
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__log(Rcpp::RObject x, Rcpp::RObject base) {
   Rcpp::RObject out;
-  DISPATCH_UNARY_ONE_SIMPLE(out, rray__log_impl, x, base);
+  DISPATCH_UNARY_ONE(out, rray__log_impl, x, base);
   rray__set_dim_names(out, rray__dim_names(x));
   return out;
 }

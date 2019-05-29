@@ -101,7 +101,7 @@ Rcpp::RObject rray__atan2(Rcpp::RObject y, Rcpp::RObject x) {
   y = vec__cast_inner(y, rray_shared_empty_dbl);
 
   Rcpp::RObject out;
-  DISPATCH_BINARY_SIMPLE(out, rray__atan2_impl, x, y);
+  DISPATCH_BINARY(out, rray__atan2_impl, x, y);
 
   rray__set_dim_names(out, new_dim_names);
   return out;

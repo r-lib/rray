@@ -145,7 +145,7 @@ Rcpp::RObject rray__subset_impl(const xt::rarray<T>& x, Rcpp::List indexer) {
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__subset(Rcpp::RObject x, Rcpp::List indexer) {
   Rcpp::RObject out;
-  DISPATCH_UNARY_ONE_SIMPLE(out, rray__subset_impl, x, indexer);
+  DISPATCH_UNARY_ONE(out, rray__subset_impl, x, indexer);
 
   rray__set_dim_names(out, subset_dim_names(rray__dim_names(x), indexer));
 

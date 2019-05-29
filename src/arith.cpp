@@ -50,7 +50,7 @@ Rcpp::RObject rray__add(Rcpp::RObject x, Rcpp::RObject y) {
   y = vec__cast_inner(y, type);
 
   Rcpp::RObject out;
-  DISPATCH_BINARY_SIMPLE(out, rray__add_impl, x, y);
+  DISPATCH_BINARY(out, rray__add_impl, x, y);
 
   out.attr("dimnames") = new_dim_names;
 
@@ -103,7 +103,7 @@ Rcpp::RObject rray__subtract(Rcpp::RObject x, Rcpp::RObject y) {
   y = vec__cast_inner(y, type);
 
   Rcpp::RObject out;
-  DISPATCH_BINARY_SIMPLE(out, rray__subtract_impl, x, y);
+  DISPATCH_BINARY(out, rray__subtract_impl, x, y);
 
   out.attr("dimnames") = new_dim_names;
 
@@ -143,7 +143,7 @@ Rcpp::RObject rray__divide(Rcpp::RObject x, Rcpp::RObject y) {
   y = vec__cast_inner(y, rray_shared_empty_dbl);
 
   Rcpp::RObject out;
-  DISPATCH_BINARY_SIMPLE(out, rray__divide_impl, x, y);
+  DISPATCH_BINARY(out, rray__divide_impl, x, y);
 
   out.attr("dimnames") = new_dim_names;
 
@@ -196,7 +196,7 @@ Rcpp::RObject rray__multiply(Rcpp::RObject x, Rcpp::RObject y) {
   y = vec__cast_inner(y, type);
 
   Rcpp::RObject out;
-  DISPATCH_BINARY_SIMPLE(out, rray__multiply_impl, x, y);
+  DISPATCH_BINARY(out, rray__multiply_impl, x, y);
 
   out.attr("dimnames") = new_dim_names;
 
@@ -236,7 +236,7 @@ Rcpp::RObject rray__pow(Rcpp::RObject x, Rcpp::RObject y) {
   y = vec__cast_inner(y, rray_shared_empty_dbl);
 
   Rcpp::RObject out;
-  DISPATCH_BINARY_SIMPLE(out, rray__pow_impl, x, y);
+  DISPATCH_BINARY(out, rray__pow_impl, x, y);
 
   out.attr("dimnames") = new_dim_names;
 
@@ -297,7 +297,7 @@ Rcpp::RObject rray__opposite_impl(const xt::rarray<rlogical>& x) {
 Rcpp::RObject rray__opposite(Rcpp::RObject x) {
 
   Rcpp::RObject out;
-  DISPATCH_UNARY_SIMPLE(out, rray__opposite_impl, x);
+  DISPATCH_UNARY(out, rray__opposite_impl, x);
 
   out.attr("dimnames") = rray__dim_names(x);
 

@@ -31,7 +31,7 @@ Rcpp::RObject rray__reshape(Rcpp::RObject x, const Rcpp::IntegerVector& dim) {
   rray__validate_reshape(x, dim);
 
   Rcpp::RObject out;
-  DISPATCH_UNARY_ONE_SIMPLE(out, rray__reshape_impl, x, dim);
+  DISPATCH_UNARY_ONE(out, rray__reshape_impl, x, dim);
 
   // Potentially going down in dimensionality, but this is fine
   rray__reshape_and_set_dim_names(out, x);
