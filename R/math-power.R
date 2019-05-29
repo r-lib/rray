@@ -54,5 +54,7 @@ rray_cbrt <- function(x) {
 #' @rdname rray_square
 #' @export
 rray_hypot <- function(x, y) {
-  rray_math_binary_base(rray__hypot, x, y)
+  out <- rray__hypot(x, y)
+  container <- vec_type_container2(x, y)
+  vec_cast_container(out, container)
 }

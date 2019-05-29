@@ -427,9 +427,33 @@
 // -----------------------------------------------------------------------------
 
 #define DISPATCH_UNARY_MATH(FUN, X)                              \
+  if (r_is_null(X)) {                                            \
+    return X;                                                    \
+  }                                                              \
+                                                                 \
   Rcpp::RObject out;                                             \
   DISPATCH_UNARY_SIMPLE(out, FUN, X);                            \
+                                                                 \
   rray__set_dim_names(out, rray__dim_names(X));                  \
+  return out
+
+// -----------------------------------------------------------------------------
+
+#define DISPATCH_BINARY_MATH(FUN, X, Y)                          \
+  if (r_is_null(X) || r_is_null(Y)) {                            \
+    return R_NilValue;                                           \
+  }                                                              \
+                                                                 \
+  Rcpp::List new_dim_names = rray__dim_names2(X, Y);             \
+                                                                 \
+  Rcpp::RObject type = vec__type_inner2(X, Y);                   \
+  X = vec__cast_inner(X, type);                                  \
+  Y = vec__cast_inner(Y, type);                                  \
+                                                                 \
+  Rcpp::RObject out;                                             \
+  DISPATCH_BINARY_SIMPLE(out, FUN, X, Y);                        \
+                                                                 \
+  rray__set_dim_names(out, new_dim_names);                       \
   return out
 
 // -----------------------------------------------------------------------------
