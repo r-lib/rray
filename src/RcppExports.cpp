@@ -344,12 +344,12 @@ BEGIN_RCPP
 END_RCPP
 }
 // rray__reshape
-Rcpp::RObject rray__reshape(Rcpp::RObject x, Rcpp::IntegerVector dim);
+Rcpp::RObject rray__reshape(Rcpp::RObject x, const Rcpp::IntegerVector& dim);
 RcppExport SEXP _rray_rray__reshape(SEXP xSEXP, SEXP dimSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type dim(dimSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::IntegerVector& >::type dim(dimSEXP);
     rcpp_result_gen = Rcpp::wrap(rray__reshape(x, dim));
     return rcpp_result_gen;
 END_RCPP
