@@ -41,18 +41,10 @@
 #' @export
 rray_full_like <- function(x, value) {
 
-  # not vec_size() (consider array(1, c(1, 1, 2)))
-  if (length(value) != 1) {
-    glubort("`value` must have length 1, not {length(value)}.")
-  }
-
-  # ensure fill is 1D and cast to inner type of `x`
-  value <- value[[1]]
-  value <- vec_cast_inner(value, x)
+  # ensure value is 1D
+  value <- as.vector(value)
 
   res <- rray__full_like(x, value)
-
-  # no dim names on the result
 
   vec_cast_container(res, x)
 }

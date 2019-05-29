@@ -117,13 +117,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // rray__diag
-Rcpp::RObject rray__diag(Rcpp::RObject x, int k);
-RcppExport SEXP _rray_rray__diag(SEXP xSEXP, SEXP kSEXP) {
+Rcpp::RObject rray__diag(Rcpp::RObject x, const int& offset);
+RcppExport SEXP _rray_rray__diag(SEXP xSEXP, SEXP offsetSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    Rcpp::traits::input_parameter< int >::type k(kSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__diag(x, k));
+    Rcpp::traits::input_parameter< const int& >::type offset(offsetSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__diag(x, offset));
     return rcpp_result_gen;
 END_RCPP
 }

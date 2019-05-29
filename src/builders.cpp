@@ -4,44 +4,83 @@
 
 #include <rray.h>
 #include <dispatch.h>
+#include <cast.h>
 
 // -----------------------------------------------------------------------------
 
 // Type of `value` has to be the same as the type of T
 
 template <typename T>
-xt::rarray<T> rray__full_like_impl(const xt::rarray<T>& x,
+Rcpp::RObject rray__full_like_impl(const xt::rarray<T>& x,
                                    Rcpp::RObject value) {
 
-  // This has also been enforced at the R level
-  using underlying_type = typename xt::r_detail::get_underlying_value_type_r<T>::type;
-  underlying_type xt_fill_value = Rcpp::as<underlying_type>(value);
+  using c_type = typename xt::r_detail::get_underlying_value_type_r<T>::type;
+  c_type xt_value;
 
-  xt::rarray<T> out = xt::full_like(x, xt_fill_value);
-  return out;
+  int x_type = TYPEOF(SEXP(x));
+
+  if (x_type == REALSXP) {
+    xt_value = REAL(value)[0];
+  }
+  else if (x_type == INTSXP) {
+    xt_value = INTEGER(value)[0];
+  }
+  else if (x_type == LGLSXP) {
+    xt_value = LOGICAL(value)[0];
+  }
+  else {
+    Rcpp::stop("should never be reached, but pleases clang.");
+  }
+
+  xt::rarray<T> out = xt::full_like(x, xt_value);
+
+  return Rcpp::as<Rcpp::RObject>(out);
 }
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__full_like(Rcpp::RObject x, Rcpp::RObject value) {
-  DISPATCH_UNARY_ONE(rray__full_like_impl, x, value);
+
+  if (r_is_null(x)) {
+    return x;
+  }
+
+  R_xlen_t value_len = Rf_xlength(value);
+  if (value_len != 1) {
+    Rcpp::stop("`value` must have length 1, not %i.", value_len);
+  }
+
+  value = vec__cast_inner(value, x);
+
+  Rcpp::RObject out;
+  DISPATCH_UNARY_ONE_SIMPLE(out, rray__full_like_impl, x, value);
+
+  return out;
 }
 
 // -----------------------------------------------------------------------------
 
 template <typename T>
-xt::rarray<T> rray__diag_impl(const xt::rarray<T>& x, int k) {
+xt::rarray<T> rray__diag_impl(const xt::rarray<T>& x, const int& offset) {
 
   if (x.dimension() > 1) {
     Rcpp::stop("`x` must be 1D, not %iD.", x.dimension());
   }
 
-  xt::rarray<T> out = xt::diag(x, k);
+  xt::rarray<T> out = xt::diag(x, offset);
   return out;
 }
 
 // [[Rcpp::export(rng = false)]]
-Rcpp::RObject rray__diag(Rcpp::RObject x, int k) {
-  DISPATCH_UNARY_ONE(rray__diag_impl, x, k);
+Rcpp::RObject rray__diag(Rcpp::RObject x, const int& offset) {
+
+  if (r_is_null(x)) {
+    return x;
+  }
+
+  Rcpp::RObject out;
+  DISPATCH_UNARY_ONE_SIMPLE(out, rray__diag_impl, x, offset);
+
+  return out;
 }
 
 // -----------------------------------------------------------------------------
