@@ -175,19 +175,6 @@ void rray__reshape_and_set_dim_names(Rcpp::RObject res, Rcpp::RObject x) {
 
 // -----------------------------------------------------------------------------
 
-// One of the other very common dim names restoration functions. This simply
-// takes the result, and the original x, and puts the original dim names back
-// on the result. It assumes that the dimensions of the result and x are the same
-// It also returns the result as an RObject, which is useful as the return value
-// of other functions.
-
-Rcpp::RObject rray__restore_dim_names(SEXP res, SEXP x) {
-  Rf_setAttrib(res, R_DimNamesSymbol, rray__dim_names(x));
-  return res;
-}
-
-// -----------------------------------------------------------------------------
-
 // Most of the time we will be setting dim names directly on an array
 // but occasionally some xtensor functions don't return arrays (rray_squeeze()
 // on all axes). In those cases we can't set dimnames, and instead have to
