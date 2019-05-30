@@ -34,3 +34,7 @@ test_that("`NULL` passes through", {
 test_that("fails if `x` is not an allowed type", {
   expect_error(rray_diag("hi"), "Incompatible")
 })
+
+test_that("fails if `x` is not 1D", {
+  expect_error(rray_diag(matrix(1)), "`x` must be 1D, not 2D")
+})
