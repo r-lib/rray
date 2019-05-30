@@ -2,6 +2,9 @@
 #include <dispatch.h>
 #include <tools/tools.h>
 
+// Required for xt::evaluation_strategy::immediate
+#include <xtensor/xarray.hpp>
+
 // -----------------------------------------------------------------------------
 
 #define DISPATCH_REDUCER(FUN, X, AXES)                         \
@@ -24,13 +27,13 @@ template <typename T>
 xt::rarray<double> rray__sum_impl(const xt::rarray<T>& x, Rcpp::RObject axes) {
 
   if (r_is_null(axes)) {
-    return xt::sum(x, xt::keep_dims);
+    return xt::sum(x, xt::keep_dims | xt::evaluation_strategy::immediate);
   }
 
   using size_vec = typename std::vector<std::size_t>;
   size_vec xt_axes = Rcpp::as<size_vec>(axes);
 
-  return xt::sum(x, xt_axes, xt::keep_dims);
+  return xt::sum(x, xt_axes, xt::keep_dims | xt::evaluation_strategy::immediate);
 }
 
 // [[Rcpp::export(rng = false)]]
@@ -44,13 +47,13 @@ template <typename T>
 xt::rarray<double> rray__prod_impl(const xt::rarray<T>& x, Rcpp::RObject axes) {
 
   if (r_is_null(axes)) {
-    return xt::prod(x, xt::keep_dims);
+    return xt::prod(x, xt::keep_dims | xt::evaluation_strategy::immediate);
   }
 
   using size_vec = typename std::vector<std::size_t>;
   size_vec xt_axes = Rcpp::as<size_vec>(axes);
 
-  return xt::prod(x, xt_axes, xt::keep_dims);
+  return xt::prod(x, xt_axes, xt::keep_dims | xt::evaluation_strategy::immediate);
 }
 
 // [[Rcpp::export(rng = false)]]
@@ -64,13 +67,13 @@ template <typename T>
 xt::rarray<double> rray__mean_impl(const xt::rarray<T>& x, Rcpp::RObject axes) {
 
   if (r_is_null(axes)) {
-    return xt::mean(x, xt::keep_dims);
+    return xt::mean(x, xt::keep_dims | xt::evaluation_strategy::immediate);
   }
 
   using size_vec = typename std::vector<std::size_t>;
   size_vec xt_axes = Rcpp::as<size_vec>(axes);
 
-  return xt::mean(x, xt_axes, xt::keep_dims);
+  return xt::mean(x, xt_axes, xt::keep_dims | xt::evaluation_strategy::immediate);
 }
 
 // [[Rcpp::export(rng = false)]]
@@ -202,7 +205,7 @@ Rcpp::RObject rray__max_impl(const xt::rarray<T>& x,
   }
 
   if (r_is_null(axes)) {
-    xt::rarray<T> xt_out = xt::amax(x, xt::keep_dims);
+    xt::rarray<T> xt_out = xt::amax(x, xt::keep_dims | xt::evaluation_strategy::immediate);
     Rcpp::RObject out = SEXP(xt_out);
     return out;
   }
@@ -210,7 +213,7 @@ Rcpp::RObject rray__max_impl(const xt::rarray<T>& x,
   using size_vec = typename std::vector<std::size_t>;
   size_vec xt_axes = Rcpp::as<size_vec>(axes);
 
-  xt::rarray<T> xt_out = xt::amax(x, xt_axes, xt::keep_dims);
+  xt::rarray<T> xt_out = xt::amax(x, xt_axes, xt::keep_dims | xt::evaluation_strategy::immediate);
   Rcpp::RObject out = SEXP(xt_out);
 
   return out;
@@ -233,7 +236,7 @@ Rcpp::RObject rray__min_impl(const xt::rarray<T>& x,
   }
 
   if (r_is_null(axes)) {
-    xt::rarray<T> xt_out = xt::amin(x, xt::keep_dims);
+    xt::rarray<T> xt_out = xt::amin(x, xt::keep_dims | xt::evaluation_strategy::immediate);
     Rcpp::RObject out = SEXP(xt_out);
     return out;
   }
@@ -241,7 +244,7 @@ Rcpp::RObject rray__min_impl(const xt::rarray<T>& x,
   using size_vec = typename std::vector<std::size_t>;
   size_vec xt_axes = Rcpp::as<size_vec>(axes);
 
-  xt::rarray<T> xt_out = xt::amin(x, xt_axes, xt::keep_dims);
+  xt::rarray<T> xt_out = xt::amin(x, xt_axes, xt::keep_dims | xt::evaluation_strategy::immediate);
   Rcpp::RObject out = SEXP(xt_out);
 
   return out;
