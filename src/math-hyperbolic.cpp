@@ -10,7 +10,7 @@ xt::rarray<double> rray__sinh_impl(const xt::rarray<T>& x) {
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__sinh(Rcpp::RObject x) {
-  DISPATCH_UNARY(rray__sinh_impl, x);
+  DISPATCH_UNARY_MATH(rray__sinh_impl, x);
 }
 
 // -----------------------------------------------------------------------------
@@ -22,7 +22,7 @@ xt::rarray<double> rray__cosh_impl(const xt::rarray<T>& x) {
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__cosh(Rcpp::RObject x) {
-  DISPATCH_UNARY(rray__cosh_impl, x);
+  DISPATCH_UNARY_MATH(rray__cosh_impl, x);
 }
 
 // -----------------------------------------------------------------------------
@@ -34,7 +34,7 @@ xt::rarray<double> rray__tanh_impl(const xt::rarray<T>& x) {
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__tanh(Rcpp::RObject x) {
-  DISPATCH_UNARY(rray__tanh_impl, x);
+  DISPATCH_UNARY_MATH(rray__tanh_impl, x);
 }
 
 // -----------------------------------------------------------------------------
@@ -46,7 +46,7 @@ xt::rarray<double> rray__asinh_impl(const xt::rarray<T>& x) {
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__asinh(Rcpp::RObject x) {
-  DISPATCH_UNARY(rray__asinh_impl, x);
+  DISPATCH_UNARY_MATH(rray__asinh_impl, x);
 }
 
 // -----------------------------------------------------------------------------
@@ -58,7 +58,7 @@ xt::rarray<double> rray__acosh_impl(const xt::rarray<T>& x) {
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__acosh(Rcpp::RObject x) {
-  DISPATCH_UNARY(rray__acosh_impl, x);
+  DISPATCH_UNARY_MATH(rray__acosh_impl, x);
 }
 
 // -----------------------------------------------------------------------------
@@ -70,7 +70,7 @@ xt::rarray<double> rray__atanh_impl(const xt::rarray<T>& x) {
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__atanh(Rcpp::RObject x) {
-  DISPATCH_UNARY(rray__atanh_impl, x);
+  DISPATCH_UNARY_MATH(rray__atanh_impl, x);
 }
 
 // -----------------------------------------------------------------------------

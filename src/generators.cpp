@@ -3,22 +3,11 @@
 
 // -----------------------------------------------------------------------------
 
-// Note: Don't treat `x` as a `const rarray&`. We have the option
-// to early exit and return x without modification. Using a const
-// reference would force the copy on the way out.
-
 template <typename T>
-xt::rarray<T> rray__reshape_impl(xt::rarray<T> x, Rcpp::IntegerVector dim) {
+xt::rarray<T> rray__reshape_impl(const xt::rarray<T>& x,
+                                 const Rcpp::IntegerVector& dim) {
 
   using vec_size_t = typename std::vector<std::size_t>;
-
-  // Early exit, no reshape needed (no copy made)
-  if (r_identical(rray__dim(SEXP(x)), dim)) {
-    return x;
-  }
-
-  rray__validate_reshape(SEXP(x), dim);
-
   const vec_size_t& xt_dim = Rcpp::as<vec_size_t>(dim);
 
   xt::rarray<T> out = xt::reshape_view<xt::layout_type::column_major>(x, xt_dim);
@@ -27,8 +16,27 @@ xt::rarray<T> rray__reshape_impl(xt::rarray<T> x, Rcpp::IntegerVector dim) {
 }
 
 // [[Rcpp::export(rng = false)]]
-Rcpp::RObject rray__reshape(Rcpp::RObject x, Rcpp::IntegerVector dim) {
-  DISPATCH_UNARY_ONE(rray__reshape_impl, x, dim);
+Rcpp::RObject rray__reshape(Rcpp::RObject x, const Rcpp::IntegerVector& dim) {
+
+  if (r_is_null(x)) {
+    return x;
+  }
+
+  // Early exit, no reshape needed (no copy made)
+  Rcpp::IntegerVector x_dim = rray__dim(x);
+  if (r_identical(x_dim, dim)) {
+    return x;
+  }
+
+  rray__validate_reshape(x, dim);
+
+  Rcpp::RObject out;
+  DISPATCH_UNARY_ONE(out, rray__reshape_impl, x, dim);
+
+  // Potentially going down in dimensionality, but this is fine
+  rray__reshape_and_set_dim_names(out, x);
+
+  return out;
 }
 
 // -----------------------------------------------------------------------------

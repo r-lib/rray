@@ -41,30 +41,32 @@ Rcpp::RObject rray__subset_assign_impl(const xt::rarray<T>& x,
   // `x` comes in as a `const&` that we can't modify directly
   // (and we don't want to change this. We will have to copy `x` at
   // some point for the assignment. It makes sense to do it here.)
-  xt::rarray<T> xt_out = x;
+  xt::rarray<T> out = x;
 
   if (is_stridable(indexer)) {
     xt::xstrided_slice_vector sv = build_strided_slice_vector(indexer);
-    auto xt_out_subset_view = xt::strided_view(xt_out, sv);
+    auto xt_out_subset_view = xt::strided_view(out, sv);
     rray__validate_broadcastable_to(value_view, xt_out_subset_view);
     xt_out_subset_view = value_view;
   }
   else {
     xt::xdynamic_slice_vector sv = build_dynamic_slice_vector(indexer);
-    auto xt_out_subset_view = xt::dynamic_view(xt_out, sv);
+    auto xt_out_subset_view = xt::dynamic_view(out, sv);
     rray__validate_broadcastable_to(value_view, xt_out_subset_view);
     xt_out_subset_view = value_view;
   }
 
-  Rcpp::RObject out = SEXP(xt_out);
-  out.attr("dimnames") = rray__dim_names(SEXP(x));
-
-  return out;
+  return Rcpp::as<Rcpp::RObject>(out);
 }
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__subset_assign(Rcpp::RObject x,
                                   Rcpp::List indexer,
                                   Rcpp::RObject value) {
-  DISPATCH_UNARY_TWO(rray__subset_assign_impl, x, indexer, value);
+  Rcpp::RObject out;
+  DISPATCH_UNARY_TWO(out, rray__subset_assign_impl, x, indexer, value);
+
+  rray__set_dim_names(out, rray__dim_names(x));
+
+  return out;
 }

@@ -9,30 +9,58 @@
 
 // -----------------------------------------------------------------------------
 
-// Might get a false alarm on the xt::reshape_view()
+// Remove dim names along the axis you sort over,
+// but keep meta names. If `axis == NULL`, remove
+// all dimension names
+
+Rcpp::List sort_dim_names(const Rcpp::List& dim_names, Rcpp::RObject axis) {
+
+  Rcpp::List new_dim_names;
+
+  if(r_is_null(axis)) {
+    new_dim_names = rray__new_empty_dim_names(dim_names.size());
+    new_dim_names.names() = dim_names.names();
+  }
+  else {
+    Rcpp::IntegerVector int_axis = Rcpp::as<Rcpp::IntegerVector>(axis);
+    new_dim_names = Rf_shallow_duplicate(dim_names);
+    new_dim_names[int_axis] = rray__new_empty_dim_names(1);
+  }
+
+  return new_dim_names;
+}
 
 template <typename T>
-xt::rarray<T> rray__sort_impl(const xt::rarray<T>& x, Rcpp::RObject axis) {
+Rcpp::RObject rray__sort_impl(const xt::rarray<T>& x, Rcpp::RObject axis) {
 
   using vec_size_t = typename std::vector<std::size_t>;
-  xt::rarray<T> res;
+  xt::rarray<T> out;
 
   if (r_is_null(axis)) {
     auto flat_res = xt::sort(x, xt::placeholders::xtuph());
     const vec_size_t& shape = Rcpp::as<vec_size_t>(rray__dim(SEXP(x)));
-    res = xt::reshape_view<xt::layout_type::column_major>(flat_res, shape);
+    out = xt::reshape_view<xt::layout_type::column_major>(flat_res, shape);
   }
   else {
     std::ptrdiff_t xt_axis = Rcpp::as<std::ptrdiff_t>(axis);
-    res = xt::sort(x, xt_axis);
+    out = xt::sort(x, xt_axis);
   }
 
-  return res;
+  return Rcpp::as<Rcpp::RObject>(out);
 }
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__sort(Rcpp::RObject x, Rcpp::RObject axis) {
-  DISPATCH_UNARY_ONE(rray__sort_impl, x, axis);
+  if (r_is_null(x)) {
+    return x;
+  }
+
+  Rcpp::RObject out;
+  DISPATCH_UNARY_ONE(out, rray__sort_impl, x, axis);
+
+  rray__set_dim_names(out, sort_dim_names(rray__dim_names(x), axis));
+
+  return out;
 }
 
 // -----------------------------------------------------------------------------
@@ -87,63 +115,74 @@ Rcpp::RObject rray__sort(Rcpp::RObject x, Rcpp::RObject axis) {
 // profmem::profmem(rray__argmax(x, 1)) # not leading axis, slow
 // profmem::profmem(rray__argmax(x, 0)) # leading axis, fast
 
-// Note: This might throw false alarm syntax errors in rstudio on the
-// auto x_reshape = rray__keep_dims_view() lines
-
-// Note: xtensor's argmax() drops dimensions no matter what. It also iterates
-// over objects in an interesting way. For a 3D object, computing the argmax
-// over axis = 2 first looks at the first row of the 1st element in the 3rd dim
-// then looks at the first row of the 2nd element in the third dim.
-
 template <typename T>
-Rcpp::RObject rray__max_pos_impl(xt::rarray<T> x, Rcpp::RObject axis) {
+Rcpp::RObject rray__max_pos_impl(const xt::rarray<T>& x, Rcpp::RObject axis) {
 
-  if (Rf_isNull(axis)) {
-    // purposefully do column major here
+  Rcpp::IntegerVector dim = rray__dim(SEXP(x));
+
+  if (r_is_null(axis)) {
     auto x_argmax = xt::argmax<xt::layout_type::column_major>(x);
-    auto x_reshape = rray__keep_dims_view(x_argmax, rray__dim(SEXP(x)), axis);
-    xt::rarray<int> xt_out = rray__as_r_idx(x_reshape);
-    Rcpp::RObject out = SEXP(xt_out);
-    rray__reshape_and_set_dim_names(out, SEXP(x));
-    return out;
+    auto x_reshape = rray__keep_dims_view(x_argmax, dim, axis);
+    xt::rarray<int> out = rray__as_r_idx(x_reshape);
+    return Rcpp::as<Rcpp::RObject>(out);
   }
 
   std::size_t xt_axis = Rcpp::as<std::size_t>(axis);
   auto x_argmax = xt::argmax<xt::layout_type::column_major>(x, xt_axis);
-  auto x_reshape = rray__keep_dims_view(x_argmax, rray__dim(SEXP(x)), axis);
-  xt::rarray<int> xt_out = rray__as_r_idx(x_reshape);
-  Rcpp::RObject out = SEXP(xt_out);
-  rray__reshape_and_set_dim_names(out, SEXP(x));
+  auto x_reshape = rray__keep_dims_view(x_argmax, dim, axis);
+  xt::rarray<int> out = rray__as_r_idx(x_reshape);
 
-  return out;
+  return Rcpp::as<Rcpp::RObject>(out);
 }
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__max_pos(Rcpp::RObject x, Rcpp::RObject axis) {
-  DISPATCH_UNARY_ONE(rray__max_pos_impl, x, axis);
+
+  if (r_is_null(x)) {
+    return x;
+  }
+
+  Rcpp::RObject out;
+  DISPATCH_UNARY_ONE(out, rray__max_pos_impl, x, axis);
+
+  rray__reshape_and_set_dim_names(out, x);
+
+  return out;
 }
 
 // -----------------------------------------------------------------------------
 
 template <typename T>
-xt::rarray<int> rray__min_pos_impl(xt::rarray<T> x, Rcpp::RObject axis) {
+Rcpp::RObject rray__min_pos_impl(xt::rarray<T> x, Rcpp::RObject axis) {
 
-  if (Rf_isNull(axis)) {
-    // purposefully do column major here
-    auto x_argmin = xt::argmin<xt::layout_type::column_major>(x);
-    auto x_reshape = rray__keep_dims_view(x_argmin, rray__dim(SEXP(x)), axis);
-    auto out = rray__as_r_idx(x_reshape);
-    return out;
+  Rcpp::IntegerVector dim = rray__dim(SEXP(x));
+
+  if (r_is_null(axis)) {
+    auto x_argmax = xt::argmin<xt::layout_type::column_major>(x);
+    auto x_reshape = rray__keep_dims_view(x_argmax, dim, axis);
+    xt::rarray<int> out = rray__as_r_idx(x_reshape);
+    return Rcpp::as<Rcpp::RObject>(out);
   }
 
   std::size_t xt_axis = Rcpp::as<std::size_t>(axis);
-  auto x_argmin = xt::argmin<xt::layout_type::column_major>(x, xt_axis);
-  auto x_reshape = rray__keep_dims_view(x_argmin, rray__dim(SEXP(x)), axis);
-  auto out = rray__as_r_idx(x_reshape);
-  return out;
+  auto x_argmax = xt::argmin<xt::layout_type::column_major>(x, xt_axis);
+  auto x_reshape = rray__keep_dims_view(x_argmax, dim, axis);
+  xt::rarray<int> out = rray__as_r_idx(x_reshape);
+
+  return Rcpp::as<Rcpp::RObject>(out);
 }
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__min_pos(Rcpp::RObject x, Rcpp::RObject axis) {
-  DISPATCH_UNARY_ONE(rray__min_pos_impl, x, axis);
+
+  if (r_is_null(x)) {
+    return x;
+  }
+
+  Rcpp::RObject out;
+  DISPATCH_UNARY_ONE(out, rray__min_pos_impl, x, axis);
+
+  rray__reshape_and_set_dim_names(out, x);
+
+  return out;
 }

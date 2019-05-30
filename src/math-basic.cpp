@@ -1,5 +1,7 @@
 #include <rray.h>
 #include <dispatch.h>
+#include <type2.h>
+#include <cast.h>
 
 // -----------------------------------------------------------------------------
 
@@ -11,9 +13,14 @@ xt::rarray<T> rray__multiply_add_impl(const xt::rarray<T>& x,
                                       const xt::rarray<T>& z) {
 
   // Common dim
-  Rcpp::IntegerVector tmp_dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
-  Rcpp::IntegerVector dim = rray__dim2(tmp_dim, rray__dim(SEXP(z)));
+  Rcpp::IntegerVector x_dim = rray__dim(SEXP(x));
+  Rcpp::IntegerVector y_dim = rray__dim(SEXP(y));
+  Rcpp::IntegerVector z_dim = rray__dim(SEXP(z));
+
+  Rcpp::IntegerVector dim = rray__dim2(rray__dim2(x_dim, y_dim), z_dim);
+
   const int& dims = dim.size();
+
   auto x_view = rray__increase_dims_view(x, dims);
   auto y_view = rray__increase_dims_view(y, dims);
   auto z_view = rray__increase_dims_view(z, dims);
@@ -23,7 +30,40 @@ xt::rarray<T> rray__multiply_add_impl(const xt::rarray<T>& x,
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__multiply_add(Rcpp::RObject x, Rcpp::RObject y, Rcpp::RObject z) {
-  DISPATCH_TRINARY_NO_LOGICAL(rray__multiply_add_impl, x, y, z);
+
+  Rcpp::IntegerVector x_dim = rray__dim(x);
+  Rcpp::IntegerVector y_dim = rray__dim(y);
+  Rcpp::IntegerVector z_dim = rray__dim(z);
+
+  Rcpp::IntegerVector dim = rray__dim2(rray__dim2(x_dim, y_dim), z_dim);
+
+  Rcpp::List reshaped_x_dim_names = rray__reshape_dim_names(rray__dim_names(x), dim);
+  Rcpp::List reshaped_y_dim_names = rray__reshape_dim_names(rray__dim_names(y), dim);
+  Rcpp::List reshaped_z_dim_names = rray__reshape_dim_names(rray__dim_names(z), dim);
+
+  Rcpp::List new_dim_names;
+
+  new_dim_names = rray__coalesce_dim_names(
+    reshaped_x_dim_names,
+    reshaped_y_dim_names
+  );
+
+  new_dim_names = rray__coalesce_dim_names(
+    new_dim_names,
+    reshaped_z_dim_names
+  );
+
+  Rcpp::RObject type = vec__type_inner2(vec__type_inner2(x, y), z);
+  x = vec__cast_inner(x, type);
+  y = vec__cast_inner(y, type);
+  z = vec__cast_inner(z, type);
+
+  Rcpp::RObject out;
+  DISPATCH_TRINARY_NO_LOGICAL(out, rray__multiply_add_impl, x, y, z);
+
+  rray__set_dim_names(out, new_dim_names);
+
+  return out;
 }
 
 // -----------------------------------------------------------------------------
@@ -43,7 +83,7 @@ Rcpp::RObject rray__abs_impl(const xt::rarray<rlogical>& x) {
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__abs(Rcpp::RObject x) {
-  DISPATCH_UNARY(rray__abs_impl, x);
+  DISPATCH_UNARY_MATH(rray__abs_impl, x);
 }
 
 // -----------------------------------------------------------------------------
@@ -66,7 +106,7 @@ Rcpp::RObject rray__sign_impl(const xt::rarray<rlogical>& x) {
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__sign(Rcpp::RObject x) {
-  DISPATCH_UNARY(rray__sign_impl, x);
+  DISPATCH_UNARY_MATH(rray__sign_impl, x);
 }
 
 // -----------------------------------------------------------------------------
@@ -75,17 +115,16 @@ template <typename T>
 xt::rarray<double> rray__fmod_impl(const xt::rarray<T>& x,
                                    const xt::rarray<T>& y) {
 
-  Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
-  const int& dims = dim.size();
-  auto x_view = rray__increase_dims_view(x, dims);
-  auto y_view = rray__increase_dims_view(y, dims);
+  auto views = rray__increase_dims_view2(x, y);
+  auto x_view = std::get<0>(views);
+  auto y_view = std::get<1>(views);
 
   return xt::fmod(x_view, y_view);
 }
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__fmod(Rcpp::RObject x, Rcpp::RObject y) {
-  DISPATCH_BINARY(rray__fmod_impl, x, y);
+  DISPATCH_BINARY_MATH(rray__fmod_impl, x, y);
 }
 
 // -----------------------------------------------------------------------------
@@ -94,17 +133,16 @@ template <typename T>
 xt::rarray<double> rray__remainder_impl(const xt::rarray<T>& x,
                                         const xt::rarray<T>& y) {
 
-  Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
-  const int& dims = dim.size();
-  auto x_view = rray__increase_dims_view(x, dims);
-  auto y_view = rray__increase_dims_view(y, dims);
+  auto views = rray__increase_dims_view2(x, y);
+  auto x_view = std::get<0>(views);
+  auto y_view = std::get<1>(views);
 
   return xt::remainder(x_view, y_view);
 }
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__remainder(Rcpp::RObject x, Rcpp::RObject y) {
-  DISPATCH_BINARY(rray__remainder_impl, x, y);
+  DISPATCH_BINARY_MATH(rray__remainder_impl, x, y);
 }
 
 // -----------------------------------------------------------------------------
@@ -113,17 +151,16 @@ template <typename T>
 xt::rarray<T> rray__maximum_impl(const xt::rarray<T>& x,
                                  const xt::rarray<T>& y) {
 
-  Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
-  const int& dims = dim.size();
-  auto x_view = rray__increase_dims_view(x, dims);
-  auto y_view = rray__increase_dims_view(y, dims);
+  auto views = rray__increase_dims_view2(x, y);
+  auto x_view = std::get<0>(views);
+  auto y_view = std::get<1>(views);
 
   return xt::maximum(x_view, y_view);
 }
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__maximum(Rcpp::RObject x, Rcpp::RObject y) {
-  DISPATCH_BINARY(rray__maximum_impl, x, y);
+  DISPATCH_BINARY_MATH(rray__maximum_impl, x, y);
 }
 
 // -----------------------------------------------------------------------------
@@ -132,17 +169,16 @@ template <typename T>
 xt::rarray<T> rray__minimum_impl(const xt::rarray<T>& x,
                                  const xt::rarray<T>& y) {
 
-  Rcpp::IntegerVector dim = rray__dim2(rray__dim(SEXP(x)), rray__dim(SEXP(y)));
-  const int& dims = dim.size();
-  auto x_view = rray__increase_dims_view(x, dims);
-  auto y_view = rray__increase_dims_view(y, dims);
+  auto views = rray__increase_dims_view2(x, y);
+  auto x_view = std::get<0>(views);
+  auto y_view = std::get<1>(views);
 
   return xt::minimum(x_view, y_view);
 }
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__minimum(Rcpp::RObject x, Rcpp::RObject y) {
-  DISPATCH_BINARY(rray__minimum_impl, x, y);
+  DISPATCH_BINARY_MATH(rray__minimum_impl, x, y);
 }
 
 // -----------------------------------------------------------------------------
@@ -181,6 +217,14 @@ xt::rarray<T> rray__clip_impl(const xt::rarray<T>& x,
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__clip(Rcpp::RObject x, Rcpp::RObject low, Rcpp::RObject high) {
-  DISPATCH_UNARY_TWO(rray__clip_impl, x, low, high);
+
+  if (r_is_null(x)) {
+    return x;
+  }
+
+  Rcpp::RObject out;
+  DISPATCH_UNARY_TWO(out, rray__clip_impl, x, low, high);
+  rray__set_dim_names(out, rray__dim_names(x));
+  return out;
 }
 

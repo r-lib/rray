@@ -50,7 +50,9 @@ NULL
 #' @rdname rray_arith
 #' @export
 rray_add <- function(x, y) {
-  rray_arith_binary_base(rray__add, x, y)
+  out <- rray__add(x, y)
+  container <- vec_type_container2(x, y)
+  vec_cast_container(out, container)
 }
 
 # ------------------------------------------------------------------------------
@@ -64,7 +66,9 @@ rray_add <- function(x, y) {
 #' @rdname rray_arith
 #' @export
 rray_subtract <- function(x, y) {
-  rray_arith_binary_base(rray__subtract, x, y)
+  out <- rray__subtract(x, y)
+  container <- vec_type_container2(x, y)
+  vec_cast_container(out, container)
 }
 
 # ------------------------------------------------------------------------------
@@ -78,7 +82,9 @@ rray_subtract <- function(x, y) {
 #' @rdname rray_arith
 #' @export
 rray_multiply <- function(x, y) {
-  rray_arith_binary_base(rray__multiply, x, y)
+  out <- rray__multiply(x, y)
+  container <- vec_type_container2(x, y)
+  vec_cast_container(out, container)
 }
 
 # ------------------------------------------------------------------------------
@@ -92,7 +98,9 @@ rray_multiply <- function(x, y) {
 #' @rdname rray_arith
 #' @export
 rray_divide <- function(x, y) {
-  rray_arith_binary_base_typed(rray__divide, x, y, numeric())
+  out <- rray__divide(x, y)
+  container <- vec_type_container2(x, y)
+  vec_cast_container(out, container)
 }
 
 # ------------------------------------------------------------------------------
@@ -106,7 +114,9 @@ rray_divide <- function(x, y) {
 #' @rdname rray_arith
 #' @export
 rray_pow <- function(x, y) {
-  rray_arith_binary_base_typed(rray__pow, x, y, numeric())
+  out <- rray__pow(x, y)
+  container <- vec_type_container2(x, y)
+  vec_cast_container(out, container)
 }
 
 # ------------------------------------------------------------------------------
@@ -129,7 +139,9 @@ rray_integer_division_vctrs_wrapper <- function(x, y) {
 #' @rdname rray_arith
 #' @export
 rray_identity <- function(x) {
-  vec_cast_container(rray__identity(x), x)
+  out <- rray__identity(x)
+  container <- vec_type_container(x)
+  vec_cast_container(out, container)
 }
 
 # ------------------------------------------------------------------------------
@@ -137,32 +149,7 @@ rray_identity <- function(x) {
 #' @rdname rray_arith
 #' @export
 rray_opposite <- function(x) {
-  vec_cast_container(rray__opposite(x), x)
-}
-
-# ------------------------------------------------------------------------------
-
-rray_arith_binary_base <- function(f, x, y) {
-
-  args <- vec_cast_inner_common(x, y)
-
-  new_dim_names <- rray_dim_names2(x, y)
-
-  res <- f(args[[1]], args[[2]], new_dim_names)
-
-  vec_cast_container(res, vec_type_container2(x, y))
-}
-
-rray_arith_binary_base_typed <- function(f, x, y, type) {
-
-  args <- list(
-    vec_cast_inner(x, type),
-    vec_cast_inner(y, type)
-  )
-
-  new_dim_names <- rray_dim_names2(x, y)
-
-  res <- f(args[[1]], args[[2]], new_dim_names)
-
-  vec_cast_container(res, vec_type_container2(x, y))
+  out <- rray__opposite(x)
+  container <- vec_type_container(x)
+  vec_cast_container(out, container)
 }

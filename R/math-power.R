@@ -30,29 +30,31 @@
 #' @family power math functions
 #' @export
 rray_square <- function(x) {
-  rray_math_unary_base(rray__square, x)
+  vec_cast_container(rray__square(x), x)
 }
 
 #' @rdname rray_square
 #' @export
 rray_cube <- function(x) {
-  rray_math_unary_base(rray__cube, x)
+  vec_cast_container(rray__cube(x), x)
 }
 
 #' @rdname rray_square
 #' @export
 rray_sqrt <- function(x) {
-  rray_math_unary_base(rray__sqrt, x)
+  vec_cast_container(rray__sqrt(x), x)
 }
 
 #' @rdname rray_square
 #' @export
 rray_cbrt <- function(x) {
-  rray_math_unary_base(rray__cbrt, x)
+  vec_cast_container(rray__cbrt(x), x)
 }
 
 #' @rdname rray_square
 #' @export
 rray_hypot <- function(x, y) {
-  rray_math_binary_base(rray__hypot, x, y)
+  out <- rray__hypot(x, y)
+  container <- vec_type_container2(x, y)
+  vec_cast_container(out, container)
 }

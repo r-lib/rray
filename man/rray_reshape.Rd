@@ -2,15 +2,35 @@
 % Please edit documentation in R/reshape.R
 \name{rray_reshape}
 \alias{rray_reshape}
-\title{Reshape an rray}
+\title{Reshape an array}
 \usage{
 rray_reshape(x, dim)
 }
 \arguments{
-\item{x}{The object to broadcast.}
+\item{x}{A vector, matrix, array or rray.}
 
-\item{dim}{An integer vector. The dimension to broadcast to.}
+\item{dim}{An integer vector. The dimension to reshape to.}
 }
 \description{
-Reshape to a new dimension
+\code{rray_reshape()} is similar to \code{dim()<-}. It reshapes \code{x} in such a way
+that the dimensions are different, but the total size of the array is still
+the same (as measured by \code{\link[=rray_elems]{rray_elems()}}).
+}
+\examples{
+
+x <- matrix(1:6, ncol = 1)
+
+# Reshape with the same dimensionality
+rray_reshape(x, c(2, 3))
+
+# Change the dimensionality and the dimensions
+rray_reshape(x, c(3, 2, 1))
+
+# You cannot reshape to a total size that is
+# different from the current size.
+try(rray_reshape(x, c(6, 2)))
+
+# Note that you can broadcast to these dimensions!
+rray_broadcast(x, c(6, 2))
+
 }

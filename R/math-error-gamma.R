@@ -39,25 +39,25 @@
 #' @family error and gamma math functions
 #' @export
 rray_erf <- function(x) {
-  rray_math_unary_base(rray__erf, x)
+  vec_cast_container(rray__erf(x), x)
 }
 
 #' @rdname rray_erf
 #' @export
 rray_erfc <- function(x) {
-  rray_math_unary_base(rray__erfc, x)
+  vec_cast_container(rray__erfc(x), x)
 }
 
 #' @rdname rray_erf
 #' @export
 rray_gamma <- function(x) {
-  rray_math_unary_base(rray__gamma, x)
+  vec_cast_container(rray__gamma(x), x)
 }
 
 #' @rdname rray_erf
 #' @export
 rray_lgamma <- function(x) {
-  rray_math_unary_base(rray__lgamma, x)
+  vec_cast_container(rray__lgamma(x), x)
 }
 
 # ------------------------------------------------------------------------------
@@ -68,11 +68,13 @@ rray_lgamma <- function(x) {
 #' @rdname rray_erf
 #' @export
 rray_digamma <- function(x) {
-  rray_math_unary_base_raw(digamma, x)
+  out <- digamma(vec_data(x))
+  vec_cast_container(out, x)
 }
 
 #' @rdname rray_erf
 #' @export
 rray_trigamma <- function(x) {
-  rray_math_unary_base_raw(trigamma, x)
+  out <- trigamma(vec_data(x))
+  vec_cast_container(out, x)
 }

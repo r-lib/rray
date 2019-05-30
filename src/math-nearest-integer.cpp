@@ -15,7 +15,7 @@ xt::rarray<double> rray__ceiling_impl(const xt::rarray<T>& x) {
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__ceiling(Rcpp::RObject x) {
-  DISPATCH_UNARY(rray__ceiling_impl, x);
+  DISPATCH_UNARY_MATH(rray__ceiling_impl, x);
 }
 
 // -----------------------------------------------------------------------------
@@ -27,7 +27,7 @@ xt::rarray<double> rray__floor_impl(const xt::rarray<T>& x) {
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__floor(Rcpp::RObject x) {
-  DISPATCH_UNARY(rray__floor_impl, x);
+  DISPATCH_UNARY_MATH(rray__floor_impl, x);
 }
 
 // -----------------------------------------------------------------------------
@@ -39,7 +39,7 @@ xt::rarray<double> rray__trunc_impl(const xt::rarray<T>& x) {
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__trunc(Rcpp::RObject x) {
-  DISPATCH_UNARY(rray__trunc_impl, x);
+  DISPATCH_UNARY_MATH(rray__trunc_impl, x);
 }
 
 // -----------------------------------------------------------------------------

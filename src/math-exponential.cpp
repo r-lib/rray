@@ -12,7 +12,7 @@ xt::rarray<double> rray__exp_impl(const xt::rarray<T>& x) {
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__exp(Rcpp::RObject x) {
-  DISPATCH_UNARY(rray__exp_impl, x);
+  DISPATCH_UNARY_MATH(rray__exp_impl, x);
 }
 
 // -----------------------------------------------------------------------------
@@ -24,7 +24,7 @@ xt::rarray<double> rray__exp2_impl(const xt::rarray<T>& x) {
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__exp2(Rcpp::RObject x) {
-  DISPATCH_UNARY(rray__exp2_impl, x);
+  DISPATCH_UNARY_MATH(rray__exp2_impl, x);
 }
 
 // -----------------------------------------------------------------------------
@@ -36,7 +36,7 @@ xt::rarray<double> rray__expm1_impl(const xt::rarray<T>& x) {
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__expm1(Rcpp::RObject x) {
-  DISPATCH_UNARY(rray__expm1_impl, x);
+  DISPATCH_UNARY_MATH(rray__expm1_impl, x);
 }
 
 // -----------------------------------------------------------------------------
@@ -63,7 +63,10 @@ xt::rarray<double> rray__log_impl(const xt::rarray<T>& x, Rcpp::RObject base) {
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__log(Rcpp::RObject x, Rcpp::RObject base) {
-  DISPATCH_UNARY_ONE(rray__log_impl, x, base);
+  Rcpp::RObject out;
+  DISPATCH_UNARY_ONE(out, rray__log_impl, x, base);
+  rray__set_dim_names(out, rray__dim_names(x));
+  return out;
 }
 
 // -----------------------------------------------------------------------------
@@ -75,7 +78,7 @@ xt::rarray<double> rray__log2_impl(const xt::rarray<T>& x) {
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__log2(Rcpp::RObject x) {
-  DISPATCH_UNARY(rray__log2_impl, x);
+  DISPATCH_UNARY_MATH(rray__log2_impl, x);
 }
 
 // -----------------------------------------------------------------------------
@@ -87,7 +90,7 @@ xt::rarray<double> rray__log10_impl(const xt::rarray<T>& x) {
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__log10(Rcpp::RObject x) {
-  DISPATCH_UNARY(rray__log10_impl, x);
+  DISPATCH_UNARY_MATH(rray__log10_impl, x);
 }
 
 // -----------------------------------------------------------------------------
@@ -99,7 +102,7 @@ xt::rarray<double> rray__log1p_impl(const xt::rarray<T>& x) {
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__log1p(Rcpp::RObject x) {
-  DISPATCH_UNARY(rray__log1p_impl, x);
+  DISPATCH_UNARY_MATH(rray__log1p_impl, x);
 }
 
 // -----------------------------------------------------------------------------

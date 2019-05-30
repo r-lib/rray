@@ -71,15 +71,9 @@ rray_transpose <- function(x, permutation = NULL) {
   validate_permutation(permutation, dims)
   validate_axes(permutation, x, nm = "permutation")
 
-  res <- rray__transpose(x, as_cpp_idx(permutation))
+  out <- rray__transpose(x, as_cpp_idx(permutation))
 
-  if (is.null(permutation)) {
-    permutation <- rev(seq_len(rray_dims(x)))
-  }
-
-  res <- set_full_dim_names(res, rray_dim_names(x)[permutation])
-
-  vec_cast_container(res, x)
+  vec_cast_container(out, x)
 }
 
 #' @rdname rray_transpose

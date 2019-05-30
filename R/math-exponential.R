@@ -48,44 +48,44 @@
 #' @family exponential math functions
 #' @export
 rray_exp <- function(x) {
-  rray_math_unary_base(rray__exp, x)
+  vec_cast_container(rray__exp(x), x)
 }
 
 #' @rdname rray_exp
 #' @export
 rray_exp2 <- function(x) {
-  rray_math_unary_base(rray__exp2, x)
+  vec_cast_container(rray__exp2(x), x)
 }
 
 #' @rdname rray_exp
 #' @export
 rray_expm1 <- function(x) {
-  rray_math_unary_base(rray__expm1, x)
+  vec_cast_container(rray__expm1(x), x)
 }
 
 #' @rdname rray_exp
 #' @export
 rray_log <- function(x, base = NULL) {
   base <- validate_base(base)
-  rray_math_unary_base(rray__log, x, base = base)
+  vec_cast_container(rray__log(x, base), x)
 }
 
 #' @rdname rray_exp
 #' @export
 rray_log2 <- function(x) {
-  rray_math_unary_base(rray__log2, x)
+  vec_cast_container(rray__log2(x), x)
 }
 
 #' @rdname rray_exp
 #' @export
 rray_log10 <- function(x) {
-  rray_math_unary_base(rray__log10, x)
+  vec_cast_container(rray__log10(x), x)
 }
 
 #' @rdname rray_exp
 #' @export
 rray_log1p <- function(x) {
-  rray_math_unary_base(rray__log1p, x)
+  vec_cast_container(rray__log1p(x), x)
 }
 
 # ------------------------------------------------------------------------------

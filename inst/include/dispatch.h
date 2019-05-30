@@ -5,231 +5,267 @@
 #include <tools/tools.h>
 
 // -----------------------------------------------------------------------------
-// Unary + 1 argument
-
-#define DISPATCH_UNARY(FUN, X)                                 \
-  if (Rf_isNull(X)) {                                          \
-    return Rcpp::as<Rcpp::RObject>(R_NilValue);                \
-  }                                                            \
-                                                               \
-  int x_type = TYPEOF(X);                                      \
-                                                               \
-  if (x_type == REALSXP) {                                     \
-    return Rcpp::as<Rcpp::RObject>(                            \
-      FUN(xt::rarray<double>(X))                               \
-    );                                                         \
-  }                                                            \
-  else if (x_type == INTSXP) {                                 \
-    return Rcpp::as<Rcpp::RObject>(                            \
-      FUN(xt::rarray<int>(X))                                  \
-    );                                                         \
-  }                                                            \
-  else if (x_type == LGLSXP) {                                 \
-    return Rcpp::as<Rcpp::RObject>(                            \
-      FUN(xt::rarray<rlogical>(X))                             \
-    );                                                         \
-  }                                                            \
-                                                               \
-  error_unknown_type()                                         \
-
-// -----------------------------------------------------------------------------
-// Unary + 1 argument
-
-#define DISPATCH_UNARY_ONE(FUN, X, ARG)                        \
-  if (Rf_isNull(X)) {                                          \
-    return Rcpp::as<Rcpp::RObject>(R_NilValue);                \
-  }                                                            \
-                                                               \
-  int x_type = TYPEOF(X);                                      \
-                                                               \
-  if (x_type == REALSXP) {                                     \
-    return Rcpp::as<Rcpp::RObject>(                            \
-      FUN(xt::rarray<double>(X), ARG)                          \
-    );                                                         \
-  }                                                            \
-  else if (x_type == INTSXP) {                                 \
-    return Rcpp::as<Rcpp::RObject>(                            \
-      FUN(xt::rarray<int>(X), ARG)                             \
-    );                                                         \
-  }                                                            \
-  else if (x_type == LGLSXP) {                                 \
-    return Rcpp::as<Rcpp::RObject>(                            \
-      FUN(xt::rarray<rlogical>(X), ARG)                        \
-    );                                                         \
-  }                                                            \
-                                                               \
-  error_unknown_type()
-
-// -----------------------------------------------------------------------------
-// Unary + 2 argument
-
-#define DISPATCH_UNARY_TWO(FUN, X, ARG_1, ARG_2)                 \
-  if (Rf_isNull(X)) {                                            \
-    return Rcpp::as<Rcpp::RObject>(R_NilValue);                  \
-  }                                                              \
-                                                                 \
-  int x_type = TYPEOF(X);                                        \
-                                                                 \
-  if (x_type == REALSXP) {                                       \
-    return Rcpp::as<Rcpp::RObject>(                              \
-      FUN(xt::rarray<double>(X), ARG_1, ARG_2)                   \
-    );                                                           \
-  }                                                              \
-  else if (x_type == INTSXP) {                                   \
-    return Rcpp::as<Rcpp::RObject>(                              \
-      FUN(xt::rarray<int>(X), ARG_1, ARG_2)                      \
-    );                                                           \
-  }                                                              \
-  else if (x_type == LGLSXP) {                                   \
-    return Rcpp::as<Rcpp::RObject>(                              \
-      FUN(xt::rarray<rlogical>(X), ARG_1, ARG_2)                 \
-    );                                                           \
-  }                                                              \
-                                                                 \
-  error_unknown_type()
-
-// -----------------------------------------------------------------------------
-// Unary + 3 argument
-
-#define DISPATCH_UNARY_THREE(FUN, X, ARG_1, ARG_2, ARG_3)        \
-  if (Rf_isNull(X)) {                                            \
-    return Rcpp::as<Rcpp::RObject>(R_NilValue);                  \
-  }                                                              \
-                                                                 \
-  int x_type = TYPEOF(X);                                        \
-                                                                 \
-  if (x_type == REALSXP) {                                       \
-    return Rcpp::as<Rcpp::RObject>(                              \
-      FUN(xt::rarray<double>(X), ARG_1, ARG_2, ARG_3)            \
-    );                                                           \
-  }                                                              \
-  else if (x_type == INTSXP) {                                   \
-    return Rcpp::as<Rcpp::RObject>(                              \
-      FUN(xt::rarray<int>(X), ARG_1, ARG_2, ARG_3)               \
-    );                                                           \
-  }                                                              \
-  else if (x_type == LGLSXP) {                                   \
-    return Rcpp::as<Rcpp::RObject>(                              \
-      FUN(xt::rarray<rlogical>(X), ARG_1, ARG_2, ARG_3)          \
-    );                                                           \
-  }                                                              \
-                                                                 \
-  error_unknown_type()
-
-// -----------------------------------------------------------------------------
-// Binary + 0 argument
-
-#define DISPATCH_BINARY(FUN, X, Y)                             \
-  if (Rf_isNull(X) || Rf_isNull(Y)) {                          \
-    return Rcpp::as<Rcpp::RObject>(R_NilValue);                \
-  }                                                            \
-                                                               \
-  int x_type = TYPEOF(X);                                      \
-  int y_type = TYPEOF(Y);                                      \
-                                                               \
-  if (x_type != y_type) {                                      \
-    Rcpp::stop("`x` and `y` must have the same type.");        \
-  }                                                            \
-                                                               \
-  if (x_type == REALSXP) {                                     \
-    return Rcpp::as<Rcpp::RObject>(                            \
-      FUN(xt::rarray<double>(X), xt::rarray<double>(Y))        \
-    );                                                         \
-  }                                                            \
-  else if (x_type == INTSXP) {                                 \
-    return Rcpp::as<Rcpp::RObject>(                            \
-      FUN(xt::rarray<int>(X), xt::rarray<int>(Y))              \
-    );                                                         \
-  }                                                            \
-  else if (x_type == LGLSXP) {                                 \
-    return Rcpp::as<Rcpp::RObject>(                            \
-      FUN(xt::rarray<rlogical>(X), xt::rarray<rlogical>(Y))    \
-    );                                                         \
-  }                                                            \
-                                                               \
-  error_unknown_type()
-
-// -----------------------------------------------------------------------------
-// Binary + 1 argument
-
-#define DISPATCH_BINARY_ONE(FUN, X, Y, ARG)                      \
-  if (Rf_isNull(X) || Rf_isNull(Y)) {                            \
-    return Rcpp::as<Rcpp::RObject>(R_NilValue);                  \
-  }                                                              \
-                                                                 \
-  int x_type = TYPEOF(X);                                        \
-  int y_type = TYPEOF(Y);                                        \
-                                                                 \
-  if (x_type != y_type) {                                        \
-    Rcpp::stop("`x` and `y` must have the same type.");          \
-  }                                                              \
-                                                                 \
-  if (x_type == REALSXP) {                                       \
-    return Rcpp::as<Rcpp::RObject>(                              \
-      FUN(xt::rarray<double>(X), xt::rarray<double>(Y), ARG)     \
-    );                                                           \
-  }                                                              \
-  else if (x_type == INTSXP) {                                   \
-    return Rcpp::as<Rcpp::RObject>(                              \
-      FUN(xt::rarray<int>(X), xt::rarray<int>(Y), ARG)           \
-    );                                                           \
-  }                                                              \
-  else if (x_type == LGLSXP) {                                   \
-    return Rcpp::as<Rcpp::RObject>(                              \
-      FUN(xt::rarray<rlogical>(X), xt::rarray<rlogical>(Y), ARG) \
-    );                                                           \
-  }                                                              \
-                                                                 \
-  error_unknown_type()                                           \
-
-// -----------------------------------------------------------------------------
 // Trinary + 0 argument + logicals converted to integer
 
-#define DISPATCH_TRINARY_NO_LOGICAL(FUN, X, Y, Z)                     \
+#define DISPATCH_TRINARY_NO_LOGICAL(OUT, FUN, X, Y, Z)                \
   if (Rf_isNull(X) || Rf_isNull(Y) || Rf_isNull(Z)) {                 \
     return Rcpp::as<Rcpp::RObject>(R_NilValue);                       \
   }                                                                   \
                                                                       \
   int x_type = TYPEOF(X);                                             \
-  int y_type = TYPEOF(Y);                                             \
-  int z_type = TYPEOF(Z);                                             \
-                                                                      \
-  if (x_type != y_type || x_type != z_type) {                         \
-    Rcpp::stop("`x`, `y`, and `z` must have the same type.");         \
-  }                                                                   \
                                                                       \
   if (x_type == REALSXP) {                                            \
-    return Rcpp::as<Rcpp::RObject>(                                   \
-      FUN(                                                            \
-        xt::rarray<double>(X),                                        \
-        xt::rarray<double>(Y),                                        \
-        xt::rarray<double>(Z)                                         \
-      )                                                               \
+    OUT = FUN(                                                        \
+      xt::rarray<double>(X),                                          \
+      xt::rarray<double>(Y),                                          \
+      xt::rarray<double>(Z)                                           \
     );                                                                \
   }                                                                   \
   else if (x_type == INTSXP) {                                        \
-    return Rcpp::as<Rcpp::RObject>(                                   \
-      FUN(                                                            \
-        xt::rarray<int>(X),                                           \
-        xt::rarray<int>(Y),                                           \
-        xt::rarray<int>(Z)                                            \
-      )                                                               \
+    OUT = FUN(                                                        \
+      xt::rarray<int>(X),                                             \
+      xt::rarray<int>(Y),                                             \
+      xt::rarray<int>(Z)                                              \
     );                                                                \
   }                                                                   \
   else if (x_type == LGLSXP) {                                        \
     xt::rarray<int> X_int = xt::cast<int>(xt::rarray<rlogical>(X));   \
     xt::rarray<int> Y_int = xt::cast<int>(xt::rarray<rlogical>(Y));   \
     xt::rarray<int> Z_int = xt::cast<int>(xt::rarray<rlogical>(Z));   \
-    return Rcpp::as<Rcpp::RObject>(                                   \
-      FUN(                                                            \
-        X_int,                                                        \
-        Y_int,                                                        \
-        Z_int                                                         \
-      )                                                               \
+    OUT = FUN(                                                        \
+      X_int,                                                          \
+      Y_int,                                                          \
+      Z_int                                                           \
     );                                                                \
   }                                                                   \
-                                                                      \
-  error_unknown_type()
+  else {                                                              \
+    error_unknown_type();                                             \
+  }
+
+// -----------------------------------------------------------------------------
+
+#define DISPATCH_BINARY(OUT, FUN, X, Y)                          \
+  int x_type = TYPEOF(X);                                        \
+                                                                 \
+  if (x_type == REALSXP) {                                       \
+    OUT = FUN(                                                   \
+      xt::rarray<double>(X),                                     \
+      xt::rarray<double>(Y)                                      \
+    );                                                           \
+  }                                                              \
+  else if (x_type == INTSXP) {                                   \
+    OUT = FUN(                                                   \
+      xt::rarray<int>(X),                                        \
+      xt::rarray<int>(Y)                                         \
+    );                                                           \
+  }                                                              \
+  else if (x_type == LGLSXP) {                                   \
+    OUT = FUN(                                                   \
+      xt::rarray<rlogical>(X),                                   \
+      xt::rarray<rlogical>(Y)                                    \
+    );                                                           \
+  }                                                              \
+  else {                                                         \
+    error_unknown_type();                                        \
+  }
+
+// -----------------------------------------------------------------------------
+
+#define DISPATCH_BINARY_ONE(OUT, FUN, X, Y, ARG)               \
+  int x_type = TYPEOF(X);                                      \
+                                                               \
+  if (x_type == REALSXP) {                                     \
+    OUT = FUN(                                                 \
+      xt::rarray<double>(X),                                   \
+      xt::rarray<double>(Y),                                   \
+      ARG                                                      \
+    );                                                         \
+  }                                                            \
+  else if (x_type == INTSXP) {                                 \
+    OUT = FUN(                                                 \
+      xt::rarray<int>(X),                                      \
+      xt::rarray<int>(Y),                                      \
+      ARG                                                      \
+    );                                                         \
+  }                                                            \
+  else if (x_type == LGLSXP) {                                 \
+    OUT = FUN(                                                 \
+      xt::rarray<rlogical>(X),                                 \
+      xt::rarray<rlogical>(Y),                                 \
+      ARG                                                      \
+    );                                                         \
+  }                                                            \
+  else {                                                       \
+    error_unknown_type();                                      \
+  }
+
+// -----------------------------------------------------------------------------
+
+#define DISPATCH_BINARY_TWO(OUT, FUN, X, Y, ARG1, ARG2)          \
+  int x_type = TYPEOF(X);                                        \
+                                                                 \
+  if (x_type == REALSXP) {                                       \
+    OUT = FUN(                                                   \
+      xt::rarray<double>(X),                                     \
+      xt::rarray<double>(Y),                                     \
+      ARG1, ARG2                                                 \
+    );                                                           \
+  }                                                              \
+  else if (x_type == INTSXP) {                                   \
+    OUT = FUN(                                                   \
+      xt::rarray<int>(X),                                        \
+      xt::rarray<int>(Y),                                        \
+      ARG1, ARG2                                                 \
+    );                                                           \
+  }                                                              \
+  else if (x_type == LGLSXP) {                                   \
+    OUT = FUN(                                                   \
+      xt::rarray<rlogical>(X),                                   \
+      xt::rarray<rlogical>(Y),                                   \
+      ARG1, ARG2                                                 \
+    );                                                           \
+  }                                                              \
+  else {                                                         \
+    error_unknown_type();                                        \
+  }
+
+
+// -----------------------------------------------------------------------------
+
+#define DISPATCH_UNARY(OUT, FUN, X)                                \
+  int x_type = TYPEOF(X);                                          \
+                                                                   \
+  if (x_type == REALSXP) {                                         \
+    OUT = FUN(                                                     \
+      xt::rarray<double>(X)                                        \
+    );                                                             \
+  }                                                                \
+  else if (x_type == INTSXP) {                                     \
+    OUT = FUN(                                                     \
+      xt::rarray<int>(X)                                           \
+    );                                                             \
+  }                                                                \
+  else if (x_type == LGLSXP) {                                     \
+    OUT = FUN(                                                     \
+      xt::rarray<rlogical>(X)                                      \
+    );                                                             \
+  }                                                                \
+  else {                                                           \
+    error_unknown_type();                                          \
+  }
+
+// -----------------------------------------------------------------------------
+
+#define DISPATCH_UNARY_ONE(OUT, FUN, X, ARG)                      \
+  int x_type = TYPEOF(X);                                         \
+                                                                  \
+  if (x_type == REALSXP) {                                        \
+    OUT = FUN(                                                    \
+      xt::rarray<double>(X),                                      \
+      ARG                                                         \
+    );                                                            \
+  }                                                               \
+  else if (x_type == INTSXP) {                                    \
+    OUT = FUN(                                                    \
+      xt::rarray<int>(X),                                         \
+      ARG                                                         \
+    );                                                            \
+  }                                                               \
+  else if (x_type == LGLSXP) {                                    \
+    OUT = FUN(                                                    \
+      xt::rarray<rlogical>(X),                                    \
+      ARG                                                         \
+    );                                                            \
+  }                                                               \
+  else {                                                          \
+    error_unknown_type();                                         \
+  }
+
+// -----------------------------------------------------------------------------
+
+#define DISPATCH_UNARY_TWO(OUT, FUN, X, ARG1, ARG2)                    \
+  int x_type = TYPEOF(X);                                              \
+                                                                       \
+  if (x_type == REALSXP) {                                             \
+    OUT = FUN(                                                         \
+      xt::rarray<double>(X),                                           \
+      ARG1, ARG2                                                       \
+    );                                                                 \
+  }                                                                    \
+  else if (x_type == INTSXP) {                                         \
+    OUT = FUN(                                                         \
+      xt::rarray<int>(X),                                              \
+      ARG1, ARG2                                                       \
+    );                                                                 \
+  }                                                                    \
+  else if (x_type == LGLSXP) {                                         \
+    OUT = FUN(                                                         \
+      xt::rarray<rlogical>(X),                                         \
+      ARG1, ARG2                                                       \
+    );                                                                 \
+  }                                                                    \
+  else {                                                               \
+    error_unknown_type();                                              \
+  }
+
+// -----------------------------------------------------------------------------
+
+#define DISPATCH_UNARY_THREE(OUT, FUN, X, ARG1, ARG2, ARG3)          \
+  int x_type = TYPEOF(X);                                            \
+                                                                     \
+  if (x_type == REALSXP) {                                           \
+    OUT = FUN(                                                       \
+      xt::rarray<double>(X),                                         \
+      ARG1, ARG2, ARG3                                               \
+    );                                                               \
+  }                                                                  \
+  else if (x_type == INTSXP) {                                       \
+    OUT = FUN(                                                       \
+      xt::rarray<int>(X),                                            \
+      ARG1, ARG2, ARG3                                               \
+    );                                                               \
+  }                                                                  \
+  else if (x_type == LGLSXP) {                                       \
+    OUT = FUN(                                                       \
+      xt::rarray<rlogical>(X),                                       \
+      ARG1, ARG2, ARG3                                               \
+    );                                                               \
+  }                                                                  \
+  else {                                                             \
+    error_unknown_type();                                            \
+  }
+
+// -----------------------------------------------------------------------------
+
+#define DISPATCH_UNARY_MATH(FUN, X)                              \
+  if (r_is_null(X)) {                                            \
+    return X;                                                    \
+  }                                                              \
+                                                                 \
+  Rcpp::RObject out;                                             \
+  DISPATCH_UNARY(out, FUN, X);                                   \
+                                                                 \
+  rray__set_dim_names(out, rray__dim_names(X));                  \
+  return out
+
+// -----------------------------------------------------------------------------
+
+#define DISPATCH_BINARY_MATH(FUN, X, Y)                          \
+  if (r_is_null(X) || r_is_null(Y)) {                            \
+    return R_NilValue;                                           \
+  }                                                              \
+                                                                 \
+  Rcpp::List new_dim_names = rray__dim_names2(X, Y);             \
+                                                                 \
+  Rcpp::RObject type = vec__type_inner2(X, Y);                   \
+  X = vec__cast_inner(X, type);                                  \
+  Y = vec__cast_inner(Y, type);                                  \
+                                                                 \
+  Rcpp::RObject out;                                             \
+  DISPATCH_BINARY(out, FUN, X, Y);                               \
+                                                                 \
+  rray__set_dim_names(out, new_dim_names);                       \
+  return out
 
 // -----------------------------------------------------------------------------
 

@@ -60,36 +60,7 @@ rray_squeeze <- function(x, axes = NULL) {
   axes <- vec_cast(axes, integer())
   validate_axes(axes, x)
 
-  res <- rray__squeeze(x, as_cpp_idx(axes))
+  out <- rray__squeeze(x, as_cpp_idx(axes))
 
-  new_dim_names <- squeeze_dim_names(x, axes)
-
-  res <- set_full_dim_names(res, new_dim_names)
-
-  vec_cast_container(res, x)
-}
-
-squeeze_dim_names <- function(x, axes) {
-
-  x_dim_names <- rray_dim_names(x)
-
-  # Generally, names will come from the non `axes` axes
-  new_dim_names <- x_dim_names[-axes]
-
-  # If squeezing every axis, that means they all had size 1.
-  # Take the names from the first dimension with names
-  if (vec_size(axes) == rray_dims(x)) {
-
-    non_null_dim_names <- discard(x_dim_names, is.null)
-
-    if (is_empty(non_null_dim_names)) {
-      new_dim_names <- rray_empty_dim_names(1L)
-    }
-    else {
-      new_dim_names <- non_null_dim_names[1L]
-    }
-
-  }
-
-  new_dim_names
+  vec_cast_container(out, x)
 }

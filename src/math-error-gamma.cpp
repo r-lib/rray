@@ -10,7 +10,7 @@ xt::rarray<double> rray__erf_impl(const xt::rarray<T>& x) {
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__erf(Rcpp::RObject x) {
-  DISPATCH_UNARY(rray__erf_impl, x);
+  DISPATCH_UNARY_MATH(rray__erf_impl, x);
 }
 
 // -----------------------------------------------------------------------------
@@ -22,7 +22,7 @@ xt::rarray<double> rray__erfc_impl(const xt::rarray<T>& x) {
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__erfc(Rcpp::RObject x) {
-  DISPATCH_UNARY(rray__erfc_impl, x);
+  DISPATCH_UNARY_MATH(rray__erfc_impl, x);
 }
 
 // -----------------------------------------------------------------------------
@@ -36,7 +36,7 @@ xt::rarray<double> rray__gamma_impl(const xt::rarray<T>& x) {
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__gamma(Rcpp::RObject x) {
-  DISPATCH_UNARY(rray__gamma_impl, x);
+  DISPATCH_UNARY_MATH(rray__gamma_impl, x);
 }
 
 // -----------------------------------------------------------------------------
@@ -48,5 +48,5 @@ xt::rarray<double> rray__lgamma_impl(const xt::rarray<T>& x) {
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__lgamma(Rcpp::RObject x) {
-  DISPATCH_UNARY(rray__lgamma_impl, x);
+  DISPATCH_UNARY_MATH(rray__lgamma_impl, x);
 }

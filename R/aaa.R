@@ -95,6 +95,8 @@ shared <- rlang::new_environment()
   shared$empty_rray_int <- new_rray(integer())
   shared$empty_rray_lgl <- new_rray(logical())
   shared$empty_rray_dbl <- new_rray(double())
+
+  rray_init(rlang::ns_env())
 }
 
 

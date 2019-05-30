@@ -89,18 +89,18 @@ test_that("extra arguments are caught", {
 context("test-round")
 
 test_that("basic", {
-  expect_equal(rray_round(2.5), new_array(round(2.5)))
-  expect_equal(rray_round(3.5), new_array(round(3.5)))
+  expect_equal(rray_round(2.5), round(2.5))
+  expect_equal(rray_round(3.5), round(3.5))
 })
 
 test_that("edge cases", {
-  expect_equal(rray_round(Inf), new_array(round(Inf)))
-  expect_equal(rray_round(-Inf), new_array(round(-Inf)))
+  expect_equal(rray_round(Inf), round(Inf))
+  expect_equal(rray_round(-Inf), round(-Inf))
 
-  expect_equal(rray_round(0), new_array(round(0)))
-  expect_equal(rray_round(-0), new_array(round(-0)))
+  expect_equal(rray_round(0), round(0))
+  expect_equal(rray_round(-0), round(-0))
 
-  expect_equal(rray_round(NaN), new_array(round(NaN)))
+  expect_equal(rray_round(NaN), round(NaN))
 })
 
 test_that("dim names are kept", {
@@ -127,18 +127,18 @@ test_that("digits", {
 context("test-signif")
 
 test_that("basic", {
-  expect_equal(rray_signif(2.5), new_array(signif(2.5)))
-  expect_equal(rray_signif(3.5), new_array(signif(3.5)))
+  expect_equal(rray_signif(2.5), signif(2.5))
+  expect_equal(rray_signif(3.5), signif(3.5))
 })
 
 test_that("edge cases", {
-  expect_equal(rray_signif(Inf), new_array(signif(Inf)))
-  expect_equal(rray_signif(-Inf), new_array(signif(-Inf)))
+  expect_equal(rray_signif(Inf), signif(Inf))
+  expect_equal(rray_signif(-Inf), signif(-Inf))
 
-  expect_equal(rray_signif(0), new_array(signif(0)))
-  expect_equal(rray_signif(-0), new_array(signif(-0)))
+  expect_equal(rray_signif(0), signif(0))
+  expect_equal(rray_signif(-0), signif(-0))
 
-  expect_equal(rray_signif(NaN), new_array(signif(NaN)))
+  expect_equal(rray_signif(NaN), signif(NaN))
 })
 
 test_that("dim names are kept", {

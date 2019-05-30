@@ -84,15 +84,9 @@ rray_rotate <- function(x, from = 1, to = 2, times = 1) {
   validate_scalar(times, "times")
   times <- normalize_times(times)
 
-  res <- rray__rotate(x, as_cpp_idx(from), as_cpp_idx(to), times)
+  out <- rray__rotate(x, as_cpp_idx(from), as_cpp_idx(to), times)
 
-  if (!is.null(x)) {
-    x_dim_names <- rray_dim_names(x)
-    new_dim_names <- rotate_dim_names(x_dim_names, from, to, times)
-    res <- set_full_dim_names(res, new_dim_names)
-  }
-
-  vec_cast_container(res, x)
+  vec_cast_container(out, x)
 }
 
 validate_scalar <- function(x, nm) {
@@ -124,28 +118,4 @@ validate_at_least_two_dims <- function(x, arg = "x") {
 # stolen from xt::rot90()
 normalize_times <- function(times) {
   (4 + (times %% 4)) %% 4
-}
-
-# By using a `<- list()` call we avoid nuking dim names
-# if anything we are assinging happens to be NULL
-rotate_dim_names <- function(x_dim_names, from, to, times) {
-
-  nms_from <- x_dim_names[[from]]
-  nms_to <- x_dim_names[[to]]
-
-  # times == 1 or 3
-  # - `to` names are reversed
-  # - Swap dim names at positions `from` and `to`
-  if (times == 1L || times == 3L) {
-    x_dim_names[c(from, to)] <- list(rev(nms_to), nms_from)
-  }
-
-  # times == 2
-  # - Reverse `from` and `to` names
-  # - Leave names in the same place
-  if (times == 2L) {
-    x_dim_names[c(from, to)] <- list(rev(nms_from), rev(nms_to))
-  }
-
-  x_dim_names
 }

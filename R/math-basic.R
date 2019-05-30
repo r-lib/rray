@@ -21,7 +21,7 @@
 #' @family math functions
 #' @export
 rray_abs <- function(x) {
-  rray_math_unary_base(rray__abs, x)
+  vec_cast_container(rray__abs(x), x)
 }
 
 # ------------------------------------------------------------------------------
@@ -56,7 +56,7 @@ rray_abs <- function(x) {
 #' @family math functions
 #' @export
 rray_sign <- function(x) {
-  rray_math_unary_base(rray__sign, x)
+  vec_cast_container(rray__sign(x), x)
 }
 
 # ------------------------------------------------------------------------------
@@ -139,13 +139,17 @@ rray_sign <- function(x) {
 #' @family math functions
 #' @export
 rray_fmod <- function(x, y) {
-  rray_math_binary_base(rray__fmod, x, y)
+  out <- rray__fmod(x, y)
+  container <- vec_type_container2(x, y)
+  vec_cast_container(out, container)
 }
 
 #' @rdname remainder
 #' @export
 rray_remainder <- function(x, y) {
-  rray_math_binary_base(rray__remainder, x, y)
+  out <- rray__remainder(x, y)
+  container <- vec_type_container2(x, y)
+  vec_cast_container(out, container)
 }
 
 # ------------------------------------------------------------------------------
@@ -173,13 +177,17 @@ rray_remainder <- function(x, y) {
 #' @family math functions
 #' @export
 rray_maximum <- function(x, y) {
-  rray_math_binary_base(rray__maximum, x, y)
+  out <- rray__maximum(x, y)
+  container <- vec_type_container2(x, y)
+  vec_cast_container(out, container)
 }
 
 #' @rdname rray_maximum
 #' @export
 rray_minimum <- function(x, y) {
-  rray_math_binary_base(rray__minimum, x, y)
+  out <- rray__minimum(x, y)
+  container <- vec_type_container2(x, y)
+  vec_cast_container(out, container)
 }
 
 # ------------------------------------------------------------------------------
@@ -207,7 +215,9 @@ rray_minimum <- function(x, y) {
 #' @family math functions
 #' @export
 rray_multiply_add <- function(x, y, z) {
-  rray_math_trinary_base(rray__multiply_add, x, y, z)
+  out <- rray__multiply_add(x, y, z)
+  container <- vec_type_container_common(x, y, z)
+  vec_cast_container(out, container)
 }
 
 # ------------------------------------------------------------------------------
@@ -251,39 +261,7 @@ rray_clip <- function(x, low, high) {
     glubort("`low` must be less than or equal to `high`.")
   }
 
-  rray_math_unary_base(rray__clip, x, low = low, high = high)
-}
+  out <- rray__clip(x, low, high)
 
-# ------------------------------------------------------------------------------
-
-rray_math_unary_base <- function(f, x, ...) {
-  res <- f(x, ...)
-  res <- set_full_dim_names(res, rray_dim_names(x))
-  vec_cast_container(res, x)
-}
-
-rray_math_binary_base <- function(f, x, y) {
-
-  args <- vec_cast_inner_common(x, y)
-
-  res <- f(args[[1]], args[[2]])
-
-  res <- set_full_dim_names(res, rray_dim_names2(x, y))
-
-  vec_cast_container(res, vec_type2(x, y))
-
-}
-
-rray_math_trinary_base <- function(f, x, y, z) {
-
-  # done before the inner cast
-  new_dim_names <- rray_dim_names_common(x, y, z)
-
-  args <- vec_cast_inner_common(x, y, z)
-
-  res <- f(args[[1]], args[[2]], args[[3]])
-
-  res <- set_full_dim_names(res, new_dim_names)
-
-  vec_cast_container(res, vec_type_container_common(x, y, z))
+  vec_cast_container(out, x)
 }

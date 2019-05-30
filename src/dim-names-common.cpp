@@ -186,4 +186,22 @@ Rcpp::RObject rray__restore_dim_names(SEXP res, SEXP x) {
   return res;
 }
 
+// -----------------------------------------------------------------------------
+
+// Most of the time we will be setting dim names directly on an array
+// but occasionally some xtensor functions don't return arrays (rray_squeeze()
+// on all axes). In those cases we can't set dimnames, and instead have to
+// set names
+
+void rray__set_dim_names(Rcpp::RObject x, const Rcpp::List& dim_names) {
+
+  if (Rf_isArray(x)) {
+    x.attr("dimnames") = dim_names;
+  }
+  else {
+    x.attr("names") = dim_names[0];
+  }
+
+}
+
 

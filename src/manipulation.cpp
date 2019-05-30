@@ -131,67 +131,248 @@ Rcpp::List rray__split_impl(const xt::rarray<T>& x,
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__split(Rcpp::RObject x,
                           const std::vector<std::size_t>& axes) {
-  DISPATCH_UNARY_ONE(rray__split_impl, x, axes);
+
+  if (r_is_null(x)) {
+    return x;
+  }
+
+  Rcpp::List out;
+  DISPATCH_UNARY_ONE(out, rray__split_impl, x, axes);
+
+  return out;
 }
 
 // -----------------------------------------------------------------------------
 
+// times == 1 or 3
+// - `to` names are reversed
+// - Swap position of `from` and `to` names
+void rotate_1_3(Rcpp::List new_dim_names,
+                const Rcpp::List& dim_names,
+                const std::ptrdiff_t& from,
+                const std::ptrdiff_t& to) {
+
+  // Always update `to` names
+  new_dim_names[to] = dim_names[from];
+
+  // Only reverse if `to` names are not NULL, but always set them in the `from` slot
+  if (r_is_null(dim_names[to])) {
+    new_dim_names[from] = dim_names[to];
+  }
+  else {
+    Rcpp::CharacterVector new_to_names = Rf_duplicate(dim_names[to]);
+    std::reverse(new_to_names.begin(), new_to_names.end());
+    new_dim_names[from] = new_to_names;
+  }
+
+}
+
+// times == 2
+// - `to` and `from` names are reversed
+// - Names are left in the same position
+void rotate_2(Rcpp::List new_dim_names,
+              const Rcpp::List& dim_names,
+              const std::ptrdiff_t& from,
+              const std::ptrdiff_t& to) {
+
+  // Reverse `from` names, performing a full duplicate of the original names
+  if (!r_is_null(dim_names[from])) {
+    Rcpp::CharacterVector new_from_names = Rf_duplicate(dim_names[from]);
+    std::reverse(new_from_names.begin(), new_from_names.end());
+    new_dim_names[from] = new_from_names;
+  }
+
+  // Reverse `to` names, performing a full duplicate of the original names
+  if (!r_is_null(dim_names[to])) {
+    Rcpp::CharacterVector new_to_names = Rf_duplicate(dim_names[to]);
+    std::reverse(new_to_names.begin(), new_to_names.end());
+    new_dim_names[to] = new_to_names;
+  }
+
+}
+
+Rcpp::List rotate_dim_names(Rcpp::List dim_names,
+                            const std::ptrdiff_t& from,
+                            const std::ptrdiff_t& to,
+                            const int& times) {
+
+  // Only shallow duplicate names so we don't copy non-rotated names
+  Rcpp::List new_dim_names = Rf_shallow_duplicate(dim_names);
+
+  if (times == 1 || times == 3) {
+    rotate_1_3(new_dim_names, dim_names, from, to);
+  }
+  else {
+    rotate_2(new_dim_names, dim_names, from, to);
+  }
+
+  return new_dim_names;
+}
+
 template <typename T>
-xt::rarray<T> rray__rotate_impl(const xt::rarray<T>& x,
-                                std::ptrdiff_t from,
-                                std::ptrdiff_t to,
-                                int n) {
+Rcpp::RObject rray__rotate_impl(const xt::rarray<T>& x,
+                                const std::ptrdiff_t& from,
+                                const std::ptrdiff_t& to,
+                                const int& times) {
 
   // Axes
   std::array<std::ptrdiff_t, 2> axes = {from, to};
+  xt::rarray<T> out;
 
-  if (n == 1) {
-    xt::rarray<T> res = xt::rot90<1>(x, axes);
-    return res;
+  if (times == 1) {
+    out = xt::rot90<1>(x, axes);
   }
-  else if (n == 2) {
-    xt::rarray<T> res = xt::rot90<2>(x, axes);
-    return res;
+  else if (times == 2) {
+    out = xt::rot90<2>(x, axes);
   }
-  else if (n == 3) {
-    xt::rarray<T> res = xt::rot90<3>(x, axes);
-    return res;
+  else if (times == 3) {
+    out = xt::rot90<3>(x, axes);
   }
   else {
     Rcpp::stop("`n` must be 1, 2, or 3.");
   }
 
+  return Rcpp::as<Rcpp::RObject>(out);
 }
 
 // [[Rcpp::export(rng = false)]]
-Rcpp::RObject rray__rotate(Rcpp::RObject x, std::ptrdiff_t from, std::ptrdiff_t to, int n) {
-  DISPATCH_UNARY_THREE(rray__rotate_impl, x, from, to, n);
+Rcpp::RObject rray__rotate(Rcpp::RObject x,
+                           const std::ptrdiff_t& from,
+                           const std::ptrdiff_t& to,
+                           const int& times) {
+
+  if (r_is_null(x)) {
+    return x;
+  }
+
+  Rcpp::RObject out;
+  DISPATCH_UNARY_THREE(out, rray__rotate_impl, x, from, to, times);
+
+  out.attr("dimnames") = rotate_dim_names(rray__dim_names(x), from, to, times);
+
+  return out;
 }
 
 // -----------------------------------------------------------------------------
 
+Rcpp::List transpose_dim_names(const Rcpp::List& dim_names,
+                               const Rcpp::RObject& permutation) {
+
+  const int& n_dim_names = dim_names.size();
+  Rcpp::List new_dim_names = rray__new_empty_dim_names(n_dim_names);
+  Rcpp::IntegerVector int_permutation;
+
+  // Default permutation is a reversal of the sequence along the dimensionality
+  if (r_is_null(permutation)) {
+    int_permutation = Rcpp::seq_len(n_dim_names) - 1;
+    std::reverse(int_permutation.begin(), int_permutation.end());
+  }
+  else {
+    int_permutation = permutation;
+  }
+
+  // Reorder dim names
+  for (int i = 0; i < n_dim_names; ++i) {
+    new_dim_names[i] = dim_names[int_permutation[i]];
+  }
+
+  // Reorder meta names
+  if (!r_is_null(dim_names.names())) {
+    Rcpp::CharacterVector meta_names = dim_names.names();
+    Rcpp::CharacterVector new_meta_names(n_dim_names);
+
+    for (int i = 0; i < n_dim_names; ++i) {
+      new_meta_names[i] = meta_names[int_permutation[i]];
+    }
+
+    new_dim_names.names() = new_meta_names;
+  }
+
+  return new_dim_names;
+}
+
 template <typename T>
-xt::rarray<T> rray__transpose_impl(const xt::rarray<T>& x,
-                                   Rcpp::RObject permutation) {
+Rcpp::RObject rray__transpose_impl(const xt::rarray<T>& x,
+                                   const Rcpp::RObject& permutation) {
 
   using ptrdiff_vec_t = typename std::vector<std::ptrdiff_t>;
 
+  xt::rarray<T> out;
+
   if (r_is_null(permutation)) {
-    xt::rarray<T> res = xt::transpose(x);
-    return res;
+    out = xt::transpose(x);
+  }
+  else {
+    ptrdiff_vec_t xt_permutation = Rcpp::as<ptrdiff_vec_t>(permutation);
+    out = xt::transpose(x, xt_permutation, xt::check_policy::full());
   }
 
-  ptrdiff_vec_t xt_permutation = Rcpp::as<ptrdiff_vec_t>(permutation);
-
-  return xt::transpose(x, xt_permutation, xt::check_policy::full());
+  return Rcpp::as<Rcpp::RObject>(out);
 }
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__transpose(Rcpp::RObject x, Rcpp::RObject permutation) {
-  DISPATCH_UNARY_ONE(rray__transpose_impl, x, permutation);
+
+  Rcpp::RObject out;
+  DISPATCH_UNARY_ONE(out, rray__transpose_impl, x, permutation);
+
+  out.attr("dimnames") = transpose_dim_names(rray__dim_names(x), permutation);
+
+  return out;
 }
 
 // -----------------------------------------------------------------------------
+
+Rcpp::IntegerVector compute_complement(const int& dims,
+                                       const std::vector<std::size_t>& axes) {
+
+  std::vector<std::size_t> axes_seq(dims);
+  for (std::size_t i = 0; i < dims; ++i) {
+    axes_seq[i] = i;
+  }
+
+  // Output container with with the maximum possible size
+  std::vector<std::size_t> axes_complement(dims);
+  std::vector<std::size_t>::iterator it;
+
+  // Set difference
+  it = std::set_difference(
+    axes_seq.begin(), axes_seq.end(),
+    axes.begin(), axes.end(),
+    axes_complement.begin()
+  );
+
+  // Resize to shrink the container
+  axes_complement.resize(it - axes_complement.begin());
+
+  return Rcpp::wrap(axes_complement);
+}
+
+Rcpp::List squeeze_dim_names(const Rcpp::List& dim_names,
+                             const std::vector<std::size_t>& axes) {
+
+  const int& dims = dim_names.size();
+  const bool& squeezing_every_axis = axes.size() == dims;
+
+  // Normally, names are pulled from the non `axes` axes
+  if (!squeezing_every_axis) {
+    Rcpp::IntegerVector axes_complement = compute_complement(dims, axes);
+    return dim_names[axes_complement];
+  }
+
+  // But in this case we are squeezing every axis!
+  // (only possible if all axes have size 1)
+  // So we take the names from the first dimension with names
+  for (int i = 0; i < dims; ++i) {
+    if (!r_is_null(dim_names[i])) {
+      return dim_names[i];
+    }
+  }
+
+  // If no dimensions have names, and we are squeezing them all,
+  // return 1 empty dim name
+  return rray__new_empty_dim_names(1);
+}
 
 // Call xt::squeeze() but always use xt::check_policy::full()
 // which throws an error if you are trying to drop a dimension
@@ -201,13 +382,22 @@ Rcpp::RObject rray__transpose(Rcpp::RObject x, Rcpp::RObject permutation) {
 // xt::squeeze() docs say it takes `axis` but its really `axes`
 
 template <typename T>
-xt::rarray<T> rray__squeeze_impl(const xt::rarray<T>& x, std::vector<std::size_t> axes) {
-  return xt::squeeze(x, axes, xt::check_policy::full());
+Rcpp::RObject rray__squeeze_impl(const xt::rarray<T>& x,
+                                 const std::vector<std::size_t>& axes) {
+  xt::rarray<T> out = xt::squeeze(x, axes, xt::check_policy::full());
+  return Rcpp::as<Rcpp::RObject>(out);
 }
 
 // [[Rcpp::export(rng = false)]]
-Rcpp::RObject rray__squeeze(Rcpp::RObject x, std::vector<std::size_t> axes) {
-  DISPATCH_UNARY_ONE(rray__squeeze_impl, x, axes);
+Rcpp::RObject rray__squeeze(Rcpp::RObject x,
+                            const std::vector<std::size_t>& axes) {
+
+  Rcpp::RObject out;
+  DISPATCH_UNARY_ONE(out, rray__squeeze_impl, x, axes);
+
+  rray__set_dim_names(out, squeeze_dim_names(rray__dim_names(x), axes));
+
+  return out;
 }
 
 // -----------------------------------------------------------------------------
@@ -232,26 +422,29 @@ Rcpp::List rray__expand_dim_names(const Rcpp::List& dim_names,
 }
 
 template <typename T>
-Rcpp::RObject rray__expand_dims_impl(const xt::rarray<T>& x, std::size_t axis) {
+Rcpp::RObject rray__expand_dims_impl(const xt::rarray<T>& x, const std::size_t& axis) {
+  xt::rarray<T> out = xt::expand_dims(x, axis);
+  return Rcpp::as<Rcpp::RObject>(out);
+}
 
-  xt::rarray<T> xt_out = xt::expand_dims(x, axis);
+// [[Rcpp::export(rng = false)]]
+Rcpp::RObject rray__expand_dims(Rcpp::RObject x, const std::size_t& axis) {
 
-  Rcpp::List new_dim_names = rray__expand_dim_names(rray__dim_names(SEXP(x)), axis);
+  if (r_is_null(x)) {
+    return x;
+  }
 
-  Rcpp::RObject out = SEXP(xt_out);
-  out.attr("dimnames") = new_dim_names;
+  Rcpp::RObject out;
+  DISPATCH_UNARY_ONE(out, rray__expand_dims_impl, x, axis);
+
+  rray__set_dim_names(out, rray__expand_dim_names(rray__dim_names(x), axis));
 
   return out;
 }
 
-// [[Rcpp::export(rng = false)]]
-Rcpp::RObject rray__expand_dims(Rcpp::RObject x, std::size_t axis) {
-  DISPATCH_UNARY_ONE(rray__expand_dims_impl, x, axis);
-}
-
 // -----------------------------------------------------------------------------
 
-Rcpp::List rev_axis_names(const Rcpp::List& dim_names, std::size_t axis) {
+Rcpp::List rev_axis_names(const Rcpp::List& dim_names, const std::size_t& axis) {
 
   if (r_is_null(dim_names[axis])) {
     return dim_names;
@@ -271,34 +464,45 @@ Rcpp::List rev_axis_names(const Rcpp::List& dim_names, std::size_t axis) {
 }
 
 template <typename T>
-Rcpp::RObject rray__flip_impl(const xt::rarray<T>& x, std::size_t axis) {
-
-  xt::rarray<T> xt_out = xt::flip(x, axis);
-
-  Rcpp::List new_dim_names = rev_axis_names(rray__dim_names(SEXP(x)), axis);
-
-  Rcpp::RObject out = SEXP(xt_out);
-  out.attr("dimnames") = new_dim_names;
-
-  return out;
+Rcpp::RObject rray__flip_impl(const xt::rarray<T>& x, const std::size_t& axis) {
+  xt::rarray<T> out = xt::flip(x, axis);
+  return Rcpp::as<Rcpp::RObject>(out);
 }
 
 // [[Rcpp::export(rng = false)]]
-Rcpp::RObject rray__flip(Rcpp::RObject x, std::size_t axis) {
-  DISPATCH_UNARY_ONE(rray__flip_impl, x, axis);
+Rcpp::RObject rray__flip(Rcpp::RObject x, const std::size_t& axis) {
+
+  if (r_is_null(x)) {
+    return x;
+  }
+
+  Rcpp::RObject out;
+  DISPATCH_UNARY_ONE(out, rray__flip_impl, x, axis);
+
+  rray__set_dim_names(out, rev_axis_names(rray__dim_names(x), axis));
+
+  return out;
 }
 
 // -----------------------------------------------------------------------------
 
 template <typename T>
 Rcpp::RObject rray__flatten_impl(const xt::rarray<T>& x) {
-  xt::rarray<T> xt_out = xt::flatten<xt::layout_type::column_major>(x);
-  Rcpp::RObject out = SEXP(xt_out);
-  rray__reshape_and_set_dim_names(out, SEXP(x));
-  return out;
+  xt::rarray<T> out = xt::flatten<xt::layout_type::column_major>(x);
+  return Rcpp::as<Rcpp::RObject>(out);
 }
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__flatten(Rcpp::RObject x) {
-  DISPATCH_UNARY(rray__flatten_impl, x);
+
+  if (r_is_null(x)) {
+    return x;
+  }
+
+  Rcpp::RObject out;
+  DISPATCH_UNARY(out, rray__flatten_impl, x);
+
+  rray__reshape_and_set_dim_names(out, x);
+
+  return out;
 }

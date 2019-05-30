@@ -48,7 +48,9 @@ NULL
 #' @rdname rray-compare
 #' @export
 rray_greater <- function(x, y) {
-  cast_compare(rray__greater, x, y)
+  out <- rray__greater(x, y)
+  container <- vec_type_container2(x, y)
+  vec_cast_container(out, container)
 }
 
 # ------------------------------------------------------------------------------
@@ -62,7 +64,9 @@ rray_greater <- function(x, y) {
 #' @rdname rray-compare
 #' @export
 rray_greater_equal <- function(x, y) {
-  cast_compare(rray__greater_equal, x, y)
+  out <- rray__greater_equal(x, y)
+  container <- vec_type_container2(x, y)
+  vec_cast_container(out, container)
 }
 
 # ------------------------------------------------------------------------------
@@ -76,7 +80,9 @@ rray_greater_equal <- function(x, y) {
 #' @rdname rray-compare
 #' @export
 rray_lesser <- function(x, y) {
-  cast_compare(rray__lesser, x, y)
+  out <- rray__lesser(x, y)
+  container <- vec_type_container2(x, y)
+  vec_cast_container(out, container)
 }
 
 # ------------------------------------------------------------------------------
@@ -90,7 +96,9 @@ rray_lesser <- function(x, y) {
 #' @rdname rray-compare
 #' @export
 rray_lesser_equal <- function(x, y) {
-  cast_compare(rray__lesser_equal, x, y)
+  out <- rray__lesser_equal(x, y)
+  container <- vec_type_container2(x, y)
+  vec_cast_container(out, container)
 }
 
 # ------------------------------------------------------------------------------
@@ -106,7 +114,9 @@ rray_lesser_equal <- function(x, y) {
 #' @rdname rray-compare
 #' @export
 rray_equal <- function(x, y) {
-  cast_compare(rray__equal, x, y)
+  out <- rray__equal(x, y)
+  container <- vec_type_container2(x, y)
+  vec_cast_container(out, container)
 }
 
 # ------------------------------------------------------------------------------
@@ -120,7 +130,9 @@ rray_equal <- function(x, y) {
 #' @rdname rray-compare
 #' @export
 rray_not_equal <- function(x, y) {
-  cast_compare(rray__not_equal, x, y)
+  out <- rray__not_equal(x, y)
+  container <- vec_type_container2(x, y)
+  vec_cast_container(out, container)
 }
 
 # ------------------------------------------------------------------------------
@@ -167,49 +179,11 @@ rray_not_equal <- function(x, y) {
 #'
 #' @export
 rray_all_equal <- function(x, y) {
-  if (!identical(class(x), class(y))) {
-    return(FALSE)
-  }
-
-  if (is.null(x) && is.null(y)) {
-    return(TRUE)
-  }
-
   rray__all_equal(x, y)
 }
 
 #' @rdname rray_all_equal
 #' @export
 rray_any_not_equal <- function(x, y) {
-  if (!identical(class(x), class(y))) {
-    return(TRUE)
-  }
-
-  if (is.null(x) && is.null(y)) {
-    return(FALSE)
-  }
-
   rray__any_not_equal(x, y)
-}
-
-# ------------------------------------------------------------------------------
-
-cast_compare <- function(f, x, y) {
-
-  # `NULL` are treated like logical()
-  if (is.null(x)) {
-    x <- logical()
-  }
-
-  if (is.null(y)) {
-    y <- logical()
-  }
-
-  args <- vec_cast_inner_common(x, y)
-
-  new_dim_names <- rray_dim_names2(x, y)
-
-  res <- f(args[[1]], args[[2]], new_dim_names)
-
-  vec_cast_container(res, vec_type_container2(x, y))
 }
