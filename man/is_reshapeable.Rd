@@ -4,10 +4,10 @@
 \alias{is_reshapeable}
 \title{Check if \code{x} can be reshaped}
 \usage{
-is_reshapeable(x, to_dim)
+is_reshapeable(x, dim)
 }
 \description{
-\code{x} is reshapeable to \code{to_dim} if the number of elements in \code{x} equal
-the number of elements implied by \code{to_dim}, i.e. \code{prod(to_dim)}.
+\code{x} is reshapeable to \code{dim} if the number of elements in \code{x} equal
+the number of elements implied by \code{dim}, i.e. \code{prod(dim)}.
 }
 \keyword{internal}

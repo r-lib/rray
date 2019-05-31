@@ -132,8 +132,10 @@ new_rray <- function(.data = numeric(0),
 #' @export
 rray <- function(x = numeric(0), dim = NULL, dim_names = NULL) {
 
+  x_dim <- rray_dim(x)
+
   if (is_null(dim)) {
-    dim <- rray_dim(x)
+    dim <- x_dim
   }
 
   dim <- vec_cast(dim, integer())
@@ -144,11 +146,7 @@ rray <- function(x = numeric(0), dim = NULL, dim_names = NULL) {
 
   validate_rray_attributes(dim, dim_names)
 
-  x_dim <- rray_dim(x)
-
-  # only broadcast if new dim is different than current dim
-  # and you can't reshape to match
-  if (!identical(x_dim, dim) && !is_reshapeable(x, dim)) {
+  if (!is_reshapeable(x, dim)) {
     x <- rray_broadcast(x, dim)
   }
 
@@ -219,13 +217,12 @@ rray_sub_type <- function(x) {
 
 #' Check if `x` can be reshaped
 #'
-#' `x` is reshapeable to `to_dim` if the number of elements in `x` equal
-#' the number of elements implied by `to_dim`, i.e. `prod(to_dim)`.
+#' `x` is reshapeable to `dim` if the number of elements in `x` equal
+#' the number of elements implied by `dim`, i.e. `prod(dim)`.
 #'
 #' @keywords internal
-is_reshapeable <- function(x, to_dim) {
-  n_x <- rray_elems(x)
-  n_x == prod(to_dim)
+is_reshapeable <- function(x, dim) {
+  rray_elems(x) == prod(dim)
 }
 
 #' Compute the number of elements in an array
