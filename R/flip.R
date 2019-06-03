@@ -12,8 +12,8 @@
 #' @examples
 #'
 #' x <- rray(1:10, c(5, 2))
-#' x <- set_row_names(x, letters[1:5])
-#' x <- set_col_names(x, c("c1", "c2"))
+#' x <- rray_set_row_names(x, letters[1:5])
+#' x <- rray_set_col_names(x, c("c1", "c2"))
 #'
 #' rray_flip(x, 1)
 #'

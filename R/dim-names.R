@@ -1,6 +1,23 @@
 #' Dimension names
 #'
-#' Extract names of various dimensions.
+#' @description
+#'
+#' This family of functions allows you to get and set dimension names in various
+#' ways.
+#'
+#' - `rray_dim_names()` returns a list of the dimension names.
+#'
+#' - `rray_axis_names()` returns a character vector or `NULL` containing the
+#' names corresponding to the `axis` dimension.
+#'
+#' - `rray_row_names()` and `rray_col_names()` are helpers for getting the
+#' row and column names respectively.
+#'
+#' - Each of these four functions also has "set" variants: a functional form
+#' (i.e. `rray_set_row_names()`), and an assignment
+#' form (i.e. `rray_row_names<-()`).
+#'
+#' @details
 #'
 #' Unlike `dimnames()` which can return `NULL`, `rray_dim_names()` always returns a
 #' list the same length as the dimensionality of `x`. If any dimensions do not
@@ -9,49 +26,49 @@
 #'
 #' @param x The object to extract the dimension names for.
 #'
-#' @param n The n-th dimension to use.
+#' @param axis A single integer. The axis to select dimension names for.
 #'
-#' @param nms A character vector of new dimension names for the n-th dimension.
+#' @param names A character vector of new dimension names
+#' for the `axis` dimension. This is also allowed to be `NULL` to remove
+#' dimension names for the specified axis.
 #'
-#' @param value The new dimension names to use for `x`. This is a list of
-#' either character vectors or `NULL`.
+#' @param value For `rray_dim_names<-()`, a list containing either character
+#' vectors or `NULL` corresponding to the new dimension names
+#' to use for `x`. Otherwise, identical to `names`.
+#'
+#' @param meta An optional "meta" name assigned to the `axis` names.
 #'
 #' @name dim-names
 #'
-#'
 #' @examples
-#'
 #' x <- rray(1:10, c(5, 2))
-#' rray_dim_names(x) <- list(letters[1:5], character())
+#' rray_dim_names(x) <- list(letters[1:5], NULL)
 #' x
 #' rray_dim_names(x)
 #'
-#' # 1D object, so 1 set of dim names
-#' rray_dim_names(rray())
-#'
-#' # 2D object, so 2 sets of dim names
-#' rray_dim_names(rray(1, dim = c(1, 1)))
-#'
-#' # 3D object, so 3 sets of dim names
+#' # 3D object, so 3 dim name elements
 #' rray_dim_names(rray(1, dim = c(1, 1, 1)))
 #'
-#' # NULL is technically 1D
-#' rray_dim_names(NULL)
-#'
 #' # Vectors are treated as 1D arrays
-#' rray_dim_names(1:5)
-#'
 #' vec <- c(x = 1, y = 2)
 #' rray_dim_names(vec)
 #'
 #' # You can add dim names more easily
-#' # using set_dim_names()
+#' # using rray_set_axis_names()
 #' # and the pipe operator
 #' library(magrittr)
-#' rray(1, c(1, 2, 1)) %>%
-#'   set_dim_names(1, "r1") %>%
-#'   set_dim_names(2, c("c1", "c2")) %>%
-#'   set_dim_names(3, "3rd dim")
+#' y <- rray(1, c(1, 2, 1)) %>%
+#'   rray_set_axis_names(1, "r1") %>%
+#'   rray_set_axis_names(2, c("c1", "c2")) %>%
+#'   rray_set_axis_names(3, "3rd dim")
+#'
+#' y
+#'
+#' # You can set also set axis names to `NULL` to reset them
+#' rray_set_axis_names(y, 2, NULL)
+#'
+#' # You can set the "meta" names of an axis as well
+#' rray_set_axis_names(y, 1, "r1", "row names")
 #'
 NULL
 
@@ -71,193 +88,177 @@ dimnames.vctrs_rray <- function(x) {
 #' @export
 #' @rdname dim-names
 `rray_dim_names<-` <- function(x, value) {
-  UseMethod("rray_dim_names<-")
+  rray_set_dim_names(x, value)
 }
 
 #' @export
-`rray_dim_names<-.default` <- function(x, value) {
-  set_full_dim_names(x, value)
-}
+#' @rdname dim-names
+rray_set_dim_names <- function(x, dim_names) {
+  dim <- rray_dim(x)
+  dims <- vec_size(dim)
 
-#' @export
-`rray_dim_names<-.vctrs_rray` <- function(x, value) {
-  set_full_dim_names(x, value)
-}
-
-set_full_dim_names <- function(x, value) {
-  UseMethod("set_full_dim_names")
-}
-
-set_full_dim_names.default <- function(x, value) {
-
-  if (is.null(x)) {
-    return(NULL)
+  if (is_null(dim_names)) {
+    dim_names <- rray_empty_dim_names(dims)
   }
 
-  if (is_null(value)) {
-    value <- rray_empty_dim_names(rray_dims(x))
-  }
+  validate_dim_names(dim_names, dim)
 
-  # checks for a dim attribute of positive length
+  rray_set_dim_names_impl(x, dim_names)
+}
+
+# `attr<-()` does't double copy like `attributes<-()` does so this is fine
+# is.array() just checks for a `dim` attribute of positive length
+rray_set_dim_names_impl <- function(x, dim_names) {
   if (is.array(x)) {
-    dimnames(x) <- value
+    attr(x, which = "dimnames") <- dim_names
   }
   else {
-    names(x) <- value[[1]]
+    attr(x, "names") <- dim_names[[1]]
   }
 
   x
 }
 
-set_full_dim_names.vctrs_rray <- function(x, value) {
+validate_dim_names <- function(dim_names, dim) {
+  dims <- vec_size(dim)
+  n_dim_names <- vec_size(dim_names)
 
-  if (is_null(value)) {
-    value <- rray_empty_dim_names(rray_dims(x))
+  if (dims != n_dim_names) {
+    glubort(
+      "The dimensionality of the object ({dims}) must be equal ",
+      "to the size of the `dim_names` ({n_dim_names})."
+    )
   }
 
-  stopifnot(map_lgl(value, is_character_or_null))
+  map2(dim_names, dim, validate_axis_names)
 
-  # n shape dims and n elements of shape name list
-  stopifnot(rray_dims(x) == vec_size(value))
-
-  # dim & rray_dim_names
-  dim_name_lengths <- map_int(value, vec_size)
-  stopifnot(
-    map2_lgl(rray_dim(x), dim_name_lengths, validate_equal_size_or_no_names)
-  )
-
-  attr(x, "dimnames") <- value
-  x
+  invisible(dim_names)
 }
 
+validate_axis_names <- function(axis_names, n) {
+
+  if (is_null(axis_names)) {
+    return(invisible(axis_names))
+  }
+
+  if (!is.character(axis_names)) {
+    abort("All dim names must be character vectors, or `NULL`.")
+  }
+
+  if (vec_size(axis_names) != n) {
+    glubort(
+      "The size of each dimension's names must be equal to the ",
+      "size of the corresponding dimension."
+    )
+  }
+
+  return(invisible(axis_names))
+}
+
+# ------------------------------------------------------------------------------
 # Base R compat
 
 #' @export
 `dimnames<-.vctrs_rray` <- function(x, value) {
-  rray_dim_names(x) <- value
-  x
+  rray_set_dim_names(x, value)
 }
 
 #' @export
 `names<-.vctrs_rray` <- function(x, value) {
 
   if (rray_dims(x) > 1L) {
-    glubort("Cannot set `names` on a 2D+ object. Use `rray_dim_names<-()` instead.")
+    glubort(
+      "Cannot set `names` on a 2D+ object. Use `rray_dim_names<-()` instead."
+    )
   }
 
   if (!is.null(value)) {
     value <- list(value)
   }
 
-  set_full_dim_names(x, value)
+  rray_set_dim_names(x, value)
 }
 
 # ------------------------------------------------------------------------------
 
 #' @export
 #' @rdname dim-names
-set_dim_names <- function(x, n, nms) {
+rray_axis_names <- function(x, axis) {
+  validate_axis(axis, x)
+  rray_dim_names(x)[[axis]]
+}
 
-  dim <- rray_dim(x)
+#' @export
+#' @rdname dim-names
+`rray_axis_names<-` <- function(x, axis, value) {
+  rray_set_axis_names(x, axis, value)
+}
 
-  n <- vec_cast(n, integer())
-  validate_scalar_n(n)
-  validate_requested_dims(x, n)
+#' @export
+#' @rdname dim-names
+rray_set_axis_names <- function(x, axis, names, meta = NULL) {
+  axis <- vec_cast(axis, integer())
+  vec_assert(axis, size = 1L, arg = "axis")
 
-  nms <- vec_cast(nms, character())
-  validate_equal_size_or_no_names(dim[n], vec_size(nms))
+  validate_axis(axis, x)
 
-  rray_dim_names(x)[[n]] <- nms
+  # Done in two steps to allow `rray_set_axis_names(x, axis, NULL)`
+  new_dim_names <- rray_dim_names(x)
+  new_dim_names[axis] <- list(names)
 
+  if (!is.null(meta)) {
+    vec_assert(meta, ptype = character(), size = 1L, arg = "meta")
+    names2(new_dim_names)[axis] <- meta
+  }
+
+  rray_set_dim_names(x, new_dim_names)
+}
+
+# rlang:::names2<-()
+`names2<-` <- function (x, value) {
+  if (is_null(names(x))) {
+    names(x) <- names2(x)
+  }
+  names(x) <- value
   x
 }
 
-#' @export
-#' @rdname dim-names
-set_row_names <- function(x, nms) {
-  set_dim_names(x, 1L, nms)
-}
+# ------------------------------------------------------------------------------
 
 #' @export
 #' @rdname dim-names
-set_col_names <- function(x, nms) {
-  set_dim_names(x, 2L, nms)
+rray_row_names <- function(x) {
+  rray_axis_names(x, 1L)
+}
+
+#' @export
+#' @rdname dim-names
+`rray_row_names<-` <- function(x, value) {
+  rray_set_row_names(x, value)
+}
+
+#' @export
+#' @rdname dim-names
+rray_set_row_names <- function(x, names, meta = NULL) {
+  rray_set_axis_names(x, 1L, names)
 }
 
 # ------------------------------------------------------------------------------
 
 #' @export
-#' @name dim-names
-row_names <- function(x) {
-  UseMethod("row_names")
+#' @rdname dim-names
+rray_col_names <- function(x) {
+  rray_axis_names(x, 2L)
 }
 
 #' @export
-row_names.default <- function(x) {
-  n_dim_names(x, 1L)
-}
-
-# ------------------------------------------------------------------------------
-
-#' @export
-#' @name dim-names
-col_names <- function(x) {
-  UseMethod("col_names")
+#' @rdname dim-names
+`rray_col_names<-` <- function(x, value) {
+  rray_set_col_names(x, value)
 }
 
 #' @export
-col_names.default <- function(x) {
-  n_dim_names(x, 2L)
-}
-
-# ------------------------------------------------------------------------------
-
-#' @export
-#' @name dim-names
-n_dim_names <- function(x, n) {
-  UseMethod("n_dim_names")
-}
-
-#' @export
-n_dim_names.default <- function(x, n) {
-
-  n <- vec_cast(n, integer())
-  validate_scalar_n(n)
-  validate_requested_dims(x, n)
-
-  rray_dim_names(x)[[n]]
-}
-
-# ------------------------------------------------------------------------------
-
-validate_scalar_n <- function(n) {
-  if (!is_scalar_integer(n)) {
-    glubort("`n` must have size 1, not {length(n)}.")
-  }
-}
-
-validate_requested_dims <- function(x, n) {
-
-  dims <- rray_dims(x)
-  if (dims < n) {
-    glubort(
-      "The dimensionality of `x` ({dims}) must be ",
-      "greater than the requested dimension ({n}).")
-  }
-
-}
-
-# Similar to dim2 but takes rray_dim_names and extends
-# it to match the number of dims
-dim_names_extend <- function(rray_dim_names, dims) {
-  nms_dims <- length(rray_dim_names)
-
-  if (nms_dims == dims) {
-    rray_dim_names
-  } else if (nms_dims < dims) {
-    c(rray_dim_names, rray_empty_dim_names(dims - nms_dims))
-  } else {
-    abort("Can not decrease dimensions")
-  }
-
+#' @rdname dim-names
+rray_set_col_names <- function(x, names, meta = NULL) {
+  rray_set_axis_names(x, 2L, names)
 }

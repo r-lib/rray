@@ -173,7 +173,7 @@ test_that("subset with character", {
 
 test_that("subset with character fails gracefully", {
   x <- rray(1:8, dim = c(2, 2, 2))
-  x <- set_row_names(x, c("r1", "r2"))
+  x <- rray_set_row_names(x, c("r1", "r2"))
   expect_error(rray_subset(x, "r3"), "non-existing")
 
   expect_error(rray_subset(1, "x"), "unnamed")
@@ -310,7 +310,7 @@ test_that("can't index beyond vector in a yank", {
 
 test_that("names are generally not kept with yank", {
   x <- rray(1:8, dim = c(2, 2, 2))
-  x <- set_row_names(x, c("a", "b"))
+  x <- rray_set_row_names(x, c("a", "b"))
   expect_equal(
     rray_dim_names(rray_yank(x, 1)),
     rray_empty_dim_names(1)
@@ -589,7 +589,7 @@ test_that("extract with character", {
 
 test_that("extract with character fails gracefully", {
   x <- rray(1:8, dim = c(2, 2, 2))
-  x <- set_row_names(x, c("r1", "r2"))
+  x <- rray_set_row_names(x, c("r1", "r2"))
   expect_error(rray_extract(x, "r3"), "non-existing")
 
   expect_error(rray_extract(1, "x"), "unnamed")

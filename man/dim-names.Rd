@@ -4,42 +4,70 @@
 \alias{dim-names}
 \alias{rray_dim_names}
 \alias{rray_dim_names<-}
-\alias{set_dim_names}
-\alias{set_row_names}
-\alias{set_col_names}
-\alias{row_names}
-\alias{col_names}
-\alias{n_dim_names}
+\alias{rray_set_dim_names}
+\alias{rray_axis_names}
+\alias{rray_axis_names<-}
+\alias{rray_set_axis_names}
+\alias{rray_row_names}
+\alias{rray_row_names<-}
+\alias{rray_set_row_names}
+\alias{rray_col_names}
+\alias{rray_col_names<-}
+\alias{rray_set_col_names}
 \title{Dimension names}
 \usage{
 rray_dim_names(x)
 
 rray_dim_names(x) <- value
 
-set_dim_names(x, n, nms)
+rray_set_dim_names(x, dim_names)
 
-set_row_names(x, nms)
+rray_axis_names(x, axis)
 
-set_col_names(x, nms)
+rray_axis_names(x, axis) <- value
 
-row_names(x)
+rray_set_axis_names(x, axis, names, meta = NULL)
 
-col_names(x)
+rray_row_names(x)
 
-n_dim_names(x, n)
+rray_row_names(x) <- value
+
+rray_set_row_names(x, names, meta = NULL)
+
+rray_col_names(x)
+
+rray_col_names(x) <- value
+
+rray_set_col_names(x, names, meta = NULL)
 }
 \arguments{
 \item{x}{The object to extract the dimension names for.}
 
-\item{value}{The new dimension names to use for \code{x}. This is a list of
-either character vectors or \code{NULL}.}
+\item{value}{For \code{rray_dim_names<-()}, a list containing either character
+vectors or \code{NULL} corresponding to the new dimension names
+to use for \code{x}. Otherwise, identical to \code{names}.}
 
-\item{n}{The n-th dimension to use.}
+\item{axis}{A single integer. The axis to select dimension names for.}
 
-\item{nms}{A character vector of new dimension names for the n-th dimension.}
+\item{names}{A character vector of new dimension names
+for the \code{axis} dimension. This is also allowed to be \code{NULL} to remove
+dimension names for the specified axis.}
+
+\item{meta}{An optional "meta" name assigned to the \code{axis} names.}
 }
 \description{
-Extract names of various dimensions.
+This family of functions allows you to get and set dimension names in various
+ways.
+\itemize{
+\item \code{rray_dim_names()} returns a list of the dimension names.
+\item \code{rray_axis_names()} returns a character vector or \code{NULL} containing the
+names corresponding to the \code{axis} dimension.
+\item \code{rray_row_names()} and \code{rray_col_names()} are helpers for getting the
+row and column names respectively.
+\item Each of these four functions also has "set" variants: a functional form
+(i.e. \code{rray_set_row_names()}), and an assignment
+form (i.e. \code{rray_row_names<-()}).
+}
 }
 \details{
 Unlike \code{dimnames()} which can return \code{NULL}, \code{rray_dim_names()} always returns a
@@ -48,37 +76,33 @@ have names, \code{NULL} is returned for that element of the list. This
 results in an object that's length always matches the dimensionality of \code{x}.
 }
 \examples{
-
 x <- rray(1:10, c(5, 2))
-rray_dim_names(x) <- list(letters[1:5], character())
+rray_dim_names(x) <- list(letters[1:5], NULL)
 x
 rray_dim_names(x)
 
-# 1D object, so 1 set of dim names
-rray_dim_names(rray())
-
-# 2D object, so 2 sets of dim names
-rray_dim_names(rray(1, dim = c(1, 1)))
-
-# 3D object, so 3 sets of dim names
+# 3D object, so 3 dim name elements
 rray_dim_names(rray(1, dim = c(1, 1, 1)))
 
-# NULL is technically 1D
-rray_dim_names(NULL)
-
 # Vectors are treated as 1D arrays
-rray_dim_names(1:5)
-
 vec <- c(x = 1, y = 2)
 rray_dim_names(vec)
 
 # You can add dim names more easily
-# using set_dim_names()
+# using rray_set_axis_names()
 # and the pipe operator
 library(magrittr)
-rray(1, c(1, 2, 1)) \%>\%
-  set_dim_names(1, "r1") \%>\%
-  set_dim_names(2, c("c1", "c2")) \%>\%
-  set_dim_names(3, "3rd dim")
+y <- rray(1, c(1, 2, 1)) \%>\%
+  rray_set_axis_names(1, "r1") \%>\%
+  rray_set_axis_names(2, c("c1", "c2")) \%>\%
+  rray_set_axis_names(3, "3rd dim")
+
+y
+
+# You can set also set axis names to `NULL` to reset them
+rray_set_axis_names(y, 2, NULL)
+
+# You can set the "meta" names of an axis as well
+rray_set_axis_names(y, 1, "r1", "row names")
 
 }

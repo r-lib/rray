@@ -46,13 +46,13 @@ test_that("names are carried along when tiling", {
   x <- new_array(1:5, c(5, 1), list(letters[1:5], "c1"))
 
   expect_equal(
-    row_names(rray_tile(x, 2)),
-    rep(row_names(x), 2)
+    rray_row_names(rray_tile(x, 2)),
+    rep(rray_row_names(x), 2)
   )
 
   expect_equal(
-    col_names(rray_tile(x, 2)),
-    col_names(x)
+    rray_col_names(rray_tile(x, 2)),
+    rray_col_names(x)
   )
 
 })

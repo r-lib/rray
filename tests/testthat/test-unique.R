@@ -41,8 +41,8 @@ test_that("can compute uniqueness along columns", {
 test_that("names are retained", {
 
   x <- rray(c(1, 1, 2, 2), c(1, 4))
-  x <- set_row_names(x, c("r1"))
-  x <- set_col_names(x, c("c1", "c2", "c3", "c4"))
+  x <- rray_set_row_names(x, c("r1"))
+  x <- rray_set_col_names(x, c("c1", "c2", "c3", "c4"))
 
   expect_equal(
     rray_unique(x, axis = 2L),
@@ -87,8 +87,8 @@ test_that("`axis` is validated", {
 
 test_that("rray_unique() is correctly defined over higher dimensions", {
   x_dup_rows <- rray(c(1, 1, 3, 3, 2, 2, 4, 4), c(2, 2, 2))
-  x_dup_rows <- set_row_names(x_dup_rows, c("r1", "r2"))
-  x_dup_rows <- set_col_names(x_dup_rows, c("c1", "c2"))
+  x_dup_rows <- rray_set_row_names(x_dup_rows, c("r1", "r2"))
+  x_dup_rows <- rray_set_col_names(x_dup_rows, c("c1", "c2"))
 
   expect_equal(rray_unique(x_dup_rows, 1), x_dup_rows[1,])
   expect_equal(rray_unique(x_dup_rows, 2), x_dup_rows)

@@ -35,8 +35,8 @@ test_that("error on bad expansion", {
 test_that("dimension names kept on expansion", {
 
   x <- rray(1:10, c(5, 2))
-  x <- set_row_names(x, letters[1:5])
-  x <- set_col_names(x, c("c1", "c2"))
+  x <- rray_set_row_names(x, letters[1:5])
+  x <- rray_set_col_names(x, c("c1", "c2"))
 
   expect_equal(
     rray_dim_names(rray_expand_dims(x, 1)),

@@ -19,16 +19,16 @@ test_that("flipping works", {
 test_that("flipping flips dimension names", {
 
   x <- rray(1:10, c(5, 2))
-  x <- set_row_names(x, letters[1:5])
-  x <- set_col_names(x, c("c1", "c2"))
+  x <- rray_set_row_names(x, letters[1:5])
+  x <- rray_set_col_names(x, c("c1", "c2"))
 
   expect_equal(
-    row_names(rray_flip(x, 1)),
+    rray_row_names(rray_flip(x, 1)),
     rev(letters[1:5])
   )
 
   expect_equal(
-    col_names(rray_flip(x, 2)),
+    rray_col_names(rray_flip(x, 2)),
     c("c2", "c1")
   )
 
@@ -37,17 +37,17 @@ test_that("flipping flips dimension names", {
 test_that("can flip base types", {
 
   x <- matrix(1:10, ncol = 2)
-  x <- set_row_names(x, letters[1:5])
-  x <- set_col_names(x, c("c1", "c2"))
+  x <- rray_set_row_names(x, letters[1:5])
+  x <- rray_set_col_names(x, c("c1", "c2"))
 
   y <- array(1:12, c(2, 2, 3))
-  y <- set_dim_names(y, 3, c("d1", "d2", "d3"))
+  y <- rray_set_axis_names(y, 3, c("d1", "d2", "d3"))
 
   expect_is(rray_flip(x, 1), "matrix")
 
   expect_equal(
-    row_names(rray_flip(x, 1)),
-    rev(row_names(x))
+    rray_row_names(rray_flip(x, 1)),
+    rev(rray_row_names(x))
   )
 
   expect_equal(

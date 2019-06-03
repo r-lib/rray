@@ -32,8 +32,8 @@ type as \code{x} giving the location of the first occurence of the value.
 }
 \examples{
 x <- rray(c(1, 1, 2, 2), c(2, 2))
-x <- set_row_names(x, c("r1", "r2"))
-x <- set_col_names(x, c("c1", "c2"))
+x <- rray_set_row_names(x, c("r1", "r2"))
+x <- rray_set_col_names(x, c("c1", "c2"))
 
 # Are there duplicates along the rows?
 rray_duplicate_any(x, 1L)

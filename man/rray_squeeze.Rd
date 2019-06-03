@@ -44,7 +44,7 @@ rray_squeeze(y, axes = 2)
 
 # Dimension names are kept here
 # (10, 1) -> (10)
-x <- set_row_names(x, letters[1:10])
+x <- rray_set_row_names(x, letters[1:10])
 rray_squeeze(x)
 
 # And they are kept here

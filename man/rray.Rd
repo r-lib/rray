@@ -65,6 +65,6 @@ arr <- array(1, c(1, 2, 2))
 rray(arr, c(3, 2, 2))
 
 # with row names
-rray(c(1, 2, 3), c(3, 2), dim_names = list(c("x", "y", "z"), character()))
+rray(c(1, 2, 3), c(3, 2), dim_names = list(c("x", "y", "z"), NULL))
 
 }

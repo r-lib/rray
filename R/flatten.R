@@ -25,7 +25,7 @@
 #'
 #' # Dimension names are kept here
 #' # (2) -> (2)
-#' y <- rray(1:2) %>% set_dim_names(1, letters[1:2])
+#' y <- rray(1:2) %>% rray_set_axis_names(1, letters[1:2])
 #' rray_flatten(y)
 #'
 #' # And they are kept here

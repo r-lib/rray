@@ -41,7 +41,7 @@ test_that("dimension names are kept", {
   )
 
   expect_equal(
-    map(rray_split(x, 1L), row_names),
+    map(rray_split(x, 1L), rray_row_names),
     list("r1", "r2")
   )
 

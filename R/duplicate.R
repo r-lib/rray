@@ -27,8 +27,8 @@
 #'
 #' @examples
 #' x <- rray(c(1, 1, 2, 2), c(2, 2))
-#' x <- set_row_names(x, c("r1", "r2"))
-#' x <- set_col_names(x, c("c1", "c2"))
+#' x <- rray_set_row_names(x, c("r1", "r2"))
+#' x <- rray_set_col_names(x, c("c1", "c2"))
 #'
 #' # Are there duplicates along the rows?
 #' rray_duplicate_any(x, 1L)
@@ -80,7 +80,7 @@ rray_duplicate_any <- function(x, axes = NULL) {
   res <- keep_dims(flat_res, x, axes)
 
   new_dim_names <- rray_reshape_dim_names(rray_dim_names(x), vec_dim(res))
-  res <- set_full_dim_names(res, new_dim_names)
+  res <- rray_set_dim_names(res, new_dim_names)
 
   vec_cast_container(res, x)
 }
@@ -99,7 +99,7 @@ rray_duplicate_detect <- function(x, axes = NULL) {
 
   res <- restore_shape(res_flat, vec_dim(x), axes)
 
-  res <- set_full_dim_names(res, rray_dim_names(x))
+  res <- rray_set_dim_names(res, rray_dim_names(x))
 
   vec_cast_container(res, x)
 }
@@ -118,7 +118,7 @@ rray_duplicate_id <- function(x, axes = NULL) {
 
   res <- restore_shape(res_flat, vec_dim(x), axes)
 
-  res <- set_full_dim_names(res, rray_dim_names(x))
+  res <- rray_set_dim_names(res, rray_dim_names(x))
 
   vec_cast_container(res, x)
 }
