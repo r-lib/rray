@@ -1,12 +1,12 @@
 # ------------------------------------------------------------------------------
 context("test-xtfrm")
 
-test_that("xtfrm() returns proxy objects", {
+test_that("xtfrm() returns order as a vector", {
   x <- rray(1:2, c(2, 1))
-  expect_equal(xtfrm(x), vec_data(x))
+  expect_identical(xtfrm(x), new_matrix(1:2))
 
   x <- rray(c(1, 2), c(2, 1))
-  expect_equal(xtfrm(x), vec_data(x))
+  expect_identical(xtfrm(x), new_matrix(c(1, 2)))
 })
 
 test_that("xtfrm() works for 3D", {
@@ -16,7 +16,7 @@ test_that("xtfrm() works for 3D", {
 
 test_that("xtfrm() for logicals returns integers", {
   x <- rray(c(TRUE, FALSE), c(2, 1))
-  expect_equal(xtfrm(x), new_matrix(c(1, 0), c(2, 1)))
+  expect_equal(xtfrm(x), new_matrix(c(1L, 0L)))
 })
 
 # ------------------------------------------------------------------------------
@@ -47,12 +47,12 @@ test_that("vctrs `min()` ignores input in `...`", {
   expect_equal(min(rray(2), 1), rray(2))
 })
 
-# TODO - Add tests after this is fixed
-# https://github.com/r-lib/vctrs/pull/329
-
-# test_that("NAs are removed", {
-#   min(rray(c(NA, 2)), na.rm = TRUE)
-# })
+test_that("NAs are removed", {
+  expect_equal(
+    min(rray(c(NA, 2)), na.rm = TRUE),
+    rray(2)
+  )
+})
 
 # ------------------------------------------------------------------------------
 context("test-max")
@@ -82,12 +82,12 @@ test_that("vctrs `max()` ignores input in `...`", {
   expect_equal(max(rray(2), 1), rray(2))
 })
 
-# TODO - Add tests after this is fixed
-# https://github.com/r-lib/vctrs/pull/329
-
-# test_that("NAs are removed", {
-#   max(rray(c(NA, 2)), na.rm = TRUE)
-# })
+test_that("NAs are removed", {
+  expect_equal(
+    max(rray(c(NA, 2)), na.rm = TRUE),
+    rray(2)
+  )
+})
 
 # ------------------------------------------------------------------------------
 context("test-base-any")

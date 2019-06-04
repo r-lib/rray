@@ -6,23 +6,44 @@
 
 # All of them dispatch on the first argument, as described in `?Summary`
 
+# Also included is xtfrm()
+
 # ------------------------------------------------------------------------------
 
-# - vctrs:::min.vctrs_vctr() does the right thing because of `xtfrm.vctrs_vctr()`
-# - vctrs:::max.vctrs_vctr() does the right thing because of `xtfrm.vctrs_vctr()`
+# xtfrm.vctrs_vctr() calls vec_proxy_compare(), which (as of 2019-06-04)
+# converts arrays to data frames, varying the first axis fastest. This makes
+# sense for the `vec_order()` functions, but results in bad behavior for
+# arrays because we want a global xtfrm, not a rowwise one. Because
+# min.vctrs_vctr uses xtfrm, this behavior leaks into these functions as well.
 
-# However, vctrs only automatically implements `xtfrm()` for integer and double
-# arrays, so logical ones need special treatment. Because of this, just
-# implement a simple xtfrm() method that calls `vec_proxy_compare()` like vctrs
+# So, for example, it will return 2 to indicate that the second row is the
+# "min" row and then min.vctrs_vctr would just return the first value in the
+# second row. This is definitely not the right behavior, as we want the
+# global minimum of the array
+
+# We do borrow from vctrs a bit and ignore the `...`
+# but otherwise we fallback to the base R method and then return an rray
+
+#' @export
+min.vctrs_rray <- function(x, ..., na.rm = FALSE) {
+  out <- min(vec_data(x), na.rm = na.rm)
+  new_rray(out, size = 1L)
+}
+
+#' @export
+max.vctrs_rray <- function(x, ..., na.rm = FALSE) {
+  out <- max(vec_data(x), na.rm = na.rm)
+  new_rray(out, size = 1L)
+}
 
 #' @export
 xtfrm.vctrs_rray <- function(x) {
-  vec_proxy_compare(x)
+  vec_data(x)
 }
 
 #' @export
 xtfrm.vctrs_rray_lgl <- function(x) {
-  vec_cast_inner(vec_proxy_compare(x), integer())
+  vec_cast_inner(vec_data(x), integer())
 }
 
 # ------------------------------------------------------------------------------
