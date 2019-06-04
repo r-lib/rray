@@ -167,16 +167,16 @@ is the same as the size of the dimension, use them.</p></li>
 #&gt; <span class='message'>    equals, is_less_than, not</span></div><div class='input'>
 <span class='co'># 1x2 - Row names but no column names</span>
 <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>, <span class='kw'>dim</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>)) <span class='kw'>%&gt;%</span>
-  <span class='fu'><a href='dim-names.html'>set_row_names</a></span>(<span class='st'>"r_from_x"</span>)
+  <span class='fu'><a href='dim-names.html'>rray_set_row_names</a></span>(<span class='st'>"r_from_x"</span>)
 
 <span class='co'># 1x1 - Row names and column names</span>
 <span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>, <span class='kw'>dim</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>1</span>)) <span class='kw'>%&gt;%</span>
-  <span class='fu'><a href='dim-names.html'>set_col_names</a></span>(<span class='st'>"c_from_y"</span>) <span class='kw'>%&gt;%</span>
-  <span class='fu'><a href='dim-names.html'>set_row_names</a></span>(<span class='st'>"r_from_y"</span>)
+  <span class='fu'><a href='dim-names.html'>rray_set_col_names</a></span>(<span class='st'>"c_from_y"</span>) <span class='kw'>%&gt;%</span>
+  <span class='fu'><a href='dim-names.html'>rray_set_row_names</a></span>(<span class='st'>"r_from_y"</span>)
 
 <span class='co'># 1x1 - Row names but no column names</span>
 <span class='no'>z</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>1</span>)) <span class='kw'>%&gt;%</span>
-  <span class='fu'><a href='dim-names.html'>set_row_names</a></span>(<span class='st'>"r_from_z"</span>)
+  <span class='fu'><a href='dim-names.html'>rray_set_row_names</a></span>(<span class='st'>"r_from_z"</span>)
 
 <span class='co'># Combining y and z</span>
 <span class='co'># y has names for both dimensions</span>

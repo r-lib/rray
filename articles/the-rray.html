@@ -300,7 +300,7 @@
 <a class="sourceLine" id="cb12-13" data-line-number="13"><span class="co">#&gt; r1  2</span></a>
 <a class="sourceLine" id="cb12-14" data-line-number="14"><span class="co">#&gt; r2  4</span></a></code></pre></div>
 <p>This isn’t to say that the order doesn’t matter. If both inputs have row names, for example, the row names of the result come from the first input.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">x_col_row_nms_rray &lt;-<span class="st"> </span><span class="kw"><a href="../reference/dim-names.html">set_row_names</a></span>(x_col_nms_rray, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"row1"</span>, <span class="st">"row2"</span>))</a>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">x_col_row_nms_rray &lt;-<span class="st"> </span><span class="kw"><a href="../reference/dim-names.html">rray_set_row_names</a></span>(x_col_nms_rray, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"row1"</span>, <span class="st">"row2"</span>))</a>
 <a class="sourceLine" id="cb13-2" data-line-number="2">x_col_row_nms_rray</a>
 <a class="sourceLine" id="cb13-3" data-line-number="3"><span class="co">#&gt; &lt;rray&lt;int&gt;[,1][2]&gt;</span></a>
 <a class="sourceLine" id="cb13-4" data-line-number="4"><span class="co">#&gt;      c1</span></a>

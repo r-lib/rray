@@ -161,7 +161,7 @@ except for the first one.</p>
 #&gt;  [1]  1  2  3  4  5  6  7  8  9 10</div><div class='input'>
 <span class='co'># Dimension names are kept here</span>
 <span class='co'># (2) -&gt; (2)</span>
-<span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>2</span>) <span class='kw'>%&gt;%</span> <span class='fu'><a href='dim-names.html'>set_dim_names</a></span>(<span class='fl'>1</span>, <span class='no'>letters</span>[<span class='fl'>1</span>:<span class='fl'>2</span>])
+<span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>2</span>) <span class='kw'>%&gt;%</span> <span class='fu'><a href='dim-names.html'>rray_set_axis_names</a></span>(<span class='fl'>1</span>, <span class='no'>letters</span>[<span class='fl'>1</span>:<span class='fl'>2</span>])
 <span class='fu'>rray_flatten</span>(<span class='no'>y</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[2]&gt;
 #&gt; a b 
 #&gt; 1 2 </div><div class='input'>

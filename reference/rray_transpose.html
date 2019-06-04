@@ -33,7 +33,7 @@
 <meta property="og:title" content="Transpose an array — rray_transpose" />
 
 <meta property="og:description" content="rray_transpose() transposes x along axes defined by permutation. By
-default, a standard tranpose is performed, which is equivalent to
+default, a standard transpose is performed, which is equivalent to
 permuting along the reversed dimensions of x." />
 <meta name="twitter:card" content="summary" />
 
@@ -127,7 +127,7 @@ permuting along the reversed dimensions of x." />
     <div class="ref-description">
     
     <p><code>rray_transpose()</code> transposes <code>x</code> along axes defined by <code>permutation</code>. By
-default, a standard tranpose is performed, which is equivalent to
+default, a standard transpose is performed, which is equivalent to
 permuting along the reversed dimensions of <code>x</code>.</p>
     
     </div>
@@ -157,8 +157,8 @@ used, which is the normal transpose.</p></td>
     <p>Unlike <code><a href='https://www.rdocumentation.org/packages/base/topics/t'>t()</a></code>, using <code>rray_transpose()</code> on a vector does not transpose it,
 as it is a 1D object, and the consistent result of transposing a
 1D object is itself.</p>
-<p><code>t.vctrs_rray()</code> is powered by <code>rray_transpose()</code>, which means that it also
-has this property if you use <code>t(&lt;rray&gt;)</code> with a 1D rray.</p>
+<p><code>t.vctrs_rray()</code> uses the base R's <code><a href='https://www.rdocumentation.org/packages/base/topics/t'>t()</a></code> behavior to be consistent with
+user expectations about transposing 1D objects.</p>
 <p>There is an <code><a href='https://www.rdocumentation.org/packages/base/topics/aperm'>aperm()</a></code> method for <code>rray</code> objects as well. Unlike base R,
 it currently does not accept character strings for <code>perm</code>.</p>
     
@@ -237,11 +237,11 @@ it currently does not accept character strings for <code>perm</code>.</p>
 #&gt; [1,]    1    2    3    4    5</div><div class='input'>
 <span class='co'># Leaves it as a 1D array and does nothing</span>
 <span class='fu'>rray_transpose</span>(<span class='fl'>1</span>:<span class='fl'>5</span>)</div><div class='output co'>#&gt; [1] 1 2 3 4 5</div><div class='input'>
-<span class='co'># rray_transpose() powers t.vctrs_rray()</span>
-<span class='co'># so you get the same behavior when you</span>
-<span class='co'># pass t() an rray</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/t'>t</a></span>(<span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>5</span>))</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[5]&gt;
-#&gt; [1] 1 2 3 4 5</div><div class='input'>
+<span class='co'># t.vctrs_rray() has the same behavior</span>
+<span class='co'># as base R</span>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/t'>t</a></span>(<span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>5</span>))</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,5][5]&gt;
+#&gt;      [,1] [,2] [,3] [,4] [,5]
+#&gt; [1,]    1    2    3    4    5</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

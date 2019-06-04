@@ -236,7 +236,7 @@ and <code>axis</code>. It will be cast to the type and dimension of the slice of
 #&gt; [2,]   14   16
 #&gt; </div><div class='input'>
 <span class='co'># `i` can be a character vector if `x` has names along `axis`</span>
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dim-names.html'>set_dim_names</a></span>(<span class='no'>x</span>, <span class='kw'>n</span> <span class='kw'>=</span> <span class='fl'>4</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"foo"</span>, <span class='st'>"bar"</span>))
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dim-names.html'>rray_set_axis_names</a></span>(<span class='no'>x</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='fl'>4</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"foo"</span>, <span class='st'>"bar"</span>))
 <span class='fu'>rray_slice</span>(<span class='no'>x</span>, <span class='st'>"bar"</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='fl'>4</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2,1][8]&gt;
 #&gt; , , 1, bar
 #&gt; 
