@@ -19,6 +19,7 @@
 rray_subset_assign <- function(x, ..., value) {
   indexer <- rray_as_index2(x, ...)
 
+  vec_assert(value, arg = "value")
   value <- vec_cast_inner(value, x)
 
   # TODO

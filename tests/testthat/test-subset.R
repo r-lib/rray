@@ -255,6 +255,12 @@ test_that("subset assign keeps names", {
   expect_equal(rray_dim_names(x), nms)
 })
 
+test_that("subset assigning a non-vector is an error", {
+  x <- array(1:5)
+  expect_error(rray_subset(x, 1) <- NULL, class = "vctrs_error_scalar_type")
+  expect_error(rray_subset(x, 1) <- environment(), class = "vctrs_error_scalar_type")
+})
+
 # ------------------------------------------------------------------------------
 # slice
 
@@ -435,6 +441,12 @@ test_that("can yank assign with base R objects", {
   x <- matrix(1:8, nrow = 2)
   rray_yank(x, 1:4) <- 4:1
   expect_equal(as.vector(x)[1:4], 4:1)
+})
+
+test_that("yank assigning a non-vector is an error", {
+  x <- array(1:5)
+  expect_error(rray_yank(x, 1) <- NULL, class = "vctrs_error_scalar_type")
+  expect_error(rray_yank(x, 1) <- environment(), class = "vctrs_error_scalar_type")
 })
 
 # ------------------------------------------------------------------------------
@@ -646,6 +658,12 @@ test_that("can extract assign with base R objects", {
   expect_equal(as.vector(rray_subset(x, 1)), 4:1)
 })
 
+test_that("extract assigning a non-vector is an error", {
+  x <- array(1:5)
+  expect_error(rray_extract(x, 1) <- NULL, class = "vctrs_error_scalar_type")
+  expect_error(rray_yank(x, 1) <- environment(), class = "vctrs_error_scalar_type")
+})
+
 # ------------------------------------------------------------------------------
 # `[[`
 
@@ -723,5 +741,7 @@ test_that("trailing dots are not ignored in `[[<-`", {
 
 test_that("assigning NULL in `[[<-` is an error", {
   x <- rray(1:8, dim = c(2, 2, 2))
-  expect_error(x[[1]] <- NULL, "replacement has length zero")
+  expect_error(x[[1]] <- NULL, class = "vctrs_error_scalar_type")
 })
+
+

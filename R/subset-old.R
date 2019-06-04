@@ -202,6 +202,8 @@ rray_yank_impl <- function(x, i) {
 rray_yank_assign_impl <- function(x, i, value) {
   i <- maybe_missing(i, TRUE)
 
+  vec_assert(value, arg = "value")
+
   x_yank <- rray_yank_impl(x, i)
   value <- vec_cast(value, x_yank)
   value <- rray_broadcast(value, rray_dim(x_yank))
@@ -276,6 +278,8 @@ rray_extract_impl <- function(x, ...) {
 }
 
 rray_extract_assign_impl <- function(x, ..., value) {
+  vec_assert(value, arg = "value")
+
   x_extract <- rray_extract_impl(x, ...)
   value <- vec_cast(value, x_extract)
   value <- rray_broadcast(value, rray_dim(x_extract))
