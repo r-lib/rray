@@ -36,7 +36,8 @@
 #' vectors or `NULL` corresponding to the new dimension names
 #' to use for `x`. Otherwise, identical to `names`.
 #'
-#' @param meta An optional "meta" name assigned to the `axis` names.
+#' @param meta A single character representing an optional "meta" name
+#' assigned to the `axis` names. If `NULL`, the current meta name is kept.
 #'
 #' @name dim-names
 #'

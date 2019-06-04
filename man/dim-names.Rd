@@ -53,7 +53,8 @@ to use for \code{x}. Otherwise, identical to \code{names}.}
 for the \code{axis} dimension. This is also allowed to be \code{NULL} to remove
 dimension names for the specified axis.}
 
-\item{meta}{An optional "meta" name assigned to the \code{axis} names.}
+\item{meta}{A single character representing an optional "meta" name
+assigned to the \code{axis} names. If \code{NULL}, the current meta name is kept.}
 }
 \description{
 This family of functions allows you to get and set dimension names in various
