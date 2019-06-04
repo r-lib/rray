@@ -64,31 +64,3 @@ test_that("sorting drops the names along the axis", {
     list(r = NULL, c = NULL)
   )
 })
-
-# ------------------------------------------------------------------------------
-context("test-vec-order-compat")
-
-library(vctrs)
-
-# (flattens to 2D using as.data.frame(), then checks order rowwise)
-
-test_that("can vec_order() with rrays", {
-  x <- rray(1:8, c(2, 2, 2))
-  x_df <- as.data.frame(x)
-  expect_equal(vec_order(x), vec_order(x_df))
-  expect_equal(vec_order(x, direction = "desc"), vec_order(x_df, direction = "desc"))
-})
-
-# ------------------------------------------------------------------------------
-context("test-vec-sort-compat")
-
-library(vctrs)
-
-# (sorts entire rows together, even across dimensions.
-# different from rray_sort()!)
-
-test_that("can vec_sort() with rrays", {
-  x <- rray(8:1, c(2, 2, 2))
-  expect_equal(vec_sort(x), x[c(2, 1)])
-  expect_equal(vec_sort(x, direction = "desc"), x)
-})
