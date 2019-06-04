@@ -47,6 +47,10 @@ rray_set_col_names(x, names, meta = NULL)
 vectors or \code{NULL} corresponding to the new dimension names
 to use for \code{x}. Otherwise, identical to \code{names}.}
 
+\item{dim_names}{A list of either character vectors or \code{NULL} representing
+the new dim names of \code{x}. If \code{NULL} is supplied, the dim names of \code{x} are
+removed.}
+
 \item{axis}{A single integer. The axis to select dimension names for.}
 
 \item{names}{A character vector of new dimension names

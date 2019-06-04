@@ -26,6 +26,10 @@
 #'
 #' @param x The object to extract the dimension names for.
 #'
+#' @param dim_names A list of either character vectors or `NULL` representing
+#' the new dim names of `x`. If `NULL` is supplied, the dim names of `x` are
+#' removed.
+#'
 #' @param axis A single integer. The axis to select dimension names for.
 #'
 #' @param names A character vector of new dimension names
