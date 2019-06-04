@@ -1,7 +1,7 @@
 #' Transpose an array
 #'
 #' `rray_transpose()` transposes `x` along axes defined by `permutation`. By
-#' default, a standard tranpose is performed, which is equivalent to
+#' default, a standard transpose is performed, which is equivalent to
 #' permuting along the reversed dimensions of `x`.
 #'
 #' @param x A vector, matrix, array, or rray.

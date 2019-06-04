@@ -18,7 +18,7 @@ used, which is the normal transpose.}
 }
 \description{
 \code{rray_transpose()} transposes \code{x} along axes defined by \code{permutation}. By
-default, a standard tranpose is performed, which is equivalent to
+default, a standard transpose is performed, which is equivalent to
 permuting along the reversed dimensions of \code{x}.
 }
 \details{

@@ -1,4 +1,4 @@
-context("test-tranpose")
+context("test-transpose")
 
 test_that("can transpose a base R matrix with names", {
 
