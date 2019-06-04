@@ -26,8 +26,8 @@ Unlike \code{t()}, using \code{rray_transpose()} on a vector does not transpose 
 as it is a 1D object, and the consistent result of transposing a
 1D object is itself.
 
-\code{t.vctrs_rray()} is powered by \code{rray_transpose()}, which means that it also
-has this property if you use \code{t(<rray>)} with a 1D rray.
+\code{t.vctrs_rray()} uses the base R's \code{t()} behavior to be consistent with
+user expectations about transposing 1D objects.
 
 There is an \code{aperm()} method for \code{rray} objects as well. Unlike base R,
 it currently does not accept character strings for \code{perm}.
@@ -68,9 +68,8 @@ t(1:5)
 # Leaves it as a 1D array and does nothing
 rray_transpose(1:5)
 
-# rray_transpose() powers t.vctrs_rray()
-# so you get the same behavior when you
-# pass t() an rray
+# t.vctrs_rray() has the same behavior
+# as base R
 t(rray(1:5))
 
 }

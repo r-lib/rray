@@ -28,12 +28,12 @@ test_that("transposing a 1D array does nothing", {
   )
 })
 
-test_that("t() method for rray objects", {
+test_that("t() method for rray objects follows base behavior", {
 
   x <- rray(1:5)
 
   expect_equal(
-    rray_transpose(x),
+    rray(1:5, c(1, 5)),
     t(x)
   )
 

@@ -16,8 +16,8 @@
 #' as it is a 1D object, and the consistent result of transposing a
 #' 1D object is itself.
 #'
-#' `t.vctrs_rray()` is powered by `rray_transpose()`, which means that it also
-#' has this property if you use `t(<rray>)` with a 1D rray.
+#' `t.vctrs_rray()` uses the base R's `t()` behavior to be consistent with
+#' user expectations about transposing 1D objects.
 #'
 #' There is an `aperm()` method for `rray` objects as well. Unlike base R,
 #' it currently does not accept character strings for `perm`.
@@ -58,9 +58,8 @@
 #' # Leaves it as a 1D array and does nothing
 #' rray_transpose(1:5)
 #'
-#' # rray_transpose() powers t.vctrs_rray()
-#' # so you get the same behavior when you
-#' # pass t() an rray
+#' # t.vctrs_rray() has the same behavior
+#' # as base R
 #' t(rray(1:5))
 #'
 #' @export
@@ -86,7 +85,18 @@ t.vctrs_rray <- function(x) {
     )
   }
 
-  rray_transpose(x)
+  # Fallback to base R t() to be consistent with the
+  # t(<1Dvector>) -> <2Dmatrix> behavior
+  out <- t(vec_data(x))
+
+  dim <- vec_dim(out)
+
+  new_rray(
+    out,
+    size = dim[1],
+    shape = dim[-1],
+    dim_names = rray_dim_names(out)
+  )
 }
 
 #' @export
