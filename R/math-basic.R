@@ -243,19 +243,13 @@ rray_multiply_add <- function(x, y, z) {
 #' @family math functions
 #' @export
 rray_clip <- function(x, low, high) {
+
+  vec_assert(low, size = 1L, arg = "low")
+  vec_assert(high, size = 1L, arg = "high")
+
   inner <- vec_type_inner(x)
   low <- vec_cast_inner(low, inner)
   high <- vec_cast_inner(high, inner)
-
-  n_low <- vec_size(low)
-  if (n_low != 1L) {
-    glubort("`low` must have size 1, not {n_low}.")
-  }
-
-  n_high <- vec_size(high)
-  if (n_high != 1L) {
-    glubort("`high` must have size 1, not {n_high}.")
-  }
 
   if (low > high) {
     glubort("`low` must be less than or equal to `high`.")

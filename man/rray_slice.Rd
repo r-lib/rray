@@ -53,7 +53,7 @@ rray_slice(x, i = 2, axis = 4)
 x[, , , 2]
 
 # `i` can be a character vector if `x` has names along `axis`
-x <- set_dim_names(x, n = 4, c("foo", "bar"))
+x <- rray_set_axis_names(x, axis = 4, c("foo", "bar"))
 rray_slice(x, "bar", axis = 4)
 
 # The assignment variation can be useful

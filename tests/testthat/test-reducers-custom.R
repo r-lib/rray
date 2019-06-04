@@ -18,16 +18,16 @@
 #
 # test_that("Dimension names are kept", {
 #
-#   yy <- set_col_names(y, c("c1", "c2"))
-#   yy <- set_row_names(yy, letters[1:2])
+#   yy <- rray_set_col_names(y, c("c1", "c2"))
+#   yy <- rray_set_row_names(yy, letters[1:2])
 #
 #   expect_equal(
-#     col_names(rray_reduce_int(yy, ~.x + .y)),
+#     rray_col_names(rray_reduce_int(yy, ~.x + .y)),
 #     c("c1", "c2")
 #   )
 #
 #   expect_equal(
-#     row_names(rray_reduce_int(yy, ~.x + .y, axes = 2)),
+#     rray_row_names(rray_reduce_int(yy, ~.x + .y, axes = 2)),
 #     letters[1:2]
 #   )
 #

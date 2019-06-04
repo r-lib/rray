@@ -126,7 +126,7 @@ test_that("using base coercing functions", {
   expect_equal(dim(x_lgl), NULL)
 
   # names are not kept
-  x_nm <- set_row_names(x, "foo")
+  x_nm <- rray_set_row_names(x, "foo")
   expect_equal(rray_dim_names(as.double(x_nm)), rray_empty_dim_names(1))
 })
 

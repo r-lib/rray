@@ -81,7 +81,7 @@ test_that("dimension names are kept", {
   y <- rray(1, c(1, 1), dim_names = list(NULL, c("y_c1")))
 
   expect_equal(rray_dim_names(x + y), rray_dim_names(x))
-  expect_equal(rray_dim_names(y + x), list(row_names(x), col_names(y)))
+  expect_equal(rray_dim_names(y + x), list(rray_row_names(x), rray_col_names(y)))
 })
 
 test_that("shortcut operator works", {
@@ -177,7 +177,7 @@ test_that("dimension names are kept", {
   y <- rray(1, c(1, 1), dim_names = list(NULL, c("y_c1")))
 
   expect_equal(rray_dim_names(x - y), rray_dim_names(x))
-  expect_equal(rray_dim_names(y - x), list(row_names(x), col_names(y)))
+  expect_equal(rray_dim_names(y - x), list(rray_row_names(x), rray_col_names(y)))
 })
 
 test_that("shortcut operator works", {
@@ -271,7 +271,7 @@ test_that("dimension names are kept", {
   y <- rray(1, c(1, 1), dim_names = list(NULL, c("y_c1")))
 
   expect_equal(rray_dim_names(x / y), rray_dim_names(x))
-  expect_equal(rray_dim_names(y / x), list(row_names(x), col_names(y)))
+  expect_equal(rray_dim_names(y / x), list(rray_row_names(x), rray_col_names(y)))
 })
 
 test_that("shortcut operator works", {
@@ -370,7 +370,7 @@ test_that("dimension names are kept", {
   y <- rray(1, c(1, 1), dim_names = list(NULL, c("y_c1")))
 
   expect_equal(rray_dim_names(x * y), rray_dim_names(x))
-  expect_equal(rray_dim_names(y * x), list(row_names(x), col_names(y)))
+  expect_equal(rray_dim_names(y * x), list(rray_row_names(x), rray_col_names(y)))
 })
 
 test_that("shortcut operator works", {
@@ -459,7 +459,7 @@ test_that("dimension names are kept", {
   y <- rray(1, c(1, 1), dim_names = list(NULL, c("y_c1")))
 
   expect_equal(rray_dim_names(x ^ y), rray_dim_names(x))
-  expect_equal(rray_dim_names(y ^ x), list(row_names(x), col_names(y)))
+  expect_equal(rray_dim_names(y ^ x), list(rray_row_names(x), rray_col_names(y)))
 })
 
 test_that("shortcut operator works", {

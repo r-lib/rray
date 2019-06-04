@@ -30,11 +30,11 @@ test_that("Dimensions are not dropped (by default)", {
 
 test_that("Dimension names are kept", {
 
-  yy <- set_col_names(y, c("c1", "c2"))
-  yy <- set_row_names(yy, letters[1:5])
+  yy <- rray_set_col_names(y, c("c1", "c2"))
+  yy <- rray_set_row_names(yy, letters[1:5])
 
-  expect_equal(col_names(rray_sum(yy, 1)), c("c1", "c2"))
-  expect_equal(row_names(rray_sum(yy, 2)), letters[1:5])
+  expect_equal(rray_col_names(rray_sum(yy, 1)), c("c1", "c2"))
+  expect_equal(rray_row_names(rray_sum(yy, 2)), letters[1:5])
 })
 
 test_that("Can reduce over multiple axes", {
@@ -62,7 +62,7 @@ test_that("reducing base types maintains type", {
   x_int <- vec_data(x)
 
   x_mat <- as.matrix(x)
-  x_mat_cnames <- set_col_names(x_mat, "x")
+  x_mat_cnames <- rray_set_col_names(x_mat, "x")
 
   x_arr <- as.array(x)
 
@@ -71,8 +71,8 @@ test_that("reducing base types maintains type", {
 
   expect_equal(vec_dim(rray_sum(x_mat, 1)), c(1, 1))
 
-  expect_equal(col_names(rray_sum(x_mat_cnames, 1)), "x")
-  expect_equal(col_names(rray_sum(x_mat_cnames, 2)), "x")
+  expect_equal(rray_col_names(rray_sum(x_mat_cnames, 1)), "x")
+  expect_equal(rray_col_names(rray_sum(x_mat_cnames, 2)), "x")
 })
 
 test_that("rray_sum() with integers gives doubles to prevent overflow", {
@@ -135,11 +135,11 @@ test_that("Dimensions are not dropped (by default)", {
 
 test_that("Dimension names are kept", {
 
-  yy <- set_col_names(y, c("c1", "c2"))
-  yy <- set_row_names(yy, letters[1:5])
+  yy <- rray_set_col_names(y, c("c1", "c2"))
+  yy <- rray_set_row_names(yy, letters[1:5])
 
-  expect_equal(col_names(rray_prod(yy, 1)), c("c1", "c2"))
-  expect_equal(row_names(rray_prod(yy, 2)), letters[1:5])
+  expect_equal(rray_col_names(rray_prod(yy, 1)), c("c1", "c2"))
+  expect_equal(rray_row_names(rray_prod(yy, 2)), letters[1:5])
 })
 
 test_that("Can reduce over multiple axes", {
@@ -167,7 +167,7 @@ test_that("reducing base types maintains type", {
   x_int <- vec_data(x)
 
   x_mat <- as.matrix(x)
-  x_mat_cnames <- set_col_names(x_mat, "x")
+  x_mat_cnames <- rray_set_col_names(x_mat, "x")
 
   x_arr <- as.array(x)
 
@@ -176,8 +176,8 @@ test_that("reducing base types maintains type", {
 
   expect_equal(vec_dim(rray_prod(x_mat, 1)), c(1, 1))
 
-  expect_equal(col_names(rray_prod(x_mat_cnames, 1)), "x")
-  expect_equal(col_names(rray_prod(x_mat_cnames, 2)), "x")
+  expect_equal(rray_col_names(rray_prod(x_mat_cnames, 1)), "x")
+  expect_equal(rray_col_names(rray_prod(x_mat_cnames, 2)), "x")
 })
 
 test_that("rray_prod() with integers gives doubles to prevent overflow", {
@@ -240,11 +240,11 @@ test_that("Dimensions are not dropped (by default)", {
 
 test_that("Dimension names are kept", {
 
-  yy <- set_col_names(y, c("c1", "c2"))
-  yy <- set_row_names(yy, letters[1:5])
+  yy <- rray_set_col_names(y, c("c1", "c2"))
+  yy <- rray_set_row_names(yy, letters[1:5])
 
-  expect_equal(col_names(rray_mean(yy, 1)), c("c1", "c2"))
-  expect_equal(row_names(rray_mean(yy, 2)), letters[1:5])
+  expect_equal(rray_col_names(rray_mean(yy, 1)), c("c1", "c2"))
+  expect_equal(rray_row_names(rray_mean(yy, 2)), letters[1:5])
 })
 
 test_that("Can reduce over multiple axes", {
@@ -272,7 +272,7 @@ test_that("reducing base types maintains type", {
   x_int <- vec_data(x)
 
   x_mat <- as.matrix(x)
-  x_mat_cnames <- set_col_names(x_mat, "x")
+  x_mat_cnames <- rray_set_col_names(x_mat, "x")
 
   x_arr <- as.array(x)
 
@@ -281,8 +281,8 @@ test_that("reducing base types maintains type", {
 
   expect_equal(vec_dim(rray_mean(x_mat, 1)), c(1, 1))
 
-  expect_equal(col_names(rray_mean(x_mat_cnames, 1)), "x")
-  expect_equal(col_names(rray_mean(x_mat_cnames, 2)), "x")
+  expect_equal(rray_col_names(rray_mean(x_mat_cnames, 1)), "x")
+  expect_equal(rray_col_names(rray_mean(x_mat_cnames, 2)), "x")
 })
 
 test_that("rray_mean() with integers gives doubles to prevent overflow", {
@@ -345,11 +345,11 @@ test_that("Dimensions are not dropped (by default)", {
 
 test_that("Dimension names are kept", {
 
-  yy <- set_col_names(y, c("c1", "c2"))
-  yy <- set_row_names(yy, letters[1:5])
+  yy <- rray_set_col_names(y, c("c1", "c2"))
+  yy <- rray_set_row_names(yy, letters[1:5])
 
-  expect_equal(col_names(rray_max(yy, 1)), c("c1", "c2"))
-  expect_equal(row_names(rray_max(yy, 2)), letters[1:5])
+  expect_equal(rray_col_names(rray_max(yy, 1)), c("c1", "c2"))
+  expect_equal(rray_row_names(rray_max(yy, 2)), letters[1:5])
 })
 
 test_that("Can reduce over multiple axes", {
@@ -377,7 +377,7 @@ test_that("reducing base types maintains type", {
   x_int <- vec_data(x)
 
   x_mat <- as.matrix(x)
-  x_mat_cnames <- set_col_names(x_mat, "x")
+  x_mat_cnames <- rray_set_col_names(x_mat, "x")
 
   x_arr <- as.array(x)
 
@@ -387,8 +387,8 @@ test_that("reducing base types maintains type", {
 
   expect_equal(vec_dim(rray_max(x_mat, 1)), c(1, 1))
 
-  expect_equal(col_names(rray_max(x_mat_cnames, 1)), "x")
-  expect_equal(col_names(rray_max(x_mat_cnames, 2)), "x")
+  expect_equal(rray_col_names(rray_max(x_mat_cnames, 1)), "x")
+  expect_equal(rray_col_names(rray_max(x_mat_cnames, 2)), "x")
 })
 
 test_that("can reduce over multiple axes if one is length 0", {
@@ -444,11 +444,11 @@ test_that("Dimensions are not dropped (by default)", {
 
 test_that("Dimension names are kept", {
 
-  yy <- set_col_names(y, c("c1", "c2"))
-  yy <- set_row_names(yy, letters[1:5])
+  yy <- rray_set_col_names(y, c("c1", "c2"))
+  yy <- rray_set_row_names(yy, letters[1:5])
 
-  expect_equal(col_names(rray_min(yy, 1)), c("c1", "c2"))
-  expect_equal(row_names(rray_min(yy, 2)), letters[1:5])
+  expect_equal(rray_col_names(rray_min(yy, 1)), c("c1", "c2"))
+  expect_equal(rray_row_names(rray_min(yy, 2)), letters[1:5])
 })
 
 test_that("Can reduce over multiple axes", {
@@ -476,7 +476,7 @@ test_that("reducing base types maintains type", {
   x_int <- vec_data(x)
 
   x_mat <- as.matrix(x)
-  x_mat_cnames <- set_col_names(x_mat, "x")
+  x_mat_cnames <- rray_set_col_names(x_mat, "x")
 
   x_arr <- as.array(x)
 
@@ -485,8 +485,8 @@ test_that("reducing base types maintains type", {
 
   expect_equal(vec_dim(rray_min(x_mat, 1)), c(1, 1))
 
-  expect_equal(col_names(rray_min(x_mat_cnames, 1)), "x")
-  expect_equal(col_names(rray_min(x_mat_cnames, 2)), "x")
+  expect_equal(rray_col_names(rray_min(x_mat_cnames, 1)), "x")
+  expect_equal(rray_col_names(rray_min(x_mat_cnames, 2)), "x")
 })
 
 test_that("can reduce over multiple axes if one is length 0", {

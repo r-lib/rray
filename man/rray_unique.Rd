@@ -63,8 +63,8 @@ When duplicates are detected, the \emph{first} unique value is used in the resul
 }
 \examples{
 x_dup_rows <- rray(c(1, 1, 3, 3, 2, 2, 4, 4), c(2, 2, 2))
-x_dup_rows <- set_row_names(x_dup_rows, c("r1", "r2"))
-x_dup_rows <- set_col_names(x_dup_rows, c("c1", "c2"))
+x_dup_rows <- rray_set_row_names(x_dup_rows, c("r1", "r2"))
+x_dup_rows <- rray_set_col_names(x_dup_rows, c("c1", "c2"))
 
 # Duplicate rows
 # x_dup_rows[1] == x_dup_rows[2]

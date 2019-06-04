@@ -41,8 +41,8 @@ of how these are rotated is controlled by the ordering of \code{from} and \code{
 # 2D example
 
 x <- rray(1:6, c(3, 2))
-x <- set_row_names(x, c("r1", "r2", "r3"))
-x <- set_col_names(x, c("c1", "c2"))
+x <- rray_set_row_names(x, c("r1", "r2", "r3"))
+x <- rray_set_col_names(x, c("c1", "c2"))
 
 # "counter clockwise" rotation turning the
 # rows into columns

@@ -25,16 +25,16 @@
 #'
 #' # 1x2 - Row names but no column names
 #' x <- rray(1, dim = c(1, 2)) %>%
-#'   set_row_names("r_from_x")
+#'   rray_set_row_names("r_from_x")
 #'
 #' # 1x1 - Row names and column names
 #' y <- rray(1, dim = c(1, 1)) %>%
-#'   set_col_names("c_from_y") %>%
-#'   set_row_names("r_from_y")
+#'   rray_set_col_names("c_from_y") %>%
+#'   rray_set_row_names("r_from_y")
 #'
 #' # 1x1 - Row names but no column names
 #' z <- rray(1, c(1, 1)) %>%
-#'   set_row_names("r_from_z")
+#'   rray_set_row_names("r_from_z")
 #'
 #' # Combining y and z
 #' # y has names for both dimensions

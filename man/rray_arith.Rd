@@ -58,8 +58,8 @@ broadcasting no matter what type the input is.
 library(magrittr)
 
 x <- rray(1:8, c(2, 2, 2)) \%>\%
-  set_row_names(c("r1", "r2")) \%>\%
-  set_col_names(c("c1", "c2"))
+  rray_set_row_names(c("r1", "r2")) \%>\%
+  rray_set_col_names(c("c1", "c2"))
 
 y <- matrix(1:2, nrow = 1)
 

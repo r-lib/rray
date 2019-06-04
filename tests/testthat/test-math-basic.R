@@ -255,13 +255,13 @@ test_that("cannot clip if `low` is greater than `high`", {
 })
 
 test_that("`low` and `high` must be size 1", {
-  expect_error(rray_clip(1, c(1, 1), 1), "1, not 2")
-  expect_error(rray_clip(1, 1, c(1, 1)), "1, not 2")
+  expect_error(rray_clip(1, c(1, 1), 1), "1, not size 2", class = "vctrs_error_assert_size")
+  expect_error(rray_clip(1, 1, c(1, 1)), "1, not size 2", class = "vctrs_error_assert_size")
 })
 
 test_that("cannot clip with NULL bounds", {
-  expect_error(rray_clip(1, NULL, 1), "1, not 0")
-  expect_error(rray_clip(1, 1, NULL), "1, not 0")
+  expect_error(rray_clip(1, NULL, 1), "not NULL", class = "vctrs_error_scalar_type")
+  expect_error(rray_clip(1, 1, NULL), "not NULL", class = "vctrs_error_scalar_type")
 })
 
 test_that("clip NULL", {

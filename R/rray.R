@@ -127,7 +127,7 @@ new_rray <- function(.data = numeric(0),
 #' rray(arr, c(3, 2, 2))
 #'
 #' # with row names
-#' rray(c(1, 2, 3), c(3, 2), dim_names = list(c("x", "y", "z"), character()))
+#' rray(c(1, 2, 3), c(3, 2), dim_names = list(c("x", "y", "z"), NULL))
 #'
 #' @export
 rray <- function(x = numeric(0), dim = NULL, dim_names = NULL) {
@@ -165,30 +165,7 @@ validate_rray_attributes <- function(dim, dim_names) {
     abort("`dim` must be a non-negative vector.")
   }
 
-  ok_dim_names <- map_lgl(dim_names, is_character_or_null)
-  if (!all(ok_dim_names)) {
-    glubort("`dim_names` must be a list containing characters, or `NULL`.")
-  }
-
-  # n shape dims and n elements of shape name list
-  dims <- vec_size(dim)
-  n_dim_names <- vec_size(dim_names)
-  if (dims != n_dim_names) {
-    glubort(
-      "The dimensionality of the object ({dims}) must be equal ",
-      "to the size of the `dim_names` ({n_dim_names})."
-    )
-  }
-
-  # dim & dim_names
-  dim_name_lengths <- map_int(dim_names, vec_size)
-  ok_dim_name_lengths <- map2_lgl(dim, dim_name_lengths, validate_equal_size_or_no_names)
-  if (!all(ok_dim_name_lengths)) {
-    glubort(
-      "The size of each dimension's names must be equal to the ",
-      "size of the corresponding dimension."
-    )
-  }
+  validate_dim_names(dim_names, dim)
 
   invisible()
 }

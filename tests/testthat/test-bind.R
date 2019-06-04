@@ -157,7 +157,7 @@ test_that("names can be supplied using outer names", {
   names(a) <- c("a_r1", "a_r2")
 
   expect_equal(
-    n_dim_names(rray_bind(a, x = b, axis = 1), 1),
+    rray_axis_names(rray_bind(a, x = b, axis = 1), 1),
     c("a_r1", "a_r2", "x1", "x2")
   )
 })
@@ -225,7 +225,7 @@ test_that("outer dim names on new axis dimension are added", {
   y <- 2
 
   expect_equal(
-    n_dim_names(rray_bind(x = x, y = y, axis = 3), 3),
+    rray_axis_names(rray_bind(x = x, y = y, axis = 3), 3),
     c("x", "y")
   )
 

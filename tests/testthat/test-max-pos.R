@@ -32,12 +32,12 @@ test_that("can compute max positions", {
 test_that("dimension names are kept", {
 
   x <- rray(1:5, c(5, 1))
-  x <- set_col_names(x, "c1")
-  x <- set_row_names(x, letters[1:5])
+  x <- rray_set_col_names(x, "c1")
+  x <- rray_set_row_names(x, letters[1:5])
 
   expect_equal(
     rray_dim_names(rray_max_pos(x, 1)),
-    c(rray_empty_dim_names(1), col_names(x))
+    c(rray_empty_dim_names(1), rray_col_names(x))
   )
 
   expect_equal(
@@ -46,11 +46,11 @@ test_that("dimension names are kept", {
   )
 
   xx <- rray_broadcast(x, c(5, 2))
-  xx <- set_col_names(xx, c("c1", "c2"))
+  xx <- rray_set_col_names(xx, c("c1", "c2"))
 
   expect_equal(
     rray_dim_names(rray_max_pos(xx, 2)),
-    c(list(row_names(xx)), rray_empty_dim_names(1))
+    c(list(rray_row_names(xx)), rray_empty_dim_names(1))
   )
 })
 
