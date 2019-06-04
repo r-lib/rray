@@ -151,7 +151,7 @@ x_col_nms_rray + x_row_nms_rray
 This isn't to say that the order doesn't matter. If both inputs have row names, for example, the row names of the result come from the first input.
 
 ```{r}
-x_col_row_nms_rray <- set_row_names(x_col_nms_rray, c("row1", "row2"))
+x_col_row_nms_rray <- rray_set_row_names(x_col_nms_rray, c("row1", "row2"))
 x_col_row_nms_rray
 
 x_row_nms_rray + x_col_row_nms_rray
