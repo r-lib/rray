@@ -26,14 +26,12 @@
 
 #' @export
 min.vctrs_rray <- function(x, ..., na.rm = FALSE) {
-  out <- min(vec_data(x), na.rm = na.rm)
-  new_rray(out, size = 1L)
+  vec_math_base("min", vec_data(x), na.rm = na.rm)
 }
 
 #' @export
 max.vctrs_rray <- function(x, ..., na.rm = FALSE) {
-  out <- max(vec_data(x), na.rm = na.rm)
-  new_rray(out, size = 1L)
+  vec_math_base("max", vec_data(x), na.rm = na.rm)
 }
 
 #' @export
