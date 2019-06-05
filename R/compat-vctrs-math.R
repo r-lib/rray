@@ -67,6 +67,12 @@ rray_math_unary_op_switch <- function(fun) {
     "prod" = rray_prod_vctrs_wrapper,
     "sum" = rray_sum_vctrs_wrapper,
 
+    # cumulative
+    "cummax" = rray_cummax_vctrs_wrapper,
+    "cummin" = rray_cummin_vctrs_wrapper,
+    "cumsum" = rray_cumsum_vctrs_wrapper,
+    "cumprod" = rray_cumprod_vctrs_wrapper,
+
     glubort("Unary math function not known: {fun}.")
   )
 }
