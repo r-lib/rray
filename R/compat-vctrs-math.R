@@ -102,42 +102,42 @@ rray_trunc_vctrs_wrapper <- function(x, ...) {
 # Summary group generic wrappers
 
 rray_all_vctrs_wrapper <- function(x, na.rm) {
-  vec_math_base("all", vec_data(x), na.rm = na.rm)
+  vec_math_base("all", x, na.rm = na.rm)
 }
 
 rray_any_vctrs_wrapper <- function(x, na.rm) {
-  vec_math_base("any", vec_data(x), na.rm = na.rm)
+  vec_math_base("any", x, na.rm = na.rm)
 }
 
 rray_range_vctrs_wrapper <- function(x, na.rm) {
-  vec_math_base("range", vec_data(x), na.rm = na.rm)
+  vec_math_base("range", x, na.rm = na.rm)
 }
 
 rray_prod_vctrs_wrapper <- function(x, na.rm) {
-  vec_math_base("prod", vec_data(x), na.rm = na.rm)
+  vec_math_base("prod", x, na.rm = na.rm)
 }
 
 rray_sum_vctrs_wrapper <- function(x, na.rm) {
-  vec_math_base("sum", vec_data(x), na.rm = na.rm)
+  vec_math_base("sum", x, na.rm = na.rm)
 }
 
 # ------------------------------------------------------------------------------
 # Math group generic wrappers
 
 rray_cummax_vctrs_wrapper <- function(x) {
-  vec_math_base("cummax", vec_data(x))
+  vec_math_base("cummax", x)
 }
 
 rray_cummin_vctrs_wrapper <- function(x) {
-  vec_math_base("cummin", vec_data(x))
+  vec_math_base("cummin", x)
 }
 
 rray_cumsum_vctrs_wrapper <- function(x) {
-  vec_math_base("cumsum", vec_data(x))
+  vec_math_base("cumsum", x)
 }
 
 rray_cumprod_vctrs_wrapper <- function(x) {
-  vec_math_base("cumprod", vec_data(x))
+  vec_math_base("cumprod", x)
 }
 
 # ------------------------------------------------------------------------------
@@ -159,12 +159,12 @@ rray_cumprod_vctrs_wrapper <- function(x) {
 
 #' @export
 min.vctrs_rray <- function(x, ..., na.rm = FALSE) {
-  vec_math_base("min", vec_data(x), na.rm = na.rm)
+  vec_math_base("min", x, na.rm = na.rm)
 }
 
 #' @export
 max.vctrs_rray <- function(x, ..., na.rm = FALSE) {
-  vec_math_base("max", vec_data(x), na.rm = na.rm)
+  vec_math_base("max", x, na.rm = na.rm)
 }
 
 #' @export
