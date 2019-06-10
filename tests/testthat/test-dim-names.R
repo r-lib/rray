@@ -147,6 +147,19 @@ test_that("col names assignment form works", {
   expect_equal(rray_dim_names(x), list(x_meta = "x", "y"))
 })
 
+test_that("can set meta names with row/col helpers", {
+  x <- rray(1, c(1, 1))
+  expect_equal(
+    rray_dim_names(rray_set_row_names(x, NULL, meta = "hi")),
+    list(hi = NULL, NULL)
+  )
+
+  expect_equal(
+    rray_dim_names(rray_set_col_names(x, NULL, meta = "hi")),
+    list(NULL, hi = NULL)
+  )
+})
+
 # ------------------------------------------------------------------------------
 
 context("test-base-name-generics")

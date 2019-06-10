@@ -245,7 +245,7 @@ rray_row_names <- function(x) {
 #' @export
 #' @rdname dim-names
 rray_set_row_names <- function(x, names, meta = NULL) {
-  rray_set_axis_names(x, 1L, names)
+  rray_set_axis_names(x, 1L, names, meta)
 }
 
 # ------------------------------------------------------------------------------
@@ -265,5 +265,5 @@ rray_col_names <- function(x) {
 #' @export
 #' @rdname dim-names
 rray_set_col_names <- function(x, names, meta = NULL) {
-  rray_set_axis_names(x, 2L, names)
+  rray_set_axis_names(x, 2L, names, meta)
 }
