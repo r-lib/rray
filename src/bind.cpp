@@ -14,7 +14,7 @@ int compute_dims(Rcpp::List args, const int& axis) {
   const int& implied_dims = axis + 1;
 
   for (int i = 0; i < n_args; ++i) {
-    dims = rray__dims2(rray__dims(args[i]), dims);
+    dims = std::max(rray__dims(args[i]), dims);
   }
 
   // Allows for going up in dimensionality

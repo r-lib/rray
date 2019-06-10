@@ -2,52 +2,36 @@
 % Please edit documentation in R/dims.R
 \name{rray_dims}
 \alias{rray_dims}
-\alias{rray_dims_common}
-\title{Find common dimensionalities}
+\title{Compute the number of dimensions of an object}
 \usage{
 rray_dims(x)
-
-rray_dims_common(...)
 }
 \arguments{
 \item{x}{An object.}
-
-\item{...}{Objects to find common dimensionality for.}
 }
 \description{
-\itemize{
-\item \code{rray_dims()} finds the dimensionality of a single object.
-\item \code{rray_dims_common()} finds the common dimensionality
-among a set of objects.
-}
+\code{rray_dims()} computes the dimensionality (i.e. the number of dimensions).
 }
 \details{
-\code{rray_dims_common()} essentially takes the maximum dimensionality of the
-inputs. This is the "common" dimensionality. Below is an example of
-comparing a \code{(4, 5)} matrix and a \code{(4, 1, 2)} array to get the common
-dimensionality.\preformatted{(4, 5,  ) | 2   <- dimensionality of 2
-(4, 1, 2) | 3   <- dimensionality of 3
--------------
-          | 3   <- maximum of the two is 3
-}
+One point worth mentioning is that \code{rray_dims()} is very strict. It does
+not simply call the generic function \code{dim()} and then check the length.
+Rather, it explicitly pulls the attribute for the \code{"dim"}, and checks
+the length of that. If an object does not have an attribute, then the
+dimensionality is 1.
 
-A subtle point is that the dimensions do not have to be broadcastable
-to still find a common dimensionality. So a \code{(2, 1)} matrix and a \code{(3, 1)}
-matrix would not be broadcastable, but have a common dimensionality of \code{2}.
+This means that data frames have a dimensionality of 1, even though
+\code{dim()} defines a method for data frames that would imply a dimensionality
+of 2.
 }
 \examples{
 x_1_by_4 <- rray(c(1, 2, 3, 4), c(1, 4))
-x_5_by_1 <- rray(1:5, c(5, 1))
 
 rray_dims(x_1_by_4)
 
-# these are both 2D
-rray_dims_common(x_1_by_4, x_5_by_1)
-
-# 1D and 2D have a common dimensionality of 2D
-rray_dims_common(x_1_by_4, 1)
-
 # NULL has a dimensionality of 1
 rray_dims(NULL)
+
+# The dimensionality of a data frame is 1
+rray_dims(data.frame())
 
 }

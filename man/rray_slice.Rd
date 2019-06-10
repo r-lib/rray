@@ -62,7 +62,7 @@ rray_slice(x, 1, 3) <- matrix(c(99, 100), nrow = 1)
 
 }
 \seealso{
-Other rray subsetters: \code{\link{rray_extract}},
+Other rray subsetters: \code{\link{rray_extract<-}},
   \code{\link{rray_subset<-}}, \code{\link{rray_yank<-}}
 }
 \concept{rray subsetters}

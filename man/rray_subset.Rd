@@ -120,7 +120,7 @@ x_arr
 \seealso{
 \code{\link[=pad]{pad()}}
 
-Other rray subsetters: \code{\link{rray_extract}},
+Other rray subsetters: \code{\link{rray_extract<-}},
   \code{\link{rray_slice<-}}, \code{\link{rray_yank<-}}
 }
 \concept{rray subsetters}
