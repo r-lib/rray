@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Get or set elements of an array by position — rray_yank • rray</title>
+<title>Get or set elements of an array <em>by position</em> — rray_yank&lt;- • rray</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,12 +30,21 @@
 
 
 
-<meta property="og:title" content="Get or set elements of an array by position — rray_yank" />
+<meta property="og:title" content="Get or set elements of an array <em>by position</em> — rray_yank&lt;-" />
 
-<meta property="og:description" content="rray_yank() is the counterpart to rray_extract(). It extracts elements
-from an array by position. It always drops dimensions
-(unlike rray_subset()), and a 1D vector is always returned. It powers
-the [[ method for rrays." />
+<meta property="og:description" content="
+rray_yank() gets and sets elements from an array by position. It is the
+complement to rray_extract(), which gets and sets elements by index.
+For rrays, [[ is powered by rray_yank(), and allows you to
+select multiple elements by position with the syntax: x[[i]].
+There are three assignment variations that all work essentially the same.
+They ensures that value has the same inner type as x, and value must be
+1D.
+rray_yank(x, i) &amp;lt;- value
+x[[i]] &amp;lt;- value
+rray_yank_assign(x, i, value)
+
+" />
 <meta name="twitter:card" content="summary" />
 
 
@@ -120,29 +129,40 @@ the [[ method for rrays." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Get or set elements of an array by position</h1>
-    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/subset-old.R'><code>R/subset-old.R</code></a></small>
+    <h1>Get or set elements of an array <em>by position</em></h1>
+    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/yank-assign.R'><code>R/yank-assign.R</code></a>, <a href='https://github.com/DavisVaughan/rray/blob/master/R/yank.R'><code>R/yank.R</code></a></small>
     <div class="hidden name"><code>rray_yank.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p><code>rray_yank()</code> is the counterpart to <code><a href='rray_extract.html'>rray_extract()</a></code>. It extracts elements
-from an array <em>by position</em>. It <em>always</em> drops dimensions
-(unlike <code><a href='rray_subset.html'>rray_subset()</a></code>), and a 1D vector is always returned. It powers
-the <code>[[</code> method for rrays.</p>
+    <ul>
+<li><p><code>rray_yank()</code> gets and sets elements from an array <em>by position</em>. It is the
+complement to <code><a href='rray_extract.html'>rray_extract()</a></code>, which gets and sets elements <em>by index</em>.</p></li>
+<li><p>For rrays, <code>[[</code> is powered by <code>rray_yank()</code>, and allows you to
+select multiple elements by position with the syntax: <code>x[[i]]</code>.</p></li>
+<li><p>There are three assignment variations that all work essentially the same.
+They ensures that <code>value</code> has the same inner type as <code>x</code>, and <code>value</code> must be
+1D.</p><ul>
+<li><p><code>rray_yank(x, i) &lt;- value</code></p></li>
+<li><p><code>x[[i]] &lt;- value</code></p></li>
+<li><p><code>rray_yank_assign(x, i, value)</code></p></li>
+</ul></li>
+</ul>
     
     </div>
 
-    <pre class="usage">rray_yank(x, i)
+    <pre class="usage">rray_yank(x, i) <- value
 
 # S3 method for vctrs_rray
-[[(x, i, ...)
+[[(x, i, ...) <- value
 
-rray_yank(x, i) <- value
+rray_yank_assign(x, i, value)
+
+rray_yank(x, i)
 
 # S3 method for vctrs_rray
-[[(x, i, ...) <- value</pre>
+[[(x, i, ...)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -155,33 +175,48 @@ rray_yank(x, i) <- value
       <th>i</th>
       <td><p>One of the following:</p><ul>
 <li><p>An integer vector specifying the positions of the elements to yank.</p></li>
-<li><p>A 1D logical vector of length 1, or <code><a href='rray_elems.html'>rray_elems(x)</a></code>.</p></li>
-<li><p>A logical with the same dimension as <code>x</code>.</p></li>
+<li><p>A 1D logical vector of either length 1 or <code><a href='rray_elems.html'>rray_elems(x)</a></code>.</p></li>
+<li><p>A logical with the exact same dimensions as <code>x</code>.</p></li>
 </ul></td>
+    </tr>
+    <tr>
+      <th>value</th>
+      <td><p>A 1D value to be assigned to the location yanked by <code>i</code>. It will
+be cast to the type of <code>rray_yank(x, i)</code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
       <td><p>Not used. An error is thrown if extra arguments are supplied here.</p></td>
     </tr>
-    <tr>
-      <th>value</th>
-      <td><p>A 1D value to be assigned to the location yanked by <code>i</code>. It will
-be cast to the type and length of <code>x</code> after being yanked by <code>i</code>.</p></td>
-    </tr>
     </table>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Dimension names are <em>only</em> kept in the special case of calling <code>rray_yank()</code>
-on a 1D object. Otherwise, the method of keeping them is not well defined.</p>
-<p><code>rray_yank()</code> works with base R objects.</p>
-<p><code>rray_yank()</code> is meant as a replacement for the traditional behavior of
-<code>x[i]</code> since <code>[</code> for rray objects is much stricter. Separating this special
-behavior into a different function is less surprising.</p>
-<p>Additionally, base R has <code>x[[i]]</code> which restricts <code>i</code> to be length 1.
-For rray objects, <code>[[</code> acts more like <code>x[i]</code>, always dropping to 1D, but
-allowing for the selection of multiple positions.</p>
-<p>You <em>cannot</em> do <code>x[[i, j, ...]]</code> with rrays. For that behavior,
+    <p><code>rray_yank()</code> is meant as a replacement for the traditional behavior of
+<code>x[i]</code>, which extracts multiple elements by their position, and returns a
+1D vector. rray is much stricter, and for rrays <code>x[i]</code> would return the
+<code>i</code> rows of <code>x</code>, without dropping any dimensions. Separating this special
+behavior of extracting by position into a new function is less surprising,
+and allows <code>[</code> to be more consistent and stable.</p>
+<p><code>rray_yank()</code> never keeps dimension names. For &gt;1D objects, this would not
+be well defined to begin with, so the decision was made to keep this behavior
+for 1D objects as well. Think of <code>rray_yank()</code> as a way to rip out the inner
+elements of <code>x</code>. The dimension names and outer type are not a part of
+this information.</p>
+    
+    <h2 class="hasAnchor" id="the-double-bracket-"><a class="anchor" href="#the-double-bracket-"></a>The Double Bracket <code>[[</code></h2>
+
+    
+    <p><code>rray_yank()</code> powers <code>[[</code> for rray objects. It works a bit differently from
+base R. As with <code>[</code>, base R allows <code>[[</code> to perform two roles. It can extract
+<em>one</em> element by position with <code>x[[i]]</code>, or <em>one</em> element by index with
+<code>x[[i, j, ...]]</code>. This felt too flexible, so with rray objects <code>[[</code> is
+directly powered by <code>rray_yank()</code>, meaning it can only do <code>x[[i]]</code>. However,
+multiple values of <code>i</code> are allowed, rather than just 1, meaning that
+<code>x[[c(3, 5)]]</code> will extract the 3rd and 5th positions in <code>x</code> and return
+them as a 1D array.</p>
+<p>Notably this means that the index extraction behavior of <code>x[[i, j, ...]]</code>
+is missing with <code>[[</code> for rrays. If you want that behavior,
 see <code><a href='rray_extract.html'>rray_extract()</a></code>.</p>
     
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
@@ -193,36 +228,22 @@ see <code><a href='rray_extract.html'>rray_extract()</a></code>.</p>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>10</span>:<span class='fl'>17</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>2</span>))
 
-<span class='co'># Resulting dimension is always 1D</span>
-<span class='fu'>rray_yank</span>(<span class='no'>x</span>, <span class='fl'>1</span>:<span class='fl'>3</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[3]&gt;
-#&gt; [1] 10 11 12</div><div class='input'>
-<span class='co'># With logical</span>
-<span class='fu'>rray_yank</span>(<span class='no'>x</span>, <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[0]&gt;</div><div class='input'><span class='fu'>rray_yank</span>(<span class='no'>x</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>TRUE</span>, <span class='fl'>FALSE</span>), <span class='kw'>times</span> <span class='kw'>=</span> <span class='fu'><a href='rray_elems.html'>rray_elems</a></span>(<span class='no'>x</span>) / <span class='fl'>2</span>))</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[4]&gt;
-#&gt; [1] 10 12 14 16</div><div class='input'>
+<span class='co'># Resulting dimension is always 1D, and is a base R array</span>
+<span class='fu'>rray_yank</span>(<span class='no'>x</span>, <span class='fl'>1</span>:<span class='fl'>3</span>)</div><div class='output co'>#&gt; [1] 10 11 12</div><div class='input'>
+<span class='co'># Subsetting with a logical is possible if it is either</span>
+<span class='co'># length 1 or the length of `x`</span>
+<span class='fu'>rray_yank</span>(<span class='no'>x</span>, <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; integer(0)</div><div class='input'><span class='fu'>rray_yank</span>(<span class='no'>x</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>TRUE</span>, <span class='fl'>FALSE</span>), <span class='kw'>times</span> <span class='kw'>=</span> <span class='fu'><a href='rray_elems.html'>rray_elems</a></span>(<span class='no'>x</span>) / <span class='fl'>2</span>))</div><div class='output co'>#&gt; [1] 10 12 14 16</div><div class='input'>
 <span class='co'># You can assign a 1D vector to these yanked selections</span>
+<span class='co'># Length 1 values are recycled as required</span>
 <span class='fu'>rray_yank</span>(<span class='no'>x</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>3</span>, <span class='fl'>5</span>)) <span class='kw'>&lt;-</span> <span class='fl'>9</span>
 
-<span class='co'># Logicals with the same dim as `x`</span>
-<span class='co'># can also be used as a yank indexer</span>
-<span class='no'>lgl</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>TRUE</span>, <span class='fl'>FALSE</span>), <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>2</span>))
-<span class='fu'>rray_yank</span>(<span class='no'>x</span>, <span class='no'>lgl</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[4]&gt;
-#&gt; [1]  9  9  9 16</div><div class='input'>
-<span class='co'># And you can set elements in these locations</span>
-<span class='fu'>rray_yank</span>(<span class='no'>x</span>, <span class='no'>lgl</span>) <span class='kw'>&lt;-</span> <span class='fl'>NA</span>
+<span class='co'># `rray_yank()` powers `[[` as well</span>
+<span class='co'># Notably, you can yank multiple values in `[[`</span>
+<span class='no'>x</span><span class='kw'>[[</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>3</span>, <span class='fl'>5</span>)]] <span class='kw'>&lt;-</span> <span class='fl'>NA</span>
 
-<span class='co'># `[[` for rray objects is powered by</span>
-<span class='co'># rray_yank().</span>
-<span class='co'># This can be very useful for</span>
-<span class='co'># performing assignment</span>
-<span class='co'># by position.</span>
-<span class='no'>x</span><span class='kw'>[[</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>3</span>)]] <span class='kw'>&lt;-</span> <span class='fl'>NA</span>
-
-<span class='co'># Logical arrays with the same shape as `x`</span>
-<span class='co'># can be assigned to. This is a useful way</span>
-<span class='co'># to get rid of NA values.</span>
-<span class='no'>idx</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/array'>array</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/NA'>is.na</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/vector'>as.vector</a></span>(<span class='no'>x</span>)), <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>2</span>))
-
-<span class='no'>x</span><span class='kw'>[[</span><span class='no'>idx</span>]] <span class='kw'>&lt;-</span> <span class='fl'>0</span></div></pre>
+<span class='co'># Logicals with the same dim as `x` can also be used as a yank indexer</span>
+<span class='co'># This comes in handy as a way to remove NA values</span>
+<span class='no'>x</span><span class='kw'>[[</span><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/NA'>is.na</a></span>(<span class='no'>x</span>)]] <span class='kw'>&lt;-</span> <span class='fl'>0</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
@@ -230,6 +251,8 @@ see <code><a href='rray_extract.html'>rray_extract()</a></code>.</p>
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#details">Details</a></li>
+
+      <li><a href="#the-double-bracket-">The Double Bracket <code>[[</code></a></li>
 
       <li><a href="#see-also">See also</a></li>
       
