@@ -193,12 +193,6 @@ rray_as_index2 <- function(x, ...) {
       next
     }
 
-    # User supplied `slice_range()`
-    if (is_slice_range(index)) {
-      indexer[[i]] <- as_xt_range(index)
-      next
-    }
-
     proxy <- seq_len(dim[i])
 
     # Character indices need to match by name in `vec_as_index()`
@@ -239,13 +233,6 @@ append_missing <- function(indexer, dims) {
   indexer <- c(indexer, padding)
 
   indexer
-}
-
-as_xt_range <- function(x) {
-  # xt::range(start, stop) is [start, stop)
-  start <- field(x, "start") - 1L
-  stop <- field(x, "stop") # - 1L + 1L
-  list(start = start, stop = stop)
 }
 
 expand_pad <- function(indexer, dims) {
