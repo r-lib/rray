@@ -106,6 +106,6 @@ x[[is.na(x)]] <- 0
 }
 \seealso{
 Other rray subsetters: \code{\link{rray_extract}},
-  \code{\link{rray_slice}}, \code{\link{rray_subset<-}}
+  \code{\link{rray_slice<-}}, \code{\link{rray_subset<-}}
 }
 \concept{rray subsetters}

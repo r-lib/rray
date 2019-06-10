@@ -121,6 +121,6 @@ x_arr
 \code{\link[=pad]{pad()}}
 
 Other rray subsetters: \code{\link{rray_extract}},
-  \code{\link{rray_slice}}, \code{\link{rray_yank<-}}
+  \code{\link{rray_slice<-}}, \code{\link{rray_yank<-}}
 }
 \concept{rray subsetters}
