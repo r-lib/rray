@@ -226,14 +226,14 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rray__reshape_dim_names
-Rcpp::List rray__reshape_dim_names(Rcpp::List dim_names, Rcpp::IntegerVector dim);
-RcppExport SEXP _rray_rray__reshape_dim_names(SEXP dim_namesSEXP, SEXP dimSEXP) {
+// rray__resize_dim_names
+Rcpp::List rray__resize_dim_names(Rcpp::List dim_names, Rcpp::IntegerVector dim);
+RcppExport SEXP _rray_rray__resize_dim_names(SEXP dim_namesSEXP, SEXP dimSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::List >::type dim_names(dim_namesSEXP);
     Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type dim(dimSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__reshape_dim_names(dim_names, dim));
+    rcpp_result_gen = Rcpp::wrap(rray__resize_dim_names(dim_names, dim));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1136,7 +1136,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__not_equal", (DL_FUNC) &_rray_rray__not_equal, 2},
     {"_rray_rray__all_equal", (DL_FUNC) &_rray_rray__all_equal, 2},
     {"_rray_rray__any_not_equal", (DL_FUNC) &_rray_rray__any_not_equal, 2},
-    {"_rray_rray__reshape_dim_names", (DL_FUNC) &_rray_rray__reshape_dim_names, 2},
+    {"_rray_rray__resize_dim_names", (DL_FUNC) &_rray_rray__resize_dim_names, 2},
     {"_rray_rray__coalesce_meta_dim_names", (DL_FUNC) &_rray_rray__coalesce_meta_dim_names, 2},
     {"_rray_rray__coalesce_dim_names", (DL_FUNC) &_rray_rray__coalesce_dim_names, 2},
     {"_rray_rray__dim_names2", (DL_FUNC) &_rray_rray__dim_names2, 2},

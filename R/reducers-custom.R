@@ -79,7 +79,7 @@
 #   new_dim[axes] <- 1L
 #   res <- rray_reshape(res, new_dim)
 #
-#   new_dim_names <- rray_reshape_dim_names(rray_dim_names(.x), new_dim)
+#   new_dim_names <- rray_resize_dim_names(rray_dim_names(.x), new_dim)
 #   res <- rray_set_dim_names(res, new_dim_names)
 #
 #   vec_restore(res, .x)

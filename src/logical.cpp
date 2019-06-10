@@ -133,7 +133,7 @@ Rcpp::RObject rray__any(Rcpp::RObject x, Rcpp::RObject axes) {
 
   Rcpp::RObject out = rray__any_impl(xt::rarray<rlogical>(x_cast), axes);
 
-  rray__reshape_and_set_dim_names(out, x);
+  rray__resize_and_set_dim_names(out, x);
 
   return out;
 }
@@ -185,7 +185,7 @@ Rcpp::RObject rray__all(Rcpp::RObject x, Rcpp::RObject axes) {
 
   Rcpp::RObject out = rray__all_impl(xt::rarray<rlogical>(x_cast), axes);
 
-  rray__reshape_and_set_dim_names(out, x);
+  rray__resize_and_set_dim_names(out, x);
 
   return out;
 }

@@ -502,7 +502,7 @@ Rcpp::RObject rray__flatten(Rcpp::RObject x) {
   Rcpp::RObject out;
   DISPATCH_UNARY(out, rray__flatten_impl, x);
 
-  rray__reshape_and_set_dim_names(out, x);
+  rray__resize_and_set_dim_names(out, x);
 
   return out;
 }

@@ -197,7 +197,7 @@ Rcpp::List compute_bind_dim_names(const Rcpp::List& lst_of_dim_names,
 
     // Call this after storing axis names, as it will set
     // names to null if they don't match the dim size
-    dim_names = rray__reshape_dim_names(dim_names, dim);
+    dim_names = rray__resize_dim_names(dim_names, dim);
 
     // Coalesce names and meta names
     new_dim_names = rray__coalesce_dim_names(new_dim_names, dim_names);

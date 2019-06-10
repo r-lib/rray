@@ -72,7 +72,7 @@ rray_dim_names_common <- function(...) {
   .dim <- rray_dim_common(!!! args)
 
   arg_dim_names <- map(args, rray_dim_names)
-  arg_dim_names <- map(arg_dim_names, rray_reshape_dim_names, dim = .dim)
+  arg_dim_names <- map(arg_dim_names, rray_resize_dim_names, dim = .dim)
 
   reduce(arg_dim_names, rray_coalesce_dim_names)
 }
@@ -91,8 +91,8 @@ rray_coalesce_meta_dim_names <- function(x_meta_dim_names, y_meta_dim_names) {
   rray__coalesce_meta_dim_names(x_meta_dim_names, y_meta_dim_names)
 }
 
-rray_reshape_dim_names <- function(dim_names, dim) {
-  rray__reshape_dim_names(dim_names, dim)
+rray_resize_dim_names <- function(dim_names, dim) {
+  rray__resize_dim_names(dim_names, dim)
 }
 
 # returns a list of n empty characters

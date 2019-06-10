@@ -28,15 +28,15 @@ Rcpp::List rray__dim_names(const Rcpp::RObject& x);
 // -----------------------------------------------------------------------------
 // Common dimension names
 
-Rcpp::List rray__reshape_dim_names(Rcpp::List dim_names,
-                                   Rcpp::IntegerVector dim);
+Rcpp::List rray__resize_dim_names(Rcpp::List dim_names,
+                                  Rcpp::IntegerVector dim);
 
 Rcpp::List rray__coalesce_dim_names(Rcpp::List x_dim_names,
                                     Rcpp::List y_dim_names);
 
 Rcpp::List rray__dim_names2(Rcpp::RObject x, Rcpp::RObject y);
 
-void rray__reshape_and_set_dim_names(Rcpp::RObject res, Rcpp::RObject x);
+void rray__resize_and_set_dim_names(Rcpp::RObject res, Rcpp::RObject x);
 
 void rray__set_dim_names(Rcpp::RObject x, const Rcpp::List& dim_names);
 

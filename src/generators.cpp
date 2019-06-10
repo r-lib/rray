@@ -3,11 +3,15 @@
 
 // -----------------------------------------------------------------------------
 
-Rcpp::List rray__reshape_dim_names2(const Rcpp::List& dim_names,
-                                    const Rcpp::IntegerVector& dim,
-                                    const Rcpp::IntegerVector& new_dim) {
+// rray__reshape_dim_names() is essentially rray__resize_dim_names(), but
+// it rather than leaving the meta names in place no matter what, it removes
+// them if the axis size changes. This is appropriate for a reshape.
 
-  Rcpp::List new_dim_names = rray__reshape_dim_names(dim_names, new_dim);
+Rcpp::List rray__reshape_dim_names(const Rcpp::List& dim_names,
+                                   const Rcpp::IntegerVector& dim,
+                                   const Rcpp::IntegerVector& new_dim) {
+
+  Rcpp::List new_dim_names = rray__resize_dim_names(dim_names, new_dim);
 
   if (r_is_null(new_dim_names.names())) {
     return new_dim_names;
@@ -61,7 +65,7 @@ Rcpp::RObject rray__reshape(Rcpp::RObject x, const Rcpp::IntegerVector& dim) {
   DISPATCH_UNARY_ONE(out, rray__reshape_impl, x, dim);
 
   // Potentially going down in dimensionality, but this is fine
-  Rcpp::List new_dim_names = rray__reshape_dim_names2(rray__dim_names(x), x_dim, dim);
+  Rcpp::List new_dim_names = rray__reshape_dim_names(rray__dim_names(x), x_dim, dim);
   rray__set_dim_names(out, new_dim_names);
 
   return out;
