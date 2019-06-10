@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Find common dimensionalities — rray_dims • rray</title>
+<title>Compute the number of dimensions of an object — rray_dims • rray</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,13 +30,9 @@
 
 
 
-<meta property="og:title" content="Find common dimensionalities — rray_dims" />
+<meta property="og:title" content="Compute the number of dimensions of an object — rray_dims" />
 
-<meta property="og:description" content="
-rray_dims() finds the dimensionality of a single object.
-rray_dims_common() finds the common dimensionality
-among a set of objects.
-" />
+<meta property="og:description" content="rray_dims() computes the dimensionality (i.e. the number of dimensions)." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -121,24 +117,18 @@ among a set of objects.
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Find common dimensionalities</h1>
+    <h1>Compute the number of dimensions of an object</h1>
     <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/dims.R'><code>R/dims.R</code></a></small>
     <div class="hidden name"><code>rray_dims.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <ul>
-<li><p><code>rray_dims()</code> finds the dimensionality of a single object.</p></li>
-<li><p><code>rray_dims_common()</code> finds the common dimensionality
-among a set of objects.</p></li>
-</ul>
+    <p><code>rray_dims()</code> computes the dimensionality (i.e. the number of dimensions).</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>rray_dims</span>(<span class='no'>x</span>)
-
-<span class='fu'>rray_dims_common</span>(<span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>rray_dims</span>(<span class='no'>x</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -147,38 +137,28 @@ among a set of objects.</p></li>
       <th>x</th>
       <td><p>An object.</p></td>
     </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Objects to find common dimensionality for.</p></td>
-    </tr>
     </table>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p><code>rray_dims_common()</code> essentially takes the maximum dimensionality of the
-inputs. This is the "common" dimensionality. Below is an example of
-comparing a <code>(4, 5)</code> matrix and a <code>(4, 1, 2)</code> array to get the common
-dimensionality.</p><pre>(4, 5,  ) | 2   &lt;- dimensionality of 2
-(4, 1, 2) | 3   &lt;- dimensionality of 3
--------------
-          | 3   &lt;- maximum of the two is 3
-</pre>
-    <p>A subtle point is that the dimensions do not have to be broadcastable
-to still find a common dimensionality. So a <code>(2, 1)</code> matrix and a <code>(3, 1)</code>
-matrix would not be broadcastable, but have a common dimensionality of <code>2</code>.</p>
+    <p>One point worth mentioning is that <code>rray_dims()</code> is very strict. It does
+not simply call the generic function <code><a href='https://www.rdocumentation.org/packages/base/topics/dim'>dim()</a></code> and then check the length.
+Rather, it explicitly pulls the attribute for the <code>"dim"</code>, and checks
+the length of that. If an object does not have an attribute, then the
+dimensionality is 1.</p>
+<p>This means that data frames have a dimensionality of 1, even though
+<code><a href='https://www.rdocumentation.org/packages/base/topics/dim'>dim()</a></code> defines a method for data frames that would imply a dimensionality
+of 2.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='no'>x_1_by_4</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>4</span>), <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>4</span>))
-<span class='no'>x_5_by_1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>5</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>5</span>, <span class='fl'>1</span>))
 
 <span class='fu'>rray_dims</span>(<span class='no'>x_1_by_4</span>)</div><div class='output co'>#&gt; [1] 2</div><div class='input'>
-<span class='co'># these are both 2D</span>
-<span class='fu'>rray_dims_common</span>(<span class='no'>x_1_by_4</span>, <span class='no'>x_5_by_1</span>)</div><div class='output co'>#&gt; [1] 2</div><div class='input'>
-<span class='co'># 1D and 2D have a common dimensionality of 2D</span>
-<span class='fu'>rray_dims_common</span>(<span class='no'>x_1_by_4</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; [1] 2</div><div class='input'>
 <span class='co'># NULL has a dimensionality of 1</span>
 <span class='fu'>rray_dims</span>(<span class='kw'>NULL</span>)</div><div class='output co'>#&gt; [1] 1</div><div class='input'>
+<span class='co'># The dimensionality of a data frame is 1</span>
+<span class='fu'>rray_dims</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/data.frame'>data.frame</a></span>())</div><div class='output co'>#&gt; [1] 1</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
