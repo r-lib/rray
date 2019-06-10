@@ -57,5 +57,5 @@ rray_dim(NULL)
 
 }
 \seealso{
-\code{\link[=rray_dims]{rray_dims()}} and \code{\link[=rray_dims_common]{rray_dims_common()}}
+\code{\link[=rray_dims]{rray_dims()}}
 }

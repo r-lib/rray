@@ -121,13 +121,6 @@ int rray__dims(const Rcpp::RObject& x) {
 // -----------------------------------------------------------------------------
 
 // [[Rcpp::export(rng = false)]]
-int rray__dims2(const int& x_dims, const int& y_dims) {
-  return std::max(x_dims, y_dims);
-}
-
-// -----------------------------------------------------------------------------
-
-// [[Rcpp::export(rng = false)]]
 Rcpp::IntegerVector rray__increase_dims(const Rcpp::IntegerVector& dim,
                                         const int& dims) {
 
