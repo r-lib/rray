@@ -1102,6 +1102,17 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// rray__yank
+Rcpp::RObject rray__yank(Rcpp::RObject x, Rcpp::RObject i);
+RcppExport SEXP _rray_rray__yank(SEXP xSEXP, SEXP iSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type i(iSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__yank(x, i));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__add", (DL_FUNC) &_rray_rray__add, 2},
@@ -1207,6 +1218,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__validate_dim", (DL_FUNC) &_rray_rray__validate_dim, 1},
     {"_rray_rray__validate_reshape", (DL_FUNC) &_rray_rray__validate_reshape, 2},
     {"_rray_rray__validate_broadcastable_to_dim", (DL_FUNC) &_rray_rray__validate_broadcastable_to_dim, 2},
+    {"_rray_rray__yank", (DL_FUNC) &_rray_rray__yank, 2},
     {NULL, NULL, 0}
 };
 
