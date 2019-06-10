@@ -87,6 +87,7 @@ rray_yank_impl <- function(x, i) {
   i <- maybe_missing(i, TRUE)
   i <- as_yank_indexer(i, x)
 
+  # TODO
   if (is.integer(i) && is_any_na_int(i)) {
     abort("`NA` indices are not yet supported.")
   }
@@ -95,37 +96,6 @@ rray_yank_impl <- function(x, i) {
   }
 
   rray__yank(x, i)
-}
-
-#' @rdname rray_yank
-#' @export
-`rray_yank<-` <- function(x, i, value) {
-  rray_yank_assign_impl(x, i = maybe_missing(i), value = value)
-}
-
-#' @rdname rray_yank
-#' @export
-`[[<-.vctrs_rray` <- function(x, i, ..., value) {
-  validate_empty_yank_assign_dots(...)
-  rray_yank_assign_impl(x, i = i, value = value)
-}
-
-rray_yank_assign_impl <- function(x, i, value) {
-  i <- maybe_missing(i, TRUE)
-
-  vec_assert(value, arg = "value")
-
-  x_yank <- rray_yank_impl(x, i)
-  value <- vec_cast(value, x_yank)
-  value <- rray_broadcast(value, rray_dim(x_yank))
-
-  out <- vec_data(x)
-
-  indexer <- as_yank_indexer(i, x)
-
-  eval_bare(expr(out[!!!indexer] <- value))
-
-  vec_cast_container(out, x)
 }
 
 # ------------------------------------------------------------------------------

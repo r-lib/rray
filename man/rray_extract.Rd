@@ -55,6 +55,6 @@ x
 }
 \seealso{
 Other rray subsetters: \code{\link{rray_slice}},
-  \code{\link{rray_subset<-}}, \code{\link{rray_yank}}
+  \code{\link{rray_subset<-}}, \code{\link{rray_yank<-}}
 }
 \concept{rray subsetters}
