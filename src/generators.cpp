@@ -3,6 +3,33 @@
 
 // -----------------------------------------------------------------------------
 
+Rcpp::List rray__reshape_dim_names2(const Rcpp::List& dim_names,
+                                    const Rcpp::IntegerVector& dim,
+                                    const Rcpp::IntegerVector& new_dim) {
+
+  Rcpp::List new_dim_names = rray__reshape_dim_names(dim_names, new_dim);
+
+  if (r_is_null(new_dim_names.names())) {
+    return new_dim_names;
+  }
+
+  const R_xlen_t n = new_dim.size();
+  const R_xlen_t n_iter = std::min(n, dim.size());
+  Rcpp::CharacterVector new_meta_names(n);
+  Rcpp::CharacterVector old_meta_names = new_dim_names.names();
+
+  // Remove meta names if the `dim` changed
+  for (R_xlen_t i = 0; i < n_iter; ++i) {
+    if (dim[i] == new_dim[i]) {
+      new_meta_names[i] = old_meta_names[i];
+    }
+  }
+
+  new_dim_names.names() = new_meta_names;
+
+  return new_dim_names;
+}
+
 template <typename T>
 xt::rarray<T> rray__reshape_impl(const xt::rarray<T>& x,
                                  const Rcpp::IntegerVector& dim) {
@@ -23,7 +50,7 @@ Rcpp::RObject rray__reshape(Rcpp::RObject x, const Rcpp::IntegerVector& dim) {
   }
 
   // Early exit, no reshape needed (no copy made)
-  Rcpp::IntegerVector x_dim = rray__dim(x);
+  const Rcpp::IntegerVector& x_dim = rray__dim(x);
   if (r_identical(x_dim, dim)) {
     return x;
   }
@@ -34,7 +61,8 @@ Rcpp::RObject rray__reshape(Rcpp::RObject x, const Rcpp::IntegerVector& dim) {
   DISPATCH_UNARY_ONE(out, rray__reshape_impl, x, dim);
 
   // Potentially going down in dimensionality, but this is fine
-  rray__reshape_and_set_dim_names(out, x);
+  Rcpp::List new_dim_names = rray__reshape_dim_names2(rray__dim_names(x), x_dim, dim);
+  rray__set_dim_names(out, new_dim_names);
 
   return out;
 }

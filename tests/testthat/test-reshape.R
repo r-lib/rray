@@ -53,6 +53,25 @@ test_that("dimension names are maintained where appropriate", {
 
 })
 
+test_that("meta names are retained if the axis size doesn't change (#201)", {
+  x <- new_matrix(1:5, c(5, 1), list(rows = letters[1:5], cols = "c1"))
+
+  expect_equal(
+    rray_dim_names(rray_reshape(x, c(5, 1))),
+    rray_dim_names(x)
+  )
+
+  expect_equal(
+    rray_dim_names(rray_reshape(x, c(1, 1, 5))),
+    list(NULL, cols = "c1", NULL)
+  )
+
+  expect_equal(
+    rray_dim_names(rray_reshape(x, c(5, 1, 1))),
+    c(rray_dim_names(x), list(NULL))
+  )
+})
+
 test_that("can reshape 0 row input", {
 
   x <- new_matrix(numeric(), c(0, 0))
