@@ -119,6 +119,52 @@ rray_subset <- function(x, ...) {
 
 # ------------------------------------------------------------------------------
 
+#' @export
+head.vctrs_rray <- function (x, n = 6L, ...) {
+
+  n_size <- vec_size(n)
+  if (vec_size(n) != 1L) {
+    glubort("`n` must be size 1, not {n_size}.")
+  }
+
+  n <- vec_cast(n, integer())
+
+  x_size <- vec_size(x)
+
+  if (n < 0L) {
+    n <- max(x_size + n, 0L)
+  }
+  else {
+    n <- min(n, x_size)
+  }
+
+  rray_subset(x, seq_len(n))
+}
+
+#' @export
+tail.vctrs_rray <- function(x, n = 6L, ...) {
+
+  n_size <- vec_size(n)
+  if (vec_size(n) != 1L) {
+    glubort("`n` must be size 1, not {n_size}.")
+  }
+
+  n <- vec_cast(n, integer())
+
+  x_size <- vec_size(x)
+
+  if (n < 0L) {
+    n <- max(x_size + n, 0L)
+  }
+  else {
+    n <- min(n, x_size)
+  }
+
+  rray_subset(x, seq.int(to = x_size, length.out = n))
+}
+
+# ------------------------------------------------------------------------------
+
 # This returns a list of correct C indices with one of:
 # - A missing value for an xt::all()
 # - An integer vector of non-contiguous positions for xt::keep()
