@@ -413,3 +413,11 @@ rray__validate_broadcastable_to_dim <- function(x_dim, dim) {
     invisible(.Call(`_rray_rray__validate_broadcastable_to_dim`, x_dim, dim))
 }
 
+rray__yank_assign <- function(x, i, value) {
+    .Call(`_rray_rray__yank_assign`, x, i, value)
+}
+
+rray__yank <- function(x, i) {
+    .Call(`_rray_rray__yank`, x, i)
+}
+
