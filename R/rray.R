@@ -223,7 +223,7 @@ is_reshapeable <- function(x, dim) {
 #'
 #' @export
 rray_elems <- function(x) {
-  prod(rray_dim(x))
+  as.integer(prod(rray_dim(x)))
 }
 
 #' Is `x` an rray?
