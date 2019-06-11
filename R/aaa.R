@@ -24,6 +24,7 @@
 #' @importFrom vctrs field
 #' @importFrom vctrs vec_split
 #' @importFrom vctrs vec_proxy_compare
+#' @importFrom vctrs vec_as_index
 #'
 #' @importFrom vctrs vec_ptype_full
 #' @importFrom vctrs vec_ptype_abbr

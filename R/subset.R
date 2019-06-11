@@ -175,7 +175,7 @@ rray_as_index2 <- function(x, ...) {
   dims <- rray_dims(x)
   indexer <- expand_pad(indexer, dims)
   requested_dims <- vec_size(indexer)
-  proxy_names <- rray_dim_names(x)
+  dim_names <- rray_dim_names(x)
 
   if (requested_dims > dims) {
     glubort(
@@ -193,14 +193,7 @@ rray_as_index2 <- function(x, ...) {
       next
     }
 
-    proxy <- seq_len(dim[i])
-
-    # Character indices need to match by name in `vec_as_index()`
-    if (is.character(index)) {
-      names(proxy) <- proxy_names[[i]]
-    }
-
-    index <- vctrs:::vec_as_index(index, proxy)
+    index <- vec_as_index(index, dim[i], dim_names[[i]])
 
     # Convert contiguous increasing indices to range lists
     if (is_contiguous_increasing(index)) {

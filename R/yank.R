@@ -124,14 +124,7 @@ as_yank_indexer <- function(i, x) {
     #return(i)
   }
 
-  as_yank_indexer_default(i, x)
-}
-
-as_yank_indexer_default <- function(i, x) {
-  # Not looking at vctrs "size" here
-  proxy <- seq_len(rray_elems(x))
-  i <- vctrs:::vec_as_index(i, proxy)
-  i - 1L
+  vec_as_index(i, rray_elems(x)) - 1L
 }
 
 # ------------------------------------------------------------------------------

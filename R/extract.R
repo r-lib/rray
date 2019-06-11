@@ -65,18 +65,13 @@ rray_as_index <- function(x, ..., with_drop = TRUE) {
 }
 
 as_indexer <- function(dots, x) {
-  proxies <- map(rray_dim(x), seq_len)
-  proxy_names <- rray_dim_names(x)
-  dots <- pad_missing(dots, x)
+  dim <- rray_dim(x)
+  dim_names <- rray_dim_names(x)
+  indexer <- pad_missing(dots, x)
 
-  # Set names on the proxy if the indexer is by name
-  for (i in seq_along(proxies)) {
-    if (is.character(dots[[i]])) {
-      names(proxies[[i]]) <- proxy_names[[i]]
-    }
+  for (i in seq_along(indexer)) {
+    indexer[[i]] <- vec_as_index_wrapper(indexer[[i]], dim[i], dim_names[[i]])
   }
-
-  indexer <- map2(dots, proxies, vec_as_index_wrapper)
 
   indexer
 }
@@ -101,12 +96,12 @@ pad_missing <- function(dots, x) {
   dots
 }
 
-vec_as_index_wrapper <- function(i, x) {
+vec_as_index_wrapper <- function(i, n, names) {
   if (is_missing(i)) {
     missing_arg()
   }
   else {
-    vctrs:::vec_as_index(i, x)
+    vec_as_index(i, n, names)
   }
 }
 
