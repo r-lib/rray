@@ -13,10 +13,6 @@ status](https://travis-ci.org/DavisVaughan/rray.svg?branch=master)](https://trav
 coverage](https://codecov.io/gh/DavisVaughan/rray/branch/master/graph/badge.svg)](https://codecov.io/gh/DavisVaughan/rray?branch=master)
 <!-- badges: end -->
 
-``` r
-library(rray)
-```
-
 ## Introduction
 
 rray (said: “r-ray”) is an array manipulation library for R. It has
@@ -36,6 +32,10 @@ three main goals:
     "rray")`.
 
 View the vignette for each goal to learn more about how to use rray.
+
+``` r
+library(rray)
+```
 
 ## What can it do?
 

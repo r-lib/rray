@@ -23,10 +23,6 @@ knitr::opts_chunk$set(
 [![Codecov test coverage](https://codecov.io/gh/DavisVaughan/rray/branch/master/graph/badge.svg)](https://codecov.io/gh/DavisVaughan/rray?branch=master)
 <!-- badges: end -->
 
-```{r}
-library(rray)
-```
-
 ## Introduction
 
 rray (said: "r-ray") is an array manipulation library for R. It has three main goals:
@@ -38,6 +34,10 @@ rray (said: "r-ray") is an array manipulation library for R. It has three main g
 3) To provide a consistent, powerful toolkit for array based manipulation, usable by rray objects and (importantly!) by base R matrices and arrays as well. `vignette("toolkit", package = "rray")`.
 
 View the vignette for each goal to learn more about how to use rray.
+
+```{r}
+library(rray)
+```
 
 ## What can it do?
 
