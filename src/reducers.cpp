@@ -15,7 +15,7 @@
   Rcpp::RObject out;                                           \
   DISPATCH_UNARY_ONE(out, FUN, X, AXES);                       \
                                                                \
-  rray__reshape_and_set_dim_names(out, X);                     \
+  rray__resize_and_set_dim_names(out, X);                      \
                                                                \
   return out
 

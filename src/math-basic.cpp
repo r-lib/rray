@@ -37,20 +37,20 @@ Rcpp::RObject rray__multiply_add(Rcpp::RObject x, Rcpp::RObject y, Rcpp::RObject
 
   Rcpp::IntegerVector dim = rray__dim2(rray__dim2(x_dim, y_dim), z_dim);
 
-  Rcpp::List reshaped_x_dim_names = rray__reshape_dim_names(rray__dim_names(x), dim);
-  Rcpp::List reshaped_y_dim_names = rray__reshape_dim_names(rray__dim_names(y), dim);
-  Rcpp::List reshaped_z_dim_names = rray__reshape_dim_names(rray__dim_names(z), dim);
+  Rcpp::List resized_x_dim_names = rray__resize_dim_names(rray__dim_names(x), dim);
+  Rcpp::List resized_y_dim_names = rray__resize_dim_names(rray__dim_names(y), dim);
+  Rcpp::List resized_z_dim_names = rray__resize_dim_names(rray__dim_names(z), dim);
 
   Rcpp::List new_dim_names;
 
   new_dim_names = rray__coalesce_dim_names(
-    reshaped_x_dim_names,
-    reshaped_y_dim_names
+    resized_x_dim_names,
+    resized_y_dim_names
   );
 
   new_dim_names = rray__coalesce_dim_names(
     new_dim_names,
-    reshaped_z_dim_names
+    resized_z_dim_names
   );
 
   Rcpp::RObject type = vec__type_inner2(vec__type_inner2(x, y), z);

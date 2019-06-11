@@ -79,7 +79,7 @@ rray_duplicate_any <- function(x, axes = NULL) {
 
   res <- keep_dims(flat_res, x, axes)
 
-  new_dim_names <- rray_reshape_dim_names(rray_dim_names(x), vec_dim(res))
+  new_dim_names <- rray_resize_dim_names(rray_dim_names(x), vec_dim(res))
   res <- rray_set_dim_names(res, new_dim_names)
 
   vec_cast_container(res, x)

@@ -5,7 +5,7 @@
 
 // Adds meta names of dim_names onto new_dim_names, allowing for going
 // up or down in dimensionality.
-void reshape_meta_dim_names(Rcpp::List new_dim_names, Rcpp::List dim_names) {
+void resize_meta_dim_names(Rcpp::List new_dim_names, Rcpp::List dim_names) {
 
   if (r_is_null(dim_names.names())) {
     return;
@@ -32,7 +32,7 @@ void reshape_meta_dim_names(Rcpp::List new_dim_names, Rcpp::List dim_names) {
   new_dim_names.names() = new_meta_names;
 }
 
-// rray__reshape_dim_names() takes `dim_names` and grows or shrinks it based
+// rray__resize_dim_names() takes `dim_names` and grows or shrinks it based
 // on `dim`. Specifically it can do:
 // - Grow the dimensionaltiy by appending `NULL` elements
 // - Shrink the dimensionality by removing elements from the back
@@ -43,15 +43,15 @@ void reshape_meta_dim_names(Rcpp::List new_dim_names, Rcpp::List dim_names) {
 // - Shrink meta names dimensionality
 
 // [[Rcpp::export(rng = false)]]
-Rcpp::List rray__reshape_dim_names(Rcpp::List dim_names,
-                                   Rcpp::IntegerVector dim) {
+Rcpp::List rray__resize_dim_names(Rcpp::List dim_names,
+                                  Rcpp::IntegerVector dim) {
 
   int n_old_dim_names = dim_names.size();
   int n_new_dim_names = dim.size();
 
   Rcpp::List new_dim_names = rray__new_empty_dim_names(n_new_dim_names);
 
-  reshape_meta_dim_names(new_dim_names, dim_names);
+  resize_meta_dim_names(new_dim_names, dim_names);
 
   for (int i = 0; i < n_new_dim_names; ++i) {
 
@@ -151,12 +151,12 @@ Rcpp::List rray__dim_names2(Rcpp::RObject x, Rcpp::RObject y) {
 
   Rcpp::IntegerVector dim = rray__dim2(rray__dim(x), rray__dim(y));
 
-  Rcpp::List reshaped_x_dim_names = rray__reshape_dim_names(rray__dim_names(x), dim);
-  Rcpp::List reshaped_y_dim_names = rray__reshape_dim_names(rray__dim_names(y), dim);
+  Rcpp::List resized_x_dim_names = rray__resize_dim_names(rray__dim_names(x), dim);
+  Rcpp::List resized_y_dim_names = rray__resize_dim_names(rray__dim_names(y), dim);
 
   Rcpp::List common_dim_names = rray__coalesce_dim_names(
-    reshaped_x_dim_names,
-    reshaped_y_dim_names
+    resized_x_dim_names,
+    resized_y_dim_names
   );
 
   return common_dim_names;
@@ -165,11 +165,11 @@ Rcpp::List rray__dim_names2(Rcpp::RObject x, Rcpp::RObject y) {
 // -----------------------------------------------------------------------------
 
 // Performs the VERY common task of reshaping dim names of `x` to the new
-// dim size of the result, `res`, and assigning those newly reshaped names
+// dim size of the result, `res`, and assigning those newly resized names
 // directly to `res`.
 
-void rray__reshape_and_set_dim_names(Rcpp::RObject res, Rcpp::RObject x) {
-  Rcpp::List new_dim_names = rray__reshape_dim_names(rray__dim_names(x), rray__dim(res));
+void rray__resize_and_set_dim_names(Rcpp::RObject res, Rcpp::RObject x) {
+  Rcpp::List new_dim_names = rray__resize_dim_names(rray__dim_names(x), rray__dim(res));
   res.attr("dimnames") = new_dim_names;
 }
 

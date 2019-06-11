@@ -41,7 +41,7 @@ rray_det <- function(x) {
 
   res <- keep_dims(res, x, c(1L, 2L))
 
-  new_dim_names <- rray_reshape_dim_names(rray_dim_names(x), rray_dim(res))
+  new_dim_names <- rray_resize_dim_names(rray_dim_names(x), rray_dim(res))
   res <- rray_set_dim_names(res, new_dim_names)
 
   vec_cast_container(res, x)
