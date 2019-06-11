@@ -29,8 +29,8 @@ rray__opposite <- function(x) {
     .Call(`_rray_rray__opposite`, x)
 }
 
-rray__bind <- function(proxy, args, axis, lst_of_dim_names) {
-    .Call(`_rray_rray__bind`, proxy, args, axis, lst_of_dim_names)
+rray__bind <- function(proxy, args, axis) {
+    .Call(`_rray_rray__bind`, proxy, args, axis)
 }
 
 rray__broadcast <- function(x, dim) {

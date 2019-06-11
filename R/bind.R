@@ -70,15 +70,12 @@ rray_bind <- function(..., axis) {
   # finalize partial types
   args <- map(args, vec_type_finalise)
 
-  # outer names from `...` are attached
-  lst_of_dim_names <- map(args, rray_dim_names)
-
   proxy <- vec_type_inner_common(!!!args)
-  args_cast <- map(args, vec_cast_inner, to = proxy)
+  container <- vec_type_container_common(!!!args)
 
-  res <- rray__bind(proxy, args_cast, as_cpp_idx(axis), lst_of_dim_names)
+  res <- rray__bind(proxy, args, as_cpp_idx(axis))
 
-  vec_cast_container(res, vec_type_container_common(!!!args))
+  vec_cast_container(res, container)
 }
 
 #' @rdname rray_bind

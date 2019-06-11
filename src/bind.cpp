@@ -1,5 +1,6 @@
 #include <rray.h>
 #include <dispatch.h>
+#include <cast.h>
 
 #include <xtensor/xstrided_view.hpp>
 #include <xtensor/xarray.hpp>
@@ -309,9 +310,19 @@ Rcpp::RObject rray__bind_impl(const Rcpp::List& args,
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__bind(Rcpp::RObject proxy,
-                         const Rcpp::List& args,
-                         const int& axis,
-                         const Rcpp::List& lst_of_dim_names) {
+                         Rcpp::List args,
+                         const int& axis) {
+
+  R_len_t n_args = args.size();
+  Rcpp::List lst_of_dim_names(n_args);
+
+  // Attach outer names
+  lst_of_dim_names.names() = args.names();
+
+  for (int i = 0; i < n_args; ++i) {
+    lst_of_dim_names[i] = rray__dim_names(args[i]);
+    args[i] = vec__cast_inner(args[i], proxy);
+  }
 
   // Dispatch on proxy type
   switch(TYPEOF(proxy)) {

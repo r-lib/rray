@@ -82,15 +82,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // rray__bind
-Rcpp::RObject rray__bind(Rcpp::RObject proxy, const Rcpp::List& args, const int& axis, const Rcpp::List& lst_of_dim_names);
-RcppExport SEXP _rray_rray__bind(SEXP proxySEXP, SEXP argsSEXP, SEXP axisSEXP, SEXP lst_of_dim_namesSEXP) {
+Rcpp::RObject rray__bind(Rcpp::RObject proxy, Rcpp::List args, const int& axis);
+RcppExport SEXP _rray_rray__bind(SEXP proxySEXP, SEXP argsSEXP, SEXP axisSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::RObject >::type proxy(proxySEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type args(argsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type args(argsSEXP);
     Rcpp::traits::input_parameter< const int& >::type axis(axisSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::List& >::type lst_of_dim_names(lst_of_dim_namesSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__bind(proxy, args, axis, lst_of_dim_names));
+    rcpp_result_gen = Rcpp::wrap(rray__bind(proxy, args, axis));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1123,7 +1122,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__pow", (DL_FUNC) &_rray_rray__pow, 2},
     {"_rray_rray__identity", (DL_FUNC) &_rray_rray__identity, 1},
     {"_rray_rray__opposite", (DL_FUNC) &_rray_rray__opposite, 1},
-    {"_rray_rray__bind", (DL_FUNC) &_rray_rray__bind, 4},
+    {"_rray_rray__bind", (DL_FUNC) &_rray_rray__bind, 3},
     {"_rray_rray__broadcast", (DL_FUNC) &_rray_rray__broadcast, 2},
     {"_rray_rray__full_like", (DL_FUNC) &_rray_rray__full_like, 2},
     {"_rray_rray__diag", (DL_FUNC) &_rray_rray__diag, 2},
