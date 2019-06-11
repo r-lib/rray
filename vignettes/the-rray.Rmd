@@ -1,5 +1,5 @@
 ---
-title: "The `rray`"
+title: "The rray"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{The `rray`}
@@ -18,15 +18,18 @@ knitr::opts_chunk$set(
 
 ```{r setup}
 library(rray)
+library(vctrs)
 ```
 
 ## Introduction
 
-rray provides a new array-like class that alters some of the behavior with base R arrays that I find non-intuitive. In the same spirit as the tibble package, rray does less than base R, but works as consistently and intuitively as possible.
+rray provides a new array class that changes some of the behavior with base R arrays that I think could be altered to result in code that is more predictable and easy to program around. In the same spirit as [tibble](https://tibble.tidyverse.org/), rrays do less than base R arrays to try and work as consistently and intuitively as possible.
 
 ## Subsetting
 
-Base R subsets matrices and arrays with a default of `drop = TRUE`, similar to data frames. This can result in problematic behavior, especially when programming around arrays, because a lot of mental work is required to ensure that functions don't accidentally subset matrices in a way that coerces them to vectors.
+### The problem
+
+Base R subsets matrices and arrays with a default of `drop = TRUE`, similar to data frames. This is one of the most common sources of bugs, especially when programming around arrays, because a lot of mental work is required to ensure that functions don't accidentally subset matrices in a way that coerces them to vectors.
 
 ```{r}
 x_mat <- matrix(1:6, ncol = 2)
@@ -34,20 +37,24 @@ x_mat
 
 x_mat[1:2,]
 
-x_mat[1,]
+x_mat[1L,]
 
 x_mat[,1:2]
 
-x_mat[,1]
+x_mat[,1L]
 ```
 
-Generally, the fix for this is to use `drop = FALSE`.
+This example demonstrates that `[` is not _type stable_. This means it is impossible to predict the type of the output solely based on the input's type. _Type_ is defined in the vctrs sense (read about it [here](https://vctrs.r-lib.org/articles/type-size.html)), but for usage in rray think of the type as being the class of an object along with its attributes, and the _shape_ of the object, which is the dimensionality of the array excluding the first dimension. The first dimension is handled separately as the _size_.
+
+To give a concrete example, `x_mat` has a type of `<integer[,2]>`. Both `1:2` and `1L` have types of `<integer>`. So the full subset expression looks like: `<integer[,2]>[<integer>,]`. If `[` was type stable, you would be able to predict the output's type based on these inputs. But you can't! In some cases, this returns `<integer[,2]>`, and in others it returns `<integer>`.
+
+Looking past the type instability, the fix for the dropping of dimensions is usually to use `drop = FALSE`.
 
 ```{r}
 x_mat[1, , drop = FALSE]
 ```
 
-But this requires careful thinking about how to subset arrays programatically, adding the right number of commas where required to ensure that dimensions aren't dropped. Consider pulling the first row of each dimension, and pay attention to the varying number of commas required to prevent a vector from being returned.
+But this requires careful thinking about how to subset arrays programatically, adding the right number of commas where required to ensure that dimensions aren't dropped. Consider how you would pull the first row of a 3D vs 4D array, and pay attention to the varying number of commas required to prevent a vector from being returned.
 
 ```{r}
 x_3D <- array(1:12, c(2, 3, 2))
@@ -58,67 +65,126 @@ x_3D[1, , , drop = FALSE]
 x_4D[1, , , , drop = FALSE]
 ```
 
-rray takes a different approach, and never drops dimensions when subsetting. This approach actually frees up more intuitive subsetting syntax, which actually results in an error with base R.
+### The solution
+
+rray takes a different approach, and never drops dimensions when subsetting. This results in a type stable `[` method, and actually frees up subsetting syntax that I find more intuitive, but results in an error with base R. To convert `x_3D` to an rray, use `as_rray()`.
 
 ```{r, error = TRUE}
 x_3D_rray <- as_rray(x_3D)
 
+# First row, but still 3D
+x_3D_rray[1]
+
+# Trailing commas are ignored, so this is the same as above
 x_3D_rray[1,]
 
+# In base R this is an error
 x_3D[1,]
 ```
 
-In this way, whether subsetting one element or multiple elements from a certain dimension, the result is an array with the same dimensionality as before. This is more predictable to program around.
+This type stability makes rrays more predictable to program around. Whether subsetting one element or multiple elements from a specific dimension, you can know that the output will have a consistent type.
 
 ```{r}
-x_3D_rray[, 1]
+x_3D_rray[, 1L]
 
 x_3D_rray[, 1:2]
 ```
 
-## Element Access
-
-Base R allows you to access inner elements of an array by using `[` without any commas. Again, this dropping of dimensions feels inconsistent, and is rarely something that I've wanted to happen.
-
-```{r}
-x_3D[1:2]
-```
-
-rray disables this behavior, and instead throws an error. 
+If you are writing a package where you aren't sure if the user is going to pass in an rray or an array, you'll want to be sure that you can subset consistently, no matter the input type. For that, `rray_subset()` has been exposed, which is what powers `[`. This means you can have this type stable subsetting with base R objects.
 
 ```{r, error = TRUE}
-x_3D_rray[1:2]
+x_3D[1, 1]
+
+rray_subset(x_3D, 1, 1)
+
+# Same as with the rray
+rray_subset(x_3D_rray, 1, 1)
 ```
 
-Instead, either coerce to a vector then subset the inner elements, or first use the more explicit rray subsetting behavior to isolate the elements (keeping the dimensionality) and then call `as.vector()`. Alternatively, to keep an rray but drop dimensions of size `1`, use `rray_squeeze()`.
+## Subsetting by position
+
+### The problem
+
+Base R allows you to access "inner" elements of an array by using `[` without any commas, i.e. `x[i]`. While technically this one operation on its own is type stable, when you compare it to `x[i,]` and `x[,i]`, it becomes clear that it is doing something completely different.
 
 ```{r}
-# coerce then subset
-as.vector(x_3D_rray)[1:2]
+# Positions 1 and 2
+x_3D[1:2]
 
-# subset
-x_slice <- x_3D_rray[1:2, 1, 1]
-x_slice
+# Positions 2 and 3
+# Correspond to elements at indices: 
+# (2, 1, 1) and (1, 2, 1)
+x_3D[2:3]
 
-# then coerce
-as.vector(x_slice)
-
-# or drop dimensions of size 1
-# to keep an rray
-rray_squeeze(x_slice)
+rray_dim(x_3D[1:2])
+rray_dim(x_3D[1:2,,])
+rray_dim(x_3D[,1:2,])
+rray_dim(x_3D[,,1:2])
 ```
 
-An argument could be made for the behavior of `[` with no commas to work like data frames, returning columns.
+I think that this is a completely separate operation, called _subsetting by position_. The traditional behavior of `x[i, j, ...]` is called _subsetting by index_.
+
+### The solution
+
+As seen briefly in the subsetting section, rrays never drop dimensions, and ignore trailing commas when subsetting. This means that `x[i]` selects rows from `x`, not positions.
 
 ```{r}
-df <- data.frame(x = 1:3, y = 4:6)
+x_3D_rray[2]
 
-df[1]
+# Same as this
+x_3D_rray[2,]
 ```
 
-This works fine for 2 dimensional data frames, where returning the columns can be justified as the most intuitive thing to do (especially for data analysis). But for arrays with 3 or more dimensions, the mental model of "rows" and "columns" is generally traded in for simply saying "the first dimension". In this world, there is no strong case for `[` with no commas to have a special behavior of always returning elements from an arbitrary 2nd dimension.
+This behavior results in a nice symmetical predictable behavior that is easy to see if you draw out the different operations. Just by adding commas, we go from selecting rows, to columns, to elements in the third dimension. The type is stable the entire time.
+
+```
+x[i]
+x[,i]
+x[,,i]
+```
+
+Because trailing commas are ignored, the following are also equivalent to the above explanation.
+
+```
+x[i,]
+x[,i,]
+x[,,i,]
+```
+
+But what about selecting by position? This is still a useful operation, so it would make sense to have some way to do it. For that, you can equivalently use either `rray_yank()` or `[[`. `rray_yank()` always returns a 1D vector, and allows you to pass in an integer vector to subset by position.
+
+```{r}
+# First 3 positions
+x_3D_rray[[1:3]]
+
+rray_yank(x_3D_rray, 1:3)
+```
+
+There are assignment variations of these as well, which are very useful for replacing `NA` values if you combine it with the other type of object that `i` can be, a logical with the same dimensions as `x`. `TRUE` values are interpreted as the positions to subset.
+
+```{r}
+dummy <- x_3D_rray
+
+# Set the first row to NA
+dummy[1] <- NA
+
+# Set NA values to 0
+dummy[[is.na(dummy)]] <- 0
+
+dummy
+```
+
+The 3rd arm of subsetting is when you want to subset _by index_ like `rray_subset()`, but you want to actually drop the dimensions like `rray_yank()`. This is accomplished with `rray_extract()`.
+
+```{r}
+rray_subset(x_3D_rray, 1)
+
+rray_extract(x_3D_rray, 1)
+```
 
 ## Dimension Names
+
+### The problem
 
 Base R has consistent dimension name handling rules, but they can be surprising because they often don't retain the maximum amount of information that it seems like they could.
 
@@ -137,7 +203,11 @@ x_row_nms + x_col_nms
 x_col_nms + x_row_nms
 ```
 
-There is no reason that dimension names from both inputs can't be used here. rray has a different set of dimension name reconciliation rules that attempts to pull names from all inputs.
+It is reasonable that dimension names from both inputs could be used here.
+
+### The solution
+
+rray has a different set of dimension name reconciliation rules that attempts to pull names from all inputs.
 
 ```{r}
 x_row_nms_rray <- as_rray(x_row_nms)
@@ -148,18 +218,18 @@ x_row_nms_rray + x_col_nms_rray
 x_col_nms_rray + x_row_nms_rray
 ```
 
-This isn't to say that the order doesn't matter. If both inputs have row names, for example, the row names of the result come from the first input.
+The order of the inputs still matters. If both inputs have row names, for example, the row names of the result come from the first input.
 
 ```{r}
-x_col_row_nms_rray <- rray_set_row_names(x_col_nms_rray, c("row1", "row2"))
-x_col_row_nms_rray
+x_col_and_row_nms_rray <- rray_set_row_names(x_col_nms_rray, c("row1", "row2"))
+x_col_and_row_nms_rray
 
-x_row_nms_rray + x_col_row_nms_rray
+x_row_nms_rray + x_col_and_row_nms_rray
 
-x_col_row_nms_rray + x_row_nms_rray
+x_col_and_row_nms_rray + x_row_nms_rray
 ```
 
-This approach emphasizes maintaining the maximum amount of information possible. The underlying engine for dimension name handling is `rray_dim_names_common()`. Pass it multiple inputs, and it will return the common dimension names using rray's rules.
+This approach emphasizes maintaining the maximum amount of information possible. The underlying engine for dimension name handling is `rray_dim_names_common()`. Pass it multiple inputs and it will return the common dimension names using rray's rules.
 
 ```{r}
 rray_dim_names_common(x_row_nms, x_col_nms)
