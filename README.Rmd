@@ -1,5 +1,7 @@
 ---
 output: github_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -21,17 +23,58 @@ knitr::opts_chunk$set(
 [![Codecov test coverage](https://codecov.io/gh/DavisVaughan/rray/branch/master/graph/badge.svg)](https://codecov.io/gh/DavisVaughan/rray?branch=master)
 <!-- badges: end -->
 
+```{r}
+library(rray)
+```
+
 ## Introduction
 
-rray has three goals:
+rray (said: "r-ray") is an array manipulation library for R. It has three main goals:
 
-1) To provide an rray class that implements stricter matrices and arrays than base R, similar in spirit to the tibble package. `vignette("the-rray", package = "rray")`.
+1) To provide an rray class that implements stricter matrices and arrays than base R, similar in spirit to tibble. `vignette("the-rray", package = "rray")`.
 
 2) To support _broadcasting_ semantics throughout the package, allowing for more flexible and intuitive array operations than are possible with base R. `vignette("broadcasting", package = "rray")`.
 
-3) To provide a consistent, powerful toolkit for array based manipulation. (WIP, but see the [function reference](https://davisvaughan.github.io/rray/reference/index.html) for current functionality)
+3) To provide a consistent, powerful toolkit for array based manipulation, usable by rray objects and (importantly!) by base R matrices and arrays as well. `vignette("toolkit", package = "rray")`.
 
 View the vignette for each goal to learn more about how to use rray.
+
+## What can it do?
+
+In short, rray tries to make array manipulation in R more intuitive by combining the ideas of broadcasting and knowing when to _not_ drop dimensions. This results in operations such as:
+
+```{r}
+x <- rray(1:6, dim = c(3, 2))
+
+# Compute proportions along the 1st dimension
+x / rray_sum(x, axes = 1)
+
+# Equivalent base R syntax
+sweep(x, 2, apply(x, 2, sum), "/")
+```
+
+These concepts are baked into every part of rray, and show up in other functions such as `rray_bind()`. Using broadcasting, `rray_bind()` can bind arrays together in ways that base R cannot with the native `cbind()` and `rbind()` functions.
+
+```{r, error=TRUE}
+a <- array(c(1, 2), dim = c(2, 1))
+b <- array(c(3, 4), dim = c(1, 2))
+
+a
+
+b
+
+# Error
+cbind(a, b)
+
+# `a` is broadcast to have dimensions: (2, 2)
+rray_bind(a, b, axis = 1)
+
+# Error
+rbind(a, b)
+
+# `b` is broadcast to have dimensions: (2, 2)
+rray_bind(a, b, axis = 2)
+```
 
 ## Installation
 
@@ -43,14 +86,23 @@ devtools::install_github("DavisVaughan/rray")
 
 ## Acknowledgements
 
-rray would not be possible without the underlying C++ library, [`xtensor`](https://github.com/QuantStack/xtensor). Additionally, rray uses a large amount of the new infrastructure in [`vctrs`](https://github.com/r-lib/vctrs) to be as consistent and type stable as possible. 
+rray would not be possible without the underlying C++ library, [`xtensor`](https://github.com/QuantStack/xtensor). Additionally, rray uses a large amount of the infrastructure in [`vctrs`](https://github.com/r-lib/vctrs) to be as consistent and type stable as possible. 
 
 ## Alternatives
 
 The Matrix package implements a small subset of column-wise broadcasting 
 operations. rray fully supports broadcasting in all operations.
 
-The original motivation for this package, and even for `xtensor`, is the excellent
-Python library, `numpy`. As far as I know, it has the original implementation of
+The original motivation for this package, and even for xtensor, is the excellent
+Python library, numpy. As far as I know, it has the original implementation of
 broadcasting, and is a core library that a huge number of others are built on 
 top of.
+
+In the past, the workhorse for flexibly binding arrays together has been the abind package. This package has been a great source of inspiration and has served as a nice benchmark for rray.
+
+## Notes
+
+Currently, rray does not handle missing values. This is coming, as the underlying library xtensor natively supports missing values, however a few upstream bugs are currently preventing rray from using those features.
+
+rray will perform best on R 3.6.0 and above. It is able to take advantage of a few of the ALTREP features there, which result in less copies being made per function call.
+
