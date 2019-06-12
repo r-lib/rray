@@ -1,8 +1,8 @@
 ---
-title: "rray as a toolkit"
+title: "Toolkit"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{rray as a toolkit}
+  %\VignetteIndexEntry{Toolkit}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
@@ -23,23 +23,18 @@ library(magrittr)
 
 ## Introduction
 
-One of the big goals for rray is to be a general purpose toolkit for working with arrays. A requirement of this is that you shouldn't have to opt into using rray objects to be able to take advantages of the nice features of broadcasting, or the ability to use any of the `rray_*()` functions. That requirement has been at the core of rray development, and it means that you can use base R vector/matrix/array objects with any of the rray functions, and still get a base R object back out.
+One of the big goals for rray is to be a general purpose toolkit for working with arrays. A requirement of this is that you shouldn't have to opt into using rray objects to be able to take advantage of broadcasting or the ability to use any of the `rray_*()` functions. That requirement has been at the core of rray development, and it means that you can use base R vector/matrix/array objects with any of the rray functions, and still get a base R object back out.
 
 ```{r}
 x <- matrix(1:6, nrow = 2)
 y <- matrix(1:2, nrow = 2)
 
-rray_sum(x, axes = 1)
-
-rray_bind(x, x, axis = 3)
-
-# You can't add these together with base R!
 rray_add(x, y)
 ```
 
 ## Axes
 
-The way you specify the dimensions over which a function should be applied is very different in rray compared with base R. With base R, you'll often use the `MARGIN` argument to specify the dimensions. In rray, you use `axes` (or `axis`, depending on the function). In short, these two are _complements_ of one another. Ignoring the fact that rray doesn't drop length 1 dimensions, notice that the values computed here are the same, even though the dimensions to compute over look different.
+Many of the function in rray are applied "along an axis". With base R, you might be used to the `MARGIN` argument when specifying the dimension to apply a function over. In rray, you'll use `axes` (or `axis`, depending on the function). In short, these two are _complements_ of one another. Ignoring the fact that rray doesn't drop length 1 dimensions, notice that the values computed here are the same, even though the dimensions to compute over look different.
 
 ```{r}
 x <- array(1:8, c(2, 2, 2))
@@ -49,57 +44,89 @@ rray_sum(x, axes = 1)
 apply(x, MARGIN = c(2, 3), FUN = sum)
 ```
 
-If you do want to drop dimensions with rray, you can explictly call `rray_squeeze()` afterwards. It is much easier to drop explictly than it is to recover the dropped dimensions from `apply()`.
+I find that `axes` is a more intuitive way to specify the dimensions. The key point is that with `axes`, you list the dimensions that you are allowing to change in some way. In the above example with the reducer `rray_sum()`, `axes = 1` was specified. This _guarantees_ that the result will have the same dimensions as `x` everywhere except in the first dimension, which will have length 1, no matter what. In other words, the dimensions change as: `(2, 2, 2) -> (1, 2, 2)`.
+
+## Binding
+
+Reducers aren't the only functions with this `axes` property. With `rray_bind()`, you specify the `axis` that you want to bind along. This has the same guarantee that only the `axis` specified will be changing. The only caveat here is that the inputs are first broadcast to a common dimension (ignoring the `axis` dimension) before the binding is carried out. A few examples might be helpful:
+
+```{r}
+# (5, 1)
+x <- matrix(1:5)
+
+# (3)
+y <- 6:8
+
+rray_bind(x, y, axis = 1)
+```
+
+This works by first finding the common dimensions between `x` and `y`, ignoring the `axis` dimension. So in this case the common dimension is `(., 1)` where the `.` represents whatever dimension is there for that object. After broadcasting the inputs to those shapes, it is probably easier to see how the binding is occurring.
+
+```{r}
+x_broadcast <- rray_broadcast(x, c(5, 1))
+x_broadcast
+
+y_broadcast <- rray_broadcast(y, c(3, 1))
+y_broadcast
+
+rray_bind(x_broadcast, y_broadcast, axis = 1)
+```
+
+The `axis` is actually taken account when finding the common dimensions. This means that you can bind along an axis that is higher in dimensionality than any of the inputs. For example, you can bind two matrices along the third dimension.
+
+```{r}
+rray_bind(x, x, axis = 3)
+```
+
+This works by finding the common dimension between `x` and `x`, which is just `(5, 1)`, and then checking that against the `axis`. If `axis` is implicitly along a higher dimension, the common dimension is extended as needed. In this case it is extended to `(5, 1, 1)`. The inputs are broadcast to that shape, and then bound together.
+
+```{r}
+x_broadcast <- rray_broadcast(x, c(5, 1, 1))
+x_broadcast
+
+rray_bind(x_broadcast, x_broadcast, axis = 3)
+```
+
+## Dimension dropping
+
+One thing you will immediately notice when working with rray is that it often tries _not_ to drop dimensions. This happens most apparently in subsetting, and in the reducers like `rray_sum()` and is in stark contrast to base R.
+
+```{r}
+x <- matrix(1:6, ncol = 2)
+x_rray <- as_rray(x)
+
+x[1,]
+x_rray[1,]
+
+apply(x, 2, sum)
+rray_sum(x, axes = 1)
+```
+
+The rationale for this has to do with how broadcasting works. When dimensions aren't dropped, operations such as the following are natural:
+
+```{r}
+x_rray / rray_sum(x, axes = 1)
+```
+
+This doesn't work in the same way with base R, and can result in a tragic error since partial recycling kicks in.
+
+```{r}
+x / apply(x, 2, sum)
+
+# Equivalent to 
+col_sums <- apply(x, 2, sum)
+partially_recycled <- matrix(rep(col_sums, times = 3), ncol = 2)
+partially_recycled
+
+x / partially_recycled
+```
+
+
+
+If you do want to drop dimensions with rray, you can explicitly call `rray_squeeze()` afterwards. It is much easier to drop explicitly than it is to recover the dropped dimensions from `apply()`.
 
 ```{r}
 x %>%
   rray_sum(axes = 1) %>%
   rray_squeeze()
 ```
-
-I find that `axes` is a more intuitive way to specify the dimensions, because you are listing the dimensions that you are allowing to change in some way. In the above example with the reducer `rray_sum()`, I specified `axes = 1`. This _guarantees_ that the result will have the same dimensions as `x` everywhere except in the first dimension, which will have length 1, no matter what. In other words, the dimensions go from `(2, 2, 2)` to `(1, 2, 2)`.
-
-For another example, consider `rray_bind()`.
-
-```{r}
-# Bind "along" the first axis
-# rray_bind((2, 2, 2), (2, 2, 2), axis = 1) -> (4, 2, 2)
-rray_bind(x, x, axis = 1)
-
-# rray_bind((2, 2, 2), (2, 2, 2), axis = 2) -> (2, 4, 2)
-rray_bind(x, x, axis = 2)
-
-# rray_bind((2, 2, 2), (2, 2, 2), axis = 3) -> (2, 2, 4)
-rray_bind(x, x, axis = 3)
-```
-
-To determine the resulting dimensions of a bind operation, there are two steps. First, the common dimensions are determined in every dimension except for the `axis` of interest. Then, to determine the dimension size of the `axis`, add the `axis` sizes of the inputs.
-
-```{r}
-axis <- 1
-arg_1 <- rray_slice(x, 0, axis)
-arg_2 <- rray_slice(x, 0, axis)
-
-# make an empty object with `axis` dimensionality to broadcast with
-dummy_dim <- rep(1L, times = axis)
-dummy_dim[axis] <- 0L
-dummy <- array(numeric(), dummy_dim)
-
-# find the common dimensions
-new_dim <- rray_dim_common(arg_1, arg_2, dummy)
-
-new_dim[axis] <- rray_dim(x)[axis] + rray_dim(x)[axis]
-
-new_dim
-```
-
-To determine the resulting dimensions, all you have to do is find the common dimensions, and then add together the dimensions along the `axis` of interest. Again, the only dimension that is allowed to change is the `axis` dimension. You might be surprised to learn that you can actually bind along a higher dimensional axis than what are specified by the inputs in `...`.
-
-```{r}
-# rray_bind((2, 2, 2), (2, 2, 2), axis = 4) -> (2, 4, 2, 2)
-rray_bind(x, x, axis = 4)
-
-rray_bind(x, x, axis = 5)
-```
-
-TODO - insert images showcasing applying a function along an axis. Use a 3D array, and do along 1st, 2nd, and 3rd dimension.
