@@ -29,12 +29,13 @@ One of the big goals for rray is to be a general purpose toolkit for working wit
 x <- matrix(1:6, nrow = 2)
 y <- matrix(1:2, nrow = 2)
 
+# Base R matrices, added with broadcasting
 rray_add(x, y)
 ```
 
 ## Axes
 
-Many of the function in rray are applied "along an axis". With base R, you might be used to the `MARGIN` argument when specifying the dimension to apply a function over. In rray, you'll use `axes` (or `axis`, depending on the function). In short, these two are _complements_ of one another. Ignoring the fact that rray doesn't drop length 1 dimensions, notice that the values computed here are the same, even though the dimensions to compute over look different.
+Many of the functions in rray are applied "along an axis". With base R, you might be used to the `MARGIN` argument when specifying the dimension to apply a function over. In rray, you'll use `axes` (or `axis`, depending on the function). In short, these two are _complements_ of one another. Ignoring the fact that rray doesn't drop length 1 dimensions, notice that the values computed in the example below are the same, even though the dimensions to compute over look different.
 
 ```{r}
 x <- array(1:8, c(2, 2, 2))
@@ -44,11 +45,11 @@ rray_sum(x, axes = 1)
 apply(x, MARGIN = c(2, 3), FUN = sum)
 ```
 
-I find that `axes` is a more intuitive way to specify the dimensions. The key point is that with `axes`, you list the dimensions that you are allowing to change in some way. In the above example with the reducer `rray_sum()`, `axes = 1` was specified. This _guarantees_ that the result will have the same dimensions as `x` everywhere except in the first dimension, which will have length 1, no matter what. In other words, the dimensions change as: `(2, 2, 2) -> (1, 2, 2)`.
+I find that `axes` is a more intuitive way to specify the dimensions. This is because with `axes`, you list the dimensions that you are allowing to change in some way. In the above example, `axes = 1` was specified which _guarantees_ that the result will have the same dimensions as `x` everywhere except in the first dimension, which will have length 1, no matter what. In other words, the dimensions change as: `(2, 2, 2) -> (1, 2, 2)`.
 
 ## Binding
 
-Reducers aren't the only functions with this `axes` property. With `rray_bind()`, you specify the `axis` that you want to bind along. This has the same guarantee that only the `axis` specified will be changing. The only caveat here is that the inputs are first broadcast to a common dimension (ignoring the `axis` dimension) before the binding is carried out. A few examples might be helpful:
+Reducers aren't the only functions with this `axes` guarantee. With `rray_bind()`, you specify the `axis` that you want to bind along. This has the same guarantee that only the `axis` specified will be changing. The only caveat here is that the inputs are first broadcast to a common dimension (ignoring the `axis` dimension) before the binding is carried out. A few examples might be helpful:
 
 ```{r}
 # (5, 1)
@@ -60,12 +61,14 @@ y <- 6:8
 rray_bind(x, y, axis = 1)
 ```
 
-This works by first finding the common dimensions between `x` and `y`, ignoring the `axis` dimension. So in this case the common dimension is `(., 1)` where the `.` represents whatever dimension is there for that object. After broadcasting the inputs to those shapes, it is probably easier to see how the binding is occurring.
+This works by first finding the common dimensions between `x` and `y`, ignoring the `axis` dimension. So in this case the common dimension is `(., 1)` where the `.` represents whatever dimension is actually there for that object. The final result after binding the inputs together will also have a `(., 1)` shape, where the `.` will be the sum of all of the 1st dimension sizes of the inputs (in this case `5 + 3 = 8`).
 
 ```{r}
+# (5, 1) where `. = 5` from x
 x_broadcast <- rray_broadcast(x, c(5, 1))
 x_broadcast
 
+# (3, 1) where `. = 3` from y
 y_broadcast <- rray_broadcast(y, c(3, 1))
 y_broadcast
 
@@ -78,7 +81,7 @@ The `axis` is actually taken account when finding the common dimensions. This me
 rray_bind(x, x, axis = 3)
 ```
 
-This works by finding the common dimension between `x` and `x`, which is just `(5, 1)`, and then checking that against the `axis`. If `axis` is implicitly along a higher dimension, the common dimension is extended as needed. In this case it is extended to `(5, 1, 1)`. The inputs are broadcast to that shape, and then bound together.
+This works by finding the common dimension between `x` and `x`, which is just `(5, 1)`, and then checking that against the `axis`. If `axis` is implicitly along a higher dimension, the common dimension is extended as needed. In this case it is extended to `(5, 1, 1)` to match the fact that you are binding along the third dimension. The inputs are broadcast to that shape, and then bound together.
 
 ```{r}
 x_broadcast <- rray_broadcast(x, c(5, 1, 1))
@@ -105,10 +108,10 @@ rray_sum(x, axes = 1)
 The rationale for this has to do with how broadcasting works. When dimensions aren't dropped, operations such as the following are natural:
 
 ```{r}
-x_rray / rray_sum(x, axes = 1)
+x_rray / rray_sum(x_rray, axes = 1)
 ```
 
-This doesn't work in the same way with base R, and can result in a tragic error since partial recycling kicks in.
+This doesn't work as you might expect with base R, and can result in a tragic error since partial recycling kicks in and you don't get an error.
 
 ```{r}
 x / apply(x, 2, sum)
@@ -121,12 +124,48 @@ partially_recycled
 x / partially_recycled
 ```
 
+This works nicely in rray because of two reasons, both are necessary:
 
-
-If you do want to drop dimensions with rray, you can explicitly call `rray_squeeze()` afterwards. It is much easier to drop explicitly than it is to recover the dropped dimensions from `apply()`.
+- The dimensions aren't dropped 
+- Broadcasting kicks in
 
 ```{r}
-x %>%
-  rray_sum(axes = 1) %>%
-  rray_squeeze()
+x_sum <- rray_sum(x_rray, axes = 1)
+
+# When `/` is called, the inputs are broadcast to the same shape, like this
+dim <- rray_dim_common(x_rray, x_sum)
+x_broadcast <- rray_broadcast(x_rray, dim)
+x_sum_broadcast <- rray_broadcast(x_sum, dim)
+
+x_broadcast
+
+x_sum_broadcast
+
+x_broadcast / x_sum_broadcast
 ```
+
+If you do want to drop dimensions with rray, you can explicitly call `rray_squeeze()` afterwards. As a rule of thumb, it is much easier to drop dimensions explicitly than it is to recover them.
+
+```{r}
+x_rray %>%
+  rray_sum(axes = 1) %>%
+  rray_squeeze(axes = 1)
+```
+
+If you come from NumPy, you might be used to reducers dropping the axis you reduce over. I think this is a mistake, and there have been a number of discussions on the NumPy forums about this choice. Here is why:
+
+```{r, error=TRUE}
+# This is the result you'd get in a NumPy sum. The 1st dimension is dropped
+x_sum_dropped <- rray_squeeze(rray_sum(x_rray, axes = 1), axes = 1)
+x_sum_dropped
+
+# Now broadcasting doesn't work!
+x_rray / x_sum_dropped
+
+# So you have to add back the dimension
+# (numpy has slightly cleaner ways to do this, but it's still an extra step)
+x_sum_reshaped <- rray_expand_dims(x_sum_dropped, 1)
+x_rray / x_sum_reshaped
+```
+
+For the curious, Julia's implementation of reducers works similarly to rray. 
