@@ -2,7 +2,7 @@
 title: "The rray"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{The `rray`}
+  %\VignetteIndexEntry{The rray}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
