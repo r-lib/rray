@@ -21,10 +21,10 @@ rray_yank_assign <- function(x, i, value) {
   value <- vec_cast_inner(value, x)
 
   # TODO
-  if (is.integer(i) && is_any_na_int(i)) {
+  if (is.integer(i) && is_any_na_int(list(i))) {
     abort("`NA` indices are not yet supported.")
   }
-  else if (is.logical(i) && is_any_na_int(as.integer(i))) {
+  else if (is.logical(i) && is_any_na_int(list(as.integer(i)))) {
     abort("`NA` indices are not yet supported.")
   }
 
