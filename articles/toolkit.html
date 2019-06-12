@@ -102,15 +102,16 @@
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">x &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/matrix">matrix</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>, <span class="dt">nrow =</span> <span class="dv">2</span>)</a>
 <a class="sourceLine" id="cb2-2" data-line-number="2">y &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/matrix">matrix</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>, <span class="dt">nrow =</span> <span class="dv">2</span>)</a>
 <a class="sourceLine" id="cb2-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="kw"><a href="../reference/rray_arith.html">rray_add</a></span>(x, y)</a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="co">#&gt;      [,1] [,2] [,3]</span></a>
-<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="co">#&gt; [1,]    2    4    6</span></a>
-<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="co">#&gt; [2,]    4    6    8</span></a></code></pre></div>
+<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="co"># Base R matrices, added with broadcasting</span></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="kw"><a href="../reference/rray_arith.html">rray_add</a></span>(x, y)</a>
+<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="co">#&gt;      [,1] [,2] [,3]</span></a>
+<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="co">#&gt; [1,]    2    4    6</span></a>
+<a class="sourceLine" id="cb2-8" data-line-number="8"><span class="co">#&gt; [2,]    4    6    8</span></a></code></pre></div>
 </div>
 <div id="axes" class="section level2">
 <h2 class="hasAnchor">
 <a href="#axes" class="anchor"></a>Axes</h2>
-<p>Many of the function in rray are applied “along an axis”. With base R, you might be used to the <code>MARGIN</code> argument when specifying the dimension to apply a function over. In rray, you’ll use <code>axes</code> (or <code>axis</code>, depending on the function). In short, these two are <em>complements</em> of one another. Ignoring the fact that rray doesn’t drop length 1 dimensions, notice that the values computed here are the same, even though the dimensions to compute over look different.</p>
+<p>Many of the functions in rray are applied “along an axis”. With base R, you might be used to the <code>MARGIN</code> argument when specifying the dimension to apply a function over. In rray, you’ll use <code>axes</code> (or <code>axis</code>, depending on the function). In short, these two are <em>complements</em> of one another. Ignoring the fact that rray doesn’t drop length 1 dimensions, notice that the values computed in the example below are the same, even though the dimensions to compute over look different.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">x &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/array">array</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">8</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>))</a>
 <a class="sourceLine" id="cb3-2" data-line-number="2"></a>
 <a class="sourceLine" id="cb3-3" data-line-number="3"><span class="kw"><a href="../reference/rray_sum.html">rray_sum</a></span>(x, <span class="dt">axes =</span> <span class="dv">1</span>)</a>
@@ -128,12 +129,12 @@
 <a class="sourceLine" id="cb3-15" data-line-number="15"><span class="co">#&gt;      [,1] [,2]</span></a>
 <a class="sourceLine" id="cb3-16" data-line-number="16"><span class="co">#&gt; [1,]    3   11</span></a>
 <a class="sourceLine" id="cb3-17" data-line-number="17"><span class="co">#&gt; [2,]    7   15</span></a></code></pre></div>
-<p>I find that <code>axes</code> is a more intuitive way to specify the dimensions. The key point is that with <code>axes</code>, you list the dimensions that you are allowing to change in some way. In the above example with the reducer <code><a href="../reference/rray_sum.html">rray_sum()</a></code>, <code>axes = 1</code> was specified. This <em>guarantees</em> that the result will have the same dimensions as <code>x</code> everywhere except in the first dimension, which will have length 1, no matter what. In other words, the dimensions change as: <code>(2, 2, 2) -&gt; (1, 2, 2)</code>.</p>
+<p>I find that <code>axes</code> is a more intuitive way to specify the dimensions. This is because with <code>axes</code>, you list the dimensions that you are allowing to change in some way. In the above example, <code>axes = 1</code> was specified which <em>guarantees</em> that the result will have the same dimensions as <code>x</code> everywhere except in the first dimension, which will have length 1, no matter what. In other words, the dimensions change as: <code>(2, 2, 2) -&gt; (1, 2, 2)</code>.</p>
 </div>
 <div id="binding" class="section level2">
 <h2 class="hasAnchor">
 <a href="#binding" class="anchor"></a>Binding</h2>
-<p>Reducers aren’t the only functions with this <code>axes</code> property. With <code><a href="../reference/rray_bind.html">rray_bind()</a></code>, you specify the <code>axis</code> that you want to bind along. This has the same guarantee that only the <code>axis</code> specified will be changing. The only caveat here is that the inputs are first broadcast to a common dimension (ignoring the <code>axis</code> dimension) before the binding is carried out. A few examples might be helpful:</p>
+<p>Reducers aren’t the only functions with this <code>axes</code> guarantee. With <code><a href="../reference/rray_bind.html">rray_bind()</a></code>, you specify the <code>axis</code> that you want to bind along. This has the same guarantee that only the <code>axis</code> specified will be changing. The only caveat here is that the inputs are first broadcast to a common dimension (ignoring the <code>axis</code> dimension) before the binding is carried out. A few examples might be helpful:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># (5, 1)</span></a>
 <a class="sourceLine" id="cb4-2" data-line-number="2">x &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/matrix">matrix</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>)</a>
 <a class="sourceLine" id="cb4-3" data-line-number="3"></a>
@@ -150,33 +151,35 @@
 <a class="sourceLine" id="cb4-14" data-line-number="14"><span class="co">#&gt; [6,]    6</span></a>
 <a class="sourceLine" id="cb4-15" data-line-number="15"><span class="co">#&gt; [7,]    7</span></a>
 <a class="sourceLine" id="cb4-16" data-line-number="16"><span class="co">#&gt; [8,]    8</span></a></code></pre></div>
-<p>This works by first finding the common dimensions between <code>x</code> and <code>y</code>, ignoring the <code>axis</code> dimension. So in this case the common dimension is <code>(., 1)</code> where the <code>.</code> represents whatever dimension is there for that object. After broadcasting the inputs to those shapes, it is probably easier to see how the binding is occurring.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">x_broadcast &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray_broadcast.html">rray_broadcast</a></span>(x, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">5</span>, <span class="dv">1</span>))</a>
-<a class="sourceLine" id="cb5-2" data-line-number="2">x_broadcast</a>
-<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="co">#&gt;      [,1]</span></a>
-<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="co">#&gt; [1,]    1</span></a>
-<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="co">#&gt; [2,]    2</span></a>
-<a class="sourceLine" id="cb5-6" data-line-number="6"><span class="co">#&gt; [3,]    3</span></a>
-<a class="sourceLine" id="cb5-7" data-line-number="7"><span class="co">#&gt; [4,]    4</span></a>
-<a class="sourceLine" id="cb5-8" data-line-number="8"><span class="co">#&gt; [5,]    5</span></a>
-<a class="sourceLine" id="cb5-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb5-10" data-line-number="10">y_broadcast &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray_broadcast.html">rray_broadcast</a></span>(y, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">3</span>, <span class="dv">1</span>))</a>
-<a class="sourceLine" id="cb5-11" data-line-number="11">y_broadcast</a>
-<a class="sourceLine" id="cb5-12" data-line-number="12"><span class="co">#&gt;      [,1]</span></a>
-<a class="sourceLine" id="cb5-13" data-line-number="13"><span class="co">#&gt; [1,]    6</span></a>
-<a class="sourceLine" id="cb5-14" data-line-number="14"><span class="co">#&gt; [2,]    7</span></a>
-<a class="sourceLine" id="cb5-15" data-line-number="15"><span class="co">#&gt; [3,]    8</span></a>
-<a class="sourceLine" id="cb5-16" data-line-number="16"></a>
-<a class="sourceLine" id="cb5-17" data-line-number="17"><span class="kw"><a href="../reference/rray_bind.html">rray_bind</a></span>(x_broadcast, y_broadcast, <span class="dt">axis =</span> <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb5-18" data-line-number="18"><span class="co">#&gt;      [,1]</span></a>
-<a class="sourceLine" id="cb5-19" data-line-number="19"><span class="co">#&gt; [1,]    1</span></a>
-<a class="sourceLine" id="cb5-20" data-line-number="20"><span class="co">#&gt; [2,]    2</span></a>
-<a class="sourceLine" id="cb5-21" data-line-number="21"><span class="co">#&gt; [3,]    3</span></a>
-<a class="sourceLine" id="cb5-22" data-line-number="22"><span class="co">#&gt; [4,]    4</span></a>
-<a class="sourceLine" id="cb5-23" data-line-number="23"><span class="co">#&gt; [5,]    5</span></a>
-<a class="sourceLine" id="cb5-24" data-line-number="24"><span class="co">#&gt; [6,]    6</span></a>
-<a class="sourceLine" id="cb5-25" data-line-number="25"><span class="co">#&gt; [7,]    7</span></a>
-<a class="sourceLine" id="cb5-26" data-line-number="26"><span class="co">#&gt; [8,]    8</span></a></code></pre></div>
+<p>This works by first finding the common dimensions between <code>x</code> and <code>y</code>, ignoring the <code>axis</code> dimension. So in this case the common dimension is <code>(., 1)</code> where the <code>.</code> represents whatever dimension is actually there for that object. The final result after binding the inputs together will also have a <code>(., 1)</code> shape, where the <code>.</code> will be the sum of all of the 1st dimension sizes of the inputs (in this case <code>5 + 3 = 8</code>).</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># (5, 1) where `. = 5` from x</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">x_broadcast &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray_broadcast.html">rray_broadcast</a></span>(x, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">5</span>, <span class="dv">1</span>))</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">x_broadcast</a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="co">#&gt;      [,1]</span></a>
+<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="co">#&gt; [1,]    1</span></a>
+<a class="sourceLine" id="cb5-6" data-line-number="6"><span class="co">#&gt; [2,]    2</span></a>
+<a class="sourceLine" id="cb5-7" data-line-number="7"><span class="co">#&gt; [3,]    3</span></a>
+<a class="sourceLine" id="cb5-8" data-line-number="8"><span class="co">#&gt; [4,]    4</span></a>
+<a class="sourceLine" id="cb5-9" data-line-number="9"><span class="co">#&gt; [5,]    5</span></a>
+<a class="sourceLine" id="cb5-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb5-11" data-line-number="11"><span class="co"># (3, 1) where `. = 3` from y</span></a>
+<a class="sourceLine" id="cb5-12" data-line-number="12">y_broadcast &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray_broadcast.html">rray_broadcast</a></span>(y, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">3</span>, <span class="dv">1</span>))</a>
+<a class="sourceLine" id="cb5-13" data-line-number="13">y_broadcast</a>
+<a class="sourceLine" id="cb5-14" data-line-number="14"><span class="co">#&gt;      [,1]</span></a>
+<a class="sourceLine" id="cb5-15" data-line-number="15"><span class="co">#&gt; [1,]    6</span></a>
+<a class="sourceLine" id="cb5-16" data-line-number="16"><span class="co">#&gt; [2,]    7</span></a>
+<a class="sourceLine" id="cb5-17" data-line-number="17"><span class="co">#&gt; [3,]    8</span></a>
+<a class="sourceLine" id="cb5-18" data-line-number="18"></a>
+<a class="sourceLine" id="cb5-19" data-line-number="19"><span class="kw"><a href="../reference/rray_bind.html">rray_bind</a></span>(x_broadcast, y_broadcast, <span class="dt">axis =</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb5-20" data-line-number="20"><span class="co">#&gt;      [,1]</span></a>
+<a class="sourceLine" id="cb5-21" data-line-number="21"><span class="co">#&gt; [1,]    1</span></a>
+<a class="sourceLine" id="cb5-22" data-line-number="22"><span class="co">#&gt; [2,]    2</span></a>
+<a class="sourceLine" id="cb5-23" data-line-number="23"><span class="co">#&gt; [3,]    3</span></a>
+<a class="sourceLine" id="cb5-24" data-line-number="24"><span class="co">#&gt; [4,]    4</span></a>
+<a class="sourceLine" id="cb5-25" data-line-number="25"><span class="co">#&gt; [5,]    5</span></a>
+<a class="sourceLine" id="cb5-26" data-line-number="26"><span class="co">#&gt; [6,]    6</span></a>
+<a class="sourceLine" id="cb5-27" data-line-number="27"><span class="co">#&gt; [7,]    7</span></a>
+<a class="sourceLine" id="cb5-28" data-line-number="28"><span class="co">#&gt; [8,]    8</span></a></code></pre></div>
 <p>The <code>axis</code> is actually taken account when finding the common dimensions. This means that you can bind along an axis that is higher in dimensionality than any of the inputs. For example, you can bind two matrices along the third dimension.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw"><a href="../reference/rray_bind.html">rray_bind</a></span>(x, x, <span class="dt">axis =</span> <span class="dv">3</span>)</a>
 <a class="sourceLine" id="cb6-2" data-line-number="2"><span class="co">#&gt; , , 1</span></a>
@@ -196,7 +199,7 @@
 <a class="sourceLine" id="cb6-16" data-line-number="16"><span class="co">#&gt; [3,]    3</span></a>
 <a class="sourceLine" id="cb6-17" data-line-number="17"><span class="co">#&gt; [4,]    4</span></a>
 <a class="sourceLine" id="cb6-18" data-line-number="18"><span class="co">#&gt; [5,]    5</span></a></code></pre></div>
-<p>This works by finding the common dimension between <code>x</code> and <code>x</code>, which is just <code>(5, 1)</code>, and then checking that against the <code>axis</code>. If <code>axis</code> is implicitly along a higher dimension, the common dimension is extended as needed. In this case it is extended to <code>(5, 1, 1)</code>. The inputs are broadcast to that shape, and then bound together.</p>
+<p>This works by finding the common dimension between <code>x</code> and <code>x</code>, which is just <code>(5, 1)</code>, and then checking that against the <code>axis</code>. If <code>axis</code> is implicitly along a higher dimension, the common dimension is extended as needed. In this case it is extended to <code>(5, 1, 1)</code> to match the fact that you are binding along the third dimension. The inputs are broadcast to that shape, and then bound together.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">x_broadcast &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray_broadcast.html">rray_broadcast</a></span>(x, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">5</span>, <span class="dv">1</span>, <span class="dv">1</span>))</a>
 <a class="sourceLine" id="cb7-2" data-line-number="2">x_broadcast</a>
 <a class="sourceLine" id="cb7-3" data-line-number="3"><span class="co">#&gt; , , 1</span></a>
@@ -247,13 +250,13 @@
 <a class="sourceLine" id="cb8-14" data-line-number="14"><span class="co">#&gt;      [,1] [,2]</span></a>
 <a class="sourceLine" id="cb8-15" data-line-number="15"><span class="co">#&gt; [1,]    6   15</span></a></code></pre></div>
 <p>The rationale for this has to do with how broadcasting works. When dimensions aren’t dropped, operations such as the following are natural:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">x_rray <span class="op">/</span><span class="st"> </span><span class="kw"><a href="../reference/rray_sum.html">rray_sum</a></span>(x, <span class="dt">axes =</span> <span class="dv">1</span>)</a>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">x_rray <span class="op">/</span><span class="st"> </span><span class="kw"><a href="../reference/rray_sum.html">rray_sum</a></span>(x_rray, <span class="dt">axes =</span> <span class="dv">1</span>)</a>
 <a class="sourceLine" id="cb9-2" data-line-number="2"><span class="co">#&gt; &lt;rray&lt;dbl&gt;[,2][6]&gt;</span></a>
 <a class="sourceLine" id="cb9-3" data-line-number="3"><span class="co">#&gt;           [,1]      [,2]</span></a>
 <a class="sourceLine" id="cb9-4" data-line-number="4"><span class="co">#&gt; [1,] 0.1666667 0.2666667</span></a>
 <a class="sourceLine" id="cb9-5" data-line-number="5"><span class="co">#&gt; [2,] 0.3333333 0.3333333</span></a>
 <a class="sourceLine" id="cb9-6" data-line-number="6"><span class="co">#&gt; [3,] 0.5000000 0.4000000</span></a></code></pre></div>
-<p>This doesn’t work in the same way with base R, and can result in a tragic error since partial recycling kicks in.</p>
+<p>This doesn’t work as you might expect with base R, and can result in a tragic error since partial recycling kicks in and you don’t get an error.</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">x <span class="op">/</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/apply">apply</a></span>(x, <span class="dv">2</span>, sum)</a>
 <a class="sourceLine" id="cb10-2" data-line-number="2"><span class="co">#&gt;           [,1]      [,2]</span></a>
 <a class="sourceLine" id="cb10-3" data-line-number="3"><span class="co">#&gt; [1,] 0.1666667 0.2666667</span></a>
@@ -274,11 +277,65 @@
 <a class="sourceLine" id="cb10-18" data-line-number="18"><span class="co">#&gt; [1,] 0.1666667 0.2666667</span></a>
 <a class="sourceLine" id="cb10-19" data-line-number="19"><span class="co">#&gt; [2,] 0.1333333 0.8333333</span></a>
 <a class="sourceLine" id="cb10-20" data-line-number="20"><span class="co">#&gt; [3,] 0.5000000 0.4000000</span></a></code></pre></div>
-<p>If you do want to drop dimensions with rray, you can explicitly call <code><a href="../reference/rray_squeeze.html">rray_squeeze()</a></code> afterwards. It is much easier to drop explicitly than it is to recover the dropped dimensions from <code><a href="https://www.rdocumentation.org/packages/base/topics/apply">apply()</a></code>.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">x <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/rray_sum.html">rray_sum</a></span>(<span class="dt">axes =</span> <span class="dv">1</span>) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb11-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/rray_squeeze.html">rray_squeeze</a></span>()</a>
-<a class="sourceLine" id="cb11-4" data-line-number="4"><span class="co">#&gt; [1]  6 15</span></a></code></pre></div>
+<p>This works nicely in rray because of two reasons, both are necessary:</p>
+<ul>
+<li>The dimensions aren’t dropped</li>
+<li>Broadcasting kicks in</li>
+</ul>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">x_sum &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray_sum.html">rray_sum</a></span>(x_rray, <span class="dt">axes =</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb11-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb11-3" data-line-number="3"><span class="co"># When `/` is called, the inputs are broadcast to the same shape, like this</span></a>
+<a class="sourceLine" id="cb11-4" data-line-number="4">dim &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray_dim.html">rray_dim_common</a></span>(x_rray, x_sum)</a>
+<a class="sourceLine" id="cb11-5" data-line-number="5">x_broadcast &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray_broadcast.html">rray_broadcast</a></span>(x_rray, dim)</a>
+<a class="sourceLine" id="cb11-6" data-line-number="6">x_sum_broadcast &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray_broadcast.html">rray_broadcast</a></span>(x_sum, dim)</a>
+<a class="sourceLine" id="cb11-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb11-8" data-line-number="8">x_broadcast</a>
+<a class="sourceLine" id="cb11-9" data-line-number="9"><span class="co">#&gt; &lt;rray&lt;int&gt;[,2][6]&gt;</span></a>
+<a class="sourceLine" id="cb11-10" data-line-number="10"><span class="co">#&gt;      [,1] [,2]</span></a>
+<a class="sourceLine" id="cb11-11" data-line-number="11"><span class="co">#&gt; [1,]    1    4</span></a>
+<a class="sourceLine" id="cb11-12" data-line-number="12"><span class="co">#&gt; [2,]    2    5</span></a>
+<a class="sourceLine" id="cb11-13" data-line-number="13"><span class="co">#&gt; [3,]    3    6</span></a>
+<a class="sourceLine" id="cb11-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb11-15" data-line-number="15">x_sum_broadcast</a>
+<a class="sourceLine" id="cb11-16" data-line-number="16"><span class="co">#&gt; &lt;rray&lt;dbl&gt;[,2][6]&gt;</span></a>
+<a class="sourceLine" id="cb11-17" data-line-number="17"><span class="co">#&gt;      [,1] [,2]</span></a>
+<a class="sourceLine" id="cb11-18" data-line-number="18"><span class="co">#&gt; [1,]    6   15</span></a>
+<a class="sourceLine" id="cb11-19" data-line-number="19"><span class="co">#&gt; [2,]    6   15</span></a>
+<a class="sourceLine" id="cb11-20" data-line-number="20"><span class="co">#&gt; [3,]    6   15</span></a>
+<a class="sourceLine" id="cb11-21" data-line-number="21"></a>
+<a class="sourceLine" id="cb11-22" data-line-number="22">x_broadcast <span class="op">/</span><span class="st"> </span>x_sum_broadcast</a>
+<a class="sourceLine" id="cb11-23" data-line-number="23"><span class="co">#&gt; &lt;rray&lt;dbl&gt;[,2][6]&gt;</span></a>
+<a class="sourceLine" id="cb11-24" data-line-number="24"><span class="co">#&gt;           [,1]      [,2]</span></a>
+<a class="sourceLine" id="cb11-25" data-line-number="25"><span class="co">#&gt; [1,] 0.1666667 0.2666667</span></a>
+<a class="sourceLine" id="cb11-26" data-line-number="26"><span class="co">#&gt; [2,] 0.3333333 0.3333333</span></a>
+<a class="sourceLine" id="cb11-27" data-line-number="27"><span class="co">#&gt; [3,] 0.5000000 0.4000000</span></a></code></pre></div>
+<p>If you do want to drop dimensions with rray, you can explicitly call <code><a href="../reference/rray_squeeze.html">rray_squeeze()</a></code> afterwards. As a rule of thumb, it is much easier to drop dimensions explicitly than it is to recover them.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1">x_rray <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb12-2" data-line-number="2"><span class="st">  </span><span class="kw"><a href="../reference/rray_sum.html">rray_sum</a></span>(<span class="dt">axes =</span> <span class="dv">1</span>) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb12-3" data-line-number="3"><span class="st">  </span><span class="kw"><a href="../reference/rray_squeeze.html">rray_squeeze</a></span>(<span class="dt">axes =</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb12-4" data-line-number="4"><span class="co">#&gt; &lt;rray&lt;dbl&gt;[2]&gt;</span></a>
+<a class="sourceLine" id="cb12-5" data-line-number="5"><span class="co">#&gt; [1]  6 15</span></a></code></pre></div>
+<p>If you come from NumPy, you might be used to reducers dropping the axis you reduce over. I think this is a mistake, and there have been a number of discussions on the NumPy forums about this choice. Here is why:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="co"># This is the result you'd get in a NumPy sum. The 1st dimension is dropped</span></a>
+<a class="sourceLine" id="cb13-2" data-line-number="2">x_sum_dropped &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray_squeeze.html">rray_squeeze</a></span>(<span class="kw"><a href="../reference/rray_sum.html">rray_sum</a></span>(x_rray, <span class="dt">axes =</span> <span class="dv">1</span>), <span class="dt">axes =</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb13-3" data-line-number="3">x_sum_dropped</a>
+<a class="sourceLine" id="cb13-4" data-line-number="4"><span class="co">#&gt; &lt;rray&lt;dbl&gt;[2]&gt;</span></a>
+<a class="sourceLine" id="cb13-5" data-line-number="5"><span class="co">#&gt; [1]  6 15</span></a>
+<a class="sourceLine" id="cb13-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb13-7" data-line-number="7"><span class="co"># Now broadcasting doesn't work!</span></a>
+<a class="sourceLine" id="cb13-8" data-line-number="8">x_rray <span class="op">/</span><span class="st"> </span>x_sum_dropped</a>
+<a class="sourceLine" id="cb13-9" data-line-number="9"><span class="co">#&gt; Error: Non-broadcastable dimensions: (3, 2) and (2).</span></a>
+<a class="sourceLine" id="cb13-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb13-11" data-line-number="11"><span class="co"># So you have to add back the dimension</span></a>
+<a class="sourceLine" id="cb13-12" data-line-number="12"><span class="co"># (numpy has slightly cleaner ways to do this, but it's still an extra step)</span></a>
+<a class="sourceLine" id="cb13-13" data-line-number="13">x_sum_reshaped &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray_expand_dims.html">rray_expand_dims</a></span>(x_sum_dropped, <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb13-14" data-line-number="14">x_rray <span class="op">/</span><span class="st"> </span>x_sum_reshaped</a>
+<a class="sourceLine" id="cb13-15" data-line-number="15"><span class="co">#&gt; &lt;rray&lt;dbl&gt;[,2][6]&gt;</span></a>
+<a class="sourceLine" id="cb13-16" data-line-number="16"><span class="co">#&gt;           [,1]      [,2]</span></a>
+<a class="sourceLine" id="cb13-17" data-line-number="17"><span class="co">#&gt; [1,] 0.1666667 0.2666667</span></a>
+<a class="sourceLine" id="cb13-18" data-line-number="18"><span class="co">#&gt; [2,] 0.3333333 0.3333333</span></a>
+<a class="sourceLine" id="cb13-19" data-line-number="19"><span class="co">#&gt; [3,] 0.5000000 0.4000000</span></a></code></pre></div>
+<p>For the curious, Julia’s implementation of reducers works similarly to rray.</p>
 </div>
   </div>
 
