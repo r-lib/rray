@@ -105,7 +105,7 @@ Rcpp::IntegerVector rray__dim2(Rcpp::IntegerVector x_dim,
 // -----------------------------------------------------------------------------
 
 // [[Rcpp::export(rng = false)]]
-int rray__dims(const Rcpp::RObject& x) {
+int rray__dim_n(const Rcpp::RObject& x) {
 
   Rcpp::RObject d = x.attr("dim");
 

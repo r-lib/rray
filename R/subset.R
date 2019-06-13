@@ -172,7 +172,7 @@ tail.vctrs_rray <- function(x, n = 6L, ...) {
 rray_as_index2 <- function(x, ...) {
   indexer <- dots_list(..., .preserve_empty = TRUE, .ignore_empty = "trailing")
   dim <- rray_dim(x)
-  dims <- rray_dims(x)
+  dims <- rray_dim_n(x)
   indexer <- expand_pad(indexer, dims)
   requested_dims <- vec_size(indexer)
   dim_names <- rray_dim_names(x)

@@ -78,7 +78,7 @@ rray_split <- function(x, axes = NULL) {
   validate_axes(axes, x)
 
   if (is_null(axes)) {
-    axes <- seq_len(rray_dims(x))
+    axes <- seq_len(rray_dim_n(x))
   }
 
   res <- rray__split(x, as_cpp_idx(axes))

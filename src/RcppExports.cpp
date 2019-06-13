@@ -310,13 +310,13 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rray__dims
-int rray__dims(const Rcpp::RObject& x);
-RcppExport SEXP _rray_rray__dims(SEXP xSEXP) {
+// rray__dim_n
+int rray__dim_n(const Rcpp::RObject& x);
+RcppExport SEXP _rray_rray__dim_n(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< const Rcpp::RObject& >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__dims(x));
+    rcpp_result_gen = Rcpp::wrap(rray__dim_n(x));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1143,7 +1143,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__dim_names", (DL_FUNC) &_rray_rray__dim_names, 1},
     {"_rray_rray__dim", (DL_FUNC) &_rray_rray__dim, 1},
     {"_rray_rray__dim2", (DL_FUNC) &_rray_rray__dim2, 2},
-    {"_rray_rray__dims", (DL_FUNC) &_rray_rray__dims, 1},
+    {"_rray_rray__dim_n", (DL_FUNC) &_rray_rray__dim_n, 1},
     {"_rray_rray__increase_dims", (DL_FUNC) &_rray_rray__increase_dims, 2},
     {"_rray_rray__reshape", (DL_FUNC) &_rray_rray__reshape, 2},
     {"_rray_rray_init", (DL_FUNC) &_rray_rray_init, 1},

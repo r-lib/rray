@@ -77,7 +77,7 @@ as_indexer <- function(dots, x) {
 }
 
 pad_missing <- function(dots, x) {
-  x_dims <- rray_dims(x)
+  x_dims <- rray_dim_n(x)
   requested_dims <- length(dots)
 
   if (requested_dims > x_dims) {

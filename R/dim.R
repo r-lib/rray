@@ -28,7 +28,7 @@
 #'
 #' @param ... Objects to find common dimensions for.
 #'
-#' @seealso [rray_dims()]
+#' @seealso [rray_dim_n()]
 #'
 #' @examples
 #' x_1_by_4 <- rray(c(1, 2, 3, 4), c(1, 4))

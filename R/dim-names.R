@@ -171,7 +171,7 @@ validate_axis_names <- function(axis_names, n) {
 #' @export
 `names<-.vctrs_rray` <- function(x, value) {
 
-  if (rray_dims(x) > 1L) {
+  if (rray_dim_n(x) > 1L) {
     glubort(
       "Cannot set `names` on a 2D+ object. Use `rray_dim_names<-()` instead."
     )

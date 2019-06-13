@@ -21,7 +21,7 @@
 #' @export
 rray_tile <- function(x, times) {
 
-  dims <- rray_dims(x)
+  dims <- rray_dim_n(x)
   size_times <- vec_size(times)
 
   if (dims < size_times) {

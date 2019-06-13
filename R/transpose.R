@@ -65,7 +65,7 @@
 #' @export
 rray_transpose <- function(x, permutation = NULL) {
 
-  dims <- rray_dims(x)
+  dims <- rray_dim_n(x)
   permutation <- vec_cast(permutation, integer())
   validate_permutation(permutation, dims)
   validate_axes(permutation, x, nm = "permutation")
@@ -79,7 +79,7 @@ rray_transpose <- function(x, permutation = NULL) {
 #' @export
 t.vctrs_rray <- function(x) {
 
-  if (rray_dims(x) > 2L) {
+  if (rray_dim_n(x) > 2L) {
     glubort(
       "`t()` only works with 1D and 2D objects, do you need `rray_transpose()`?"
     )

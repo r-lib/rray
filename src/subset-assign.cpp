@@ -37,7 +37,7 @@ Rcpp::RObject rray__subset_assign_impl(const xt::rarray<T>& x,
   xt::rarray<T> value(value_);
 
   // Reshape `xt_value` to have the dimensionality of `x`
-  const int& x_dims = rray__dims(SEXP(x));
+  const int& x_dims = rray__dim_n(SEXP(x));
   auto value_view = rray__increase_dims_view(value, x_dims);
 
   // Request a copy of `x` that we can assign to
