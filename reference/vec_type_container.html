@@ -180,10 +180,12 @@ returns <code><a href='https://www.rdocumentation.org/packages/base/topics/logic
     <pre class="examples"><div class='input'><span class='co'># The container of base R atomics is just logical()</span>
 <span class='fu'>vec_type_container</span>(<span class='fl'>1</span>)</div><div class='output co'>#&gt; logical(0)</div><div class='input'>
 <span class='co'># The container of an rray is an empty logical rray</span>
-<span class='fu'>vec_type_container</span>(<span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>))</div><div class='output co'>#&gt; &lt;rray&lt;lgl&gt;[0]&gt;</div><div class='input'>
+<span class='fu'>vec_type_container</span>(<span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>))</div><div class='output co'>#&gt; &lt;rray&lt;lgl&gt;[0]&gt;
+#&gt; logical(0)</div><div class='input'>
 <span class='co'># Find the common container of multiple types</span>
 <span class='co'># (the rray type is more complex here, and becomes the common container)</span>
-<span class='fu'>vec_type_container_common</span>(<span class='fl'>1</span>, <span class='fl'>TRUE</span>, <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1L</span>))</div><div class='output co'>#&gt; &lt;rray&lt;lgl&gt;[0]&gt;</div><div class='input'>
+<span class='fu'>vec_type_container_common</span>(<span class='fl'>1</span>, <span class='fl'>TRUE</span>, <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1L</span>))</div><div class='output co'>#&gt; &lt;rray&lt;lgl&gt;[0]&gt;
+#&gt; logical(0)</div><div class='input'>
 <span class='co'># Not an error!</span>
 <span class='fu'>vec_type_container_common</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/character'>character</a></span>(), <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/logical'>logical</a></span>())</div><div class='output co'>#&gt; logical(0)</div><div class='input'>
 </div></pre>

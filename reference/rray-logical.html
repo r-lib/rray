@@ -169,11 +169,6 @@ rray_all(x, axes = NULL)</pre>
 way. <code>2</code> does the same, but with the columns, and so on for higher
 dimensions. The default reduces along all axes.</p></td>
     </tr>
-    <tr>
-      <th>...</th>
-      <td><p>A single rray. An error is currently thrown if more than one
-input is passed here.</p></td>
-    </tr>
     </table>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
@@ -190,7 +185,7 @@ broadcasting behavior is well defined. Length 0 dimensions are not exceptions
 to the normal broadcasting rules. Comparing dimensions of <code>0</code> and <code>1</code>, the
 common dimension is <code>0</code> because <code>1</code> always becomes the other dimension in the
 comparison. On the other hand, comparing dimensions <code>0</code> and <code>2</code> is an error
-because neither are one, and they are not identical.</p>
+because neither are <code>1</code>, and they are not identical.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
@@ -223,13 +218,23 @@ because neither are one, and they are not identical.</p>
 <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>TRUE</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>))
 
 <span class='co'># The common dim is (0, 2)</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/logical'>logical</a></span>() <span class='kw'>&amp;</span> <span class='no'>x</span></div><div class='output co'>#&gt; &lt;rray&lt;lgl&gt;[,2][0]&gt;</div><div class='input'>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/logical'>logical</a></span>() <span class='kw'>&amp;</span> <span class='no'>x</span></div><div class='output co'>#&gt; &lt;rray&lt;lgl&gt;[,2][0]&gt;
+#&gt;      [,1] [,2]</div><div class='input'>
 <span class='co'># You can have empty arrays with shape</span>
 <span class='co'># The common dim is (0, 2, 2)</span>
 <span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/array'>array</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/logical'>logical</a></span>(), <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>1</span>, <span class='fl'>2</span>))
-<span class='no'>x</span> <span class='kw'>&amp;</span> <span class='no'>y</span></div><div class='output co'>#&gt; &lt;rray&lt;lgl&gt;[,2,2][0]&gt;</div><div class='input'>
+<span class='no'>x</span> <span class='kw'>&amp;</span> <span class='no'>y</span></div><div class='output co'>#&gt; &lt;rray&lt;lgl&gt;[,2,2][0]&gt;
+#&gt; , , 1
+#&gt; 
+#&gt;      [,1] [,2]
+#&gt; 
+#&gt; , , 2
+#&gt; 
+#&gt;      [,1] [,2]
+#&gt; </div><div class='input'>
 <span class='co'># NULL is treated as logical(0)</span>
-<span class='kw'>NULL</span> <span class='kw'>&amp;</span> <span class='no'>x</span></div><div class='output co'>#&gt; &lt;rray&lt;lgl&gt;[,2][0]&gt;</div><div class='input'>
+<span class='kw'>NULL</span> <span class='kw'>&amp;</span> <span class='no'>x</span></div><div class='output co'>#&gt; &lt;rray&lt;lgl&gt;[,2][0]&gt;
+#&gt;      [,1] [,2]</div><div class='input'>
 <span class='fu'>rray_logical_and</span>(<span class='kw'>NULL</span>, <span class='kw'>NULL</span>)</div><div class='output co'>#&gt; logical(0)</div><div class='input'>
 # You cannot broadcast dimensions
 # of 2 and 0. Following standard
