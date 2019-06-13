@@ -176,3 +176,10 @@ xtfrm.vctrs_rray <- function(x) {
 xtfrm.vctrs_rray_lgl <- function(x) {
   vec_cast_inner(vec_data(x), integer())
 }
+
+# ------------------------------------------------------------------------------
+
+#' @export
+determinant.vctrs_rray <- function(x, logarithm = TRUE, ...) {
+  determinant(as.matrix(x), logarithm = logarithm, ...)
+}

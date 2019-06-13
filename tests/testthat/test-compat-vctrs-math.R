@@ -246,3 +246,12 @@ test_that("a double is returned so no integer overflow occurs", {
   x <- rray(c(2147483647L, 2L))
   expect_equal(storage.mode(cumprod(x)), "double")
 })
+
+# ------------------------------------------------------------------------------
+context("test-determinant")
+
+test_that("can compute the determinant using the base R functions", {
+  x <- rray(c(2, 3, 4, 1), c(2, 2))
+  expect_equal(det(x), -10)
+  expect_equal(determinant(x), determinant(as.matrix(x)))
+})
