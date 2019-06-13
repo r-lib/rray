@@ -18,22 +18,26 @@ coverage](https://codecov.io/gh/DavisVaughan/rray/branch/master/graph/badge.svg)
 rray (said: “r-ray”) is an array manipulation library for R. It has
 three main goals:
 
-1)  To provide an rray class that implements stricter matrices and
-    arrays than base R, similar in spirit to tibble.
-    `vignette("the-rray", package = "rray")`.
+1)  To provide an rray class that tries to be stricter and more
+    consistent than base R arrays, similar in spirit to tibble.
 
-2)  To support *broadcasting* semantics throughout the package, allowing
-    for more flexible and intuitive array operations than are possible
-    with base R. `vignette("broadcasting", package = "rray")`.
+2)  To support broadcasting throughout the package, which allows for
+    novel yet intuitive array operations that have been missing from the
+    R ecosystem.
 
 3)  To provide a consistent, powerful toolkit for array based
-    manipulation, usable by rray objects and (importantly\!) by base R
-    matrices and arrays as well. `vignette("toolkit", package =
-    "rray")`.
+    manipulation, usable by both the new rray objects and base R
+    matrices/arrays.
 
 View the vignettes for each goal on [the
 website](https://davisvaughan.github.io/rray/) to learn more about how
 to use rray.
+
+  - `vignette("the-rray")`
+  - `vignette("broadcasting")`
+  - `vignette("toolkit")`
+
+<!-- end list -->
 
 ``` r
 library(rray)
@@ -42,7 +46,7 @@ library(rray)
 ## What can it do?
 
 In short, rray tries to make array manipulation in R more intuitive by
-combining the ideas of broadcasting and knowing when to *not* drop
+combining the idea of broadcasting with knowing when to *not* drop
 dimensions. This results in operations such as:
 
 ``` r
@@ -87,7 +91,7 @@ b
 cbind(a, b)
 #> Error in cbind(a, b): number of rows of matrices must match (see arg 2)
 
-# `a` is broadcast to have dimensions: (2, 2)
+# `a` is first broadcast to have dimensions: (2, 2)
 rray_bind(a, b, axis = 1)
 #>      [,1] [,2]
 #> [1,]    1    1
@@ -98,7 +102,7 @@ rray_bind(a, b, axis = 1)
 rbind(a, b)
 #> Error in rbind(a, b): number of columns of matrices must match (see arg 2)
 
-# `b` is broadcast to have dimensions: (2, 2)
+# `b` is first broadcast to have dimensions: (2, 2)
 rray_bind(a, b, axis = 2)
 #>      [,1] [,2] [,3]
 #> [1,]    1    3    4
@@ -127,7 +131,7 @@ The Matrix package implements a small subset of column-wise broadcasting
 operations. rray fully supports broadcasting in all operations.
 
 The original motivation for this package, and even for xtensor, is the
-excellent Python library, numpy. As far as I know, it has the original
+excellent Python library, NumPy. As far as I know, it has the original
 implementation of broadcasting, and is a core library that a huge number
 of others are built on top of.
 
