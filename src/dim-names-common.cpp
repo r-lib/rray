@@ -112,7 +112,6 @@ Rcpp::RObject coalesce_axis_names(Rcpp::RObject x_axis_names,
   Rcpp::stop("Incompatible dim_name lengths.");
 }
 
-// [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__coalesce_meta_dim_names(Rcpp::RObject x_meta_dim_names,
                                             Rcpp::RObject y_meta_dim_names) {
 

@@ -85,10 +85,6 @@ rray__resize_dim_names <- function(dim_names, dim) {
     .Call(`_rray_rray__resize_dim_names`, dim_names, dim)
 }
 
-rray__coalesce_meta_dim_names <- function(x_meta_dim_names, y_meta_dim_names) {
-    .Call(`_rray_rray__coalesce_meta_dim_names`, x_meta_dim_names, y_meta_dim_names)
-}
-
 rray__coalesce_dim_names <- function(x_dim_names, y_dim_names) {
     .Call(`_rray_rray__coalesce_dim_names`, x_dim_names, y_dim_names)
 }
