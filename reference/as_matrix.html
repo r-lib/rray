@@ -32,7 +32,7 @@
 
 <meta property="og:title" content="Coerce to a matrix — as_matrix" />
 
-<meta property="og:description" content="as_matrix() coerces x to a matrix" />
+<meta property="og:description" content="as_matrix() coerces x to a matrix." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -124,7 +124,7 @@
 
     <div class="ref-description">
     
-    <p><code>as_matrix()</code> coerces <code>x</code> to a matrix</p>
+    <p><code>as_matrix()</code> coerces <code>x</code> to a matrix.</p>
     
     </div>
 
@@ -143,10 +143,21 @@
     </tr>
     </table>
     
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>1D arrays are coerced to 1 column matrices.</p>
+<p>For a &gt;2D object to be coercible to a matrix, all of the dimensions
+except for the first two must be size 1. Meaning an array with dimensions
+<code>(3, 2, 1)</code> would be coercible to a <code>(3, 2)</code> matrix, but one with <code>(3, 1, 2)</code>
+would not be.</p>
+    
+    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+    <div class='dont-index'><p><code><a href='as_array.html'>as_array()</a></code></p></div>
+    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'>
-<span class='fu'>as_matrix</span>(<span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>10</span>))</div><div class='output co'>#&gt;       [,1]
+    <pre class="examples"><div class='input'><span class='fu'>as_matrix</span>(<span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>10</span>))</div><div class='output co'>#&gt;       [,1]
 #&gt;  [1,]    1
 #&gt;  [2,]    2
 #&gt;  [3,]    3
@@ -157,13 +168,75 @@
 #&gt;  [8,]    8
 #&gt;  [9,]    9
 #&gt; [10,]   10</div><div class='input'>
+<span class='co'># &gt;2D structures can be coerced to matrices</span>
+<span class='co'># their first and second dimensions are</span>
+<span class='co'># the only ones having a size &gt;1</span>
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>1</span>))
+<span class='fu'>as_matrix</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt;      [,1] [,2]
+#&gt; [1,]    1    1
+#&gt; [2,]    1    1</div><div class='input'>
+<span class='co'># This cannot be coerced to a matrix</span>
+<span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray_reshape.html'>rray_reshape</a></span>(<span class='no'>x</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>2</span>))
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/try'>try</a></span>(<span class='fu'>as_matrix</span>(<span class='no'>y</span>))</div><div class='output co'>#&gt; Error : A &gt;2D object can only be reduced to a matrix if all dimensions except for the first two are 1. This is not the case for dimension(s): 3.
+#&gt; Backtrace:
+#&gt;      █
+#&gt;   1. ├─base::tryCatch(...)
+#&gt;   2. │ └─base:::tryCatchList(expr, classes, parentenv, handlers)
+#&gt;   3. │   ├─base:::tryCatchOne(...)
+#&gt;   4. │   │ └─base:::doTryCatch(return(expr), name, parentenv, handler)
+#&gt;   5. │   └─base:::tryCatchList(expr, names[-nh], parentenv, handlers[-nh])
+#&gt;   6. │     └─base:::tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#&gt;   7. │       └─base:::doTryCatch(return(expr), name, parentenv, handler)
+#&gt;   8. ├─base::withCallingHandlers(...)
+#&gt;   9. ├─base::saveRDS(...)
+#&gt;  10. ├─base::do.call(...)
+#&gt;  11. ├─(function (what, args, quote = FALSE, envir = parent.frame()) ...
+#&gt;  12. └─(function (..., crayon_enabled, crayon_colors, pkgdown_internet) ...
+#&gt;  13.   └─pkgdown::build_site(...)
+#&gt;  14.     └─pkgdown:::build_site_local(...)
+#&gt;  15.       └─pkgdown::build_reference(...)
+#&gt;  16.         └─purrr::map(...)
+#&gt;  17.           └─pkgdown:::.f(.x[[i]], ...)
+#&gt;  18.             └─pkgdown:::data_reference_topic(...)
+#&gt;  19.               ├─pkgdown:::as_data(...)
+#&gt;  20.               └─pkgdown:::as_data.tag_examples(...)
+#&gt;  21.                 └─purrr::pmap_chr(...)
+#&gt;  22.                   └─pkgdown:::.f(...)
+#&gt;  23.                     ├─withr::with_options(...)
+#&gt;  24.                     │ └─base::force(code)
+#&gt;  25.                     └─evaluate::evaluate(code, env, new_device = TRUE)
+#&gt;  26.                       └─evaluate:::evaluate_call(...)
+#&gt;  27.                         ├─evaluate:::timing_fn(...)
+#&gt;  28.                         ├─evaluate:::handle(...)
+#&gt;  29.                         │ └─base::try(f, silent = TRUE)
+#&gt;  30.                         │   └─base::tryCatch(...)
+#&gt;  31.                         │     └─base:::tryCatchList(expr, classes, parentenv, handlers)
+#&gt;  32.                         │       └─base:::tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#&gt;  33.                         │         └─base:::doTryCatch(return(expr), name, parentenv, handler)
+#&gt;  34.                         ├─base::withCallingHandlers(...)
+#&gt;  35.                         ├─base::withVisible(eval(expr, envir, enclos))
+#&gt;  36.                         └─base::eval(expr, envir, enclos)
+#&gt;  37.                           └─base::eval(expr, envir, enclos)
+#&gt;  38.                             ├─base::try(as_matrix(y))
+#&gt;  39.                             │ └─base::tryCatch(...)
+#&gt;  40.                             │   └─base:::tryCatchList(expr, classes, parentenv, handlers)
+#&gt;  41.                             │     └─base:::tryCatchOne(expr, names, parentenv, handlers[[1L]])
+#&gt;  42.                             │       └─base:::doTryCatch(return(expr), name, parentenv, handler)
+#&gt;  43.                             ├─rray::as_matrix(y)
+#&gt;  44.                             └─rray:::as_matrix.vctrs_rray(y) /home/travis/build/DavisVaughan/rray/R/coercion.R:90:2
+#&gt;  45.                               └─rray:::validate_matrix_coercible_dim(dim) /home/travis/build/DavisVaughan/rray/R/coercion.R:102:2
+#&gt;  46.                                 └─rray:::glubort(...) /home/travis/build/DavisVaughan/rray/R/coercion.R:146:2</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-            
+      
+      <li><a href="#details">Details</a></li>
+
+      <li><a href="#see-also">See also</a></li>
+      
       <li><a href="#examples">Examples</a></li>
     </ul>
 
