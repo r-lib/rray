@@ -1,0 +1,4 @@
+ rray [5] 1, 2, 3, 4, 5
+ @ dim     : int 5
+ @ dimnames:List of 1
+  ..$ : NULL

@@ -1,0 +1,5 @@
+ rray [,1][1] 1
+ @ dim     : int [1:2] 1 1
+ @ dimnames:List of 2
+  ..$ : NULL
+  ..$ : NULL

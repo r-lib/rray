@@ -1,0 +1,4 @@
+<rray<dbl>[,1,0][0]>
+<0 x 1 x 0 array of double>
+     [,1]
+
