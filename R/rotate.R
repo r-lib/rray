@@ -68,7 +68,7 @@ rray_rotate <- function(x, from = 1, to = 2, times = 1) {
 
   validate_at_least_two_dims(x)
 
-  dims <- rray_dim_n(x)
+  dim_n <- rray_dim_n(x)
 
   from <- vec_cast(from, integer())
   validate_axes(from, x, n = 1L, nm = "from")
@@ -103,10 +103,10 @@ validate_at_least_two_dims <- function(x, arg = "x") {
     return(NULL)
   }
 
-  dims <- rray_dim_n(x)
+  dim_n <- rray_dim_n(x)
 
-  if (dims < 2L) {
-    glubort("`{arg}` must have at least 2 dimensions, not {dims}.")
+  if (dim_n < 2L) {
+    glubort("`{arg}` must have at least 2 dimensions, not {dim_n}.")
   }
 
   invisible(x)

@@ -100,10 +100,10 @@ dimnames.vctrs_rray <- function(x) {
 #' @rdname dim-names
 rray_set_dim_names <- function(x, dim_names) {
   dim <- rray_dim(x)
-  dims <- vec_size(dim)
+  dim_n <- vec_size(dim)
 
   if (is_null(dim_names)) {
-    dim_names <- rray_empty_dim_names(dims)
+    dim_names <- rray_empty_dim_names(dim_n)
   }
 
   validate_dim_names(dim_names, dim)
@@ -125,12 +125,12 @@ rray_set_dim_names_impl <- function(x, dim_names) {
 }
 
 validate_dim_names <- function(dim_names, dim) {
-  dims <- vec_size(dim)
+  dim_n <- vec_size(dim)
   n_dim_names <- vec_size(dim_names)
 
-  if (dims != n_dim_names) {
+  if (dim_n != n_dim_names) {
     glubort(
-      "The dimensionality of the object ({dims}) must be equal ",
+      "The dimensionality of the object ({dim_n}) must be equal ",
       "to the size of the `dim_names` ({n_dim_names})."
     )
   }

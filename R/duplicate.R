@@ -206,9 +206,9 @@ duplicate_splitter <- function(x, axes) {
 # in a reshape, then transposing to undo
 restore_shape <- function(x, dim, axes) {
 
-  dims <- length(dim)
+  dim_n <- length(dim)
 
-  axes_complement <- get_axes_complement(dims, axes)
+  axes_complement <- get_axes_complement(dim_n, axes)
 
   permutation <- c(axes, axes_complement)
 
@@ -218,8 +218,8 @@ restore_shape <- function(x, dim, axes) {
   out
 }
 
-get_axes_complement <- function(dims, axes) {
-  axes_seq <- seq_len(dims)
+get_axes_complement <- function(dim_n, axes) {
+  axes_seq <- seq_len(dim_n)
 
   if (length(axes) == 0L) {
     axes_seq

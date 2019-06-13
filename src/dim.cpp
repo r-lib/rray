@@ -122,24 +122,24 @@ int rray__dim_n(const Rcpp::RObject& x) {
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::IntegerVector rray__increase_dims(const Rcpp::IntegerVector& dim,
-                                        const int& dims) {
+                                        const int& dim_n) {
 
-  int current_dims = dim.size();
+  int current_dim_n = dim.size();
 
   // Early exit
-  if (current_dims == dims) {
+  if (current_dim_n == dim_n) {
     return dim;
   }
 
-  if (current_dims > dims) {
+  if (current_dim_n > dim_n) {
     Rcpp::stop(
       "Cannot decrease dimensionality from %i to %i.",
-      current_dims, dims
+      current_dim_n, dim_n
     );
   }
 
-  // At this point, we know we are missing dims
-  int n_missing_dims = dims - current_dims;
+  // At this point, we know we are missing dim_n
+  int n_missing_dims = dim_n - current_dim_n;
 
   // Copy dim since we change it
   Rcpp::IntegerVector out = Rcpp::clone(dim);

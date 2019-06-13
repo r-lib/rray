@@ -14,7 +14,7 @@ Rcpp::IntegerVector rray__dim2(Rcpp::IntegerVector x_dim,
 int rray__dim_n(const Rcpp::RObject& x);
 
 Rcpp::IntegerVector rray__increase_dims(const Rcpp::IntegerVector& dim,
-                                        const int& dims);
+                                        const int& dim_n);
 
 bool rray__has_dim(const Rcpp::RObject& x);
 

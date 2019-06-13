@@ -321,13 +321,13 @@ BEGIN_RCPP
 END_RCPP
 }
 // rray__increase_dims
-Rcpp::IntegerVector rray__increase_dims(const Rcpp::IntegerVector& dim, const int& dims);
-RcppExport SEXP _rray_rray__increase_dims(SEXP dimSEXP, SEXP dimsSEXP) {
+Rcpp::IntegerVector rray__increase_dims(const Rcpp::IntegerVector& dim, const int& dim_n);
+RcppExport SEXP _rray_rray__increase_dims(SEXP dimSEXP, SEXP dim_nSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< const Rcpp::IntegerVector& >::type dim(dimSEXP);
-    Rcpp::traits::input_parameter< const int& >::type dims(dimsSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__increase_dims(dim, dims));
+    Rcpp::traits::input_parameter< const int& >::type dim_n(dim_nSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__increase_dims(dim, dim_n));
     return rcpp_result_gen;
 END_RCPP
 }

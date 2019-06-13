@@ -8,20 +8,20 @@
 
 // -----------------------------------------------------------------------------
 
-int compute_dims(Rcpp::List args, const int& axis) {
+int compute_dimensionality(Rcpp::List args, const int& axis) {
 
-  int dims = 1;
+  int dim_n = 1;
   const int& n_args = args.size();
   const int& implied_dims = axis + 1;
 
   for (int i = 0; i < n_args; ++i) {
-    dims = std::max(rray__dim_n(args[i]), dims);
+    dim_n = std::max(rray__dim_n(args[i]), dim_n);
   }
 
   // Allows for going up in dimensionality
-  dims = std::max(dims, implied_dims);
+  dim_n = std::max(dim_n, implied_dims);
 
-  return dims;
+  return dim_n;
 }
 
 // -----------------------------------------------------------------------------
@@ -30,7 +30,7 @@ int compute_dims(Rcpp::List args, const int& axis) {
 bool has_only_null_elements_and_no_names(const Rcpp::List& x) {
 
   bool all_null = true;
-  const int& dims = x.size();
+  const int& dim_n = x.size();
   Rcpp::RObject names = x.names();
 
   if (!r_is_null(names)) {
@@ -38,7 +38,7 @@ bool has_only_null_elements_and_no_names(const Rcpp::List& x) {
     return all_null;
   }
 
-  for (int j = 0; j < dims; ++j) {
+  for (int j = 0; j < dim_n; ++j) {
 
     if (r_is_null(x[j])) {
       continue;
@@ -173,9 +173,9 @@ Rcpp::List compute_bind_dim_names(const Rcpp::List& lst_of_dim_names,
                                   const Rcpp::IntegerVector& axis_sizes) {
 
   const int& n_args = lst_of_dim_names.size();
-  const int& dims = dim.size();
+  const int& dim_n = dim.size();
 
-  Rcpp::List new_dim_names = rray__new_empty_dim_names(dims);
+  Rcpp::List new_dim_names = rray__new_empty_dim_names(dim_n);
   Rcpp::List lst_of_axis_names(n_args);
 
   Rcpp::RObject outer_names = lst_of_dim_names.names();
@@ -217,14 +217,14 @@ Rcpp::List compute_bind_dim_names(const Rcpp::List& lst_of_dim_names,
 
 Rcpp::List compute_out_info(const Rcpp::List& args,
                             const int& axis,
-                            const int& dims) {
+                            const int& dim_n) {
 
   const int& n_args = args.size();
 
   int loc = 0;
   int out_axis_size = 0;
 
-  Rcpp::IntegerVector out_dim(dims, 1);
+  Rcpp::IntegerVector out_dim(dim_n, 1);
   Rcpp::IntegerVector axis_starts(n_args);
   Rcpp::IntegerVector axis_ends(n_args);
   Rcpp::IntegerVector axis_sizes(n_args);
@@ -232,7 +232,7 @@ Rcpp::List compute_out_info(const Rcpp::List& args,
   for (int i = 0; i < n_args; ++i) {
     // Must clone, otherwise directly affecting the args `dim`
     Rcpp::IntegerVector arg_dim_i = Rcpp::clone(rray__dim(args[i]));
-    arg_dim_i = rray__increase_dims(arg_dim_i, dims);
+    arg_dim_i = rray__increase_dims(arg_dim_i, dim_n);
 
     int axis_size_i = arg_dim_i[axis];
     axis_sizes[i] = axis_size_i;
@@ -264,9 +264,9 @@ Rcpp::RObject rray__bind_impl(const Rcpp::List& args,
                               const Rcpp::List& lst_of_dim_names) {
 
   const int& n_args = args.size();
-  const int& dims = compute_dims(args, axis);
+  const int& dim_n = compute_dimensionality(args, axis);
 
-  Rcpp::List out_info = compute_out_info(args, axis, dims);
+  Rcpp::List out_info = compute_out_info(args, axis, dim_n);
 
   Rcpp::IntegerVector out_dim = out_info["out_dim"];
   Rcpp::IntegerVector axis_starts = out_info["axis_starts"];
@@ -278,7 +278,7 @@ Rcpp::RObject rray__bind_impl(const Rcpp::List& args,
   xt::rarray<T> xt_out(shape);
 
   // Initialize slice vector with `all()`
-  xt::xstrided_slice_vector sv(dims, xt::all());
+  xt::xstrided_slice_vector sv(dim_n, xt::all());
 
   for (int i = 0; i < n_args; ++i) {
 
@@ -287,7 +287,7 @@ Rcpp::RObject rray__bind_impl(const Rcpp::List& args,
 
     // Reshape view on args[i]
     xt::rarray<T> arg_i = args[i];
-    auto arg_i_view = rray__increase_dims_view(arg_i, dims);
+    auto arg_i_view = rray__increase_dims_view(arg_i, dim_n);
 
     auto xt_view = xt::strided_view(xt_out, sv);
     xt::noalias(xt_view) = arg_i_view;

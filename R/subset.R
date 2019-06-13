@@ -172,14 +172,14 @@ tail.vctrs_rray <- function(x, n = 6L, ...) {
 rray_as_index2 <- function(x, ...) {
   indexer <- dots_list(..., .preserve_empty = TRUE, .ignore_empty = "trailing")
   dim <- rray_dim(x)
-  dims <- rray_dim_n(x)
-  indexer <- expand_pad(indexer, dims)
+  dim_n <- rray_dim_n(x)
+  indexer <- expand_pad(indexer, dim_n)
   requested_dims <- vec_size(indexer)
   dim_names <- rray_dim_names(x)
 
-  if (requested_dims > dims) {
+  if (requested_dims > dim_n) {
     glubort(
-      "The dimensionality of `x` is {dims}. ",
+      "The dimensionality of `x` is {dim_n}. ",
       "Cannot subset into dimension {requested_dims}."
     )
   }
@@ -207,28 +207,28 @@ rray_as_index2 <- function(x, ...) {
 
   # After the loop, append any missing indices to the back side
   # to fill out the dimensionality
-  indexer <- append_missing(indexer, dims)
+  indexer <- append_missing(indexer, dim_n)
 
   indexer
 }
 
-append_missing <- function(indexer, dims) {
+append_missing <- function(indexer, dim_n) {
 
   requested_dims <- vec_size(indexer)
 
-  if (requested_dims == dims) {
+  if (requested_dims == dim_n) {
     return(indexer)
   }
 
   # n_dots < d, need to pad with missing args
-  n_missing <- dims - vec_size(indexer)
+  n_missing <- dim_n - vec_size(indexer)
   padding <- rep(list(missing_arg()), times = n_missing)
   indexer <- c(indexer, padding)
 
   indexer
 }
 
-expand_pad <- function(indexer, dims) {
+expand_pad <- function(indexer, dim_n) {
 
   has_pad <- map_lgl(indexer, is_pad)
 
@@ -244,11 +244,11 @@ expand_pad <- function(indexer, dims) {
 
   pad_loc <- which(has_pad)
 
-  # number of dims without pad
+  # number of dimensions without pad
   requested_dims <- vec_size(indexer)
   requested_dims_no_pad <- requested_dims - 1L
 
-  n_padding <- dims - requested_dims_no_pad
+  n_padding <- dim_n - requested_dims_no_pad
 
   # Dimensionality subsetting error will be caught after the padding
   # (this also ensures the error message has the right dimensionality)

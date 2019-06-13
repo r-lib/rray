@@ -117,8 +117,8 @@ rray__dim_n <- function(x) {
     .Call(`_rray_rray__dim_n`, x)
 }
 
-rray__increase_dims <- function(dim, dims) {
-    .Call(`_rray_rray__increase_dims`, dim, dims)
+rray__increase_dims <- function(dim, dim_n) {
+    .Call(`_rray_rray__increase_dims`, dim, dim_n)
 }
 
 rray__reshape <- function(x, dim) {

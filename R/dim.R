@@ -95,9 +95,9 @@ dim2 <- function(x, y) {
   }
 }
 
-rray_increase_dims <- function(dim, dims) {
+rray_increase_dims <- function(dim, dim_n) {
   dim <- vec_cast(dim, integer())
-  dims <- vec_cast(dims, integer())
-  vec_assert(dims, size = 1L)
-  rray__increase_dims(dim, dims)
+  dim_n <- vec_cast(dim_n, integer())
+  vec_assert(dim_n, size = 1L)
+  rray__increase_dims(dim, dim_n)
 }

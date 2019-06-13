@@ -92,7 +92,7 @@ test_that("can squeeze base objects", {
 
 })
 
-test_that("nothing happens when all dims have size >1", {
+test_that("nothing happens when all dimensions have size >1", {
 
   x <- rray(1:4, c(2, 2, 1))
   x <- rray_broadcast(x, c(2, 2, 2))
