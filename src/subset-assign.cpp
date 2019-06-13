@@ -9,30 +9,10 @@
 // For assignment speed
 #include <xtensor/xnoalias.hpp>
 
-// xtensor can't handle assigning to a requested dimension of 0
-// i.e. this crashes) x[0, 1] <- 99
-// this should always be a no-op so we just check for it and return x
-bool any_zero_length(Rcpp::List x) {
-  int n = x.size();
-
-  for (int i = 0; i < n; ++i) {
-    if (Rf_length(x[i]) == 0) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
 template <typename T>
 Rcpp::RObject rray__subset_assign_impl(const xt::rarray<T>& x,
                                        Rcpp::List indexer,
                                        Rcpp::RObject value_) {
-
-  // Catch this early on
-  if (any_zero_length(indexer)) {
-    return SEXP(x);
-  }
 
   xt::rarray<T> value(value_);
 

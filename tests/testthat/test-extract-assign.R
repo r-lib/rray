@@ -15,6 +15,9 @@ test_that("assigning to 0 does nothing", {
   x <- rray(1:8, dim = c(2, 2, 2))
   rray_extract(x, 0) <- 1
   expect_equal(x, rray(1:8, dim = c(2, 2, 2)))
+
+  rray_extract(x, 0, 0) <- 1
+  expect_equal(x, rray(1:8, dim = c(2, 2, 2)))
 })
 
 test_that("assigning to NULL does nothing", {
