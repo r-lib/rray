@@ -155,36 +155,36 @@ validate_matrix_coercible_dim <- function(dim) {
 
 #' Coerce to an rray
 #'
-#' Coerce `x` to an rray object.
+#' Coerce `x` to an rray. It will keep its dimensions and dimension names if
+#' it has any.
 #'
 #' @param x An object to coerce to an rray.
-#' @param ... Objects passed on to methods.
 #'
 #' @examples
 #'
 #' as_rray(1)
 #'
-#' as_rray(1:10, col_name = "x", row_names = letters[1:10])
-#'
 #' ex <- matrix(1:10, nrow = 5, dimnames = list(NULL, c("a", "b")))
 #' as_rray(ex)
 #'
 #' @export
-as_rray <- function(x, ...) {
+as_rray <- function(x) {
   UseMethod("as_rray")
 }
 
 #' @export
-as_rray.vctrs_rray <- function(x, ...) {
+as_rray.vctrs_rray <- function(x) {
   x
 }
 
 #' @export
-as_rray.double <- function(x, ...) {
+as_rray.double <- function(x) {
+  dim <- rray_dim(x)
+
   new_rray(
     .data = x,
-    size = vec_size(x),
-    shape = rray_shape(x),
+    size = dim[1L],
+    shape = dim[-1L],
     dim_names = rray_dim_names(x)
   )
 }

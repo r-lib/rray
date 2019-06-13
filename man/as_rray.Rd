@@ -4,21 +4,18 @@
 \alias{as_rray}
 \title{Coerce to an rray}
 \usage{
-as_rray(x, ...)
+as_rray(x)
 }
 \arguments{
 \item{x}{An object to coerce to an rray.}
-
-\item{...}{Objects passed on to methods.}
 }
 \description{
-Coerce \code{x} to an rray object.
+Coerce \code{x} to an rray. It will keep its dimensions and dimension names if
+it has any.
 }
 \examples{
 
 as_rray(1)
-
-as_rray(1:10, col_name = "x", row_names = letters[1:10])
 
 ex <- matrix(1:10, nrow = 5, dimnames = list(NULL, c("a", "b")))
 as_rray(ex)
