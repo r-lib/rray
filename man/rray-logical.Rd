@@ -37,9 +37,6 @@ rray_all(x, axes = NULL)
 \code{1} reduces the number of rows to \code{1}, performing the reduction along the
 way. \code{2} does the same, but with the columns, and so on for higher
 dimensions. The default reduces along all axes.}
-
-\item{...}{A single rray. An error is currently thrown if more than one
-input is passed here.}
 }
 \description{
 These operators perform logical operations on arrays, with broadcasting. The
@@ -60,7 +57,7 @@ broadcasting behavior is well defined. Length 0 dimensions are not exceptions
 to the normal broadcasting rules. Comparing dimensions of \code{0} and \code{1}, the
 common dimension is \code{0} because \code{1} always becomes the other dimension in the
 comparison. On the other hand, comparing dimensions \code{0} and \code{2} is an error
-because neither are one, and they are not identical.
+because neither are \code{1}, and they are not identical.
 }
 \examples{
 x <- rray(TRUE, c(2, 2, 3))

@@ -8,9 +8,6 @@
 #'
 #' @param e1,e2 Generally, the same as `x` and `y`. See Details.
 #'
-#' @param ... A single rray. An error is currently thrown if more than one
-#' input is passed here.
-#'
 #' @param axes An integer vector specifying the axes to reduce over.
 #' `1` reduces the number of rows to `1`, performing the reduction along the
 #' way. `2` does the same, but with the columns, and so on for higher
@@ -31,7 +28,7 @@
 #' to the normal broadcasting rules. Comparing dimensions of `0` and `1`, the
 #' common dimension is `0` because `1` always becomes the other dimension in the
 #' comparison. On the other hand, comparing dimensions `0` and `2` is an error
-#' because neither are one, and they are not identical.
+#' because neither are `1`, and they are not identical.
 #'
 #' @examples
 #' x <- rray(TRUE, c(2, 2, 3))
