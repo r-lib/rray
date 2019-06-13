@@ -116,14 +116,14 @@ test_that("rotations work on higher dimensions", {
   nms <- list(letters[1:3], letters[4:5])
   vals <- 1:6
   x <- rray(vals, c(3, 2), dim_names = nms)
-  x <- rray_expand_dims(x, 3)
+  x <- rray_expand(x, 3)
 
   # from = 1, to = 2, times = 1
   nms_rot_1 <- nms[c(2, 1)]
   nms_rot_1[[1]] <- rev(nms_rot_1[[1]])
   vals_rot_1 <- vals[c(4, 1, 5, 2, 6, 3)]
   x_rot_1 <- rray(vals_rot_1, c(2, 3), nms_rot_1)
-  x_rot_1 <- rray_expand_dims(x_rot_1, 3)
+  x_rot_1 <- rray_expand(x_rot_1, 3)
 
   expect_equal(rray_rotate(x), x_rot_1)
 

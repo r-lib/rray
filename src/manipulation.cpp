@@ -422,20 +422,20 @@ Rcpp::List rray__expand_dim_names(const Rcpp::List& dim_names,
 }
 
 template <typename T>
-Rcpp::RObject rray__expand_dims_impl(const xt::rarray<T>& x, const std::size_t& axis) {
+Rcpp::RObject rray__expand_impl(const xt::rarray<T>& x, const std::size_t& axis) {
   xt::rarray<T> out = xt::expand_dims(x, axis);
   return Rcpp::as<Rcpp::RObject>(out);
 }
 
 // [[Rcpp::export(rng = false)]]
-Rcpp::RObject rray__expand_dims(Rcpp::RObject x, const std::size_t& axis) {
+Rcpp::RObject rray__expand(Rcpp::RObject x, const std::size_t& axis) {
 
   if (r_is_null(x)) {
     return x;
   }
 
   Rcpp::RObject out;
-  DISPATCH_UNARY_ONE(out, rray__expand_dims_impl, x, axis);
+  DISPATCH_UNARY_ONE(out, rray__expand_impl, x, axis);
 
   rray__set_dim_names(out, rray__expand_dim_names(rray__dim_names(x), axis));
 

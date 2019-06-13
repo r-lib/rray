@@ -36,7 +36,7 @@ test_that("can tile a 3D array", {
 
   expect_equal(
     rray_tile(x, c(1, 1, 1, 1)),
-    rray_expand_dims(x, 4)
+    rray_expand(x, 4)
   )
 
 })

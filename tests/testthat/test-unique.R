@@ -49,7 +49,7 @@ test_that("names are retained", {
     x[, c(1, 3)]
   )
 
-  xx <- rray_expand_dims(x, 2)
+  xx <- rray_expand(x, 2)
 
   expect_equal(
     rray_unique(xx, 3L),

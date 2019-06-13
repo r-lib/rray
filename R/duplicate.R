@@ -38,7 +38,7 @@
 #'
 #' # Create a 3d version of x
 #' # where the columns are not unique
-#' y <- rray_expand_dims(x, 1)
+#' y <- rray_expand(x, 1)
 #'
 #' # Along the rows, all the values are unique...
 #' rray_duplicate_any(y, 1L)

@@ -161,7 +161,7 @@ validate_axis <- function(axis, x, dim_n = NULL) {
   validate_axes(axis, x, n = 1L, nm = "axis", dim_n = dim_n)
 }
 
-# `dim_n` argument is used as an override in a few cases (rray_expand_dims())
+# `dim_n` argument is used as an override in a few cases (rray_expand())
 validate_axes <- function(axes, x, n = NULL, nm = "axes", dim_n = NULL) {
 
   if (is.null(axes)) {

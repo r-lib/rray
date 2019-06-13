@@ -53,7 +53,7 @@
 #' # ---------------------------------------------------------------------------
 #' # 3D example
 #'
-#' x_3d <- rray_expand_dims(x, 3)
+#' x_3d <- rray_expand(x, 3)
 #'
 #' # - Rotations on the (1, 3) axis plane
 #' # - Dimensions go from (3, 2, 1) -> (1, 2, 3) in both cases
