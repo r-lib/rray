@@ -6,6 +6,9 @@
 // Required for the assignment step
 #include <xtensor/xarray.hpp>
 
+// For assignment speed
+#include <xtensor/xnoalias.hpp>
+
 // xtensor can't handle assigning to a requested dimension of 0
 // i.e. this crashes) x[0, 1] <- 99
 // this should always be a no-op so we just check for it and return x
@@ -47,13 +50,13 @@ Rcpp::RObject rray__subset_assign_impl(const xt::rarray<T>& x,
     xt::xstrided_slice_vector sv = build_strided_slice_vector(indexer);
     auto xt_out_subset_view = xt::strided_view(out, sv);
     rray__validate_broadcastable_to(value_view, xt_out_subset_view);
-    xt_out_subset_view = value_view;
+    xt::noalias(xt_out_subset_view) = value_view;
   }
   else {
     xt::xdynamic_slice_vector sv = build_dynamic_slice_vector(indexer);
     auto xt_out_subset_view = xt::dynamic_view(out, sv);
     rray__validate_broadcastable_to(value_view, xt_out_subset_view);
-    xt_out_subset_view = value_view;
+    xt::noalias(xt_out_subset_view) = value_view;
   }
 
   return Rcpp::as<Rcpp::RObject>(out);

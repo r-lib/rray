@@ -75,7 +75,7 @@ inline auto rray__increase_dims_view2(const xt::rarray<T>& x,
 // Validate that `x` is immediately broadcastable to the dimensions of `to`
 
 template <class E1, class E2>
-void rray__validate_broadcastable_to(E1 x, E2 to) {
+void rray__validate_broadcastable_to(E1&& x, E2&& to) {
   auto x_shape = x.shape();
   Rcpp::IntegerVector x_dim(x_shape.begin(), x_shape.end());
 
