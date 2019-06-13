@@ -39,81 +39,14 @@ rray_extract <- function(x, ...) {
 }
 
 rray_extract_impl <- function(x, ...) {
-  out <- vec_data(x)
+  indexer <- rray_as_index2(x, ...)
 
-  indexer <- rray_as_index(x, ..., with_drop = FALSE)
+  # TODO
+  if (is_any_na_int(indexer)) {
+    abort("`NA` indices are not yet supported.")
+  }
 
-  out <- eval_bare(expr(out[!!!indexer]))
-
-  out <- as.vector(out)
+  out <- rray__extract(x, indexer)
 
   vec_cast_container(out, x)
-}
-
-# ------------------------------------------------------------------------------
-
-rray_as_index <- function(x, ..., with_drop = TRUE) {
-  dots <- dots_list(..., .preserve_empty = TRUE, .ignore_empty = "trailing")
-
-  indexer <- as_indexer(dots, x)
-
-  if (with_drop) {
-    indexer <- c(indexer, drop = FALSE)
-  }
-
-  indexer
-}
-
-as_indexer <- function(dots, x) {
-  dim <- rray_dim(x)
-  dim_names <- rray_dim_names(x)
-  indexer <- pad_missing(dots, x)
-
-  for (i in seq_along(indexer)) {
-    indexer[[i]] <- vec_as_index_wrapper(indexer[[i]], dim[i], dim_names[[i]])
-  }
-
-  indexer
-}
-
-pad_missing <- function(dots, x) {
-  x_dims <- rray_dims(x)
-  requested_dims <- length(dots)
-
-  if (requested_dims > x_dims) {
-    glubort(
-      "The dimensionality of `x` is {x_dims}. ",
-      "Cannot subset into dimension {requested_dims}."
-    )
-  }
-
-  # n_dots < d, need to pad with missing args
-  # (if n_dots == d this does nothing)
-  n_missing <- x_dims - requested_dims
-  padding <- rep(list(missing_arg()), times = n_missing)
-  dots <- c(dots, padding)
-
-  dots
-}
-
-vec_as_index_wrapper <- function(i, n, names) {
-  if (is_missing(i)) {
-    missing_arg()
-  }
-  else {
-    vec_as_index(i, n, names)
-  }
-}
-
-# ------------------------------------------------------------------------------
-
-maybe_warn_drop <- function(drop) {
-  if (drop) {
-    warn_drop()
-  }
-  invisible(drop)
-}
-
-warn_drop <- function() {
-  rlang::warn("`drop` ignored.")
 }

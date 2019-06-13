@@ -121,6 +121,10 @@ rray__increase_dims <- function(dim, dims) {
     .Call(`_rray_rray__increase_dims`, dim, dims)
 }
 
+rray__extract <- function(x, indexer) {
+    .Call(`_rray_rray__extract`, x, indexer)
+}
+
 rray__reshape <- function(x, dim) {
     .Call(`_rray_rray__reshape`, x, dim)
 }

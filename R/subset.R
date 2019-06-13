@@ -278,3 +278,16 @@ expand_pad <- function(indexer, dims) {
 
   indexer
 }
+
+# ------------------------------------------------------------------------------
+
+maybe_warn_drop <- function(drop) {
+  if (drop) {
+    warn_drop()
+  }
+  invisible(drop)
+}
+
+warn_drop <- function() {
+  rlang::warn("`drop` ignored.")
+}
