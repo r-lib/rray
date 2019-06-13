@@ -7,7 +7,7 @@
 #' @rdname rray_extract
 #' @export
 rray_extract_assign <- function(x, ..., value) {
-  indexer <- rray_as_index2(x, ...)
+  indexer <- rray_as_index(x, ...)
 
   vec_assert(value, arg = "value")
   value <- vec_cast_inner(value, x)
