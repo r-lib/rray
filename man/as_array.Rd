@@ -12,10 +12,14 @@ as_array(x, ...)
 \item{...}{Objects passed on to methods.}
 }
 \description{
-\code{as_array()} coerces \code{x} to an array
+\code{as_array()} coerces \code{x} to an array. \code{x} will keep any existing
+dimensions and dimension names.
 }
 \examples{
 
 as_array(1:10)
 
+}
+\seealso{
+\code{\link[=as_matrix]{as_matrix()}}
 }

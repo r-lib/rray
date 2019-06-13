@@ -12,10 +12,30 @@ as_matrix(x, ...)
 \item{...}{Objects passed on to methods.}
 }
 \description{
-\code{as_matrix()} coerces \code{x} to a matrix
+\code{as_matrix()} coerces \code{x} to a matrix.
+}
+\details{
+1D arrays are coerced to 1 column matrices.
+
+For a >2D object to be coercible to a matrix, all of the dimensions
+except for the first two must be size 1. Meaning an array with dimensions
+\code{(3, 2, 1)} would be coercible to a \code{(3, 2)} matrix, but one with \code{(3, 1, 2)}
+would not be.
 }
 \examples{
-
 as_matrix(rray(1:10))
 
+# >2D structures can be coerced to matrices
+# their first and second dimensions are
+# the only ones having a size >1
+x <- rray(1, c(2, 2, 1))
+as_matrix(x)
+
+# This cannot be coerced to a matrix
+y <- rray_reshape(x, c(2, 1, 2))
+try(as_matrix(y))
+
+}
+\seealso{
+\code{\link[=as_array]{as_array()}}
 }

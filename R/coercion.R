@@ -2,11 +2,13 @@
 
 #' Coerce to an array
 #'
-#' `as_array()` coerces `x` to an array
-#'
+#' `as_array()` coerces `x` to an array. `x` will keep any existing
+#' dimensions and dimension names.
 #'
 #' @param x An object to coerce to an array.
 #' @param ... Objects passed on to methods.
+#'
+#' @seealso [as_matrix()]
 #'
 #' @examples
 #'
@@ -54,15 +56,34 @@ as.array.vctrs_rray <- as_array.vctrs_rray
 
 #' Coerce to a matrix
 #'
-#' `as_matrix()` coerces `x` to a matrix
+#' `as_matrix()` coerces `x` to a matrix.
 #'
+#' @details
+#'
+#' 1D arrays are coerced to 1 column matrices.
+#'
+#' For a >2D object to be coercible to a matrix, all of the dimensions
+#' except for the first two must be size 1. Meaning an array with dimensions
+#' `(3, 2, 1)` would be coercible to a `(3, 2)` matrix, but one with `(3, 1, 2)`
+#' would not be.
 #'
 #' @param x An object to coerce to a matrix.
 #' @param ... Objects passed on to methods.
 #'
-#' @examples
+#' @seealso [as_array()]
 #'
+#' @examples
 #' as_matrix(rray(1:10))
+#'
+#' # >2D structures can be coerced to matrices
+#' # their first and second dimensions are
+#' # the only ones having a size >1
+#' x <- rray(1, c(2, 2, 1))
+#' as_matrix(x)
+#'
+#' # This cannot be coerced to a matrix
+#' y <- rray_reshape(x, c(2, 1, 2))
+#' try(as_matrix(y))
 #'
 #' @export
 as_matrix <- function(x, ...) {
