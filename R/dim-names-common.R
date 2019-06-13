@@ -70,10 +70,10 @@ rray_dim_names_common <- function(...) {
     return(list())
   }
 
-  .dim <- rray_dim_common(!!! args)
+  dim <- rray_dim_common(!!! args)
 
   arg_dim_names <- map(args, rray_dim_names)
-  arg_dim_names <- map(arg_dim_names, rray_resize_dim_names, dim = .dim)
+  arg_dim_names <- map(arg_dim_names, rray_resize_dim_names, dim = dim)
 
   reduce(arg_dim_names, rray_coalesce_dim_names)
 }
