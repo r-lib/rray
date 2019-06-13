@@ -31,7 +31,9 @@ three main goals:
     matrices and arrays as well. `vignette("toolkit", package =
     "rray")`.
 
-View the vignette for each goal to learn more about how to use rray.
+View the vignettes for each goal on [the
+website](https://davisvaughan.github.io/rray/) to learn more about how
+to use rray.
 
 ``` r
 library(rray)
