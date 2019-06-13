@@ -1,21 +1,23 @@
 #' @rdname rray_extract
 #' @export
 `rray_extract<-` <- function(x, ..., value) {
-  rray_extract_assign_impl(x, ..., value = value)
+  rray_extract_assign(x, ..., value = value)
 }
 
-rray_extract_assign_impl <- function(x, ..., value) {
+#' @rdname rray_extract
+#' @export
+rray_extract_assign <- function(x, ..., value) {
+  indexer <- rray_as_index2(x, ...)
+
   vec_assert(value, arg = "value")
+  value <- vec_cast_inner(value, x)
 
-  x_extract <- rray_extract_impl(x, ...)
-  value <- vec_cast(value, x_extract)
-  value <- rray_broadcast(value, rray_dim(x_extract))
+  # TODO
+  if (is_any_na_int(indexer)) {
+    abort("`NA` indices are not yet supported.")
+  }
 
-  out <- vec_data(x)
-
-  indexer <- rray_as_index(x, ..., with_drop = FALSE)
-
-  eval_bare(expr(out[!!!indexer] <- value))
+  out <- rray__extract_assign(x, indexer, value)
 
   vec_cast_container(out, x)
 }
