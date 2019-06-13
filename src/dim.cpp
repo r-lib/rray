@@ -31,7 +31,7 @@ Rcpp::IntegerVector combine_int(Rcpp::IntegerVector x, Rcpp::IntegerVector y) {
 
 // This returns a list of x_dim / y_dim, but extends them as required
 // so that the dimensionality matches. It does so by appending 1's as needed
-Rcpp::List dims_match2(Rcpp::IntegerVector x_dim, Rcpp::IntegerVector y_dim) {
+Rcpp::List dim_n_match2(Rcpp::IntegerVector x_dim, Rcpp::IntegerVector y_dim) {
   int n_x = x_dim.size();
   int n_y = y_dim.size();
 
@@ -66,7 +66,7 @@ Rcpp::List dims_match2(Rcpp::IntegerVector x_dim, Rcpp::IntegerVector y_dim) {
 Rcpp::IntegerVector rray__dim2(Rcpp::IntegerVector x_dim,
                                Rcpp::IntegerVector y_dim) {
 
-  Rcpp::List matched = dims_match2(x_dim, y_dim);
+  Rcpp::List matched = dim_n_match2(x_dim, y_dim);
 
   Rcpp::IntegerVector x = matched["x"];
   Rcpp::IntegerVector y = matched["y"];
@@ -105,7 +105,7 @@ Rcpp::IntegerVector rray__dim2(Rcpp::IntegerVector x_dim,
 // -----------------------------------------------------------------------------
 
 // [[Rcpp::export(rng = false)]]
-int rray__dims(const Rcpp::RObject& x) {
+int rray__dim_n(const Rcpp::RObject& x) {
 
   Rcpp::RObject d = x.attr("dim");
 
@@ -122,29 +122,29 @@ int rray__dims(const Rcpp::RObject& x) {
 
 // [[Rcpp::export(rng = false)]]
 Rcpp::IntegerVector rray__increase_dims(const Rcpp::IntegerVector& dim,
-                                        const int& dims) {
+                                        const int& dim_n) {
 
-  int current_dims = dim.size();
+  int current_dim_n = dim.size();
 
   // Early exit
-  if (current_dims == dims) {
+  if (current_dim_n == dim_n) {
     return dim;
   }
 
-  if (current_dims > dims) {
+  if (current_dim_n > dim_n) {
     Rcpp::stop(
       "Cannot decrease dimensionality from %i to %i.",
-      current_dims, dims
+      current_dim_n, dim_n
     );
   }
 
-  // At this point, we know we are missing dims
-  int n_missing_dims = dims - current_dims;
+  // At this point, we know we are missing dim_n
+  int n_missing_dimensions = dim_n - current_dim_n;
 
   // Copy dim since we change it
   Rcpp::IntegerVector out = Rcpp::clone(dim);
 
-  for (int i = 0; i < n_missing_dims; ++i) {
+  for (int i = 0; i < n_missing_dimensions; ++i) {
     out.push_back(1);
   }
 

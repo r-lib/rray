@@ -310,24 +310,24 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rray__dims
-int rray__dims(const Rcpp::RObject& x);
-RcppExport SEXP _rray_rray__dims(SEXP xSEXP) {
+// rray__dim_n
+int rray__dim_n(const Rcpp::RObject& x);
+RcppExport SEXP _rray_rray__dim_n(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< const Rcpp::RObject& >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__dims(x));
+    rcpp_result_gen = Rcpp::wrap(rray__dim_n(x));
     return rcpp_result_gen;
 END_RCPP
 }
 // rray__increase_dims
-Rcpp::IntegerVector rray__increase_dims(const Rcpp::IntegerVector& dim, const int& dims);
-RcppExport SEXP _rray_rray__increase_dims(SEXP dimSEXP, SEXP dimsSEXP) {
+Rcpp::IntegerVector rray__increase_dims(const Rcpp::IntegerVector& dim, const int& dim_n);
+RcppExport SEXP _rray_rray__increase_dims(SEXP dimSEXP, SEXP dim_nSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< const Rcpp::IntegerVector& >::type dim(dimSEXP);
-    Rcpp::traits::input_parameter< const int& >::type dims(dimsSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__increase_dims(dim, dims));
+    Rcpp::traits::input_parameter< const int& >::type dim_n(dim_nSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__increase_dims(dim, dim_n));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -488,14 +488,14 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rray__expand_dims
-Rcpp::RObject rray__expand_dims(Rcpp::RObject x, const std::size_t& axis);
-RcppExport SEXP _rray_rray__expand_dims(SEXP xSEXP, SEXP axisSEXP) {
+// rray__expand
+Rcpp::RObject rray__expand(Rcpp::RObject x, const std::size_t& axis);
+RcppExport SEXP _rray_rray__expand(SEXP xSEXP, SEXP axisSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
     Rcpp::traits::input_parameter< const std::size_t& >::type axis(axisSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__expand_dims(x, axis));
+    rcpp_result_gen = Rcpp::wrap(rray__expand(x, axis));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1166,7 +1166,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__dim_names", (DL_FUNC) &_rray_rray__dim_names, 1},
     {"_rray_rray__dim", (DL_FUNC) &_rray_rray__dim, 1},
     {"_rray_rray__dim2", (DL_FUNC) &_rray_rray__dim2, 2},
-    {"_rray_rray__dims", (DL_FUNC) &_rray_rray__dims, 1},
+    {"_rray_rray__dim_n", (DL_FUNC) &_rray_rray__dim_n, 1},
     {"_rray_rray__increase_dims", (DL_FUNC) &_rray_rray__increase_dims, 2},
     {"_rray_rray__extract_assign", (DL_FUNC) &_rray_rray__extract_assign, 3},
     {"_rray_rray__extract", (DL_FUNC) &_rray_rray__extract, 2},
@@ -1182,7 +1182,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__rotate", (DL_FUNC) &_rray_rray__rotate, 4},
     {"_rray_rray__transpose", (DL_FUNC) &_rray_rray__transpose, 2},
     {"_rray_rray__squeeze", (DL_FUNC) &_rray_rray__squeeze, 2},
-    {"_rray_rray__expand_dims", (DL_FUNC) &_rray_rray__expand_dims, 2},
+    {"_rray_rray__expand", (DL_FUNC) &_rray_rray__expand, 2},
     {"_rray_rray__flip", (DL_FUNC) &_rray_rray__flip, 2},
     {"_rray_rray__flatten", (DL_FUNC) &_rray_rray__flatten, 1},
     {"_rray_rray__multiply_add", (DL_FUNC) &_rray_rray__multiply_add, 3},

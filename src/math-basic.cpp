@@ -19,11 +19,11 @@ xt::rarray<T> rray__multiply_add_impl(const xt::rarray<T>& x,
 
   Rcpp::IntegerVector dim = rray__dim2(rray__dim2(x_dim, y_dim), z_dim);
 
-  const int& dims = dim.size();
+  const int& dim_n = dim.size();
 
-  auto x_view = rray__increase_dims_view(x, dims);
-  auto y_view = rray__increase_dims_view(y, dims);
-  auto z_view = rray__increase_dims_view(z, dims);
+  auto x_view = rray__increase_dims_view(x, dim_n);
+  auto y_view = rray__increase_dims_view(y, dim_n);
+  auto z_view = rray__increase_dims_view(z, dim_n);
 
   return xt::fma(x_view, y_view, z_view);
 }

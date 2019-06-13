@@ -323,16 +323,16 @@ Rcpp::RObject rray__transpose(Rcpp::RObject x, Rcpp::RObject permutation) {
 
 // -----------------------------------------------------------------------------
 
-Rcpp::IntegerVector compute_complement(const int& dims,
+Rcpp::IntegerVector compute_complement(const int& dim_n,
                                        const std::vector<std::size_t>& axes) {
 
-  std::vector<std::size_t> axes_seq(dims);
-  for (std::size_t i = 0; i < dims; ++i) {
+  std::vector<std::size_t> axes_seq(dim_n);
+  for (std::size_t i = 0; i < dim_n; ++i) {
     axes_seq[i] = i;
   }
 
   // Output container with with the maximum possible size
-  std::vector<std::size_t> axes_complement(dims);
+  std::vector<std::size_t> axes_complement(dim_n);
   std::vector<std::size_t>::iterator it;
 
   // Set difference
@@ -351,19 +351,19 @@ Rcpp::IntegerVector compute_complement(const int& dims,
 Rcpp::List squeeze_dim_names(const Rcpp::List& dim_names,
                              const std::vector<std::size_t>& axes) {
 
-  const int& dims = dim_names.size();
-  const bool& squeezing_every_axis = axes.size() == dims;
+  const int& dim_n = dim_names.size();
+  const bool& squeezing_every_axis = axes.size() == dim_n;
 
   // Normally, names are pulled from the non `axes` axes
   if (!squeezing_every_axis) {
-    Rcpp::IntegerVector axes_complement = compute_complement(dims, axes);
+    Rcpp::IntegerVector axes_complement = compute_complement(dim_n, axes);
     return dim_names[axes_complement];
   }
 
   // But in this case we are squeezing every axis!
   // (only possible if all axes have size 1)
   // So we take the names from the first dimension with names
-  for (int i = 0; i < dims; ++i) {
+  for (int i = 0; i < dim_n; ++i) {
     if (!r_is_null(dim_names[i])) {
       return dim_names[i];
     }
@@ -422,20 +422,20 @@ Rcpp::List rray__expand_dim_names(const Rcpp::List& dim_names,
 }
 
 template <typename T>
-Rcpp::RObject rray__expand_dims_impl(const xt::rarray<T>& x, const std::size_t& axis) {
+Rcpp::RObject rray__expand_impl(const xt::rarray<T>& x, const std::size_t& axis) {
   xt::rarray<T> out = xt::expand_dims(x, axis);
   return Rcpp::as<Rcpp::RObject>(out);
 }
 
 // [[Rcpp::export(rng = false)]]
-Rcpp::RObject rray__expand_dims(Rcpp::RObject x, const std::size_t& axis) {
+Rcpp::RObject rray__expand(Rcpp::RObject x, const std::size_t& axis) {
 
   if (r_is_null(x)) {
     return x;
   }
 
   Rcpp::RObject out;
-  DISPATCH_UNARY_ONE(out, rray__expand_dims_impl, x, axis);
+  DISPATCH_UNARY_ONE(out, rray__expand_impl, x, axis);
 
   rray__set_dim_names(out, rray__expand_dim_names(rray__dim_names(x), axis));
 

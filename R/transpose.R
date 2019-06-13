@@ -65,9 +65,9 @@
 #' @export
 rray_transpose <- function(x, permutation = NULL) {
 
-  dims <- rray_dims(x)
+  dim_n <- rray_dim_n(x)
   permutation <- vec_cast(permutation, integer())
-  validate_permutation(permutation, dims)
+  validate_permutation(permutation, dim_n)
   validate_axes(permutation, x, nm = "permutation")
 
   out <- rray__transpose(x, as_cpp_idx(permutation))
@@ -79,7 +79,7 @@ rray_transpose <- function(x, permutation = NULL) {
 #' @export
 t.vctrs_rray <- function(x) {
 
-  if (rray_dims(x) > 2L) {
+  if (rray_dim_n(x) > 2L) {
     glubort(
       "`t()` only works with 1D and 2D objects, do you need `rray_transpose()`?"
     )
@@ -104,7 +104,7 @@ aperm.vctrs_rray <- function(a, perm = NULL, ...) {
   rray_transpose(a, permutation = perm)
 }
 
-validate_permutation <- function(permutation, dims) {
+validate_permutation <- function(permutation, dim_n) {
 
   if (is.null(permutation)) {
     return(invisible(permutation))
@@ -112,9 +112,9 @@ validate_permutation <- function(permutation, dims) {
 
   perm_size <- vec_size(permutation)
 
-  if (perm_size != dims) {
+  if (perm_size != dim_n) {
     glubort(
-      "`permutation` must have size {dims} to permute `x`, not {perm_size}."
+      "`permutation` must have size {dim_n} to permute `x`, not {perm_size}."
     )
   }
 

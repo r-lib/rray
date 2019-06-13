@@ -53,7 +53,7 @@
 #' # ---------------------------------------------------------------------------
 #' # 3D example
 #'
-#' x_3d <- rray_expand_dims(x, 3)
+#' x_3d <- rray_expand(x, 3)
 #'
 #' # - Rotations on the (1, 3) axis plane
 #' # - Dimensions go from (3, 2, 1) -> (1, 2, 3) in both cases
@@ -66,9 +66,9 @@
 #' @export
 rray_rotate <- function(x, from = 1, to = 2, times = 1) {
 
-  validate_at_least_two_dims(x)
+  validate_at_least_two_dimensions(x)
 
-  dims <- rray_dims(x)
+  dim_n <- rray_dim_n(x)
 
   from <- vec_cast(from, integer())
   validate_axes(from, x, n = 1L, nm = "from")
@@ -97,16 +97,16 @@ validate_scalar <- function(x, nm) {
   invisible(x)
 }
 
-validate_at_least_two_dims <- function(x, arg = "x") {
+validate_at_least_two_dimensions <- function(x, arg = "x") {
 
   if (is.null(x)) {
     return(NULL)
   }
 
-  dims <- rray_dims(x)
+  dim_n <- rray_dim_n(x)
 
-  if (dims < 2L) {
-    glubort("`{arg}` must have at least 2 dimensions, not {dims}.")
+  if (dim_n < 2L) {
+    glubort("`{arg}` must have at least 2 dimensions, not {dim_n}.")
   }
 
   invisible(x)

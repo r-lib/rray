@@ -16,7 +16,7 @@
 
 // -----------------------------------------------------------------------------
 
-// filter() view. `rray_dims(i) == rray_dims(x)`
+// filter() view. `rray_dim_n(i) == rray_dim_n(x)`
 
 // Would like to use `xt::filter()` for the logical `i` case
 // Waiting on https://github.com/QuantStack/xtensor/issues/1663

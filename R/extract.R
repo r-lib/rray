@@ -40,7 +40,7 @@ rray_extract <- function(x, ...) {
 
 rray_extract_impl <- function(x, ...) {
   indexer <- rray_as_index2(x, ...)
-
+  
   # TODO
   if (is_any_na_int(indexer)) {
     abort("`NA` indices are not yet supported.")

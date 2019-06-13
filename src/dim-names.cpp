@@ -19,14 +19,14 @@ Rcpp::List rray__dim_names(const Rcpp::RObject& x) {
     x_dim_names = x.attr("dimnames");
 
     if (x_dim_names.isNULL()) {
-      x_dim_names = rray__new_empty_dim_names(rray__dims(x));
+      x_dim_names = rray__new_empty_dim_names(rray__dim_n(x));
     }
   }
   else {
     x_dim_names = x.attr("names");
 
     if (x_dim_names.isNULL()) {
-      x_dim_names = rray__new_empty_dim_names(rray__dims(x));
+      x_dim_names = rray__new_empty_dim_names(rray__dim_n(x));
     }
     else {
       // character vector -> list

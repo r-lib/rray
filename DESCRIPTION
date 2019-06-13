@@ -1,37 +1,41 @@
 Package: rray
-Title: Simple Matrices and Arrays
+Title: Simple Arrays
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "Davis",
-           family = "Vaughan",
-           role = c("aut", "cre"),
-           email = "davis@rstudio.com")
-Description: Implements an 'rray' class that provide stricter checking 
-  than traditional arrays.
+    c(person(given = "Davis",
+             family = "Vaughan",
+             role = c("aut", "cre"),
+             email = "davis@rstudio.com"),
+      person(given = "RStudio",
+             role = "cph"))
+Description: Provides a toolkit for manipulating arrays in a consistent, 
+    powerful, and intuitive manner through the use of broadcasting and a new
+    array class, the 'rray'.
 License: GPL-3
-Encoding: UTF-8
-LazyData: true
-Remotes:
-    r-lib/vctrs,
-    r-lib/rlang,
-    DavisVaughan/Xtensor.R@dev
-Imports: 
-    rlang (>= 0.3.4.9002),
-    vctrs,
-    Rcpp (>= 1.0.1),
-    glue,
-    utils
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 6.1.1
 URL: https://github.com/DavisVaughan/rray
 BugReports: https://github.com/DavisVaughan/rray/issues
+Imports: 
+    glue,
+    Rcpp (>= 1.0.1),
+    rlang (>= 0.3.4.9002),
+    utils,
+    vctrs
+Suggests: 
+    covr,
+    knitr,
+    magrittr,
+    rmarkdown,
+    testthat (>= 2.1.0)
 LinkingTo: 
     Rcpp,
     xtensor
-Suggests: 
-    testthat (>= 2.1.0),
-    magrittr,
-    knitr,
-    rmarkdown,
-    covr
-VignetteBuilder: knitr
+Remotes:
+    r-lib/rlang,
+    r-lib/vctrs,
+    DavisVaughan/Xtensor.R@dev
+VignetteBuilder: 
+    knitr
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 6.1.1

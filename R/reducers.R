@@ -157,12 +157,12 @@ rray_reducer_base <- function(f, x, axes) {
 
 # ------------------------------------------------------------------------------
 
-validate_axis <- function(axis, x, dims = NULL) {
-  validate_axes(axis, x, n = 1L, nm = "axis", dims = dims)
+validate_axis <- function(axis, x, dim_n = NULL) {
+  validate_axes(axis, x, n = 1L, nm = "axis", dim_n = dim_n)
 }
 
-# `dims` argument is used as an override in a few cases (rray_expand_dims())
-validate_axes <- function(axes, x, n = NULL, nm = "axes", dims = NULL) {
+# `dim_n` argument is used as an override in a few cases (rray_expand())
+validate_axes <- function(axes, x, n = NULL, nm = "axes", dim_n = NULL) {
 
   if (is.null(axes)) {
     return(invisible(NULL))
@@ -172,12 +172,12 @@ validate_axes <- function(axes, x, n = NULL, nm = "axes", dims = NULL) {
     return(invisible(NULL))
   }
 
-  if (is.null(dims)) {
-    dims <- rray_dims(x)
+  if (is.null(dim_n)) {
+    dim_n <- rray_dim_n(x)
   }
 
   if (is.null(n)) {
-    n <- dims
+    n <- dim_n
   }
 
   ok_axes <- vec_size(axes) <= n
@@ -190,7 +190,7 @@ validate_axes <- function(axes, x, n = NULL, nm = "axes", dims = NULL) {
     )
   }
 
-  ok_vec <- axes <= dims
+  ok_vec <- axes <= dim_n
   ok_axes <- all(ok_vec)
 
   if (!ok_axes) {
@@ -198,7 +198,7 @@ validate_axes <- function(axes, x, n = NULL, nm = "axes", dims = NULL) {
     pos <- glue::glue_collapse(pos, sep = ", ")
     glubort(
       "Invalid `{nm}`.
-       The maximum value for `{nm}` is {dims}.
+       The maximum value for `{nm}` is {dim_n}.
        The following `{nm}` positions are incorrect: {pos}."
     )
   }

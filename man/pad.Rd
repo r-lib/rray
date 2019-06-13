@@ -28,7 +28,7 @@ x[,,,2]
 x[pad(), 2, 1]
 
 # can fill in the missing gaps too
-# this fills in the 2nd/3rd dims
+# this fills in the 2nd/3rd dimensions
 x[1, pad(), 1]
 
 # if a pad() isn't needed

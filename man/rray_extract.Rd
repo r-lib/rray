@@ -13,7 +13,7 @@ rray_extract_assign(x, ..., value)
 rray_extract(x, ...)
 }
 \arguments{
-\item{x}{An rray.}
+\item{x}{A vector, matrix, array, or rray.}
 
 \item{...}{A specification of indices to extract.
 \itemize{

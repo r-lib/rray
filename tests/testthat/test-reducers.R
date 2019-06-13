@@ -11,7 +11,7 @@ test_that("Results are correct", {
   expect_equal(as.vector(rray_sum(y, 2)), c(7, 9, 11, 13, 15))
 })
 
-test_that("Default `axes` argument reduces over all dims", {
+test_that("Default `axes` argument reduces over all dimensions", {
   expect_equal(
     as.vector(rray_sum(y)),
     sum(vec_data(y))
@@ -116,7 +116,7 @@ test_that("Results are correct", {
   )
 })
 
-test_that("Default `axes` argument reduces over all dims", {
+test_that("Default `axes` argument reduces over all dimensions", {
   expect_equal(
     as.vector(rray_prod(y)),
     prod(vec_data(y))
@@ -221,7 +221,7 @@ test_that("Results are correct", {
   )
 })
 
-test_that("Default `axes` argument reduces over all dims", {
+test_that("Default `axes` argument reduces over all dimensions", {
   expect_equal(
     as.vector(rray_mean(y)),
     mean(vec_data(y))
@@ -326,7 +326,7 @@ test_that("Results are correct", {
   )
 })
 
-test_that("Default `axes` argument reduces over all dims", {
+test_that("Default `axes` argument reduces over all dimensions", {
   expect_equal(
     as.vector(rray_max(y)),
     max(vec_data(y))
@@ -425,7 +425,7 @@ test_that("Results are correct", {
   )
 })
 
-test_that("Default `axes` argument reduces over all dims", {
+test_that("Default `axes` argument reduces over all dimensions", {
   expect_equal(
     as.vector(rray_min(y)),
     min(vec_data(y))

@@ -34,14 +34,14 @@ inline auto rray__keep_dims_view(E&& x,
 }
 
 template <typename T>
-inline auto rray__increase_dims_view(const xt::rarray<T>& x, const int& dims) {
+inline auto rray__increase_dims_view(const xt::rarray<T>& x, const int& dim_n) {
 
   using vec_size_t = typename std::vector<std::size_t>;
 
-  // Reshape `x` to have the dimensionality of `dims`
+  // Reshape `x` to have the dimensionality of `dim_n`
   Rcpp::IntegerVector x_dim = rray__dim(SEXP(x));
 
-  Rcpp::IntegerVector x_view_dim = rray__increase_dims(x_dim, dims);
+  Rcpp::IntegerVector x_view_dim = rray__increase_dims(x_dim, dim_n);
   const vec_size_t& xt_view_dim = Rcpp::as<vec_size_t>(x_view_dim);
 
   auto x_view = xt::reshape_view<xt::layout_type::column_major>(x, xt_view_dim);
@@ -61,13 +61,13 @@ inline auto rray__increase_dims_view2(const xt::rarray<T>& x,
   Rcpp::IntegerVector y_dim = rray__dim(SEXP(y));
 
   Rcpp::IntegerVector dim = rray__dim2(x_dim, y_dim);
-  const int& dims = dim.size();
+  const int& dim_n = dim.size();
 
-  using x_reshaped_t = decltype(rray__increase_dims_view(x, dims));
-  using y_reshaped_t = decltype(rray__increase_dims_view(y, dims));
+  using x_reshaped_t = decltype(rray__increase_dims_view(x, dim_n));
+  using y_reshaped_t = decltype(rray__increase_dims_view(y, dim_n));
 
-  auto x_view = rray__increase_dims_view(x, dims);
-  auto y_view = rray__increase_dims_view(y, dims);
+  auto x_view = rray__increase_dims_view(x, dim_n);
+  auto y_view = rray__increase_dims_view(y, dim_n);
 
   return std::tuple<x_reshaped_t, y_reshaped_t>(x_view, y_view);
 }

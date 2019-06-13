@@ -3,6 +3,16 @@
 #' These functions bind multiple vectors, matrices, arrays, or rrays together
 #' into one, combining along the `axis`.
 #'
+#' @details
+#'
+#' `rray_bind()` is extremely flexible. It uses broadcasting to combine
+#' arrays together in a way that the native functions of `cbind()` and `rbind()`
+#' cannot. See the examples section for more explanation!
+#'
+#' @return
+#'
+#' An array, or rray, depending on the input.
+#'
 #' @param ... Vectors, matrices, arrays, or rrays.
 #'
 #' @param axis A single integer. The axis to bind along.
@@ -18,6 +28,9 @@
 #' # Bind along rows
 #' # Broadcasting is done automatically
 #' rray_bind(a, b, axis = 1)
+#'
+#' # Notice that this is not possible with rbind()!
+#' try(rbind(a, b))
 #'
 #' # You can bind "up" to a new dimension
 #' # to stack matrices into an array
@@ -59,7 +72,7 @@
 #' @export
 rray_bind <- function(..., axis) {
   axis <- vec_cast(axis, integer())
-  validate_axis(axis, x = numeric(), dims = Inf)
+  validate_axis(axis, x = numeric(), dim_n = Inf)
 
   args <- compact(list2(...))
 

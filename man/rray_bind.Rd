@@ -17,9 +17,17 @@ rray_cbind(...)
 
 \item{axis}{A single integer. The axis to bind along.}
 }
+\value{
+An array, or rray, depending on the input.
+}
 \description{
 These functions bind multiple vectors, matrices, arrays, or rrays together
 into one, combining along the \code{axis}.
+}
+\details{
+\code{rray_bind()} is extremely flexible. It uses broadcasting to combine
+arrays together in a way that the native functions of \code{cbind()} and \code{rbind()}
+cannot. See the examples section for more explanation!
 }
 \examples{
 # ---------------------------------------------------------------------------
@@ -32,6 +40,9 @@ rray_bind(a, b, axis = 2)
 # Bind along rows
 # Broadcasting is done automatically
 rray_bind(a, b, axis = 1)
+
+# Notice that this is not possible with rbind()!
+try(rbind(a, b))
 
 # You can bind "up" to a new dimension
 # to stack matrices into an array

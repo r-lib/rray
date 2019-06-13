@@ -164,7 +164,7 @@ x_rray / x_sum_dropped
 
 # So you have to add back the dimension
 # (numpy has slightly cleaner ways to do this, but it's still an extra step)
-x_sum_reshaped <- rray_expand_dims(x_sum_dropped, 1)
+x_sum_reshaped <- rray_expand(x_sum_dropped, 1)
 x_rray / x_sum_reshaped
 ```
 

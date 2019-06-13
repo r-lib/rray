@@ -21,16 +21,16 @@
 #' @export
 rray_tile <- function(x, times) {
 
-  dims <- rray_dims(x)
+  dim_n <- rray_dim_n(x)
   size_times <- vec_size(times)
 
-  if (dims < size_times) {
+  if (dim_n < size_times) {
     new_dim <- rray_increase_dims(rray_dim(x), size_times)
     x <- rray_reshape(x, new_dim)
   }
 
-  if (dims > size_times) {
-    times <- rray_increase_dims(times, dims)
+  if (dim_n > size_times) {
+    times <- rray_increase_dims(times, dim_n)
   }
 
   dim <- rray_dim(x)
