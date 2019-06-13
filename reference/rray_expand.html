@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Find common dimensions — rray_dim • rray</title>
+<title>Insert a dimension into an rray — rray_expand • rray</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,12 +30,10 @@
 
 
 
-<meta property="og:title" content="Find common dimensions — rray_dim" />
+<meta property="og:title" content="Insert a dimension into an rray — rray_expand" />
 
-<meta property="og:description" content="
-rray_dim() finds the dimension of a single object.
-rray_dim_common() finds the common dimensions of a set of objects.
-" />
+<meta property="og:description" content="rray_expand() inserts a new dimension at the axis dimension. This
+expands the number of dimensions of x by 1." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -120,72 +118,124 @@ rray_dim_common() finds the common dimensions of a set of objects.
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Find common dimensions</h1>
-    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/dim.R'><code>R/dim.R</code></a></small>
-    <div class="hidden name"><code>rray_dim.Rd</code></div>
+    <h1>Insert a dimension into an rray</h1>
+    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/expand.R'><code>R/expand.R</code></a></small>
+    <div class="hidden name"><code>rray_expand.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <ul>
-<li><p><code>rray_dim()</code> finds the dimension of a single object.</p></li>
-<li><p><code>rray_dim_common()</code> finds the common dimensions of a set of objects.</p></li>
-</ul>
+    <p><code>rray_expand()</code> inserts a new dimension at the <code>axis</code> dimension. This
+expands the number of dimensions of <code>x</code> by <code>1</code>.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>rray_dim</span>(<span class='no'>x</span>)
-
-<span class='fu'>rray_dim_common</span>(<span class='no'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>rray_expand</span>(<span class='no'>x</span>, <span class='no'>axis</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>An object.</p></td>
+      <td><p>An rray.</p></td>
     </tr>
     <tr>
-      <th>...</th>
-      <td><p>Objects to find common dimensions for.</p></td>
+      <th>axis</th>
+      <td><p>An integer of size <code>1</code> specifying the location of the new
+dimension.</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p><code>rray_dim_common()</code> first finds the common dimensionality,
-makes any implicit dimensions explicit, then recycles the size of each
-dimension to a common size.</p>
-<p>As an example, the common dimensions of <code>(4, 5)</code> and <code>(4, 1, 2)</code> are:</p><pre>(4, 5, 1) &lt;- implicit 1 is made to be explicit, then recycled to 2
-(4, 1, 2) &lt;- the 1 in the second dimension here is recycled to 5
----------
-(4, 5, 2) &lt;- resulting common dim
-</pre>
-    <p>The resulting dimensions from <code>rray_dim_common()</code> are the dimensions that
-are used in broadcasted operations.</p>
-    
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><code><a href='rray_dim_n.html'>rray_dim_n()</a></code></p></div>
+    <p>Dimension names are kept through the insertion of the new dimension.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='no'>x_1_by_4</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>4</span>), <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>4</span>))
-<span class='no'>x_5_by_1</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>5</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>5</span>, <span class='fl'>1</span>))
+    <pre class="examples"><div class='input'>
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>10</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>5</span>, <span class='fl'>2</span>))
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dim-names.html'>rray_set_row_names</a></span>(<span class='no'>x</span>, <span class='no'>letters</span>[<span class='fl'>1</span>:<span class='fl'>5</span>])
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dim-names.html'>rray_set_col_names</a></span>(<span class='no'>x</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"c1"</span>, <span class='st'>"c2"</span>))
 
-<span class='fu'>rray_dim</span>(<span class='no'>x_1_by_4</span>)</div><div class='output co'>#&gt; [1] 1 4</div><div class='input'>
-<span class='co'># recycle rows: 1 VS 5 = 5</span>
-<span class='co'># recycle cols: 4 VS 1 = 4</span>
-<span class='fu'>rray_dim_common</span>(<span class='no'>x_1_by_4</span>, <span class='no'>x_5_by_1</span>)</div><div class='output co'>#&gt; [1] 5 4</div><div class='input'>
-<span class='no'>x_5_by_1_by_3</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>5</span>, <span class='fl'>1</span>, <span class='fl'>3</span>))
-
-<span class='co'># recycle rows:    5 VS 1 = 5</span>
-<span class='co'># recycle cols:    4 VS 1 = 4</span>
-<span class='co'># recycle 3rd dim: 1 VS 3 = 3</span>
-<span class='co'># (here, 3rd dim of 1 for the matrix is implicit)</span>
-<span class='fu'>rray_dim_common</span>(<span class='no'>x_1_by_4</span>, <span class='no'>x_5_by_1_by_3</span>)</div><div class='output co'>#&gt; [1] 5 4 3</div><div class='input'>
-<span class='co'># The dimensions of NULL are 0</span>
-<span class='fu'>rray_dim</span>(<span class='kw'>NULL</span>)</div><div class='output co'>#&gt; [1] 0</div><div class='input'>
+<span class='co'># (5, 2)</span>
+<span class='co'># Add dimension to the front</span>
+<span class='co'># (1, 5, 2) = 1 row, 5 cols, 2 deep</span>
+<span class='fu'>rray_expand</span>(<span class='no'>x</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,5,2][10]&gt;
+#&gt; , , c1
+#&gt; 
+#&gt;      a b c d e
+#&gt; [1,] 1 2 3 4 5
+#&gt; 
+#&gt; , , c2
+#&gt; 
+#&gt;      a b c d  e
+#&gt; [1,] 6 7 8 9 10
+#&gt; </div><div class='input'>
+<span class='co'># (5, 2)</span>
+<span class='co'># Add dimension to the middle</span>
+<span class='co'># (5, 1, 2) = 5 rows, 1 col, 2 deep</span>
+<span class='fu'>rray_expand</span>(<span class='no'>x</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,1,2][10]&gt;
+#&gt; , , c1
+#&gt; 
+#&gt;   [,1]
+#&gt; a    1
+#&gt; b    2
+#&gt; c    3
+#&gt; d    4
+#&gt; e    5
+#&gt; 
+#&gt; , , c2
+#&gt; 
+#&gt;   [,1]
+#&gt; a    6
+#&gt; b    7
+#&gt; c    8
+#&gt; d    9
+#&gt; e   10
+#&gt; </div><div class='input'>
+<span class='co'># (5, 2)</span>
+<span class='co'># Add dimension to the end</span>
+<span class='co'># (5, 2, 1) = 5 rows, 2 cols, 1 deep</span>
+<span class='fu'>rray_expand</span>(<span class='no'>x</span>, <span class='fl'>3</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,1][10]&gt;
+#&gt; , , 1
+#&gt; 
+#&gt;   c1 c2
+#&gt; a  1  6
+#&gt; b  2  7
+#&gt; c  3  8
+#&gt; d  4  9
+#&gt; e  5 10
+#&gt; </div><div class='input'>
+<span class='co'># In some cases this is different than a simple</span>
+<span class='co'># rray_reshape() because the dimension names</span>
+<span class='co'># follow the original dimension position</span>
+<span class='co'># - 5 row names follow to the new 5 column position</span>
+<span class='co'># - 2 col names follow to the new 2 deep position</span>
+<span class='co'># - result has no row names because that is the new axis</span>
+<span class='fu'>rray_expand</span>(<span class='no'>x</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,5,2][10]&gt;
+#&gt; , , c1
+#&gt; 
+#&gt;      a b c d e
+#&gt; [1,] 1 2 3 4 5
+#&gt; 
+#&gt; , , c2
+#&gt; 
+#&gt;      a b c d  e
+#&gt; [1,] 6 7 8 9 10
+#&gt; </div><div class='input'>
+<span class='co'># A reshape, on the other hand,</span>
+<span class='co'># drops all dimension names</span>
+<span class='fu'><a href='rray_reshape.html'>rray_reshape</a></span>(<span class='no'>x</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>5</span>, <span class='fl'>2</span>))</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,5,2][10]&gt;
+#&gt; , , 1
+#&gt; 
+#&gt;      [,1] [,2] [,3] [,4] [,5]
+#&gt; [1,]    1    2    3    4    5
+#&gt; 
+#&gt; , , 2
+#&gt; 
+#&gt;      [,1] [,2] [,3] [,4] [,5]
+#&gt; [1,]    6    7    8    9   10
+#&gt; </div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -194,8 +244,6 @@ are used in broadcasted operations.</p>
       <li><a href="#arguments">Arguments</a></li>
       
       <li><a href="#details">Details</a></li>
-
-      <li><a href="#see-also">See also</a></li>
       
       <li><a href="#examples">Examples</a></li>
     </ul>

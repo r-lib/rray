@@ -328,7 +328,7 @@
 <a class="sourceLine" id="cb13-10" data-line-number="10"></a>
 <a class="sourceLine" id="cb13-11" data-line-number="11"><span class="co"># So you have to add back the dimension</span></a>
 <a class="sourceLine" id="cb13-12" data-line-number="12"><span class="co"># (numpy has slightly cleaner ways to do this, but it's still an extra step)</span></a>
-<a class="sourceLine" id="cb13-13" data-line-number="13">x_sum_reshaped &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray_expand_dims.html">rray_expand_dims</a></span>(x_sum_dropped, <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb13-13" data-line-number="13">x_sum_reshaped &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray_expand.html">rray_expand</a></span>(x_sum_dropped, <span class="dv">1</span>)</a>
 <a class="sourceLine" id="cb13-14" data-line-number="14">x_rray <span class="op">/</span><span class="st"> </span>x_sum_reshaped</a>
 <a class="sourceLine" id="cb13-15" data-line-number="15"><span class="co">#&gt; &lt;rray&lt;dbl&gt;[,2][6]&gt;</span></a>
 <a class="sourceLine" id="cb13-16" data-line-number="16"><span class="co">#&gt;           [,1]      [,2]</span></a>
