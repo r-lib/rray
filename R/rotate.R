@@ -66,7 +66,7 @@
 #' @export
 rray_rotate <- function(x, from = 1, to = 2, times = 1) {
 
-  validate_at_least_two_dims(x)
+  validate_at_least_two_dimensions(x)
 
   dim_n <- rray_dim_n(x)
 
@@ -97,7 +97,7 @@ validate_scalar <- function(x, nm) {
   invisible(x)
 }
 
-validate_at_least_two_dims <- function(x, arg = "x") {
+validate_at_least_two_dimensions <- function(x, arg = "x") {
 
   if (is.null(x)) {
     return(NULL)

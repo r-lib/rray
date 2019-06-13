@@ -12,14 +12,14 @@ int compute_dimensionality(Rcpp::List args, const int& axis) {
 
   int dim_n = 1;
   const int& n_args = args.size();
-  const int& implied_dims = axis + 1;
+  const int& implied_dim_n = axis + 1;
 
   for (int i = 0; i < n_args; ++i) {
     dim_n = std::max(rray__dim_n(args[i]), dim_n);
   }
 
   // Allows for going up in dimensionality
-  dim_n = std::max(dim_n, implied_dims);
+  dim_n = std::max(dim_n, implied_dim_n);
 
   return dim_n;
 }

@@ -174,13 +174,13 @@ rray_as_index2 <- function(x, ...) {
   dim <- rray_dim(x)
   dim_n <- rray_dim_n(x)
   indexer <- expand_pad(indexer, dim_n)
-  requested_dims <- vec_size(indexer)
+  requested_dim_n <- vec_size(indexer)
   dim_names <- rray_dim_names(x)
 
-  if (requested_dims > dim_n) {
+  if (requested_dim_n > dim_n) {
     glubort(
       "The dimensionality of `x` is {dim_n}. ",
-      "Cannot subset into dimension {requested_dims}."
+      "Cannot subset into dimension {requested_dim_n}."
     )
   }
 
@@ -214,9 +214,9 @@ rray_as_index2 <- function(x, ...) {
 
 append_missing <- function(indexer, dim_n) {
 
-  requested_dims <- vec_size(indexer)
+  requested_dim_n <- vec_size(indexer)
 
-  if (requested_dims == dim_n) {
+  if (requested_dim_n == dim_n) {
     return(indexer)
   }
 
@@ -245,10 +245,10 @@ expand_pad <- function(indexer, dim_n) {
   pad_loc <- which(has_pad)
 
   # number of dimensions without pad
-  requested_dims <- vec_size(indexer)
-  requested_dims_no_pad <- requested_dims - 1L
+  requested_dim_n <- vec_size(indexer)
+  requested_dim_n_no_pad <- requested_dim_n - 1L
 
-  n_padding <- dim_n - requested_dims_no_pad
+  n_padding <- dim_n - requested_dim_n_no_pad
 
   # Dimensionality subsetting error will be caught after the padding
   # (this also ensures the error message has the right dimensionality)
@@ -266,7 +266,7 @@ expand_pad <- function(indexer, dim_n) {
     before <- indexer[seq_len(n_before)]
   }
 
-  n_after <- requested_dims - pad_loc
+  n_after <- requested_dim_n - pad_loc
   if (n_after == 0L) {
     after <- list()
   }

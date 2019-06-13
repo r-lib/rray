@@ -31,7 +31,7 @@ Rcpp::IntegerVector combine_int(Rcpp::IntegerVector x, Rcpp::IntegerVector y) {
 
 // This returns a list of x_dim / y_dim, but extends them as required
 // so that the dimensionality matches. It does so by appending 1's as needed
-Rcpp::List dims_match2(Rcpp::IntegerVector x_dim, Rcpp::IntegerVector y_dim) {
+Rcpp::List dim_n_match2(Rcpp::IntegerVector x_dim, Rcpp::IntegerVector y_dim) {
   int n_x = x_dim.size();
   int n_y = y_dim.size();
 
@@ -66,7 +66,7 @@ Rcpp::List dims_match2(Rcpp::IntegerVector x_dim, Rcpp::IntegerVector y_dim) {
 Rcpp::IntegerVector rray__dim2(Rcpp::IntegerVector x_dim,
                                Rcpp::IntegerVector y_dim) {
 
-  Rcpp::List matched = dims_match2(x_dim, y_dim);
+  Rcpp::List matched = dim_n_match2(x_dim, y_dim);
 
   Rcpp::IntegerVector x = matched["x"];
   Rcpp::IntegerVector y = matched["y"];
@@ -139,12 +139,12 @@ Rcpp::IntegerVector rray__increase_dims(const Rcpp::IntegerVector& dim,
   }
 
   // At this point, we know we are missing dim_n
-  int n_missing_dims = dim_n - current_dim_n;
+  int n_missing_dimensions = dim_n - current_dim_n;
 
   // Copy dim since we change it
   Rcpp::IntegerVector out = Rcpp::clone(dim);
 
-  for (int i = 0; i < n_missing_dims; ++i) {
+  for (int i = 0; i < n_missing_dimensions; ++i) {
     out.push_back(1);
   }
 

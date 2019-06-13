@@ -29,14 +29,14 @@
 #' @export
 rray_dot <- function(x, y) {
 
-  x_dims <- rray_dim_n(x)
-  if (x_dims > 2L) {
-    glubort("`x` must have a dimensionality of 1 or 2, not {x_dims}.")
+  x_dim_n <- rray_dim_n(x)
+  if (x_dim_n > 2L) {
+    glubort("`x` must have a dimensionality of 1 or 2, not {x_dim_n}.")
   }
 
-  y_dims <- rray_dim_n(y)
-  if (y_dims > 2L) {
-    glubort("`y` must have a dimensionality of 1 or 2, not {y_dims}.")
+  y_dim_n <- rray_dim_n(y)
+  if (y_dim_n > 2L) {
+    glubort("`y` must have a dimensionality of 1 or 2, not {y_dim_n}.")
   }
 
   out <- x %*% y
