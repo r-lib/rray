@@ -113,12 +113,12 @@ rray__dim2 <- function(x_dim, y_dim) {
     .Call(`_rray_rray__dim2`, x_dim, y_dim)
 }
 
-rray__dims <- function(x) {
-    .Call(`_rray_rray__dims`, x)
+rray__dim_n <- function(x) {
+    .Call(`_rray_rray__dim_n`, x)
 }
 
-rray__increase_dims <- function(dim, dims) {
-    .Call(`_rray_rray__increase_dims`, dim, dims)
+rray__increase_dims <- function(dim, dim_n) {
+    .Call(`_rray_rray__increase_dims`, dim, dim_n)
 }
 
 rray__reshape <- function(x, dim) {
@@ -169,8 +169,8 @@ rray__squeeze <- function(x, axes) {
     .Call(`_rray_rray__squeeze`, x, axes)
 }
 
-rray__expand_dims <- function(x, axis) {
-    .Call(`_rray_rray__expand_dims`, x, axis)
+rray__expand <- function(x, axis) {
+    .Call(`_rray_rray__expand`, x, axis)
 }
 
 rray__flip <- function(x, axis) {

@@ -20,20 +20,20 @@
 #' @export
 rray_det <- function(x) {
 
-  dims <- rray_dims(x)
+  dim_n <- rray_dim_n(x)
 
-  if (dims < 2) {
+  if (dim_n < 2) {
     glubort(
-      "Cannot compute the determinant of a {rray_dims(x)}D object."
+      "Cannot compute the determinant of a {rray_dim_n(x)}D object."
     )
   }
 
-  if (dims == 2L) {
+  if (dim_n == 2L) {
     x_split <- list(x)
   }
   else {
     # non matrix axes, split in (correct) reverse order
-    axes <- rev(seq_len(dims)[-c(1L ,2L)])
+    axes <- rev(seq_len(dim_n)[-c(1L ,2L)])
     x_split <- rray_split(x, axes)
   }
 

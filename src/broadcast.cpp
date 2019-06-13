@@ -8,9 +8,9 @@ Rcpp::RObject rray__broadcast_impl(const xt::rarray<T>& x,
   using vec_size_t = typename std::vector<std::size_t>;
   const vec_size_t& dim_vec = Rcpp::as<vec_size_t>(dim);
 
-  int dims = dim.size();
+  int dim_n = dim.size();
 
-  auto x_view = rray__increase_dims_view(x, dims);
+  auto x_view = rray__increase_dims_view(x, dim_n);
 
   xt::rarray<T> out = xt::broadcast(x_view, dim_vec);
 

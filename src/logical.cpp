@@ -207,11 +207,11 @@ xt::rarray<T> rray__if_else_impl(const xt::rarray<T>& true_,
 
   Rcpp::IntegerVector dim = rray__dim2(rray__dim2(dim_condition, dim_true), dim_false);
 
-  const int& dims = dim.size();
+  const int& dim_n = dim.size();
 
-  auto condition_view = rray__increase_dims_view(condition_, dims);
-  auto true_view = rray__increase_dims_view(true_, dims);
-  auto false_view = rray__increase_dims_view(false_, dims);
+  auto condition_view = rray__increase_dims_view(condition_, dim_n);
+  auto true_view = rray__increase_dims_view(true_, dim_n);
+  auto false_view = rray__increase_dims_view(false_, dim_n);
 
   return xt::where(condition_view, true_view, false_view);
 }

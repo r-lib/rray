@@ -77,19 +77,19 @@ as_indexer <- function(dots, x) {
 }
 
 pad_missing <- function(dots, x) {
-  x_dims <- rray_dims(x)
-  requested_dims <- length(dots)
+  dim_n <- rray_dim_n(x)
+  requested_dim_n <- length(dots)
 
-  if (requested_dims > x_dims) {
+  if (requested_dim_n > dim_n) {
     glubort(
-      "The dimensionality of `x` is {x_dims}. ",
-      "Cannot subset into dimension {requested_dims}."
+      "The dimensionality of `x` is {dim_n}. ",
+      "Cannot subset into dimension {requested_dim_n}."
     )
   }
 
   # n_dots < d, need to pad with missing args
   # (if n_dots == d this does nothing)
-  n_missing <- x_dims - requested_dims
+  n_missing <- dim_n - requested_dim_n
   padding <- rep(list(missing_arg()), times = n_missing)
   dots <- c(dots, padding)
 
