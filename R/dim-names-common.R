@@ -1,6 +1,6 @@
 #' Find common dimension names
 #'
-#' Obtain a common list of dimension names among a set of objects. For
+#' Obtain a list of common dimension names among a set of objects. For
 #' interactive use, `rray_dim_names_common()` is more useful.
 #'
 #' `rray_dim_names_common()` is the engine that determines what dim names should
@@ -10,13 +10,14 @@
 #' The rules for determining the set of common dim names between objects
 #' `x` and `y` (in that order) are:
 #'
-#' 1) Compute the common `dim` between `x` and `y` using `rray_dim_common()`.
-#' 1) For each dimension along the common `dim`, if `x` has dim names for that
-#' specific dimension and the size of the names is the same as the size
-#' of the dimension, use them.
-#' 2) If `y` has dim names for that dimension, and the size of the names
-#' is the same as the size of the dimension, use them.
-#' 3) If there are no dim names found, then the result is `character(0)`.
+#' - Compute the common `dim` between `x` and `y` using `rray_dim_common()`.
+#'
+#' - For each axis along the common `dim`:
+#'    - If `x` has names for that axis _and_ the size of the names vector
+#'    is the same as the size of the axis, use those names for that axis.
+#'    - Else if `y` has names for that axis _and_ the size of the names vector
+#'     is the same as the size of the axis, use those names for that axis.
+#'    - Otherwise, the names for that axis is `NULL`.
 #'
 #' @param x,y,... Objects to find common dimensions for.
 #'
@@ -50,10 +51,10 @@
 #' # Combining x and y
 #' # - Row names are found first from x
 #' # - x has no column names
-#' # - y has column names
-#' # - But they are different length from
-#' #   the common column dimension (2)
-#' # - No column names are used
+#' # - y has column names but they are
+#' #   a different length from the common
+#' #   column dimension (common size of 2)
+#' # - So no column names are used
 #' rray_dim_names_common(x, y)
 #'
 #' @name common-dim-names

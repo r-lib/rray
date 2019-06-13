@@ -14,7 +14,7 @@ rray_dim_names2(x, y)
 \item{x, y, ...}{Objects to find common dimensions for.}
 }
 \description{
-Obtain a common list of dimension names among a set of objects. For
+Obtain a list of common dimension names among a set of objects. For
 interactive use, \code{rray_dim_names_common()} is more useful.
 }
 \details{
@@ -24,14 +24,16 @@ involve multiple rray objects and return a single result.
 
 The rules for determining the set of common dim names between objects
 \code{x} and \code{y} (in that order) are:
-\enumerate{
+\itemize{
 \item Compute the common \code{dim} between \code{x} and \code{y} using \code{rray_dim_common()}.
-\item For each dimension along the common \code{dim}, if \code{x} has dim names for that
-specific dimension and the size of the names is the same as the size
-of the dimension, use them.
-\item If \code{y} has dim names for that dimension, and the size of the names
-is the same as the size of the dimension, use them.
-\item If there are no dim names found, then the result is \code{character(0)}.
+\item For each axis along the common \code{dim}:
+\itemize{
+\item If \code{x} has names for that axis \emph{and} the size of the names vector
+is the same as the size of the axis, use those names for that axis.
+\item Else if \code{y} has names for that axis \emph{and} the size of the names vector
+is the same as the size of the axis, use those names for that axis.
+\item Otherwise, the names for that axis is \code{NULL}.
+}
 }
 }
 \examples{
@@ -64,10 +66,10 @@ rray_dim_names_common(z, y)
 # Combining x and y
 # - Row names are found first from x
 # - x has no column names
-# - y has column names
-# - But they are different length from
-#   the common column dimension (2)
-# - No column names are used
+# - y has column names but they are
+#   a different length from the common
+#   column dimension (common size of 2)
+# - So no column names are used
 rray_dim_names_common(x, y)
 
 }
