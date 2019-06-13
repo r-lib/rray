@@ -1,4 +1,4 @@
-context("test-dims")
+context("test-dim-n")
 
 x_5 <- rep(1, times = 5)
 x_2x3 <- matrix(1, nrow = 2, ncol = 3)
