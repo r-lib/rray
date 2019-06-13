@@ -331,6 +331,29 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray__extract_assign
+Rcpp::RObject rray__extract_assign(Rcpp::RObject x, Rcpp::List indexer, Rcpp::RObject value);
+RcppExport SEXP _rray_rray__extract_assign(SEXP xSEXP, SEXP indexerSEXP, SEXP valueSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type indexer(indexerSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type value(valueSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__extract_assign(x, indexer, value));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__extract
+Rcpp::RObject rray__extract(Rcpp::RObject x, Rcpp::List indexer);
+RcppExport SEXP _rray_rray__extract(SEXP xSEXP, SEXP indexerSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type indexer(indexerSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__extract(x, indexer));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray__reshape
 Rcpp::RObject rray__reshape(Rcpp::RObject x, const Rcpp::IntegerVector& dim);
 RcppExport SEXP _rray_rray__reshape(SEXP xSEXP, SEXP dimSEXP) {
@@ -1145,6 +1168,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__dim2", (DL_FUNC) &_rray_rray__dim2, 2},
     {"_rray_rray__dim_n", (DL_FUNC) &_rray_rray__dim_n, 1},
     {"_rray_rray__increase_dims", (DL_FUNC) &_rray_rray__increase_dims, 2},
+    {"_rray_rray__extract_assign", (DL_FUNC) &_rray_rray__extract_assign, 3},
+    {"_rray_rray__extract", (DL_FUNC) &_rray_rray__extract, 2},
     {"_rray_rray__reshape", (DL_FUNC) &_rray_rray__reshape, 2},
     {"_rray_rray_init", (DL_FUNC) &_rray_rray_init, 1},
     {"_rray_rray__logical_and", (DL_FUNC) &_rray_rray__logical_and, 2},

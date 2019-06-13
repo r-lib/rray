@@ -53,12 +53,12 @@ test_that("extract works with base R", {
 
   expect_equal(
     rray_extract(x, 1),
-    as.vector(x[1,,])
+    new_array(x[1,,])
   )
 
   expect_equal(
     rray_extract(x, 1:2, 1:2, 1),
-    as.vector(x[,,1])
+    new_array(x[,,1])
   )
 })
 
@@ -84,42 +84,54 @@ test_that("can extract with a logical", {
 test_that("extract with NA (lgl)", {
   x <- rray(1:8, dim = c(2, 2, 2))
 
-  expect_equal(
-    rray_extract(x, NA),
-    rray_reshape(vec_na(x, n = 2), rray_elems(x))
+  expect_error(
+    expect_equal(
+      rray_extract(x, NA),
+      rray_reshape(vec_na(x, n = 2), rray_elems(x))
+    )
   )
 
-  expect_equal(
-    rray_extract(x, c(NA, NA)),
-    rray_reshape(vec_na(x, n = 2), rray_elems(x))
+  expect_error(
+    expect_equal(
+      rray_extract(x, c(NA, NA)),
+      rray_reshape(vec_na(x, n = 2), rray_elems(x))
+    )
   )
 
-  expect_equal(
-    rray_extract(x, c(NA, TRUE)),
-    rray_reshape(vec_c(vec_na(x, n = 1), x[2]), rray_elems(x))
+  expect_error(
+    expect_equal(
+      rray_extract(x, c(NA, TRUE)),
+      rray_reshape(vec_c(vec_na(x, n = 1), x[2]), rray_elems(x))
+    )
   )
 })
 
 test_that("extract with NA (int)", {
   x <- rray(1:8, dim = c(2, 2, 2))
 
-  expect_equal(
-    rray_extract(x, NA_integer_),
-    rray_reshape(vec_na(x, 1), rray_elems(x[1,]))
+  expect_error(
+    expect_equal(
+      rray_extract(x, NA_integer_),
+      rray_reshape(vec_na(x, 1), rray_elems(x[1,]))
+    )
   )
 
-  expect_equal(
-    rray_extract(x, c(NA_integer_, NA_integer_, NA_integer_)),
-    rray_reshape(vec_na(x, 3), rray_elems(x[c(1,1,1)]))
+  expect_error(
+    expect_equal(
+      rray_extract(x, c(NA_integer_, NA_integer_, NA_integer_)),
+      rray_reshape(vec_na(x, 3), rray_elems(x[c(1,1,1)]))
+    )
   )
 })
 
 test_that("extract with NA (real)", {
   x <- rray(1:8, dim = c(2, 2, 2))
 
-  expect_equal(
-    rray_extract(x, NA_real_),
-    rray_extract(x, NA_integer_)
+  expect_error(
+    expect_equal(
+      rray_extract(x, NA_real_),
+      rray_extract(x, NA_integer_)
+    )
   )
 })
 

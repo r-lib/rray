@@ -98,7 +98,7 @@
 #' @family rray subsetters
 #' @export
 rray_subset <- function(x, ...) {
-  indexer <- rray_as_index2(x, ...)
+  indexer <- rray_as_index(x, ...)
 
   # TODO
   if (is_any_na_int(indexer)) {
@@ -169,7 +169,8 @@ tail.vctrs_rray <- function(x, n = 6L, ...) {
 # - A missing value for an xt::all()
 # - An integer vector of non-contiguous positions for xt::keep()
 # - A list of length 2 representing (start, stop) positions for an xt::range()
-rray_as_index2 <- function(x, ...) {
+
+rray_as_index <- function(x, ...) {
   indexer <- dots_list(..., .preserve_empty = TRUE, .ignore_empty = "trailing")
   dim <- rray_dim(x)
   dim_n <- rray_dim_n(x)
@@ -277,4 +278,17 @@ expand_pad <- function(indexer, dim_n) {
   indexer <- c(before, padding, after)
 
   indexer
+}
+
+# ------------------------------------------------------------------------------
+
+maybe_warn_drop <- function(drop) {
+  if (drop) {
+    warn_drop()
+  }
+  invisible(drop)
+}
+
+warn_drop <- function() {
+  rlang::warn("`drop` ignored.")
 }

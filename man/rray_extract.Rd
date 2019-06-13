@@ -2,10 +2,13 @@
 % Please edit documentation in R/extract-assign.R, R/extract.R
 \name{rray_extract<-}
 \alias{rray_extract<-}
+\alias{rray_extract_assign}
 \alias{rray_extract}
 \title{Get or set elements of an array by index}
 \usage{
 rray_extract(x, ...) <- value
+
+rray_extract_assign(x, ..., value)
 
 rray_extract(x, ...)
 }
