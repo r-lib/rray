@@ -149,6 +149,16 @@ into one, combining along the <code>axis</code>.</p>
     </tr>
     </table>
     
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>An array, or rray, depending on the input.</p>
+    
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p><code>rray_bind()</code> is extremely flexible. It uses broadcasting to combine
+arrays together in a way that the native functions of <code><a href='https://www.rdocumentation.org/packages/base/topics/cbind'>cbind()</a></code> and <code><a href='https://www.rdocumentation.org/packages/base/topics/cbind'>rbind()</a></code>
+cannot. See the examples section for more explanation!</p>
+    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># ---------------------------------------------------------------------------</span>
@@ -166,6 +176,9 @@ into one, combining along the <code>axis</code>.</p>
 #&gt; [2,]    2    4
 #&gt; [3,]    5    5
 #&gt; [4,]    6    6</div><div class='input'>
+<span class='co'># Notice that this is not possible with rbind()!</span>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/try'>try</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cbind'>rbind</a></span>(<span class='no'>a</span>, <span class='no'>b</span>))</div><div class='output co'>#&gt; Error in rbind(a, b) : 
+#&gt;   number of columns of matrices must match (see arg 2)</div><div class='input'>
 <span class='co'># You can bind "up" to a new dimension</span>
 <span class='co'># to stack matrices into an array</span>
 <span class='fu'>rray_bind</span>(<span class='no'>a</span>, <span class='no'>b</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='fl'>3</span>)</div><div class='output co'>#&gt; , , 1
@@ -227,7 +240,11 @@ into one, combining along the <code>axis</code>.</p>
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-            
+      
+      <li><a href="#value">Value</a></li>
+
+      <li><a href="#details">Details</a></li>
+      
       <li><a href="#examples">Examples</a></li>
     </ul>
 
