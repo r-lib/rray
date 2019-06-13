@@ -19,7 +19,7 @@ rray_subset(x, ...)
 \method{[}{vctrs_rray}(x, ..., drop = FALSE)
 }
 \arguments{
-\item{x}{An rray.}
+\item{x}{A vector, matrix, array, or rray.}
 
 \item{...}{A specification of indices to extract.
 \itemize{

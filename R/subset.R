@@ -4,7 +4,7 @@
 #' for rray objects. Notably, it _never_ drops dimensions, and ignores
 #' trailing commas.
 #'
-#' @param x An rray.
+#' @param x A vector, matrix, array, or rray.
 #'
 #' @param ... A specification of indices to extract.
 #' - Integer-ish indices extract specific elements of dimensions.
