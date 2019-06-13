@@ -1,5 +1,6 @@
 #include <rray.h>
 #include <dispatch.h>
+#include <utils.h>
 
 // -----------------------------------------------------------------------------
 
@@ -112,14 +113,38 @@ Rcpp::RObject coalesce_axis_names(Rcpp::RObject x_axis_names,
   Rcpp::stop("Incompatible dim_name lengths.");
 }
 
-Rcpp::RObject rray__coalesce_meta_dim_names(Rcpp::RObject x_meta_dim_names,
-                                            Rcpp::RObject y_meta_dim_names) {
+Rcpp::RObject rray__coalesce_meta_names(Rcpp::RObject x_meta_names,
+                                        Rcpp::RObject y_meta_names) {
 
-  if (r_is_null(x_meta_dim_names)) {
-    return y_meta_dim_names;
+  // If y meta names are null, we definitely can just use x meta names
+  if (r_is_null(y_meta_names)) {
+    return x_meta_names;
   }
 
-  return x_meta_dim_names;
+  // If y meta names are not null, but x's are, just use y's
+  if (r_is_null(x_meta_names)) {
+    return y_meta_names;
+  }
+
+  // Otherwise both x and y have at least some meta names, and we need to
+  // coalesce them. It is guaranteed that they are the same size
+  R_xlen_t n = Rf_xlength(x_meta_names);
+  Rcpp::CharacterVector new_meta_names(n);
+
+  for (R_xlen_t i = 0; i < n; ++i) {
+    SEXP x_meta_name = STRING_ELT(x_meta_names, i);
+    if (!(x_meta_name == rray_shared_empty_chr)) {
+      new_meta_names[i] = x_meta_name;
+      continue;
+    }
+
+    SEXP y_meta_name = STRING_ELT(y_meta_names, i);
+    if (!(y_meta_name == rray_shared_empty_chr)) {
+      new_meta_names[i] = y_meta_name;
+    }
+  }
+
+  return new_meta_names;
 }
 
 // [[Rcpp::export(rng = false)]]
@@ -135,7 +160,7 @@ Rcpp::List rray__coalesce_dim_names(Rcpp::List x_dim_names,
     new_dim_names[i] = coalesce_axis_names(x_dim_names[i], y_dim_names[i]);
   }
 
-  new_dim_names.names() = rray__coalesce_meta_dim_names(
+  new_dim_names.names() = rray__coalesce_meta_names(
     x_dim_names.names(),
     y_dim_names.names()
   );

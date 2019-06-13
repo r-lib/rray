@@ -14,6 +14,7 @@ SEXP syms_to = NULL;
 SEXP rray_shared_empty_lgl = NULL;
 SEXP rray_shared_empty_int = NULL;
 SEXP rray_shared_empty_dbl = NULL;
+SEXP rray_shared_empty_chr = NULL;
 
 // -----------------------------------------------------------------------------
 // r_new_environment()
@@ -90,6 +91,9 @@ void rray_init_utils(SEXP ns) {
   rray_shared_empty_dbl = Rf_allocVector(REALSXP, 0);
   R_PreserveObject(rray_shared_empty_dbl);
   MARK_NOT_MUTABLE(rray_shared_empty_dbl);
+
+  rray_shared_empty_chr = Rf_mkChar("");
+  R_PreserveObject(rray_shared_empty_chr);
 
   new_env_call = r_parse_eval("as.call(list(new.env, TRUE, NULL, NULL))", R_BaseEnv);
   R_PreserveObject(new_env_call);
