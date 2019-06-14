@@ -84,7 +84,7 @@ Rcpp::RObject rray__mean(Rcpp::RObject x, Rcpp::RObject axes) {
 // -----------------------------------------------------------------------------
 
 // TODO - Blocked by
-// https://github.com/DavisVaughan/rray/issues/42
+// https://github.com/r-lib/rray/issues/42
 
 // template <typename T>
 // xt::rarray<double> rray__variance_impl(const xt::rarray<T>& x, Rcpp::RObject axes) {
@@ -107,7 +107,7 @@ Rcpp::RObject rray__mean(Rcpp::RObject x, Rcpp::RObject axes) {
 // -----------------------------------------------------------------------------
 
 // TODO - Blocked by
-// https://github.com/DavisVaughan/rray/issues/42
+// https://github.com/r-lib/rray/issues/42
 
 // template <typename T>
 // xt::rarray<double> rray__std_dev_impl(const xt::rarray<T>& x, Rcpp::RObject axes) {

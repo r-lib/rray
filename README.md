@@ -8,9 +8,9 @@
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![Travis build
-status](https://travis-ci.org/DavisVaughan/rray.svg?branch=master)](https://travis-ci.org/DavisVaughan/rray)
+status](https://travis-ci.org/r-lib/rray.svg?branch=master)](https://travis-ci.org/r-lib/rray)
 [![Codecov test
-coverage](https://codecov.io/gh/DavisVaughan/rray/branch/master/graph/badge.svg)](https://codecov.io/gh/DavisVaughan/rray?branch=master)
+coverage](https://codecov.io/gh/r-lib/rray/branch/master/graph/badge.svg)](https://codecov.io/gh/r-lib/rray?branch=master)
 <!-- badges: end -->
 
 ## Introduction
@@ -30,8 +30,7 @@ three main goals:
     matrices/arrays.
 
 View the vignettes for each goal on [the
-website](https://davisvaughan.github.io/rray/) to learn more about how
-to use rray.
+website](https://rray.r-lib.org) to learn more about how to use rray.
 
   - `vignette("the-rray")`
   - `vignette("broadcasting")`
@@ -54,7 +53,7 @@ x <- rray(1:6, dim = c(3, 2))
 
 # Compute proportions along the 1st dimension
 x / rray_sum(x, axes = 1)
-#> <rray<dbl>[,2][6]>
+#> <rray<dbl>[,2][3]>
 #>           [,1]      [,2]
 #> [1,] 0.1666667 0.2666667
 #> [2,] 0.3333333 0.3333333
@@ -62,7 +61,7 @@ x / rray_sum(x, axes = 1)
 
 # Equivalent base R syntax
 sweep(x, 2, apply(x, 2, sum), "/")
-#> <rray<dbl>[,2][6]>
+#> <rray<dbl>[,2][3]>
 #>           [,1]      [,2]
 #> [1,] 0.1666667 0.2666667
 #> [2,] 0.3333333 0.3333333
@@ -114,7 +113,7 @@ rray_bind(a, b, axis = 2)
 You can install from Github with:
 
 ``` r
-devtools::install_github("DavisVaughan/rray")
+devtools::install_github("r-lib/rray")
 ```
 
 ## Acknowledgements
