@@ -18,9 +18,6 @@ reduces along all axes.}
 \code{rray_max()} computes the maximum along a given axis or axes. The
 dimensionality of \code{x} is retained in the result.
 }
-\details{
-Currently, objects are coerced to \code{rray}s before the reduction is applied.
-}
 \examples{
 
 x <- rray(1:10, c(5, 2))

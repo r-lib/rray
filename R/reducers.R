@@ -3,8 +3,6 @@
 #' `rray_sum()` computes the sum along a given axis or axes. The dimensionality
 #' of `x` is retained in the result.
 #'
-#' Currently, objects are coerced to `rray`s before the reduction is applied.
-#'
 #' @param x A vector, matrix, or array to reduce.
 #' @param axes An integer vector specifying the axes to reduce over. `1` reduces
 #' the number of rows to 1, performing the reduction along the way. `2` does the
@@ -49,8 +47,6 @@ rray_sum <- function(x, axes = NULL) {
 #' `rray_prod()` computes the product along a given axis or axes. The
 #' dimensionality of `x` is retained in the result.
 #'
-#' @inherit rray_sum details
-#'
 #' @inheritParams rray_sum
 #'
 #' @examples
@@ -73,8 +69,6 @@ rray_prod <- function(x, axes = NULL) {
 #'
 #' `rray_mean()` computes the mean along a given axis or axes. The
 #' dimensionality of `x` is retained in the result.
-#'
-#' @inherit rray_sum details
 #'
 #' @inheritParams rray_sum
 #'
@@ -99,8 +93,6 @@ rray_mean <- function(x, axes = NULL) {
 #' `rray_max()` computes the maximum along a given axis or axes. The
 #' dimensionality of `x` is retained in the result.
 #'
-#' @inherit rray_sum details
-#'
 #' @inheritParams rray_sum
 #'
 #' @examples
@@ -123,8 +115,6 @@ rray_max <- function(x, axes = NULL) {
 #'
 #' `rray_min()` computes the minimum along a given axis or axes. The
 #' dimensionality of `x` is retained in the result.
-#'
-#' @inherit rray_sum details
 #'
 #' @inheritParams rray_sum
 #'
