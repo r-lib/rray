@@ -128,7 +128,7 @@
     <tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
+          <h2 id="section-coercion" class="hasAnchor"><a href="#section-coercion" class="anchor"></a>Coercion</h2>
           <p class="section-desc"></p>
         </th>
       </tr>
@@ -153,51 +153,23 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="common-dim-names.html">rray_dim_names_common()</a></code> <code><a href="common-dim-names.html">rray_dim_names2()</a></code> </p>
-        </td>
-        <td><p>Find common dimension names</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="dim-names.html">rray_dim_names()</a></code> <code><a href="dim-names.html">`rray_dim_names<-`()</a></code> <code><a href="dim-names.html">rray_set_dim_names()</a></code> <code><a href="dim-names.html">rray_axis_names()</a></code> <code><a href="dim-names.html">`rray_axis_names<-`()</a></code> <code><a href="dim-names.html">rray_set_axis_names()</a></code> <code><a href="dim-names.html">rray_row_names()</a></code> <code><a href="dim-names.html">`rray_row_names<-`()</a></code> <code><a href="dim-names.html">rray_set_row_names()</a></code> <code><a href="dim-names.html">rray_col_names()</a></code> <code><a href="dim-names.html">`rray_col_names<-`()</a></code> <code><a href="dim-names.html">rray_set_col_names()</a></code> </p>
-        </td>
-        <td><p>Dimension names</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="is_rray.html">is_rray()</a></code> </p>
         </td>
         <td><p>Is <code>x</code> an rray?</p></td>
-      </tr><tr>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-construction" class="hasAnchor"><a href="#section-construction" class="anchor"></a>Construction</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      <tr>
         
         <td>
           <p><code><a href="new_rray.html">new_rray()</a></code> </p>
         </td>
         <td><p>Create a new rray</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="pad.html">pad()</a></code> </p>
-        </td>
-        <td><p>Pad missing dimensions when subsetting</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="remainder.html">rray_fmod()</a></code> <code><a href="remainder.html">rray_remainder()</a></code> </p>
-        </td>
-        <td><p>Remainders</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="rray-compare.html">`>`(<i>&lt;vctrs_rray&gt;</i>)</a></code> <code><a href="rray-compare.html">rray_greater()</a></code> <code><a href="rray-compare.html">`>=`(<i>&lt;vctrs_rray&gt;</i>)</a></code> <code><a href="rray-compare.html">rray_greater_equal()</a></code> <code><a href="rray-compare.html">`<`(<i>&lt;vctrs_rray&gt;</i>)</a></code> <code><a href="rray-compare.html">rray_lesser()</a></code> <code><a href="rray-compare.html">`<=`(<i>&lt;vctrs_rray&gt;</i>)</a></code> <code><a href="rray-compare.html">rray_lesser_equal()</a></code> <code><a href="rray-compare.html">`==`(<i>&lt;vctrs_rray&gt;</i>)</a></code> <code><a href="rray-compare.html">rray_equal()</a></code> <code><a href="rray-compare.html">`!=`(<i>&lt;vctrs_rray&gt;</i>)</a></code> <code><a href="rray-compare.html">rray_not_equal()</a></code> </p>
-        </td>
-        <td><p>Compare arrays</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="rray-logical.html">rray_logical_and()</a></code> <code><a href="rray-logical.html">rray_logical_or()</a></code> <code><a href="rray-logical.html">rray_logical_not()</a></code> <code><a href="rray-logical.html">rray_any()</a></code> <code><a href="rray-logical.html">rray_all()</a></code> </p>
-        </td>
-        <td><p>Logical operators</p></td>
       </tr><tr>
         
         <td>
@@ -207,22 +179,102 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="rray_abs.html">rray_abs()</a></code> </p>
+          <p><code><a href="rray_full_like.html">rray_full_like()</a></code> <code><a href="rray_full_like.html">rray_ones_like()</a></code> <code><a href="rray_full_like.html">rray_zeros_like()</a></code> </p>
         </td>
-        <td><p>Absolute value</p></td>
+        <td><p>Create an array like <code>x</code></p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-dimension-names" class="hasAnchor"><a href="#section-dimension-names" class="anchor"></a>Dimension names</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      <tr>
+        
+        <td>
+          <p><code><a href="common-dim-names.html">rray_dim_names_common()</a></code> <code><a href="common-dim-names.html">rray_dim_names2()</a></code> </p>
+        </td>
+        <td><p>Find common dimension names</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="rray_all_equal.html">rray_all_equal()</a></code> <code><a href="rray_all_equal.html">rray_any_not_equal()</a></code> </p>
+          <p><code><a href="dim-names.html">rray_dim_names()</a></code> <code><a href="dim-names.html">`rray_dim_names<-`()</a></code> <code><a href="dim-names.html">rray_set_dim_names()</a></code> <code><a href="dim-names.html">rray_axis_names()</a></code> <code><a href="dim-names.html">`rray_axis_names<-`()</a></code> <code><a href="dim-names.html">rray_set_axis_names()</a></code> <code><a href="dim-names.html">rray_row_names()</a></code> <code><a href="dim-names.html">`rray_row_names<-`()</a></code> <code><a href="dim-names.html">rray_set_row_names()</a></code> <code><a href="dim-names.html">rray_col_names()</a></code> <code><a href="dim-names.html">`rray_col_names<-`()</a></code> <code><a href="dim-names.html">rray_set_col_names()</a></code> </p>
         </td>
-        <td><p>Strictly compare arrays</p></td>
+        <td><p>Dimension names</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-dimensions" class="hasAnchor"><a href="#section-dimensions" class="anchor"></a>Dimensions</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      <tr>
+        
+        <td>
+          <p><code><a href="rray_dim.html">rray_dim()</a></code> <code><a href="rray_dim.html">rray_dim_common()</a></code> </p>
+        </td>
+        <td><p>Find common dimensions</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="rray_arith.html">`%b+%`</a></code> <code><a href="rray_arith.html">rray_add()</a></code> <code><a href="rray_arith.html">`%b-%`</a></code> <code><a href="rray_arith.html">rray_subtract()</a></code> <code><a href="rray_arith.html">`%b*%`</a></code> <code><a href="rray_arith.html">rray_multiply()</a></code> <code><a href="rray_arith.html">`%b/%`</a></code> <code><a href="rray_arith.html">rray_divide()</a></code> <code><a href="rray_arith.html">`%b^%`</a></code> <code><a href="rray_arith.html">rray_pow()</a></code> <code><a href="rray_arith.html">rray_identity()</a></code> <code><a href="rray_arith.html">rray_opposite()</a></code> </p>
+          <p><code><a href="rray_dim_n.html">rray_dim_n()</a></code> </p>
         </td>
-        <td><p>Arithmetic operations</p></td>
+        <td><p>Compute the number of dimensions of an object</p></td>
       </tr><tr>
+        
+        <td>
+          <p><code><a href="rray_elems.html">rray_elems()</a></code> </p>
+        </td>
+        <td><p>Compute the number of elements in an array</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-subsetting" class="hasAnchor"><a href="#section-subsetting" class="anchor"></a>Subsetting</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      <tr>
+        
+        <td>
+          <p><code><a href="pad.html">pad()</a></code> </p>
+        </td>
+        <td><p>Pad missing dimensions when subsetting</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="rray_subset.html">`rray_subset<-`()</a></code> <code><a href="rray_subset.html">`[<-`(<i>&lt;vctrs_rray&gt;</i>)</a></code> <code><a href="rray_subset.html">rray_subset_assign()</a></code> <code><a href="rray_subset.html">rray_subset()</a></code> <code><a href="rray_subset.html">`[`(<i>&lt;vctrs_rray&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Get or set dimensions of an array</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="rray_extract.html">`rray_extract<-`()</a></code> <code><a href="rray_extract.html">rray_extract_assign()</a></code> <code><a href="rray_extract.html">rray_extract()</a></code> </p>
+        </td>
+        <td><p>Get or set elements of an array by index</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="rray_slice.html">`rray_slice<-`()</a></code> <code><a href="rray_slice.html">rray_slice_assign()</a></code> <code><a href="rray_slice.html">rray_slice()</a></code> </p>
+        </td>
+        <td><p>Get or set a slice of an array</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="rray_yank.html">`rray_yank<-`()</a></code> <code><a href="rray_yank.html">`[[<-`(<i>&lt;vctrs_rray&gt;</i>)</a></code> <code><a href="rray_yank.html">rray_yank_assign()</a></code> <code><a href="rray_yank.html">rray_yank()</a></code> <code><a href="rray_yank.html">`[[`(<i>&lt;vctrs_rray&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Get or set elements of an array <em>by position</em></p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-manipulation" class="hasAnchor"><a href="#section-manipulation" class="anchor"></a>Manipulation</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      <tr>
         
         <td>
           <p><code><a href="rray_bind.html">rray_bind()</a></code> <code><a href="rray_bind.html">rray_rbind()</a></code> <code><a href="rray_bind.html">rray_cbind()</a></code> </p>
@@ -237,9 +289,9 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="rray_ceiling.html">rray_ceiling()</a></code> <code><a href="rray_ceiling.html">rray_floor()</a></code> <code><a href="rray_ceiling.html">rray_trunc()</a></code> <code><a href="rray_ceiling.html">rray_round()</a></code> <code><a href="rray_ceiling.html">rray_signif()</a></code> </p>
+          <p><code><a href="rray_reshape.html">rray_reshape()</a></code> </p>
         </td>
-        <td><p>Rounding functions</p></td>
+        <td><p>Reshape an array</p></td>
       </tr><tr>
         
         <td>
@@ -255,57 +307,9 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="rray_dim.html">rray_dim()</a></code> <code><a href="rray_dim.html">rray_dim_common()</a></code> </p>
-        </td>
-        <td><p>Find common dimensions</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="rray_dim_n.html">rray_dim_n()</a></code> </p>
-        </td>
-        <td><p>Compute the number of dimensions of an object</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="rray_dot.html">rray_dot()</a></code> </p>
-        </td>
-        <td><p>Matrix multiplication</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="rray_duplicate.html">rray_duplicate_any()</a></code> <code><a href="rray_duplicate.html">rray_duplicate_detect()</a></code> <code><a href="rray_duplicate.html">rray_duplicate_id()</a></code> </p>
-        </td>
-        <td><p>Find duplicated values in an array</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="rray_elems.html">rray_elems()</a></code> </p>
-        </td>
-        <td><p>Compute the number of elements in an array</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="rray_erf.html">rray_erf()</a></code> <code><a href="rray_erf.html">rray_erfc()</a></code> <code><a href="rray_erf.html">rray_gamma()</a></code> <code><a href="rray_erf.html">rray_lgamma()</a></code> <code><a href="rray_erf.html">rray_digamma()</a></code> <code><a href="rray_erf.html">rray_trigamma()</a></code> </p>
-        </td>
-        <td><p>Error and gamma functions</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="rray_exp.html">rray_exp()</a></code> <code><a href="rray_exp.html">rray_exp2()</a></code> <code><a href="rray_exp.html">rray_expm1()</a></code> <code><a href="rray_exp.html">rray_log()</a></code> <code><a href="rray_exp.html">rray_log2()</a></code> <code><a href="rray_exp.html">rray_log10()</a></code> <code><a href="rray_exp.html">rray_log1p()</a></code> </p>
-        </td>
-        <td><p>Logarithms and exponentials</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="rray_expand.html">rray_expand()</a></code> </p>
         </td>
         <td><p>Insert a dimension into an rray</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="rray_extract.html">`rray_extract<-`()</a></code> <code><a href="rray_extract.html">rray_extract_assign()</a></code> <code><a href="rray_extract.html">rray_extract()</a></code> </p>
-        </td>
-        <td><p>Get or set elements of an array by index</p></td>
       </tr><tr>
         
         <td>
@@ -321,16 +325,54 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="rray_full_like.html">rray_full_like()</a></code> <code><a href="rray_full_like.html">rray_ones_like()</a></code> <code><a href="rray_full_like.html">rray_zeros_like()</a></code> </p>
+          <p><code><a href="rray_sort.html">rray_sort()</a></code> </p>
         </td>
-        <td><p>Create an array like <code>x</code></p></td>
+        <td><p>Sort an array</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="rray_if_else.html">rray_if_else()</a></code> </p>
+          <p><code><a href="rray_split.html">rray_split()</a></code> </p>
         </td>
-        <td><p>Conditional selection</p></td>
+        <td><p>Split an array along axes</p></td>
       </tr><tr>
+        
+        <td>
+          <p><code><a href="rray_squeeze.html">rray_squeeze()</a></code> </p>
+        </td>
+        <td><p>Squeeze an rray</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="rray_tile.html">rray_tile()</a></code> </p>
+        </td>
+        <td><p>Tile an array</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="rray_transpose.html">rray_transpose()</a></code> <code><a href="rray_transpose.html">t(<i>&lt;vctrs_rray&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Transpose an array</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="rray_maximum.html">rray_maximum()</a></code> <code><a href="rray_maximum.html">rray_minimum()</a></code> </p>
+        </td>
+        <td><p>Maximum and minimum values</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="rray_rotate.html">rray_rotate()</a></code> </p>
+        </td>
+        <td><p>Rotate an array</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-reducers" class="hasAnchor"><a href="#section-reducers" class="anchor"></a>Reducers</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      <tr>
         
         <td>
           <p><code><a href="rray_max.html">rray_max()</a></code> </p>
@@ -342,12 +384,6 @@
           <p><code><a href="rray_max_pos.html">rray_max_pos()</a></code> </p>
         </td>
         <td><p>Locate the position of the maximum value</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="rray_maximum.html">rray_maximum()</a></code> <code><a href="rray_maximum.html">rray_minimum()</a></code> </p>
-        </td>
-        <td><p>Maximum and minimum values</p></td>
       </tr><tr>
         
         <td>
@@ -369,34 +405,88 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="rray_multiply_add.html">rray_multiply_add()</a></code> </p>
-        </td>
-        <td><p>Fused multiply-add</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="rray_prod.html">rray_prod()</a></code> </p>
         </td>
         <td><p>Calculate the product along an axis</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="rray_reshape.html">rray_reshape()</a></code> </p>
+          <p><code><a href="rray_sum.html">rray_sum()</a></code> </p>
         </td>
-        <td><p>Reshape an array</p></td>
+        <td><p>Calculate the sum along an axis</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-duplicate-and-unique" class="hasAnchor"><a href="#section-duplicate-and-unique" class="anchor"></a>Duplicate and Unique</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      <tr>
+        
+        <td>
+          <p><code><a href="rray_duplicate.html">rray_duplicate_any()</a></code> <code><a href="rray_duplicate.html">rray_duplicate_detect()</a></code> <code><a href="rray_duplicate.html">rray_duplicate_id()</a></code> </p>
+        </td>
+        <td><p>Find duplicated values in an array</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="rray_rotate.html">rray_rotate()</a></code> </p>
+          <p><code><a href="rray_unique.html">rray_unique()</a></code> <code><a href="rray_unique.html">rray_unique_loc()</a></code> <code><a href="rray_unique.html">rray_unique_count()</a></code> </p>
         </td>
-        <td><p>Rotate an array</p></td>
+        <td><p>Find and count unique values in an array</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-math" class="hasAnchor"><a href="#section-math" class="anchor"></a>Math</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      <tr>
+        
+        <td>
+          <p><code><a href="remainder.html">rray_fmod()</a></code> <code><a href="remainder.html">rray_remainder()</a></code> </p>
+        </td>
+        <td><p>Remainders</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="rray_abs.html">rray_abs()</a></code> </p>
+        </td>
+        <td><p>Absolute value</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="rray_ceiling.html">rray_ceiling()</a></code> <code><a href="rray_ceiling.html">rray_floor()</a></code> <code><a href="rray_ceiling.html">rray_trunc()</a></code> <code><a href="rray_ceiling.html">rray_round()</a></code> <code><a href="rray_ceiling.html">rray_signif()</a></code> </p>
+        </td>
+        <td><p>Rounding functions</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="rray_erf.html">rray_erf()</a></code> <code><a href="rray_erf.html">rray_erfc()</a></code> <code><a href="rray_erf.html">rray_gamma()</a></code> <code><a href="rray_erf.html">rray_lgamma()</a></code> <code><a href="rray_erf.html">rray_digamma()</a></code> <code><a href="rray_erf.html">rray_trigamma()</a></code> </p>
+        </td>
+        <td><p>Error and gamma functions</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="rray_exp.html">rray_exp()</a></code> <code><a href="rray_exp.html">rray_exp2()</a></code> <code><a href="rray_exp.html">rray_expm1()</a></code> <code><a href="rray_exp.html">rray_log()</a></code> <code><a href="rray_exp.html">rray_log2()</a></code> <code><a href="rray_exp.html">rray_log10()</a></code> <code><a href="rray_exp.html">rray_log1p()</a></code> </p>
+        </td>
+        <td><p>Logarithms and exponentials</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="rray_sign.html">rray_sign()</a></code> </p>
         </td>
         <td><p>Sign function</p></td>
-      </tr><tr>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-trigonometry" class="hasAnchor"><a href="#section-trigonometry" class="anchor"></a>Trigonometry</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      <tr>
         
         <td>
           <p><code><a href="rray_sin.html">rray_sin()</a></code> <code><a href="rray_sin.html">rray_cos()</a></code> <code><a href="rray_sin.html">rray_tan()</a></code> <code><a href="rray_sin.html">rray_asin()</a></code> <code><a href="rray_sin.html">rray_acos()</a></code> <code><a href="rray_sin.html">rray_atan()</a></code> <code><a href="rray_sin.html">rray_atan2()</a></code> <code><a href="rray_sin.html">rray_sinpi()</a></code> <code><a href="rray_sin.html">rray_cospi()</a></code> <code><a href="rray_sin.html">rray_tanpi()</a></code> </p>
@@ -408,73 +498,79 @@
           <p><code><a href="rray_sinh.html">rray_sinh()</a></code> <code><a href="rray_sinh.html">rray_cosh()</a></code> <code><a href="rray_sinh.html">rray_tanh()</a></code> <code><a href="rray_sinh.html">rray_asinh()</a></code> <code><a href="rray_sinh.html">rray_acosh()</a></code> <code><a href="rray_sinh.html">rray_atanh()</a></code> </p>
         </td>
         <td><p>Hyperbolic functions</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-arithmetic" class="hasAnchor"><a href="#section-arithmetic" class="anchor"></a>Arithmetic</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      <tr>
+        
+        <td>
+          <p><code><a href="rray_arith.html">`%b+%`</a></code> <code><a href="rray_arith.html">rray_add()</a></code> <code><a href="rray_arith.html">`%b-%`</a></code> <code><a href="rray_arith.html">rray_subtract()</a></code> <code><a href="rray_arith.html">`%b*%`</a></code> <code><a href="rray_arith.html">rray_multiply()</a></code> <code><a href="rray_arith.html">`%b/%`</a></code> <code><a href="rray_arith.html">rray_divide()</a></code> <code><a href="rray_arith.html">`%b^%`</a></code> <code><a href="rray_arith.html">rray_pow()</a></code> <code><a href="rray_arith.html">rray_identity()</a></code> <code><a href="rray_arith.html">rray_opposite()</a></code> </p>
+        </td>
+        <td><p>Arithmetic operations</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="rray_slice.html">`rray_slice<-`()</a></code> <code><a href="rray_slice.html">rray_slice_assign()</a></code> <code><a href="rray_slice.html">rray_slice()</a></code> </p>
+          <p><code><a href="rray_dot.html">rray_dot()</a></code> </p>
         </td>
-        <td><p>Get or set a slice of an array</p></td>
+        <td><p>Matrix multiplication</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="rray_sort.html">rray_sort()</a></code> </p>
+          <p><code><a href="rray_multiply_add.html">rray_multiply_add()</a></code> </p>
         </td>
-        <td><p>Sort an array</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="rray_split.html">rray_split()</a></code> </p>
-        </td>
-        <td><p>Split an array along axes</p></td>
+        <td><p>Fused multiply-add</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="rray_square.html">rray_square()</a></code> <code><a href="rray_square.html">rray_cube()</a></code> <code><a href="rray_square.html">rray_sqrt()</a></code> <code><a href="rray_square.html">rray_cbrt()</a></code> <code><a href="rray_square.html">rray_hypot()</a></code> </p>
         </td>
         <td><p>Power functions</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-comparison-and-logical" class="hasAnchor"><a href="#section-comparison-and-logical" class="anchor"></a>Comparison and Logical</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      <tr>
+        
+        <td>
+          <p><code><a href="rray-compare.html">`>`(<i>&lt;vctrs_rray&gt;</i>)</a></code> <code><a href="rray-compare.html">rray_greater()</a></code> <code><a href="rray-compare.html">`>=`(<i>&lt;vctrs_rray&gt;</i>)</a></code> <code><a href="rray-compare.html">rray_greater_equal()</a></code> <code><a href="rray-compare.html">`<`(<i>&lt;vctrs_rray&gt;</i>)</a></code> <code><a href="rray-compare.html">rray_lesser()</a></code> <code><a href="rray-compare.html">`<=`(<i>&lt;vctrs_rray&gt;</i>)</a></code> <code><a href="rray-compare.html">rray_lesser_equal()</a></code> <code><a href="rray-compare.html">`==`(<i>&lt;vctrs_rray&gt;</i>)</a></code> <code><a href="rray-compare.html">rray_equal()</a></code> <code><a href="rray-compare.html">`!=`(<i>&lt;vctrs_rray&gt;</i>)</a></code> <code><a href="rray-compare.html">rray_not_equal()</a></code> </p>
+        </td>
+        <td><p>Compare arrays</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="rray_squeeze.html">rray_squeeze()</a></code> </p>
+          <p><code><a href="rray_all_equal.html">rray_all_equal()</a></code> <code><a href="rray_all_equal.html">rray_any_not_equal()</a></code> </p>
         </td>
-        <td><p>Squeeze an rray</p></td>
+        <td><p>Strictly compare arrays</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="rray_subset.html">`rray_subset<-`()</a></code> <code><a href="rray_subset.html">`[<-`(<i>&lt;vctrs_rray&gt;</i>)</a></code> <code><a href="rray_subset.html">rray_subset_assign()</a></code> <code><a href="rray_subset.html">rray_subset()</a></code> <code><a href="rray_subset.html">`[`(<i>&lt;vctrs_rray&gt;</i>)</a></code> </p>
+          <p><code><a href="rray-logical.html">rray_logical_and()</a></code> <code><a href="rray-logical.html">rray_logical_or()</a></code> <code><a href="rray-logical.html">rray_logical_not()</a></code> <code><a href="rray-logical.html">rray_any()</a></code> <code><a href="rray-logical.html">rray_all()</a></code> </p>
         </td>
-        <td><p>Get or set dimensions of an array</p></td>
+        <td><p>Logical operators</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="rray_sum.html">rray_sum()</a></code> </p>
+          <p><code><a href="rray_if_else.html">rray_if_else()</a></code> </p>
         </td>
-        <td><p>Calculate the sum along an axis</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="rray_tile.html">rray_tile()</a></code> </p>
-        </td>
-        <td><p>Tile an array</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="rray_transpose.html">rray_transpose()</a></code> <code><a href="rray_transpose.html">t(<i>&lt;vctrs_rray&gt;</i>)</a></code> </p>
-        </td>
-        <td><p>Transpose an array</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="rray_unique.html">rray_unique()</a></code> <code><a href="rray_unique.html">rray_unique_loc()</a></code> <code><a href="rray_unique.html">rray_unique_count()</a></code> </p>
-        </td>
-        <td><p>Find and count unique values in an array</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="rray_yank.html">`rray_yank<-`()</a></code> <code><a href="rray_yank.html">`[[<-`(<i>&lt;vctrs_rray&gt;</i>)</a></code> <code><a href="rray_yank.html">rray_yank_assign()</a></code> <code><a href="rray_yank.html">rray_yank()</a></code> <code><a href="rray_yank.html">`[[`(<i>&lt;vctrs_rray&gt;</i>)</a></code> </p>
-        </td>
-        <td><p>Get or set elements of an array <em>by position</em></p></td>
-      </tr><tr>
+        <td><p>Conditional selection</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-compatibility" class="hasAnchor"><a href="#section-compatibility" class="anchor"></a>Compatibility</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      <tr>
         
         <td>
           <p><code><a href="vctrs-compat.html">vec_arith(<i>&lt;vctrs_rray&gt;</i>)</a></code> <code><a href="vctrs-compat.html">vec_type2(<i>&lt;vctrs_rray_dbl&gt;</i>)</a></code> <code><a href="vctrs-compat.html">vec_type2(<i>&lt;vctrs_rray_int&gt;</i>)</a></code> <code><a href="vctrs-compat.html">vec_type2(<i>&lt;vctrs_rray_lgl&gt;</i>)</a></code> <code><a href="vctrs-compat.html">vec_cast(<i>&lt;vctrs_rray_int&gt;</i>)</a></code> <code><a href="vctrs-compat.html">vec_cast(<i>&lt;vctrs_rray_dbl&gt;</i>)</a></code> <code><a href="vctrs-compat.html">vec_cast(<i>&lt;vctrs_rray_lgl&gt;</i>)</a></code> </p>
@@ -486,12 +582,6 @@
           <p><code><a href="vec_cast_container.html">vec_cast_container()</a></code> <code><a href="vec_cast_container.html">vec_cast_container_common()</a></code> </p>
         </td>
         <td><p>Cast to a container type</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="vec_cast_inner.html">vec_cast_inner()</a></code> <code><a href="vec_cast_inner.html">vec_cast_inner_common()</a></code> </p>
-        </td>
-        <td><p>Cast to an inner type</p></td>
       </tr><tr>
         
         <td>
@@ -510,6 +600,12 @@
           <p><code><a href="vec_type_inner.html">vec_type_inner()</a></code> <code><a href="vec_type_inner.html">vec_type_inner_common()</a></code> </p>
         </td>
         <td><p>Find the inner type of a set of vectors</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="vec_cast_inner.html">vec_cast_inner()</a></code> <code><a href="vec_cast_inner.html">vec_cast_inner_common()</a></code> </p>
+        </td>
+        <td><p>Cast to an inner type</p></td>
       </tr>
     </tbody>
     </table>
@@ -518,7 +614,19 @@
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-      <li><a href="#section-all-functions">All functions</a></li>
+      <li><a href="#section-coercion">Coercion</a></li>
+      <li><a href="#section-construction">Construction</a></li>
+      <li><a href="#section-dimension-names">Dimension names</a></li>
+      <li><a href="#section-dimensions">Dimensions</a></li>
+      <li><a href="#section-subsetting">Subsetting</a></li>
+      <li><a href="#section-manipulation">Manipulation</a></li>
+      <li><a href="#section-reducers">Reducers</a></li>
+      <li><a href="#section-duplicate-and-unique">Duplicate and Unique</a></li>
+      <li><a href="#section-math">Math</a></li>
+      <li><a href="#section-trigonometry">Trigonometry</a></li>
+      <li><a href="#section-arithmetic">Arithmetic</a></li>
+      <li><a href="#section-comparison-and-logical">Comparison and Logical</a></li>
+      <li><a href="#section-compatibility">Compatibility</a></li>
     </ul>
   </div>
 </div>
