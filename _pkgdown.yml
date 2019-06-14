@@ -3,3 +3,106 @@ development:
 
 home:
   strip_header: true
+
+reference:
+- title: Coercion
+  contents:
+  - as_array
+  - as_matrix
+  - as_rray
+  - is_rray
+
+- title: Construction
+  contents:
+  - new_rray
+  - rray
+  - rray_full_like
+
+- title: Dimension names
+  contents:
+  - rray_dim_names_common
+  - rray_dim_names
+
+- title: Dimensions
+  contents:
+  - rray_dim
+  - rray_dim_n
+  - rray_elems
+
+- title: Subsetting
+  contents:
+  - pad
+  - rray_subset
+  - rray_extract
+  - rray_slice
+  - rray_yank
+
+- title: Manipulation
+  contents:
+  - rray_bind
+  - rray_broadcast
+  - rray_reshape
+  - rray_clip
+  - rray_diag
+  - rray_expand
+  - rray_flatten
+  - rray_flip
+  - rray_sort
+  - rray_split
+  - rray_squeeze
+  - rray_tile
+  - rray_transpose
+  - rray_maximum
+  - rray_rotate
+
+- title: Reducers
+  contents:
+  - rray_max
+  - rray_max_pos
+  - rray_mean
+  - rray_min
+  - rray_min_pos
+  - rray_prod
+  - rray_sum
+
+- title: Duplicate and Unique
+  contents:
+  - rray_duplicate_any
+  - rray_unique
+
+- title: Math
+  contents:
+  - rray_fmod
+  - rray_abs
+  - rray_ceiling
+  - rray_erf
+  - rray_exp
+  - rray_sign
+
+- title: Trigonometry
+  contents:
+  - rray_sin
+  - rray_sinh
+
+- title: Arithmetic
+  contents:
+  - rray_add
+  - rray_dot
+  - rray_multiply_add
+  - rray_square
+
+- title: Comparison and Logical
+  contents:
+  - rray_greater
+  - rray_all_equal
+  - rray_logical_and
+  - rray_if_else
+
+- title: Compatibility
+  contents:
+  - vec_arith.vctrs_rray
+  - vec_cast_container
+  - vec_type_container
+  - vec_type_container2
+  - vec_type_inner
+  - vec_cast_inner
