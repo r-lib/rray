@@ -103,7 +103,7 @@ rray_unique_loc <- function(x, axis) {
   axis <- vec_cast(axis, integer())
   validate_axis(axis, x)
 
-  axes <- get_axes_complement(vec_dims(x), axis)
+  axes <- get_axes_complement(vec_dim_n(x), axis)
   x_split_flat <- duplicate_splitter(x, axes)
 
   vec_unique_loc(x_split_flat)
@@ -115,7 +115,7 @@ rray_unique_count <- function(x, axis) {
   axis <- vec_cast(axis, integer())
   validate_axis(axis, x)
 
-  axes <- get_axes_complement(vec_dims(x), axis)
+  axes <- get_axes_complement(vec_dim_n(x), axis)
   x_split_flat <- duplicate_splitter(x, axes)
 
   vec_unique_count(x_split_flat)

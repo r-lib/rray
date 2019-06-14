@@ -18,7 +18,7 @@ test_that("Default `axes` argument reduces over all dimensions", {
   )
 
   expect_equal(
-    vec_dims(rray_sum(y)),
+    vec_dim_n(rray_sum(y)),
     2L
   )
 })
@@ -123,7 +123,7 @@ test_that("Default `axes` argument reduces over all dimensions", {
   )
 
   expect_equal(
-    vec_dims(rray_prod(y)),
+    vec_dim_n(rray_prod(y)),
     2L
   )
 })
@@ -228,7 +228,7 @@ test_that("Default `axes` argument reduces over all dimensions", {
   )
 
   expect_equal(
-    vec_dims(rray_mean(y)),
+    vec_dim_n(rray_mean(y)),
     2L
   )
 })
@@ -333,7 +333,7 @@ test_that("Default `axes` argument reduces over all dimensions", {
   )
 
   expect_equal(
-    vec_dims(rray_max(y)),
+    vec_dim_n(rray_max(y)),
     2L
   )
 })
@@ -432,7 +432,7 @@ test_that("Default `axes` argument reduces over all dimensions", {
   )
 
   expect_equal(
-    vec_dims(rray_min(y)),
+    vec_dim_n(rray_min(y)),
     2L
   )
 })

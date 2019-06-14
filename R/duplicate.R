@@ -178,7 +178,7 @@ check_duplicate_axes <- function(axes, x) {
   }
 
   if (is.null(axes)) {
-    axes <- seq_len(vec_dims(x))
+    axes <- seq_len(vec_dim_n(x))
   }
 
   axes
@@ -190,7 +190,7 @@ rray_unlist <- function(x) {
 
 duplicate_splitter <- function(x, axes) {
 
-  axes_complement <- get_axes_complement(vec_dims(x), axes)
+  axes_complement <- get_axes_complement(vec_dim_n(x), axes)
 
   x_split <- rray_split(x, axes_complement)
 

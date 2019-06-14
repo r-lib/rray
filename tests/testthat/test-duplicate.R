@@ -49,7 +49,7 @@ test_that("`NULL` axes", {
   x <- array(c(1, 4, 1, 3, 3, 1, 4, 4, 4, 6, 7, 1), c(2, 3, 2))
   expect_equal(
     rray_duplicate_any(x, axes = NULL),
-    rray_duplicate_any(x, axes = seq_len(vec_dims(x)))
+    rray_duplicate_any(x, axes = seq_len(vec_dim_n(x)))
   )
 })
 
@@ -124,7 +124,7 @@ test_that("`NULL` axes", {
   x <- array(c(1, 4, 1, 3, 3, 1, 4, 4, 4, 6, 7, 1), c(2, 3, 2))
   expect_equal(
     rray_duplicate_detect(x, axes = NULL),
-    rray_duplicate_detect(x, axes = seq_len(vec_dims(x)))
+    rray_duplicate_detect(x, axes = seq_len(vec_dim_n(x)))
   )
 })
 
@@ -199,7 +199,7 @@ test_that("`NULL` axes", {
   x <- array(c(1, 4, 1, 3, 3, 1, 4, 4, 4, 6, 7, 1), c(2, 3, 2))
   expect_equal(
     rray_duplicate_id(x, axes = NULL),
-    rray_duplicate_id(x, axes = seq_len(vec_dims(x)))
+    rray_duplicate_id(x, axes = seq_len(vec_dim_n(x)))
   )
 })
 
