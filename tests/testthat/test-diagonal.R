@@ -38,3 +38,7 @@ test_that("fails if `x` is not an allowed type", {
 test_that("fails if `x` is not 1D", {
   expect_error(rray_diag(matrix(1)), "`x` must be 1D, not 2D")
 })
+
+test_that("fails with bad `offset`", {
+  expect_error(rray_diag(1, offset = c(1, 1)), "1, not 2")
+})
