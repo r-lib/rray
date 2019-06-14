@@ -48,3 +48,7 @@ test_that("cannot have more than 1 pad()", {
   expect_error(x[pad(), 1, pad()], "Only one")
   expect_error(x[1, 1, pad(), pad()], "Only one")
 })
+
+test_that("pad format", {
+  expect_equal(format(pad()), "<padding>")
+})
