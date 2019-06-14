@@ -1,12 +1,10 @@
 #' Logical operators
 #'
-#' These operators perform logical operations on arrays, with broadcasting. The
-#' underlying functions powering the logical operations are also exported
-#' for use with base R objects.
+#' These functions perform logical operations on arrays, with broadcasting. They
+#' power the logical operators of `&`, `|`, and `!` with rrays, but are
+#' also exported for use with base R objects.
 #'
-#' @param x,y Two vectors, matrices, arrays, or rrays.
-#'
-#' @param e1,e2 Generally, the same as `x` and `y`. See Details.
+#' @param x,y Vectors, matrices, arrays, or rrays.
 #'
 #' @param axes An integer vector specifying the axes to reduce over.
 #' `1` reduces the number of rows to `1`, performing the reduction along the
@@ -22,8 +20,8 @@
 #' error is thrown. There is nothing we can do about
 #' this. See `?groupGeneric` for more information on this.
 #'
-#' The behavior of comparing either an array with a length 0 dimension
-#' or `NULL` with another array is slightly different than base R since
+#' The behavior of comparing an array with a length 0 dimension
+#' with another array is slightly different than base R since
 #' broadcasting behavior is well defined. Length 0 dimensions are not exceptions
 #' to the normal broadcasting rules. Comparing dimensions of `0` and `1`, the
 #' common dimension is `0` because `1` always becomes the other dimension in the
@@ -50,30 +48,17 @@
 #' y <- array(logical(), c(0, 1, 2))
 #' x & y
 #'
-#' # NULL is treated as logical(0)
-#' NULL & x
-#'
-#' rray_logical_and(NULL, NULL)
-#'
 #' # You cannot broadcast dimensions
 #' # of 2 and 0. Following standard
 #' # broadcasting rules, they do not
 #' # match and neither are 1, so an
 #' # error should be thrown
-#' \dontrun{
-#' x & array(logical(), c(1, 0))
-#' }
+#' try(x & array(logical(), c(1, 0)))
 #'
 #' @name rray-logical
 NULL
 
 # ------------------------------------------------------------------------------
-
-#' @rdname rray-logical
-#' @export
-`&.vctrs_rray` <- function(e1, e2) {
-  rray_logical_and(e1, e2)
-}
 
 #' @rdname rray-logical
 #' @export
@@ -87,12 +72,6 @@ rray_logical_and <- function(x, y) {
 
 #' @rdname rray-logical
 #' @export
-`|.vctrs_rray` <- function(e1, e2) {
-  rray_logical_or(e1, e2)
-}
-
-#' @rdname rray-logical
-#' @export
 rray_logical_or <- function(x, y) {
   out <- rray__logical_or(x, y)
   container <- vec_type_container2(x, y)
@@ -100,12 +79,6 @@ rray_logical_or <- function(x, y) {
 }
 
 # ------------------------------------------------------------------------------
-
-#' @rdname rray-logical
-#' @export
-`!.vctrs_rray` <- function(x) {
-  rray_logical_not(x)
-}
 
 #' @rdname rray-logical
 #' @export

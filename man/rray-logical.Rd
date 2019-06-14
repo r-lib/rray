@@ -2,25 +2,16 @@
 % Please edit documentation in R/logical.R
 \name{rray-logical}
 \alias{rray-logical}
-\alias{&.vctrs_rray}
 \alias{rray_logical_and}
-\alias{|.vctrs_rray}
 \alias{rray_logical_or}
-\alias{!.vctrs_rray}
 \alias{rray_logical_not}
 \alias{rray_any}
 \alias{rray_all}
 \title{Logical operators}
 \usage{
-\method{&}{vctrs_rray}(e1, e2)
-
 rray_logical_and(x, y)
 
-\method{|}{vctrs_rray}(e1, e2)
-
 rray_logical_or(x, y)
-
-\method{!}{vctrs_rray}(x)
 
 rray_logical_not(x)
 
@@ -29,9 +20,7 @@ rray_any(x, axes = NULL)
 rray_all(x, axes = NULL)
 }
 \arguments{
-\item{e1, e2}{Generally, the same as \code{x} and \code{y}. See Details.}
-
-\item{x, y}{Two vectors, matrices, arrays, or rrays.}
+\item{x, y}{Vectors, matrices, arrays, or rrays.}
 
 \item{axes}{An integer vector specifying the axes to reduce over.
 \code{1} reduces the number of rows to \code{1}, performing the reduction along the
@@ -39,9 +28,9 @@ way. \code{2} does the same, but with the columns, and so on for higher
 dimensions. The default reduces along all axes.}
 }
 \description{
-These operators perform logical operations on arrays, with broadcasting. The
-underlying functions powering the logical operations are also exported
-for use with base R objects.
+These functions perform logical operations on arrays, with broadcasting. They
+power the logical operators of \code{&}, \code{|}, and \code{!} with rrays, but are
+also exported for use with base R objects.
 }
 \details{
 The operators themselves rely on R's dispatching rules to
@@ -51,8 +40,8 @@ compare classed objects like \code{factor("x") & rray(1)} then a fall through
 error is thrown. There is nothing we can do about
 this. See \code{?groupGeneric} for more information on this.
 
-The behavior of comparing either an array with a length 0 dimension
-or \code{NULL} with another array is slightly different than base R since
+The behavior of comparing an array with a length 0 dimension
+with another array is slightly different than base R since
 broadcasting behavior is well defined. Length 0 dimensions are not exceptions
 to the normal broadcasting rules. Comparing dimensions of \code{0} and \code{1}, the
 common dimension is \code{0} because \code{1} always becomes the other dimension in the
@@ -79,18 +68,11 @@ logical() & x
 y <- array(logical(), c(0, 1, 2))
 x & y
 
-# NULL is treated as logical(0)
-NULL & x
-
-rray_logical_and(NULL, NULL)
-
 # You cannot broadcast dimensions
 # of 2 and 0. Following standard
 # broadcasting rules, they do not
 # match and neither are 1, so an
 # error should be thrown
-\dontrun{
-x & array(logical(), c(1, 0))
-}
+try(x & array(logical(), c(1, 0)))
 
 }

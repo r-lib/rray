@@ -31,19 +31,9 @@ test_that("& works with non-logicals", {
   expect_equal(x & 0, rray(FALSE, 2))
 })
 
-# treated as logical(0)
-test_that("& works with NULL input", {
-  x <- rray(c(TRUE, FALSE), c(1, 2))
-  expect_equal(x & NULL, x[0,])
-
-  expect_equal(rray_logical_and(NULL, NULL), new_array(logical()))
-
-  expect_equal(rray_logical_and(logical(), NULL), new_array(logical()))
-})
-
-test_that("dim names are kept with NULL input", {
-  x <- rray(c(TRUE, FALSE), c(1, 2), dim_names = list(c("r1"), c("c1", "c2")))
-  expect_equal(rray_dim_names(x & NULL), rray_dim_names(x[0,]))
+# TODO Is this right?
+test_that("`NULL` logical op is an error", {
+  expect_error(rray(TRUE) & NULL, class = "vctrs_error_incompatible_op")
 })
 
 test_that("& works with 0-length input", {
@@ -120,19 +110,9 @@ test_that("| works with non-logicals", {
   expect_equal(x | 0, rray(c(TRUE, FALSE)))
 })
 
-# treated as logical(0)
-test_that("| works with NULL input", {
-  x <- rray(c(TRUE, FALSE), c(1, 2))
-  expect_equal(x | NULL, x[0,])
-
-  expect_equal(rray_logical_or(NULL, NULL), new_array(logical()))
-
-  expect_equal(rray_logical_or(logical(), NULL), new_array(logical()))
-})
-
-test_that("dim names are kept with NULL input", {
-  x <- rray(c(TRUE, FALSE), c(1, 2), dim_names = list(c("r1"), c("c1", "c2")))
-  expect_equal(rray_dim_names(x | NULL), rray_dim_names(x[0,]))
+# TODO Is this right?
+test_that("`NULL` logical op is an error", {
+  expect_error(rray(TRUE) | NULL, class = "vctrs_error_incompatible_op")
 })
 
 test_that("| works with 0-length input", {
