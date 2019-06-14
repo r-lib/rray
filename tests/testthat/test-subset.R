@@ -184,3 +184,37 @@ test_that("can use a negative subset", {
   expect_equal(x[-1], x[2])
   expect_error(x[-3], "length 2")
 })
+
+test_that("subset ignored `drop`", {
+  x <- rray(1:8, dim = c(2, 2, 2))
+  expect_warning(
+    expect_equal(x[1, drop = TRUE], x[1]),
+    "`drop` ignored."
+  )
+})
+
+# ------------------------------------------------------------------------------
+
+test_that("head() works", {
+  x <- rray(1:12, dim = c(3, 2, 2))
+
+  expect_equal(head(x), x)
+
+  expect_equal(head(x, 1), x[1])
+
+  expect_equal(head(x, -1), x[1:2])
+
+  expect_error(head(x, c(1, 2)), "1, not 2")
+})
+
+test_that("tail() works", {
+  x <- rray(1:12, dim = c(3, 2, 2))
+
+  expect_equal(tail(x), x)
+
+  expect_equal(tail(x, 1), x[-(1:2)])
+
+  expect_equal(tail(x, -1), x[2:3])
+
+  expect_error(tail(x, c(1, 2)), "1, not 2")
+})
