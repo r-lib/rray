@@ -118,10 +118,7 @@ as_yank_indexer <- function(i, x) {
 
   # Special case with logical array index
   if (is.logical(i) && identical(rray_dim(i), rray_dim(x))) {
-    # Waiting on https://github.com/QuantStack/xtensor/issues/1663
-    # short term solution is to precompute the locations:
-    return(which(i) - 1L)
-    #return(i)
+    return(i)
   }
 
   vec_as_index(i, rray_elems(x)) - 1L

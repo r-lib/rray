@@ -43,6 +43,14 @@ test_that("yank assigning a non-vector is an error", {
   expect_error(rray_yank(x, 1) <- environment(), class = "vctrs_error_scalar_type")
 })
 
+test_that("can yank assign with a logical array", {
+  x <- rray(1:8, dim = c(2, 2, 2))
+  idx <- rray(rep(c(TRUE, FALSE), 4), c(2, 2, 2))
+  rray_yank(x, idx) <- c(10L, 11L, 12L, 13L)
+
+  expect <- rray(c(10L, 2L, 11L, 4L, 12L, 6L, 13L, 8L), c(2, 2, 2))
+  expect_equal(x, expect)
+})
 
 # ------------------------------------------------------------------------------
 # `[[<-`

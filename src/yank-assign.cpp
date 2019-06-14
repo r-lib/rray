@@ -16,18 +16,15 @@
 
 // -----------------------------------------------------------------------------
 
-// filter() view. `rray_dim_n(i) == rray_dim_n(x)`
-
-// Would like to use `xt::filter()` for the logical `i` case
-// Waiting on https://github.com/QuantStack/xtensor/issues/1663
-
-// template <typename T>
-// auto rray__yank_filter_impl(const xt::rarray<T>& x, const Rcpp::RObject& i) {
-//   xt::rarray<rlogical> xt_i = Rcpp::as<xt::rarray<rlogical>>(i);
-//   return xt::filter(x, xt_i);
-// }
-
 // For the assignment step to work, `x` cannot be a const reference
+
+// filter() view happens when there is a logical i and `rray_dim_n(i) == rray_dim_n(x)`
+
+template <typename T>
+auto rray__yank_non_const_filter_impl(xt::rarray<T>& x, const Rcpp::RObject& i) {
+  xt::rarray<rlogical> xt_i = Rcpp::as<xt::rarray<rlogical>>(i);
+  return xt::filter<xt::layout_type::column_major>(x, xt_i);
+}
 
 template <typename T>
 auto rray__yank_non_const_index_impl(xt::rarray<T>& x, const Rcpp::RObject& i) {
@@ -53,15 +50,14 @@ Rcpp::RObject rray__yank_assign_impl(const xt::rarray<T>& x, Rcpp::RObject i, Rc
   xt::rarray<T> value(value_);
 
   if (TYPEOF(i) == LGLSXP) {
-    // Waiting on https://github.com/QuantStack/xtensor/issues/1663
-    //x_view = rray__yank_filter_impl(x, i);
-    //rray__validate_broadcastable_to(value, x_view);
-    //xt::noalias(x_view) = value;
+    auto out_view = rray__yank_non_const_filter_impl(out, i);
+    rray__validate_broadcastable_to(value, out_view);
+    out_view = value;
   }
   else if (TYPEOF(i) == INTSXP) {
-    auto x_view = rray__yank_non_const_index_impl(out, i);
-    rray__validate_broadcastable_to(value, x_view);
-    x_view = value;
+    auto out_view = rray__yank_non_const_index_impl(out, i);
+    rray__validate_broadcastable_to(value, out_view);
+    out_view = value;
   }
   else {
     Rcpp::stop("Internal error: `i` is somehow not a logical or integer.");

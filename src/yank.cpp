@@ -16,14 +16,11 @@
 
 // filter() view. `rray_dim_n(i) == rray_dim_n(x)`
 
-// Would like to use `xt::filter()` for the logical `i` case
-// Waiting on https://github.com/QuantStack/xtensor/issues/1663
-
-// template <typename T>
-// auto rray__yank_filter_impl(const xt::rarray<T>& x, const Rcpp::RObject& i) {
-//   xt::rarray<rlogical> xt_i = Rcpp::as<xt::rarray<rlogical>>(i);
-//   return xt::filter(x, xt_i);
-// }
+template <typename T>
+auto rray__yank_filter_impl(const xt::rarray<T>& x, const Rcpp::RObject& i) {
+  xt::rarray<rlogical> xt_i = Rcpp::as<xt::rarray<rlogical>>(i);
+  return xt::filter<xt::layout_type::column_major>(x, xt_i);
+}
 
 template <typename T>
 auto rray__yank_index_impl(const xt::rarray<T>& x, const Rcpp::RObject& i) {
@@ -46,8 +43,7 @@ Rcpp::RObject rray__yank_impl(const xt::rarray<T>& x, Rcpp::RObject i) {
   xt::rarray<T> out;
 
   if (TYPEOF(i) == LGLSXP) {
-    // Waiting on https://github.com/QuantStack/xtensor/issues/1663
-    //out = rray__yank_filter_impl(x, i);
+    out = rray__yank_filter_impl(x, i);
   }
   else if (TYPEOF(i) == INTSXP) {
     out = rray__yank_index_impl(x, i);
