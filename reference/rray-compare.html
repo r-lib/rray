@@ -102,7 +102,7 @@ for use with base R objects." />
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/DavisVaughan/rray">
+  <a href="https://github.com/r-lib/rray">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -120,7 +120,7 @@ for use with base R objects." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Compare arrays</h1>
-    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/compare.R'><code>R/compare.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/r-lib/rray/blob/master/R/compare.R'><code>R/compare.R</code></a></small>
     <div class="hidden name"><code>rray-compare.Rd</code></div>
     </div>
 
@@ -190,7 +190,7 @@ this. See <code><a href='https://www.rdocumentation.org/packages/base/topics/gro
 <span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fl'>1</span>:<span class='fl'>2</span>)
 
 <span class='co'># True except in first 2 positions</span>
-<span class='no'>x</span> <span class='kw'>&gt;</span> <span class='no'>y</span></div><div class='output co'>#&gt; &lt;rray&lt;lgl&gt;[,2,3][12]&gt;
+<span class='no'>x</span> <span class='kw'>&gt;</span> <span class='no'>y</span></div><div class='output co'>#&gt; &lt;rray&lt;lgl&gt;[,2,3][2]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;       [,1] [,2]
@@ -210,7 +210,7 @@ this. See <code><a href='https://www.rdocumentation.org/packages/base/topics/gro
 #&gt; [2,] TRUE TRUE
 #&gt; </div><div class='input'>
 <span class='co'># All true</span>
-<span class='no'>x</span> <span class='kw'>&gt;=</span> <span class='no'>y</span></div><div class='output co'>#&gt; &lt;rray&lt;lgl&gt;[,2,3][12]&gt;
+<span class='no'>x</span> <span class='kw'>&gt;=</span> <span class='no'>y</span></div><div class='output co'>#&gt; &lt;rray&lt;lgl&gt;[,2,3][2]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1] [,2]
@@ -230,7 +230,7 @@ this. See <code><a href='https://www.rdocumentation.org/packages/base/topics/gro
 #&gt; [2,] TRUE TRUE
 #&gt; </div><div class='input'>
 <span class='co'># False everywhere</span>
-<span class='no'>x</span> <span class='kw'>&lt;</span> <span class='no'>y</span></div><div class='output co'>#&gt; &lt;rray&lt;lgl&gt;[,2,3][12]&gt;
+<span class='no'>x</span> <span class='kw'>&lt;</span> <span class='no'>y</span></div><div class='output co'>#&gt; &lt;rray&lt;lgl&gt;[,2,3][2]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;       [,1]  [,2]
@@ -250,7 +250,7 @@ this. See <code><a href='https://www.rdocumentation.org/packages/base/topics/gro
 #&gt; [2,] FALSE FALSE
 #&gt; </div><div class='input'>
 <span class='co'># False except in the first 2 positions</span>
-<span class='no'>x</span> <span class='kw'>&lt;=</span> <span class='no'>y</span></div><div class='output co'>#&gt; &lt;rray&lt;lgl&gt;[,2,3][12]&gt;
+<span class='no'>x</span> <span class='kw'>&lt;=</span> <span class='no'>y</span></div><div class='output co'>#&gt; &lt;rray&lt;lgl&gt;[,2,3][2]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1]  [,2]

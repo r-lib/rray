@@ -100,7 +100,7 @@
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/DavisVaughan/rray">
+  <a href="https://github.com/r-lib/rray">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -118,7 +118,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Split an array along axes</h1>
-    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/split.R'><code>R/split.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/r-lib/rray/blob/master/R/split.R'><code>R/split.R</code></a></small>
     <div class="hidden name"><code>rray_split.Rd</code></div>
     </div>
 
@@ -290,7 +290,7 @@ shape <code>(2, 1, 1)</code>.</p>
 <span class='co'># Split along the 1st dimension (rows)</span>
 <span class='co'># (2, 2, 2, 2) -&gt; (1, 2, 2, 2)</span>
 <span class='fu'>rray_split</span>(<span class='no'>x_4d</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; [[1]]
-#&gt; &lt;rray&lt;int&gt;[,2,2,2][8]&gt;
+#&gt; &lt;rray&lt;int&gt;[,2,2,2][1]&gt;
 #&gt; , , d1, e1
 #&gt; 
 #&gt;    c1 c2
@@ -313,7 +313,7 @@ shape <code>(2, 1, 1)</code>.</p>
 #&gt; 
 #&gt; 
 #&gt; [[2]]
-#&gt; &lt;rray&lt;int&gt;[,2,2,2][8]&gt;
+#&gt; &lt;rray&lt;int&gt;[,2,2,2][1]&gt;
 #&gt; , , d1, e1
 #&gt; 
 #&gt;    c1 c2
@@ -338,7 +338,7 @@ shape <code>(2, 1, 1)</code>.</p>
 <span class='co'># Split along columns</span>
 <span class='co'># (2, 2, 2, 2) -&gt; (2, 1, 2, 2)</span>
 <span class='fu'>rray_split</span>(<span class='no'>x_4d</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; [[1]]
-#&gt; &lt;rray&lt;int&gt;[,1,2,2][8]&gt;
+#&gt; &lt;rray&lt;int&gt;[,1,2,2][2]&gt;
 #&gt; , , d1, e1
 #&gt; 
 #&gt;    c1
@@ -365,7 +365,7 @@ shape <code>(2, 1, 1)</code>.</p>
 #&gt; 
 #&gt; 
 #&gt; [[2]]
-#&gt; &lt;rray&lt;int&gt;[,1,2,2][8]&gt;
+#&gt; &lt;rray&lt;int&gt;[,1,2,2][2]&gt;
 #&gt; , , d1, e1
 #&gt; 
 #&gt;    c2
@@ -395,7 +395,7 @@ shape <code>(2, 1, 1)</code>.</p>
 <span class='co'># is use this to split the 4D array into a set</span>
 <span class='co'># of 4 2D matrices.</span>
 <span class='fu'>rray_split</span>(<span class='no'>x_4d</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>3</span>, <span class='fl'>4</span>))</div><div class='output co'>#&gt; [[1]]
-#&gt; &lt;rray&lt;int&gt;[,2,1,1][4]&gt;
+#&gt; &lt;rray&lt;int&gt;[,2,1,1][2]&gt;
 #&gt; , , d1, e1
 #&gt; 
 #&gt;    c1 c2
@@ -404,7 +404,7 @@ shape <code>(2, 1, 1)</code>.</p>
 #&gt; 
 #&gt; 
 #&gt; [[2]]
-#&gt; &lt;rray&lt;int&gt;[,2,1,1][4]&gt;
+#&gt; &lt;rray&lt;int&gt;[,2,1,1][2]&gt;
 #&gt; , , d2, e1
 #&gt; 
 #&gt;    c1 c2
@@ -413,7 +413,7 @@ shape <code>(2, 1, 1)</code>.</p>
 #&gt; 
 #&gt; 
 #&gt; [[3]]
-#&gt; &lt;rray&lt;int&gt;[,2,1,1][4]&gt;
+#&gt; &lt;rray&lt;int&gt;[,2,1,1][2]&gt;
 #&gt; , , d1, e2
 #&gt; 
 #&gt;    c1 c2
@@ -422,7 +422,7 @@ shape <code>(2, 1, 1)</code>.</p>
 #&gt; 
 #&gt; 
 #&gt; [[4]]
-#&gt; &lt;rray&lt;int&gt;[,2,1,1][4]&gt;
+#&gt; &lt;rray&lt;int&gt;[,2,1,1][2]&gt;
 #&gt; , , d2, e2
 #&gt; 
 #&gt;    c1 c2

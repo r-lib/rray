@@ -105,7 +105,7 @@ rray_zeros_like() is rray_full_like() with value = 0.
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/DavisVaughan/rray">
+  <a href="https://github.com/r-lib/rray">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -123,7 +123,7 @@ rray_zeros_like() is rray_full_like() with value = 0.
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Create an array like <code>x</code></h1>
-    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/full-like.R'><code>R/full-like.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/r-lib/rray/blob/master/R/full-like.R'><code>R/full-like.R</code></a></small>
     <div class="hidden name"><code>rray_full_like.Rd</code></div>
     </div>
 
@@ -169,7 +169,7 @@ coerced to an integer).</p></td>
 <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>10</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>5</span>, <span class='fl'>2</span>))
 
 <span class='co'># Same shape and type as x, but filled with 1</span>
-<span class='fu'>rray_full_like</span>(<span class='no'>x</span>, <span class='fl'>1L</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2][10]&gt;
+<span class='fu'>rray_full_like</span>(<span class='no'>x</span>, <span class='fl'>1L</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2][5]&gt;
 #&gt;      [,1] [,2]
 #&gt; [1,]    1    1
 #&gt; [2,]    1    1
@@ -177,7 +177,7 @@ coerced to an integer).</p></td>
 #&gt; [4,]    1    1
 #&gt; [5,]    1    1</div><div class='input'>
 <span class='co'># `fill` is coerced to `x` if it can be</span>
-<span class='fu'>rray_full_like</span>(<span class='no'>x</span>, <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2][10]&gt;
+<span class='fu'>rray_full_like</span>(<span class='no'>x</span>, <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2][5]&gt;
 #&gt;      [,1] [,2]
 #&gt; [1,]    0    0
 #&gt; [2,]    0    0
@@ -185,7 +185,7 @@ coerced to an integer).</p></td>
 #&gt; [4,]    0    0
 #&gt; [5,]    0    0</div><div class='input'>
 <span class='co'># `value = 1`</span>
-<span class='fu'>rray_ones_like</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2][10]&gt;
+<span class='fu'>rray_ones_like</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2][5]&gt;
 #&gt;      [,1] [,2]
 #&gt; [1,]    1    1
 #&gt; [2,]    1    1
@@ -195,7 +195,7 @@ coerced to an integer).</p></td>
 <span class='co'># When logicals are used, it is filled with TRUE</span>
 <span class='fu'>rray_ones_like</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>FALSE</span>, <span class='fl'>TRUE</span>))</div><div class='output co'>#&gt; [1] TRUE TRUE</div><div class='input'>
 <span class='co'># `value = 0`</span>
-<span class='fu'>rray_zeros_like</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2][10]&gt;
+<span class='fu'>rray_zeros_like</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2][5]&gt;
 #&gt;      [,1] [,2]
 #&gt; [1,]    0    0
 #&gt; [2,]    0    0

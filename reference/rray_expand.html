@@ -101,7 +101,7 @@ expands the number of dimensions of x by 1." />
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/DavisVaughan/rray">
+  <a href="https://github.com/r-lib/rray">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -119,7 +119,7 @@ expands the number of dimensions of x by 1." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Insert a dimension into an rray</h1>
-    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/expand.R'><code>R/expand.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/r-lib/rray/blob/master/R/expand.R'><code>R/expand.R</code></a></small>
     <div class="hidden name"><code>rray_expand.Rd</code></div>
     </div>
 
@@ -160,7 +160,7 @@ dimension.</p></td>
 <span class='co'># (5, 2)</span>
 <span class='co'># Add dimension to the front</span>
 <span class='co'># (1, 5, 2) = 1 row, 5 cols, 2 deep</span>
-<span class='fu'>rray_expand</span>(<span class='no'>x</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,5,2][10]&gt;
+<span class='fu'>rray_expand</span>(<span class='no'>x</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,5,2][1]&gt;
 #&gt; , , c1
 #&gt; 
 #&gt;      a b c d e
@@ -174,7 +174,7 @@ dimension.</p></td>
 <span class='co'># (5, 2)</span>
 <span class='co'># Add dimension to the middle</span>
 <span class='co'># (5, 1, 2) = 5 rows, 1 col, 2 deep</span>
-<span class='fu'>rray_expand</span>(<span class='no'>x</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,1,2][10]&gt;
+<span class='fu'>rray_expand</span>(<span class='no'>x</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,1,2][5]&gt;
 #&gt; , , c1
 #&gt; 
 #&gt;   [,1]
@@ -196,7 +196,7 @@ dimension.</p></td>
 <span class='co'># (5, 2)</span>
 <span class='co'># Add dimension to the end</span>
 <span class='co'># (5, 2, 1) = 5 rows, 2 cols, 1 deep</span>
-<span class='fu'>rray_expand</span>(<span class='no'>x</span>, <span class='fl'>3</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,1][10]&gt;
+<span class='fu'>rray_expand</span>(<span class='no'>x</span>, <span class='fl'>3</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,1][5]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;   c1 c2
@@ -212,7 +212,7 @@ dimension.</p></td>
 <span class='co'># - 5 row names follow to the new 5 column position</span>
 <span class='co'># - 2 col names follow to the new 2 deep position</span>
 <span class='co'># - result has no row names because that is the new axis</span>
-<span class='fu'>rray_expand</span>(<span class='no'>x</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,5,2][10]&gt;
+<span class='fu'>rray_expand</span>(<span class='no'>x</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,5,2][1]&gt;
 #&gt; , , c1
 #&gt; 
 #&gt;      a b c d e
@@ -225,7 +225,7 @@ dimension.</p></td>
 #&gt; </div><div class='input'>
 <span class='co'># A reshape, on the other hand,</span>
 <span class='co'># drops all dimension names</span>
-<span class='fu'><a href='rray_reshape.html'>rray_reshape</a></span>(<span class='no'>x</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>5</span>, <span class='fl'>2</span>))</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,5,2][10]&gt;
+<span class='fu'><a href='rray_reshape.html'>rray_reshape</a></span>(<span class='no'>x</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>5</span>, <span class='fl'>2</span>))</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,5,2][1]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1] [,2] [,3] [,4] [,5]

@@ -104,7 +104,7 @@ rray_unique_count(): the number of unique values.
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/DavisVaughan/rray">
+  <a href="https://github.com/r-lib/rray">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -122,7 +122,7 @@ rray_unique_count(): the number of unique values.
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Find and count unique values in an array</h1>
-    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/unique.R'><code>R/unique.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/r-lib/rray/blob/master/R/unique.R'><code>R/unique.R</code></a></small>
     <div class="hidden name"><code>rray_unique.Rd</code></div>
     </div>
 
@@ -206,7 +206,7 @@ any type of vector object.</p></div>
 
 <span class='co'># Duplicate rows</span>
 <span class='co'># x_dup_rows[1] == x_dup_rows[2]</span>
-<span class='fu'>rray_unique</span>(<span class='no'>x_dup_rows</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2,2][4]&gt;
+<span class='fu'>rray_unique</span>(<span class='no'>x_dup_rows</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2,2][1]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;    c1 c2
@@ -220,7 +220,7 @@ any type of vector object.</p></div>
 <span class='co'># Duplicate cols</span>
 <span class='co'># x_dup_cols[, 1] == x_dup_cols[, 2]</span>
 <span class='no'>x_dup_cols</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray_transpose.html'>rray_transpose</a></span>(<span class='no'>x_dup_rows</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>3</span>))
-<span class='fu'>rray_unique</span>(<span class='no'>x_dup_cols</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,1,2][4]&gt;
+<span class='fu'>rray_unique</span>(<span class='no'>x_dup_cols</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,1,2][2]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;    r1
@@ -236,7 +236,7 @@ any type of vector object.</p></div>
 <span class='co'># Duplicate 3rd dim</span>
 <span class='co'># x_dup_layers[, , 1] == x_dup_layers[, , 2]</span>
 <span class='no'>x_dup_layers</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray_transpose.html'>rray_transpose</a></span>(<span class='no'>x_dup_rows</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>1</span>))
-<span class='fu'>rray_unique</span>(<span class='no'>x_dup_layers</span>, <span class='fl'>3</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2,1][4]&gt;
+<span class='fu'>rray_unique</span>(<span class='no'>x_dup_layers</span>, <span class='fl'>3</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2,1][2]&gt;
 #&gt; , , r1
 #&gt; 
 #&gt;    [,1] [,2]
@@ -247,7 +247,7 @@ any type of vector object.</p></div>
 <span class='co'># integer vector you can use</span>
 <span class='co'># to subset out the unique values along</span>
 <span class='co'># the axis you are interested in</span>
-<span class='no'>x_dup_cols</span>[, <span class='fu'>rray_unique_loc</span>(<span class='no'>x_dup_cols</span>, <span class='fl'>2L</span>)]</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,1,2][4]&gt;
+<span class='no'>x_dup_cols</span>[, <span class='fu'>rray_unique_loc</span>(<span class='no'>x_dup_cols</span>, <span class='fl'>2L</span>)]</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,1,2][2]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;    r1

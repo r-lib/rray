@@ -5,4 +5,7 @@ articles:
   broadcasting: broadcasting.html
   the-rray: the-rray.html
   toolkit: toolkit.html
+urls:
+  reference: https://rray.r-lib.org/reference
+  article: https://rray.r-lib.org/articles
 

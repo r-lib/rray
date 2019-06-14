@@ -101,7 +101,7 @@ of x is retained in the result." />
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/DavisVaughan/rray">
+  <a href="https://github.com/r-lib/rray">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -119,7 +119,7 @@ of x is retained in the result." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Calculate the sum along an axis</h1>
-    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/reducers.R'><code>R/reducers.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/r-lib/rray/blob/master/R/reducers.R'><code>R/reducers.R</code></a></small>
     <div class="hidden name"><code>rray_sum.Rd</code></div>
     </div>
 
@@ -165,7 +165,7 @@ reduces along all axes.</p></td>
 
 <span class='co'># Reduce the number of rows to 1,</span>
 <span class='co'># summing along the way</span>
-<span class='fu'>rray_sum</span>(<span class='no'>x</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2][2]&gt;
+<span class='fu'>rray_sum</span>(<span class='no'>x</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2][1]&gt;
 #&gt;      [,1] [,2]
 #&gt; [1,]   15   40</div><div class='input'>
 <span class='co'># Reduce the number of columns to 1,</span>
@@ -182,7 +182,7 @@ reduces along all axes.</p></td>
 #&gt;      [,1]
 #&gt; [1,]   55</div><div class='input'>
 <span class='co'># Column-wise proportions</span>
-<span class='no'>x</span> / <span class='fu'>rray_sum</span>(<span class='no'>x</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2][10]&gt;
+<span class='no'>x</span> / <span class='fu'>rray_sum</span>(<span class='no'>x</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2][5]&gt;
 #&gt;            [,1]  [,2]
 #&gt; [1,] 0.06666667 0.150
 #&gt; [2,] 0.13333333 0.175
@@ -190,7 +190,7 @@ reduces along all axes.</p></td>
 #&gt; [4,] 0.26666667 0.225
 #&gt; [5,] 0.33333333 0.250</div><div class='input'>
 <span class='co'># Row-wise proportions</span>
-<span class='no'>x</span> / <span class='fu'>rray_sum</span>(<span class='no'>x</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2][10]&gt;
+<span class='no'>x</span> / <span class='fu'>rray_sum</span>(<span class='no'>x</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2][5]&gt;
 #&gt;           [,1]      [,2]
 #&gt; [1,] 0.1428571 0.8571429
 #&gt; [2,] 0.2222222 0.7777778
@@ -201,7 +201,7 @@ reduces along all axes.</p></td>
 <span class='co'># This reduces over the rows and columns</span>
 <span class='co'># of each mini-matrix in the 3rd dimension</span>
 <span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>24</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>4</span>))
-<span class='fu'>rray_sum</span>(<span class='no'>y</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>))</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,1,4][4]&gt;
+<span class='fu'>rray_sum</span>(<span class='no'>y</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>))</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,1,4][1]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1]

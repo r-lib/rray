@@ -102,7 +102,7 @@ to their input." />
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/DavisVaughan/rray">
+  <a href="https://github.com/r-lib/rray">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -120,7 +120,7 @@ to their input." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Arithmetic operations</h1>
-    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/arith.R'><code>R/arith.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/r-lib/rray/blob/master/R/arith.R'><code>R/arith.R</code></a></small>
     <div class="hidden name"><code>rray_arith.Rd</code></div>
     </div>
 
@@ -183,7 +183,7 @@ broadcasting no matter what type the input is.</p>
 <span class='no'>y</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fl'>1</span>:<span class='fl'>2</span>, <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='fl'>1</span>)
 
 <span class='co'># All arithmetic functions are applied with broadcasting</span>
-<span class='fu'>rray_add</span>(<span class='no'>x</span>, <span class='no'>y</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][8]&gt;
+<span class='fu'>rray_add</span>(<span class='no'>x</span>, <span class='no'>y</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][2]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;    c1 c2
@@ -198,7 +198,7 @@ broadcasting no matter what type the input is.</p>
 #&gt; </div><div class='input'>
 <span class='co'># And the power `+` when any underlying input</span>
 <span class='co'># is an rray</span>
-<span class='no'>x</span> + <span class='no'>y</span></div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][8]&gt;
+<span class='no'>x</span> + <span class='no'>y</span></div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][2]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;    c1 c2

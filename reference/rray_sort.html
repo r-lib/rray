@@ -101,7 +101,7 @@ along the specified axis." />
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/DavisVaughan/rray">
+  <a href="https://github.com/r-lib/rray">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -119,7 +119,7 @@ along the specified axis." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Sort an array</h1>
-    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/sort.R'><code>R/sort.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/r-lib/rray/blob/master/R/sort.R'><code>R/sort.R</code></a></small>
     <div class="hidden name"><code>rray_sort.Rd</code></div>
     </div>
 
@@ -161,7 +161,7 @@ order that the row names can be placed in.</p>
     <pre class="examples"><div class='input'><span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>20</span>:<span class='fl'>11</span>, <span class='fl'>1</span>:<span class='fl'>10</span>), <span class='kw'>dim</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>5</span>, <span class='fl'>2</span>, <span class='fl'>2</span>))
 
 <span class='co'># Flatten, sort, then reconstruct the shape</span>
-<span class='fu'>rray_sort</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][20]&gt;
+<span class='fu'>rray_sort</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][5]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1] [,2]
@@ -181,7 +181,7 @@ order that the row names can be placed in.</p>
 #&gt; [5,]   15   20
 #&gt; </div><div class='input'>
 <span class='co'># Sort, looking along the rows</span>
-<span class='fu'>rray_sort</span>(<span class='no'>x</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][20]&gt;
+<span class='fu'>rray_sort</span>(<span class='no'>x</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][5]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1] [,2]
@@ -201,7 +201,7 @@ order that the row names can be placed in.</p>
 #&gt; [5,]    5   10
 #&gt; </div><div class='input'>
 <span class='co'># Sort, looking along the columns</span>
-<span class='fu'>rray_sort</span>(<span class='no'>x</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][20]&gt;
+<span class='fu'>rray_sort</span>(<span class='no'>x</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][5]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1] [,2]
@@ -223,7 +223,7 @@ order that the row names can be placed in.</p>
 <span class='co'># Sort, looking along the third dimension</span>
 <span class='co'># This switches the 20 with the 1, the</span>
 <span class='co'># 19 with the 2, and so on</span>
-<span class='fu'>rray_sort</span>(<span class='no'>x</span>, <span class='fl'>3</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][20]&gt;
+<span class='fu'>rray_sort</span>(<span class='no'>x</span>, <span class='fl'>3</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][5]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1] [,2]
@@ -255,17 +255,17 @@ order that the row names can be placed in.</p>
 )
 
 <span class='co'># Dimension names are dropped along the axis you sort along</span>
-<span class='fu'>rray_sort</span>(<span class='no'>y</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2][4]&gt;
+<span class='fu'>rray_sort</span>(<span class='no'>y</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2][2]&gt;
 #&gt;       c
 #&gt; r      c1 c2
 #&gt;   [1,]  1  1
-#&gt;   [2,]  2  2</div><div class='input'><span class='fu'>rray_sort</span>(<span class='no'>y</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2][4]&gt;
+#&gt;   [2,]  2  2</div><div class='input'><span class='fu'>rray_sort</span>(<span class='no'>y</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2][2]&gt;
 #&gt;     c
 #&gt; r    [,1] [,2]
 #&gt;   r1    1    2
 #&gt;   r2    1    2</div><div class='input'>
 <span class='co'># All dimension names are dropped if `axis = NULL`</span>
-<span class='fu'>rray_sort</span>(<span class='no'>y</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2][4]&gt;
+<span class='fu'>rray_sort</span>(<span class='no'>y</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2][2]&gt;
 #&gt;       c
 #&gt; r      [,1] [,2]
 #&gt;   [1,]    1    2

@@ -110,7 +110,7 @@ form (i.e. rray_row_names&amp;lt;-()).
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/DavisVaughan/rray">
+  <a href="https://github.com/r-lib/rray">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -128,7 +128,7 @@ form (i.e. rray_row_names&amp;lt;-()).
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Dimension names</h1>
-    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/dim-names.R'><code>R/dim-names.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/r-lib/rray/blob/master/R/dim-names.R'><code>R/dim-names.R</code></a></small>
     <div class="hidden name"><code>dim-names.Rd</code></div>
     </div>
 
@@ -219,7 +219,7 @@ results in an object that's length always matches the dimensionality of <code>x<
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>10</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>5</span>, <span class='fl'>2</span>))
 <span class='fu'>rray_dim_names</span>(<span class='no'>x</span>) <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='no'>letters</span>[<span class='fl'>1</span>:<span class='fl'>5</span>], <span class='kw'>NULL</span>)
-<span class='no'>x</span></div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2][10]&gt;
+<span class='no'>x</span></div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2][5]&gt;
 #&gt;   [,1] [,2]
 #&gt; a    1    6
 #&gt; b    2    7
@@ -255,21 +255,21 @@ results in an object that's length always matches the dimensionality of <code>x<
   <span class='fu'>rray_set_axis_names</span>(<span class='fl'>2</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"c1"</span>, <span class='st'>"c2"</span>)) <span class='kw'>%&gt;%</span>
   <span class='fu'>rray_set_axis_names</span>(<span class='fl'>3</span>, <span class='st'>"3rd dim"</span>)
 
-<span class='no'>y</span></div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2,1][2]&gt;
+<span class='no'>y</span></div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2,1][1]&gt;
 #&gt; , , 3rd dim
 #&gt; 
 #&gt;    c1 c2
 #&gt; r1  1  1
 #&gt; </div><div class='input'>
 <span class='co'># You can set also set axis names to `NULL` to reset them</span>
-<span class='fu'>rray_set_axis_names</span>(<span class='no'>y</span>, <span class='fl'>2</span>, <span class='kw'>NULL</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2,1][2]&gt;
+<span class='fu'>rray_set_axis_names</span>(<span class='no'>y</span>, <span class='fl'>2</span>, <span class='kw'>NULL</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2,1][1]&gt;
 #&gt; , , 3rd dim
 #&gt; 
 #&gt;    [,1] [,2]
 #&gt; r1    1    1
 #&gt; </div><div class='input'>
 <span class='co'># You can set the "meta" names of an axis as well</span>
-<span class='fu'>rray_set_axis_names</span>(<span class='no'>y</span>, <span class='fl'>1</span>, <span class='st'>"r1"</span>, <span class='st'>"row names"</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2,1][2]&gt;
+<span class='fu'>rray_set_axis_names</span>(<span class='no'>y</span>, <span class='fl'>1</span>, <span class='st'>"r1"</span>, <span class='st'>"row names"</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2,1][1]&gt;
 #&gt; , ,  = 3rd dim
 #&gt; 
 #&gt;          

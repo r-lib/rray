@@ -66,7 +66,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/DavisVaughan/rray">
+  <a href="https://github.com/r-lib/rray">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -86,7 +86,7 @@
       <h1>The rray</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/DavisVaughan/rray/blob/master/vignettes/the-rray.Rmd"><code>vignettes/the-rray.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/r-lib/rray/blob/master/vignettes/the-rray.Rmd"><code>vignettes/the-rray.Rmd</code></a></small>
       <div class="hidden name"><code>the-rray.Rmd</code></div>
 
     </div>
@@ -170,7 +170,7 @@
 <a class="sourceLine" id="cb5-2" data-line-number="2"></a>
 <a class="sourceLine" id="cb5-3" data-line-number="3"><span class="co"># First row, but still 3D</span></a>
 <a class="sourceLine" id="cb5-4" data-line-number="4">x_3D_rray[<span class="dv">1</span>]</a>
-<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="co">#&gt; &lt;rray&lt;int&gt;[,3,2][6]&gt;</span></a>
+<a class="sourceLine" id="cb5-5" data-line-number="5"><span class="co">#&gt; &lt;rray&lt;int&gt;[,3,2][1]&gt;</span></a>
 <a class="sourceLine" id="cb5-6" data-line-number="6"><span class="co">#&gt; , , 1</span></a>
 <a class="sourceLine" id="cb5-7" data-line-number="7"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb5-8" data-line-number="8"><span class="co">#&gt;      [,1] [,2] [,3]</span></a>
@@ -183,7 +183,7 @@
 <a class="sourceLine" id="cb5-15" data-line-number="15"></a>
 <a class="sourceLine" id="cb5-16" data-line-number="16"><span class="co"># Trailing commas are ignored, so this is the same as above</span></a>
 <a class="sourceLine" id="cb5-17" data-line-number="17">x_3D_rray[<span class="dv">1</span>,]</a>
-<a class="sourceLine" id="cb5-18" data-line-number="18"><span class="co">#&gt; &lt;rray&lt;int&gt;[,3,2][6]&gt;</span></a>
+<a class="sourceLine" id="cb5-18" data-line-number="18"><span class="co">#&gt; &lt;rray&lt;int&gt;[,3,2][1]&gt;</span></a>
 <a class="sourceLine" id="cb5-19" data-line-number="19"><span class="co">#&gt; , , 1</span></a>
 <a class="sourceLine" id="cb5-20" data-line-number="20"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb5-21" data-line-number="21"><span class="co">#&gt;      [,1] [,2] [,3]</span></a>
@@ -199,7 +199,7 @@
 <a class="sourceLine" id="cb5-31" data-line-number="31"><span class="co">#&gt; Error in x_3D[1, ]: incorrect number of dimensions</span></a></code></pre></div>
 <p>This type stability makes rrays more predictable to program around. Whether subsetting one element or multiple elements from a specific dimension, you can know that the output will have a consistent type.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">x_3D_rray[, 1L]</a>
-<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="co">#&gt; &lt;rray&lt;int&gt;[,1,2][4]&gt;</span></a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="co">#&gt; &lt;rray&lt;int&gt;[,1,2][2]&gt;</span></a>
 <a class="sourceLine" id="cb6-3" data-line-number="3"><span class="co">#&gt; , , 1</span></a>
 <a class="sourceLine" id="cb6-4" data-line-number="4"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb6-5" data-line-number="5"><span class="co">#&gt;      [,1]</span></a>
@@ -213,7 +213,7 @@
 <a class="sourceLine" id="cb6-13" data-line-number="13"><span class="co">#&gt; [2,]    8</span></a>
 <a class="sourceLine" id="cb6-14" data-line-number="14"></a>
 <a class="sourceLine" id="cb6-15" data-line-number="15">x_3D_rray[, <span class="dv">1</span><span class="op">:</span><span class="dv">2</span>]</a>
-<a class="sourceLine" id="cb6-16" data-line-number="16"><span class="co">#&gt; &lt;rray&lt;int&gt;[,2,2][8]&gt;</span></a>
+<a class="sourceLine" id="cb6-16" data-line-number="16"><span class="co">#&gt; &lt;rray&lt;int&gt;[,2,2][2]&gt;</span></a>
 <a class="sourceLine" id="cb6-17" data-line-number="17"><span class="co">#&gt; , , 1</span></a>
 <a class="sourceLine" id="cb6-18" data-line-number="18"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb6-19" data-line-number="19"><span class="co">#&gt;      [,1] [,2]</span></a>
@@ -242,7 +242,7 @@
 <a class="sourceLine" id="cb7-14" data-line-number="14"></a>
 <a class="sourceLine" id="cb7-15" data-line-number="15"><span class="co"># Same as with the rray</span></a>
 <a class="sourceLine" id="cb7-16" data-line-number="16"><span class="kw"><a href="../reference/rray_subset.html">rray_subset</a></span>(x_3D_rray, <span class="dv">1</span>, <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb7-17" data-line-number="17"><span class="co">#&gt; &lt;rray&lt;int&gt;[,1,2][2]&gt;</span></a>
+<a class="sourceLine" id="cb7-17" data-line-number="17"><span class="co">#&gt; &lt;rray&lt;int&gt;[,1,2][1]&gt;</span></a>
 <a class="sourceLine" id="cb7-18" data-line-number="18"><span class="co">#&gt; , , 1</span></a>
 <a class="sourceLine" id="cb7-19" data-line-number="19"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb7-20" data-line-number="20"><span class="co">#&gt;      [,1]</span></a>
@@ -286,7 +286,7 @@
 <a href="#the-solution-1" class="anchor"></a>The solution</h3>
 <p>As seen briefly in the subsetting section, rrays never drop dimensions, and ignore trailing commas when subsetting. This means that <code>x[i]</code> selects rows from <code>x</code>, not positions.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">x_3D_rray[<span class="dv">2</span>]</a>
-<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="co">#&gt; &lt;rray&lt;int&gt;[,3,2][6]&gt;</span></a>
+<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="co">#&gt; &lt;rray&lt;int&gt;[,3,2][1]&gt;</span></a>
 <a class="sourceLine" id="cb9-3" data-line-number="3"><span class="co">#&gt; , , 1</span></a>
 <a class="sourceLine" id="cb9-4" data-line-number="4"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb9-5" data-line-number="5"><span class="co">#&gt;      [,1] [,2] [,3]</span></a>
@@ -299,7 +299,7 @@
 <a class="sourceLine" id="cb9-12" data-line-number="12"></a>
 <a class="sourceLine" id="cb9-13" data-line-number="13"><span class="co"># Same as this</span></a>
 <a class="sourceLine" id="cb9-14" data-line-number="14">x_3D_rray[<span class="dv">2</span>,]</a>
-<a class="sourceLine" id="cb9-15" data-line-number="15"><span class="co">#&gt; &lt;rray&lt;int&gt;[,3,2][6]&gt;</span></a>
+<a class="sourceLine" id="cb9-15" data-line-number="15"><span class="co">#&gt; &lt;rray&lt;int&gt;[,3,2][1]&gt;</span></a>
 <a class="sourceLine" id="cb9-16" data-line-number="16"><span class="co">#&gt; , , 1</span></a>
 <a class="sourceLine" id="cb9-17" data-line-number="17"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb9-18" data-line-number="18"><span class="co">#&gt;      [,1] [,2] [,3]</span></a>
@@ -334,7 +334,7 @@ x[,,i,]</code></pre>
 <a class="sourceLine" id="cb13-7" data-line-number="7">dummy[[<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/NA">is.na</a></span>(dummy)]] &lt;-<span class="st"> </span><span class="dv">0</span></a>
 <a class="sourceLine" id="cb13-8" data-line-number="8"></a>
 <a class="sourceLine" id="cb13-9" data-line-number="9">dummy</a>
-<a class="sourceLine" id="cb13-10" data-line-number="10"><span class="co">#&gt; &lt;rray&lt;int&gt;[,3,2][12]&gt;</span></a>
+<a class="sourceLine" id="cb13-10" data-line-number="10"><span class="co">#&gt; &lt;rray&lt;int&gt;[,3,2][2]&gt;</span></a>
 <a class="sourceLine" id="cb13-11" data-line-number="11"><span class="co">#&gt; , , 1</span></a>
 <a class="sourceLine" id="cb13-12" data-line-number="12"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb13-13" data-line-number="13"><span class="co">#&gt;      [,1] [,2] [,3]</span></a>
@@ -348,7 +348,7 @@ x[,,i,]</code></pre>
 <a class="sourceLine" id="cb13-21" data-line-number="21"><span class="co">#&gt; [2,]    8   10   12</span></a></code></pre></div>
 <p>The 3rd arm of subsetting is when you want to subset <em>by index</em> like <code><a href="../reference/rray_subset.html">rray_subset()</a></code>, but you want to actually drop the dimensions like <code><a href="../reference/rray_yank.html">rray_yank()</a></code>. This is accomplished with <code><a href="../reference/rray_extract.html">rray_extract()</a></code>.</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw"><a href="../reference/rray_subset.html">rray_subset</a></span>(x_3D_rray, <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb14-2" data-line-number="2"><span class="co">#&gt; &lt;rray&lt;int&gt;[,3,2][6]&gt;</span></a>
+<a class="sourceLine" id="cb14-2" data-line-number="2"><span class="co">#&gt; &lt;rray&lt;int&gt;[,3,2][1]&gt;</span></a>
 <a class="sourceLine" id="cb14-3" data-line-number="3"><span class="co">#&gt; , , 1</span></a>
 <a class="sourceLine" id="cb14-4" data-line-number="4"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb14-5" data-line-number="5"><span class="co">#&gt;      [,1] [,2] [,3]</span></a>

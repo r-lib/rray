@@ -102,7 +102,7 @@ permuting along the reversed dimensions of x." />
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/DavisVaughan/rray">
+  <a href="https://github.com/r-lib/rray">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -120,7 +120,7 @@ permuting along the reversed dimensions of x." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Transpose an array</h1>
-    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/transpose.R'><code>R/transpose.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/r-lib/rray/blob/master/R/transpose.R'><code>R/transpose.R</code></a></small>
     <div class="hidden name"><code>rray_transpose.Rd</code></div>
     </div>
 
@@ -172,13 +172,13 @@ it currently does not accept character strings for <code>perm</code>.</p>
 )
 
 <span class='co'># A standard transpose</span>
-<span class='fu'>rray_transpose</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,3][6]&gt;
+<span class='fu'>rray_transpose</span>(<span class='no'>x</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,3][2]&gt;
 #&gt;     rows
 #&gt; cols r1 r2 r3
 #&gt;   c1  1  2  3
 #&gt;   c2  4  5  6</div><div class='input'>
 <span class='co'># Identical to</span>
-<span class='fu'>rray_transpose</span>(<span class='no'>x</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rev'>rev</a></span>(<span class='fl'>1</span>:<span class='fl'>2</span>))</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,3][6]&gt;
+<span class='fu'>rray_transpose</span>(<span class='no'>x</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rev'>rev</a></span>(<span class='fl'>1</span>:<span class='fl'>2</span>))</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,3][2]&gt;
 #&gt;     rows
 #&gt; cols r1 r2 r3
 #&gt;   c1  1  2  3
@@ -189,7 +189,7 @@ it currently does not accept character strings for <code>perm</code>.</p>
 <span class='co'># `permutation = c(3, 2, 1)`</span>
 <span class='co'># so the result should change _shape_ like:</span>
 <span class='co'># (3, 2, 2) -&gt; (2, 2, 3)</span>
-<span class='fu'>rray_transpose</span>(<span class='no'>x_3d</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,3][12]&gt;
+<span class='fu'>rray_transpose</span>(<span class='no'>x_3d</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,3][2]&gt;
 #&gt; , , rows = r1
 #&gt; 
 #&gt;       cols
@@ -214,7 +214,7 @@ it currently does not accept character strings for <code>perm</code>.</p>
 <span class='co'># This transposes the "inner" matrices</span>
 <span class='co'># (flips the first and second dimension)</span>
 <span class='co'># and leaves the 3rd dimension alone</span>
-<span class='fu'>rray_transpose</span>(<span class='no'>x_3d</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>3</span>))</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,3,2][12]&gt;
+<span class='fu'>rray_transpose</span>(<span class='no'>x_3d</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>3</span>))</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,3,2][2]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;     rows
@@ -239,7 +239,7 @@ it currently does not accept character strings for <code>perm</code>.</p>
 <span class='fu'>rray_transpose</span>(<span class='fl'>1</span>:<span class='fl'>5</span>)</div><div class='output co'>#&gt; [1] 1 2 3 4 5</div><div class='input'>
 <span class='co'># t.vctrs_rray() has the same behavior</span>
 <span class='co'># as base R</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/t'>t</a></span>(<span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>5</span>))</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,5][5]&gt;
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/t'>t</a></span>(<span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>5</span>))</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,5][1]&gt;
 #&gt;      [,1] [,2] [,3] [,4] [,5]
 #&gt; [1,]    1    2    3    4    5</div><div class='input'>
 </div></pre>

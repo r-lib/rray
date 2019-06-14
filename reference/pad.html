@@ -102,7 +102,7 @@ dimensions without having to explictly list the intermediate commas." />
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/DavisVaughan/rray">
+  <a href="https://github.com/r-lib/rray">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -120,7 +120,7 @@ dimensions without having to explictly list the intermediate commas." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Pad missing dimensions when subsetting</h1>
-    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/pad.R'><code>R/pad.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/r-lib/rray/blob/master/R/pad.R'><code>R/pad.R</code></a></small>
     <div class="hidden name"><code>pad.Rd</code></div>
     </div>
 
@@ -142,7 +142,7 @@ dimensions without having to explictly list the intermediate commas.</p>
 <span class='co'># essentially it adds commas automatically</span>
 
 <span class='co'># second element in the 4th dimension</span>
-<span class='no'>x</span>[<span class='fu'>pad</span>(), <span class='fl'>2</span>]</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,1,2,1][2]&gt;
+<span class='no'>x</span>[<span class='fu'>pad</span>(), <span class='fl'>2</span>]</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,1,2,1][1]&gt;
 #&gt; , , 1, 1
 #&gt; 
 #&gt;      [,1]
@@ -154,7 +154,7 @@ dimensions without having to explictly list the intermediate commas.</p>
 #&gt; [1,]    4
 #&gt; </div><div class='input'>
 <span class='co'># vs using</span>
-<span class='no'>x</span>[,,,<span class='fl'>2</span>]</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,1,2,1][2]&gt;
+<span class='no'>x</span>[,,,<span class='fl'>2</span>]</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,1,2,1][1]&gt;
 #&gt; , , 1, 1
 #&gt; 
 #&gt;      [,1]
@@ -175,7 +175,7 @@ dimensions without having to explictly list the intermediate commas.</p>
 #&gt; </div><div class='input'>
 <span class='co'># can fill in the missing gaps too</span>
 <span class='co'># this fills in the 2nd/3rd dimensions</span>
-<span class='no'>x</span>[<span class='fl'>1</span>, <span class='fu'>pad</span>(), <span class='fl'>1</span>]</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,1,2,1][2]&gt;
+<span class='no'>x</span>[<span class='fl'>1</span>, <span class='fu'>pad</span>(), <span class='fl'>1</span>]</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,1,2,1][1]&gt;
 #&gt; , , 1, 1
 #&gt; 
 #&gt;      [,1]

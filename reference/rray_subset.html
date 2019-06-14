@@ -102,7 +102,7 @@ trailing commas." />
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/DavisVaughan/rray">
+  <a href="https://github.com/r-lib/rray">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -120,7 +120,7 @@ trailing commas." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Get or set dimensions of an array</h1>
-    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/subset-assign.R'><code>R/subset-assign.R</code></a>, <a href='https://github.com/DavisVaughan/rray/blob/master/R/subset.R'><code>R/subset.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/r-lib/rray/blob/master/R/subset-assign.R'><code>R/subset-assign.R</code></a>, <a href='https://github.com/r-lib/rray/blob/master/R/subset.R'><code>R/subset.R</code></a></small>
     <div class="hidden name"><code>rray_subset.Rd</code></div>
     </div>
 
@@ -201,7 +201,7 @@ casting <code>x</code> to <code>value</code>.</p></li>
     <pre class="examples"><div class='input'><span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>8</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>2</span>))
 
 <span class='co'># `rray_subset()` powers `[` so these are identical</span>
-<span class='fu'>rray_subset</span>(<span class='no'>x</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][4]&gt;
+<span class='fu'>rray_subset</span>(<span class='no'>x</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][1]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1] [,2]
@@ -211,7 +211,7 @@ casting <code>x</code> to <code>value</code>.</p></li>
 #&gt; 
 #&gt;      [,1] [,2]
 #&gt; [1,]    5    7
-#&gt; </div><div class='input'><span class='no'>x</span>[<span class='fl'>1</span>]</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][4]&gt;
+#&gt; </div><div class='input'><span class='no'>x</span>[<span class='fl'>1</span>]</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][1]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1] [,2]
@@ -223,7 +223,7 @@ casting <code>x</code> to <code>value</code>.</p></li>
 #&gt; [1,]    5    7
 #&gt; </div><div class='input'>
 <span class='co'># Trailing dots are ignored, so these are identical</span>
-<span class='no'>x</span>[<span class='fl'>1</span>]</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][4]&gt;
+<span class='no'>x</span>[<span class='fl'>1</span>]</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][1]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1] [,2]
@@ -233,7 +233,7 @@ casting <code>x</code> to <code>value</code>.</p></li>
 #&gt; 
 #&gt;      [,1] [,2]
 #&gt; [1,]    5    7
-#&gt; </div><div class='input'><span class='no'>x</span>[<span class='fl'>1</span>,]</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][4]&gt;
+#&gt; </div><div class='input'><span class='no'>x</span>[<span class='fl'>1</span>,]</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][1]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1] [,2]
@@ -247,7 +247,7 @@ casting <code>x</code> to <code>value</code>.</p></li>
 <span class='co'># Missing arguments are treated as selecting the</span>
 <span class='co'># entire dimension, consistent with base R.</span>
 <span class='co'># This selects all of the rows, and the first column.</span>
-<span class='no'>x</span>[,<span class='fl'>1</span>]</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,1,2][4]&gt;
+<span class='no'>x</span>[,<span class='fl'>1</span>]</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,1,2][2]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1]
@@ -295,13 +295,13 @@ casting <code>x</code> to <code>value</code>.</p></li>
 <span class='co'># For higher dimensional objects, `pad()` can be</span>
 <span class='co'># useful for automatically adding commas. The</span>
 <span class='co'># following are equivalent:</span>
-<span class='no'>x</span>[<span class='fu'><a href='pad.html'>pad</a></span>(), <span class='fl'>1</span>]</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,1][4]&gt;
+<span class='no'>x</span>[<span class='fu'><a href='pad.html'>pad</a></span>(), <span class='fl'>1</span>]</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,1][2]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1] [,2]
 #&gt; [1,]    1    3
 #&gt; [2,]    2    4
-#&gt; </div><div class='input'><span class='no'>x</span>[, , <span class='fl'>1</span>]</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,1][4]&gt;
+#&gt; </div><div class='input'><span class='no'>x</span>[, , <span class='fl'>1</span>]</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,1][2]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1] [,2]
@@ -312,7 +312,7 @@ casting <code>x</code> to <code>value</code>.</p></li>
 <span class='co'># x[...] &lt;- value</span>
 <span class='co'># This assigns 99 to the entire first row</span>
 <span class='no'>x</span>[<span class='fl'>1</span>] <span class='kw'>&lt;-</span> <span class='fl'>99</span>
-<span class='no'>x</span></div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][8]&gt;
+<span class='no'>x</span></div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][2]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1] [,2]
@@ -328,7 +328,7 @@ casting <code>x</code> to <code>value</code>.</p></li>
 <span class='co'># First row in the first</span>
 <span class='co'># element of the 3rd dimension</span>
 <span class='no'>x</span>[<span class='fl'>1</span>, , <span class='fl'>1</span>] <span class='kw'>&lt;-</span> <span class='fl'>100</span>
-<span class='no'>x</span></div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][8]&gt;
+<span class='no'>x</span></div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][2]&gt;
 #&gt; , , 1
 #&gt; 
 #&gt;      [,1] [,2]

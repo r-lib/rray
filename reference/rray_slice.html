@@ -101,7 +101,7 @@ for easily subsetting along a single axis." />
       
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/DavisVaughan/rray">
+  <a href="https://github.com/r-lib/rray">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -119,7 +119,7 @@ for easily subsetting along a single axis." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Get or set a slice of an array</h1>
-    <small class="dont-index">Source: <a href='https://github.com/DavisVaughan/rray/blob/master/R/slice-assign.R'><code>R/slice-assign.R</code></a>, <a href='https://github.com/DavisVaughan/rray/blob/master/R/slice.R'><code>R/slice.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/r-lib/rray/blob/master/R/slice-assign.R'><code>R/slice-assign.R</code></a>, <a href='https://github.com/r-lib/rray/blob/master/R/slice.R'><code>R/slice.R</code></a></small>
     <div class="hidden name"><code>rray_slice.Rd</code></div>
     </div>
 
@@ -180,7 +180,7 @@ along, for example, only the 4th dimension.</p>
     <pre class="examples"><div class='input'><span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>16</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>2</span>, <span class='fl'>2</span>))
 
 <span class='co'># Selecting the first column</span>
-<span class='fu'>rray_slice</span>(<span class='no'>x</span>, <span class='kw'>i</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,1,2,2][8]&gt;
+<span class='fu'>rray_slice</span>(<span class='no'>x</span>, <span class='kw'>i</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,1,2,2][2]&gt;
 #&gt; , , 1, 1
 #&gt; 
 #&gt;      [,1]
@@ -208,7 +208,7 @@ along, for example, only the 4th dimension.</p>
 <span class='co'># rray_slice() is particularly useful for</span>
 <span class='co'># subsetting higher dimensions because you don't</span>
 <span class='co'># have to worry about the commas</span>
-<span class='fu'>rray_slice</span>(<span class='no'>x</span>, <span class='kw'>i</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='fl'>4</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2,1][8]&gt;
+<span class='fu'>rray_slice</span>(<span class='no'>x</span>, <span class='kw'>i</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='fl'>4</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2,1][2]&gt;
 #&gt; , , 1, 1
 #&gt; 
 #&gt;      [,1] [,2]
@@ -222,7 +222,7 @@ along, for example, only the 4th dimension.</p>
 #&gt; [2,]   14   16
 #&gt; </div><div class='input'>
 <span class='co'># Compare the above with the equivalent using `[`</span>
-<span class='no'>x</span>[, , , <span class='fl'>2</span>]</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2,1][8]&gt;
+<span class='no'>x</span>[, , , <span class='fl'>2</span>]</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2,1][2]&gt;
 #&gt; , , 1, 1
 #&gt; 
 #&gt;      [,1] [,2]
@@ -237,7 +237,7 @@ along, for example, only the 4th dimension.</p>
 #&gt; </div><div class='input'>
 <span class='co'># `i` can be a character vector if `x` has names along `axis`</span>
 <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dim-names.html'>rray_set_axis_names</a></span>(<span class='no'>x</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='fl'>4</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"foo"</span>, <span class='st'>"bar"</span>))
-<span class='fu'>rray_slice</span>(<span class='no'>x</span>, <span class='st'>"bar"</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='fl'>4</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2,1][8]&gt;
+<span class='fu'>rray_slice</span>(<span class='no'>x</span>, <span class='st'>"bar"</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='fl'>4</span>)</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2,1][2]&gt;
 #&gt; , , 1, bar
 #&gt; 
 #&gt;      [,1] [,2]

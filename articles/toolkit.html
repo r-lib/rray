@@ -66,7 +66,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/DavisVaughan/rray">
+  <a href="https://github.com/r-lib/rray">
     <span class="fa fa-github fa-lg"></span>
      
   </a>
@@ -86,7 +86,7 @@
       <h1>Toolkit</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/DavisVaughan/rray/blob/master/vignettes/toolkit.Rmd"><code>vignettes/toolkit.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/r-lib/rray/blob/master/vignettes/toolkit.Rmd"><code>vignettes/toolkit.Rmd</code></a></small>
       <div class="hidden name"><code>toolkit.Rmd</code></div>
 
     </div>
@@ -240,7 +240,7 @@
 <a class="sourceLine" id="cb8-4" data-line-number="4">x[<span class="dv">1</span>,]</a>
 <a class="sourceLine" id="cb8-5" data-line-number="5"><span class="co">#&gt; [1] 1 4</span></a>
 <a class="sourceLine" id="cb8-6" data-line-number="6">x_rray[<span class="dv">1</span>,]</a>
-<a class="sourceLine" id="cb8-7" data-line-number="7"><span class="co">#&gt; &lt;rray&lt;int&gt;[,2][2]&gt;</span></a>
+<a class="sourceLine" id="cb8-7" data-line-number="7"><span class="co">#&gt; &lt;rray&lt;int&gt;[,2][1]&gt;</span></a>
 <a class="sourceLine" id="cb8-8" data-line-number="8"><span class="co">#&gt;      [,1] [,2]</span></a>
 <a class="sourceLine" id="cb8-9" data-line-number="9"><span class="co">#&gt; [1,]    1    4</span></a>
 <a class="sourceLine" id="cb8-10" data-line-number="10"></a>
@@ -251,7 +251,7 @@
 <a class="sourceLine" id="cb8-15" data-line-number="15"><span class="co">#&gt; [1,]    6   15</span></a></code></pre></div>
 <p>The rationale for this has to do with how broadcasting works. When dimensions aren’t dropped, operations such as the following are natural:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">x_rray <span class="op">/</span><span class="st"> </span><span class="kw"><a href="../reference/rray_sum.html">rray_sum</a></span>(x_rray, <span class="dt">axes =</span> <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="co">#&gt; &lt;rray&lt;dbl&gt;[,2][6]&gt;</span></a>
+<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="co">#&gt; &lt;rray&lt;dbl&gt;[,2][3]&gt;</span></a>
 <a class="sourceLine" id="cb9-3" data-line-number="3"><span class="co">#&gt;           [,1]      [,2]</span></a>
 <a class="sourceLine" id="cb9-4" data-line-number="4"><span class="co">#&gt; [1,] 0.1666667 0.2666667</span></a>
 <a class="sourceLine" id="cb9-5" data-line-number="5"><span class="co">#&gt; [2,] 0.3333333 0.3333333</span></a>
@@ -290,21 +290,21 @@
 <a class="sourceLine" id="cb11-6" data-line-number="6">x_sum_broadcast &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray_broadcast.html">rray_broadcast</a></span>(x_sum, dim)</a>
 <a class="sourceLine" id="cb11-7" data-line-number="7"></a>
 <a class="sourceLine" id="cb11-8" data-line-number="8">x_broadcast</a>
-<a class="sourceLine" id="cb11-9" data-line-number="9"><span class="co">#&gt; &lt;rray&lt;int&gt;[,2][6]&gt;</span></a>
+<a class="sourceLine" id="cb11-9" data-line-number="9"><span class="co">#&gt; &lt;rray&lt;int&gt;[,2][3]&gt;</span></a>
 <a class="sourceLine" id="cb11-10" data-line-number="10"><span class="co">#&gt;      [,1] [,2]</span></a>
 <a class="sourceLine" id="cb11-11" data-line-number="11"><span class="co">#&gt; [1,]    1    4</span></a>
 <a class="sourceLine" id="cb11-12" data-line-number="12"><span class="co">#&gt; [2,]    2    5</span></a>
 <a class="sourceLine" id="cb11-13" data-line-number="13"><span class="co">#&gt; [3,]    3    6</span></a>
 <a class="sourceLine" id="cb11-14" data-line-number="14"></a>
 <a class="sourceLine" id="cb11-15" data-line-number="15">x_sum_broadcast</a>
-<a class="sourceLine" id="cb11-16" data-line-number="16"><span class="co">#&gt; &lt;rray&lt;dbl&gt;[,2][6]&gt;</span></a>
+<a class="sourceLine" id="cb11-16" data-line-number="16"><span class="co">#&gt; &lt;rray&lt;dbl&gt;[,2][3]&gt;</span></a>
 <a class="sourceLine" id="cb11-17" data-line-number="17"><span class="co">#&gt;      [,1] [,2]</span></a>
 <a class="sourceLine" id="cb11-18" data-line-number="18"><span class="co">#&gt; [1,]    6   15</span></a>
 <a class="sourceLine" id="cb11-19" data-line-number="19"><span class="co">#&gt; [2,]    6   15</span></a>
 <a class="sourceLine" id="cb11-20" data-line-number="20"><span class="co">#&gt; [3,]    6   15</span></a>
 <a class="sourceLine" id="cb11-21" data-line-number="21"></a>
 <a class="sourceLine" id="cb11-22" data-line-number="22">x_broadcast <span class="op">/</span><span class="st"> </span>x_sum_broadcast</a>
-<a class="sourceLine" id="cb11-23" data-line-number="23"><span class="co">#&gt; &lt;rray&lt;dbl&gt;[,2][6]&gt;</span></a>
+<a class="sourceLine" id="cb11-23" data-line-number="23"><span class="co">#&gt; &lt;rray&lt;dbl&gt;[,2][3]&gt;</span></a>
 <a class="sourceLine" id="cb11-24" data-line-number="24"><span class="co">#&gt;           [,1]      [,2]</span></a>
 <a class="sourceLine" id="cb11-25" data-line-number="25"><span class="co">#&gt; [1,] 0.1666667 0.2666667</span></a>
 <a class="sourceLine" id="cb11-26" data-line-number="26"><span class="co">#&gt; [2,] 0.3333333 0.3333333</span></a>
@@ -330,7 +330,7 @@
 <a class="sourceLine" id="cb13-12" data-line-number="12"><span class="co"># (numpy has slightly cleaner ways to do this, but it's still an extra step)</span></a>
 <a class="sourceLine" id="cb13-13" data-line-number="13">x_sum_reshaped &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray_expand.html">rray_expand</a></span>(x_sum_dropped, <span class="dv">1</span>)</a>
 <a class="sourceLine" id="cb13-14" data-line-number="14">x_rray <span class="op">/</span><span class="st"> </span>x_sum_reshaped</a>
-<a class="sourceLine" id="cb13-15" data-line-number="15"><span class="co">#&gt; &lt;rray&lt;dbl&gt;[,2][6]&gt;</span></a>
+<a class="sourceLine" id="cb13-15" data-line-number="15"><span class="co">#&gt; &lt;rray&lt;dbl&gt;[,2][3]&gt;</span></a>
 <a class="sourceLine" id="cb13-16" data-line-number="16"><span class="co">#&gt;           [,1]      [,2]</span></a>
 <a class="sourceLine" id="cb13-17" data-line-number="17"><span class="co">#&gt; [1,] 0.1666667 0.2666667</span></a>
 <a class="sourceLine" id="cb13-18" data-line-number="18"><span class="co">#&gt; [2,] 0.3333333 0.3333333</span></a>
