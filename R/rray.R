@@ -75,6 +75,8 @@ new_rray <- function(.data = numeric(0),
 
 }
 
+# ------------------------------------------------------------------------------
+
 #' Build a rray object
 #'
 #' Constructor for building rray objects. Existing vectors, matrices, and
@@ -159,48 +161,7 @@ rray <- function(x = numeric(0), dim = NULL, dim_names = NULL) {
 
 }
 
-validate_rray_attributes <- function(dim, dim_names) {
-
-  if (!all(dim >= 0L)) {
-    abort("`dim` must be a non-negative vector.")
-  }
-
-  validate_dim_names(dim_names, dim)
-
-  invisible()
-}
-
-is_character_or_null <- function(x) {
-  is_null(x) || is_character(x)
-}
-
-validate_equal_size_or_no_names <- function(n_x, n_names) {
-  n_names == 0L || identical(n_x, n_names)
-}
-
-is_rray_type <- function(x) {
-  is_integer(x) || is_double(x) || is_logical(x)
-}
-
-rray_sub_type <- function(x) {
-  switch(
-    typeof(x),
-    integer = "vctrs_rray_int",
-    double = "vctrs_rray_dbl",
-    logical = "vctrs_rray_lgl",
-    glubort("Cannot create an rray from a {class(x)[1]}.")
-  )
-}
-
-#' Check if `x` can be reshaped
-#'
-#' `x` is reshapeable to `dim` if the number of elements in `x` equal
-#' the number of elements implied by `dim`, i.e. `prod(dim)`.
-#'
-#' @keywords internal
-is_reshapeable <- function(x, dim) {
-  rray_elems(x) == prod(dim)
-}
+# ------------------------------------------------------------------------------
 
 #' Compute the number of elements in an array
 #'
@@ -225,6 +186,8 @@ is_reshapeable <- function(x, dim) {
 rray_elems <- function(x) {
   as.integer(prod(rray_dim(x)))
 }
+
+# ------------------------------------------------------------------------------
 
 #' Is `x` an rray?
 #'
@@ -253,4 +216,31 @@ is_rray_dbl <- function(x) {
 
 is_rray_lgl <- function(x) {
   inherits(x, "vctrs_rray_lgl")
+}
+
+# ------------------------------------------------------------------------------
+
+validate_rray_attributes <- function(dim, dim_names) {
+
+  if (!all(dim >= 0L)) {
+    abort("`dim` must be a non-negative vector.")
+  }
+
+  validate_dim_names(dim_names, dim)
+
+  invisible()
+}
+
+rray_sub_type <- function(x) {
+  switch(
+    typeof(x),
+    integer = "vctrs_rray_int",
+    double = "vctrs_rray_dbl",
+    logical = "vctrs_rray_lgl",
+    glubort("Cannot create an rray from a {class(x)[1]}.")
+  )
+}
+
+is_reshapeable <- function(x, dim) {
+  rray_elems(x) == prod(dim)
 }
