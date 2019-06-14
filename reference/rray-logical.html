@@ -32,9 +32,9 @@
 
 <meta property="og:title" content="Logical operators — rray-logical" />
 
-<meta property="og:description" content="These operators perform logical operations on arrays, with broadcasting. The
-underlying functions powering the logical operations are also exported
-for use with base R objects." />
+<meta property="og:description" content="These functions perform logical operations on arrays, with broadcasting. They
+power the logical operators of &amp;amp;, |, and ! with rrays, but are
+also exported for use with base R objects." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -126,41 +126,28 @@ for use with base R objects." />
 
     <div class="ref-description">
     
-    <p>These operators perform logical operations on arrays, with broadcasting. The
-underlying functions powering the logical operations are also exported
-for use with base R objects.</p>
+    <p>These functions perform logical operations on arrays, with broadcasting. They
+power the logical operators of <code>&amp;</code>, <code>|</code>, and <code>!</code> with rrays, but are
+also exported for use with base R objects.</p>
     
     </div>
 
-    <pre class="usage"># S3 method for vctrs_rray
-&amp;(e1, e2)
+    <pre class="usage"><span class='fu'>rray_logical_and</span>(<span class='no'>x</span>, <span class='no'>y</span>)
 
-rray_logical_and(x, y)
+<span class='fu'>rray_logical_or</span>(<span class='no'>x</span>, <span class='no'>y</span>)
 
-# S3 method for vctrs_rray
-|(e1, e2)
+<span class='fu'>rray_logical_not</span>(<span class='no'>x</span>)
 
-rray_logical_or(x, y)
+<span class='fu'>rray_any</span>(<span class='no'>x</span>, <span class='kw'>axes</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)
 
-# S3 method for vctrs_rray
-!(x)
-
-rray_logical_not(x)
-
-rray_any(x, axes = NULL)
-
-rray_all(x, axes = NULL)</pre>
+<span class='fu'>rray_all</span>(<span class='no'>x</span>, <span class='kw'>axes</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>e1, e2</th>
-      <td><p>Generally, the same as <code>x</code> and <code>y</code>. See Details.</p></td>
-    </tr>
-    <tr>
       <th>x, y</th>
-      <td><p>Two vectors, matrices, arrays, or rrays.</p></td>
+      <td><p>Vectors, matrices, arrays, or rrays.</p></td>
     </tr>
     <tr>
       <th>axes</th>
@@ -179,8 +166,8 @@ base R matrices and arrays, this generally works fine. However, if you
 compare classed objects like <code>factor("x") &amp; rray(1)</code> then a fall through
 error is thrown. There is nothing we can do about
 this. See <code><a href='https://www.rdocumentation.org/packages/base/topics/groupGeneric'>?groupGeneric</a></code> for more information on this.</p>
-<p>The behavior of comparing either an array with a length 0 dimension
-or <code>NULL</code> with another array is slightly different than base R since
+<p>The behavior of comparing an array with a length 0 dimension
+with another array is slightly different than base R since
 broadcasting behavior is well defined. Length 0 dimensions are not exceptions
 to the normal broadcasting rules. Comparing dimensions of <code>0</code> and <code>1</code>, the
 common dimension is <code>0</code> because <code>1</code> always becomes the other dimension in the
@@ -232,18 +219,12 @@ because neither are <code>1</code>, and they are not identical.</p>
 #&gt; 
 #&gt;      [,1] [,2]
 #&gt; </div><div class='input'>
-<span class='co'># NULL is treated as logical(0)</span>
-<span class='kw'>NULL</span> <span class='kw'>&amp;</span> <span class='no'>x</span></div><div class='output co'>#&gt; &lt;rray&lt;lgl&gt;[,2][0]&gt;
-#&gt;      [,1] [,2]</div><div class='input'>
-<span class='fu'>rray_logical_and</span>(<span class='kw'>NULL</span>, <span class='kw'>NULL</span>)</div><div class='output co'>#&gt; logical(0)</div><div class='input'>
-# You cannot broadcast dimensions
-# of 2 and 0. Following standard
-# broadcasting rules, they do not
-# match and neither are 1, so an
-# error should be thrown
-</div><span class='co'># NOT RUN {</span>
-<span class='no'>x</span> <span class='kw'>&amp;</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/array'>array</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/logical'>logical</a></span>(), <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>0</span>))
-<span class='co'># }</span><div class='input'>
+<span class='co'># You cannot broadcast dimensions</span>
+<span class='co'># of 2 and 0. Following standard</span>
+<span class='co'># broadcasting rules, they do not</span>
+<span class='co'># match and neither are 1, so an</span>
+<span class='co'># error should be thrown</span>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/try'>try</a></span>(<span class='no'>x</span> <span class='kw'>&amp;</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/array'>array</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/logical'>logical</a></span>(), <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>0</span>)))</div><div class='output co'>#&gt; Error : Non-broadcastable dimensions: (1, 2) and (1, 0).</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
