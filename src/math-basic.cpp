@@ -68,26 +68,6 @@ Rcpp::RObject rray__multiply_add(Rcpp::RObject x, Rcpp::RObject y, Rcpp::RObject
 
 // -----------------------------------------------------------------------------
 
-// logicals return integers. this does so with only 1 allocation (so does base R)
-
-template <typename T>
-Rcpp::RObject rray__abs_impl(const xt::rarray<T>& x) {
-  xt::rarray<T> res = xt::abs(x);
-  return Rcpp::as<Rcpp::RObject>(res);
-}
-
-Rcpp::RObject rray__abs_impl(const xt::rarray<rlogical>& x) {
-  xt::rarray<int> res = xt::abs(x);
-  return Rcpp::as<Rcpp::RObject>(res);
-}
-
-// [[Rcpp::export(rng = false)]]
-Rcpp::RObject rray__abs(Rcpp::RObject x) {
-  DISPATCH_UNARY_MATH(rray__abs_impl, x);
-}
-
-// -----------------------------------------------------------------------------
-
 // - for doubles, this should return a double, not an integer.
 // this is so that `rray_sign(NaN)` correctly returns `NaN`
 // - for ints, we can return an int. base R does not.

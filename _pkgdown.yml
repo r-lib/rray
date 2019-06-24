@@ -75,7 +75,6 @@ reference:
 - title: Math
   contents:
   - rray_fmod
-  - rray_abs
   - rray_ceiling
   - rray_erf
   - rray_exp

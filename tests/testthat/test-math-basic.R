@@ -1,39 +1,8 @@
 context("test-abs")
 
-test_that("basic examples", {
-  expect_equal(rray_abs(-1), new_array(1))
-  expect_equal(rray_abs(-1L), new_array(1L))
-})
-
-test_that("dimension names are kept", {
-  x <- rray(c(-1, -2), c(2, 1), list(c("r1", "r2"), "c1"))
-
-  expect_equal(
-    rray_abs(x),
-    rray(c(1, 2), c(2, 1), list(c("r1", "r2"), "c1"))
-  )
-})
-
-test_that("corner cases", {
-
-  # Logicals
-  expect_equal(rray_abs(TRUE), new_array(1L))
-  expect_equal(rray_abs(FALSE), new_array(0L))
-
-  # NaN
-  expect_equal(rray_abs(NaN), new_array(NaN))
-
-  # 0
-  expect_equal(rray_abs(0), new_array(0))
-  expect_equal(rray_abs(0L), new_array(0L))
-
-  # Inf
-  expect_equal(rray_abs(-Inf), new_array(Inf))
-})
-
 test_that("vctrs dispatch works", {
-  expect_equal(abs(rray(TRUE)), rray_abs(rray(TRUE)))
-  expect_equal(abs(rray(1L)), rray_abs(rray(1L)))
+  expect_equal(abs(rray(TRUE)), rray(abs(TRUE)))
+  expect_equal(abs(rray(1L)), rray(abs(1L)))
 })
 
 # ------------------------------------------------------------------------------
@@ -71,10 +40,10 @@ test_that("corner cases", {
   expect_equal(rray_sign(-Inf), new_array(-1))
 })
 
-test_that("vctrs dispatch works", {
-  expect_equal(sign(rray(TRUE)), rray_sign(rray(TRUE)))
-  expect_equal(sign(rray(1L)), rray_sign(rray(1L)))
-})
+# test_that("vctrs dispatch works", {
+#   expect_equal(sign(rray(TRUE)), rray_sign(rray(TRUE)))
+#   expect_equal(sign(rray(1L)), rray_sign(rray(1L)))
+# })
 
 test_that("return value is integer, not double (unlike base R)", {
   expect_is(rray_sign(rray(1L)), "vctrs_rray_int")

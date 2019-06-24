@@ -521,16 +521,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rray__abs
-Rcpp::RObject rray__abs(Rcpp::RObject x);
-RcppExport SEXP _rray_rray__abs(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__abs(x));
-    return rcpp_result_gen;
-END_RCPP
-}
 // rray__sign
 Rcpp::RObject rray__sign(Rcpp::RObject x);
 RcppExport SEXP _rray_rray__sign(SEXP xSEXP) {
@@ -1174,7 +1164,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__flip", (DL_FUNC) &_rray_rray__flip, 2},
     {"_rray_rray__flatten", (DL_FUNC) &_rray_rray__flatten, 1},
     {"_rray_rray__multiply_add", (DL_FUNC) &_rray_rray__multiply_add, 3},
-    {"_rray_rray__abs", (DL_FUNC) &_rray_rray__abs, 1},
     {"_rray_rray__sign", (DL_FUNC) &_rray_rray__sign, 1},
     {"_rray_rray__fmod", (DL_FUNC) &_rray_rray__fmod, 2},
     {"_rray_rray__remainder", (DL_FUNC) &_rray_rray__remainder, 2},

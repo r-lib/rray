@@ -1,31 +1,3 @@
-#' Absolute value
-#'
-#' Compute the absolute value.
-#'
-#' @param x A vector, matrix, array or rray.
-#'
-#' @details
-#'
-#' If `x` is logical, an integer is returned.
-#'
-#' @examples
-#'
-#' rray_abs(-1)
-#'
-#' x <- rray(1:5 * -1L, c(5, 1))
-#'
-#' rray_abs(x)
-#'
-#' rray_abs(TRUE)
-#'
-#' @family math functions
-#' @export
-rray_abs <- function(x) {
-  vec_cast_container(rray__abs(x), x)
-}
-
-# ------------------------------------------------------------------------------
-
 #' Sign function
 #'
 #' @description
@@ -133,7 +105,6 @@ rray_sign <- function(x) {
 #' # I get -5.551115e-17
 #' result <- rray_remainder(x_abs, y_abs)
 #' if (sign(result)) result <- result + y_abs
-#' rray_abs(result) * sign(x)
 #'
 #' @name remainder
 #' @family math functions
