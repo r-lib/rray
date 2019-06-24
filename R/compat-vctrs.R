@@ -33,7 +33,7 @@ vec_type2.vctrs_rray_dbl <- function(x, y, ...) {
 
 #' @method vec_type2.vctrs_rray_dbl default
 #' @export
-vec_type2.vctrs_rray_dbl.default <- function(x, y, ..., x_arg = "", y_arg = "") {
+vec_type2.vctrs_rray_dbl.default <- function(x, y, ..., x_arg = "x", y_arg = "y") {
   stop_incompatible_type(x, y, ..., x_arg = x_arg, y_arg = y_arg)
 }
 
@@ -106,7 +106,7 @@ vec_type2.vctrs_rray_int <- function(x, y, ...) {
 
 #' @method vec_type2.vctrs_rray_int default
 #' @export
-vec_type2.vctrs_rray_int.default <- function(x, y, ..., x_arg = "", y_arg = "") {
+vec_type2.vctrs_rray_int.default <- function(x, y, ..., x_arg = "x", y_arg = "y") {
   stop_incompatible_type(x, y, ..., x_arg = x_arg, y_arg = y_arg)
 }
 
@@ -179,7 +179,7 @@ vec_type2.vctrs_rray_lgl <- function(x, y, ...) {
 
 #' @method vec_type2.vctrs_rray_lgl default
 #' @export
-vec_type2.vctrs_rray_lgl.default <- function(x, y, ..., x_arg = "", y_arg = "") {
+vec_type2.vctrs_rray_lgl.default <- function(x, y, ..., x_arg = "x", y_arg = "y") {
   stop_incompatible_type(x, y, ..., x_arg = x_arg, y_arg = y_arg)
 }
 
