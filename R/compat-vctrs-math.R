@@ -1,158 +1,16 @@
+
+
 #' @export
-vec_math.vctrs_rray <- function(fun, x, ...) {
-  f <- rray_math_unary_op_switch(fun)
-  f(x, ...)
-}
+vec_math.vctrs_rray <- function(.fn, .x, ...) {
+  out <- vec_math_base(.fn, .x, ...)
+  dim <- rray_dim(out)
 
-rray_math_unary_op_switch <- function(fun) {
-  switch(
-    fun,
-
-    # basic
-    "abs" = rray_abs,
-    "sign" = rray_sign,
-
-    # exponential
-    "exp" = rray_exp,
-    "expm1" = rray_expm1,
-    "log" = rray_log_vctrs_wrapper,
-    "log2" = rray_log2,
-    "log10" = rray_log10,
-    "log1p" = rray_log1p,
-
-    # power
-    "sqrt" = rray_sqrt,
-
-    # trigonometric
-    "sin" = rray_sin,
-    "cos" = rray_cos,
-    "tan" = rray_tan,
-    "asin" = rray_asin,
-    "acos" = rray_acos,
-    "atan" = rray_atan,
-    "sinpi" = rray_sinpi,
-    "cospi" = rray_cospi,
-    "tanpi" = rray_tanpi,
-
-    # hyperbolic
-    "sinh" = rray_sinh,
-    "cosh" = rray_cosh,
-    "tanh" = rray_tanh,
-    "asinh" = rray_asinh,
-    "acosh" = rray_acosh,
-    "atanh" = rray_atanh,
-
-    # error and gamma
-    "gamma" = rray_gamma,
-    "lgamma" = rray_lgamma,
-    "digamma" = rray_digamma,
-    "trigamma" = rray_trigamma,
-
-    # rounding
-    "ceiling" = rray_ceiling,
-    "floor" = rray_floor,
-    "trunc" = rray_trunc_vctrs_wrapper,
-    "round" = rray_round,
-    "signif" = rray_signif,
-
-    # extra
-    "is.nan" = rray_is_nan_vctrs_wrapper,
-    "is.infinite" = rray_is_infinite_vctrs_wrapper,
-    "is.finite" = rray_is_finite_vctrs_wrapper,
-    "mean" = rray_mean_vctrs_wrapper,
-
-    # summary
-    "all" = rray_all_vctrs_wrapper,
-    "any" = rray_any_vctrs_wrapper,
-    "prod" = rray_prod_vctrs_wrapper,
-    "sum" = rray_sum_vctrs_wrapper,
-
-    # cumulative
-    "cummax" = rray_cummax_vctrs_wrapper,
-    "cummin" = rray_cummin_vctrs_wrapper,
-    "cumsum" = rray_cumsum_vctrs_wrapper,
-    "cumprod" = rray_cumprod_vctrs_wrapper,
-
-    glubort("Unary math function not known: {fun}.")
+  new_rray(
+    out,
+    size = dim[1L],
+    shape = dim[-1L],
+    dim_names = rray_dim_names(out)
   )
-}
-
-# ------------------------------------------------------------------------------
-
-rray_log_vctrs_wrapper <- function(x, base = exp(1)) {
-  if(identical(base, exp(1))) {
-    rray_log(x)
-  }
-  else {
-    rray_log(x, base)
-  }
-}
-
-# to check for dots
-rray_trunc_vctrs_wrapper <- function(x, ...) {
-  n_dots <- length(list(...))
-  if (n_dots > 0L) {
-    glubort("`trunc()` for rrays does not support arguments passed to `...`.")
-  }
-
-  rray_trunc(x)
-}
-
-# ------------------------------------------------------------------------------
-# Summary group generic wrappers
-
-rray_all_vctrs_wrapper <- function(x, na.rm) {
-  vec_math_base("all", x, na.rm = na.rm)
-}
-
-rray_any_vctrs_wrapper <- function(x, na.rm) {
-  vec_math_base("any", x, na.rm = na.rm)
-}
-
-rray_prod_vctrs_wrapper <- function(x, na.rm) {
-  vec_math_base("prod", x, na.rm = na.rm)
-}
-
-rray_sum_vctrs_wrapper <- function(x, na.rm) {
-  vec_math_base("sum", x, na.rm = na.rm)
-}
-
-# ------------------------------------------------------------------------------
-# Math group generic wrappers
-
-rray_cummax_vctrs_wrapper <- function(x) {
-  vec_math_base("cummax", x)
-}
-
-rray_cummin_vctrs_wrapper <- function(x) {
-  vec_math_base("cummin", x)
-}
-
-rray_cumsum_vctrs_wrapper <- function(x) {
-  vec_math_base("cumsum", x)
-}
-
-rray_cumprod_vctrs_wrapper <- function(x) {
-  vec_math_base("cumprod", x)
-}
-
-# ------------------------------------------------------------------------------
-# Additional generics wrapped by vctrs vec_math()
-
-rray_mean_vctrs_wrapper <- function(x, na.rm) {
-  vec_math_base("mean", x, na.rm = na.rm)
-}
-
-rray_is_nan_vctrs_wrapper <- function(x) {
-  vec_cast_container(vec_math_base("is.nan", x), x)
-}
-
-rray_is_finite_vctrs_wrapper <- function(x) {
-  vec_cast_container(vec_math_base("is.finite", x), x)
-}
-
-rray_is_infinite_vctrs_wrapper <- function(x) {
-  vec_cast_container(vec_math_base("is.infinite", x), x)
 }
 
 # ------------------------------------------------------------------------------

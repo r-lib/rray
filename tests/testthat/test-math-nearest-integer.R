@@ -81,9 +81,9 @@ test_that("vctrs dispatch works", {
   expect_equal(trunc(rray(1)), rray_trunc(rray(1)))
 })
 
-test_that("extra arguments are caught", {
-  expect_error(trunc(rray(1), 2), "does not support")
-})
+# test_that("extra arguments are caught", {
+#   expect_error(trunc(rray(1), 2), "does not support")
+# })
 
 # ------------------------------------------------------------------------------
 context("test-round")
