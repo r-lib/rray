@@ -28,11 +28,10 @@ Suggests:
     testthat (>= 2.1.0)
 LinkingTo: 
     Rcpp,
-    xtensor
+    xtensor (>= 0.11.1-0)
 Remotes:
     r-lib/rlang,
-    r-lib/vctrs,
-    DavisVaughan/Xtensor.R@dev
+    r-lib/vctrs
 VignetteBuilder: 
     knitr
 Encoding: UTF-8

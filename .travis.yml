@@ -35,11 +35,11 @@ before_install:
   - sed -i 's|CXX_STD = CXX14||' src/Makevars
 # ------------------------------------------------------------------------------
 
-# To always pull fresh xtensor cpp code
-# Can't rely on Remotes b/c Xtensor.R dynamically pulls in
-# underlying headers
-before_script:
-  - Rscript -e 'remotes::install_github("DavisVaughan/Xtensor.R", ref = "dev", force = TRUE)'
+# # To always pull fresh xtensor cpp code
+# # Can't rely on Remotes b/c Xtensor.R dynamically pulls in
+# # underlying headers
+#before_script:
+#  - Rscript -e 'remotes::install_github("DavisVaughan/Xtensor.R", ref = "dev", force = TRUE)'
 
 matrix:
   include:
