@@ -87,21 +87,21 @@ test_that("extract with NA (lgl)", {
   expect_error(
     expect_equal(
       rray_extract(x, NA),
-      rray_reshape(vec_na(x, n = 2), rray_elems(x))
+      rray_reshape(vec_init(x, n = 2), rray_elems(x))
     )
   )
 
   expect_error(
     expect_equal(
       rray_extract(x, c(NA, NA)),
-      rray_reshape(vec_na(x, n = 2), rray_elems(x))
+      rray_reshape(vec_init(x, n = 2), rray_elems(x))
     )
   )
 
   expect_error(
     expect_equal(
       rray_extract(x, c(NA, TRUE)),
-      rray_reshape(vec_c(vec_na(x, n = 1), x[2]), rray_elems(x))
+      rray_reshape(vec_c(vec_init(x, n = 1), x[2]), rray_elems(x))
     )
   )
 })
@@ -112,14 +112,14 @@ test_that("extract with NA (int)", {
   expect_error(
     expect_equal(
       rray_extract(x, NA_integer_),
-      rray_reshape(vec_na(x, 1), rray_elems(x[1,]))
+      rray_reshape(vec_init(x, 1), rray_elems(x[1,]))
     )
   )
 
   expect_error(
     expect_equal(
       rray_extract(x, c(NA_integer_, NA_integer_, NA_integer_)),
-      rray_reshape(vec_na(x, 3), rray_elems(x[c(1,1,1)]))
+      rray_reshape(vec_init(x, 3), rray_elems(x[c(1,1,1)]))
     )
   )
 })

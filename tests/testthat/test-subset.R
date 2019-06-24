@@ -96,21 +96,21 @@ test_that("subset with NA (lgl)", {
   expect_error(
     expect_equal(
       rray_subset(x, NA),
-      vec_na(x, n = 2)
+      vec_init(x, n = 2)
     )
   )
 
   expect_error(
     expect_equal(
       rray_subset(x, c(NA, NA)),
-      vec_na(x, n = 2)
+      vec_init(x, n = 2)
     )
   )
 
   expect_error(
     expect_equal(
       rray_subset(x, c(NA, TRUE)),
-      vec_c(vec_na(x, n = 1), x[2])
+      vec_c(vec_init(x, n = 1), x[2])
     )
   )
 })
@@ -121,14 +121,14 @@ test_that("subset with NA (int)", {
   expect_error(
     expect_equal(
       rray_subset(x, NA_integer_),
-      vec_na(x, 1)
+      vec_init(x, 1)
     )
   )
 
   expect_error(
     expect_equal(
       rray_subset(x, c(NA_integer_, NA_integer_, NA_integer_)),
-      vec_na(x, 3)
+      vec_init(x, 3)
     )
   )
 })
