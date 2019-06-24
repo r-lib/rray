@@ -63,7 +63,6 @@ rray_math_unary_op_switch <- function(fun) {
     # summary
     "all" = rray_all_vctrs_wrapper,
     "any" = rray_any_vctrs_wrapper,
-    "range" = rray_range_vctrs_wrapper,
     "prod" = rray_prod_vctrs_wrapper,
     "sum" = rray_sum_vctrs_wrapper,
 
@@ -107,10 +106,6 @@ rray_all_vctrs_wrapper <- function(x, na.rm) {
 
 rray_any_vctrs_wrapper <- function(x, na.rm) {
   vec_math_base("any", x, na.rm = na.rm)
-}
-
-rray_range_vctrs_wrapper <- function(x, na.rm) {
-  vec_math_base("range", x, na.rm = na.rm)
 }
 
 rray_prod_vctrs_wrapper <- function(x, na.rm) {
@@ -159,12 +154,26 @@ rray_cumprod_vctrs_wrapper <- function(x) {
 
 #' @export
 min.vctrs_rray <- function(x, ..., na.rm = FALSE) {
-  vec_math_base("min", x, na.rm = na.rm)
+  vec_summary_base("min", x, na.rm = na.rm)
 }
 
 #' @export
 max.vctrs_rray <- function(x, ..., na.rm = FALSE) {
-  vec_math_base("max", x, na.rm = na.rm)
+  vec_summary_base("max", x, na.rm = na.rm)
+}
+
+#' @export
+range.vctrs_rray <- function(x, ..., na.rm = FALSE) {
+  vec_summary_base("range", x, na.rm = na.rm)
+}
+
+# should keep the inner type and container type
+# (but the shape may be different, i.e. the min of a 2D matrix
+# is a 1D vector of length 1)
+vec_summary_base <- function(.fn, .x, ...) {
+  value <- vec_math_base(.fn, .x, ...)
+  value <- vec_cast_inner(value, .x)
+  vec_cast_container(value, .x)
 }
 
 #' @export
