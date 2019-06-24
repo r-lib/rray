@@ -60,7 +60,7 @@ test_that("& errors gracefully on bad broadcast", {
 
 test_that("& fails when input that can't be cast to logical", {
   x <- rray(1:2)
-  expect_error(x & 1, "<integer> to <logical>", class = "vctrs_error_cast_lossy")
+  expect_error(x & 1, "`x` <integer> to `to` <logical>", class = "vctrs_error_cast_lossy")
 })
 
 test_that("& fails with non-broadcastable 0-length input", {
@@ -139,7 +139,7 @@ test_that("| errors gracefully on bad broadcast", {
 
 test_that("| fails when input that can't be cast to logical", {
   x <- rray(1:2)
-  expect_error(x | 1, "<integer> to <logical>", class = "vctrs_error_cast_lossy")
+  expect_error(x | 1, "`x` <integer> to `to` <logical>", class = "vctrs_error_cast_lossy")
 })
 
 test_that("| fails with non-broadcastable 0-length input", {
@@ -188,7 +188,7 @@ test_that("! works with 0-length input", {
 
 test_that("! fails when input that can't be cast to logical", {
   x <- rray(1:2)
-  expect_error(!x, "<integer> to <logical>", class = "vctrs_error_cast_lossy")
+  expect_error(!x, "`x` <integer> to `to` <logical>", class = "vctrs_error_cast_lossy")
 })
 
 # ------------------------------------------------------------------------------
@@ -258,7 +258,7 @@ test_that("reducing over multiple axes works consistently", {
 })
 
 test_that("fails when can't cast to logical", {
-  expect_error(rray_any(1:5), "<integer> to <logical>", class = "vctrs_error_cast_lossy")
+  expect_error(rray_any(1:5), "`x` <integer> to `to` <logical>", class = "vctrs_error_cast_lossy")
 })
 
 # ------------------------------------------------------------------------------
@@ -328,7 +328,7 @@ test_that("reducing over multiple axes works consistently", {
 })
 
 test_that("fails when can't cast to logical", {
-  expect_error(rray_all(1:5), "<integer> to <logical>", class = "vctrs_error_cast_lossy")
+  expect_error(rray_all(1:5), "`x` <integer> to `to` <logical>", class = "vctrs_error_cast_lossy")
 })
 
 # ------------------------------------------------------------------------------
@@ -404,5 +404,5 @@ test_that("`true` and `false` must have a common type", {
 })
 
 test_that("`condition` must be castable to a logical", {
-  expect_error(rray_if_else(1.5, 1, 2), "<double> to <logical>", class = "vctrs_error_cast_lossy")
+  expect_error(rray_if_else(1.5, 1, 2), "`x` <double> to `to` <logical>", class = "vctrs_error_cast_lossy")
 })
