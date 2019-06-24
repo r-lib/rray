@@ -2,20 +2,20 @@ test_that("extract drops dimensions", {
   x <- as_rray(array(1:24, dim = c(3, 4, 2)))
 
   # first row
-  expect_equal(rray_extract(x, 1), rray_reshape(x[1], length(x[1])))
+  expect_equal(rray_extract(x, 1), new_array(x[1]))
 
   # 1st col of every dimension
-  expect_equal(rray_extract(x, , 1), rray_reshape(x[,1], length(x[,1])))
+  expect_equal(rray_extract(x, , 1), new_array(x[,1]))
 
   # first 3rd dim
-  expect_equal(rray_extract(x, , , 1), rray_reshape(x[,,1], length(x[,,1])))
+  expect_equal(rray_extract(x, , , 1), new_array(x[,,1]))
 })
 
 test_that("extract allows subscripts to have >1 length", {
   x <- rray(1:8, c(2, 2, 2))
   expect_equal(
     rray_extract(x, 1:2, 1),
-    rray_reshape(x[1:2,1], rray_elems(x[1:2,1]))
+    new_array(x[1:2, 1])
   )
 })
 
@@ -28,9 +28,9 @@ test_that("extract ignores trailing dots", {
 
 test_that("0D extracting", {
   x <- as_rray(matrix(1:10, ncol = 2))
-  expect_equal(rray_extract(x, 0), rray(integer()))
-  expect_equal(rray_extract(x, 0, 1), rray(integer()))
-  expect_equal(rray_extract(x, , 0), rray(integer()))
+  expect_equal(rray_extract(x, 0), new_array(integer()))
+  expect_equal(rray_extract(x, 0, 1), new_array(integer()))
+  expect_equal(rray_extract(x, , 0), new_array(integer()))
 })
 
 test_that("extract never keeps dimension names", {
@@ -43,9 +43,9 @@ test_that("extract never keeps dimension names", {
 # equivalent to 0
 test_that("extract works with `NULL` as dimension", {
   x <- rray(1:8, dim = c(2, 2, 2))
-  expect_equal(rray_extract(x, NULL), rray(integer()))
-  expect_equal(rray_extract(x, NULL, 1), rray(integer()))
-  expect_equal(rray_extract(x, , NULL), rray(integer()))
+  expect_equal(rray_extract(x, NULL), new_array(integer()))
+  expect_equal(rray_extract(x, NULL, 1), new_array(integer()))
+  expect_equal(rray_extract(x, , NULL), new_array(integer()))
 })
 
 test_that("extract works with base R", {
@@ -71,14 +71,14 @@ test_that("can't index beyond vector in extract", {
 test_that("can extract with a logical", {
   x <- rray(1:8, dim = c(2, 2, 2))
 
-  expect_equal(rray_extract(x, TRUE), rray_reshape(x, rray_elems(x)))
-  expect_equal(rray_extract(x, FALSE), rray_reshape(x[0], 0))
+  expect_equal(rray_extract(x, TRUE), new_array(x[TRUE]))
+  expect_equal(rray_extract(x, FALSE), new_array(x[0]))
 
-  expect_equal(rray_extract(x, TRUE, FALSE), rray_reshape(x[0], 0))
+  expect_equal(rray_extract(x, TRUE, FALSE), new_array(x[0]))
 
   expect_error(rray_extract(x, c(TRUE, TRUE, TRUE)), "must have length 1 or")
 
-  expect_equal(rray_extract(x, c(TRUE, FALSE)), rray(c(1L, 3L, 5L, 7L)))
+  expect_equal(rray_extract(x, c(TRUE, FALSE)), new_array(c(1L, 3L, 5L, 7L)))
 })
 
 test_that("extract with NA (lgl)", {

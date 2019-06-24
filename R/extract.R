@@ -46,7 +46,5 @@ rray_extract_impl <- function(x, ...) {
     abort("`NA` indices are not yet supported.")
   }
 
-  out <- rray__extract(x, indexer)
-
-  vec_cast_container(out, x)
+  rray__extract(x, indexer)
 }
