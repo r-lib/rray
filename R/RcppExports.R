@@ -189,10 +189,6 @@ rray__multiply_add <- function(x, y, z) {
     .Call(`_rray_rray__multiply_add`, x, y, z)
 }
 
-rray__sign <- function(x) {
-    .Call(`_rray_rray__sign`, x)
-}
-
 rray__fmod <- function(x, y) {
     .Call(`_rray_rray__fmod`, x, y)
 }

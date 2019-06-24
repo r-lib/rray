@@ -68,29 +68,6 @@ Rcpp::RObject rray__multiply_add(Rcpp::RObject x, Rcpp::RObject y, Rcpp::RObject
 
 // -----------------------------------------------------------------------------
 
-// - for doubles, this should return a double, not an integer.
-// this is so that `rray_sign(NaN)` correctly returns `NaN`
-// - for ints, we can return an int. base R does not.
-//   e.g. `storage.mode(sign(1L))`
-
-template <typename T>
-Rcpp::RObject rray__sign_impl(const xt::rarray<T>& x) {
-  xt::rarray<T> res = xt::sign(x);
-  return Rcpp::as<Rcpp::RObject>(res);
-}
-
-Rcpp::RObject rray__sign_impl(const xt::rarray<rlogical>& x) {
-  xt::rarray<int> res = xt::sign(x);
-  return Rcpp::as<Rcpp::RObject>(res);
-}
-
-// [[Rcpp::export(rng = false)]]
-Rcpp::RObject rray__sign(Rcpp::RObject x) {
-  DISPATCH_UNARY_MATH(rray__sign_impl, x);
-}
-
-// -----------------------------------------------------------------------------
-
 template <typename T>
 xt::rarray<double> rray__fmod_impl(const xt::rarray<T>& x,
                                    const xt::rarray<T>& y) {

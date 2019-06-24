@@ -86,6 +86,6 @@ if (sign(result)) result <- result + y_abs
 \seealso{
 Other math functions: \code{\link{rray_clip}},
   \code{\link{rray_maximum}},
-  \code{\link{rray_multiply_add}}, \code{\link{rray_sign}}
+  \code{\link{rray_multiply_add}}
 }
 \concept{math functions}

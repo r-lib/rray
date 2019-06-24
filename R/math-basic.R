@@ -1,38 +1,3 @@
-#' Sign function
-#'
-#' @description
-#'
-#' Compute the elementwise sign of an array. Depending on the input the
-#' following is returned:
-#'
-#' - `1`: Positive input
-#' - `0`: Zero input
-#' - `-1`: Negative input
-#' - `NA`: `NA` input
-#'
-#' @param x A vector, matrix, array or rray.
-#'
-#' @return
-#'
-#' An array the same shape as `x`, but with numeric values indicating the
-#' sign of the values in `x`.
-#'
-#' @examples
-#'
-#' rray_sign(-5)
-#'
-#' x <- rray(c(5, NA, -5), c(3, 2))
-#'
-#' rray_sign(x)
-#'
-#' @family math functions
-#' @export
-rray_sign <- function(x) {
-  vec_cast_container(rray__sign(x), x)
-}
-
-# ------------------------------------------------------------------------------
-
 #' Remainders
 #'
 #' @description

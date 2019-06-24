@@ -78,7 +78,6 @@ reference:
   - rray_ceiling
   - rray_erf
   - rray_exp
-  - rray_sign
 
 - title: Trigonometry
   contents:
