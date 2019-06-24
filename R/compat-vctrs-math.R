@@ -55,10 +55,11 @@ rray_math_unary_op_switch <- function(fun) {
     "round" = rray_round,
     "signif" = rray_signif,
 
-    # finite
-    "is.nan" = rray_is_nan,
-    "is.infinite" = rray_is_infinite,
-    "is.finite" = rray_is_finite,
+    # extra
+    "is.nan" = rray_is_nan_vctrs_wrapper,
+    "is.infinite" = rray_is_infinite_vctrs_wrapper,
+    "is.finite" = rray_is_finite_vctrs_wrapper,
+    "mean" = rray_mean_vctrs_wrapper,
 
     # summary
     "all" = rray_all_vctrs_wrapper,
@@ -138,15 +139,19 @@ rray_cumprod_vctrs_wrapper <- function(x) {
 # ------------------------------------------------------------------------------
 # Additional generics wrapped by vctrs vec_math()
 
-rray_is_nan <- function(x) {
+rray_mean_vctrs_wrapper <- function(x, na.rm) {
+  vec_math_base("mean", x, na.rm = na.rm)
+}
+
+rray_is_nan_vctrs_wrapper <- function(x) {
   vec_cast_container(vec_math_base("is.nan", x), x)
 }
 
-rray_is_finite <- function(x) {
+rray_is_finite_vctrs_wrapper <- function(x) {
   vec_cast_container(vec_math_base("is.finite", x), x)
 }
 
-rray_is_infinite <- function(x) {
+rray_is_infinite_vctrs_wrapper <- function(x) {
   vec_cast_container(vec_math_base("is.infinite", x), x)
 }
 

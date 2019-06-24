@@ -280,16 +280,25 @@ test_that("a double is returned so no integer overflow occurs", {
 })
 
 # ------------------------------------------------------------------------------
-context("test-determinant")
+context("test-base-mean")
 
-test_that("can compute the determinant using the base R functions", {
-  x <- rray(c(2, 3, 4, 1), c(2, 2))
-  expect_equal(det(x), -10)
-  expect_equal(determinant(x), determinant(as.matrix(x)))
+test_that("vctrs dispatch works", {
+  x <- rray(1:5)
+  expect_equal(mean(x), mean(vec_data(x)))
+})
+
+test_that("flattens 2D+ arrays", {
+  x <- rray(1:5, c(5, 1))
+  expect_equal(mean(x), mean(1:5))
+})
+
+test_that("logicals become numerics", {
+  x <- rray(TRUE, c(5, 1))
+  expect_equal(mean(x), 1)
 })
 
 # ------------------------------------------------------------------------------
-context("test-is-nan")
+context("test-base-is-nan")
 
 test_that("vctrs dispatch works", {
   nms <- list(NULL, "c1")
@@ -299,7 +308,7 @@ test_that("vctrs dispatch works", {
 })
 
 # ------------------------------------------------------------------------------
-context("test-is-finite")
+context("test-base-is-finite")
 
 test_that("vctrs dispatch works", {
   nms <- list(NULL, "c1")
@@ -312,7 +321,7 @@ test_that("vctrs dispatch works", {
 })
 
 # ------------------------------------------------------------------------------
-context("test-is-infinite")
+context("test-base-is-infinite")
 
 test_that("vctrs dispatch works", {
   nms <- list(NULL, "c1")
@@ -323,4 +332,13 @@ test_that("vctrs dispatch works", {
   y <- rray(c(1, Inf, 2), c(3, 1), dim_names = nms)
   expect <- rray(c(FALSE, TRUE, FALSE), c(3, 1), dim_names = nms)
   expect_equal(is.infinite(y), expect)
+})
+
+# ------------------------------------------------------------------------------
+context("test-determinant")
+
+test_that("can compute the determinant using the base R functions", {
+  x <- rray(c(2, 3, 4, 1), c(2, 2))
+  expect_equal(det(x), -10)
+  expect_equal(determinant(x), determinant(as.matrix(x)))
 })
