@@ -22,16 +22,19 @@ test_that("xtfrm() for logicals returns integers", {
 # ------------------------------------------------------------------------------
 context("test-min")
 
+test_that("vctrs `min()` is type stable", {
+  expect_equal(min(rray(TRUE)), rray(TRUE))
+})
+
 test_that("`min()` returns a length 1 vector for 1D", {
-  expect_equal(min(rray(5:1)), 1L)
-  expect_equal(min(rray(5:1 + 0)), 1)
+  expect_equal(min(rray(5:1)), rray(1L))
 })
 
 test_that("`min()` returns a length 1 vector for 2D", {
   x <- rray(c(2, 4, 5, 2), c(2, 2))
   expect_equal(
     min(x),
-    2
+    rray(2)
   )
 })
 
@@ -39,34 +42,37 @@ test_that("`min()` returns a length 1 vector for 3D", {
   x <- rray(c(2, 4, 5, 2), c(2, 1, 2))
   expect_equal(
     min(x),
-    2
+    rray(2)
   )
 })
 
 test_that("vctrs `min()` ignores input in `...`", {
-  expect_equal(min(rray(2), 1), 2)
+  expect_equal(min(rray(2), 1), rray(2))
 })
 
 test_that("NAs are removed", {
   expect_equal(
     min(rray(c(NA, 2)), na.rm = TRUE),
-    2
+    rray(2)
   )
 })
 
 # ------------------------------------------------------------------------------
 context("test-max")
 
+test_that("vctrs `max()` is type stable", {
+  expect_equal(max(rray(TRUE)), rray(TRUE))
+})
+
 test_that("`max()` returns a length 1 vector for 1D", {
-  expect_equal(max(rray(5:1)), 5L)
-  expect_equal(max(rray(5:1 + 0)), 5)
+  expect_equal(max(rray(5:1)), rray(5L))
 })
 
 test_that("`max()` returns a length 1 vector for 2D", {
   x <- rray(c(2, 4, 5, 2), c(2, 2))
   expect_equal(
     max(x),
-    5
+    rray(5)
   )
 })
 
@@ -74,18 +80,56 @@ test_that("`max()` returns a length 1 vector for 3D", {
   x <- rray(c(2, 4, 5, 2), c(2, 1, 2))
   expect_equal(
     max(x),
-    5
+    rray(5)
   )
 })
 
 test_that("vctrs `max()` ignores input in `...`", {
-  expect_equal(max(rray(2), 1), 2)
+  expect_equal(max(rray(2), 1), rray(2))
 })
 
 test_that("NAs are removed", {
   expect_equal(
     max(rray(c(NA, 2)), na.rm = TRUE),
-    2
+    rray(2)
+  )
+})
+
+# ------------------------------------------------------------------------------
+context("test-range")
+
+test_that("vctrs `range()` is type stable", {
+  expect_equal(range(rray(TRUE)), rray(c(TRUE, TRUE)))
+})
+
+test_that("`range()` returns a length 2 vector for 1D", {
+  expect_equal(range(rray(5:1)), rray(c(1L, 5L)))
+})
+
+test_that("`range()` returns a length 2 vector for 2D", {
+  x <- rray(c(2, 4, 5, 2), c(2, 2))
+  expect_equal(
+    range(x),
+    rray(c(2, 5))
+  )
+})
+
+test_that("`range()` returns a length 2 vector for 3D", {
+  x <- rray(c(2, 4, 5, 2), c(2, 1, 2))
+  expect_equal(
+    range(x),
+    rray(c(2, 5))
+  )
+})
+
+test_that("vctrs `range()` ignores input in `...`", {
+  expect_equal(range(rray(2), 1), rray(c(2, 2)))
+})
+
+test_that("NAs are removed", {
+  expect_equal(
+    range(rray(c(NA, 2)), na.rm = TRUE),
+    rray(c(2, 2))
   )
 })
 
@@ -97,9 +141,9 @@ test_that("returns a single value with shaped arrays", {
   expect_equal(any(rray(c(FALSE, FALSE), c(2, 2))), FALSE)
 })
 
-test_that("always uses `na.rm = TRUE`", {
-  expect_equal(any(rray(c(NA, 1L)), na.rm = FALSE), TRUE)
-  expect_equal(any(rray(c(NA, 0L)), na.rm = FALSE), FALSE)
+test_that("`na.rm` propagates", {
+  expect_equal(any(rray(c(NA, 0L)), na.rm = FALSE), NA)
+  expect_equal(any(rray(c(NA, 0L)), na.rm = TRUE), FALSE)
 })
 
 # ------------------------------------------------------------------------------
@@ -110,23 +154,9 @@ test_that("returns a single value with shaped arrays", {
   expect_equal(all(rray(c(TRUE, TRUE), c(2, 2))), TRUE)
 })
 
-test_that("always uses `na.rm = TRUE`", {
-  expect_equal(all(rray(c(NA, 1L, 0L)), na.rm = FALSE), FALSE)
-  expect_equal(all(rray(c(NA, 1L, 1L)), na.rm = FALSE), TRUE)
-})
-
-# ------------------------------------------------------------------------------
-context("test-base-range")
-
-test_that("returns same values as base R", {
-  x <- rray(c(TRUE, FALSE), c(2, 2))
-  expect_equal(range(x), range(vec_data(x)))
-  expect_equal(range(x, x), range(vec_data(x), vec_data(x)))
-  expect_equal(range(x, 5), range(vec_data(x), 5))
-})
-
-test_that("always uses `na.rm = TRUE`", {
-  expect_equal(range(rray(c(NA, 1L)), na.rm = FALSE), c(1L, 1L))
+test_that("`na.rm` propagates", {
+  expect_equal(all(rray(c(NA, 1L)), na.rm = FALSE), NA)
+  expect_equal(all(rray(c(NA, 1L)), na.rm = TRUE), TRUE)
 })
 
 # ------------------------------------------------------------------------------
@@ -143,8 +173,9 @@ test_that("broadcasts input using vctrs", {
   expect_equal(prod(x, 5), prod(x, matrix(5, c(1, 2))))
 })
 
-test_that("always uses `na.rm = TRUE`", {
-  expect_equal(prod(rray(c(NA, 1L)), na.rm = FALSE), 1)
+test_that("`na.rm` propagates", {
+  expect_equal(prod(rray(c(NA, 1L)), na.rm = FALSE), NA_real_)
+  expect_equal(prod(rray(c(NA, 1L)), na.rm = TRUE), 1)
 })
 
 # ------------------------------------------------------------------------------
@@ -161,8 +192,9 @@ test_that("broadcasts input using vctrs", {
   expect_equal(sum(x, 5), sum(x, matrix(5, c(1, 2))))
 })
 
-test_that("always uses `na.rm = TRUE`", {
-  expect_equal(sum(rray(c(NA, 1L)), na.rm = FALSE), 1)
+test_that("`na.rm` propagates", {
+  expect_equal(sum(rray(c(NA, 1L)), na.rm = FALSE), NA_integer_)
+  expect_equal(sum(rray(c(NA, 1L)), na.rm = TRUE), 1L)
 })
 
 # ------------------------------------------------------------------------------
@@ -245,6 +277,61 @@ test_that("keeps names if x is 1D", {
 test_that("a double is returned so no integer overflow occurs", {
   x <- rray(c(2147483647L, 2L))
   expect_equal(storage.mode(cumprod(x)), "double")
+})
+
+# ------------------------------------------------------------------------------
+context("test-base-mean")
+
+test_that("vctrs dispatch works", {
+  x <- rray(1:5)
+  expect_equal(mean(x), mean(vec_data(x)))
+})
+
+test_that("flattens 2D+ arrays", {
+  x <- rray(1:5, c(5, 1))
+  expect_equal(mean(x), mean(1:5))
+})
+
+test_that("logicals become numerics", {
+  x <- rray(TRUE, c(5, 1))
+  expect_equal(mean(x), 1)
+})
+
+# ------------------------------------------------------------------------------
+context("test-base-is-nan")
+
+test_that("vctrs dispatch works", {
+  nms <- list(NULL, "c1")
+  x <- rray(c(1, NaN, 2), c(3, 1), dim_names = nms)
+  expect <- rray(c(FALSE, TRUE, FALSE), c(3, 1), dim_names = nms)
+  expect_equal(is.nan(x), expect)
+})
+
+# ------------------------------------------------------------------------------
+context("test-base-is-finite")
+
+test_that("vctrs dispatch works", {
+  nms <- list(NULL, "c1")
+  x <- rray(c(1, NaN, 2), c(3, 1), dim_names = nms)
+  expect <- rray(c(TRUE, FALSE, TRUE), c(3, 1), dim_names = nms)
+  expect_equal(is.finite(x), expect)
+
+  y <- rray(c(1, Inf, 2), c(3, 1), dim_names = nms)
+  expect_equal(is.finite(y), expect)
+})
+
+# ------------------------------------------------------------------------------
+context("test-base-is-infinite")
+
+test_that("vctrs dispatch works", {
+  nms <- list(NULL, "c1")
+  x <- rray(c(1, NaN, 2), c(3, 1), dim_names = nms)
+  expect <- rray(c(FALSE, FALSE, FALSE), c(3, 1), dim_names = nms)
+  expect_equal(is.infinite(x), expect)
+
+  y <- rray(c(1, Inf, 2), c(3, 1), dim_names = nms)
+  expect <- rray(c(FALSE, TRUE, FALSE), c(3, 1), dim_names = nms)
+  expect_equal(is.infinite(y), expect)
 })
 
 # ------------------------------------------------------------------------------
