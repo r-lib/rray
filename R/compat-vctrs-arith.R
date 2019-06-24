@@ -66,7 +66,7 @@ rray_arith_unary_op_switch <- function(op, x) {
   )
 }
 
-rray_arith_binary_op_switch <- function(op, x, y) {
+rray_arith_binary_op_switch <- function(op) {
   switch(
     op,
     "+" = rray_add,
@@ -76,8 +76,25 @@ rray_arith_binary_op_switch <- function(op, x, y) {
     "&" = rray_logical_and,
     "|" = rray_logical_or,
     "^" = rray_pow,
-    "%%" = rray_fmod,
-    "%/%" = rray_integer_division_vctrs_wrapper,
+    "%%" = rray_arith_binary_generator(`%%`),
+    "%/%" = rray_arith_binary_generator(`%/%`),
     glubort("Binary arithmetic operation not known: {op}.")
   )
+}
+
+# ------------------------------------------------------------------------------
+
+# Integer division and modulus could be improved with a custom C++ version,
+# but it is low hanging fruit for now. There is not a complete xtensor
+# function that handles all of the cases for this.
+
+rray_arith_binary_generator <- function(f) {
+  function(x, y) {
+    dim <- rray_dim_common(x, y)
+    x <- rray_broadcast(x, dim)
+    y <- rray_broadcast(y, dim)
+    res <- f(vec_data(x), vec_data(y))
+    res <- rray_set_dim_names(res, rray_dim_names2(x, y))
+    vec_cast_container(res, vec_type2(x, y))
+  }
 }

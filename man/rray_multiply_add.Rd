@@ -28,7 +28,7 @@ x * y + z
 
 }
 \seealso{
-Other math functions: \code{\link{remainder}},
-  \code{\link{rray_clip}}, \code{\link{rray_maximum}}
+Other math functions: \code{\link{rray_clip}},
+  \code{\link{rray_maximum}}
 }
 \concept{math functions}

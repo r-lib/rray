@@ -189,14 +189,6 @@ rray__multiply_add <- function(x, y, z) {
     .Call(`_rray_rray__multiply_add`, x, y, z)
 }
 
-rray__fmod <- function(x, y) {
-    .Call(`_rray_rray__fmod`, x, y)
-}
-
-rray__remainder <- function(x, y) {
-    .Call(`_rray_rray__remainder`, x, y)
-}
-
 rray__maximum <- function(x, y) {
     .Call(`_rray_rray__maximum`, x, y)
 }

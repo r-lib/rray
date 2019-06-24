@@ -29,7 +29,7 @@ rray_maximum(x, t(x))
 
 }
 \seealso{
-Other math functions: \code{\link{remainder}},
-  \code{\link{rray_clip}}, \code{\link{rray_multiply_add}}
+Other math functions: \code{\link{rray_clip}},
+  \code{\link{rray_multiply_add}}
 }
 \concept{math functions}

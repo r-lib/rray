@@ -26,8 +26,7 @@ rray_clip(x, 1, 5)
 
 }
 \seealso{
-Other math functions: \code{\link{remainder}},
-  \code{\link{rray_maximum}},
+Other math functions: \code{\link{rray_maximum}},
   \code{\link{rray_multiply_add}}
 }
 \concept{math functions}

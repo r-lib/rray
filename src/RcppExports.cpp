@@ -521,28 +521,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rray__fmod
-Rcpp::RObject rray__fmod(Rcpp::RObject x, Rcpp::RObject y);
-RcppExport SEXP _rray_rray__fmod(SEXP xSEXP, SEXP ySEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__fmod(x, y));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rray__remainder
-Rcpp::RObject rray__remainder(Rcpp::RObject x, Rcpp::RObject y);
-RcppExport SEXP _rray_rray__remainder(SEXP xSEXP, SEXP ySEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__remainder(x, y));
-    return rcpp_result_gen;
-END_RCPP
-}
 // rray__maximum
 Rcpp::RObject rray__maximum(Rcpp::RObject x, Rcpp::RObject y);
 RcppExport SEXP _rray_rray__maximum(SEXP xSEXP, SEXP ySEXP) {
@@ -1154,8 +1132,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__flip", (DL_FUNC) &_rray_rray__flip, 2},
     {"_rray_rray__flatten", (DL_FUNC) &_rray_rray__flatten, 1},
     {"_rray_rray__multiply_add", (DL_FUNC) &_rray_rray__multiply_add, 3},
-    {"_rray_rray__fmod", (DL_FUNC) &_rray_rray__fmod, 2},
-    {"_rray_rray__remainder", (DL_FUNC) &_rray_rray__remainder, 2},
     {"_rray_rray__maximum", (DL_FUNC) &_rray_rray__maximum, 2},
     {"_rray_rray__minimum", (DL_FUNC) &_rray_rray__minimum, 2},
     {"_rray_rray__clip", (DL_FUNC) &_rray_rray__clip, 3},
