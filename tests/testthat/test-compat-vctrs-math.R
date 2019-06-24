@@ -97,9 +97,9 @@ test_that("returns a single value with shaped arrays", {
   expect_equal(any(rray(c(FALSE, FALSE), c(2, 2))), FALSE)
 })
 
-test_that("always uses `na.rm = TRUE`", {
-  expect_equal(any(rray(c(NA, 1L)), na.rm = FALSE), TRUE)
-  expect_equal(any(rray(c(NA, 0L)), na.rm = FALSE), FALSE)
+test_that("`na.rm` propagates", {
+  expect_equal(any(rray(c(NA, 0L)), na.rm = FALSE), NA)
+  expect_equal(any(rray(c(NA, 0L)), na.rm = TRUE), FALSE)
 })
 
 # ------------------------------------------------------------------------------
@@ -110,9 +110,9 @@ test_that("returns a single value with shaped arrays", {
   expect_equal(all(rray(c(TRUE, TRUE), c(2, 2))), TRUE)
 })
 
-test_that("always uses `na.rm = TRUE`", {
-  expect_equal(all(rray(c(NA, 1L, 0L)), na.rm = FALSE), FALSE)
-  expect_equal(all(rray(c(NA, 1L, 1L)), na.rm = FALSE), TRUE)
+test_that("`na.rm` propagates", {
+  expect_equal(all(rray(c(NA, 1L)), na.rm = FALSE), NA)
+  expect_equal(all(rray(c(NA, 1L)), na.rm = TRUE), TRUE)
 })
 
 # ------------------------------------------------------------------------------
@@ -125,8 +125,9 @@ test_that("returns same values as base R", {
   expect_equal(range(x, 5), range(vec_data(x), 5))
 })
 
-test_that("always uses `na.rm = TRUE`", {
-  expect_equal(range(rray(c(NA, 1L)), na.rm = FALSE), c(1L, 1L))
+test_that("`na.rm` propagates", {
+  expect_equal(range(rray(c(NA, 1L)), na.rm = FALSE), c(NA_integer_, NA_integer_))
+  expect_equal(range(rray(c(NA, 1L)), na.rm = TRUE), c(1L, 1L))
 })
 
 # ------------------------------------------------------------------------------
@@ -143,8 +144,9 @@ test_that("broadcasts input using vctrs", {
   expect_equal(prod(x, 5), prod(x, matrix(5, c(1, 2))))
 })
 
-test_that("always uses `na.rm = TRUE`", {
-  expect_equal(prod(rray(c(NA, 1L)), na.rm = FALSE), 1)
+test_that("`na.rm` propagates", {
+  expect_equal(prod(rray(c(NA, 1L)), na.rm = FALSE), NA_real_)
+  expect_equal(prod(rray(c(NA, 1L)), na.rm = TRUE), 1)
 })
 
 # ------------------------------------------------------------------------------
@@ -161,8 +163,9 @@ test_that("broadcasts input using vctrs", {
   expect_equal(sum(x, 5), sum(x, matrix(5, c(1, 2))))
 })
 
-test_that("always uses `na.rm = TRUE`", {
-  expect_equal(sum(rray(c(NA, 1L)), na.rm = FALSE), 1)
+test_that("`na.rm` propagates", {
+  expect_equal(sum(rray(c(NA, 1L)), na.rm = FALSE), NA_integer_)
+  expect_equal(sum(rray(c(NA, 1L)), na.rm = TRUE), 1L)
 })
 
 # ------------------------------------------------------------------------------
