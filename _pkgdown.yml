@@ -75,7 +75,6 @@ reference:
 - title: Math
   contents:
   - rray_ceiling
-  - rray_erf
   - rray_exp
 
 - title: Trigonometry

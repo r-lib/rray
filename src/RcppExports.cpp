@@ -555,46 +555,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rray__erf
-Rcpp::RObject rray__erf(Rcpp::RObject x);
-RcppExport SEXP _rray_rray__erf(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__erf(x));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rray__erfc
-Rcpp::RObject rray__erfc(Rcpp::RObject x);
-RcppExport SEXP _rray_rray__erfc(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__erfc(x));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rray__gamma
-Rcpp::RObject rray__gamma(Rcpp::RObject x);
-RcppExport SEXP _rray_rray__gamma(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__gamma(x));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rray__lgamma
-Rcpp::RObject rray__lgamma(Rcpp::RObject x);
-RcppExport SEXP _rray_rray__lgamma(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__lgamma(x));
-    return rcpp_result_gen;
-END_RCPP
-}
 // rray__exp
 Rcpp::RObject rray__exp(Rcpp::RObject x);
 RcppExport SEXP _rray_rray__exp(SEXP xSEXP) {
@@ -1135,10 +1095,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__maximum", (DL_FUNC) &_rray_rray__maximum, 2},
     {"_rray_rray__minimum", (DL_FUNC) &_rray_rray__minimum, 2},
     {"_rray_rray__clip", (DL_FUNC) &_rray_rray__clip, 3},
-    {"_rray_rray__erf", (DL_FUNC) &_rray_rray__erf, 1},
-    {"_rray_rray__erfc", (DL_FUNC) &_rray_rray__erfc, 1},
-    {"_rray_rray__gamma", (DL_FUNC) &_rray_rray__gamma, 1},
-    {"_rray_rray__lgamma", (DL_FUNC) &_rray_rray__lgamma, 1},
     {"_rray_rray__exp", (DL_FUNC) &_rray_rray__exp, 1},
     {"_rray_rray__exp2", (DL_FUNC) &_rray_rray__exp2, 1},
     {"_rray_rray__expm1", (DL_FUNC) &_rray_rray__expm1, 1},
