@@ -19,11 +19,11 @@
 
 \method{vec_type2}{vctrs_rray_lgl}(x, y, ...)
 
-\method{vec_cast}{vctrs_rray_int}(x, to)
+\method{vec_cast}{vctrs_rray_int}(x, to, ...)
 
-\method{vec_cast}{vctrs_rray_dbl}(x, to)
+\method{vec_cast}{vctrs_rray_dbl}(x, to, ...)
 
-\method{vec_cast}{vctrs_rray_lgl}(x, to)
+\method{vec_cast}{vctrs_rray_lgl}(x, to, ...)
 }
 \arguments{
 \item{op}{An arithmetic operator as a string.}
