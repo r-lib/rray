@@ -72,10 +72,6 @@ reference:
   - rray_duplicate_any
   - rray_unique
 
-- title: Math
-  contents:
-  - rray_ceiling
-
 - title: Trigonometry
   contents:
   - rray_sin
