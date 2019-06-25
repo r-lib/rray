@@ -49,6 +49,10 @@ vec__cast_inner <- function(x, to) {
     .Call(`_rray_vec__cast_inner`, x, to)
 }
 
+rray__clip <- function(x, low, high) {
+    .Call(`_rray_rray__clip`, x, low, high)
+}
+
 rray__greater <- function(x, y) {
     .Call(`_rray_rray__greater`, x, y)
 }
@@ -199,10 +203,6 @@ rray__maximum <- function(x, y) {
 
 rray__minimum <- function(x, y) {
     .Call(`_rray_rray__minimum`, x, y)
-}
-
-rray__clip <- function(x, low, high) {
-    .Call(`_rray_rray__clip`, x, low, high)
 }
 
 rray__sort <- function(x, axis) {

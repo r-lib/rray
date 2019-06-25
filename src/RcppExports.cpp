@@ -137,6 +137,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray__clip
+Rcpp::RObject rray__clip(Rcpp::RObject x, Rcpp::RObject low, Rcpp::RObject high);
+RcppExport SEXP _rray_rray__clip(SEXP xSEXP, SEXP lowSEXP, SEXP highSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type low(lowSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type high(highSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__clip(x, low, high));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray__greater
 Rcpp::RObject rray__greater(Rcpp::RObject x, Rcpp::RObject y);
 RcppExport SEXP _rray_rray__greater(SEXP xSEXP, SEXP ySEXP) {
@@ -554,18 +566,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rray__clip
-Rcpp::RObject rray__clip(Rcpp::RObject x, Rcpp::RObject low, Rcpp::RObject high);
-RcppExport SEXP _rray_rray__clip(SEXP xSEXP, SEXP lowSEXP, SEXP highSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type low(lowSEXP);
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type high(highSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__clip(x, low, high));
-    return rcpp_result_gen;
-END_RCPP
-}
 // rray__sort
 Rcpp::RObject rray__sort(Rcpp::RObject x, Rcpp::RObject axis);
 RcppExport SEXP _rray_rray__sort(SEXP xSEXP, SEXP axisSEXP) {
@@ -785,6 +785,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__full_like", (DL_FUNC) &_rray_rray__full_like, 2},
     {"_rray_rray__diag", (DL_FUNC) &_rray_rray__diag, 2},
     {"_rray_vec__cast_inner", (DL_FUNC) &_rray_vec__cast_inner, 2},
+    {"_rray_rray__clip", (DL_FUNC) &_rray_rray__clip, 3},
     {"_rray_rray__greater", (DL_FUNC) &_rray_rray__greater, 2},
     {"_rray_rray__greater_equal", (DL_FUNC) &_rray_rray__greater_equal, 2},
     {"_rray_rray__lesser", (DL_FUNC) &_rray_rray__lesser, 2},
@@ -823,7 +824,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__multiply_add", (DL_FUNC) &_rray_rray__multiply_add, 3},
     {"_rray_rray__maximum", (DL_FUNC) &_rray_rray__maximum, 2},
     {"_rray_rray__minimum", (DL_FUNC) &_rray_rray__minimum, 2},
-    {"_rray_rray__clip", (DL_FUNC) &_rray_rray__clip, 3},
     {"_rray_rray__sort", (DL_FUNC) &_rray_rray__sort, 2},
     {"_rray_rray__max_pos", (DL_FUNC) &_rray_rray__max_pos, 2},
     {"_rray_rray__min_pos", (DL_FUNC) &_rray_rray__min_pos, 2},
