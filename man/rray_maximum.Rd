@@ -28,7 +28,4 @@ x <- matrix(1:3)
 rray_maximum(x, t(x))
 
 }
-\seealso{
-Other math functions: \code{\link{rray_multiply_add}}
-}
 \concept{math functions}

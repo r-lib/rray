@@ -532,18 +532,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rray__multiply_add
-Rcpp::RObject rray__multiply_add(Rcpp::RObject x, Rcpp::RObject y, Rcpp::RObject z);
-RcppExport SEXP _rray_rray__multiply_add(SEXP xSEXP, SEXP ySEXP, SEXP zSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type z(zSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__multiply_add(x, y, z));
-    return rcpp_result_gen;
-END_RCPP
-}
 // rray__maximum
 Rcpp::RObject rray__maximum(Rcpp::RObject x, Rcpp::RObject y);
 RcppExport SEXP _rray_rray__maximum(SEXP xSEXP, SEXP ySEXP) {
@@ -563,6 +551,18 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
     Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
     rcpp_result_gen = Rcpp::wrap(rray__minimum(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__multiply_add
+Rcpp::RObject rray__multiply_add(Rcpp::RObject x, Rcpp::RObject y, Rcpp::RObject z);
+RcppExport SEXP _rray_rray__multiply_add(SEXP xSEXP, SEXP ySEXP, SEXP zSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type z(zSEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__multiply_add(x, y, z));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -821,9 +821,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__expand", (DL_FUNC) &_rray_rray__expand, 2},
     {"_rray_rray__flip", (DL_FUNC) &_rray_rray__flip, 2},
     {"_rray_rray__flatten", (DL_FUNC) &_rray_rray__flatten, 1},
-    {"_rray_rray__multiply_add", (DL_FUNC) &_rray_rray__multiply_add, 3},
     {"_rray_rray__maximum", (DL_FUNC) &_rray_rray__maximum, 2},
     {"_rray_rray__minimum", (DL_FUNC) &_rray_rray__minimum, 2},
+    {"_rray_rray__multiply_add", (DL_FUNC) &_rray_rray__multiply_add, 3},
     {"_rray_rray__sort", (DL_FUNC) &_rray_rray__sort, 2},
     {"_rray_rray__max_pos", (DL_FUNC) &_rray_rray__max_pos, 2},
     {"_rray_rray__min_pos", (DL_FUNC) &_rray_rray__min_pos, 2},

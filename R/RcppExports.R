@@ -193,16 +193,16 @@ rray__flatten <- function(x) {
     .Call(`_rray_rray__flatten`, x)
 }
 
-rray__multiply_add <- function(x, y, z) {
-    .Call(`_rray_rray__multiply_add`, x, y, z)
-}
-
 rray__maximum <- function(x, y) {
     .Call(`_rray_rray__maximum`, x, y)
 }
 
 rray__minimum <- function(x, y) {
     .Call(`_rray_rray__minimum`, x, y)
+}
+
+rray__multiply_add <- function(x, y, z) {
+    .Call(`_rray_rray__multiply_add`, x, y, z)
 }
 
 rray__sort <- function(x, axis) {
