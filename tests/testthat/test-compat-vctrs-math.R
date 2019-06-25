@@ -1,140 +1,5 @@
 # ------------------------------------------------------------------------------
-context("test-xtfrm")
-
-test_that("xtfrm() returns order as a vector", {
-  x <- rray(1:2, c(2, 1))
-  expect_identical(xtfrm(x), new_matrix(1:2))
-
-  x <- rray(c(1, 2), c(2, 1))
-  expect_identical(xtfrm(x), new_matrix(c(1, 2)))
-})
-
-test_that("xtfrm() works for 3D", {
-  x <- rray(1:6, c(2, 1, 3))
-  expect_equal(xtfrm(x), vec_data(x))
-})
-
-test_that("xtfrm() for logicals returns integers", {
-  x <- rray(c(TRUE, FALSE), c(2, 1))
-  expect_equal(xtfrm(x), new_matrix(c(1L, 0L)))
-})
-
-# ------------------------------------------------------------------------------
-context("test-min")
-
-test_that("vctrs `min()` is type stable", {
-  expect_equal(min(rray(TRUE)), rray(TRUE))
-})
-
-test_that("`min()` returns a length 1 vector for 1D", {
-  expect_equal(min(rray(5:1)), rray(1L))
-})
-
-test_that("`min()` returns a length 1 vector for 2D", {
-  x <- rray(c(2, 4, 5, 2), c(2, 2))
-  expect_equal(
-    min(x),
-    rray(2)
-  )
-})
-
-test_that("`min()` returns a length 1 vector for 3D", {
-  x <- rray(c(2, 4, 5, 2), c(2, 1, 2))
-  expect_equal(
-    min(x),
-    rray(2)
-  )
-})
-
-test_that("vctrs `min()` ignores input in `...`", {
-  expect_equal(min(rray(2), 1), rray(2))
-})
-
-test_that("NAs are removed", {
-  expect_equal(
-    min(rray(c(NA, 2)), na.rm = TRUE),
-    rray(2)
-  )
-})
-
-# ------------------------------------------------------------------------------
-context("test-max")
-
-test_that("vctrs `max()` is type stable", {
-  expect_equal(max(rray(TRUE)), rray(TRUE))
-})
-
-test_that("`max()` returns a length 1 vector for 1D", {
-  expect_equal(max(rray(5:1)), rray(5L))
-})
-
-test_that("`max()` returns a length 1 vector for 2D", {
-  x <- rray(c(2, 4, 5, 2), c(2, 2))
-  expect_equal(
-    max(x),
-    rray(5)
-  )
-})
-
-test_that("`max()` returns a length 1 vector for 3D", {
-  x <- rray(c(2, 4, 5, 2), c(2, 1, 2))
-  expect_equal(
-    max(x),
-    rray(5)
-  )
-})
-
-test_that("vctrs `max()` ignores input in `...`", {
-  expect_equal(max(rray(2), 1), rray(2))
-})
-
-test_that("NAs are removed", {
-  expect_equal(
-    max(rray(c(NA, 2)), na.rm = TRUE),
-    rray(2)
-  )
-})
-
-# ------------------------------------------------------------------------------
-context("test-range")
-
-test_that("vctrs `range()` is type stable", {
-  expect_equal(range(rray(TRUE)), rray(c(TRUE, TRUE)))
-})
-
-test_that("`range()` returns a length 2 vector for 1D", {
-  expect_equal(range(rray(5:1)), rray(c(1L, 5L)))
-})
-
-test_that("`range()` returns a length 2 vector for 2D", {
-  x <- rray(c(2, 4, 5, 2), c(2, 2))
-  expect_equal(
-    range(x),
-    rray(c(2, 5))
-  )
-})
-
-test_that("`range()` returns a length 2 vector for 3D", {
-  x <- rray(c(2, 4, 5, 2), c(2, 1, 2))
-  expect_equal(
-    range(x),
-    rray(c(2, 5))
-  )
-})
-
-test_that("vctrs `range()` ignores input in `...`", {
-  expect_equal(range(rray(2), 1), rray(c(2, 2)))
-})
-
-test_that("NAs are removed", {
-  expect_equal(
-    range(rray(c(NA, 2)), na.rm = TRUE),
-    rray(c(2, 2))
-  )
-})
-
-# ------------------------------------------------------------------------------
-context("test-base-any")
+context("test-any")
 
 test_that("returns a single value with shaped arrays", {
   expect_equal(any(rray(c(TRUE, FALSE), c(2, 2))), rray(TRUE))
@@ -147,7 +12,7 @@ test_that("`na.rm` propagates", {
 })
 
 # ------------------------------------------------------------------------------
-context("test-base-all")
+context("test-all")
 
 test_that("returns a single value with shaped arrays", {
   expect_equal(all(rray(c(TRUE, FALSE), c(2, 2))), rray(FALSE))
@@ -160,7 +25,7 @@ test_that("`na.rm` propagates", {
 })
 
 # ------------------------------------------------------------------------------
-context("test-base-prod")
+context("test-prod")
 
 test_that("returns same values as base R", {
   x <- rray(c(5, 6), c(2, 2))
@@ -179,7 +44,7 @@ test_that("`na.rm` propagates", {
 })
 
 # ------------------------------------------------------------------------------
-context("test-base-sum")
+context("test-sum")
 
 test_that("returns same values as base R", {
   x <- rray(c(5, 6), c(2, 2))
@@ -198,7 +63,7 @@ test_that("`na.rm` propagates", {
 })
 
 # ------------------------------------------------------------------------------
-context("test-base-cummax")
+context("test-cummax")
 
 test_that("vctrs dispatch works", {
   x <- rray(5:1)
@@ -216,7 +81,7 @@ test_that("keeps names if x is 1D", {
 })
 
 # ------------------------------------------------------------------------------
-context("test-base-cummin")
+context("test-cummin")
 
 test_that("vctrs dispatch works", {
   x <- rray(1:5)
@@ -234,7 +99,7 @@ test_that("keeps names if x is 1D", {
 })
 
 # ------------------------------------------------------------------------------
-context("test-base-cumsum")
+context("test-cumsum")
 
 test_that("vctrs dispatch works", {
   x <- rray(1:5)
@@ -257,7 +122,7 @@ test_that("integer overflow throws a warning", {
 })
 
 # ------------------------------------------------------------------------------
-context("test-base-cumprod")
+context("test-cumprod")
 
 test_that("vctrs dispatch works", {
   x <- rray(1:5)
@@ -280,7 +145,7 @@ test_that("a double is returned so no integer overflow occurs", {
 })
 
 # ------------------------------------------------------------------------------
-context("test-base-mean")
+context("test-mean")
 
 test_that("vctrs dispatch works", {
   x <- rray(1:5)
@@ -298,7 +163,7 @@ test_that("logicals become numerics", {
 })
 
 # ------------------------------------------------------------------------------
-context("test-base-is-nan")
+context("test-is-nan")
 
 test_that("vctrs dispatch works", {
   nms <- list(NULL, "c1")
@@ -308,7 +173,7 @@ test_that("vctrs dispatch works", {
 })
 
 # ------------------------------------------------------------------------------
-context("test-base-is-finite")
+context("test-is-finite")
 
 test_that("vctrs dispatch works", {
   nms <- list(NULL, "c1")
@@ -321,7 +186,7 @@ test_that("vctrs dispatch works", {
 })
 
 # ------------------------------------------------------------------------------
-context("test-base-is-infinite")
+context("test-is-infinite")
 
 test_that("vctrs dispatch works", {
   nms <- list(NULL, "c1")
@@ -335,10 +200,118 @@ test_that("vctrs dispatch works", {
 })
 
 # ------------------------------------------------------------------------------
-context("test-determinant")
+context("test-math-unary")
 
-test_that("can compute the determinant using the base R functions", {
-  x <- rray(c(2, 3, 4, 1), c(2, 2))
-  expect_equal(det(x), -10)
-  expect_equal(determinant(x), determinant(as.matrix(x)))
+.fs <- c(
+  abs,
+  sign,
+
+  ceiling,
+  floor,
+  trunc,
+  round,
+  signif,
+
+  exp,
+  expm1,
+  log,
+  log2,
+  log10,
+  log1p,
+
+  sin,
+  cos,
+  tan,
+  asin,
+  acos,
+  atan,
+  sinpi,
+  cospi,
+  tanpi,
+
+  sinh,
+  cosh,
+  tanh,
+  asinh,
+  acosh,
+  atanh,
+
+  gamma,
+  lgamma,
+  digamma,
+  trigamma
+)
+
+.f_names <- c(
+  "abs",
+  "sign",
+
+  "ceiling",
+  "floor",
+  "trunc",
+  "round",
+  "signif",
+
+  "exp",
+  "expm1",
+  "log",
+  "log2",
+  "log10",
+  "log1p",
+
+  "sin",
+  "cos",
+  "tan",
+  "asin",
+  "acos",
+  "atan",
+  "sinpi",
+  "cospi",
+  "tanpi",
+
+  "sinh",
+  "cosh",
+  "tanh",
+  "asinh",
+  "acosh",
+  "atanh",
+
+  "gamma",
+  "lgamma",
+  "digamma",
+  "trigamma"
+)
+
+for (i in seq_along(.fs)) {
+  .f <- .fs[[i]]
+  .f_name <- .f_names[[i]]
+
+  test_that(glue::glue("vctrs dispatch works - {.f_name}"), {
+    expect_equal(.f(rray(1)), rray(.f(1)))
+    expect_equal(.f(rray(1L)), rray(.f(1L)))
+  })
+}
+
+# ------------------------------------------------------------------------------
+context("test-unary-math-extra")
+
+test_that("vctrs dispatch passes `base` through", {
+  expect_equal(log(rray(2), base = 2), rray(log(2, base = 2)))
+})
+
+test_that("vctrs dispatch passes `digits` through", {
+  expect_equal(round(rray(1)), rray(round(1)))
+  expect_equal(round(rray(1.5), digits = 0), rray(round(1.5, digits = 0)))
+})
+
+test_that("vctrs dispatch passes `digits` through", {
+  expect_equal(signif(rray(1.5), digits = 1), rray(signif(1.5, digits = 1)))
+})
+
+# ------------------------------------------------------------------------------
+context("test-binary-math")
+
+test_that(glue::glue("atan2() keeps class of `y` (first argument)"), {
+  expect_equal(atan2(rray(1), 2), rray(atan2(1, 2)))
+  expect_equal(atan2(1, rray(2)), atan2(1, 2))
 })
