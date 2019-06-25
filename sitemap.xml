@@ -19,6 +19,9 @@
     <loc>https://rray.r-lib.org/reference/dim-names.html</loc>
   </url>
   <url>
+    <loc>https://rray.r-lib.org/reference/extremum.html</loc>
+  </url>
+  <url>
     <loc>https://rray.r-lib.org/reference/is_rray.html</loc>
   </url>
   <url>
@@ -28,9 +31,6 @@
     <loc>https://rray.r-lib.org/reference/pad.html</loc>
   </url>
   <url>
-    <loc>https://rray.r-lib.org/reference/remainder.html</loc>
-  </url>
-  <url>
     <loc>https://rray.r-lib.org/reference/rray-compare.html</loc>
   </url>
   <url>
@@ -38,9 +38,6 @@
   </url>
   <url>
     <loc>https://rray.r-lib.org/reference/rray.html</loc>
-  </url>
-  <url>
-    <loc>https://rray.r-lib.org/reference/rray_abs.html</loc>
   </url>
   <url>
     <loc>https://rray.r-lib.org/reference/rray_all_equal.html</loc>
@@ -53,9 +50,6 @@
   </url>
   <url>
     <loc>https://rray.r-lib.org/reference/rray_broadcast.html</loc>
-  </url>
-  <url>
-    <loc>https://rray.r-lib.org/reference/rray_ceiling.html</loc>
   </url>
   <url>
     <loc>https://rray.r-lib.org/reference/rray_clip.html</loc>
@@ -79,12 +73,6 @@
     <loc>https://rray.r-lib.org/reference/rray_elems.html</loc>
   </url>
   <url>
-    <loc>https://rray.r-lib.org/reference/rray_erf.html</loc>
-  </url>
-  <url>
-    <loc>https://rray.r-lib.org/reference/rray_exp.html</loc>
-  </url>
-  <url>
     <loc>https://rray.r-lib.org/reference/rray_expand.html</loc>
   </url>
   <url>
@@ -100,6 +88,9 @@
     <loc>https://rray.r-lib.org/reference/rray_full_like.html</loc>
   </url>
   <url>
+    <loc>https://rray.r-lib.org/reference/rray_hypot.html</loc>
+  </url>
+  <url>
     <loc>https://rray.r-lib.org/reference/rray_if_else.html</loc>
   </url>
   <url>
@@ -107,9 +98,6 @@
   </url>
   <url>
     <loc>https://rray.r-lib.org/reference/rray_max_pos.html</loc>
-  </url>
-  <url>
-    <loc>https://rray.r-lib.org/reference/rray_maximum.html</loc>
   </url>
   <url>
     <loc>https://rray.r-lib.org/reference/rray_mean.html</loc>
@@ -133,15 +121,6 @@
     <loc>https://rray.r-lib.org/reference/rray_rotate.html</loc>
   </url>
   <url>
-    <loc>https://rray.r-lib.org/reference/rray_sign.html</loc>
-  </url>
-  <url>
-    <loc>https://rray.r-lib.org/reference/rray_sin.html</loc>
-  </url>
-  <url>
-    <loc>https://rray.r-lib.org/reference/rray_sinh.html</loc>
-  </url>
-  <url>
     <loc>https://rray.r-lib.org/reference/rray_slice.html</loc>
   </url>
   <url>
@@ -149,9 +128,6 @@
   </url>
   <url>
     <loc>https://rray.r-lib.org/reference/rray_split.html</loc>
-  </url>
-  <url>
-    <loc>https://rray.r-lib.org/reference/rray_square.html</loc>
   </url>
   <url>
     <loc>https://rray.r-lib.org/reference/rray_squeeze.html</loc>
