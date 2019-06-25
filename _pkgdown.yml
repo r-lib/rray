@@ -72,16 +72,13 @@ reference:
   - rray_duplicate_any
   - rray_unique
 
-- title: Trigonometry
-  contents:
-  - rray_sin
-
 - title: Arithmetic
   contents:
   - rray_add
   - rray_dot
   - rray_multiply_add
   - rray_square
+  - rray_hypot
 
 - title: Comparison and Logical
   contents:

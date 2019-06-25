@@ -354,6 +354,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray__hypot
+Rcpp::RObject rray__hypot(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__hypot(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__hypot(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray_init
 SEXP rray_init(SEXP ns);
 RcppExport SEXP _rray_rray_init(SEXP nsSEXP) {
@@ -552,57 +563,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::RObject >::type low(lowSEXP);
     Rcpp::traits::input_parameter< Rcpp::RObject >::type high(highSEXP);
     rcpp_result_gen = Rcpp::wrap(rray__clip(x, low, high));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rray__square
-Rcpp::RObject rray__square(Rcpp::RObject x);
-RcppExport SEXP _rray_rray__square(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__square(x));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rray__cube
-Rcpp::RObject rray__cube(Rcpp::RObject x);
-RcppExport SEXP _rray_rray__cube(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__cube(x));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rray__sqrt
-Rcpp::RObject rray__sqrt(Rcpp::RObject x);
-RcppExport SEXP _rray_rray__sqrt(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__sqrt(x));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rray__cbrt
-Rcpp::RObject rray__cbrt(Rcpp::RObject x);
-RcppExport SEXP _rray_rray__cbrt(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__cbrt(x));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rray__hypot
-Rcpp::RObject rray__hypot(Rcpp::RObject x, Rcpp::RObject y);
-RcppExport SEXP _rray_rray__hypot(SEXP xSEXP, SEXP ySEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__hypot(x, y));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -916,6 +876,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__extract_assign", (DL_FUNC) &_rray_rray__extract_assign, 3},
     {"_rray_rray__extract", (DL_FUNC) &_rray_rray__extract, 2},
     {"_rray_rray__reshape", (DL_FUNC) &_rray_rray__reshape, 2},
+    {"_rray_rray__hypot", (DL_FUNC) &_rray_rray__hypot, 2},
     {"_rray_rray_init", (DL_FUNC) &_rray_rray_init, 1},
     {"_rray_rray__logical_and", (DL_FUNC) &_rray_rray__logical_and, 2},
     {"_rray_rray__logical_or", (DL_FUNC) &_rray_rray__logical_or, 2},
@@ -934,11 +895,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__maximum", (DL_FUNC) &_rray_rray__maximum, 2},
     {"_rray_rray__minimum", (DL_FUNC) &_rray_rray__minimum, 2},
     {"_rray_rray__clip", (DL_FUNC) &_rray_rray__clip, 3},
-    {"_rray_rray__square", (DL_FUNC) &_rray_rray__square, 1},
-    {"_rray_rray__cube", (DL_FUNC) &_rray_rray__cube, 1},
-    {"_rray_rray__sqrt", (DL_FUNC) &_rray_rray__sqrt, 1},
-    {"_rray_rray__cbrt", (DL_FUNC) &_rray_rray__cbrt, 1},
-    {"_rray_rray__hypot", (DL_FUNC) &_rray_rray__hypot, 2},
     {"_rray_rray__sin", (DL_FUNC) &_rray_rray__sin, 1},
     {"_rray_rray__cos", (DL_FUNC) &_rray_rray__cos, 1},
     {"_rray_rray__tan", (DL_FUNC) &_rray_rray__tan, 1},

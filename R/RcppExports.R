@@ -129,6 +129,10 @@ rray__reshape <- function(x, dim) {
     .Call(`_rray_rray__reshape`, x, dim)
 }
 
+rray__hypot <- function(x, y) {
+    .Call(`_rray_rray__hypot`, x, y)
+}
+
 rray_init <- function(ns) {
     .Call(`_rray_rray_init`, ns)
 }
@@ -199,26 +203,6 @@ rray__minimum <- function(x, y) {
 
 rray__clip <- function(x, low, high) {
     .Call(`_rray_rray__clip`, x, low, high)
-}
-
-rray__square <- function(x) {
-    .Call(`_rray_rray__square`, x)
-}
-
-rray__cube <- function(x) {
-    .Call(`_rray_rray__cube`, x)
-}
-
-rray__sqrt <- function(x) {
-    .Call(`_rray_rray__sqrt`, x)
-}
-
-rray__cbrt <- function(x) {
-    .Call(`_rray_rray__cbrt`, x)
-}
-
-rray__hypot <- function(x, y) {
-    .Call(`_rray_rray__hypot`, x, y)
 }
 
 rray__sin <- function(x) {
