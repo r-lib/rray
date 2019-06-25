@@ -39,7 +39,7 @@
 #' # (the double type wins, the container types are disregarded)
 #' vec_type_inner_common(1, TRUE, rray(1L))
 #'
-#' @export
+#' @keywords internal
 vec_type_inner <- function(x) {
 
   if (is.null(x)) {
@@ -49,47 +49,38 @@ vec_type_inner <- function(x) {
   UseMethod("vec_type_inner")
 }
 
-#' @export
 vec_type_inner.default <- function(x) {
   abort("`x` has an unknown inner type.")
 }
 
-#' @export
 vec_type_inner.logical <- function(x) {
   logical()
 }
 
-#' @export
 vec_type_inner.integer <- function(x) {
   integer()
 }
 
-#' @export
 vec_type_inner.double <- function(x) {
   double()
 }
 
-#' @export
 vec_type_inner.character <- function(x) {
   character()
 }
 
-#' @export
 vec_type_inner.vctrs_rray_lgl <- function(x) {
   logical()
 }
 
-#' @export
 vec_type_inner.vctrs_rray_int <- function(x) {
   integer()
 }
 
-#' @export
 vec_type_inner.vctrs_rray_dbl <- function(x) {
   double()
 }
 
-#' @export
 vec_type_inner.vctrs_unspecified <- function(x) {
   logical()
 }
@@ -103,7 +94,6 @@ vec_type_inner2 <- function(x, y) {
 # ------------------------------------------------------------------------------
 
 #' @rdname vec_type_inner
-#' @export
 vec_type_inner_common <- function(..., .ptype = NULL) {
 
   if (!is.null(.ptype)) {

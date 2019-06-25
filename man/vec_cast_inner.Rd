@@ -17,19 +17,19 @@ vec_cast_inner(x, to)
 
 \method{vec_cast_inner}{default}(x, to)
 
-\method{vec_cast_inner}{logical}(x, to)
+vec_cast_inner.logical(x, to)
 
-\method{vec_cast_inner}{integer}(x, to)
+vec_cast_inner.integer(x, to)
 
-\method{vec_cast_inner}{double}(x, to)
+vec_cast_inner.double(x, to)
 
-\method{vec_cast_inner}{character}(x, to)
+vec_cast_inner.character(x, to)
 
-\method{vec_cast_inner}{vctrs_rray_lgl}(x, to)
+vec_cast_inner.vctrs_rray_lgl(x, to)
 
-\method{vec_cast_inner}{vctrs_rray_dbl}(x, to)
+vec_cast_inner.vctrs_rray_dbl(x, to)
 
-\method{vec_cast_inner}{vctrs_rray_int}(x, to)
+vec_cast_inner.vctrs_rray_int(x, to)
 
 vec_cast_inner_common(..., .to = NULL)
 }
@@ -77,3 +77,4 @@ vec_cast_inner(rray(1), TRUE)
 vec_cast_inner(matrix(c(TRUE, FALSE)), rray(1))
 
 }
+\keyword{internal}

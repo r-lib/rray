@@ -14,15 +14,15 @@ vec_type_container2(x, y)
 
 \method{vec_type_container2}{default}(x, y)
 
-\method{vec_type_container2}{logical}(x, y)
+vec_type_container2.logical(x, y)
 
-\method{vec_type_container2}{integer}(x, y)
+vec_type_container2.integer(x, y)
 
-\method{vec_type_container2}{double}(x, y)
+vec_type_container2.double(x, y)
 
-\method{vec_type_container2}{character}(x, y)
+vec_type_container2.character(x, y)
 
-\method{vec_type_container2}{vctrs_rray}(x, y)
+vec_type_container2.vctrs_rray(x, y)
 }
 \arguments{
 \item{x, y}{Vectors.}
@@ -40,3 +40,4 @@ vec_type_container2(1, 2L)
 vec_type_container2(1, rray(2L))
 
 }
+\keyword{internal}

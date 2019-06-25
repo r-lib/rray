@@ -89,8 +89,3 @@ reference:
 - title: Compatibility
   contents:
   - vec_arith.vctrs_rray
-  - vec_cast_container
-  - vec_type_container
-  - vec_type_container2
-  - vec_type_inner
-  - vec_cast_inner

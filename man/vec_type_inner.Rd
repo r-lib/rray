@@ -50,3 +50,4 @@ vec_type_inner(rray(1))
 vec_type_inner_common(1, TRUE, rray(1L))
 
 }
+\keyword{internal}

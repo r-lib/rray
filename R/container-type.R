@@ -52,7 +52,7 @@
 #' # Not an error!
 #' vec_type_container_common(character(), logical())
 #'
-#' @export
+#' @keywords internal
 vec_type_container <- function(x) {
 
   if (is.null(x)) {
@@ -62,37 +62,29 @@ vec_type_container <- function(x) {
   UseMethod("vec_type_container")
 }
 
-#' @export
 vec_type_container.default <- function(x) {
   abort("`x` has an unknown container type.")
 }
 
-#' @export
 vec_type_container.logical <- function(x) {
   logical()
 }
 
-#' @export
 vec_type_container.integer <- vec_type_container.logical
 
-#' @export
 vec_type_container.double <- vec_type_container.logical
 
-#' @export
 vec_type_container.character <- vec_type_container.logical
 
-#' @export
 vec_type_container.vctrs_rray <- function(x) {
   shared$empty_rray_lgl
 }
 
-#' @export
 vec_type_container.vctrs_unspecified <- vec_type_container.integer
 
 # ------------------------------------------------------------------------------
 
 #' @rdname vec_type_container
-#' @export
 vec_type_container_common <- function(..., .ptype = NULL) {
 
   if (!is.null(.ptype)) {

@@ -61,3 +61,4 @@ vec_type_container_common(1, TRUE, rray(1L))
 vec_type_container_common(character(), logical())
 
 }
+\keyword{internal}

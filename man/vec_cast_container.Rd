@@ -14,13 +14,13 @@ vec_cast_container(x, to)
 
 \method{vec_cast_container}{default}(x, to)
 
-\method{vec_cast_container}{logical}(x, to)
+vec_cast_container.logical(x, to)
 
-\method{vec_cast_container}{double}(x, to)
+vec_cast_container.double(x, to)
 
-\method{vec_cast_container}{integer}(x, to)
+vec_cast_container.integer(x, to)
 
-\method{vec_cast_container}{vctrs_rray}(x, to)
+vec_cast_container.vctrs_rray(x, to)
 
 vec_cast_container_common(..., .to = NULL)
 }
@@ -71,3 +71,4 @@ x <- rray(1:2, dim_names = list(c("r1", "r2")))
 vec_cast_container(x, 1)
 
 }
+\keyword{internal}
