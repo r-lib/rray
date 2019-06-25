@@ -201,34 +201,6 @@ rray__clip <- function(x, low, high) {
     .Call(`_rray_rray__clip`, x, low, high)
 }
 
-rray__exp <- function(x) {
-    .Call(`_rray_rray__exp`, x)
-}
-
-rray__exp2 <- function(x) {
-    .Call(`_rray_rray__exp2`, x)
-}
-
-rray__expm1 <- function(x) {
-    .Call(`_rray_rray__expm1`, x)
-}
-
-rray__log <- function(x, base) {
-    .Call(`_rray_rray__log`, x, base)
-}
-
-rray__log2 <- function(x) {
-    .Call(`_rray_rray__log2`, x)
-}
-
-rray__log10 <- function(x) {
-    .Call(`_rray_rray__log10`, x)
-}
-
-rray__log1p <- function(x) {
-    .Call(`_rray_rray__log1p`, x)
-}
-
 rray__sinh <- function(x) {
     .Call(`_rray_rray__sinh`, x)
 }
