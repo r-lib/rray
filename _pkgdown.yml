@@ -72,26 +72,12 @@ reference:
   - rray_duplicate_any
   - rray_unique
 
-- title: Math
-  contents:
-  - rray_fmod
-  - rray_abs
-  - rray_ceiling
-  - rray_erf
-  - rray_exp
-  - rray_sign
-
-- title: Trigonometry
-  contents:
-  - rray_sin
-  - rray_sinh
-
 - title: Arithmetic
   contents:
   - rray_add
   - rray_dot
   - rray_multiply_add
-  - rray_square
+  - rray_hypot
 
 - title: Comparison and Logical
   contents:

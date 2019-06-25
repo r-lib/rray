@@ -49,6 +49,10 @@ vec__cast_inner <- function(x, to) {
     .Call(`_rray_vec__cast_inner`, x, to)
 }
 
+rray__clip <- function(x, low, high) {
+    .Call(`_rray_rray__clip`, x, low, high)
+}
+
 rray__greater <- function(x, y) {
     .Call(`_rray_rray__greater`, x, y)
 }
@@ -125,8 +129,20 @@ rray__extract <- function(x, indexer) {
     .Call(`_rray_rray__extract`, x, indexer)
 }
 
+rray__maximum <- function(x, y) {
+    .Call(`_rray_rray__maximum`, x, y)
+}
+
+rray__minimum <- function(x, y) {
+    .Call(`_rray_rray__minimum`, x, y)
+}
+
 rray__reshape <- function(x, dim) {
     .Call(`_rray_rray__reshape`, x, dim)
+}
+
+rray__hypot <- function(x, y) {
+    .Call(`_rray_rray__hypot`, x, y)
 }
 
 rray_init <- function(ns) {
@@ -187,162 +203,6 @@ rray__flatten <- function(x) {
 
 rray__multiply_add <- function(x, y, z) {
     .Call(`_rray_rray__multiply_add`, x, y, z)
-}
-
-rray__abs <- function(x) {
-    .Call(`_rray_rray__abs`, x)
-}
-
-rray__sign <- function(x) {
-    .Call(`_rray_rray__sign`, x)
-}
-
-rray__fmod <- function(x, y) {
-    .Call(`_rray_rray__fmod`, x, y)
-}
-
-rray__remainder <- function(x, y) {
-    .Call(`_rray_rray__remainder`, x, y)
-}
-
-rray__maximum <- function(x, y) {
-    .Call(`_rray_rray__maximum`, x, y)
-}
-
-rray__minimum <- function(x, y) {
-    .Call(`_rray_rray__minimum`, x, y)
-}
-
-rray__clip <- function(x, low, high) {
-    .Call(`_rray_rray__clip`, x, low, high)
-}
-
-rray__erf <- function(x) {
-    .Call(`_rray_rray__erf`, x)
-}
-
-rray__erfc <- function(x) {
-    .Call(`_rray_rray__erfc`, x)
-}
-
-rray__gamma <- function(x) {
-    .Call(`_rray_rray__gamma`, x)
-}
-
-rray__lgamma <- function(x) {
-    .Call(`_rray_rray__lgamma`, x)
-}
-
-rray__exp <- function(x) {
-    .Call(`_rray_rray__exp`, x)
-}
-
-rray__exp2 <- function(x) {
-    .Call(`_rray_rray__exp2`, x)
-}
-
-rray__expm1 <- function(x) {
-    .Call(`_rray_rray__expm1`, x)
-}
-
-rray__log <- function(x, base) {
-    .Call(`_rray_rray__log`, x, base)
-}
-
-rray__log2 <- function(x) {
-    .Call(`_rray_rray__log2`, x)
-}
-
-rray__log10 <- function(x) {
-    .Call(`_rray_rray__log10`, x)
-}
-
-rray__log1p <- function(x) {
-    .Call(`_rray_rray__log1p`, x)
-}
-
-rray__sinh <- function(x) {
-    .Call(`_rray_rray__sinh`, x)
-}
-
-rray__cosh <- function(x) {
-    .Call(`_rray_rray__cosh`, x)
-}
-
-rray__tanh <- function(x) {
-    .Call(`_rray_rray__tanh`, x)
-}
-
-rray__asinh <- function(x) {
-    .Call(`_rray_rray__asinh`, x)
-}
-
-rray__acosh <- function(x) {
-    .Call(`_rray_rray__acosh`, x)
-}
-
-rray__atanh <- function(x) {
-    .Call(`_rray_rray__atanh`, x)
-}
-
-rray__ceiling <- function(x) {
-    .Call(`_rray_rray__ceiling`, x)
-}
-
-rray__floor <- function(x) {
-    .Call(`_rray_rray__floor`, x)
-}
-
-rray__trunc <- function(x) {
-    .Call(`_rray_rray__trunc`, x)
-}
-
-rray__square <- function(x) {
-    .Call(`_rray_rray__square`, x)
-}
-
-rray__cube <- function(x) {
-    .Call(`_rray_rray__cube`, x)
-}
-
-rray__sqrt <- function(x) {
-    .Call(`_rray_rray__sqrt`, x)
-}
-
-rray__cbrt <- function(x) {
-    .Call(`_rray_rray__cbrt`, x)
-}
-
-rray__hypot <- function(x, y) {
-    .Call(`_rray_rray__hypot`, x, y)
-}
-
-rray__sin <- function(x) {
-    .Call(`_rray_rray__sin`, x)
-}
-
-rray__cos <- function(x) {
-    .Call(`_rray_rray__cos`, x)
-}
-
-rray__tan <- function(x) {
-    .Call(`_rray_rray__tan`, x)
-}
-
-rray__asin <- function(x) {
-    .Call(`_rray_rray__asin`, x)
-}
-
-rray__acos <- function(x) {
-    .Call(`_rray_rray__acos`, x)
-}
-
-rray__atan <- function(x) {
-    .Call(`_rray_rray__atan`, x)
-}
-
-rray__atan2 <- function(y, x) {
-    .Call(`_rray_rray__atan2`, y, x)
 }
 
 rray__sort <- function(x, axis) {

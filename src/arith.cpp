@@ -245,13 +245,6 @@ Rcpp::RObject rray__pow(Rcpp::RObject x, Rcpp::RObject y) {
 
 // -----------------------------------------------------------------------------
 
-// Not implementing `rray__modulus()` as it ONLY works with integers
-// and crashes when dividing by 0. It is essentially a less stable
-// `rray_fmod()` which always returns a double, and can handle the
-// dividing by 0 case.
-
-// -----------------------------------------------------------------------------
-
 // Nothing to do in the case of double / integer x
 
 // Logicals as integers
