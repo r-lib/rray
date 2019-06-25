@@ -129,6 +129,14 @@ rray__extract <- function(x, indexer) {
     .Call(`_rray_rray__extract`, x, indexer)
 }
 
+rray__maximum <- function(x, y) {
+    .Call(`_rray_rray__maximum`, x, y)
+}
+
+rray__minimum <- function(x, y) {
+    .Call(`_rray_rray__minimum`, x, y)
+}
+
 rray__reshape <- function(x, dim) {
     .Call(`_rray_rray__reshape`, x, dim)
 }
@@ -191,14 +199,6 @@ rray__flip <- function(x, axis) {
 
 rray__flatten <- function(x) {
     .Call(`_rray_rray__flatten`, x)
-}
-
-rray__maximum <- function(x, y) {
-    .Call(`_rray_rray__maximum`, x, y)
-}
-
-rray__minimum <- function(x, y) {
-    .Call(`_rray_rray__minimum`, x, y)
 }
 
 rray__multiply_add <- function(x, y, z) {

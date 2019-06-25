@@ -18,7 +18,7 @@
 #' x <- matrix(1:3)
 #' rray_maximum(x, t(x))
 #'
-#' @family math functions
+#' @name extremum
 #' @export
 rray_maximum <- function(x, y) {
   out <- rray__maximum(x, y)
@@ -26,7 +26,7 @@ rray_maximum <- function(x, y) {
   vec_cast_container(out, container)
 }
 
-#' @rdname rray_maximum
+#' @rdname extremum
 #' @export
 rray_minimum <- function(x, y) {
   out <- rray__minimum(x, y)

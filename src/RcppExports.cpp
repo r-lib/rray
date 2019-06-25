@@ -355,6 +355,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rray__maximum
+Rcpp::RObject rray__maximum(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__maximum(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__maximum(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rray__minimum
+Rcpp::RObject rray__minimum(Rcpp::RObject x, Rcpp::RObject y);
+RcppExport SEXP _rray_rray__minimum(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(rray__minimum(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
 // rray__reshape
 Rcpp::RObject rray__reshape(Rcpp::RObject x, const Rcpp::IntegerVector& dim);
 RcppExport SEXP _rray_rray__reshape(SEXP xSEXP, SEXP dimSEXP) {
@@ -529,28 +551,6 @@ BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
     rcpp_result_gen = Rcpp::wrap(rray__flatten(x));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rray__maximum
-Rcpp::RObject rray__maximum(Rcpp::RObject x, Rcpp::RObject y);
-RcppExport SEXP _rray_rray__maximum(SEXP xSEXP, SEXP ySEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__maximum(x, y));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rray__minimum
-Rcpp::RObject rray__minimum(Rcpp::RObject x, Rcpp::RObject y);
-RcppExport SEXP _rray_rray__minimum(SEXP xSEXP, SEXP ySEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__minimum(x, y));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -805,6 +805,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__increase_dims", (DL_FUNC) &_rray_rray__increase_dims, 2},
     {"_rray_rray__extract_assign", (DL_FUNC) &_rray_rray__extract_assign, 3},
     {"_rray_rray__extract", (DL_FUNC) &_rray_rray__extract, 2},
+    {"_rray_rray__maximum", (DL_FUNC) &_rray_rray__maximum, 2},
+    {"_rray_rray__minimum", (DL_FUNC) &_rray_rray__minimum, 2},
     {"_rray_rray__reshape", (DL_FUNC) &_rray_rray__reshape, 2},
     {"_rray_rray__hypot", (DL_FUNC) &_rray_rray__hypot, 2},
     {"_rray_rray_init", (DL_FUNC) &_rray_rray_init, 1},
@@ -821,8 +823,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__expand", (DL_FUNC) &_rray_rray__expand, 2},
     {"_rray_rray__flip", (DL_FUNC) &_rray_rray__flip, 2},
     {"_rray_rray__flatten", (DL_FUNC) &_rray_rray__flatten, 1},
-    {"_rray_rray__maximum", (DL_FUNC) &_rray_rray__maximum, 2},
-    {"_rray_rray__minimum", (DL_FUNC) &_rray_rray__minimum, 2},
     {"_rray_rray__multiply_add", (DL_FUNC) &_rray_rray__multiply_add, 3},
     {"_rray_rray__sort", (DL_FUNC) &_rray_rray__sort, 2},
     {"_rray_rray__max_pos", (DL_FUNC) &_rray_rray__max_pos, 2},
