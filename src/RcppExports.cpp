@@ -566,77 +566,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// rray__sin
-Rcpp::RObject rray__sin(Rcpp::RObject x);
-RcppExport SEXP _rray_rray__sin(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__sin(x));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rray__cos
-Rcpp::RObject rray__cos(Rcpp::RObject x);
-RcppExport SEXP _rray_rray__cos(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__cos(x));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rray__tan
-Rcpp::RObject rray__tan(Rcpp::RObject x);
-RcppExport SEXP _rray_rray__tan(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__tan(x));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rray__asin
-Rcpp::RObject rray__asin(Rcpp::RObject x);
-RcppExport SEXP _rray_rray__asin(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__asin(x));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rray__acos
-Rcpp::RObject rray__acos(Rcpp::RObject x);
-RcppExport SEXP _rray_rray__acos(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__acos(x));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rray__atan
-Rcpp::RObject rray__atan(Rcpp::RObject x);
-RcppExport SEXP _rray_rray__atan(SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__atan(x));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rray__atan2
-Rcpp::RObject rray__atan2(Rcpp::RObject y, Rcpp::RObject x);
-RcppExport SEXP _rray_rray__atan2(SEXP ySEXP, SEXP xSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type y(ySEXP);
-    Rcpp::traits::input_parameter< Rcpp::RObject >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(rray__atan2(y, x));
-    return rcpp_result_gen;
-END_RCPP
-}
 // rray__sort
 Rcpp::RObject rray__sort(Rcpp::RObject x, Rcpp::RObject axis);
 RcppExport SEXP _rray_rray__sort(SEXP xSEXP, SEXP axisSEXP) {
@@ -895,13 +824,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__maximum", (DL_FUNC) &_rray_rray__maximum, 2},
     {"_rray_rray__minimum", (DL_FUNC) &_rray_rray__minimum, 2},
     {"_rray_rray__clip", (DL_FUNC) &_rray_rray__clip, 3},
-    {"_rray_rray__sin", (DL_FUNC) &_rray_rray__sin, 1},
-    {"_rray_rray__cos", (DL_FUNC) &_rray_rray__cos, 1},
-    {"_rray_rray__tan", (DL_FUNC) &_rray_rray__tan, 1},
-    {"_rray_rray__asin", (DL_FUNC) &_rray_rray__asin, 1},
-    {"_rray_rray__acos", (DL_FUNC) &_rray_rray__acos, 1},
-    {"_rray_rray__atan", (DL_FUNC) &_rray_rray__atan, 1},
-    {"_rray_rray__atan2", (DL_FUNC) &_rray_rray__atan2, 2},
     {"_rray_rray__sort", (DL_FUNC) &_rray_rray__sort, 2},
     {"_rray_rray__max_pos", (DL_FUNC) &_rray_rray__max_pos, 2},
     {"_rray_rray__min_pos", (DL_FUNC) &_rray_rray__min_pos, 2},

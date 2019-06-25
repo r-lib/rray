@@ -77,7 +77,6 @@ reference:
   - rray_add
   - rray_dot
   - rray_multiply_add
-  - rray_square
   - rray_hypot
 
 - title: Comparison and Logical
