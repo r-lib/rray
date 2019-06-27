@@ -57,18 +57,18 @@ When casting between base R types, this simply returns \code{x}.
 \examples{
 
 # Upcasting to an rray. Still a logical
-vec_cast_container(TRUE, rray(1))
+# vec_cast_container(TRUE, rray(1))
 
 # Downcasting to a double, no longer an rray
 # (the "container" here is just a base R object)
-vec_cast_container(rray(1), TRUE)
+# vec_cast_container(rray(1), TRUE)
 
 # Shape of `x` is kept
-vec_cast_container(matrix(1:5), rray(1))
+# vec_cast_container(matrix(1:5), rray(1))
 
 # Dim names of `x` are kept
 x <- rray(1:2, dim_names = list(c("r1", "r2")))
-vec_cast_container(x, 1)
+# vec_cast_container(x, 1)
 
 }
 \keyword{internal}

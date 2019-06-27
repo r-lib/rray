@@ -64,17 +64,17 @@ As opposed to \code{vec_cast()}, the \emph{shape} of \code{x} is maintained.
 # Casting from logical to double.
 # Not worrying about the fact that `to`
 # is an rray.
-vec_cast_inner(TRUE, rray(1))
+# vec_cast_inner(TRUE, rray(1))
 
 # Casting from a double to a logical
 # Note that the rray attributes are lost.
 # This is expected as the only thing
 # `vec_cast_inner()` cares about is
 # the internal type
-vec_cast_inner(rray(1), TRUE)
+# vec_cast_inner(rray(1), TRUE)
 
 # Shape of `x` is kept
-vec_cast_inner(matrix(c(TRUE, FALSE)), rray(1))
+# vec_cast_inner(matrix(c(TRUE, FALSE)), rray(1))
 
 }
 \keyword{internal}

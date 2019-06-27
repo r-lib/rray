@@ -9,9 +9,9 @@
 #'
 #' @examples
 #'
-#' vec_type_container2(1, 2L)
+#' # vec_type_container2(1, 2L)
 #'
-#' vec_type_container2(1, rray(2L))
+#' # vec_type_container2(1, rray(2L))
 #'
 #' @keywords internal
 vec_type_container2 <- function(x, y) {

@@ -48,17 +48,17 @@ returns \code{logical()} because they are both base R containers.
 }
 \examples{
 # The container of base R atomics is just logical()
-vec_type_container(1)
+# vec_type_container(1)
 
 # The container of an rray is an empty logical rray
-vec_type_container(rray(1))
+# vec_type_container(rray(1))
 
 # Find the common container of multiple types
 # (the rray type is more complex here, and becomes the common container)
-vec_type_container_common(1, TRUE, rray(1L))
+# vec_type_container_common(1, TRUE, rray(1L))
 
 # Not an error!
-vec_type_container_common(character(), logical())
+# vec_type_container_common(character(), logical())
 
 }
 \keyword{internal}
