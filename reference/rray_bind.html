@@ -33,7 +33,7 @@
 <meta property="og:title" content="Combine many arrays together into one array — rray_bind" />
 
 <meta property="og:description" content="These functions bind multiple vectors, matrices, arrays, or rrays together
-into one, combining along the axis." />
+into one, combining along the .axis." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -126,11 +126,11 @@ into one, combining along the axis." />
     <div class="ref-description">
     
     <p>These functions bind multiple vectors, matrices, arrays, or rrays together
-into one, combining along the <code>axis</code>.</p>
+into one, combining along the <code>.axis</code>.</p>
     
     </div>
 
-    <pre class="usage"><span class='fu'>rray_bind</span>(<span class='no'>...</span>, <span class='no'>axis</span>)
+    <pre class="usage"><span class='fu'>rray_bind</span>(<span class='no'>...</span>, <span class='no'>.axis</span>)
 
 <span class='fu'>rray_rbind</span>(<span class='no'>...</span>)
 
@@ -144,7 +144,7 @@ into one, combining along the <code>axis</code>.</p>
       <td><p>Vectors, matrices, arrays, or rrays.</p></td>
     </tr>
     <tr>
-      <th>axis</th>
+      <th>.axis</th>
       <td><p>A single integer. The axis to bind along.</p></td>
     </tr>
     </table>
@@ -166,12 +166,12 @@ cannot. See the examples section for more explanation!</p>
 <span class='no'>b</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fl'>5</span>:<span class='fl'>6</span>, <span class='kw'>ncol</span> <span class='kw'>=</span> <span class='fl'>1</span>)
 
 <span class='co'># Bind along columns</span>
-<span class='fu'>rray_bind</span>(<span class='no'>a</span>, <span class='no'>b</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt;      [,1] [,2] [,3]
+<span class='fu'>rray_bind</span>(<span class='no'>a</span>, <span class='no'>b</span>, <span class='kw'>.axis</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt;      [,1] [,2] [,3]
 #&gt; [1,]    1    3    5
 #&gt; [2,]    2    4    6</div><div class='input'>
 <span class='co'># Bind along rows</span>
 <span class='co'># Broadcasting is done automatically</span>
-<span class='fu'>rray_bind</span>(<span class='no'>a</span>, <span class='no'>b</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='fl'>1</span>)</div><div class='output co'>#&gt;      [,1] [,2]
+<span class='fu'>rray_bind</span>(<span class='no'>a</span>, <span class='no'>b</span>, <span class='kw'>.axis</span> <span class='kw'>=</span> <span class='fl'>1</span>)</div><div class='output co'>#&gt;      [,1] [,2]
 #&gt; [1,]    1    3
 #&gt; [2,]    2    4
 #&gt; [3,]    5    5
@@ -181,7 +181,7 @@ cannot. See the examples section for more explanation!</p>
 #&gt;   number of columns of matrices must match (see arg 2)</div><div class='input'>
 <span class='co'># You can bind "up" to a new dimension</span>
 <span class='co'># to stack matrices into an array</span>
-<span class='fu'>rray_bind</span>(<span class='no'>a</span>, <span class='no'>b</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='fl'>3</span>)</div><div class='output co'>#&gt; , , 1
+<span class='fu'>rray_bind</span>(<span class='no'>a</span>, <span class='no'>b</span>, <span class='kw'>.axis</span> <span class='kw'>=</span> <span class='fl'>3</span>)</div><div class='output co'>#&gt; , , 1
 #&gt; 
 #&gt;      [,1] [,2]
 #&gt; [1,]    1    3
@@ -210,13 +210,13 @@ cannot. See the examples section for more explanation!</p>
 
 <span class='co'># Dimension names come along for the ride</span>
 <span class='co'># following rray name handling</span>
-<span class='fu'>rray_bind</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt;      a_c1 a_c2 a_c3 b_c1
+<span class='fu'>rray_bind</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>.axis</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt;      a_c1 a_c2 a_c3 b_c1
 #&gt; a_r1    1    3    5    7
 #&gt; a_r2    2    4    6    8</div><div class='input'>
 <span class='co'># If some inputs are named, and others</span>
 <span class='co'># are not, the non-named inputs get `""`</span>
 <span class='co'># as names</span>
-<span class='fu'>rray_bind</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='fl'>1</span>)</div><div class='output co'>#&gt;      a_c1 a_c2 a_c3
+<span class='fu'>rray_bind</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>.axis</span> <span class='kw'>=</span> <span class='fl'>1</span>)</div><div class='output co'>#&gt;      a_c1 a_c2 a_c3
 #&gt; a_r1    1    3    5
 #&gt; a_r2    2    4    6
 #&gt;         7    7    7
@@ -224,12 +224,12 @@ cannot. See the examples section for more explanation!</p>
 <span class='co'># You can add "outer" names to the</span>
 <span class='co'># axis you are binding along.</span>
 <span class='co'># They are added to existing names with `..`</span>
-<span class='fu'>rray_bind</span>(<span class='kw'>outer</span> <span class='kw'>=</span> <span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt;      outer..a_c1 outer..a_c2 outer..a_c3 b_c1
+<span class='fu'>rray_bind</span>(<span class='kw'>outer</span> <span class='kw'>=</span> <span class='no'>x</span>, <span class='no'>y</span>, <span class='kw'>.axis</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt;      outer..a_c1 outer..a_c2 outer..a_c3 b_c1
 #&gt; a_r1           1           3           5    7
 #&gt; a_r2           2           4           6    8</div><div class='input'>
 <span class='co'># Outer names can be used to give unnamed</span>
 <span class='co'># inputs default names</span>
-<span class='fu'>rray_bind</span>(<span class='kw'>outer</span> <span class='kw'>=</span> <span class='no'>x</span>, <span class='kw'>outer_y</span> <span class='kw'>=</span> <span class='no'>y</span>, <span class='kw'>axis</span> <span class='kw'>=</span> <span class='fl'>1</span>)</div><div class='output co'>#&gt;             a_c1 a_c2 a_c3
+<span class='fu'>rray_bind</span>(<span class='kw'>outer</span> <span class='kw'>=</span> <span class='no'>x</span>, <span class='kw'>outer_y</span> <span class='kw'>=</span> <span class='no'>y</span>, <span class='kw'>.axis</span> <span class='kw'>=</span> <span class='fl'>1</span>)</div><div class='output co'>#&gt;             a_c1 a_c2 a_c3
 #&gt; outer..a_r1    1    3    5
 #&gt; outer..a_r2    2    4    6
 #&gt; outer_y1       7    7    7
