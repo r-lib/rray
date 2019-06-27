@@ -139,26 +139,19 @@ the size and shape of each input.</p>
 <span class='co'># S3 method for default</span>
 <span class='fu'>vec_cast_inner</span>(<span class='no'>x</span>, <span class='no'>to</span>)
 
-<span class='co'># S3 method for logical</span>
-<span class='fu'>vec_cast_inner</span>(<span class='no'>x</span>, <span class='no'>to</span>)
+<span class='fu'>vec_cast_inner.logical</span>(<span class='no'>x</span>, <span class='no'>to</span>)
 
-<span class='co'># S3 method for integer</span>
-<span class='fu'>vec_cast_inner</span>(<span class='no'>x</span>, <span class='no'>to</span>)
+<span class='fu'>vec_cast_inner.integer</span>(<span class='no'>x</span>, <span class='no'>to</span>)
 
-<span class='co'># S3 method for double</span>
-<span class='fu'>vec_cast_inner</span>(<span class='no'>x</span>, <span class='no'>to</span>)
+<span class='fu'>vec_cast_inner.double</span>(<span class='no'>x</span>, <span class='no'>to</span>)
 
-<span class='co'># S3 method for character</span>
-<span class='fu'>vec_cast_inner</span>(<span class='no'>x</span>, <span class='no'>to</span>)
+<span class='fu'>vec_cast_inner.character</span>(<span class='no'>x</span>, <span class='no'>to</span>)
 
-<span class='co'># S3 method for vctrs_rray_lgl</span>
-<span class='fu'>vec_cast_inner</span>(<span class='no'>x</span>, <span class='no'>to</span>)
+<span class='fu'>vec_cast_inner.vctrs_rray_lgl</span>(<span class='no'>x</span>, <span class='no'>to</span>)
 
-<span class='co'># S3 method for vctrs_rray_dbl</span>
-<span class='fu'>vec_cast_inner</span>(<span class='no'>x</span>, <span class='no'>to</span>)
+<span class='fu'>vec_cast_inner.vctrs_rray_dbl</span>(<span class='no'>x</span>, <span class='no'>to</span>)
 
-<span class='co'># S3 method for vctrs_rray_int</span>
-<span class='fu'>vec_cast_inner</span>(<span class='no'>x</span>, <span class='no'>to</span>)
+<span class='fu'>vec_cast_inner.vctrs_rray_int</span>(<span class='no'>x</span>, <span class='no'>to</span>)
 
 <span class='fu'>vec_cast_inner_common</span>(<span class='no'>...</span>, <span class='kw'>.to</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
@@ -196,20 +189,21 @@ functionality restores the attributes and container type.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='co'># Casting from logical to double.</span>
-<span class='co'># Not worrying about the fact that `to`</span>
-<span class='co'># is an rray.</span>
-<span class='fu'>vec_cast_inner</span>(<span class='fl'>TRUE</span>, <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>))</div><div class='output co'>#&gt; [1] 1</div><div class='input'>
-<span class='co'># Casting from a double to a logical</span>
-<span class='co'># Note that the rray attributes are lost.</span>
-<span class='co'># This is expected as the only thing</span>
-<span class='co'># `vec_cast_inner()` cares about is</span>
-<span class='co'># the internal type</span>
-<span class='fu'>vec_cast_inner</span>(<span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>), <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; [1] TRUE</div><div class='input'>
-<span class='co'># Shape of `x` is kept</span>
-<span class='fu'>vec_cast_inner</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>TRUE</span>, <span class='fl'>FALSE</span>)), <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>))</div><div class='output co'>#&gt;      [,1]
-#&gt; [1,]    1
-#&gt; [2,]    0</div><div class='input'>
+# Casting from logical to double.
+# Not worrying about the fact that `to`
+# is an rray.
+# vec_cast_inner(TRUE, rray(1))
+
+# Casting from a double to a logical
+# Note that the rray attributes are lost.
+# This is expected as the only thing
+# `vec_cast_inner()` cares about is
+# the internal type
+# vec_cast_inner(rray(1), TRUE)
+
+# Shape of `x` is kept
+# vec_cast_inner(matrix(c(TRUE, FALSE)), rray(1))
+
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

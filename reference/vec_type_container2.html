@@ -139,20 +139,15 @@ should be used.</p>
 <span class='co'># S3 method for default</span>
 <span class='fu'>vec_type_container2</span>(<span class='no'>x</span>, <span class='no'>y</span>)
 
-<span class='co'># S3 method for logical</span>
-<span class='fu'>vec_type_container2</span>(<span class='no'>x</span>, <span class='no'>y</span>)
+<span class='fu'>vec_type_container2.logical</span>(<span class='no'>x</span>, <span class='no'>y</span>)
 
-<span class='co'># S3 method for integer</span>
-<span class='fu'>vec_type_container2</span>(<span class='no'>x</span>, <span class='no'>y</span>)
+<span class='fu'>vec_type_container2.integer</span>(<span class='no'>x</span>, <span class='no'>y</span>)
 
-<span class='co'># S3 method for double</span>
-<span class='fu'>vec_type_container2</span>(<span class='no'>x</span>, <span class='no'>y</span>)
+<span class='fu'>vec_type_container2.double</span>(<span class='no'>x</span>, <span class='no'>y</span>)
 
-<span class='co'># S3 method for character</span>
-<span class='fu'>vec_type_container2</span>(<span class='no'>x</span>, <span class='no'>y</span>)
+<span class='fu'>vec_type_container2.character</span>(<span class='no'>x</span>, <span class='no'>y</span>)
 
-<span class='co'># S3 method for vctrs_rray</span>
-<span class='fu'>vec_type_container2</span>(<span class='no'>x</span>, <span class='no'>y</span>)</pre>
+<span class='fu'>vec_type_container2.vctrs_rray</span>(<span class='no'>x</span>, <span class='no'>y</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -166,9 +161,10 @@ should be used.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
-<span class='fu'>vec_type_container2</span>(<span class='fl'>1</span>, <span class='fl'>2L</span>)</div><div class='output co'>#&gt; logical(0)</div><div class='input'>
-<span class='fu'>vec_type_container2</span>(<span class='fl'>1</span>, <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>2L</span>))</div><div class='output co'>#&gt; &lt;rray&lt;lgl&gt;[0]&gt;
-#&gt; logical(0)</div><div class='input'>
+# vec_type_container2(1, 2L)
+
+# vec_type_container2(1, rray(2L))
+
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

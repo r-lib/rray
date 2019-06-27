@@ -171,13 +171,16 @@ type before binding them together.</p>
     
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'># The inner type of base R atomics uses their constructor</span>
-<span class='fu'>vec_type_inner</span>(<span class='fl'>1</span>)</div><div class='output co'>#&gt; numeric(0)</div><div class='input'>
-<span class='co'># The inner type of an rray is an empty base R object</span>
-<span class='fu'>vec_type_inner</span>(<span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>))</div><div class='output co'>#&gt; numeric(0)</div><div class='input'>
-<span class='co'># Find the common inner type of multiple inputs</span>
-<span class='co'># (the double type wins, the container types are disregarded)</span>
-<span class='fu'>vec_type_inner_common</span>(<span class='fl'>1</span>, <span class='fl'>TRUE</span>, <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1L</span>))</div><div class='output co'>#&gt; numeric(0)</div><div class='input'>
+    <pre class="examples"><div class='input'># The inner type of base R atomics uses their constructor
+# vec_type_inner(1)
+
+# The inner type of an rray is an empty base R object
+# vec_type_inner(rray(1))
+
+# Find the common inner type of multiple inputs
+# (the double type wins, the container types are disregarded)
+# vec_type_inner_common(1, TRUE, rray(1L))
+
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

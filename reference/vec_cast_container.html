@@ -147,17 +147,13 @@ type.</p>
 <span class='co'># S3 method for default</span>
 <span class='fu'>vec_cast_container</span>(<span class='no'>x</span>, <span class='no'>to</span>)
 
-<span class='co'># S3 method for logical</span>
-<span class='fu'>vec_cast_container</span>(<span class='no'>x</span>, <span class='no'>to</span>)
+<span class='fu'>vec_cast_container.logical</span>(<span class='no'>x</span>, <span class='no'>to</span>)
 
-<span class='co'># S3 method for double</span>
-<span class='fu'>vec_cast_container</span>(<span class='no'>x</span>, <span class='no'>to</span>)
+<span class='fu'>vec_cast_container.double</span>(<span class='no'>x</span>, <span class='no'>to</span>)
 
-<span class='co'># S3 method for integer</span>
-<span class='fu'>vec_cast_container</span>(<span class='no'>x</span>, <span class='no'>to</span>)
+<span class='fu'>vec_cast_container.integer</span>(<span class='no'>x</span>, <span class='no'>to</span>)
 
-<span class='co'># S3 method for vctrs_rray</span>
-<span class='fu'>vec_cast_container</span>(<span class='no'>x</span>, <span class='no'>to</span>)
+<span class='fu'>vec_cast_container.vctrs_rray</span>(<span class='no'>x</span>, <span class='no'>to</span>)
 
 <span class='fu'>vec_cast_container_common</span>(<span class='no'>...</span>, <span class='kw'>.to</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
@@ -196,24 +192,18 @@ and returns a logical vector wrapped in that container type.</p>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
 <span class='co'># Upcasting to an rray. Still a logical</span>
-<span class='fu'>vec_cast_container</span>(<span class='fl'>TRUE</span>, <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>))</div><div class='output co'>#&gt; &lt;rray&lt;lgl&gt;[1]&gt;
-#&gt; [1] TRUE</div><div class='input'>
+<span class='co'># vec_cast_container(TRUE, rray(1))</span>
+
 <span class='co'># Downcasting to a double, no longer an rray</span>
 <span class='co'># (the "container" here is just a base R object)</span>
-<span class='fu'>vec_cast_container</span>(<span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>), <span class='fl'>TRUE</span>)</div><div class='output co'>#&gt; [1] 1</div><div class='input'>
+<span class='co'># vec_cast_container(rray(1), TRUE)</span>
+
 <span class='co'># Shape of `x` is kept</span>
-<span class='fu'>vec_cast_container</span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fl'>1</span>:<span class='fl'>5</span>), <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>))</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,1][5]&gt;
-#&gt;      [,1]
-#&gt; [1,]    1
-#&gt; [2,]    2
-#&gt; [3,]    3
-#&gt; [4,]    4
-#&gt; [5,]    5</div><div class='input'>
+<span class='co'># vec_cast_container(matrix(1:5), rray(1))</span>
+
 <span class='co'># Dim names of `x` are kept</span>
 <span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>2</span>, <span class='kw'>dim_names</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"r1"</span>, <span class='st'>"r2"</span>)))
-<span class='fu'>vec_cast_container</span>(<span class='no'>x</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; r1 r2 
-#&gt;  1  2 </div><div class='input'>
-</div></pre>
+<span class='co'># vec_cast_container(x, 1)</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
