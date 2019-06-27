@@ -18,12 +18,12 @@ obj_print_data.vctrs_rray <- function(x, ...) {
 }
 
 #' @export
-vec_ptype_abbr.vctrs_rray <- function(x) {
+vec_ptype_abbr.vctrs_rray <- function(x, ...) {
   "rray"
 }
 
 #' @export
-vec_ptype_full.vctrs_rray <- function(x) {
+vec_ptype_full.vctrs_rray <- function(x, ...) {
   paste0("rray<", rray_inner_ptype_abbr(x), ">", vec_ptype_shape(x))
 }
 
