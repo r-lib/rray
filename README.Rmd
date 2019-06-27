@@ -71,13 +71,13 @@ b
 cbind(a, b)
 
 # `a` is first broadcast to have dimensions: (2, 2)
-rray_bind(a, b, axis = 1)
+rray_bind(a, b, .axis = 1)
 
 # Error
 rbind(a, b)
 
 # `b` is first broadcast to have dimensions: (2, 2)
-rray_bind(a, b, axis = 2)
+rray_bind(a, b, .axis = 2)
 ```
 
 ## Installation

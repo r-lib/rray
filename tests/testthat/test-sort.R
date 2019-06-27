@@ -29,7 +29,7 @@ test_that("can sort 3D arrays", {
 
   expect_equal(rray_sort(x, axis = 2), rray(c(8:7, 10:9, 12:11, 2:1, 4:3, 6:5), c(2, 3, 2)))
 
-  expect_equal(rray_sort(x, axis = 3), rray_bind(x[,,2], x[,,1], axis = 3))
+  expect_equal(rray_sort(x, axis = 3), rray_bind(x[,,2], x[,,1], .axis = 3))
 })
 
 test_that("error is thrown when trying to sort on unknown axis", {

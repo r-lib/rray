@@ -91,7 +91,7 @@ cbind(a, b)
 #> Error in cbind(a, b): number of rows of matrices must match (see arg 2)
 
 # `a` is first broadcast to have dimensions: (2, 2)
-rray_bind(a, b, axis = 1)
+rray_bind(a, b, .axis = 1)
 #>      [,1] [,2]
 #> [1,]    1    1
 #> [2,]    2    2
@@ -102,7 +102,7 @@ rbind(a, b)
 #> Error in rbind(a, b): number of columns of matrices must match (see arg 2)
 
 # `b` is first broadcast to have dimensions: (2, 2)
-rray_bind(a, b, axis = 2)
+rray_bind(a, b, .axis = 2)
 #>      [,1] [,2] [,3]
 #> [1,]    1    3    4
 #> [2,]    2    3    4
