@@ -40,7 +40,7 @@ vec_type2.vctrs_rray_dbl.default <- function(x, y, ..., x_arg = "x", y_arg = "y"
 #' @method vec_type2.vctrs_rray_dbl vctrs_unspecified
 #' @export
 vec_type2.vctrs_rray_dbl.vctrs_unspecified <- function(x, y, ...) {
-  vec_type(x)
+  vec_ptype(x)
 }
 
 # vec_type2 vctrs_rray_dbl <-> vctrs_rray_dbl ----------------------------------
@@ -113,7 +113,7 @@ vec_type2.vctrs_rray_int.default <- function(x, y, ..., x_arg = "x", y_arg = "y"
 #' @method vec_type2.vctrs_rray_int vctrs_unspecified
 #' @export
 vec_type2.vctrs_rray_int.vctrs_unspecified <- function(x, y, ...) {
-  vec_type(x)
+  vec_ptype(x)
 }
 
 # vec_type2 vctrs_rray_int <-> vctrs_rray_int ----------------------------------
@@ -186,7 +186,7 @@ vec_type2.vctrs_rray_lgl.default <- function(x, y, ..., x_arg = "x", y_arg = "y"
 #' @method vec_type2.vctrs_rray_lgl vctrs_unspecified
 #' @export
 vec_type2.vctrs_rray_lgl.vctrs_unspecified <- function(x, y, ...) {
-  vec_type(x)
+  vec_ptype(x)
 }
 
 # vec_type2 vctrs_rray_lgl <-> vctrs_rray_lgl ----------------------------------

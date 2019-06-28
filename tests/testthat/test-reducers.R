@@ -77,8 +77,8 @@ test_that("reducing base types maintains type", {
 
 test_that("rray_sum() with integers gives doubles to prevent overflow", {
   expect_equal(
-    vec_type(rray_sum(rray(1L))),
-    vec_type(rray(1))
+    vec_ptype(rray_sum(rray(1L))),
+    vec_ptype(rray(1))
   )
 })
 
@@ -182,8 +182,8 @@ test_that("reducing base types maintains type", {
 
 test_that("rray_prod() with integers gives doubles to prevent overflow", {
   expect_equal(
-    vec_type(rray_prod(rray(1L))),
-    vec_type(rray(1))
+    vec_ptype(rray_prod(rray(1L))),
+    vec_ptype(rray(1))
   )
 })
 
@@ -287,8 +287,8 @@ test_that("reducing base types maintains type", {
 
 test_that("rray_mean() with integers gives doubles to prevent overflow", {
   expect_equal(
-    vec_type(rray_mean(rray(1L))),
-    vec_type(rray(1))
+    vec_ptype(rray_mean(rray(1L))),
+    vec_ptype(rray(1))
   )
 })
 
