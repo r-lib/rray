@@ -51,7 +51,7 @@ NULL
 #' @export
 rray_add <- function(x, y) {
   out <- rray__add(x, y)
-  container <- vec_type_container2(x, y)
+  container <- vec_ptype_container2(x, y)
   vec_cast_container(out, container)
 }
 
@@ -67,7 +67,7 @@ rray_add <- function(x, y) {
 #' @export
 rray_subtract <- function(x, y) {
   out <- rray__subtract(x, y)
-  container <- vec_type_container2(x, y)
+  container <- vec_ptype_container2(x, y)
   vec_cast_container(out, container)
 }
 
@@ -83,7 +83,7 @@ rray_subtract <- function(x, y) {
 #' @export
 rray_multiply <- function(x, y) {
   out <- rray__multiply(x, y)
-  container <- vec_type_container2(x, y)
+  container <- vec_ptype_container2(x, y)
   vec_cast_container(out, container)
 }
 
@@ -99,7 +99,7 @@ rray_multiply <- function(x, y) {
 #' @export
 rray_divide <- function(x, y) {
   out <- rray__divide(x, y)
-  container <- vec_type_container2(x, y)
+  container <- vec_ptype_container2(x, y)
   vec_cast_container(out, container)
 }
 
@@ -115,7 +115,7 @@ rray_divide <- function(x, y) {
 #' @export
 rray_pow <- function(x, y) {
   out <- rray__pow(x, y)
-  container <- vec_type_container2(x, y)
+  container <- vec_ptype_container2(x, y)
   vec_cast_container(out, container)
 }
 

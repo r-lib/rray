@@ -102,5 +102,5 @@ vec_type_container_common <- function(..., .ptype = NULL) {
     return(vec_ptype_container(args[[1]]))
   }
 
-  reduce(args, vec_type_container2)
+  reduce(args, vec_ptype_container2)
 }

@@ -64,7 +64,7 @@ NULL
 #' @export
 rray_logical_and <- function(x, y) {
   out <- rray__logical_and(x, y)
-  container <- vec_type_container2(x, y)
+  container <- vec_ptype_container2(x, y)
   vec_cast_container(out, container)
 }
 
@@ -74,7 +74,7 @@ rray_logical_and <- function(x, y) {
 #' @export
 rray_logical_or <- function(x, y) {
   out <- rray__logical_or(x, y)
-  container <- vec_type_container2(x, y)
+  container <- vec_ptype_container2(x, y)
   vec_cast_container(out, container)
 }
 
@@ -167,6 +167,6 @@ rray_all <- function(x, axes = NULL) {
 #' @export
 rray_if_else <- function(condition, true, false) {
   out <- rray__if_else(condition, true, false)
-  container <- vec_type_container2(true, false)
+  container <- vec_ptype_container2(true, false)
   vec_cast_container(out, container)
 }

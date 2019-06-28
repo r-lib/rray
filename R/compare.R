@@ -49,7 +49,7 @@ NULL
 #' @export
 rray_greater <- function(x, y) {
   out <- rray__greater(x, y)
-  container <- vec_type_container2(x, y)
+  container <- vec_ptype_container2(x, y)
   vec_cast_container(out, container)
 }
 
@@ -65,7 +65,7 @@ rray_greater <- function(x, y) {
 #' @export
 rray_greater_equal <- function(x, y) {
   out <- rray__greater_equal(x, y)
-  container <- vec_type_container2(x, y)
+  container <- vec_ptype_container2(x, y)
   vec_cast_container(out, container)
 }
 
@@ -81,7 +81,7 @@ rray_greater_equal <- function(x, y) {
 #' @export
 rray_lesser <- function(x, y) {
   out <- rray__lesser(x, y)
-  container <- vec_type_container2(x, y)
+  container <- vec_ptype_container2(x, y)
   vec_cast_container(out, container)
 }
 
@@ -97,7 +97,7 @@ rray_lesser <- function(x, y) {
 #' @export
 rray_lesser_equal <- function(x, y) {
   out <- rray__lesser_equal(x, y)
-  container <- vec_type_container2(x, y)
+  container <- vec_ptype_container2(x, y)
   vec_cast_container(out, container)
 }
 
@@ -115,7 +115,7 @@ rray_lesser_equal <- function(x, y) {
 #' @export
 rray_equal <- function(x, y) {
   out <- rray__equal(x, y)
-  container <- vec_type_container2(x, y)
+  container <- vec_ptype_container2(x, y)
   vec_cast_container(out, container)
 }
 
@@ -131,7 +131,7 @@ rray_equal <- function(x, y) {
 #' @export
 rray_not_equal <- function(x, y) {
   out <- rray__not_equal(x, y)
-  container <- vec_type_container2(x, y)
+  container <- vec_ptype_container2(x, y)
   vec_cast_container(out, container)
 }
 
