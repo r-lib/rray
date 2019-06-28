@@ -1,8 +1,8 @@
 
 # ##############################################################################
-# vec_type2 boilerplate
+# vec_ptype2 boilerplate
 
-# vec_type2 makes no attempt to recover dim names, as they are not part of the type.
+# vec_ptype2 makes no attempt to recover dim names, as they are not part of the type.
 # type = class + shape (at least for rray objects)
 
 #' vctrs compatibility functions
@@ -14,230 +14,230 @@
 #' @param to Type to cast to.
 #' @param op An arithmetic operator as a string.
 #' @param ... Used to pass along error message information.
-#' @inheritParams vec_type2
+#' @inheritParams vec_ptype2
 #'
 #' @name vctrs-compat
 #'
 NULL
 
 # ##############################################################################
-# vec_type2 - vctrs_rray_dbl
+# vec_ptype2 - vctrs_rray_dbl
 
 #' @export
 #' @rdname vctrs-compat
-#' @method vec_type2 vctrs_rray_dbl
-#' @export vec_type2.vctrs_rray_dbl
-vec_type2.vctrs_rray_dbl <- function(x, y, ...) {
-  UseMethod("vec_type2.vctrs_rray_dbl", y)
+#' @method vec_ptype2 vctrs_rray_dbl
+#' @export vec_ptype2.vctrs_rray_dbl
+vec_ptype2.vctrs_rray_dbl <- function(x, y, ...) {
+  UseMethod("vec_ptype2.vctrs_rray_dbl", y)
 }
 
-#' @method vec_type2.vctrs_rray_dbl default
+#' @method vec_ptype2.vctrs_rray_dbl default
 #' @export
-vec_type2.vctrs_rray_dbl.default <- function(x, y, ..., x_arg = "x", y_arg = "y") {
+vec_ptype2.vctrs_rray_dbl.default <- function(x, y, ..., x_arg = "x", y_arg = "y") {
   stop_incompatible_type(x, y, ..., x_arg = x_arg, y_arg = y_arg)
 }
 
-#' @method vec_type2.vctrs_rray_dbl vctrs_unspecified
+#' @method vec_ptype2.vctrs_rray_dbl vctrs_unspecified
 #' @export
-vec_type2.vctrs_rray_dbl.vctrs_unspecified <- function(x, y, ...) {
+vec_ptype2.vctrs_rray_dbl.vctrs_unspecified <- function(x, y, ...) {
   vec_ptype(x)
 }
 
-# vec_type2 vctrs_rray_dbl <-> vctrs_rray_dbl ----------------------------------
+# vec_ptype2 vctrs_rray_dbl <-> vctrs_rray_dbl ----------------------------------
 
-#' @method vec_type2.vctrs_rray_dbl vctrs_rray_dbl
+#' @method vec_ptype2.vctrs_rray_dbl vctrs_rray_dbl
 #' @export
-vec_type2.vctrs_rray_dbl.vctrs_rray_dbl <- function(x, y, ...) {
+vec_ptype2.vctrs_rray_dbl.vctrs_rray_dbl <- function(x, y, ...) {
   new_rray(double(), shape = rray_shape2(x, y))
 }
 
-# vec_type2 vctrs_rray_dbl <-> vctrs_rray_int ----------------------------------
+# vec_ptype2 vctrs_rray_dbl <-> vctrs_rray_int ----------------------------------
 
-#' @method vec_type2.vctrs_rray_dbl vctrs_rray_int
+#' @method vec_ptype2.vctrs_rray_dbl vctrs_rray_int
 #' @export
-vec_type2.vctrs_rray_dbl.vctrs_rray_int <- vec_type2.vctrs_rray_dbl.vctrs_rray_dbl
+vec_ptype2.vctrs_rray_dbl.vctrs_rray_int <- vec_ptype2.vctrs_rray_dbl.vctrs_rray_dbl
 
-# vec_type2 vctrs_rray_dbl <-> vctrs_rray_lgl ----------------------------------
+# vec_ptype2 vctrs_rray_dbl <-> vctrs_rray_lgl ----------------------------------
 
-#' @method vec_type2.vctrs_rray_dbl vctrs_rray_lgl
+#' @method vec_ptype2.vctrs_rray_dbl vctrs_rray_lgl
 #' @export
-vec_type2.vctrs_rray_dbl.vctrs_rray_lgl <- vec_type2.vctrs_rray_dbl.vctrs_rray_dbl
+vec_ptype2.vctrs_rray_dbl.vctrs_rray_lgl <- vec_ptype2.vctrs_rray_dbl.vctrs_rray_dbl
 
-# vec_type2 vctrs_rray_dbl <-> double/matrix/array -----------------------------
+# vec_ptype2 vctrs_rray_dbl <-> double/matrix/array -----------------------------
 
-#' @method vec_type2.vctrs_rray_dbl double
+#' @method vec_ptype2.vctrs_rray_dbl double
 #' @export
-vec_type2.vctrs_rray_dbl.double <- vec_type2.vctrs_rray_dbl.vctrs_rray_dbl
+vec_ptype2.vctrs_rray_dbl.double <- vec_ptype2.vctrs_rray_dbl.vctrs_rray_dbl
 
-#' @method vec_type2.double vctrs_rray_dbl
+#' @method vec_ptype2.double vctrs_rray_dbl
 #' @export
-vec_type2.double.vctrs_rray_dbl <- vec_type2.vctrs_rray_dbl.vctrs_rray_dbl
+vec_ptype2.double.vctrs_rray_dbl <- vec_ptype2.vctrs_rray_dbl.vctrs_rray_dbl
 
-# vec_type2 vctrs_rray_dbl <-> integer/matrix/array ----------------------------
+# vec_ptype2 vctrs_rray_dbl <-> integer/matrix/array ----------------------------
 
-#' @method vec_type2.vctrs_rray_dbl integer
+#' @method vec_ptype2.vctrs_rray_dbl integer
 #' @export
-vec_type2.vctrs_rray_dbl.integer <- vec_type2.vctrs_rray_dbl.vctrs_rray_dbl
+vec_ptype2.vctrs_rray_dbl.integer <- vec_ptype2.vctrs_rray_dbl.vctrs_rray_dbl
 
-#' @method vec_type2.integer vctrs_rray_dbl
+#' @method vec_ptype2.integer vctrs_rray_dbl
 #' @export
-vec_type2.integer.vctrs_rray_dbl <- vec_type2.vctrs_rray_dbl.vctrs_rray_dbl
+vec_ptype2.integer.vctrs_rray_dbl <- vec_ptype2.vctrs_rray_dbl.vctrs_rray_dbl
 
-# vec_type2 vctrs_rray_dbl <-> logical/matrix/array ----------------------------
+# vec_ptype2 vctrs_rray_dbl <-> logical/matrix/array ----------------------------
 
-#' @method vec_type2.vctrs_rray_dbl logical
+#' @method vec_ptype2.vctrs_rray_dbl logical
 #' @export
-vec_type2.vctrs_rray_dbl.logical <- vec_type2.vctrs_rray_dbl.vctrs_rray_dbl
+vec_ptype2.vctrs_rray_dbl.logical <- vec_ptype2.vctrs_rray_dbl.vctrs_rray_dbl
 
-#' @method vec_type2.logical vctrs_rray_dbl
+#' @method vec_ptype2.logical vctrs_rray_dbl
 #' @export
-vec_type2.logical.vctrs_rray_dbl <- vec_type2.vctrs_rray_dbl.vctrs_rray_dbl
+vec_ptype2.logical.vctrs_rray_dbl <- vec_ptype2.vctrs_rray_dbl.vctrs_rray_dbl
 
 # ##############################################################################
-# vec_type2 - vctrs_rray_int
+# vec_ptype2 - vctrs_rray_int
 
 #' @export
 #' @rdname vctrs-compat
-#' @method vec_type2 vctrs_rray_int
-#' @export vec_type2.vctrs_rray_int
-vec_type2.vctrs_rray_int <- function(x, y, ...) {
-  UseMethod("vec_type2.vctrs_rray_int", y)
+#' @method vec_ptype2 vctrs_rray_int
+#' @export vec_ptype2.vctrs_rray_int
+vec_ptype2.vctrs_rray_int <- function(x, y, ...) {
+  UseMethod("vec_ptype2.vctrs_rray_int", y)
 }
 
-#' @method vec_type2.vctrs_rray_int default
+#' @method vec_ptype2.vctrs_rray_int default
 #' @export
-vec_type2.vctrs_rray_int.default <- function(x, y, ..., x_arg = "x", y_arg = "y") {
+vec_ptype2.vctrs_rray_int.default <- function(x, y, ..., x_arg = "x", y_arg = "y") {
   stop_incompatible_type(x, y, ..., x_arg = x_arg, y_arg = y_arg)
 }
 
-#' @method vec_type2.vctrs_rray_int vctrs_unspecified
+#' @method vec_ptype2.vctrs_rray_int vctrs_unspecified
 #' @export
-vec_type2.vctrs_rray_int.vctrs_unspecified <- function(x, y, ...) {
+vec_ptype2.vctrs_rray_int.vctrs_unspecified <- function(x, y, ...) {
   vec_ptype(x)
 }
 
-# vec_type2 vctrs_rray_int <-> vctrs_rray_int ----------------------------------
+# vec_ptype2 vctrs_rray_int <-> vctrs_rray_int ----------------------------------
 
-#' @method vec_type2.vctrs_rray_int vctrs_rray_int
+#' @method vec_ptype2.vctrs_rray_int vctrs_rray_int
 #' @export
-vec_type2.vctrs_rray_int.vctrs_rray_int <- function(x, y, ...) {
+vec_ptype2.vctrs_rray_int.vctrs_rray_int <- function(x, y, ...) {
   new_rray(integer(), shape = rray_shape2(x, y))
 }
 
-# vec_type2 vctrs_rray_int <-> vctrs_rray_dbl ----------------------------------
+# vec_ptype2 vctrs_rray_int <-> vctrs_rray_dbl ----------------------------------
 
-#' @method vec_type2.vctrs_rray_int vctrs_rray_dbl
+#' @method vec_ptype2.vctrs_rray_int vctrs_rray_dbl
 #' @export
-vec_type2.vctrs_rray_int.vctrs_rray_dbl <- vec_type2.vctrs_rray_dbl.vctrs_rray_dbl
+vec_ptype2.vctrs_rray_int.vctrs_rray_dbl <- vec_ptype2.vctrs_rray_dbl.vctrs_rray_dbl
 
-# vec_type2 vctrs_rray_int <-> vctrs_rray_lgl ----------------------------------
+# vec_ptype2 vctrs_rray_int <-> vctrs_rray_lgl ----------------------------------
 
-#' @method vec_type2.vctrs_rray_int vctrs_rray_lgl
+#' @method vec_ptype2.vctrs_rray_int vctrs_rray_lgl
 #' @export
-vec_type2.vctrs_rray_int.vctrs_rray_lgl <- vec_type2.vctrs_rray_int.vctrs_rray_int
+vec_ptype2.vctrs_rray_int.vctrs_rray_lgl <- vec_ptype2.vctrs_rray_int.vctrs_rray_int
 
-# vec_type2 vctrs_rray_int <-> double/matrix/array -----------------------------
+# vec_ptype2 vctrs_rray_int <-> double/matrix/array -----------------------------
 
-#' @method vec_type2.vctrs_rray_int double
+#' @method vec_ptype2.vctrs_rray_int double
 #' @export
-vec_type2.vctrs_rray_int.double <- vec_type2.vctrs_rray_dbl.vctrs_rray_dbl
+vec_ptype2.vctrs_rray_int.double <- vec_ptype2.vctrs_rray_dbl.vctrs_rray_dbl
 
-#' @method vec_type2.double vctrs_rray_int
+#' @method vec_ptype2.double vctrs_rray_int
 #' @export
-vec_type2.double.vctrs_rray_int <- vec_type2.vctrs_rray_dbl.vctrs_rray_dbl
+vec_ptype2.double.vctrs_rray_int <- vec_ptype2.vctrs_rray_dbl.vctrs_rray_dbl
 
-# vec_type2 vctrs_rray_int <-> integer/matrix/array ----------------------------
+# vec_ptype2 vctrs_rray_int <-> integer/matrix/array ----------------------------
 
-#' @method vec_type2.vctrs_rray_int integer
+#' @method vec_ptype2.vctrs_rray_int integer
 #' @export
-vec_type2.vctrs_rray_int.integer <- vec_type2.vctrs_rray_int.vctrs_rray_int
+vec_ptype2.vctrs_rray_int.integer <- vec_ptype2.vctrs_rray_int.vctrs_rray_int
 
-#' @method vec_type2.integer vctrs_rray_int
+#' @method vec_ptype2.integer vctrs_rray_int
 #' @export
-vec_type2.integer.vctrs_rray_int <- vec_type2.vctrs_rray_int.vctrs_rray_int
+vec_ptype2.integer.vctrs_rray_int <- vec_ptype2.vctrs_rray_int.vctrs_rray_int
 
-# vec_type2 vctrs_rray_int <-> logical/matrix/array ----------------------------
+# vec_ptype2 vctrs_rray_int <-> logical/matrix/array ----------------------------
 
-#' @method vec_type2.vctrs_rray_int logical
+#' @method vec_ptype2.vctrs_rray_int logical
 #' @export
-vec_type2.vctrs_rray_int.logical <- vec_type2.vctrs_rray_int.vctrs_rray_int
+vec_ptype2.vctrs_rray_int.logical <- vec_ptype2.vctrs_rray_int.vctrs_rray_int
 
-#' @method vec_type2.logical vctrs_rray_int
+#' @method vec_ptype2.logical vctrs_rray_int
 #' @export
-vec_type2.logical.vctrs_rray_int <- vec_type2.vctrs_rray_int.vctrs_rray_int
+vec_ptype2.logical.vctrs_rray_int <- vec_ptype2.vctrs_rray_int.vctrs_rray_int
 
 # ##############################################################################
-# vec_type2 - vctrs_rray_lgl
+# vec_ptype2 - vctrs_rray_lgl
 
 #' @export
 #' @rdname vctrs-compat
-#' @method vec_type2 vctrs_rray_lgl
-#' @export vec_type2.vctrs_rray_lgl
-vec_type2.vctrs_rray_lgl <- function(x, y, ...) {
-  UseMethod("vec_type2.vctrs_rray_lgl", y)
+#' @method vec_ptype2 vctrs_rray_lgl
+#' @export vec_ptype2.vctrs_rray_lgl
+vec_ptype2.vctrs_rray_lgl <- function(x, y, ...) {
+  UseMethod("vec_ptype2.vctrs_rray_lgl", y)
 }
 
-#' @method vec_type2.vctrs_rray_lgl default
+#' @method vec_ptype2.vctrs_rray_lgl default
 #' @export
-vec_type2.vctrs_rray_lgl.default <- function(x, y, ..., x_arg = "x", y_arg = "y") {
+vec_ptype2.vctrs_rray_lgl.default <- function(x, y, ..., x_arg = "x", y_arg = "y") {
   stop_incompatible_type(x, y, ..., x_arg = x_arg, y_arg = y_arg)
 }
 
-#' @method vec_type2.vctrs_rray_lgl vctrs_unspecified
+#' @method vec_ptype2.vctrs_rray_lgl vctrs_unspecified
 #' @export
-vec_type2.vctrs_rray_lgl.vctrs_unspecified <- function(x, y, ...) {
+vec_ptype2.vctrs_rray_lgl.vctrs_unspecified <- function(x, y, ...) {
   vec_ptype(x)
 }
 
-# vec_type2 vctrs_rray_lgl <-> vctrs_rray_lgl ----------------------------------
+# vec_ptype2 vctrs_rray_lgl <-> vctrs_rray_lgl ----------------------------------
 
-#' @method vec_type2.vctrs_rray_lgl vctrs_rray_lgl
+#' @method vec_ptype2.vctrs_rray_lgl vctrs_rray_lgl
 #' @export
-vec_type2.vctrs_rray_lgl.vctrs_rray_lgl <- function(x, y, ...) {
+vec_ptype2.vctrs_rray_lgl.vctrs_rray_lgl <- function(x, y, ...) {
   new_rray(logical(), shape = rray_shape2(x, y))
 }
 
-# vec_type2 vctrs_rray_lgl <-> vctrs_rray_int ----------------------------------
+# vec_ptype2 vctrs_rray_lgl <-> vctrs_rray_int ----------------------------------
 
-#' @method vec_type2.vctrs_rray_lgl vctrs_rray_int
+#' @method vec_ptype2.vctrs_rray_lgl vctrs_rray_int
 #' @export
-vec_type2.vctrs_rray_lgl.vctrs_rray_int <- vec_type2.vctrs_rray_int.vctrs_rray_int
+vec_ptype2.vctrs_rray_lgl.vctrs_rray_int <- vec_ptype2.vctrs_rray_int.vctrs_rray_int
 
-# vec_type2 vctrs_rray_lgl <-> vctrs_rray_dbl ----------------------------------
+# vec_ptype2 vctrs_rray_lgl <-> vctrs_rray_dbl ----------------------------------
 
-#' @method vec_type2.vctrs_rray_lgl vctrs_rray_dbl
+#' @method vec_ptype2.vctrs_rray_lgl vctrs_rray_dbl
 #' @export
-vec_type2.vctrs_rray_lgl.vctrs_rray_dbl <- vec_type2.vctrs_rray_dbl.vctrs_rray_dbl
+vec_ptype2.vctrs_rray_lgl.vctrs_rray_dbl <- vec_ptype2.vctrs_rray_dbl.vctrs_rray_dbl
 
-# vec_type2 vctrs_rray_lgl <-> double/matrix/array -----------------------------
+# vec_ptype2 vctrs_rray_lgl <-> double/matrix/array -----------------------------
 
-#' @method vec_type2.vctrs_rray_lgl double
+#' @method vec_ptype2.vctrs_rray_lgl double
 #' @export
-vec_type2.vctrs_rray_lgl.double <- vec_type2.vctrs_rray_dbl.vctrs_rray_dbl
+vec_ptype2.vctrs_rray_lgl.double <- vec_ptype2.vctrs_rray_dbl.vctrs_rray_dbl
 
-#' @method vec_type2.double vctrs_rray_lgl
+#' @method vec_ptype2.double vctrs_rray_lgl
 #' @export
-vec_type2.double.vctrs_rray_lgl <- vec_type2.vctrs_rray_dbl.vctrs_rray_dbl
+vec_ptype2.double.vctrs_rray_lgl <- vec_ptype2.vctrs_rray_dbl.vctrs_rray_dbl
 
-# vec_type2 vctrs_rray_lgl <-> integer/matrix/array ----------------------------
+# vec_ptype2 vctrs_rray_lgl <-> integer/matrix/array ----------------------------
 
-#' @method vec_type2.vctrs_rray_lgl integer
+#' @method vec_ptype2.vctrs_rray_lgl integer
 #' @export
-vec_type2.vctrs_rray_lgl.integer <- vec_type2.vctrs_rray_int.vctrs_rray_int
+vec_ptype2.vctrs_rray_lgl.integer <- vec_ptype2.vctrs_rray_int.vctrs_rray_int
 
-#' @method vec_type2.integer vctrs_rray_lgl
+#' @method vec_ptype2.integer vctrs_rray_lgl
 #' @export
-vec_type2.integer.vctrs_rray_lgl <- vec_type2.vctrs_rray_int.vctrs_rray_int
+vec_ptype2.integer.vctrs_rray_lgl <- vec_ptype2.vctrs_rray_int.vctrs_rray_int
 
-# vec_type2 vctrs_rray_lgl <-> logical/matrix/array ----------------------------
+# vec_ptype2 vctrs_rray_lgl <-> logical/matrix/array ----------------------------
 
-#' @method vec_type2.vctrs_rray_lgl logical
+#' @method vec_ptype2.vctrs_rray_lgl logical
 #' @export
-vec_type2.vctrs_rray_lgl.logical <- vec_type2.vctrs_rray_lgl.vctrs_rray_lgl
+vec_ptype2.vctrs_rray_lgl.logical <- vec_ptype2.vctrs_rray_lgl.vctrs_rray_lgl
 
-#' @method vec_type2.logical vctrs_rray_lgl
+#' @method vec_ptype2.logical vctrs_rray_lgl
 #' @export
-vec_type2.logical.vctrs_rray_lgl <- vec_type2.vctrs_rray_lgl.vctrs_rray_lgl
+vec_ptype2.logical.vctrs_rray_lgl <- vec_ptype2.vctrs_rray_lgl.vctrs_rray_lgl
 
 # ##############################################################################
 # vec_cast - vctrs_rray_int

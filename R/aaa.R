@@ -46,10 +46,10 @@
 #' @importFrom vctrs vec_cast.integer
 #' @importFrom vctrs vec_cast.logical
 #'
-#' @importFrom vctrs vec_type2
-#' @importFrom vctrs vec_type2.double
-#' @importFrom vctrs vec_type2.integer
-#' @importFrom vctrs vec_type2.logical
+#' @importFrom vctrs vec_ptype2
+#' @importFrom vctrs vec_ptype2.double
+#' @importFrom vctrs vec_ptype2.integer
+#' @importFrom vctrs vec_ptype2.logical
 NULL
 
 # Required for R 3.1

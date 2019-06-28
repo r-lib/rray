@@ -95,6 +95,6 @@ rray_arith_binary_generator <- function(f) {
     y <- rray_broadcast(y, dim)
     res <- f(vec_data(x), vec_data(y))
     res <- rray_set_dim_names(res, rray_dim_names2(x, y))
-    vec_cast_container(res, vec_type2(x, y))
+    vec_cast_container(res, vec_ptype2(x, y))
   }
 }

@@ -1,7 +1,7 @@
 #' Find the container type of a pair of vectors
 #'
 #' `vec_type_container2()` finds the common container type of two vectors.
-#' Like `vec_type2()`, `vec_type_container2()` powers coercion but should
+#' Like `vec_ptype2()`, `vec_type_container2()` powers coercion but should
 #' usually not be called directly. Instead, [vec_type_container_common()]
 #' should be used.
 #'
