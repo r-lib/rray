@@ -339,7 +339,7 @@ vec_cast_inner.vctrs_rray_int.vctrs_rray_lgl <- function(x, to) {
 #' @rdname vec_cast_inner
 vec_cast_inner_common <- function(..., .to = NULL) {
   args <- list2(...)
-  type <- vec_type_inner_common(!!!args, .ptype = .to)
+  type <- vec_ptype_inner_common(!!!args, .ptype = .to)
   # allow internal S3 dispatch to work inside lapply
   map(args, function(x) vec_cast_inner(x, type))
 }

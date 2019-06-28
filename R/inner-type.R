@@ -3,7 +3,7 @@
 #' @description
 #'
 #' `vec_ptype_inner()` finds the inner type of a single vector.
-#' `vec_type_inner_common()` finds the common inner type of multiple
+#' `vec_ptype_inner_common()` finds the common inner type of multiple
 #' vectors.
 #'
 #' @details
@@ -19,7 +19,7 @@
 #' should _not_ have the class of the classed input.
 #'
 #' The common inner type is useful alongside [vec_cast_inner()].
-#' For example, `rray_bind()` uses `vec_type_inner_common()`
+#' For example, `rray_bind()` uses `vec_ptype_inner_common()`
 #' to determine the common inner type, and then uses
 #' `vec_cast_inner()` to cast each of the inputs to the same inner
 #' type before binding them together.
@@ -37,7 +37,7 @@
 #'
 #' # Find the common inner type of multiple inputs
 #' # (the double type wins, the container types are disregarded)
-#' # vec_type_inner_common(1, TRUE, rray(1L))
+#' # vec_ptype_inner_common(1, TRUE, rray(1L))
 #'
 #' @keywords internal
 vec_ptype_inner <- function(x) {
@@ -94,7 +94,7 @@ vec_ptype_inner2 <- function(x, y) {
 # ------------------------------------------------------------------------------
 
 #' @rdname vec_ptype_inner
-vec_type_inner_common <- function(..., .ptype = NULL) {
+vec_ptype_inner_common <- function(..., .ptype = NULL) {
 
   if (!is.null(.ptype)) {
     return(vec_ptype_inner(.ptype))
