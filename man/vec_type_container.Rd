@@ -42,7 +42,7 @@ to determine the common container for the output, and then uses
 to either an rray or an array, depending on the container type.
 
 Critically, the container type is independent of the \emph{inner} type of a
-vector. This means that while \code{vec_type_common(character(), numeric())}
+vector. This means that while \code{vec_ptype_common(character(), numeric())}
 is an error, \code{vec_type_container_common(character(), numeric())}
 returns \code{logical()} because they are both base R containers.
 }

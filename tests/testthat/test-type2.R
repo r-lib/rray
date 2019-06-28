@@ -8,7 +8,7 @@ test_that("vec_ptype2 with same dimensions", {
 
   expect_equal(dim(vec_ptype(x[0,0])), c(0, 0, 2))
 
-  expect_equal(vec_type_common(x, x), vec_ptype2(x, x))
+  expect_equal(vec_ptype_common(x, x), vec_ptype2(x, x))
 })
 
 
@@ -21,7 +21,7 @@ test_that("Common dim is found", {
   expect_equal(dim(vec_ptype2(x, y)), c(0, 2, 2))
   expect_equal(dim(vec_ptype2(y, x)), c(0, 2, 2))
 
-  expect_equal(vec_type_common(x, y), vec_ptype2(x, y))
+  expect_equal(vec_ptype_common(x, y), vec_ptype2(x, y))
 })
 
 test_that("Common inner type is found", {

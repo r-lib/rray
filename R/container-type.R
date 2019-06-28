@@ -28,7 +28,7 @@
 #' to either an rray or an array, depending on the container type.
 #'
 #' Critically, the container type is independent of the _inner_ type of a
-#' vector. This means that while `vec_type_common(character(), numeric())`
+#' vector. This means that while `vec_ptype_common(character(), numeric())`
 #' is an error, `vec_type_container_common(character(), numeric())`
 #' returns `logical()` because they are both base R containers.
 #'
