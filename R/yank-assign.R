@@ -30,7 +30,7 @@ rray_yank_assign <- function(x, i, value) {
 
   out <- rray__yank_assign(x, i, value)
 
-  vec_cast_container(out, vec_type_container(x))
+  vec_cast_container(out, vec_ptype_container(x))
 }
 
 # ------------------------------------------------------------------------------

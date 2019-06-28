@@ -2,7 +2,7 @@
 #'
 #' @description
 #'
-#' `vec_type_container()` finds the container type of a single vector.
+#' `vec_ptype_container()` finds the container type of a single vector.
 #' `vec_type_container_common()` finds the common container type of multiple
 #' vectors.
 #'
@@ -40,10 +40,10 @@
 #'
 #' @examples
 #' # The container of base R atomics is just logical()
-#' # vec_type_container(1)
+#' # vec_ptype_container(1)
 #'
 #' # The container of an rray is an empty logical rray
-#' # vec_type_container(rray(1))
+#' # vec_ptype_container(rray(1))
 #'
 #' # Find the common container of multiple types
 #' # (the rray type is more complex here, and becomes the common container)
@@ -53,42 +53,42 @@
 #' # vec_type_container_common(character(), logical())
 #'
 #' @keywords internal
-vec_type_container <- function(x) {
+vec_ptype_container <- function(x) {
 
   if (is.null(x)) {
     return(NULL)
   }
 
-  UseMethod("vec_type_container")
+  UseMethod("vec_ptype_container")
 }
 
-vec_type_container.default <- function(x) {
+vec_ptype_container.default <- function(x) {
   abort("`x` has an unknown container type.")
 }
 
-vec_type_container.logical <- function(x) {
+vec_ptype_container.logical <- function(x) {
   logical()
 }
 
-vec_type_container.integer <- vec_type_container.logical
+vec_ptype_container.integer <- vec_ptype_container.logical
 
-vec_type_container.double <- vec_type_container.logical
+vec_ptype_container.double <- vec_ptype_container.logical
 
-vec_type_container.character <- vec_type_container.logical
+vec_ptype_container.character <- vec_ptype_container.logical
 
-vec_type_container.vctrs_rray <- function(x) {
+vec_ptype_container.vctrs_rray <- function(x) {
   shared$empty_rray_lgl
 }
 
-vec_type_container.vctrs_unspecified <- vec_type_container.integer
+vec_ptype_container.vctrs_unspecified <- vec_ptype_container.integer
 
 # ------------------------------------------------------------------------------
 
-#' @rdname vec_type_container
+#' @rdname vec_ptype_container
 vec_type_container_common <- function(..., .ptype = NULL) {
 
   if (!is.null(.ptype)) {
-    return(vec_type_container(.ptype))
+    return(vec_ptype_container(.ptype))
   }
 
   args <- compact(list2(...))
@@ -99,7 +99,7 @@ vec_type_container_common <- function(..., .ptype = NULL) {
   }
 
   if (n_args == 1L) {
-    return(vec_type_container(args[[1]]))
+    return(vec_ptype_container(args[[1]]))
   }
 
   reduce(args, vec_type_container2)

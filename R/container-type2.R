@@ -17,11 +17,11 @@
 vec_type_container2 <- function(x, y) {
 
   if (is.null(x)) {
-    return(vec_type_container(y))
+    return(vec_ptype_container(y))
   }
 
   if (is.null(y)) {
-    return(vec_type_container(x))
+    return(vec_ptype_container(x))
   }
 
   UseMethod("vec_type_container2", y)

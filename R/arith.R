@@ -125,7 +125,7 @@ rray_pow <- function(x, y) {
 #' @export
 rray_identity <- function(x) {
   out <- rray__identity(x)
-  container <- vec_type_container(x)
+  container <- vec_ptype_container(x)
   vec_cast_container(out, container)
 }
 
@@ -135,6 +135,6 @@ rray_identity <- function(x) {
 #' @export
 rray_opposite <- function(x) {
   out <- rray__opposite(x)
-  container <- vec_type_container(x)
+  container <- vec_ptype_container(x)
   vec_cast_container(out, container)
 }

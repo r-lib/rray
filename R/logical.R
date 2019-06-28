@@ -84,7 +84,7 @@ rray_logical_or <- function(x, y) {
 #' @export
 rray_logical_not <- function(x) {
   out <- rray__logical_not(x)
-  container <- vec_type_container(x)
+  container <- vec_ptype_container(x)
   vec_cast_container(out, container)
 }
 
