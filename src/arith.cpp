@@ -45,7 +45,7 @@ Rcpp::RObject rray__add(Rcpp::RObject x, Rcpp::RObject y) {
 
   Rcpp::List new_dim_names = rray__dim_names2(x, y);
 
-  Rcpp::RObject type = vec__type_inner2(x, y);
+  Rcpp::RObject type = vec__ptype_inner2(x, y);
   x = vec__cast_inner(x, type);
   y = vec__cast_inner(y, type);
 
@@ -98,7 +98,7 @@ Rcpp::RObject rray__subtract(Rcpp::RObject x, Rcpp::RObject y) {
 
   Rcpp::List new_dim_names = rray__dim_names2(x, y);
 
-  Rcpp::RObject type = vec__type_inner2(x, y);
+  Rcpp::RObject type = vec__ptype_inner2(x, y);
   x = vec__cast_inner(x, type);
   y = vec__cast_inner(y, type);
 
@@ -191,7 +191,7 @@ Rcpp::RObject rray__multiply(Rcpp::RObject x, Rcpp::RObject y) {
 
   Rcpp::List new_dim_names = rray__dim_names2(x, y);
 
-  Rcpp::RObject type = vec__type_inner2(x, y);
+  Rcpp::RObject type = vec__ptype_inner2(x, y);
   x = vec__cast_inner(x, type);
   y = vec__cast_inner(y, type);
 

@@ -87,7 +87,7 @@ vec_ptype_inner.vctrs_unspecified <- function(x) {
 
 # ------------------------------------------------------------------------------
 
-vec_type_inner2 <- function(x, y) {
+vec_ptype_inner2 <- function(x, y) {
   vec_ptype2(vec_ptype_inner(x), vec_ptype_inner(y))
 }
 
@@ -111,5 +111,5 @@ vec_type_inner_common <- function(..., .ptype = NULL) {
     return(vec_ptype_inner(args[[1]]))
   }
 
-  reduce(args, vec_type_inner2)
+  reduce(args, vec_ptype_inner2)
 }

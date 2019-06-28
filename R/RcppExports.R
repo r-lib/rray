@@ -45,10 +45,6 @@ rray__diag <- function(x, offset) {
     .Call(`_rray_rray__diag`, x, offset)
 }
 
-vec__cast_inner <- function(x, to) {
-    .Call(`_rray_vec__cast_inner`, x, to)
-}
-
 rray__clip <- function(x, low, high) {
     .Call(`_rray_rray__clip`, x, low, high)
 }
@@ -255,10 +251,6 @@ subset_dim_names <- function(dim_names, indexer) {
 
 rray__subset <- function(x, indexer) {
     .Call(`_rray_rray__subset`, x, indexer)
-}
-
-vec__type_inner2 <- function(x, y) {
-    .Call(`_rray_vec__type_inner2`, x, y)
 }
 
 rray__validate_dim <- function(dim) {

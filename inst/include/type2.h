@@ -1,8 +1,8 @@
 #ifndef rray_type2_h
 #define rray_type2_h
 
-extern SEXP fns_vec_type_inner2;
+extern SEXP fns_vec_ptype_inner2;
 
-SEXP vec__type_inner2(SEXP x, SEXP y);
+SEXP vec__ptype_inner2(SEXP x, SEXP y);
 
 #endif

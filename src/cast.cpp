@@ -3,7 +3,6 @@
 
 SEXP fns_vec_cast_inner = NULL;
 
-// [[Rcpp::export(rng = false)]]
 SEXP vec__cast_inner(SEXP x, SEXP to) {
   SEXP env = PROTECT(r_new_environment(rray_ns_env, 2));
 
