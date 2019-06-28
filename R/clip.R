@@ -22,7 +22,7 @@ rray_clip <- function(x, low, high) {
   vec_assert(low, size = 1L, arg = "low")
   vec_assert(high, size = 1L, arg = "high")
 
-  inner <- vec_type_inner(x)
+  inner <- vec_ptype_inner(x)
   low <- vec_cast_inner(low, inner)
   high <- vec_cast_inner(high, inner)
 

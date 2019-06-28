@@ -2,7 +2,7 @@
 #'
 #' @description
 #'
-#' `vec_type_inner()` finds the inner type of a single vector.
+#' `vec_ptype_inner()` finds the inner type of a single vector.
 #' `vec_type_inner_common()` finds the common inner type of multiple
 #' vectors.
 #'
@@ -30,74 +30,74 @@
 #'
 #' @examples
 #' # The inner type of base R atomics uses their constructor
-#' # vec_type_inner(1)
+#' # vec_ptype_inner(1)
 #'
 #' # The inner type of an rray is an empty base R object
-#' # vec_type_inner(rray(1))
+#' # vec_ptype_inner(rray(1))
 #'
 #' # Find the common inner type of multiple inputs
 #' # (the double type wins, the container types are disregarded)
 #' # vec_type_inner_common(1, TRUE, rray(1L))
 #'
 #' @keywords internal
-vec_type_inner <- function(x) {
+vec_ptype_inner <- function(x) {
 
   if (is.null(x)) {
     return(NULL)
   }
 
-  UseMethod("vec_type_inner")
+  UseMethod("vec_ptype_inner")
 }
 
-vec_type_inner.default <- function(x) {
+vec_ptype_inner.default <- function(x) {
   abort("`x` has an unknown inner type.")
 }
 
-vec_type_inner.logical <- function(x) {
+vec_ptype_inner.logical <- function(x) {
   logical()
 }
 
-vec_type_inner.integer <- function(x) {
+vec_ptype_inner.integer <- function(x) {
   integer()
 }
 
-vec_type_inner.double <- function(x) {
+vec_ptype_inner.double <- function(x) {
   double()
 }
 
-vec_type_inner.character <- function(x) {
+vec_ptype_inner.character <- function(x) {
   character()
 }
 
-vec_type_inner.vctrs_rray_lgl <- function(x) {
+vec_ptype_inner.vctrs_rray_lgl <- function(x) {
   logical()
 }
 
-vec_type_inner.vctrs_rray_int <- function(x) {
+vec_ptype_inner.vctrs_rray_int <- function(x) {
   integer()
 }
 
-vec_type_inner.vctrs_rray_dbl <- function(x) {
+vec_ptype_inner.vctrs_rray_dbl <- function(x) {
   double()
 }
 
-vec_type_inner.vctrs_unspecified <- function(x) {
+vec_ptype_inner.vctrs_unspecified <- function(x) {
   logical()
 }
 
 # ------------------------------------------------------------------------------
 
 vec_type_inner2 <- function(x, y) {
-  vec_ptype2(vec_type_inner(x), vec_type_inner(y))
+  vec_ptype2(vec_ptype_inner(x), vec_ptype_inner(y))
 }
 
 # ------------------------------------------------------------------------------
 
-#' @rdname vec_type_inner
+#' @rdname vec_ptype_inner
 vec_type_inner_common <- function(..., .ptype = NULL) {
 
   if (!is.null(.ptype)) {
-    return(vec_type_inner(.ptype))
+    return(vec_ptype_inner(.ptype))
   }
 
   args <- list2(...)
@@ -108,7 +108,7 @@ vec_type_inner_common <- function(..., .ptype = NULL) {
   }
 
   if (n_args == 1L) {
-    return(vec_type_inner(args[[1]]))
+    return(vec_ptype_inner(args[[1]]))
   }
 
   reduce(args, vec_type_inner2)
