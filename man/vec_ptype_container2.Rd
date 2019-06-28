@@ -30,7 +30,7 @@ vec_ptype_container2.vctrs_rray(x, y)
 \description{
 \code{vec_ptype_container2()} finds the common container type of two vectors.
 Like \code{vec_ptype2()}, \code{vec_ptype_container2()} powers coercion but should
-usually not be called directly. Instead, \code{\link[=vec_type_container_common]{vec_type_container_common()}}
+usually not be called directly. Instead, \code{\link[=vec_ptype_container_common]{vec_ptype_container_common()}}
 should be used.
 }
 \examples{

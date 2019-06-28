@@ -47,22 +47,22 @@ test_that("rray container types are rray(logical())", {
 # common container type
 
 test_that("common container type can be found", {
-  expect_equal(vec_type_container_common(1, 1L), logical())
+  expect_equal(vec_ptype_container_common(1, 1L), logical())
 })
 
 test_that("common container type with 1 input", {
-  expect_equal(vec_type_container_common(1), logical())
+  expect_equal(vec_ptype_container_common(1), logical())
 })
 
 test_that("common container type with no input", {
-  expect_equal(vec_type_container_common(), NULL)
+  expect_equal(vec_ptype_container_common(), NULL)
 })
 
 test_that("can specify ptype", {
-  expect_equal(vec_type_container_common(.ptype = 1), logical())
-  expect_equal(vec_type_container_common(.ptype = rray(1)), rray(logical()))
+  expect_equal(vec_ptype_container_common(.ptype = 1), logical())
+  expect_equal(vec_ptype_container_common(.ptype = rray(1)), rray(logical()))
 })
 
 test_that("can find a common container type with characters", {
-  expect_equal(vec_type_container_common(1, character()), logical())
+  expect_equal(vec_ptype_container_common(1, character()), logical())
 })

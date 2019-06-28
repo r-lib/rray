@@ -3,7 +3,7 @@
 #' @description
 #'
 #' `vec_ptype_container()` finds the container type of a single vector.
-#' `vec_type_container_common()` finds the common container type of multiple
+#' `vec_ptype_container_common()` finds the common container type of multiple
 #' vectors.
 #'
 #' @details
@@ -22,14 +22,14 @@
 #' when inspecting the container type.
 #'
 #' The common container type is useful alongside [vec_cast_container()].
-#' For example, `rray_greater()` uses `vec_type_container_common()`
+#' For example, `rray_greater()` uses `vec_ptype_container_common()`
 #' to determine the common container for the output, and then uses
 #' `vec_cast_container()` to restore the logical result of the comparison
 #' to either an rray or an array, depending on the container type.
 #'
 #' Critically, the container type is independent of the _inner_ type of a
 #' vector. This means that while `vec_ptype_common(character(), numeric())`
-#' is an error, `vec_type_container_common(character(), numeric())`
+#' is an error, `vec_ptype_container_common(character(), numeric())`
 #' returns `logical()` because they are both base R containers.
 #'
 #' @param x Vector to compute the container type for.
@@ -47,10 +47,10 @@
 #'
 #' # Find the common container of multiple types
 #' # (the rray type is more complex here, and becomes the common container)
-#' # vec_type_container_common(1, TRUE, rray(1L))
+#' # vec_ptype_container_common(1, TRUE, rray(1L))
 #'
 #' # Not an error!
-#' # vec_type_container_common(character(), logical())
+#' # vec_ptype_container_common(character(), logical())
 #'
 #' @keywords internal
 vec_ptype_container <- function(x) {
@@ -85,7 +85,7 @@ vec_ptype_container.vctrs_unspecified <- vec_ptype_container.integer
 # ------------------------------------------------------------------------------
 
 #' @rdname vec_ptype_container
-vec_type_container_common <- function(..., .ptype = NULL) {
+vec_ptype_container_common <- function(..., .ptype = NULL) {
 
   if (!is.null(.ptype)) {
     return(vec_ptype_container(.ptype))

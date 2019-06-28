@@ -84,7 +84,7 @@ rray_bind <- function(..., .axis) {
   args <- map(args, vec_type_finalise)
 
   proxy <- vec_type_inner_common(!!!args)
-  container <- vec_type_container_common(!!!args)
+  container <- vec_ptype_container_common(!!!args)
 
   res <- rray__bind(proxy, args, as_cpp_idx(.axis))
 

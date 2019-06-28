@@ -173,7 +173,7 @@ vec_cast_container.vctrs_rray.vctrs_rray <- function(x, to) {
 #' @rdname vec_cast_container
 vec_cast_container_common <- function(..., .to = NULL) {
   args <- list2(...)
-  container <- vec_type_container_common(!!!args, .ptype = .to)
+  container <- vec_ptype_container_common(!!!args, .ptype = .to)
   # allow internal S3 dispatch to work inside lapply
   map(args, function(x) vec_cast_container(x, container))
 }

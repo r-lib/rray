@@ -2,7 +2,7 @@
 #'
 #' `vec_ptype_container2()` finds the common container type of two vectors.
 #' Like `vec_ptype2()`, `vec_ptype_container2()` powers coercion but should
-#' usually not be called directly. Instead, [vec_type_container_common()]
+#' usually not be called directly. Instead, [vec_ptype_container_common()]
 #' should be used.
 #'
 #' @param x,y Vectors.
