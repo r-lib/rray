@@ -2,7 +2,7 @@ context("test-diag")
 
 test_that("can create a diagonal matrix", {
   x <- rray_diag(1L)
-  expect_equal(vec_dim(x), c(1, 1))
+  expect_equal(rray_dim(x), c(1, 1))
   expect_equal(storage.mode(x), "integer")
 
   x <- rray_diag(TRUE)

@@ -36,7 +36,7 @@
 # test_that("Can reduce over multiple axes", {
 #   out <- rray_reduce_dbl(rray(1, c(2, 3, 4)), ~ .x + .y, axes = c(1, 2))
 #   expect_equal(vec_data(out), rep(6, times = 4))
-#   expect_equal(vec_dim(out), c(1, 1, 4))
+#   expect_equal(rray_dim(out), c(1, 1, 4))
 # })
 #
 # test_that("Can reduce base R objects", {
@@ -70,8 +70,8 @@
 #   sum_1D <- rray_reduce_dbl(x, `+`, axes = 1L)
 #   sum_2D <- rray_reduce_dbl(x_mat, `+`, axes = c(1, 2))
 #
-#   expect_equal(vec_dim(sum_1D), 1L)
-#   expect_equal(vec_dim(sum_2D), c(1L, 1L))
+#   expect_equal(rray_dim(sum_1D), 1L)
+#   expect_equal(rray_dim(sum_2D), c(1L, 1L))
 #
 #   expect_equal(vec_data(sum_1D), 10)
 #   expect_equal(vec_data(sum_2D), 10)

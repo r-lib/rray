@@ -1,8 +1,6 @@
 # nocov start
 
 #' @importFrom vctrs vec_size
-#' @importFrom vctrs vec_dim
-#' @importFrom vctrs vec_dim_n
 #' @importFrom vctrs vec_data
 #' @importFrom vctrs vec_slice
 #' @importFrom vctrs vec_init

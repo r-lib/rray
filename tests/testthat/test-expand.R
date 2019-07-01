@@ -5,17 +5,17 @@ test_that("various dimension expanding variations work", {
   x <- rray(1:10, c(5, 2))
 
   expect_equal(
-    vec_dim(rray_expand(x, 1)),
+    rray_dim(rray_expand(x, 1)),
     c(1, 5, 2)
   )
 
   expect_equal(
-    vec_dim(rray_expand(x, 2)),
+    rray_dim(rray_expand(x, 2)),
     c(5, 1, 2)
   )
 
   expect_equal(
-    vec_dim(rray_expand(x, 3)),
+    rray_dim(rray_expand(x, 3)),
     c(5, 2, 1)
   )
 

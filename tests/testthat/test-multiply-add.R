@@ -5,7 +5,7 @@ test_that("rray_multiply_add() basics", {
 
   # broadcasting
   x <- matrix(1:5)
-  expect_equal(vec_dim(rray_multiply_add(x, t(x), x)), c(5, 5))
+  expect_equal(rray_dim(rray_multiply_add(x, t(x), x)), c(5, 5))
 
   # with names
   x <- rray(c(0, 0), c(2, 1), list(c("r1", "r2"), "c1"))

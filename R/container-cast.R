@@ -156,7 +156,7 @@ vec_cast_container.vctrs_rray.default <- function(x, to) {
 }
 
 vec_cast_container.vctrs_rray.logical <- function(x, to) {
-  dim <- vec_dim(x)
+  dim <- rray_dim(x)
   new_rray(x, size = dim[1], shape = dim[-1], dim_names = rray_dim_names(x))
 }
 

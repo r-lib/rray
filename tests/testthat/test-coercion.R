@@ -15,7 +15,7 @@ test_that("Can coerce to matrices from various inputs", {
 })
 
 test_that("vector -> matrix makes a 1 column matrix", {
-  expect_equal(vec_dim(as_matrix(x)), c(vec_size(x), 1L))
+  expect_equal(rray_dim(as_matrix(x)), c(vec_size(x), 1L))
 })
 
 test_that("names() and rray_dim_names() are kept", {
@@ -63,7 +63,7 @@ test_that("Can coerce to arrays from various inputs", {
 })
 
 test_that("vector -> array makes a 1D array", {
-  expect_equal(vec_dim(as_array(x)), vec_size(x))
+  expect_equal(rray_dim(as_array(x)), vec_size(x))
 })
 
 test_that("names() and rray_dim_names() are kept", {
@@ -101,7 +101,7 @@ test_that("Can coerce to rrays from various inputs", {
 })
 
 test_that("vector -> rray makes a 1D rray", {
-  expect_equal(vec_dim(as_rray(x)), vec_size(x))
+  expect_equal(rray_dim(as_rray(x)), vec_size(x))
 })
 
 test_that("names() and rray_dim_names() are kept", {
@@ -134,6 +134,6 @@ test_that("4D tests", {
   x_4D <- array(1, c(1, 1, 1, 1), dimnames = list("r1", "c1", "..3_1", "..4_1"))
   nms_4D <- rray_dim_names(x_4D)
 
-  expect_equal(vec_dim(as_rray(x_4D)), c(1, 1, 1, 1))
+  expect_equal(rray_dim(as_rray(x_4D)), c(1, 1, 1, 1))
   expect_equal(rray_dim_names(as_rray(x_4D)), nms_4D)
 })

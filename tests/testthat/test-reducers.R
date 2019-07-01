@@ -18,14 +18,14 @@ test_that("Default `axes` argument reduces over all dimensions", {
   )
 
   expect_equal(
-    vec_dim_n(rray_sum(y)),
+    rray_dim_n(rray_sum(y)),
     2L
   )
 })
 
 test_that("Dimensions are not dropped (by default)", {
-  expect_equal(vec_dim(rray_sum(y, 1)), c(1, 2))
-  expect_equal(vec_dim(rray_sum(y, 2)), c(5, 1))
+  expect_equal(rray_dim(rray_sum(y, 1)), c(1, 2))
+  expect_equal(rray_dim(rray_sum(y, 2)), c(5, 1))
 })
 
 test_that("Dimension names are kept", {
@@ -40,7 +40,7 @@ test_that("Dimension names are kept", {
 test_that("Can reduce over multiple axes", {
   out <- rray_sum(rray(1, c(2, 3, 4)), c(1,2))
   expect_equal(as.vector(out), rep(6, times = 4))
-  expect_equal(vec_dim(out), c(1, 1, 4))
+  expect_equal(rray_dim(out), c(1, 1, 4))
 })
 
 test_that("Reducing to 0D works", {
@@ -50,8 +50,8 @@ test_that("Reducing to 0D works", {
   ..1D <- rray_sum(x, 1)
   ..2D <- rray_sum(x_mat, c(1, 2))
 
-  expect_equal(vec_dim(..1D), 1L)
-  expect_equal(vec_dim(..2D), c(1L, 1L))
+  expect_equal(rray_dim(..1D), 1L)
+  expect_equal(rray_dim(..2D), c(1L, 1L))
 
   expect_equal(as.vector(..1D), 55)
   expect_equal(as.vector(..2D), 55)
@@ -69,7 +69,7 @@ test_that("reducing base types maintains type", {
   expect_is(rray_sum(x_mat, 1), "matrix")
   expect_equal(storage.mode(rray_sum(x_arr, 1)), "double")
 
-  expect_equal(vec_dim(rray_sum(x_mat, 1)), c(1, 1))
+  expect_equal(rray_dim(rray_sum(x_mat, 1)), c(1, 1))
 
   expect_equal(rray_col_names(rray_sum(x_mat_cnames, 1)), "x")
   expect_equal(rray_col_names(rray_sum(x_mat_cnames, 2)), "x")
@@ -123,14 +123,14 @@ test_that("Default `axes` argument reduces over all dimensions", {
   )
 
   expect_equal(
-    vec_dim_n(rray_prod(y)),
+    rray_dim_n(rray_prod(y)),
     2L
   )
 })
 
 test_that("Dimensions are not dropped (by default)", {
-  expect_equal(vec_dim(rray_prod(y, 1)), c(1, 2))
-  expect_equal(vec_dim(rray_prod(y, 2)), c(5, 1))
+  expect_equal(rray_dim(rray_prod(y, 1)), c(1, 2))
+  expect_equal(rray_dim(rray_prod(y, 2)), c(5, 1))
 })
 
 test_that("Dimension names are kept", {
@@ -145,7 +145,7 @@ test_that("Dimension names are kept", {
 test_that("Can reduce over multiple axes", {
   out <- rray_prod(rray(1, c(2, 3, 4)), c(1,2))
   expect_equal(as.vector(out), rep(1, times = 4))
-  expect_equal(vec_dim(out), c(1, 1, 4))
+  expect_equal(rray_dim(out), c(1, 1, 4))
 })
 
 test_that("Reducing to 0D works", {
@@ -155,8 +155,8 @@ test_that("Reducing to 0D works", {
   ..1D <- rray_prod(x, 1)
   ..2D <- rray_prod(x_mat, c(1, 2))
 
-  expect_equal(vec_dim(..1D), 1L)
-  expect_equal(vec_dim(..2D), c(1L, 1L))
+  expect_equal(rray_dim(..1D), 1L)
+  expect_equal(rray_dim(..2D), c(1L, 1L))
 
   expect_equal(as.vector(..1D), prod(vec_data(x)))
   expect_equal(as.vector(..2D), prod(vec_data(x)))
@@ -174,7 +174,7 @@ test_that("reducing base types maintains type", {
   expect_is(rray_prod(x_mat, 1), "matrix")
   expect_equal(storage.mode(rray_prod(x_arr, 1)), "double")
 
-  expect_equal(vec_dim(rray_prod(x_mat, 1)), c(1, 1))
+  expect_equal(rray_dim(rray_prod(x_mat, 1)), c(1, 1))
 
   expect_equal(rray_col_names(rray_prod(x_mat_cnames, 1)), "x")
   expect_equal(rray_col_names(rray_prod(x_mat_cnames, 2)), "x")
@@ -228,14 +228,14 @@ test_that("Default `axes` argument reduces over all dimensions", {
   )
 
   expect_equal(
-    vec_dim_n(rray_mean(y)),
+    rray_dim_n(rray_mean(y)),
     2L
   )
 })
 
 test_that("Dimensions are not dropped (by default)", {
-  expect_equal(vec_dim(rray_mean(y, 1)), c(1, 2))
-  expect_equal(vec_dim(rray_mean(y, 2)), c(5, 1))
+  expect_equal(rray_dim(rray_mean(y, 1)), c(1, 2))
+  expect_equal(rray_dim(rray_mean(y, 2)), c(5, 1))
 })
 
 test_that("Dimension names are kept", {
@@ -250,7 +250,7 @@ test_that("Dimension names are kept", {
 test_that("Can reduce over multiple axes", {
   out <- rray_mean(rray(1, c(2, 3, 4)), c(1,2))
   expect_equal(as.vector(out), rep(1, times = 4))
-  expect_equal(vec_dim(out), c(1, 1, 4))
+  expect_equal(rray_dim(out), c(1, 1, 4))
 })
 
 test_that("Reducing to 0D works", {
@@ -260,8 +260,8 @@ test_that("Reducing to 0D works", {
   ..1D <- rray_mean(x, 1)
   ..2D <- rray_mean(x_mat, c(1, 2))
 
-  expect_equal(vec_dim(..1D), 1L)
-  expect_equal(vec_dim(..2D), c(1L, 1L))
+  expect_equal(rray_dim(..1D), 1L)
+  expect_equal(rray_dim(..2D), c(1L, 1L))
 
   expect_equal(as.vector(..1D), mean(vec_data(x)))
   expect_equal(as.vector(..2D), mean(vec_data(x)))
@@ -279,7 +279,7 @@ test_that("reducing base types maintains type", {
   expect_is(rray_mean(x_mat, 1), "matrix")
   expect_equal(storage.mode(rray_mean(x_arr, 1)), "double")
 
-  expect_equal(vec_dim(rray_mean(x_mat, 1)), c(1, 1))
+  expect_equal(rray_dim(rray_mean(x_mat, 1)), c(1, 1))
 
   expect_equal(rray_col_names(rray_mean(x_mat_cnames, 1)), "x")
   expect_equal(rray_col_names(rray_mean(x_mat_cnames, 2)), "x")
@@ -333,14 +333,14 @@ test_that("Default `axes` argument reduces over all dimensions", {
   )
 
   expect_equal(
-    vec_dim_n(rray_max(y)),
+    rray_dim_n(rray_max(y)),
     2L
   )
 })
 
 test_that("Dimensions are not dropped (by default)", {
-  expect_equal(vec_dim(rray_max(y, 1)), c(1, 2))
-  expect_equal(vec_dim(rray_max(y, 2)), c(5, 1))
+  expect_equal(rray_dim(rray_max(y, 1)), c(1, 2))
+  expect_equal(rray_dim(rray_max(y, 2)), c(5, 1))
 })
 
 test_that("Dimension names are kept", {
@@ -355,7 +355,7 @@ test_that("Dimension names are kept", {
 test_that("Can reduce over multiple axes", {
   out <- rray_max(rray(1, c(2, 3, 4)), c(1,2))
   expect_equal(as.vector(out), rep(1, times = 4))
-  expect_equal(vec_dim(out), c(1, 1, 4))
+  expect_equal(rray_dim(out), c(1, 1, 4))
 })
 
 test_that("Reducing to 0D works", {
@@ -365,8 +365,8 @@ test_that("Reducing to 0D works", {
   ..1D <- rray_max(x, 1)
   ..2D <- rray_max(x_mat, c(1, 2))
 
-  expect_equal(vec_dim(..1D), 1L)
-  expect_equal(vec_dim(..2D), c(1L, 1L))
+  expect_equal(rray_dim(..1D), 1L)
+  expect_equal(rray_dim(..2D), c(1L, 1L))
 
   expect_equal(as.vector(..1D), max(vec_data(x)))
   expect_equal(as.vector(..2D), max(vec_data(x)))
@@ -385,7 +385,7 @@ test_that("reducing base types maintains type", {
   expect_equal(storage.mode(rray_max(x_arr, 1)), "integer")
 
 
-  expect_equal(vec_dim(rray_max(x_mat, 1)), c(1, 1))
+  expect_equal(rray_dim(rray_max(x_mat, 1)), c(1, 1))
 
   expect_equal(rray_col_names(rray_max(x_mat_cnames, 1)), "x")
   expect_equal(rray_col_names(rray_max(x_mat_cnames, 2)), "x")
@@ -432,14 +432,14 @@ test_that("Default `axes` argument reduces over all dimensions", {
   )
 
   expect_equal(
-    vec_dim_n(rray_min(y)),
+    rray_dim_n(rray_min(y)),
     2L
   )
 })
 
 test_that("Dimensions are not dropped (by default)", {
-  expect_equal(vec_dim(rray_min(y, 1)), c(1, 2))
-  expect_equal(vec_dim(rray_min(y, 2)), c(5, 1))
+  expect_equal(rray_dim(rray_min(y, 1)), c(1, 2))
+  expect_equal(rray_dim(rray_min(y, 2)), c(5, 1))
 })
 
 test_that("Dimension names are kept", {
@@ -454,7 +454,7 @@ test_that("Dimension names are kept", {
 test_that("Can reduce over multiple axes", {
   out <- rray_min(rray(1, c(2, 3, 4)), c(1,2))
   expect_equal(as.vector(out), rep(1, times = 4))
-  expect_equal(vec_dim(out), c(1, 1, 4))
+  expect_equal(rray_dim(out), c(1, 1, 4))
 })
 
 test_that("Reducing to 0D works", {
@@ -464,8 +464,8 @@ test_that("Reducing to 0D works", {
   ..1D <- rray_min(x, 1)
   ..2D <- rray_min(x_mat, c(1, 2))
 
-  expect_equal(vec_dim(..1D), 1L)
-  expect_equal(vec_dim(..2D), c(1L, 1L))
+  expect_equal(rray_dim(..1D), 1L)
+  expect_equal(rray_dim(..2D), c(1L, 1L))
 
   expect_equal(as.vector(..1D), min(vec_data(x)))
   expect_equal(as.vector(..2D), min(vec_data(x)))
@@ -483,7 +483,7 @@ test_that("reducing base types maintains type", {
   expect_is(rray_min(x_mat, 1), "matrix")
   expect_equal(storage.mode(rray_min(x_arr, 1)), "integer")
 
-  expect_equal(vec_dim(rray_min(x_mat, 1)), c(1, 1))
+  expect_equal(rray_dim(rray_min(x_mat, 1)), c(1, 1))
 
   expect_equal(rray_col_names(rray_min(x_mat_cnames, 1)), "x")
   expect_equal(rray_col_names(rray_min(x_mat_cnames, 2)), "x")

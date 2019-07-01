@@ -24,13 +24,13 @@ test_that("subset ignores trailing dots", {
 
 test_that("0D slicing", {
   y <- as_rray(matrix(1:10, ncol = 2))
-  y_dim <- vec_dim(y)
+  y_dim <- rray_dim(y)
 
   # no columns
-  expect_equal(vec_dim(y[,0]), c(5L, 0L))
+  expect_equal(rray_dim(y[,0]), c(5L, 0L))
 
   # no rows
-  expect_equal(vec_dim(y[0]), c(0L, 2L))
+  expect_equal(rray_dim(y[0]), c(0L, 2L))
 
   expect_error(y[,,0], "Cannot subset")
 })

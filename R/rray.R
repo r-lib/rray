@@ -99,7 +99,7 @@ new_rray <- function(.data = numeric(0),
 #' @param x A numeric vector, matrix, or array to convert to an rray.
 #'
 #' @param dim An integer vector describing the dimensions of the rray. If `NULL`,
-#' the dimensions are taken from the existing object using [vctrs::vec_dim()].
+#' the dimensions are taken from the existing object using [rray_dim()].
 #'
 #' @examples
 #'

@@ -79,7 +79,7 @@ rray_duplicate_any <- function(x, axes = NULL) {
 
   res <- keep_dims(flat_res, x, axes)
 
-  new_dim_names <- rray_resize_dim_names(rray_dim_names(x), vec_dim(res))
+  new_dim_names <- rray_resize_dim_names(rray_dim_names(x), rray_dim(res))
   res <- rray_set_dim_names(res, new_dim_names)
 
   vec_cast_container(res, x)
@@ -97,7 +97,7 @@ rray_duplicate_detect <- function(x, axes = NULL) {
 
   res_flat <- rray_unlist(res_lgl_lst)
 
-  res <- restore_shape(res_flat, vec_dim(x), axes)
+  res <- restore_shape(res_flat, rray_dim(x), axes)
 
   res <- rray_set_dim_names(res, rray_dim_names(x))
 
@@ -116,7 +116,7 @@ rray_duplicate_id <- function(x, axes = NULL) {
 
   res_flat <- rray_unlist(res_lgl_lst)
 
-  res <- restore_shape(res_flat, vec_dim(x), axes)
+  res <- restore_shape(res_flat, rray_dim(x), axes)
 
   res <- rray_set_dim_names(res, rray_dim_names(x))
 
@@ -178,7 +178,7 @@ check_duplicate_axes <- function(axes, x) {
   }
 
   if (is.null(axes)) {
-    axes <- seq_len(vec_dim_n(x))
+    axes <- seq_len(rray_dim_n(x))
   }
 
   axes
@@ -190,7 +190,7 @@ rray_unlist <- function(x) {
 
 duplicate_splitter <- function(x, axes) {
 
-  axes_complement <- get_axes_complement(vec_dim_n(x), axes)
+  axes_complement <- get_axes_complement(rray_dim_n(x), axes)
 
   x_split <- rray_split(x, axes_complement)
 

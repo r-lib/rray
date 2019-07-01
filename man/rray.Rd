@@ -10,7 +10,7 @@ rray(x = numeric(0), dim = NULL, dim_names = NULL)
 \item{x}{A numeric vector, matrix, or array to convert to an rray.}
 
 \item{dim}{An integer vector describing the dimensions of the rray. If \code{NULL},
-the dimensions are taken from the existing object using \code{\link[vctrs:vec_dim]{vctrs::vec_dim()}}.}
+the dimensions are taken from the existing object using \code{\link[=rray_dim]{rray_dim()}}.}
 
 \item{dim_names}{A list. For no names, \code{NULL}, in which case a list of
 empty characters will be constructed. Otherwise the list must

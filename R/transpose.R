@@ -89,7 +89,7 @@ t.vctrs_rray <- function(x) {
   # t(<1Dvector>) -> <2Dmatrix> behavior
   out <- t(vec_data(x))
 
-  dim <- vec_dim(out)
+  dim <- rray_dim(out)
 
   new_rray(
     out,
