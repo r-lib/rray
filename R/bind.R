@@ -81,7 +81,7 @@ rray_bind <- function(..., .axis) {
   }
 
   # finalize partial types
-  args <- map(args, vec_type_finalise)
+  args <- map(args, vec_ptype_finalise)
 
   proxy <- vec_ptype_inner_common(!!!args)
   container <- vec_ptype_container_common(!!!args)
