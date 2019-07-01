@@ -21,6 +21,6 @@
 #' @export
 rray_multiply_add <- function(x, y, z) {
   out <- rray__multiply_add(x, y, z)
-  container <- vec_type_container_common(x, y, z)
+  container <- vec_ptype_container_common(x, y, z)
   vec_cast_container(out, container)
 }

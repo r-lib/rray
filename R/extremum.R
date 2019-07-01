@@ -22,7 +22,7 @@
 #' @export
 rray_maximum <- function(x, y) {
   out <- rray__maximum(x, y)
-  container <- vec_type_container2(x, y)
+  container <- vec_ptype_container2(x, y)
   vec_cast_container(out, container)
 }
 
@@ -30,6 +30,6 @@ rray_maximum <- function(x, y) {
 #' @export
 rray_minimum <- function(x, y) {
   out <- rray__minimum(x, y)
-  container <- vec_type_container2(x, y)
+  container <- vec_ptype_container2(x, y)
   vec_cast_container(out, container)
 }

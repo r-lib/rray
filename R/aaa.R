@@ -7,8 +7,8 @@
 #' @importFrom vctrs vec_slice
 #' @importFrom vctrs vec_init
 #' @importFrom vctrs vec_c
-#' @importFrom vctrs vec_type
-#' @importFrom vctrs vec_type_common
+#' @importFrom vctrs vec_ptype
+#' @importFrom vctrs vec_ptype_common
 #' @importFrom vctrs vec_size_common
 #' @importFrom vctrs vec_math
 #' @importFrom vctrs vec_math_base
@@ -46,10 +46,10 @@
 #' @importFrom vctrs vec_cast.integer
 #' @importFrom vctrs vec_cast.logical
 #'
-#' @importFrom vctrs vec_type2
-#' @importFrom vctrs vec_type2.double
-#' @importFrom vctrs vec_type2.integer
-#' @importFrom vctrs vec_type2.logical
+#' @importFrom vctrs vec_ptype2
+#' @importFrom vctrs vec_ptype2.double
+#' @importFrom vctrs vec_ptype2.integer
+#' @importFrom vctrs vec_ptype2.logical
 NULL
 
 # Required for R 3.1

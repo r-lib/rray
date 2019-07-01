@@ -16,7 +16,7 @@ extern SEXP rray_shared_empty_dbl;
 extern SEXP rray_shared_empty_chr;
 
 extern SEXP fns_vec_cast_inner;
-extern SEXP fns_vec_type_inner2;
+extern SEXP fns_vec_ptype_inner2;
 
 SEXP r_new_environment(SEXP parent, R_len_t size);
 

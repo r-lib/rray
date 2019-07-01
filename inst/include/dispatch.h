@@ -257,7 +257,7 @@
                                                                  \
   Rcpp::List new_dim_names = rray__dim_names2(X, Y);             \
                                                                  \
-  Rcpp::RObject type = vec__type_inner2(X, Y);                   \
+  Rcpp::RObject type = vec__ptype_inner2(X, Y);                  \
   X = vec__cast_inner(X, type);                                  \
   Y = vec__cast_inner(Y, type);                                  \
                                                                  \

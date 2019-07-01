@@ -230,7 +230,7 @@ Rcpp::RObject rray__if_else(Rcpp::RObject condition,
 
   condition = vec__cast_inner(condition, rray_shared_empty_lgl);
 
-  Rcpp::RObject type = vec__type_inner2(true_, false_);
+  Rcpp::RObject type = vec__ptype_inner2(true_, false_);
   true_ = vec__cast_inner(true_, type);
   false_ = vec__cast_inner(false_, type);
 

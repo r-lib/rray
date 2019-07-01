@@ -126,17 +126,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// vec__cast_inner
-SEXP vec__cast_inner(SEXP x, SEXP to);
-RcppExport SEXP _rray_vec__cast_inner(SEXP xSEXP, SEXP toSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type to(toSEXP);
-    rcpp_result_gen = Rcpp::wrap(vec__cast_inner(x, to));
-    return rcpp_result_gen;
-END_RCPP
-}
 // rray__clip
 Rcpp::RObject rray__clip(Rcpp::RObject x, Rcpp::RObject low, Rcpp::RObject high);
 RcppExport SEXP _rray_rray__clip(SEXP xSEXP, SEXP lowSEXP, SEXP highSEXP) {
@@ -708,17 +697,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// vec__type_inner2
-SEXP vec__type_inner2(SEXP x, SEXP y);
-RcppExport SEXP _rray_vec__type_inner2(SEXP xSEXP, SEXP ySEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::traits::input_parameter< SEXP >::type x(xSEXP);
-    Rcpp::traits::input_parameter< SEXP >::type y(ySEXP);
-    rcpp_result_gen = Rcpp::wrap(vec__type_inner2(x, y));
-    return rcpp_result_gen;
-END_RCPP
-}
 // rray__validate_dim
 void rray__validate_dim(Rcpp::IntegerVector dim);
 RcppExport SEXP _rray_rray__validate_dim(SEXP dimSEXP) {
@@ -784,7 +762,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_rray__broadcast", (DL_FUNC) &_rray_rray__broadcast, 2},
     {"_rray_rray__full_like", (DL_FUNC) &_rray_rray__full_like, 2},
     {"_rray_rray__diag", (DL_FUNC) &_rray_rray__diag, 2},
-    {"_rray_vec__cast_inner", (DL_FUNC) &_rray_vec__cast_inner, 2},
     {"_rray_rray__clip", (DL_FUNC) &_rray_rray__clip, 3},
     {"_rray_rray__greater", (DL_FUNC) &_rray_rray__greater, 2},
     {"_rray_rray__greater_equal", (DL_FUNC) &_rray_rray__greater_equal, 2},
@@ -837,7 +814,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rray_is_contiguous_increasing", (DL_FUNC) &_rray_is_contiguous_increasing, 1},
     {"_rray_subset_dim_names", (DL_FUNC) &_rray_subset_dim_names, 2},
     {"_rray_rray__subset", (DL_FUNC) &_rray_rray__subset, 2},
-    {"_rray_vec__type_inner2", (DL_FUNC) &_rray_vec__type_inner2, 2},
     {"_rray_rray__validate_dim", (DL_FUNC) &_rray_rray__validate_dim, 1},
     {"_rray_rray__validate_reshape", (DL_FUNC) &_rray_rray__validate_reshape, 2},
     {"_rray_rray__validate_broadcastable_to_dim", (DL_FUNC) &_rray_rray__validate_broadcastable_to_dim, 2},

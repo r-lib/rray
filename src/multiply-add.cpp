@@ -53,7 +53,7 @@ Rcpp::RObject rray__multiply_add(Rcpp::RObject x, Rcpp::RObject y, Rcpp::RObject
     resized_z_dim_names
   );
 
-  Rcpp::RObject type = vec__type_inner2(vec__type_inner2(x, y), z);
+  Rcpp::RObject type = vec__ptype_inner2(vec__ptype_inner2(x, y), z);
   x = vec__cast_inner(x, type);
   y = vec__cast_inner(y, type);
   z = vec__cast_inner(z, type);
