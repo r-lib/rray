@@ -140,10 +140,10 @@ and has served as a nice benchmark for rray.
 
 ## Notes
 
-Currently, rray does not handle missing values. This is coming, as the
-underlying library xtensor natively supports missing values, however a
-few upstream bugs are currently preventing rray from using those
-features.
+Currently, rray does not handle missing values in arithmetic operations
+and the reducing functions. This is coming, as the underlying library
+xtensor natively supports missing values, however a few upstream bugs
+are currently preventing rray from using those features.
 
 rray will perform best on R 3.6.0 and above. It is able to take
 advantage of a few of the ALTREP features there, which result in less
