@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>vctrs compatibility functions — vec_arith.vctrs_rray • rray</title>
+<title>Find the container type of a pair of vectors — vec_ptype_container2 • rray</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,10 +30,12 @@
 
 
 
-<meta property="og:title" content="vctrs compatibility functions — vec_arith.vctrs_rray" />
+<meta property="og:title" content="Find the container type of a pair of vectors — vec_ptype_container2" />
 
-<meta property="og:description" content="These functions are the extensions that allow rray objects to
-work with vctrs." />
+<meta property="og:description" content="vec_ptype_container2() finds the common container type of two vectors.
+Like vec_ptype2(), vec_ptype_container2() powers coercion but should
+usually not be called directly. Instead, vec_ptype_container_common()
+should be used." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -118,67 +120,60 @@ work with vctrs." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>vctrs compatibility functions</h1>
-    <small class="dont-index">Source: <a href='https://github.com/r-lib/rray/blob/master/R/compat-vctrs-arith.R'><code>R/compat-vctrs-arith.R</code></a>, <a href='https://github.com/r-lib/rray/blob/master/R/compat-vctrs.R'><code>R/compat-vctrs.R</code></a></small>
-    <div class="hidden name"><code>vctrs-compat.Rd</code></div>
+    <h1>Find the container type of a pair of vectors</h1>
+    <small class="dont-index">Source: <a href='https://github.com/r-lib/rray/blob/master/R/container-type2.R'><code>R/container-type2.R</code></a></small>
+    <div class="hidden name"><code>vec_ptype_container2.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>These functions are the extensions that allow rray objects to
-work with vctrs.</p>
+    <p><code>vec_ptype_container2()</code> finds the common container type of two vectors.
+Like <code>vec_ptype2()</code>, <code>vec_ptype_container2()</code> powers coercion but should
+usually not be called directly. Instead, <code><a href='vec_ptype_container.html'>vec_ptype_container_common()</a></code>
+should be used.</p>
     
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for vctrs_rray</span>
-<span class='fu'>vec_arith</span>(<span class='no'>op</span>, <span class='no'>x</span>, <span class='no'>y</span>)
+    <pre class="usage"><span class='fu'>vec_ptype_container2</span>(<span class='no'>x</span>, <span class='no'>y</span>)
 
-<span class='co'># S3 method for vctrs_rray_dbl</span>
-<span class='fu'>vec_ptype2</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='no'>...</span>)
+<span class='co'># S3 method for default</span>
+<span class='fu'>vec_ptype_container2</span>(<span class='no'>x</span>, <span class='no'>y</span>)
 
-<span class='co'># S3 method for vctrs_rray_int</span>
-<span class='fu'>vec_ptype2</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='no'>...</span>)
+<span class='fu'>vec_ptype_container2.logical</span>(<span class='no'>x</span>, <span class='no'>y</span>)
 
-<span class='co'># S3 method for vctrs_rray_lgl</span>
-<span class='fu'>vec_ptype2</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='no'>...</span>)
+<span class='fu'>vec_ptype_container2.integer</span>(<span class='no'>x</span>, <span class='no'>y</span>)
 
-<span class='co'># S3 method for vctrs_rray_int</span>
-<span class='fu'>vec_cast</span>(<span class='no'>x</span>, <span class='no'>to</span>, <span class='no'>...</span>)
+<span class='fu'>vec_ptype_container2.double</span>(<span class='no'>x</span>, <span class='no'>y</span>)
 
-<span class='co'># S3 method for vctrs_rray_dbl</span>
-<span class='fu'>vec_cast</span>(<span class='no'>x</span>, <span class='no'>to</span>, <span class='no'>...</span>)
+<span class='fu'>vec_ptype_container2.character</span>(<span class='no'>x</span>, <span class='no'>y</span>)
 
-<span class='co'># S3 method for vctrs_rray_lgl</span>
-<span class='fu'>vec_cast</span>(<span class='no'>x</span>, <span class='no'>to</span>, <span class='no'>...</span>)</pre>
+<span class='fu'>vec_ptype_container2.vctrs_rray</span>(<span class='no'>x</span>, <span class='no'>y</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>op</th>
-      <td><p>An arithmetic operator as a string.</p></td>
-    </tr>
-    <tr>
       <th>x, y</th>
-      <td><p>Objects.</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>Used to pass along error message information.</p></td>
-    </tr>
-    <tr>
-      <th>to</th>
-      <td><p>Type to cast to.</p></td>
+      <td><p>Vectors.</p></td>
     </tr>
     </table>
     
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'>
+# vec_ptype_container2(1, 2L)
+
+# vec_ptype_container2(1, rray(2L))
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-                </ul>
+            
+      <li><a href="#examples">Examples</a></li>
+    </ul>
 
   </div>
 </div>

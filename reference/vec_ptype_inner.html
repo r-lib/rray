@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>vctrs compatibility functions — vec_arith.vctrs_rray • rray</title>
+<title>Find the inner type of a set of vectors — vec_ptype_inner • rray</title>
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
@@ -30,10 +30,11 @@
 
 
 
-<meta property="og:title" content="vctrs compatibility functions — vec_arith.vctrs_rray" />
+<meta property="og:title" content="Find the inner type of a set of vectors — vec_ptype_inner" />
 
-<meta property="og:description" content="These functions are the extensions that allow rray objects to
-work with vctrs." />
+<meta property="og:description" content="vec_ptype_inner() finds the inner type of a single vector.
+vec_ptype_inner_common() finds the common inner type of multiple
+vectors." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -118,67 +119,79 @@ work with vctrs." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>vctrs compatibility functions</h1>
-    <small class="dont-index">Source: <a href='https://github.com/r-lib/rray/blob/master/R/compat-vctrs-arith.R'><code>R/compat-vctrs-arith.R</code></a>, <a href='https://github.com/r-lib/rray/blob/master/R/compat-vctrs.R'><code>R/compat-vctrs.R</code></a></small>
-    <div class="hidden name"><code>vctrs-compat.Rd</code></div>
+    <h1>Find the inner type of a set of vectors</h1>
+    <small class="dont-index">Source: <a href='https://github.com/r-lib/rray/blob/master/R/inner-type.R'><code>R/inner-type.R</code></a></small>
+    <div class="hidden name"><code>vec_ptype_inner.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>These functions are the extensions that allow rray objects to
-work with vctrs.</p>
+    <p><code>vec_ptype_inner()</code> finds the inner type of a single vector.
+<code>vec_ptype_inner_common()</code> finds the common inner type of multiple
+vectors.</p>
     
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for vctrs_rray</span>
-<span class='fu'>vec_arith</span>(<span class='no'>op</span>, <span class='no'>x</span>, <span class='no'>y</span>)
+    <pre class="usage"><span class='fu'>vec_ptype_inner</span>(<span class='no'>x</span>)
 
-<span class='co'># S3 method for vctrs_rray_dbl</span>
-<span class='fu'>vec_ptype2</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='no'>...</span>)
-
-<span class='co'># S3 method for vctrs_rray_int</span>
-<span class='fu'>vec_ptype2</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='no'>...</span>)
-
-<span class='co'># S3 method for vctrs_rray_lgl</span>
-<span class='fu'>vec_ptype2</span>(<span class='no'>x</span>, <span class='no'>y</span>, <span class='no'>...</span>)
-
-<span class='co'># S3 method for vctrs_rray_int</span>
-<span class='fu'>vec_cast</span>(<span class='no'>x</span>, <span class='no'>to</span>, <span class='no'>...</span>)
-
-<span class='co'># S3 method for vctrs_rray_dbl</span>
-<span class='fu'>vec_cast</span>(<span class='no'>x</span>, <span class='no'>to</span>, <span class='no'>...</span>)
-
-<span class='co'># S3 method for vctrs_rray_lgl</span>
-<span class='fu'>vec_cast</span>(<span class='no'>x</span>, <span class='no'>to</span>, <span class='no'>...</span>)</pre>
+<span class='fu'>vec_ptype_inner_common</span>(<span class='no'>...</span>, <span class='kw'>.ptype</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>op</th>
-      <td><p>An arithmetic operator as a string.</p></td>
-    </tr>
-    <tr>
-      <th>x, y</th>
-      <td><p>Objects.</p></td>
+      <th>x</th>
+      <td><p>A vector.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Used to pass along error message information.</p></td>
+      <td><p>Vectors to determine the common inner type of.</p></td>
     </tr>
     <tr>
-      <th>to</th>
-      <td><p>Type to cast to.</p></td>
+      <th>.ptype</th>
+      <td><p>If not <code>NULL</code>, this overrides the common inner type of <code>...</code>.</p></td>
     </tr>
     </table>
     
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
+    <p>The inner type is a 0-size, 0-shape prototype that represents the
+"inner" type of <code>x</code>. The return value is essentially the
+object form of <code><a href='https://www.rdocumentation.org/packages/base/topics/typeof'>typeof()</a></code>.</p>
+<p>For complex types, a method should be written that returns an
+empty inner type of that input with no shape or size. If that complex type
+can have multiple inner types, the method should be written so that it
+returns the correct inner type of the current input. The return value
+should <em>not</em> have the class of the classed input.</p>
+<p>The common inner type is useful alongside <code><a href='vec_cast_inner.html'>vec_cast_inner()</a></code>.
+For example, <code><a href='rray_bind.html'>rray_bind()</a></code> uses <code>vec_ptype_inner_common()</code>
+to determine the common inner type, and then uses
+<code><a href='vec_cast_inner.html'>vec_cast_inner()</a></code> to cast each of the inputs to the same inner
+type before binding them together.</p>
+    
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'># The inner type of base R atomics uses their constructor
+# vec_ptype_inner(1)
+
+# The inner type of an rray is an empty base R object
+# vec_ptype_inner(rray(1))
+
+# Find the common inner type of multiple inputs
+# (the double type wins, the container types are disregarded)
+# vec_ptype_inner_common(1, TRUE, rray(1L))
+
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-                </ul>
+      
+      <li><a href="#details">Details</a></li>
+      
+      <li><a href="#examples">Examples</a></li>
+    </ul>
 
   </div>
 </div>
