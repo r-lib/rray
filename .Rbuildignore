@@ -6,3 +6,4 @@
 ^LICENSE\.md$
 ^rray\.Rproj$
 ^\.Rproj\.user$
+^cran-comments\.md$
