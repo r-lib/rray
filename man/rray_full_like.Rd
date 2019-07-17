@@ -15,7 +15,7 @@ rray_zeros_like(x)
 \arguments{
 \item{x}{A vector, matrix, array or rray.}
 
-\item{value}{A value coercable to the same \emph{inner} type as \code{x} that will be
+\item{value}{A value coercible to the same \emph{inner} type as \code{x} that will be
 used to fill the result (If \code{x} is an integer matrix, then \code{value} will be
 coerced to an integer).}
 }

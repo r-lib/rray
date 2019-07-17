@@ -10,7 +10,7 @@
 #' type as `x` describing if that element of `x` is duplicated elsewhere.
 #'
 #' * `rray_duplicate_id()`: returns an integer with the same shape and
-#' type as `x` giving the location of the first occurence of the value.
+#' type as `x` giving the location of the first occurrence of the value.
 #'
 #' @param x A vector, matrix, array, or rray.
 #'

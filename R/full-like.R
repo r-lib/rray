@@ -15,7 +15,7 @@
 #'
 #' @param x A vector, matrix, array or rray.
 #'
-#' @param value A value coercable to the same _inner_ type as `x` that will be
+#' @param value A value coercible to the same _inner_ type as `x` that will be
 #' used to fill the result (If `x` is an integer matrix, then `value` will be
 #' coerced to an integer).
 #'
