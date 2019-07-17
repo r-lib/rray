@@ -19,16 +19,15 @@
                                                                \
   return out
 
-// a general template for xt reducers
-#define XT_REDUCER_IMPL(XT_FUN, X, AXES)                                       \
-  if (r_is_null(AXES)) {                                                       \
-    return XT_FUN(X, xt::keep_dims | xt::evaluation_strategy::immediate);      \
-  }                                                                            \
-                                                                               \
-  using size_vec = typename std::vector<std::size_t>;                          \
-  size_vec xt_axes = Rcpp::as<size_vec>(AXES);                                 \
-                                                                               \
-  return XT_FUN(X, xt_axes, xt::keep_dims | xt::evaluation_strategy::immediate)
+#define REDUCER_IMPL(FUN, X, AXES)                                            \
+  if (r_is_null(AXES)) {                                                      \
+    return FUN(X, xt::keep_dims | xt::evaluation_strategy::immediate);        \
+  }                                                                           \
+                                                                              \
+  using size_vec = typename std::vector<std::size_t>;                         \
+  size_vec xt_axes = Rcpp::as<size_vec>(AXES);                                \
+                                                                              \
+  return FUN(X, xt::keep_dims | xt::evaluation_strategy::immediate)
 
 // -----------------------------------------------------------------------------
 
@@ -36,7 +35,7 @@
 
 template <typename T>
 xt::rarray<double> rray__sum_impl(const xt::rarray<T>& x, Rcpp::RObject axes) {
-  XT_REDUCER_IMPL(xt::sum, x, axes);
+  REDUCER_IMPL(xt::sum, x, axes);
 }
 
 // [[Rcpp::export(rng = false)]]
@@ -48,7 +47,7 @@ Rcpp::RObject rray__sum(Rcpp::RObject x, Rcpp::RObject axes) {
 
 template <typename T>
 xt::rarray<double> rray__prod_impl(const xt::rarray<T>& x, Rcpp::RObject axes) {
-  XT_REDUCER_IMPL(xt::prod, x, axes);
+  REDUCER_IMPL(xt::prod, x, axes);
 }
 
 // [[Rcpp::export(rng = false)]]
@@ -60,7 +59,7 @@ Rcpp::RObject rray__prod(Rcpp::RObject x, Rcpp::RObject axes) {
 
 template <typename T>
 xt::rarray<double> rray__mean_impl(const xt::rarray<T>& x, Rcpp::RObject axes) {
-  XT_REDUCER_IMPL(xt::mean, x, axes);
+  REDUCER_IMPL(xt::mean, x, axes);
 }
 
 // [[Rcpp::export(rng = false)]]
