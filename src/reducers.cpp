@@ -27,7 +27,7 @@
   using size_vec = typename std::vector<std::size_t>;                         \
   size_vec xt_axes = Rcpp::as<size_vec>(AXES);                                \
                                                                               \
-  return FUN(X, xt::keep_dims | xt::evaluation_strategy::immediate)
+  return FUN(X, xt_axes, xt::keep_dims | xt::evaluation_strategy::immediate)
 
 // -----------------------------------------------------------------------------
 
