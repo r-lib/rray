@@ -19,6 +19,9 @@ rray_duplicate_id(x, axes = NULL)
 \item{axes}{An integer vector. The default of \code{NULL} looks for duplicates
 over all axes.}
 }
+\value{
+See the description for return value details.
+}
 \description{
 \itemize{
 \item \code{rray_duplicate_any()}: returns a logical with the same shape and type

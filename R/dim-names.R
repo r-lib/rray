@@ -43,6 +43,12 @@
 #' @param meta A single character representing an optional "meta" name
 #' assigned to the `axis` names. If `NULL`, the current meta name is kept.
 #'
+#' @return
+#'
+#' `rray_dim_names()` returns a list of dimension names. The other names
+#' functions return character vectors, or `NULL`, corresponding to the
+#' names of a particular axis.
+#'
 #' @name dim-names
 #'
 #' @examples

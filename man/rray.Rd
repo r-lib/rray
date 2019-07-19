@@ -19,6 +19,9 @@ be the same length as the total number of dimensions
 a character vector the same size as the corresponding dimension, or
 \code{character(0)} for no names for that dimension.}
 }
+\value{
+An rray.
+}
 \description{
 Constructor for building rray objects. Existing vectors, matrices, and
 arrays can be used to build the rray, but their dimension names are not

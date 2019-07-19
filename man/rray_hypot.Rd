@@ -9,6 +9,10 @@ rray_hypot(x, y)
 \arguments{
 \item{x, y}{A vector, matrix, array or rray.}
 }
+\value{
+An object of the common type of \code{x} and \code{y} containing the square root
+of the sum of squares.
+}
 \description{
 \code{rray_hypot()} computes the elementwise square root of the sum
 of squares of \code{x} and \code{y}.

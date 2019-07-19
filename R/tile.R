@@ -5,6 +5,15 @@
 #' @param times An integer vector. The number of times to repeat the
 #' array along an axis.
 #'
+#' @details
+#'
+#' `rray_tile()` should not be used as a replacement for `rray_broadcast()`,
+#' as it is generally less efficient.
+#'
+#' @return
+#'
+#' `x` with dimensions repeated as described by `times`.
+#'
 #' @examples
 #'
 #' x <- matrix(1:5)

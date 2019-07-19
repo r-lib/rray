@@ -29,6 +29,9 @@ dimension.
 Before assignment, \code{value} is cast to the type and dimension of \code{x} after
 extracting elements with \code{...}.}
 }
+\value{
+A 1D vector of elements extracted from \code{x}.
+}
 \description{
 \code{rray_extract()} is the counterpart to \code{\link[=rray_yank]{rray_yank()}}. It extracts elements
 from an array \emph{by index}. It \emph{always} drops dimensions

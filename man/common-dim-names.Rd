@@ -13,6 +13,9 @@ rray_dim_names2(x, y)
 \arguments{
 \item{x, y, ...}{Objects to find common dimensions for.}
 }
+\value{
+A list of the common dimension names of the inputs.
+}
 \description{
 Obtain a list of common dimension names among a set of objects. For
 interactive use, \code{rray_dim_names_common()} is more useful.

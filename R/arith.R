@@ -11,6 +11,11 @@
 #' been exported, such as `%b+%`, which will perform addition with
 #' broadcasting no matter what type the input is.
 #'
+#' @return
+#'
+#' The value of the arithmetic operation, with dimensions identical to the
+#' common dimensions of the input.
+#'
 #' @param x,y A pair of vectors.
 #'
 #' @examples

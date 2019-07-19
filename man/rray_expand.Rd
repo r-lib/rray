@@ -12,6 +12,9 @@ rray_expand(x, axis)
 \item{axis}{An integer of size \code{1} specifying the location of the new
 dimension.}
 }
+\value{
+\code{x} with a new dimension inserted at the \code{axis}.
+}
 \description{
 \code{rray_expand()} inserts a new dimension at the \code{axis} dimension. This
 expands the number of dimensions of \code{x} by \code{1}.

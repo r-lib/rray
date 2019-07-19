@@ -15,6 +15,9 @@ inner type of \code{x}.}
 \item{high}{A single value. The upper bound. \code{high} is cast to the
 inner type of \code{x}.}
 }
+\value{
+\code{x} bounded by \code{low} and \code{high}.
+}
 \description{
 \code{rray_clip()} sets \emph{inclusive} lower and upper bounds on the values of \code{x}.
 }

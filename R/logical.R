@@ -28,6 +28,13 @@
 #' comparison. On the other hand, comparing dimensions `0` and `2` is an error
 #' because neither are `1`, and they are not identical.
 #'
+#' @return
+#'
+#' The value of the logical comparison, with broadcasting.
+#'
+#' `rray_any()` and `rray_all()` return a logical object with the same shape
+#' as `x` everywhere except along `axes`, which have been reduced to size 1.
+#'
 #' @examples
 #' x <- rray(TRUE, c(2, 2, 3))
 #' y <- matrix(c(TRUE, FALSE))

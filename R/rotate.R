@@ -29,6 +29,10 @@
 #' `from = 3` and `to = 1` would give the same shape. The "direction"
 #' of how these are rotated is controlled by the ordering of `from` and `to`.
 #'
+#' @return
+#'
+#' `x` rotated along the axis described by `from` and `to`.
+#'
 #' @examples
 #' # ---------------------------------------------------------------------------
 #' # 2D example

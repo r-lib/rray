@@ -17,6 +17,10 @@
 #' @param axes An integer vector. The default of `NULL` looks for duplicates
 #' over all axes.
 #'
+#' @return
+#'
+#' See the description for return value details.
+#'
 #' @seealso
 #'
 #' [rray_unique()] for functions that work with the dual of duplicated values:

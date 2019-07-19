@@ -21,6 +21,11 @@
 #'
 #' @param x,y Arrays or rrays that are either 1D or 2D.
 #'
+#' @return
+#'
+#' The result of the matrix multiplication of `x` and `y`. See `%*%` for the
+#' exact details. The common type of `x` and `y` will be preserved.
+#'
 #' @examples
 #' rray_dot(1:5, 1:5)
 #'

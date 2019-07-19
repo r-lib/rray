@@ -11,6 +11,9 @@ rray_broadcast(x, dim)
 
 \item{dim}{An integer vector. The dimension to broadcast to.}
 }
+\value{
+\code{x} broadcast to the new dimensions.
+}
 \description{
 \code{rray_broadcast()} will \emph{broadcast} the dimensions of the current
 object to a new dimension.

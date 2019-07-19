@@ -23,6 +23,10 @@
 #' mainly helpful for higher dimensional objects, when you need to subset
 #' along, for example, only the 4th dimension.
 #'
+#' @return
+#'
+#' `x` with the `i` elements extracted from the `axis`.
+#'
 #' @examples
 #' x <- rray(1:16, c(2, 2, 2, 2))
 #'

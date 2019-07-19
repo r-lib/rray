@@ -14,6 +14,10 @@ computes along rows, reducing the number of rows to 1.
 \code{2} does the same, but along columns, and so on for higher dimensions.
 The default of \code{NULL} first flattens \code{x} to 1-D.}
 }
+\value{
+An integer object of the same type and shape as \code{x}, except along \code{axis},
+which has been reduced to size 1.
+}
 \description{
 \code{rray_min_pos()} returns the integer position of the minimum value over an
 axis.

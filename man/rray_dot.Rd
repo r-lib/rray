@@ -9,6 +9,10 @@ rray_dot(x, y)
 \arguments{
 \item{x, y}{Arrays or rrays that are either 1D or 2D.}
 }
+\value{
+The result of the matrix multiplication of \code{x} and \code{y}. See \code{\%*\%} for the
+exact details. The common type of \code{x} and \code{y} will be preserved.
+}
 \description{
 \code{rray_dot()} works exactly like the base R function, \code{\%*\%}, but preserves
 the rray class where applicable. For the exact details of how 1D objects

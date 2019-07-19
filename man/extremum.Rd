@@ -13,6 +13,9 @@ rray_minimum(x, y)
 \arguments{
 \item{x, y}{A vector, matrix, array or rray.}
 }
+\value{
+The elementwise max/min of \code{x} and \code{y}, with broadcasting.
+}
 \description{
 \code{rray_maximum()} and \code{rray_minimum()} compute the elementwise max / min
 between \code{x} and \code{y}.

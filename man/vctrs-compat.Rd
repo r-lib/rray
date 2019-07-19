@@ -34,6 +34,9 @@
 
 \item{to}{Type to cast to.}
 }
+\value{
+See the corresponding vctrs function for the exact return value.
+}
 \description{
 These functions are the extensions that allow rray objects to
 work with vctrs.

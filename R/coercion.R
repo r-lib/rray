@@ -8,6 +8,10 @@
 #' @param x An object to coerce to an array.
 #' @param ... Objects passed on to methods.
 #'
+#' @return
+#'
+#' An array.
+#'
 #' @seealso [as_matrix()]
 #'
 #' @examples
@@ -69,6 +73,10 @@ as.array.vctrs_rray <- as_array.vctrs_rray
 #'
 #' @param x An object to coerce to a matrix.
 #' @param ... Objects passed on to methods.
+#'
+#' @return
+#'
+#' A matrix.
 #'
 #' @seealso [as_array()]
 #'
@@ -159,6 +167,10 @@ validate_matrix_coercible_dim <- function(dim) {
 #' it has any.
 #'
 #' @param x An object to coerce to an rray.
+#'
+#' @return
+#'
+#' An rray.
 #'
 #' @examples
 #'

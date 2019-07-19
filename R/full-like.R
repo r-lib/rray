@@ -19,6 +19,10 @@
 #' used to fill the result (If `x` is an integer matrix, then `value` will be
 #' coerced to an integer).
 #'
+#' @return
+#'
+#' An object with the same type as `x`, but filled with `value`.
+#'
 #' @examples
 #'
 #' x <- rray(1:10, c(5, 2))

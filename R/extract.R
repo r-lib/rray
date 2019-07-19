@@ -19,6 +19,10 @@
 #' `rray_extract()` is similar to the traditional behavior of
 #' `x[[i, j, ...]]`, but allows each subscript to have length >1.
 #'
+#' @return
+#'
+#' A 1D vector of elements extracted from `x`.
+#'
 #' @examples
 #' x <- rray(1:16, c(2, 4, 2), dim_names = list(c("r1", "r2"), NULL, NULL))
 #'

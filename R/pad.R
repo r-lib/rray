@@ -4,6 +4,10 @@
 #' the underlying `rray_subset()` function) to easily subset into higher
 #' dimensions without having to explicitly list the intermediate commas.
 #'
+#' @return
+#'
+#' An object that can be used to pad dimensions with when subsetting.
+#'
 #' @examples
 #' x <- rray(1:4, c(1, 1, 2, 2))
 #'

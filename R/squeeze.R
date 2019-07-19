@@ -21,6 +21,10 @@
 #' @param axes An integer vector specifying the size 1 dimensions to drop. If
 #' `NULL`, all size 1 dimensions are dropped.
 #'
+#' @return
+#'
+#' `x` with the `axes` dropped, if possible.
+#'
 #' @examples
 #' # (10, 1) -> (10)
 #' x <- rray(1:10, c(10, 1))

@@ -27,6 +27,12 @@ rray_all(x, axes = NULL)
 way. \code{2} does the same, but with the columns, and so on for higher
 dimensions. The default reduces along all axes.}
 }
+\value{
+The value of the logical comparison, with broadcasting.
+
+\code{rray_any()} and \code{rray_all()} return a logical object with the same shape
+as \code{x} everywhere except along \code{axes}, which have been reduced to size 1.
+}
 \description{
 These functions perform logical operations on arrays, with broadcasting. They
 power the logical operators of \code{&}, \code{|}, and \code{!} with rrays, but are

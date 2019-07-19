@@ -14,6 +14,9 @@ rray_dim_common(...)
 
 \item{...}{Objects to find common dimensions for.}
 }
+\value{
+An integer vector containing the common dimensions.
+}
 \description{
 \itemize{
 \item \code{rray_dim()} finds the dimension of a single object.

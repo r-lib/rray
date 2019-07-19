@@ -43,6 +43,10 @@ rray_opposite(x)
 \arguments{
 \item{x, y}{A pair of vectors.}
 }
+\value{
+The value of the arithmetic operation, with dimensions identical to the
+common dimensions of the input.
+}
 \description{
 These functions provide the implementations for their underlying infix
 operators (i.e. \code{rray_add()} powers \code{+}). All operators apply broadcasting

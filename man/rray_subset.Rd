@@ -37,6 +37,12 @@ assignment, \code{value} is cast to the type and dimension of \code{x[...]}.}
 \item{drop}{Ignored, but preserved for better error messages with code
 that might have used arrays before.}
 }
+\value{
+\code{x} subset by the specification defined in the \code{...}.
+
+The assignment variants return \code{x} modified by having the elements of
+\code{value} inserted into the positions defined by \code{...}.
+}
 \description{
 \code{rray_subset()} extracts dimensions from an array \emph{by index}. It powers \code{[}
 for rray objects. Notably, it \emph{never} drops dimensions, and ignores
@@ -77,9 +83,7 @@ x[,1]
 # R. It requires you to fully specify the dimensions of `x`.
 # This would throw an error.
 x_arr <- as_array(x)
-\dontrun{
-x_arr[,1]
-}
+try(x_arr[,1])
 
 # To get the same behavior, you have to do:
 x_arr[, 1, , drop = FALSE]

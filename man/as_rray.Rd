@@ -9,6 +9,9 @@ as_rray(x)
 \arguments{
 \item{x}{An object to coerce to an rray.}
 }
+\value{
+An rray.
+}
 \description{
 Coerce \code{x} to an rray. It will keep its dimensions and dimension names if
 it has any.

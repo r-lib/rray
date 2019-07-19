@@ -49,6 +49,10 @@
 #' @param x The object to broadcast.
 #' @param dim An integer vector. The dimension to broadcast to.
 #'
+#' @return
+#'
+#' `x` broadcast to the new dimensions.
+#'
 #' @examples
 #'
 #' # From 5x1 ...

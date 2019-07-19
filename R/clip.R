@@ -10,6 +10,10 @@
 #' @param high A single value. The upper bound. `high` is cast to the
 #' inner type of `x`.
 #'
+#' @return
+#'
+#' `x` bounded by `low` and `high`.
+#'
 #' @examples
 #'
 #' # bound `x` between 1 and 5

@@ -17,6 +17,9 @@ To go \emph{clockwise}, reverse \code{from} and \code{to}.}
 \item{times}{A single integer. The number of times to perform the rotation.
 One of: \code{1}, \code{2}, \code{3}. Or, equivalently: \code{-3}, \code{-2}, \code{-1}.}
 }
+\value{
+\code{x} rotated along the axis described by \code{from} and \code{to}.
+}
 \description{
 \code{rray_rotate()} rotates an array along the plane defined by \code{c(from, to)}. It
 can be thought of as sequentially rotating the array 90 degrees a set number

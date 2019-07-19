@@ -29,6 +29,9 @@ rray_slice(x, i, axis)
 \code{rray_slice(x, i, axis)}. It will be cast to the type and dimension
 of the slice of \code{x}.}
 }
+\value{
+\code{x} with the \code{i} elements extracted from the \code{axis}.
+}
 \description{
 \code{rray_slice()} is a shortcut wrapper around \code{\link[=rray_subset]{rray_subset()}} that is useful
 for easily subsetting along a single axis.

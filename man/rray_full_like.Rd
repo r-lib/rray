@@ -19,6 +19,9 @@ rray_zeros_like(x)
 used to fill the result (If \code{x} is an integer matrix, then \code{value} will be
 coerced to an integer).}
 }
+\value{
+An object with the same type as \code{x}, but filled with \code{value}.
+}
 \description{
 \itemize{
 \item \code{rray_full_like()} creates an array with the same type and size as \code{x}, but
