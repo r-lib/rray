@@ -66,8 +66,7 @@
 #' rray_broadcast(x, c(5, 2, 3))
 #'
 #' # You cannot broadcast down in dimensions
-#' # rray_broadcast(x, 5)
-#' # > Error: Cannot decrease dimensions of `x`
+#' try(rray_broadcast(x, 5))
 #'
 #' @export
 rray_broadcast <- function(x, dim) {

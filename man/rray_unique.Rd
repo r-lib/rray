@@ -67,16 +67,16 @@ x_dup_rows <- rray_set_row_names(x_dup_rows, c("r1", "r2"))
 x_dup_rows <- rray_set_col_names(x_dup_rows, c("c1", "c2"))
 
 # Duplicate rows
-# x_dup_rows[1] == x_dup_rows[2]
+# `x_dup_rows[1] == x_dup_rows[2]`
 rray_unique(x_dup_rows, 1)
 
 # Duplicate cols
-# x_dup_cols[, 1] == x_dup_cols[, 2]
+# `x_dup_cols[, 1] == x_dup_cols[, 2]`
 x_dup_cols <- rray_transpose(x_dup_rows, c(2, 1, 3))
 rray_unique(x_dup_cols, 2)
 
 # Duplicate 3rd dim
-# x_dup_layers[, , 1] == x_dup_layers[, , 2]
+# `x_dup_layers[, , 1] == x_dup_layers[, , 2]`
 x_dup_layers <- rray_transpose(x_dup_rows, c(2, 3, 1))
 rray_unique(x_dup_layers, 3)
 

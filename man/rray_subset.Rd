@@ -94,7 +94,7 @@ x[pad(), 1]
 x[, , 1]
 
 # You can assign to index locations with
-# x[...] <- value
+# `x[...] <- value`
 # This assigns 99 to the entire first row
 x[1] <- 99
 x

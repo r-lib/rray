@@ -66,7 +66,6 @@ rray(1:5, dim = c(5, 2))
 rray_broadcast(x, c(5, 2, 3))
 
 # You cannot broadcast down in dimensions
-# rray_broadcast(x, 5)
-# > Error: Cannot decrease dimensions of `x`
+try(rray_broadcast(x, 5))
 
 }

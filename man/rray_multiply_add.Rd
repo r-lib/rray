@@ -14,7 +14,6 @@ rray_multiply_add(x, y, z)
 It is more efficient than simply doing those operations in sequence.
 }
 \examples{
-# 2 * 3 + 5
 rray_multiply_add(2, 3, 5)
 
 # Using broadcasting
