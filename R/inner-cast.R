@@ -32,19 +32,20 @@
 #' # Casting from logical to double.
 #' # Not worrying about the fact that `to`
 #' # is an rray.
-#' # vec_cast_inner(TRUE, rray(1))
+#' vec_cast_inner(TRUE, rray(1))
 #'
 #' # Casting from a double to a logical
 #' # Note that the rray attributes are lost.
 #' # This is expected as the only thing
 #' # `vec_cast_inner()` cares about is
 #' # the internal type
-#' # vec_cast_inner(rray(1), TRUE)
+#' vec_cast_inner(rray(1), TRUE)
 #'
 #' # Shape of `x` is kept
-#' # vec_cast_inner(matrix(c(TRUE, FALSE)), rray(1))
+#' vec_cast_inner(matrix(c(TRUE, FALSE)), rray(1))
 #'
 #' @keywords internal
+#' @noRd
 vec_cast_inner <- function(x, to) {
 
   if (is.null(x) || is.null(to)) {
@@ -56,14 +57,12 @@ vec_cast_inner <- function(x, to) {
 
 # ------------------------------------------------------------------------------
 
-#' @rdname vec_cast_inner
 vec_cast_inner.default <- function(x, to) {
   stop_incompatible_cast(x, to)
 }
 
 # ------------------------------------------------------------------------------
 
-#' @rdname vec_cast_inner
 vec_cast_inner.logical <- function(x, to) {
   UseMethod("vec_cast_inner.logical")
 }
@@ -102,7 +101,6 @@ vec_cast_inner.logical.vctrs_rray_lgl <- function(x, to) {
 
 # ------------------------------------------------------------------------------
 
-#' @rdname vec_cast_inner
 vec_cast_inner.integer <- function(x, to) {
   UseMethod("vec_cast_inner.integer")
 }
@@ -141,7 +139,6 @@ vec_cast_inner.integer.vctrs_rray_lgl <- function(x, to) {
 
 # ------------------------------------------------------------------------------
 
-#' @rdname vec_cast_inner
 vec_cast_inner.double <- function(x, to) {
   UseMethod("vec_cast_inner.double")
 }
@@ -180,7 +177,6 @@ vec_cast_inner.double.vctrs_rray_lgl <- function(x, to) {
 
 # ------------------------------------------------------------------------------
 
-#' @rdname vec_cast_inner
 vec_cast_inner.character <- function(x, to) {
   UseMethod("vec_cast_inner.character")
 }
@@ -219,7 +215,6 @@ vec_cast_inner.character.vctrs_rray_lgl <- function(x, to) {
 
 # ------------------------------------------------------------------------------
 
-#' @rdname vec_cast_inner
 vec_cast_inner.vctrs_rray_lgl <- function(x, to) {
   UseMethod("vec_cast_inner.vctrs_rray_lgl")
 }
@@ -258,7 +253,6 @@ vec_cast_inner.vctrs_rray_lgl.vctrs_rray_lgl <- function(x, to) {
 
 # ------------------------------------------------------------------------------
 
-#' @rdname vec_cast_inner
 vec_cast_inner.vctrs_rray_dbl <- function(x, to) {
   UseMethod("vec_cast_inner.vctrs_rray_dbl")
 }
@@ -297,7 +291,6 @@ vec_cast_inner.vctrs_rray_dbl.vctrs_rray_lgl <- function(x, to) {
 
 # ------------------------------------------------------------------------------
 
-#' @rdname vec_cast_inner
 vec_cast_inner.vctrs_rray_int <- function(x, to) {
   UseMethod("vec_cast_inner.vctrs_rray_int")
 }
@@ -336,7 +329,6 @@ vec_cast_inner.vctrs_rray_int.vctrs_rray_lgl <- function(x, to) {
 
 # ------------------------------------------------------------------------------
 
-#' @rdname vec_cast_inner
 vec_cast_inner_common <- function(..., .to = NULL) {
   args <- list2(...)
   type <- vec_ptype_inner_common(!!!args, .ptype = .to)

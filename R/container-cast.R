@@ -33,20 +33,21 @@
 #' @examples
 #'
 #' # Upcasting to an rray. Still a logical
-#' # vec_cast_container(TRUE, rray(1))
+#' vec_cast_container(TRUE, rray(1))
 #'
 #' # Downcasting to a double, no longer an rray
 #' # (the "container" here is just a base R object)
-#' # vec_cast_container(rray(1), TRUE)
+#' vec_cast_container(rray(1), TRUE)
 #'
 #' # Shape of `x` is kept
-#' # vec_cast_container(matrix(1:5), rray(1))
+#' vec_cast_container(matrix(1:5), rray(1))
 #'
 #' # Dim names of `x` are kept
 #' x <- rray(1:2, dim_names = list(c("r1", "r2")))
-#' # vec_cast_container(x, 1)
+#' vec_cast_container(x, 1)
 #'
 #' @keywords internal
+#' @noRd
 vec_cast_container <- function(x, to) {
 
   if (is.null(x) || is.null(to)) {
@@ -58,14 +59,12 @@ vec_cast_container <- function(x, to) {
 
 # ------------------------------------------------------------------------------
 
-#' @rdname vec_cast_container
 vec_cast_container.default <- function(x, to) {
   stop_incompatible_cast(x, to)
 }
 
 # ------------------------------------------------------------------------------
 
-#' @rdname vec_cast_container
 vec_cast_container.logical <- function(x, to) {
   UseMethod("vec_cast_container.logical")
 }
@@ -92,7 +91,6 @@ vec_cast_container.logical.vctrs_rray <- function(x, to) {
 
 # ------------------------------------------------------------------------------
 
-#' @rdname vec_cast_container
 vec_cast_container.double <- function(x, to) {
   UseMethod("vec_cast_container.double")
 }
@@ -119,7 +117,6 @@ vec_cast_container.double.vctrs_rray <- function(x, to) {
 
 # ------------------------------------------------------------------------------
 
-#' @rdname vec_cast_container
 vec_cast_container.integer <- function(x, to) {
   UseMethod("vec_cast_container.integer")
 }
@@ -146,7 +143,6 @@ vec_cast_container.integer.vctrs_rray <- function(x, to) {
 
 # ------------------------------------------------------------------------------
 
-#' @rdname vec_cast_container
 vec_cast_container.vctrs_rray <- function(x, to) {
   UseMethod("vec_cast_container.vctrs_rray")
 }
@@ -170,7 +166,6 @@ vec_cast_container.vctrs_rray.vctrs_rray <- function(x, to) {
 
 # ------------------------------------------------------------------------------
 
-#' @rdname vec_cast_container
 vec_cast_container_common <- function(..., .to = NULL) {
   args <- list2(...)
   container <- vec_ptype_container_common(!!!args, .ptype = .to)

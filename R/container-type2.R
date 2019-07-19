@@ -9,11 +9,12 @@
 #'
 #' @examples
 #'
-#' # vec_ptype_container2(1, 2L)
+#' vec_ptype_container2(1, 2L)
 #'
-#' # vec_ptype_container2(1, rray(2L))
+#' vec_ptype_container2(1, rray(2L))
 #'
 #' @keywords internal
+#' @noRd
 vec_ptype_container2 <- function(x, y) {
 
   if (is.null(x)) {
@@ -29,14 +30,12 @@ vec_ptype_container2 <- function(x, y) {
 
 # ------------------------------------------------------------------------------
 
-#' @rdname vec_ptype_container2
 vec_ptype_container2.default <- function(x, y) {
   stop_incompatible_type(x, y)
 }
 
 # ------------------------------------------------------------------------------
 
-#' @rdname vec_ptype_container2
 vec_ptype_container2.logical <- function(x, y) {
   UseMethod("vec_ptype_container2.logical")
 }
@@ -61,7 +60,6 @@ vec_ptype_container2.logical.vctrs_rray <- function(x, y) {
 
 # ------------------------------------------------------------------------------
 
-#' @rdname vec_ptype_container2
 vec_ptype_container2.integer <- function(x, y) {
   UseMethod("vec_ptype_container2.integer")
 }
@@ -82,7 +80,6 @@ vec_ptype_container2.integer.vctrs_rray <- vec_ptype_container2.logical.vctrs_rr
 
 # ------------------------------------------------------------------------------
 
-#' @rdname vec_ptype_container2
 vec_ptype_container2.double <- function(x, y) {
   UseMethod("vec_ptype_container2.double")
 }
@@ -103,7 +100,6 @@ vec_ptype_container2.double.vctrs_rray <- vec_ptype_container2.logical.vctrs_rra
 
 # ------------------------------------------------------------------------------
 
-#' @rdname vec_ptype_container2
 vec_ptype_container2.character <- function(x, y) {
   UseMethod("vec_ptype_container2.character")
 }
@@ -124,7 +120,6 @@ vec_ptype_container2.character.vctrs_rray <- vec_ptype_container2.logical.vctrs_
 
 # ------------------------------------------------------------------------------
 
-#' @rdname vec_ptype_container2
 vec_ptype_container2.vctrs_rray <- function(x, y) {
   UseMethod("vec_ptype_container2.vctrs_rray")
 }
