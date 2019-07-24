@@ -63,7 +63,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rray</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -95,6 +95,9 @@
       <a href="../articles/toolkit.html">Toolkit</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       
@@ -142,6 +145,10 @@
       <td><p>Objects passed on to methods.</p></td>
     </tr>
     </table>
+    
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>A matrix.</p>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
@@ -223,9 +230,9 @@ would not be.</p>
 #&gt; </span><span style='color: #555555;'> 41. </span><span>                            │     └─base:::tryCatchOne(expr, names, parentenv, handlers[[1L]])
 #&gt; </span><span style='color: #555555;'> 42. </span><span>                            │       └─base:::doTryCatch(return(expr), name, parentenv, handler)
 #&gt; </span><span style='color: #555555;'> 43. </span><span>                            ├─rray::as_matrix(y)
-#&gt; </span><span style='color: #555555;'> 44. </span><span>                            └─rray:::as_matrix.vctrs_rray(y) </span><span style='color: #555555;'>/home/travis/build/r-lib/rray/R/coercion.R:90:2</span><span>
-#&gt; </span><span style='color: #555555;'> 45. </span><span>                              └─rray:::validate_matrix_coercible_dim(dim) </span><span style='color: #555555;'>/home/travis/build/r-lib/rray/R/coercion.R:102:2</span><span>
-#&gt; </span><span style='color: #555555;'> 46. </span><span>                                └─rray:::glubort(...) </span><span style='color: #555555;'>/home/travis/build/r-lib/rray/R/coercion.R:146:2</span><span></div><div class='input'>
+#&gt; </span><span style='color: #555555;'> 44. </span><span>                            └─rray:::as_matrix.vctrs_rray(y) </span><span style='color: #555555;'>/home/travis/build/r-lib/rray/R/coercion.R:98:2</span><span>
+#&gt; </span><span style='color: #555555;'> 45. </span><span>                              └─rray:::validate_matrix_coercible_dim(dim) </span><span style='color: #555555;'>/home/travis/build/r-lib/rray/R/coercion.R:110:2</span><span>
+#&gt; </span><span style='color: #555555;'> 46. </span><span>                                └─rray:::glubort(...) </span><span style='color: #555555;'>/home/travis/build/r-lib/rray/R/coercion.R:154:2</span><span></div><div class='input'>
 </div></span></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -233,6 +240,8 @@ would not be.</p>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       
+      <li><a href="#value">Value</a></li>
+
       <li><a href="#details">Details</a></li>
 
       <li><a href="#see-also">See also</a></li>

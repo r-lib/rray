@@ -65,7 +65,7 @@ trailing commas." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rray</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -97,6 +97,9 @@ trailing commas." />
       <a href="../articles/toolkit.html">Toolkit</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       
@@ -173,6 +176,12 @@ assignment, <code>value</code> is cast to the type and dimension of <code>x[...]
 that might have used arrays before.</p></td>
     </tr>
     </table>
+    
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p><code>x</code> subset by the specification defined in the <code>...</code>.</p>
+<p>The assignment variants return <code>x</code> modified by having the elements of
+<code>value</code> inserted into the positions defined by <code>...</code>.</p>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
@@ -263,9 +272,8 @@ casting <code>x</code> to <code>value</code>.</p></li>
 <span class='co'># Notice that you can't actually do the above with base</span>
 <span class='co'># R. It requires you to fully specify the dimensions of `x`.</span>
 <span class='co'># This would throw an error.</span>
-<span class='no'>x_arr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='as_array.html'>as_array</a></span>(<span class='no'>x</span>)</div><span class='co'># NOT RUN {</span>
-<span class='no'>x_arr</span>[,<span class='fl'>1</span>]
-<span class='co'># }</span><div class='input'>
+<span class='no'>x_arr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='as_array.html'>as_array</a></span>(<span class='no'>x</span>)
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/try'>try</a></span>(<span class='no'>x_arr</span>[,<span class='fl'>1</span>])</div><div class='output co'>#&gt; Error in x_arr[, 1] : incorrect number of dimensions</div><div class='input'>
 <span class='co'># To get the same behavior, you have to do:</span>
 <span class='no'>x_arr</span>[, <span class='fl'>1</span>, , <span class='kw'>drop</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>]</div><div class='output co'>#&gt; , , 1
 #&gt; 
@@ -309,7 +317,7 @@ casting <code>x</code> to <code>value</code>.</p></li>
 #&gt; [2,]    2    4
 #&gt; </div><div class='input'>
 <span class='co'># You can assign to index locations with</span>
-<span class='co'># x[...] &lt;- value</span>
+<span class='co'># `x[...] &lt;- value`</span>
 <span class='co'># This assigns 99 to the entire first row</span>
 <span class='no'>x</span>[<span class='fl'>1</span>] <span class='kw'>&lt;-</span> <span class='fl'>99</span>
 <span class='no'>x</span></div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[,2,2][2]&gt;
@@ -370,6 +378,8 @@ casting <code>x</code> to <code>value</code>.</p></li>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       
+      <li><a href="#value">Value</a></li>
+
       <li><a href="#details">Details</a></li>
 
       <li><a href="#differences-from-base-r">Differences from base R</a></li>

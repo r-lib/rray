@@ -67,7 +67,7 @@ rray_unique_count(): the number of unique values.
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rray</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -99,6 +99,9 @@ rray_unique_count(): the number of unique values.
       <a href="../articles/toolkit.html">Toolkit</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       
@@ -205,7 +208,7 @@ any type of vector object.</p></div>
 <span class='no'>x_dup_rows</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dim-names.html'>rray_set_col_names</a></span>(<span class='no'>x_dup_rows</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"c1"</span>, <span class='st'>"c2"</span>))
 
 <span class='co'># Duplicate rows</span>
-<span class='co'># x_dup_rows[1] == x_dup_rows[2]</span>
+<span class='co'># `x_dup_rows[1] == x_dup_rows[2]`</span>
 <span class='fu'>rray_unique</span>(<span class='no'>x_dup_rows</span>, <span class='fl'>1</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2,2][1]&gt;
 #&gt; , , 1
 #&gt; 
@@ -218,7 +221,7 @@ any type of vector object.</p></div>
 #&gt; r1  2  4
 #&gt; </div><div class='input'>
 <span class='co'># Duplicate cols</span>
-<span class='co'># x_dup_cols[, 1] == x_dup_cols[, 2]</span>
+<span class='co'># `x_dup_cols[, 1] == x_dup_cols[, 2]`</span>
 <span class='no'>x_dup_cols</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray_transpose.html'>rray_transpose</a></span>(<span class='no'>x_dup_rows</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>3</span>))
 <span class='fu'>rray_unique</span>(<span class='no'>x_dup_cols</span>, <span class='fl'>2</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,1,2][2]&gt;
 #&gt; , , 1
@@ -234,7 +237,7 @@ any type of vector object.</p></div>
 #&gt; c2  4
 #&gt; </div><div class='input'>
 <span class='co'># Duplicate 3rd dim</span>
-<span class='co'># x_dup_layers[, , 1] == x_dup_layers[, , 2]</span>
+<span class='co'># `x_dup_layers[, , 1] == x_dup_layers[, , 2]`</span>
 <span class='no'>x_dup_layers</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray_transpose.html'>rray_transpose</a></span>(<span class='no'>x_dup_rows</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>1</span>))
 <span class='fu'>rray_unique</span>(<span class='no'>x_dup_layers</span>, <span class='fl'>3</span>)</div><div class='output co'>#&gt; &lt;rray&lt;dbl&gt;[,2,1][2]&gt;
 #&gt; , , r1

@@ -65,7 +65,7 @@ also exported for use with base R objects." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rray</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -97,6 +97,9 @@ also exported for use with base R objects." />
       <a href="../articles/toolkit.html">Toolkit</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       
@@ -157,6 +160,12 @@ way. <code>2</code> does the same, but with the columns, and so on for higher
 dimensions. The default reduces along all axes.</p></td>
     </tr>
     </table>
+    
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>The value of the logical comparison, with broadcasting.</p>
+<p><code>rray_any()</code> and <code>rray_all()</code> return a logical object with the same shape
+as <code>x</code> everywhere except along <code>axes</code>, which have been reduced to size 1.</p>
     
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
@@ -232,6 +241,8 @@ because neither are <code>1</code>, and they are not identical.</p>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       
+      <li><a href="#value">Value</a></li>
+
       <li><a href="#details">Details</a></li>
       
       <li><a href="#examples">Examples</a></li>

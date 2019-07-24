@@ -30,7 +30,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rray</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -62,6 +62,9 @@
       <a href="../articles/toolkit.html">Toolkit</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
@@ -136,7 +139,7 @@
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">x_mat[<span class="dv">1</span>, , drop =<span class="st"> </span><span class="ot">FALSE</span>]</a>
 <a class="sourceLine" id="cb3-2" data-line-number="2"><span class="co">#&gt;      [,1] [,2]</span></a>
 <a class="sourceLine" id="cb3-3" data-line-number="3"><span class="co">#&gt; [1,]    1    4</span></a></code></pre></div>
-<p>But this requires careful thinking about how to subset arrays programatically, adding the right number of commas where required to ensure that dimensions aren’t dropped. Consider how you would pull the first row of a 3D vs 4D array, and pay attention to the varying number of commas required to prevent a vector from being returned.</p>
+<p>But this requires careful thinking about how to subset arrays programmatically, adding the right number of commas where required to ensure that dimensions aren’t dropped. Consider how you would pull the first row of a 3D vs 4D array, and pay attention to the varying number of commas required to prevent a vector from being returned.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">x_3D &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/array">array</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">12</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">2</span>))</a>
 <a class="sourceLine" id="cb4-2" data-line-number="2">x_4D &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/array">array</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">12</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">1</span>))</a>
 <a class="sourceLine" id="cb4-3" data-line-number="3"></a>
@@ -309,7 +312,7 @@
 <a class="sourceLine" id="cb9-22" data-line-number="22"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb9-23" data-line-number="23"><span class="co">#&gt;      [,1] [,2] [,3]</span></a>
 <a class="sourceLine" id="cb9-24" data-line-number="24"><span class="co">#&gt; [1,]    8   10   12</span></a></code></pre></div>
-<p>This behavior results in a nice symmetical predictable behavior that is easy to see if you draw out the different operations. Just by adding commas, we go from selecting rows, to columns, to elements in the third dimension. The type is stable the entire time.</p>
+<p>This behavior results in a nice symmetrical predictable behavior that is easy to see if you draw out the different operations. Just by adding commas, we go from selecting rows, to columns, to elements in the third dimension. The type is stable the entire time.</p>
 <pre><code>x[i]
 x[,i]
 x[,,i]</code></pre>

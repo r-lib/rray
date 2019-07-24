@@ -34,7 +34,7 @@
 
 <meta property="og:description" content="pad() is used alongside the standard rray subsetting operator [ (and
 the underlying rray_subset() function) to easily subset into higher
-dimensions without having to explictly list the intermediate commas." />
+dimensions without having to explicitly list the intermediate commas." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -65,7 +65,7 @@ dimensions without having to explictly list the intermediate commas." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rray</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -98,6 +98,9 @@ dimensions without having to explictly list the intermediate commas." />
     </li>
   </ul>
 </li>
+<li>
+  <a href="../news/index.html">Changelog</a>
+</li>
       </ul>
       
       <ul class="nav navbar-nav navbar-right">
@@ -128,12 +131,16 @@ dimensions without having to explictly list the intermediate commas." />
     
     <p><code>pad()</code> is used alongside the standard rray subsetting operator <code>[</code> (and
 the underlying <code><a href='rray_subset.html'>rray_subset()</a></code> function) to easily subset into higher
-dimensions without having to explictly list the intermediate commas.</p>
+dimensions without having to explicitly list the intermediate commas.</p>
     
     </div>
 
     <pre class="usage"><span class='fu'>pad</span>()</pre>
         
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>An object that can be used to pad dimensions with when subsetting.</p>
+    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>4</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>1</span>, <span class='fl'>2</span>, <span class='fl'>2</span>))
@@ -211,7 +218,9 @@ dimensions without having to explictly list the intermediate commas.</p>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
-            
+      
+      <li><a href="#value">Value</a></li>
+      
       <li><a href="#examples">Examples</a></li>
     </ul>
 

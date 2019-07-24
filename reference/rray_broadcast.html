@@ -64,7 +64,7 @@ object to a new dimension." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rray</a>
-        <span class="version label label-danger" data-toggle="tooltip" data-placement="bottom" title="Unreleased version">0.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
       </span>
     </div>
 
@@ -96,6 +96,9 @@ object to a new dimension." />
       <a href="../articles/toolkit.html">Toolkit</a>
     </li>
   </ul>
+</li>
+<li>
+  <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
       
@@ -145,6 +148,10 @@ object to a new dimension.</p>
     </tr>
     </table>
     
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p><code>x</code> broadcast to the new dimensions.</p>
+    
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>Broadcasting works by <em>recycling dimensions</em> and <em>repeating values</em> in
@@ -167,7 +174,7 @@ incompatible.</p><pre>(2, 1, 4)
 (2, 3, X)
 </pre>
     <p>You can broadcast to higher dimensions too. If you go from a 5x2 to a
-5x2x3 array, then the 5x2 matrix implicitely gets a 1 appended as another
+5x2x3 array, then the 5x2 matrix implicitly gets a 1 appended as another
 dimension (i.e. 5x2x1)</p><pre>(5, 2,  ) &lt;- implicit 1 is recycled
 (5, 2, 3)
 ---------
@@ -229,10 +236,9 @@ the different structure for arithmetic operations.</p>
 #&gt; [4,]    4    4
 #&gt; [5,]    5    5
 #&gt; </div><div class='input'>
-# You cannot broadcast down in dimensions
-# rray_broadcast(x, 5)
-# > Error: Cannot decrease dimensions of `x`
-
+<span class='co'># You cannot broadcast down in dimensions</span>
+<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/try'>try</a></span>(<span class='fu'>rray_broadcast</span>(<span class='no'>x</span>, <span class='fl'>5</span>))</div><div class='output co'>#&gt; &lt;rray&lt;int&gt;[5]&gt;
+#&gt; [1] 1 2 3 4 5</div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
@@ -240,6 +246,8 @@ the different structure for arithmetic operations.</p>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
       
+      <li><a href="#value">Value</a></li>
+
       <li><a href="#details">Details</a></li>
       
       <li><a href="#examples">Examples</a></li>
