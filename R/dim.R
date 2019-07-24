@@ -28,6 +28,10 @@
 #'
 #' @param ... Objects to find common dimensions for.
 #'
+#' @return
+#'
+#' An integer vector containing the common dimensions.
+#'
 #' @seealso [rray_dim_n()]
 #'
 #' @examples

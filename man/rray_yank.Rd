@@ -33,6 +33,9 @@ be cast to the type of \code{rray_yank(x, i)}.}
 
 \item{...}{Not used. An error is thrown if extra arguments are supplied here.}
 }
+\value{
+A 1D vector of elements yanked out of \code{x}.
+}
 \description{
 \itemize{
 \item \code{rray_yank()} gets and sets elements from an array \emph{by position}. It is the

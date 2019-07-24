@@ -12,6 +12,10 @@
 #' @param offset A single integer specifying the offset from the diagonal to
 #' place `x`. This can be positive or negative.
 #'
+#' @return
+#'
+#' A matrix, with `x` on the diagonal.
+#'
 #' @examples
 #' # Creates a diagonal matrix
 #' rray_diag(1:5)

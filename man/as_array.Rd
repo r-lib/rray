@@ -11,6 +11,9 @@ as_array(x, ...)
 
 \item{...}{Objects passed on to methods.}
 }
+\value{
+An array.
+}
 \description{
 \code{as_array()} coerces \code{x} to an array. \code{x} will keep any existing
 dimensions and dimension names.

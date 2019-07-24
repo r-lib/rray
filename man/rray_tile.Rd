@@ -12,8 +12,15 @@ rray_tile(x, times)
 \item{times}{An integer vector. The number of times to repeat the
 array along an axis.}
 }
+\value{
+\code{x} with dimensions repeated as described by \code{times}.
+}
 \description{
 Tile an array
+}
+\details{
+\code{rray_tile()} should not be used as a replacement for \code{rray_broadcast()},
+as it is generally less efficient.
 }
 \examples{
 

@@ -9,6 +9,9 @@ is_rray(x)
 \arguments{
 \item{x}{An object.}
 }
+\value{
+A single logical.
+}
 \description{
 \code{is_rray()} tests if \code{x} is an rray object.
 }

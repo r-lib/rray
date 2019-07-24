@@ -6,10 +6,13 @@
 \usage{
 pad()
 }
+\value{
+An object that can be used to pad dimensions with when subsetting.
+}
 \description{
 \code{pad()} is used alongside the standard rray subsetting operator \code{[} (and
 the underlying \code{rray_subset()} function) to easily subset into higher
-dimensions without having to explictly list the intermediate commas.
+dimensions without having to explicitly list the intermediate commas.
 }
 \examples{
 x <- rray(1:4, c(1, 1, 2, 2))

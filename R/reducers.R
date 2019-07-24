@@ -9,6 +9,11 @@
 #' same, but with the columns, and so on for higher dimensions. The default
 #' reduces along all axes.
 #'
+#' @return
+#'
+#' The result of the reduction as a double with the same shape as `x`, except
+#' along `axes`, which have been reduced to size 1.
+#'
 #' @examples
 #'
 #' x <- rray(1:10, c(5, 2))
@@ -49,6 +54,11 @@ rray_sum <- function(x, axes = NULL) {
 #'
 #' @inheritParams rray_sum
 #'
+#' @return
+#'
+#' The result of the reduction as a double with the same shape as `x`, except
+#' along `axes`, which have been reduced to size 1.
+#'
 #' @examples
 #'
 #' x <- rray(1:10, c(5, 2))
@@ -71,6 +81,11 @@ rray_prod <- function(x, axes = NULL) {
 #' dimensionality of `x` is retained in the result.
 #'
 #' @inheritParams rray_sum
+#'
+#' @return
+#'
+#' The result of the reduction as a double with the same shape as `x`, except
+#' along `axes`, which have been reduced to size 1.
 #'
 #' @examples
 #'
@@ -95,6 +110,11 @@ rray_mean <- function(x, axes = NULL) {
 #'
 #' @inheritParams rray_sum
 #'
+#' @return
+#'
+#' The result of the reduction with the same shape as `x`, except
+#' along `axes`, which have been reduced to size 1.
+#'
 #' @examples
 #'
 #' x <- rray(1:10, c(5, 2))
@@ -117,6 +137,11 @@ rray_max <- function(x, axes = NULL) {
 #' dimensionality of `x` is retained in the result.
 #'
 #' @inheritParams rray_sum
+#'
+#' @return
+#'
+#' The result of the reduction with the same shape as `x`, except
+#' along `axes`, which have been reduced to size 1.
 #'
 #' @examples
 #'

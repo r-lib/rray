@@ -40,19 +40,20 @@
 #'
 #' @examples
 #' # The container of base R atomics is just logical()
-#' # vec_ptype_container(1)
+#' vec_ptype_container(1)
 #'
 #' # The container of an rray is an empty logical rray
-#' # vec_ptype_container(rray(1))
+#' vec_ptype_container(rray(1))
 #'
 #' # Find the common container of multiple types
 #' # (the rray type is more complex here, and becomes the common container)
-#' # vec_ptype_container_common(1, TRUE, rray(1L))
+#' vec_ptype_container_common(1, TRUE, rray(1L))
 #'
 #' # Not an error!
-#' # vec_ptype_container_common(character(), logical())
+#' vec_ptype_container_common(character(), logical())
 #'
 #' @keywords internal
+#' @noRd
 vec_ptype_container <- function(x) {
 
   if (is.null(x)) {
@@ -84,7 +85,6 @@ vec_ptype_container.vctrs_unspecified <- vec_ptype_container.integer
 
 # ------------------------------------------------------------------------------
 
-#' @rdname vec_ptype_container
 vec_ptype_container_common <- function(..., .ptype = NULL) {
 
   if (!is.null(.ptype)) {

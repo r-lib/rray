@@ -9,12 +9,15 @@ rray_multiply_add(x, y, z)
 \arguments{
 \item{x, y, z}{A vector, matrix, array or rray.}
 }
+\value{
+An object of the common type of the inputs, containing the result of the
+multiply-add operation.
+}
 \description{
 \code{rray_multiply_add()} computes \code{x * y + z}, with broadcasting.
 It is more efficient than simply doing those operations in sequence.
 }
 \examples{
-# 2 * 3 + 5
 rray_multiply_add(2, 3, 5)
 
 # Using broadcasting

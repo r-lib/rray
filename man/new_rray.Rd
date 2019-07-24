@@ -28,6 +28,9 @@ a character vector the same size as the corresponding dimension, or
 
 \item{subclass}{The name of the subclass.}
 }
+\value{
+A new rray.
+}
 \description{
 Low level constructor for rray objects
 }

@@ -5,6 +5,11 @@
 #'
 #' @param x,y A vector, matrix, array or rray.
 #'
+#' @return
+#'
+#' An object of the common type of `x` and `y` containing the square root
+#' of the sum of squares.
+#'
 #' @examples
 #' x <- matrix(c(2, 4, 6))
 #'

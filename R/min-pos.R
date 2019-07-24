@@ -5,6 +5,11 @@
 #'
 #' @inheritParams rray_max_pos
 #'
+#' @return
+#'
+#' An integer object of the same type and shape as `x`, except along `axis`,
+#' which has been reduced to size 1.
+#'
 #' @examples
 #'
 #' x <- rray(c(1:10, 20:11), dim = c(5, 2, 2))

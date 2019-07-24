@@ -22,6 +22,10 @@
 #'
 #' @param subclass The name of the subclass.
 #'
+#' @return
+#'
+#' A new rray.
+#'
 #' @examples
 #'
 #' rray_ex <- new_rray(
@@ -101,6 +105,10 @@ new_rray <- function(.data = numeric(0),
 #' @param dim An integer vector describing the dimensions of the rray. If `NULL`,
 #' the dimensions are taken from the existing object using [rray_dim()].
 #'
+#' @return
+#'
+#' An rray.
+#'
 #' @examples
 #'
 #' # 1D rray. Looks like a vector
@@ -171,6 +179,10 @@ rray <- function(x = numeric(0), dim = NULL, dim_names = NULL) {
 #'
 #' @param x A vector, matrix, array or rray.
 #'
+#' @return
+#'
+#' A single integer. The number of elements in `x`.
+#'
 #' @examples
 #' rray_elems(1:5)
 #'
@@ -194,6 +206,10 @@ rray_elems <- function(x) {
 #' `is_rray()` tests if `x` is an rray object.
 #'
 #' @param x An object.
+#'
+#' @return
+#'
+#' A single logical.
 #'
 #' @examples
 #'

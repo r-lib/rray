@@ -14,6 +14,10 @@ the number of rows to 1, performing the reduction along the way. \code{2} does t
 same, but with the columns, and so on for higher dimensions. The default
 reduces along all axes.}
 }
+\value{
+The result of the reduction as a double with the same shape as \code{x}, except
+along \code{axes}, which have been reduced to size 1.
+}
 \description{
 \code{rray_prod()} computes the product along a given axis or axes. The
 dimensionality of \code{x} is retained in the result.

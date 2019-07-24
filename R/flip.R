@@ -9,6 +9,10 @@
 #' @param x An rray.
 #' @param axis An integer of size `1` specifying the dimension to flip.
 #'
+#' @return
+#'
+#' `x` but with reversed elements along `axis`.
+#'
 #' @examples
 #'
 #' x <- rray(1:10, c(5, 2))

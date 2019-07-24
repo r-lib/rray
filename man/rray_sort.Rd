@@ -13,6 +13,10 @@ rray_sort(x, axis = NULL)
 sorts along rows, \code{2} sorts along columns. The default of \code{NULL} first
 flattens \code{x} to 1-D, sorts, and then reconstructs the original dimensions.}
 }
+\value{
+An object with the same dimensions as \code{x}, but sorted along \code{axis}. The
+dimension names will be lost along the axis you sort along.
+}
 \description{
 \code{rray_sort()} returns an array with the same dimensions as \code{x}, but sorted
 along the specified axis.

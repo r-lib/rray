@@ -32,7 +32,7 @@
 #' ```
 #'
 #' You can broadcast to higher dimensions too. If you go from a 5x2 to a
-#' 5x2x3 array, then the 5x2 matrix implicitely gets a 1 appended as another
+#' 5x2x3 array, then the 5x2 matrix implicitly gets a 1 appended as another
 #' dimension (i.e. 5x2x1)
 #'
 #'
@@ -48,6 +48,10 @@
 #'
 #' @param x The object to broadcast.
 #' @param dim An integer vector. The dimension to broadcast to.
+#'
+#' @return
+#'
+#' `x` broadcast to the new dimensions.
 #'
 #' @examples
 #'
@@ -66,8 +70,7 @@
 #' rray_broadcast(x, c(5, 2, 3))
 #'
 #' # You cannot broadcast down in dimensions
-#' # rray_broadcast(x, 5)
-#' # > Error: Cannot decrease dimensions of `x`
+#' try(rray_broadcast(x, 5))
 #'
 #' @export
 rray_broadcast <- function(x, dim) {

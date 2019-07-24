@@ -16,6 +16,10 @@
 #' `dim()` defines a method for data frames that would imply a dimensionality
 #' of 2.
 #'
+#' @return
+#'
+#' An integer vector containing the number of dimensions of `x`.
+#'
 #' @examples
 #' x_1_by_4 <- rray(c(1, 2, 3, 4), c(1, 4))
 #'

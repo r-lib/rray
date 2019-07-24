@@ -18,6 +18,11 @@
 #' method is used and a warning is thrown. There is nothing we can do about
 #' this. See `?groupGeneric` for more information on this.
 #'
+#' @return
+#'
+#' The value of the comparison, with dimensions identical to the common
+#' dimensions of the inputs.
+#'
 #' @examples
 #' x <- rray(1:12, c(2, 2, 3))
 #' y <- matrix(1:2)

@@ -45,6 +45,10 @@ rray_not_equal(x, y)
 
 \item{x, y}{Two vectors, matrices, arrays, or rrays.}
 }
+\value{
+The value of the comparison, with dimensions identical to the common
+dimensions of the inputs.
+}
 \description{
 These operators compare multiple arrays together, with broadcasting. The
 underlying functions powering the comparison operators are also exported

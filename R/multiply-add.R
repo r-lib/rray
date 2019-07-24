@@ -5,8 +5,12 @@
 #'
 #' @param x,y,z A vector, matrix, array or rray.
 #'
+#' @return
+#'
+#' An object of the common type of the inputs, containing the result of the
+#' multiply-add operation.
+#'
 #' @examples
-#' # 2 * 3 + 5
 #' rray_multiply_add(2, 3, 5)
 #'
 #' # Using broadcasting

@@ -7,6 +7,10 @@
 #' @param x A vector, matrix, array or rray.
 #' @param dim An integer vector. The dimension to reshape to.
 #'
+#' @return
+#'
+#' `x` reshaped to the new dimensions of `dim`.
+#'
 #' @examples
 #'
 #' x <- matrix(1:6, ncol = 1)

@@ -11,6 +11,9 @@ rray_broadcast(x, dim)
 
 \item{dim}{An integer vector. The dimension to broadcast to.}
 }
+\value{
+\code{x} broadcast to the new dimensions.
+}
 \description{
 \code{rray_broadcast()} will \emph{broadcast} the dimensions of the current
 object to a new dimension.
@@ -39,7 +42,7 @@ incompatible.\preformatted{(2, 1, 4)
 }
 
 You can broadcast to higher dimensions too. If you go from a 5x2 to a
-5x2x3 array, then the 5x2 matrix implicitely gets a 1 appended as another
+5x2x3 array, then the 5x2 matrix implicitly gets a 1 appended as another
 dimension (i.e. 5x2x1)\preformatted{(5, 2,  ) <- implicit 1 is recycled
 (5, 2, 3)
 ---------
@@ -66,7 +69,6 @@ rray(1:5, dim = c(5, 2))
 rray_broadcast(x, c(5, 2, 3))
 
 # You cannot broadcast down in dimensions
-# rray_broadcast(x, 5)
-# > Error: Cannot decrease dimensions of `x`
+try(rray_broadcast(x, 5))
 
 }

@@ -11,6 +11,9 @@ rray_flip(x, axis)
 
 \item{axis}{An integer of size \code{1} specifying the dimension to flip.}
 }
+\value{
+\code{x} but with reversed elements along \code{axis}.
+}
 \description{
 \code{rray_flip()} reverses the elements of an rray along a single dimension.
 }

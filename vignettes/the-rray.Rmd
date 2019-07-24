@@ -54,7 +54,7 @@ Looking past the type instability, the fix for the dropping of dimensions is usu
 x_mat[1, , drop = FALSE]
 ```
 
-But this requires careful thinking about how to subset arrays programatically, adding the right number of commas where required to ensure that dimensions aren't dropped. Consider how you would pull the first row of a 3D vs 4D array, and pay attention to the varying number of commas required to prevent a vector from being returned.
+But this requires careful thinking about how to subset arrays programmatically, adding the right number of commas where required to ensure that dimensions aren't dropped. Consider how you would pull the first row of a 3D vs 4D array, and pay attention to the varying number of commas required to prevent a vector from being returned.
 
 ```{r}
 x_3D <- array(1:12, c(2, 3, 2))
@@ -135,7 +135,7 @@ x_3D_rray[2]
 x_3D_rray[2,]
 ```
 
-This behavior results in a nice symmetical predictable behavior that is easy to see if you draw out the different operations. Just by adding commas, we go from selecting rows, to columns, to elements in the third dimension. The type is stable the entire time.
+This behavior results in a nice symmetrical predictable behavior that is easy to see if you draw out the different operations. Just by adding commas, we go from selecting rows, to columns, to elements in the third dimension. The type is stable the entire time.
 
 ```
 x[i]

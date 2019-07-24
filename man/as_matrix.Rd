@@ -11,6 +11,9 @@ as_matrix(x, ...)
 
 \item{...}{Objects passed on to methods.}
 }
+\value{
+A matrix.
+}
 \description{
 \code{as_matrix()} coerces \code{x} to a matrix.
 }

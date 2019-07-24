@@ -9,6 +9,9 @@ rray_dim_n(x)
 \arguments{
 \item{x}{An object.}
 }
+\value{
+An integer vector containing the number of dimensions of \code{x}.
+}
 \description{
 \code{rray_dim_n()} computes the dimensionality (i.e. the number of dimensions).
 }

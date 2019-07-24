@@ -16,6 +16,10 @@
 #'
 #' @param x A vector, matrix, array or rray.
 #'
+#' @return
+#'
+#' A 1D object with the same container type as `x`.
+#'
 #' @examples
 #' library(magrittr)
 #'

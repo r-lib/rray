@@ -12,6 +12,9 @@ rray_squeeze(x, axes = NULL)
 \item{axes}{An integer vector specifying the size 1 dimensions to drop. If
 \code{NULL}, all size 1 dimensions are dropped.}
 }
+\value{
+\code{x} with the \code{axes} dropped, if possible.
+}
 \description{
 \code{rray_squeeze()} is conceptually similar to \code{\link[base:drop]{base::drop()}}, but it allows
 for the specification of specific dimensions to squeeze.

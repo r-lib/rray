@@ -16,6 +16,10 @@
 #' @param ... Used to pass along error message information.
 #' @inheritParams vec_ptype2
 #'
+#' @return
+#'
+#' See the corresponding vctrs function for the exact return value.
+#'
 #' @name vctrs-compat
 #'
 NULL

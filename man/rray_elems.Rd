@@ -9,6 +9,9 @@ rray_elems(x)
 \arguments{
 \item{x}{A vector, matrix, array or rray.}
 }
+\value{
+A single integer. The number of elements in \code{x}.
+}
 \description{
 \code{rray_elems()} computes the number of individual elements in an array. It
 generally computes the same thing as \code{length()}, but has a more predictable

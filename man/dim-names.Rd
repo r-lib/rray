@@ -60,6 +60,11 @@ dimension names for the specified axis.}
 \item{meta}{A single character representing an optional "meta" name
 assigned to the \code{axis} names. If \code{NULL}, the current meta name is kept.}
 }
+\value{
+\code{rray_dim_names()} returns a list of dimension names. The other names
+functions return character vectors, or \code{NULL}, corresponding to the
+names of a particular axis.
+}
 \description{
 This family of functions allows you to get and set dimension names in various
 ways.

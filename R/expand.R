@@ -11,6 +11,10 @@
 #' @param axis An integer of size `1` specifying the location of the new
 #' dimension.
 #'
+#' @return
+#'
+#' `x` with a new dimension inserted at the `axis`.
+#'
 #' @examples
 #'
 #' x <- rray(1:10, c(5, 2))

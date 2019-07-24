@@ -16,6 +16,9 @@ rray_transpose(x, permutation = NULL)
 being the number of dimensions of \code{x}. If \code{NULL}, the reverse of \code{1:n} is
 used, which is the normal transpose.}
 }
+\value{
+\code{x} transposed along the axes defined by the \code{permutation}.
+}
 \description{
 \code{rray_transpose()} transposes \code{x} along axes defined by \code{permutation}. By
 default, a standard transpose is performed, which is equivalent to

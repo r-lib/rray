@@ -25,6 +25,13 @@
 #' `rray_subset()` and its assignment variant can also be used with base R
 #' matrices and arrays to get rray subsetting behavior with them.
 #'
+#' @return
+#'
+#' `x` subset by the specification defined in the `...`.
+#'
+#' The assignment variants return `x` modified by having the elements of
+#' `value` inserted into the positions defined by `...`.
+#'
 #' @section Differences from base R:
 #'
 #' - `rray_subset()` _never_ drops dimensions.
@@ -55,9 +62,7 @@
 #' # R. It requires you to fully specify the dimensions of `x`.
 #' # This would throw an error.
 #' x_arr <- as_array(x)
-#' \dontrun{
-#' x_arr[,1]
-#' }
+#' try(x_arr[,1])
 #'
 #' # To get the same behavior, you have to do:
 #' x_arr[, 1, , drop = FALSE]
@@ -72,7 +77,7 @@
 #' x[, , 1]
 #'
 #' # You can assign to index locations with
-#' # x[...] <- value
+#' # `x[...] <- value`
 #' # This assigns 99 to the entire first row
 #' x[1] <- 99
 #' x

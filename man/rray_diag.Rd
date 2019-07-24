@@ -12,6 +12,9 @@ rray_diag(x, offset = 0)
 \item{offset}{A single integer specifying the offset from the diagonal to
 place \code{x}. This can be positive or negative.}
 }
+\value{
+A matrix, with \code{x} on the diagonal.
+}
 \description{
 \code{rray_diag()} creates a matrix filled with \code{x} on the diagonal. Use \code{offset}
 to place \code{x} along an offset from the diagonal.

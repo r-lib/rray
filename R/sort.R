@@ -18,6 +18,11 @@
 #' position, but the rows in the second column do not, so there is no rational
 #' order that the row names can be placed in.
 #'
+#' @return
+#'
+#' An object with the same dimensions as `x`, but sorted along `axis`. The
+#' dimension names will be lost along the axis you sort along.
+#'
 #' @examples
 #' x <- rray(c(20:11, 1:10), dim = c(5, 2, 2))
 #'

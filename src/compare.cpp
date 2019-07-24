@@ -132,8 +132,11 @@ xt::rarray<rlogical> rray__all_equal_impl(const xt::rarray<T>& x,
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__all_equal(Rcpp::RObject x, Rcpp::RObject y) {
 
+  Rcpp::RObject x_class = x.attr("class");
+  Rcpp::RObject y_class = y.attr("class");
+
   // The class is part of the check (rray vs array)
-  if (!r_identical(x.attr("class"), y.attr("class"))) {
+  if (!r_identical(x_class, y_class)) {
     return Rcpp::LogicalVector::create(false);
   }
 
@@ -166,8 +169,11 @@ xt::rarray<rlogical> rray__any_not_equal_impl(const xt::rarray<T>& x,
 // [[Rcpp::export(rng = false)]]
 Rcpp::RObject rray__any_not_equal(Rcpp::RObject x, Rcpp::RObject y) {
 
+  Rcpp::RObject x_class = x.attr("class");
+  Rcpp::RObject y_class = y.attr("class");
+
   // The class is part of the check (rray vs array)
-  if (!r_identical(x.attr("class"), y.attr("class"))) {
+  if (!r_identical(x_class, y_class)) {
     return Rcpp::LogicalVector::create(true);
   }
 

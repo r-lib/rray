@@ -7,6 +7,10 @@
 #'
 #' @param x,y A vector, matrix, array or rray.
 #'
+#' @return
+#'
+#' The elementwise max/min of `x` and `y`, with broadcasting.
+#'
 #' @examples
 #' # Elementwise maximum
 #' rray_maximum(c(1, 2, 3), c(3, 2, 1))

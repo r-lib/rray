@@ -9,6 +9,9 @@ rray_flatten(x)
 \arguments{
 \item{x}{A vector, matrix, array or rray.}
 }
+\value{
+A 1D object with the same container type as \code{x}.
+}
 \description{
 \code{rray_flatten()} squashes the dimensionality of \code{x} so that the result is a
 1D object.

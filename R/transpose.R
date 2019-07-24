@@ -22,6 +22,10 @@
 #' There is an `aperm()` method for `rray` objects as well. Unlike base R,
 #' it currently does not accept character strings for `perm`.
 #'
+#' @return
+#'
+#' `x` transposed along the axes defined by the `permutation`.
+#'
 #' @examples
 #'
 #' x <- rray(

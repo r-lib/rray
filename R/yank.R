@@ -27,6 +27,10 @@
 #'
 #' @param ... Not used. An error is thrown if extra arguments are supplied here.
 #'
+#' @return
+#'
+#' A 1D vector of elements yanked out of `x`.
+#'
 #' @details
 #'
 #' `rray_yank()` is meant as a replacement for the traditional behavior of

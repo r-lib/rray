@@ -30,16 +30,17 @@
 #'
 #' @examples
 #' # The inner type of base R atomics uses their constructor
-#' # vec_ptype_inner(1)
+#' vec_ptype_inner(1)
 #'
 #' # The inner type of an rray is an empty base R object
-#' # vec_ptype_inner(rray(1))
+#' vec_ptype_inner(rray(1))
 #'
 #' # Find the common inner type of multiple inputs
 #' # (the double type wins, the container types are disregarded)
-#' # vec_ptype_inner_common(1, TRUE, rray(1L))
+#' vec_ptype_inner_common(1, TRUE, rray(1L))
 #'
 #' @keywords internal
+#' @noRd
 vec_ptype_inner <- function(x) {
 
   if (is.null(x)) {
@@ -93,7 +94,6 @@ vec_ptype_inner2 <- function(x, y) {
 
 # ------------------------------------------------------------------------------
 
-#' @rdname vec_ptype_inner
 vec_ptype_inner_common <- function(..., .ptype = NULL) {
 
   if (!is.null(.ptype)) {

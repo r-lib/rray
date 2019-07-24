@@ -21,6 +21,10 @@
 #'
 #' @param x,y,... Objects to find common dimensions for.
 #'
+#' @return
+#'
+#' A list of the common dimension names of the inputs.
+#'
 #' @examples
 #' library(magrittr)
 #'
