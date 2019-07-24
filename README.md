@@ -110,10 +110,16 @@ rray_bind(a, b, .axis = 2)
 
 ## Installation
 
-You can install from Github with:
+You can install from CRAN with:
 
 ``` r
-devtools::install_github("r-lib/rray")
+install.packages("rray")
+```
+
+You can install the development version from Github with:
+
+``` r
+remotes::install_github("r-lib/rray")
 ```
 
 ## Acknowledgements
