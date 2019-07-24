@@ -1,0 +1,11 @@
+pandoc: '2.2'
+pkgdown: 1.3.0
+pkgdown_sha: ~
+articles:
+  broadcasting: broadcasting.html
+  the-rray: the-rray.html
+  toolkit: toolkit.html
+urls:
+  reference: https://rray.r-lib.org/reference
+  article: https://rray.r-lib.org/articles
+
