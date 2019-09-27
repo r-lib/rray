@@ -1,7 +1,7 @@
 url: https://rray.r-lib.org
 
 development:
-  mode: release
+  mode: auto
 
 reference:
 - title: Coercion
