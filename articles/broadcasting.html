@@ -6,11 +6,19 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Broadcasting • rray</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Broadcasting">
 <meta property="og:description" content="">
+<meta property="og:image" content="https://rray.r-lib.org/logo.png">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -30,7 +38,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rray</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0.9000</span>
       </span>
     </div>
 
@@ -38,7 +46,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -70,7 +78,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/r-lib/rray">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -83,13 +91,14 @@
 <!--/.navbar -->
 
       
+
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1>Broadcasting</h1>
                         <h4 class="author">Davis Vaughan</h4>
             
-            <h4 class="date">2019-07-24</h4>
+            <h4 class="date">2019-09-27</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/r-lib/rray/blob/master/vignettes/broadcasting.Rmd"><code>vignettes/broadcasting.Rmd</code></a></small>
       <div class="hidden name"><code>broadcasting.Rmd</code></div>
@@ -98,12 +107,12 @@
 
     
     
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(rray)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(rray)</a></code></pre></div>
 <div id="introduction" class="section level2">
 <h2 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h2>
 <p>The idea for rray sprung from frustration with the following example:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">x &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/matrix">matrix</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>, <span class="dt">nrow =</span> <span class="dv">3</span>)</a>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">x &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>, <span class="dt">nrow =</span> <span class="dv">3</span>)</a>
 <a class="sourceLine" id="cb2-2" data-line-number="2">x</a>
 <a class="sourceLine" id="cb2-3" data-line-number="3"><span class="co">#&gt;      [,1] [,2]</span></a>
 <a class="sourceLine" id="cb2-4" data-line-number="4"><span class="co">#&gt; [1,]    1    4</span></a>
@@ -116,7 +125,7 @@
 <a class="sourceLine" id="cb2-11" data-line-number="11"><span class="co">#&gt; [2,]    3    6</span></a>
 <a class="sourceLine" id="cb2-12" data-line-number="12"><span class="co">#&gt; [3,]    4    7</span></a>
 <a class="sourceLine" id="cb2-13" data-line-number="13"></a>
-<a class="sourceLine" id="cb2-14" data-line-number="14">x <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/matrix">matrix</a></span>(<span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb2-14" data-line-number="14">x <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="dv">1</span>)</a>
 <a class="sourceLine" id="cb2-15" data-line-number="15"><span class="co">#&gt; Error in x + matrix(1): non-conformable arrays</span></a></code></pre></div>
 <p>To someone who has worked with matrices in R before, this error message is probably nothing new. It’s stating that because <code>x</code> has dimensions <code>(3, 2)</code> and is being added to an object with dimensions <code>(1, 1)</code>, which is a matrix does not have <em>exactly the same dimensions</em>, the operation cannot be completed. My frustration lies with the fact that I had this “feeling” that I knew the answer to this operation. It shouldn’t be an error, it should have the same answer as <code>x + 1</code>. Why does this work, when the other doesn’t?</p>
 <p>In one sentence, the answer is that R <em>recycles</em>, but I want it to <em>broadcast</em>.</p>
@@ -138,7 +147,7 @@
 <a class="sourceLine" id="cb3-10" data-line-number="10"><span class="co">#&gt; [2,]    3    6</span></a>
 <a class="sourceLine" id="cb3-11" data-line-number="11"><span class="co">#&gt; [3,]    4    7</span></a>
 <a class="sourceLine" id="cb3-12" data-line-number="12"></a>
-<a class="sourceLine" id="cb3-13" data-line-number="13">y &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray.html">rray</a></span>(<span class="dv">1</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>, <span class="dv">1</span>))</a>
+<a class="sourceLine" id="cb3-13" data-line-number="13">y &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray.html">rray</a></span>(<span class="dv">1</span>, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>, <span class="dv">1</span>))</a>
 <a class="sourceLine" id="cb3-14" data-line-number="14">y</a>
 <a class="sourceLine" id="cb3-15" data-line-number="15"><span class="co">#&gt; &lt;rray&lt;dbl&gt;[,1][1]&gt;</span></a>
 <a class="sourceLine" id="cb3-16" data-line-number="16"><span class="co">#&gt;      [,1]</span></a>
@@ -152,7 +161,7 @@
 <a class="sourceLine" id="cb3-24" data-line-number="24"><span class="co">#&gt; [3,]    4    7</span></a></code></pre></div>
 <p>You’ll come to learn that rray implements broadcasting throughout the package, which is what allows this to work. It solves this motivating example, but is generally useful in variety of ways.</p>
 <p>So how does this happen? The mental model to understand broadcasting in this case is to alter the dimensions of <code>y</code> to match the dimensions of <code>x</code> by duplicating the rows. This is known as <em>broadcasting y</em>. After this alteration is done, then the addition is performed.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">y_broadcast &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray_broadcast.html">rray_broadcast</a></span>(y, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">3</span>, <span class="dv">2</span>))</a>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">y_broadcast &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray_broadcast.html">rray_broadcast</a></span>(y, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">3</span>, <span class="dv">2</span>))</a>
 <a class="sourceLine" id="cb4-2" data-line-number="2"></a>
 <a class="sourceLine" id="cb4-3" data-line-number="3">y_broadcast</a>
 <a class="sourceLine" id="cb4-4" data-line-number="4"><span class="co">#&gt; &lt;rray&lt;dbl&gt;[,2][3]&gt;</span></a>
@@ -256,7 +265,7 @@
 <a class="sourceLine" id="cb8-24" data-line-number="24"><span class="co">#&gt; [2,]    3    6</span></a>
 <a class="sourceLine" id="cb8-25" data-line-number="25"><span class="co">#&gt; [3,]    4    7</span></a></code></pre></div>
 <p>rray applies these rules automatically when either object is an <code>rray</code>, as <code>y</code> is.</p>
-<p>To get this behavior with base R objects, the underlying engine that powers <code>+</code> has been exposed: <code><a href="../reference/rray_arith.html">rray_add()</a></code>. If you are designing a package and don’t know what your inputs are going to be, this might be a good way to ensure you are manipulating arrays and rrays consistently.</p>
+<p>To get this behavior with base R objects, the underlying engine that powers <code><a href="https://rdrr.io/r/base/Arithmetic.html">+</a></code> has been exposed: <code><a href="../reference/rray_arith.html">rray_add()</a></code>. If you are designing a package and don’t know what your inputs are going to be, this might be a good way to ensure you are manipulating arrays and rrays consistently.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="co"># Both are base R objects, but are added with broadcasting!</span></a>
 <a class="sourceLine" id="cb9-2" data-line-number="2"><span class="kw"><a href="../reference/rray_arith.html">rray_add</a></span>(x, <span class="kw"><a href="../reference/as_matrix.html">as_matrix</a></span>(y))</a>
 <a class="sourceLine" id="cb9-3" data-line-number="3"><span class="co">#&gt;      [,1] [,2]</span></a>
@@ -268,7 +277,7 @@
 <h2 class="hasAnchor">
 <a href="#example---implicit-dimensions" class="anchor"></a>Example - Implicit Dimensions</h2>
 <p>If <code>y</code> was a vector, not a matrix, what would have changed?</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">z &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray.html">rray</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(1L, 2L, 3L))</a>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">z &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray.html">rray</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(1L, 2L, 3L))</a>
 <a class="sourceLine" id="cb10-2" data-line-number="2">z</a>
 <a class="sourceLine" id="cb10-3" data-line-number="3"><span class="co">#&gt; &lt;rray&lt;int&gt;[3]&gt;</span></a>
 <a class="sourceLine" id="cb10-4" data-line-number="4"><span class="co">#&gt; [1] 1 2 3</span></a>
@@ -313,14 +322,14 @@
 <a class="sourceLine" id="cb13-2" data-line-number="2"><span class="co">#&gt; &lt;rray&lt;int&gt;[3]&gt;</span></a>
 <a class="sourceLine" id="cb13-3" data-line-number="3"><span class="co">#&gt; [1] 1 2 3</span></a>
 <a class="sourceLine" id="cb13-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb13-5" data-line-number="5"><span class="kw"><a href="../reference/rray_broadcast.html">rray_broadcast</a></span>(z, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">3</span>, <span class="dv">1</span>))</a>
+<a class="sourceLine" id="cb13-5" data-line-number="5"><span class="kw"><a href="../reference/rray_broadcast.html">rray_broadcast</a></span>(z, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">3</span>, <span class="dv">1</span>))</a>
 <a class="sourceLine" id="cb13-6" data-line-number="6"><span class="co">#&gt; &lt;rray&lt;int&gt;[,1][3]&gt;</span></a>
 <a class="sourceLine" id="cb13-7" data-line-number="7"><span class="co">#&gt;      [,1]</span></a>
 <a class="sourceLine" id="cb13-8" data-line-number="8"><span class="co">#&gt; [1,]    1</span></a>
 <a class="sourceLine" id="cb13-9" data-line-number="9"><span class="co">#&gt; [2,]    2</span></a>
 <a class="sourceLine" id="cb13-10" data-line-number="10"><span class="co">#&gt; [3,]    3</span></a>
 <a class="sourceLine" id="cb13-11" data-line-number="11"></a>
-<a class="sourceLine" id="cb13-12" data-line-number="12"><span class="kw"><a href="../reference/rray_broadcast.html">rray_broadcast</a></span>(z, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">3</span>, <span class="dv">2</span>))</a>
+<a class="sourceLine" id="cb13-12" data-line-number="12"><span class="kw"><a href="../reference/rray_broadcast.html">rray_broadcast</a></span>(z, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">3</span>, <span class="dv">2</span>))</a>
 <a class="sourceLine" id="cb13-13" data-line-number="13"><span class="co">#&gt; &lt;rray&lt;int&gt;[,2][3]&gt;</span></a>
 <a class="sourceLine" id="cb13-14" data-line-number="14"><span class="co">#&gt;      [,1] [,2]</span></a>
 <a class="sourceLine" id="cb13-15" data-line-number="15"><span class="co">#&gt; [1,]    1    1</span></a>
@@ -344,13 +353,13 @@
 <h2 class="hasAnchor">
 <a href="#example---higher-dimensions" class="anchor"></a>Example - Higher Dimensions</h2>
 <p>Broadcasting becomes more interesting when higher dimensional objects are used. Additionally, at this point only 1 dimension has been changing (the columns), and only 1 object at a time needed altering. This example will require both inputs to be changed.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">a &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray.html">rray</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>, <span class="dv">3</span>))</a>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">a &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray.html">rray</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>, <span class="dv">3</span>))</a>
 <a class="sourceLine" id="cb15-2" data-line-number="2">a</a>
 <a class="sourceLine" id="cb15-3" data-line-number="3"><span class="co">#&gt; &lt;rray&lt;int&gt;[,3][1]&gt;</span></a>
 <a class="sourceLine" id="cb15-4" data-line-number="4"><span class="co">#&gt;      [,1] [,2] [,3]</span></a>
 <a class="sourceLine" id="cb15-5" data-line-number="5"><span class="co">#&gt; [1,]    1    2    3</span></a>
 <a class="sourceLine" id="cb15-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb15-7" data-line-number="7">b &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray.html">rray</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">8</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">2</span>))</a>
+<a class="sourceLine" id="cb15-7" data-line-number="7">b &lt;-<span class="st"> </span><span class="kw"><a href="../reference/rray.html">rray</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">8</span>, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">2</span>))</a>
 <a class="sourceLine" id="cb15-8" data-line-number="8">b</a>
 <a class="sourceLine" id="cb15-9" data-line-number="9"><span class="co">#&gt; &lt;rray&lt;int&gt;[,1,2][4]&gt;</span></a>
 <a class="sourceLine" id="cb15-10" data-line-number="10"><span class="co">#&gt; , , 1</span></a>
@@ -436,14 +445,14 @@
 <a class="sourceLine" id="cb20-3" data-line-number="3"><span class="co">#&gt;      [,1] [,2] [,3]</span></a>
 <a class="sourceLine" id="cb20-4" data-line-number="4"><span class="co">#&gt; [1,]    1    2    3</span></a>
 <a class="sourceLine" id="cb20-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb20-6" data-line-number="6"><span class="kw"><a href="../reference/rray_broadcast.html">rray_broadcast</a></span>(a, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">1</span>))</a>
+<a class="sourceLine" id="cb20-6" data-line-number="6"><span class="kw"><a href="../reference/rray_broadcast.html">rray_broadcast</a></span>(a, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">1</span>))</a>
 <a class="sourceLine" id="cb20-7" data-line-number="7"><span class="co">#&gt; &lt;rray&lt;int&gt;[,3,1][1]&gt;</span></a>
 <a class="sourceLine" id="cb20-8" data-line-number="8"><span class="co">#&gt; , , 1</span></a>
 <a class="sourceLine" id="cb20-9" data-line-number="9"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb20-10" data-line-number="10"><span class="co">#&gt;      [,1] [,2] [,3]</span></a>
 <a class="sourceLine" id="cb20-11" data-line-number="11"><span class="co">#&gt; [1,]    1    2    3</span></a>
 <a class="sourceLine" id="cb20-12" data-line-number="12"></a>
-<a class="sourceLine" id="cb20-13" data-line-number="13"><span class="kw"><a href="../reference/rray_broadcast.html">rray_broadcast</a></span>(a, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">1</span>))</a>
+<a class="sourceLine" id="cb20-13" data-line-number="13"><span class="kw"><a href="../reference/rray_broadcast.html">rray_broadcast</a></span>(a, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">1</span>))</a>
 <a class="sourceLine" id="cb20-14" data-line-number="14"><span class="co">#&gt; &lt;rray&lt;int&gt;[,3,1][4]&gt;</span></a>
 <a class="sourceLine" id="cb20-15" data-line-number="15"><span class="co">#&gt; , , 1</span></a>
 <a class="sourceLine" id="cb20-16" data-line-number="16"><span class="co">#&gt; </span></a>
@@ -453,7 +462,7 @@
 <a class="sourceLine" id="cb20-20" data-line-number="20"><span class="co">#&gt; [3,]    1    2    3</span></a>
 <a class="sourceLine" id="cb20-21" data-line-number="21"><span class="co">#&gt; [4,]    1    2    3</span></a>
 <a class="sourceLine" id="cb20-22" data-line-number="22"></a>
-<a class="sourceLine" id="cb20-23" data-line-number="23"><span class="kw"><a href="../reference/rray_broadcast.html">rray_broadcast</a></span>(a, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">2</span>))</a>
+<a class="sourceLine" id="cb20-23" data-line-number="23"><span class="kw"><a href="../reference/rray_broadcast.html">rray_broadcast</a></span>(a, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">2</span>))</a>
 <a class="sourceLine" id="cb20-24" data-line-number="24"><span class="co">#&gt; &lt;rray&lt;int&gt;[,3,2][4]&gt;</span></a>
 <a class="sourceLine" id="cb20-25" data-line-number="25"><span class="co">#&gt; , , 1</span></a>
 <a class="sourceLine" id="cb20-26" data-line-number="26"><span class="co">#&gt; </span></a>
@@ -489,7 +498,7 @@
 <a class="sourceLine" id="cb21-16" data-line-number="16"><span class="co">#&gt; [3,]    7</span></a>
 <a class="sourceLine" id="cb21-17" data-line-number="17"><span class="co">#&gt; [4,]    8</span></a>
 <a class="sourceLine" id="cb21-18" data-line-number="18"></a>
-<a class="sourceLine" id="cb21-19" data-line-number="19"><span class="kw"><a href="../reference/rray_broadcast.html">rray_broadcast</a></span>(b, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">2</span>))</a>
+<a class="sourceLine" id="cb21-19" data-line-number="19"><span class="kw"><a href="../reference/rray_broadcast.html">rray_broadcast</a></span>(b, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">2</span>))</a>
 <a class="sourceLine" id="cb21-20" data-line-number="20"><span class="co">#&gt; &lt;rray&lt;int&gt;[,3,2][4]&gt;</span></a>
 <a class="sourceLine" id="cb21-21" data-line-number="21"><span class="co">#&gt; , , 1</span></a>
 <a class="sourceLine" id="cb21-22" data-line-number="22"><span class="co">#&gt; </span></a>
@@ -549,7 +558,7 @@
 <a class="sourceLine" id="cb23-10" data-line-number="10"><span class="co">#&gt; [2,]    4   10</span></a>
 <a class="sourceLine" id="cb23-11" data-line-number="11"><span class="co">#&gt; [3,]    6   12</span></a></code></pre></div>
 <p>But when a vector and an array are combined, the vector is <em>recycled</em> to fit the dimensions of the array. <em>This is very different from broadcasting.</em></p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1">vec_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>)</a>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1">vec_<span class="dv">1</span> &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>)</a>
 <a class="sourceLine" id="cb24-2" data-line-number="2"></a>
 <a class="sourceLine" id="cb24-3" data-line-number="3">x</a>
 <a class="sourceLine" id="cb24-4" data-line-number="4"><span class="co">#&gt;      [,1] [,2]</span></a>
@@ -564,13 +573,13 @@
 <a class="sourceLine" id="cb24-13" data-line-number="13"><span class="co">#&gt; [3,]    6    9</span></a>
 <a class="sourceLine" id="cb24-14" data-line-number="14"></a>
 <a class="sourceLine" id="cb24-15" data-line-number="15"><span class="co"># Equivalent to:</span></a>
-<a class="sourceLine" id="cb24-16" data-line-number="16">x <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/rep">rep</a></span>(vec_<span class="dv">1</span>, <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb24-16" data-line-number="16">x <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/rep.html">rep</a></span>(vec_<span class="dv">1</span>, <span class="dv">2</span>)</a>
 <a class="sourceLine" id="cb24-17" data-line-number="17"><span class="co">#&gt;      [,1] [,2]</span></a>
 <a class="sourceLine" id="cb24-18" data-line-number="18"><span class="co">#&gt; [1,]    2    5</span></a>
 <a class="sourceLine" id="cb24-19" data-line-number="19"><span class="co">#&gt; [2,]    4    7</span></a>
 <a class="sourceLine" id="cb24-20" data-line-number="20"><span class="co">#&gt; [3,]    6    9</span></a></code></pre></div>
 <p>This example seems intuitive and harmless, but even <em>partial recycling</em> is allowed, which can be quite confusing and dangerous.</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1">vec_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">1</span>, <span class="dv">2</span>)</a>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1">vec_<span class="dv">2</span> &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">1</span>, <span class="dv">2</span>)</a>
 <a class="sourceLine" id="cb25-2" data-line-number="2"></a>
 <a class="sourceLine" id="cb25-3" data-line-number="3">x <span class="op">+</span><span class="st"> </span>vec_<span class="dv">2</span></a>
 <a class="sourceLine" id="cb25-4" data-line-number="4"><span class="co">#&gt;      [,1] [,2]</span></a>
@@ -578,7 +587,7 @@
 <a class="sourceLine" id="cb25-6" data-line-number="6"><span class="co">#&gt; [2,]    4    6</span></a>
 <a class="sourceLine" id="cb25-7" data-line-number="7"><span class="co">#&gt; [3,]    4    8</span></a></code></pre></div>
 <p>This is confusingly identical to the following, where <code>vec_2</code> is repeatedly used to construct something that can be added to <code>x</code>.</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1">recycled &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/matrix">matrix</a></span>(<span class="ot">NA</span>, <span class="dv">3</span>, <span class="dv">2</span>)</a>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1">recycled &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="ot">NA</span>, <span class="dv">3</span>, <span class="dv">2</span>)</a>
 <a class="sourceLine" id="cb26-2" data-line-number="2"></a>
 <a class="sourceLine" id="cb26-3" data-line-number="3">recycled[<span class="dv">1</span>, <span class="dv">1</span>] &lt;-<span class="st"> </span>vec_<span class="dv">2</span>[<span class="dv">1</span>]</a>
 <a class="sourceLine" id="cb26-4" data-line-number="4">recycled[<span class="dv">2</span>, <span class="dv">1</span>] &lt;-<span class="st"> </span>vec_<span class="dv">2</span>[<span class="dv">2</span>]</a>
@@ -611,7 +620,7 @@
 <p>In the Python world, NumPy is used for broadcasting operations. The underlying C++ library used for rray is heavily based on the NumPy principles. However, one interesting thing to note is that when applying broadcasting rules for NumPy, implicit dimensions are <em>prepended to the left hand side</em> as <code>1</code>s. This is used consistently in the NumPy world, even down to how they are printed. However, R often uses the concept of appended implicit dimensions the right hand side, and prints with this concept in mind.</p>
 <p>For a simple example of R doing this, try coercing a vector to a matrix:</p>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1"><span class="co"># (3) -&gt; (3, 1)</span></a>
-<a class="sourceLine" id="cb28-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/matrix">as.matrix</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>)</a>
+<a class="sourceLine" id="cb28-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>)</a>
 <a class="sourceLine" id="cb28-3" data-line-number="3"><span class="co">#&gt;      [,1]</span></a>
 <a class="sourceLine" id="cb28-4" data-line-number="4"><span class="co">#&gt; [1,]    1</span></a>
 <a class="sourceLine" id="cb28-5" data-line-number="5"><span class="co">#&gt; [2,]    2</span></a>
@@ -622,6 +631,7 @@
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+
         <div id="tocnav">
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
@@ -640,17 +650,20 @@
 </div>
 
 
+
       <footer><div class="copyright">
   <p>Developed by Davis Vaughan.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
 </div>
 
   
+
 
   </body>
 </html>
