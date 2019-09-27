@@ -25,11 +25,9 @@ knitr::opts_chunk$set(
 
 rray (said: "r-ray") is an array manipulation library for R. It has three main goals:
 
-1) To provide an rray class that tries to be stricter and more consistent than base R arrays, similar in spirit to tibble.
-
-2) To support broadcasting throughout the package, which allows for novel yet intuitive array operations that have been missing from the R ecosystem.
-
-3) To provide a consistent, powerful toolkit for array based manipulation, usable by both the new rray objects and base R matrices/arrays.
+- To provide an rray class that tries to be stricter and more consistent than base R arrays, similar in spirit to tibble.
+- To support broadcasting throughout the package, which allows for novel yet intuitive array operations that have been missing from the R ecosystem.
+- To provide a consistent, powerful toolkit for array based manipulation, usable by both the new rray objects and base R matrices/arrays.
 
 View the vignettes for each goal on [the website](https://rray.r-lib.org) to learn more about how to use rray.
 

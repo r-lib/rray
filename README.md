@@ -16,14 +16,12 @@ coverage](https://codecov.io/gh/r-lib/rray/branch/master/graph/badge.svg)](https
 rray (said: “r-ray”) is an array manipulation library for R. It has
 three main goals:
 
-1)  To provide an rray class that tries to be stricter and more
+  - To provide an rray class that tries to be stricter and more
     consistent than base R arrays, similar in spirit to tibble.
-
-2)  To support broadcasting throughout the package, which allows for
+  - To support broadcasting throughout the package, which allows for
     novel yet intuitive array operations that have been missing from the
     R ecosystem.
-
-3)  To provide a consistent, powerful toolkit for array based
+  - To provide a consistent, powerful toolkit for array based
     manipulation, usable by both the new rray objects and base R
     matrices/arrays.
 
