@@ -3,9 +3,6 @@ url: https://rray.r-lib.org
 development:
   mode: auto
 
-home:
-  strip_header: true
-
 reference:
 - title: Coercion
   contents:

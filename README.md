@@ -13,8 +13,6 @@ status](https://travis-ci.org/r-lib/rray.svg?branch=master)](https://travis-ci.o
 coverage](https://codecov.io/gh/r-lib/rray/branch/master/graph/badge.svg)](https://codecov.io/gh/r-lib/rray?branch=master)
 <!-- badges: end -->
 
-## Introduction
-
 rray (said: “r-ray”) is an array manipulation library for R. It has
 three main goals:
 

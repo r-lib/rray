@@ -23,8 +23,6 @@ knitr::opts_chunk$set(
 [![Codecov test coverage](https://codecov.io/gh/r-lib/rray/branch/master/graph/badge.svg)](https://codecov.io/gh/r-lib/rray?branch=master)
 <!-- badges: end -->
 
-## Introduction
-
 rray (said: "r-ray") is an array manipulation library for R. It has three main goals:
 
 1) To provide an rray class that tries to be stricter and more consistent than base R arrays, similar in spirit to tibble.
