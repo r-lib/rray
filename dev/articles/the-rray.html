@@ -6,11 +6,19 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The rray • rray</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="The rray">
 <meta property="og:description" content="">
+<meta property="og:image" content="https://rray.r-lib.org/logo.png">
 <meta name="twitter:card" content="summary">
 <meta name="robots" content="noindex">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -39,7 +47,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -71,7 +79,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/r-lib/rray">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -84,6 +92,7 @@
 <!--/.navbar -->
 
       
+
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
@@ -97,8 +106,8 @@
 
     
     
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(rray)</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(vctrs)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(rray)</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(vctrs)</a></code></pre></div>
 <div id="introduction" class="section level2">
 <h2 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h2>
@@ -111,7 +120,7 @@
 <h3 class="hasAnchor">
 <a href="#the-problem" class="anchor"></a>The problem</h3>
 <p>Base R subsets matrices and arrays with a default of <code>drop = TRUE</code>, similar to data frames. This is one of the most common sources of bugs, especially when programming around arrays, because a lot of mental work is required to ensure that functions don’t accidentally subset matrices in a way that coerces them to vectors.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">x_mat &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/matrix">matrix</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>, <span class="dt">ncol =</span> <span class="dv">2</span>)</a>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">x_mat &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>, <span class="dt">ncol =</span> <span class="dv">2</span>)</a>
 <a class="sourceLine" id="cb2-2" data-line-number="2">x_mat</a>
 <a class="sourceLine" id="cb2-3" data-line-number="3"><span class="co">#&gt;      [,1] [,2]</span></a>
 <a class="sourceLine" id="cb2-4" data-line-number="4"><span class="co">#&gt; [1,]    1    4</span></a>
@@ -134,15 +143,15 @@
 <a class="sourceLine" id="cb2-21" data-line-number="21"></a>
 <a class="sourceLine" id="cb2-22" data-line-number="22">x_mat[,1L]</a>
 <a class="sourceLine" id="cb2-23" data-line-number="23"><span class="co">#&gt; [1] 1 2 3</span></a></code></pre></div>
-<p>This example demonstrates that <code>[</code> is not <em>type stable</em>. This means it is impossible to predict the type of the output solely based on the input’s type. <em>Type</em> is defined in the vctrs sense (read about it <a href="https://vctrs.r-lib.org/articles/type-size.html">here</a>), but for usage in rray think of the type as being the class of an object along with its attributes, and the <em>shape</em> of the object, which is the dimensionality of the array excluding the first dimension. The first dimension is handled separately as the <em>size</em>.</p>
-<p>To give a concrete example, <code>x_mat</code> has a type of <code>&lt;integer[,2]&gt;</code>. Both <code>1:2</code> and <code>1L</code> have types of <code>&lt;integer&gt;</code>. So the full subset expression looks like: <code>&lt;integer[,2]&gt;[&lt;integer&gt;,]</code>. If <code>[</code> was type stable, you would be able to predict the output’s type based on these inputs. But you can’t! In some cases, this returns <code>&lt;integer[,2]&gt;</code>, and in others it returns <code>&lt;integer&gt;</code>.</p>
+<p>This example demonstrates that <code><a href="https://rdrr.io/r/base/Extract.html">[</a></code> is not <em>type stable</em>. This means it is impossible to predict the type of the output solely based on the input’s type. <em>Type</em> is defined in the vctrs sense (read about it <a href="https://vctrs.r-lib.org/articles/type-size.html">here</a>), but for usage in rray think of the type as being the class of an object along with its attributes, and the <em>shape</em> of the object, which is the dimensionality of the array excluding the first dimension. The first dimension is handled separately as the <em>size</em>.</p>
+<p>To give a concrete example, <code>x_mat</code> has a type of <code>&lt;integer[,2]&gt;</code>. Both <code>1:2</code> and <code>1L</code> have types of <code>&lt;integer&gt;</code>. So the full subset expression looks like: <code>&lt;integer[,2]&gt;[&lt;integer&gt;,]</code>. If <code><a href="https://rdrr.io/r/base/Extract.html">[</a></code> was type stable, you would be able to predict the output’s type based on these inputs. But you can’t! In some cases, this returns <code>&lt;integer[,2]&gt;</code>, and in others it returns <code>&lt;integer&gt;</code>.</p>
 <p>Looking past the type instability, the fix for the dropping of dimensions is usually to use <code>drop = FALSE</code>.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">x_mat[<span class="dv">1</span>, , drop =<span class="st"> </span><span class="ot">FALSE</span>]</a>
 <a class="sourceLine" id="cb3-2" data-line-number="2"><span class="co">#&gt;      [,1] [,2]</span></a>
 <a class="sourceLine" id="cb3-3" data-line-number="3"><span class="co">#&gt; [1,]    1    4</span></a></code></pre></div>
 <p>But this requires careful thinking about how to subset arrays programmatically, adding the right number of commas where required to ensure that dimensions aren’t dropped. Consider how you would pull the first row of a 3D vs 4D array, and pay attention to the varying number of commas required to prevent a vector from being returned.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">x_3D &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/array">array</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">12</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">2</span>))</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">x_4D &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/array">array</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">12</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">1</span>))</a>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">x_3D &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/array.html">array</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">12</span>, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">2</span>))</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">x_4D &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/array.html">array</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">12</span>, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">1</span>))</a>
 <a class="sourceLine" id="cb4-3" data-line-number="3"></a>
 <a class="sourceLine" id="cb4-4" data-line-number="4">x_3D[<span class="dv">1</span>, , , drop =<span class="st"> </span><span class="ot">FALSE</span>]</a>
 <a class="sourceLine" id="cb4-5" data-line-number="5"><span class="co">#&gt; , , 1</span></a>
@@ -169,7 +178,7 @@
 <div id="the-solution" class="section level3">
 <h3 class="hasAnchor">
 <a href="#the-solution" class="anchor"></a>The solution</h3>
-<p>rray takes a different approach, and never drops dimensions when subsetting. This results in a type stable <code>[</code> method, and actually frees up subsetting syntax that I find more intuitive, but results in an error with base R. To convert <code>x_3D</code> to an rray, use <code><a href="../reference/as_rray.html">as_rray()</a></code>.</p>
+<p>rray takes a different approach, and never drops dimensions when subsetting. This results in a type stable <code><a href="https://rdrr.io/r/base/Extract.html">[</a></code> method, and actually frees up subsetting syntax that I find more intuitive, but results in an error with base R. To convert <code>x_3D</code> to an rray, use <code><a href="../reference/as_rray.html">as_rray()</a></code>.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">x_3D_rray &lt;-<span class="st"> </span><span class="kw"><a href="../reference/as_rray.html">as_rray</a></span>(x_3D)</a>
 <a class="sourceLine" id="cb5-2" data-line-number="2"></a>
 <a class="sourceLine" id="cb5-3" data-line-number="3"><span class="co"># First row, but still 3D</span></a>
@@ -229,7 +238,7 @@
 <a class="sourceLine" id="cb6-25" data-line-number="25"><span class="co">#&gt;      [,1] [,2]</span></a>
 <a class="sourceLine" id="cb6-26" data-line-number="26"><span class="co">#&gt; [1,]    7    9</span></a>
 <a class="sourceLine" id="cb6-27" data-line-number="27"><span class="co">#&gt; [2,]    8   10</span></a></code></pre></div>
-<p>If you are writing a package where you aren’t sure if the user is going to pass in an rray or an array, you’ll want to be sure that you can subset consistently, no matter the input type. For that, <code><a href="../reference/rray_subset.html">rray_subset()</a></code> has been exposed, which is what powers <code>[</code>. This means you can have this type stable subsetting with base R objects.</p>
+<p>If you are writing a package where you aren’t sure if the user is going to pass in an rray or an array, you’ll want to be sure that you can subset consistently, no matter the input type. For that, <code><a href="../reference/rray_subset.html">rray_subset()</a></code> has been exposed, which is what powers <code><a href="https://rdrr.io/r/base/Extract.html">[</a></code>. This means you can have this type stable subsetting with base R objects.</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">x_3D[<span class="dv">1</span>, <span class="dv">1</span>]</a>
 <a class="sourceLine" id="cb7-2" data-line-number="2"><span class="co">#&gt; Error in x_3D[1, 1]: incorrect number of dimensions</span></a>
 <a class="sourceLine" id="cb7-3" data-line-number="3"></a>
@@ -264,7 +273,7 @@
 <div id="the-problem-1" class="section level3">
 <h3 class="hasAnchor">
 <a href="#the-problem-1" class="anchor"></a>The problem</h3>
-<p>Base R allows you to access “inner” elements of an array by using <code>[</code> without any commas, i.e. <code>x[i]</code>. While technically this one operation on its own is type stable, when you compare it to <code>x[i,]</code> and <code>x[,i]</code>, it becomes clear that it is doing something completely different.</p>
+<p>Base R allows you to access “inner” elements of an array by using <code><a href="https://rdrr.io/r/base/Extract.html">[</a></code> without any commas, i.e. <code>x[i]</code>. While technically this one operation on its own is type stable, when you compare it to <code>x[i,]</code> and <code>x[,i]</code>, it becomes clear that it is doing something completely different.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="co"># Positions 1 and 2</span></a>
 <a class="sourceLine" id="cb8-2" data-line-number="2">x_3D[<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>]</a>
 <a class="sourceLine" id="cb8-3" data-line-number="3"><span class="co">#&gt; [1] 1 2</span></a>
@@ -321,7 +330,7 @@ x[,,i]</code></pre>
 <pre><code>x[i,]
 x[,i,]
 x[,,i,]</code></pre>
-<p>But what about selecting by position? This is still a useful operation, so it would make sense to have some way to do it. For that, you can equivalently use either <code><a href="../reference/rray_yank.html">rray_yank()</a></code> or <code>[[</code>. <code><a href="../reference/rray_yank.html">rray_yank()</a></code> always returns a 1D vector, and allows you to pass in an integer vector to subset by position.</p>
+<p>But what about selecting by position? This is still a useful operation, so it would make sense to have some way to do it. For that, you can equivalently use either <code><a href="../reference/rray_yank.html">rray_yank()</a></code> or <code><a href="https://rdrr.io/r/base/Extract.html">[[</a></code>. <code><a href="../reference/rray_yank.html">rray_yank()</a></code> always returns a 1D vector, and allows you to pass in an integer vector to subset by position.</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="co"># First 3 positions</span></a>
 <a class="sourceLine" id="cb12-2" data-line-number="2">x_3D_rray[[<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>]]</a>
 <a class="sourceLine" id="cb12-3" data-line-number="3"><span class="co">#&gt; [1] 1 2 3</span></a>
@@ -335,7 +344,7 @@ x[,,i,]</code></pre>
 <a class="sourceLine" id="cb13-4" data-line-number="4">dummy[<span class="dv">1</span>] &lt;-<span class="st"> </span><span class="ot">NA</span></a>
 <a class="sourceLine" id="cb13-5" data-line-number="5"></a>
 <a class="sourceLine" id="cb13-6" data-line-number="6"><span class="co"># Set NA values to 0</span></a>
-<a class="sourceLine" id="cb13-7" data-line-number="7">dummy[[<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/NA">is.na</a></span>(dummy)]] &lt;-<span class="st"> </span><span class="dv">0</span></a>
+<a class="sourceLine" id="cb13-7" data-line-number="7">dummy[[<span class="kw"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span>(dummy)]] &lt;-<span class="st"> </span><span class="dv">0</span></a>
 <a class="sourceLine" id="cb13-8" data-line-number="8"></a>
 <a class="sourceLine" id="cb13-9" data-line-number="9">dummy</a>
 <a class="sourceLine" id="cb13-10" data-line-number="10"><span class="co">#&gt; &lt;rray&lt;int&gt;[,3,2][2]&gt;</span></a>
@@ -374,8 +383,8 @@ x[,,i,]</code></pre>
 <h3 class="hasAnchor">
 <a href="#the-problem-2" class="anchor"></a>The problem</h3>
 <p>Base R has consistent dimension name handling rules, but they can be surprising because they often don’t retain the maximum amount of information that it seems like they could.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">x_row_nms &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/matrix">matrix</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>, <span class="dt">dimnames =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"r1"</span>, <span class="st">"r2"</span>)))</a>
-<a class="sourceLine" id="cb15-2" data-line-number="2">x_col_nms &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/matrix">matrix</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>, <span class="dt">dimnames =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="ot">NULL</span>, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"c1"</span>)))</a>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">x_row_nms &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>, <span class="dt">dimnames =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"r1"</span>, <span class="st">"r2"</span>)))</a>
+<a class="sourceLine" id="cb15-2" data-line-number="2">x_col_nms &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span>(<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>, <span class="dt">dimnames =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="ot">NULL</span>, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"c1"</span>)))</a>
 <a class="sourceLine" id="cb15-3" data-line-number="3"></a>
 <a class="sourceLine" id="cb15-4" data-line-number="4">x_row_nms</a>
 <a class="sourceLine" id="cb15-5" data-line-number="5"><span class="co">#&gt;    [,1]</span></a>
@@ -419,7 +428,7 @@ x[,,i,]</code></pre>
 <a class="sourceLine" id="cb16-13" data-line-number="13"><span class="co">#&gt; r1  2</span></a>
 <a class="sourceLine" id="cb16-14" data-line-number="14"><span class="co">#&gt; r2  4</span></a></code></pre></div>
 <p>The order of the inputs still matters. If both inputs have row names, for example, the row names of the result come from the first input.</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">x_col_and_row_nms_rray &lt;-<span class="st"> </span><span class="kw"><a href="../reference/dim-names.html">rray_set_row_names</a></span>(x_col_nms_rray, <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"row1"</span>, <span class="st">"row2"</span>))</a>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">x_col_and_row_nms_rray &lt;-<span class="st"> </span><span class="kw"><a href="../reference/dim-names.html">rray_set_row_names</a></span>(x_col_nms_rray, <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"row1"</span>, <span class="st">"row2"</span>))</a>
 <a class="sourceLine" id="cb17-2" data-line-number="2">x_col_and_row_nms_rray</a>
 <a class="sourceLine" id="cb17-3" data-line-number="3"><span class="co">#&gt; &lt;rray&lt;int&gt;[,1][2]&gt;</span></a>
 <a class="sourceLine" id="cb17-4" data-line-number="4"><span class="co">#&gt;      c1</span></a>
@@ -449,6 +458,7 @@ x[,,i,]</code></pre>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+
         <div id="tocnav">
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
@@ -464,17 +474,20 @@ x[,,i,]</code></pre>
 </div>
 
 
+
       <footer><div class="copyright">
   <p>Developed by Davis Vaughan.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
 </div>
 
   
+
 
   </body>
 </html>

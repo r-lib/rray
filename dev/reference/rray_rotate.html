@@ -8,21 +8,32 @@
 
 <title>Rotate an array — rray_rotate • rray</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
 
-<!-- sticky kit -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+<!-- headroom.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -30,12 +41,14 @@
 
 
 
-<meta property="og:title" content="Rotate an array — rray_rotate" />
 
+<meta property="og:title" content="Rotate an array — rray_rotate" />
 <meta property="og:description" content="rray_rotate() rotates an array along the plane defined by c(from, to). It
 can be thought of as sequentially rotating the array 90 degrees a set number
 of times." />
+<meta property="og:image" content="https://rray.r-lib.org/logo.png" />
 <meta name="twitter:card" content="summary" />
+
 
 <meta name="robots" content="noindex">
 
@@ -47,6 +60,7 @@ of times." />
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
+
 
 
   </head>
@@ -73,7 +87,7 @@ of times." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -102,11 +116,10 @@ of times." />
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/r-lib/rray">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -117,6 +130,7 @@ of times." />
 </div><!--/.navbar -->
 
       
+
       </header>
 
 <div class="row">
@@ -128,15 +142,13 @@ of times." />
     </div>
 
     <div class="ref-description">
-    
-    <p><code>rray_rotate()</code> rotates an array along the plane defined by <code><a href='https://www.rdocumentation.org/packages/base/topics/c'>c(from, to)</a></code>. It
+    <p><code>rray_rotate()</code> rotates an array along the plane defined by <code><a href='https://rdrr.io/r/base/c.html'>c(from, to)</a></code>. It
 can be thought of as sequentially rotating the array 90 degrees a set number
 of <code>times</code>.</p>
-    
     </div>
 
     <pre class="usage"><span class='fu'>rray_rotate</span>(<span class='no'>x</span>, <span class='kw'>from</span> <span class='kw'>=</span> <span class='fl'>1</span>, <span class='kw'>to</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>times</span> <span class='kw'>=</span> <span class='fl'>1</span>)</pre>
-    
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -157,11 +169,10 @@ To go <em>clockwise</em>, reverse <code>from</code> and <code>to</code>.</p></td
 One of: <code>1</code>, <code>2</code>, <code>3</code>. Or, equivalently: <code>-3</code>, <code>-2</code>, <code>-1</code>.</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p><code>x</code> rotated along the axis described by <code>from</code> and <code>to</code>.</p>
-    
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>A rotation can be a hard thing to wrap your head around. I encourage
@@ -174,15 +185,14 @@ you the shape of the output. So, a <code>(5, 2, 4)</code> array rotated using <c
 and <code>to = 3</code> would have a resulting shape of <code>(4, 2, 5)</code>. Note that using
 <code>from = 3</code> and <code>to = 1</code> would give the same shape. The "direction"
 of how these are rotated is controlled by the ordering of <code>from</code> and <code>to</code>.</p>
-    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># ---------------------------------------------------------------------------</span>
 <span class='co'># 2D example</span>
 
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>6</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>3</span>, <span class='fl'>2</span>))
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dim-names.html'>rray_set_row_names</a></span>(<span class='no'>x</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"r1"</span>, <span class='st'>"r2"</span>, <span class='st'>"r3"</span>))
-<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dim-names.html'>rray_set_col_names</a></span>(<span class='no'>x</span>, <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"c1"</span>, <span class='st'>"c2"</span>))
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='rray.html'>rray</a></span>(<span class='fl'>1</span>:<span class='fl'>6</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>3</span>, <span class='fl'>2</span>))
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dim-names.html'>rray_set_row_names</a></span>(<span class='no'>x</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"r1"</span>, <span class='st'>"r2"</span>, <span class='st'>"r3"</span>))
+<span class='no'>x</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='dim-names.html'>rray_set_col_names</a></span>(<span class='no'>x</span>, <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"c1"</span>, <span class='st'>"c2"</span>))
 
 <span class='co'># "counter clockwise" rotation turning the</span>
 <span class='co'># rows into columns</span>
@@ -254,16 +264,14 @@ of how these are rotated is controlled by the ordering of <code>from</code> and 
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
       <li><a href="#value">Value</a></li>
-
       <li><a href="#details">Details</a></li>
-      
       <li><a href="#examples">Examples</a></li>
     </ul>
 
   </div>
 </div>
+
 
       <footer>
       <div class="copyright">
@@ -271,13 +279,16 @@ of how these are rotated is controlled by the ordering of <code>from</code> and 
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
    </div>
 
   
 
+
   </body>
 </html>
+
 
