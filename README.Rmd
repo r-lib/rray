@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# rray
+# rray <a href='https:/rray.r-lib.org'><img src='man/figures/logo.png' align="right" height="139" /></a>
 
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
