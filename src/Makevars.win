@@ -1,4 +1,4 @@
 ## -*- mode: makefile; -*-
 
-PKG_CXXFLAGS = -I../inst/include -DRCPP_DEFAULT_INCLUDE_CALL=false
+PKG_CXXFLAGS = -I../inst/include -DRCPP_DEFAULT_INCLUDE_CALL=false -DRCPP_NO_MODULES
 CXX_STD = CXX14
