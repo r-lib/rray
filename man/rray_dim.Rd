@@ -28,7 +28,7 @@ An integer vector containing the common dimensions.
 makes any implicit dimensions explicit, then recycles the size of each
 dimension to a common size.
 
-As an example, the common dimensions of \code{(4, 5)} and \code{(4, 1, 2)} are:\preformatted{(4, 5, 1) <- implicit 1 is made to be explicit, then recycled to 2
+As an example, the common dimensions of \verb{(4, 5)} and \verb{(4, 1, 2)} are:\preformatted{(4, 5, 1) <- implicit 1 is made to be explicit, then recycled to 2
 (4, 1, 2) <- the 1 in the second dimension here is recycled to 5
 ---------
 (4, 5, 2) <- resulting common dim

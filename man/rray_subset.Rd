@@ -58,7 +58,7 @@ matrices and arrays to get rray subsetting behavior with them.
 \item \code{rray_subset()} \emph{never} drops dimensions.
 \item \code{rray_subset()} ignores trailing commas. This has the nice property of
 making \code{x[1] == x[1,]}.
-\item \code{rray_subset()<-} casts \code{value} to \code{x}, rather than
+\item \verb{rray_subset()<-} casts \code{value} to \code{x}, rather than
 casting \code{x} to \code{value}.
 }
 }
@@ -124,7 +124,9 @@ x_arr
 \seealso{
 \code{\link[=pad]{pad()}}
 
-Other rray subsetters: \code{\link{rray_extract<-}},
-  \code{\link{rray_slice<-}}, \code{\link{rray_yank<-}}
+Other rray subsetters: 
+\code{\link{rray_extract<-}()},
+\code{\link{rray_slice<-}()},
+\code{\link{rray_yank<-}()}
 }
 \concept{rray subsetters}

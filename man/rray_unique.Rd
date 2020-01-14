@@ -45,7 +45,7 @@ The family of unique functions work in the following manner:
 final output is restored from that result.
 }
 
-As an example, if \code{x} has dimensions of \code{(2, 3, 2)} and \code{axis = 2}, then
+As an example, if \code{x} has dimensions of \verb{(2, 3, 2)} and \code{axis = 2}, then
 you can think of \code{x} as being broken into \code{x[, 1]}, \code{x[, 2]} and \code{x[, 3]}.
 Each of those three pieces are then flattened, and a vctrs unique function
 is called on the list of those flattened inputs.

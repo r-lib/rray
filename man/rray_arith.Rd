@@ -55,7 +55,7 @@ to their input.
 \details{
 In case you want to apply arithmetic operations with broadcasting to
 purely base R objects using infix operators, custom infix functions have
-been exported, such as \code{\%b+\%}, which will perform addition with
+been exported, such as \verb{\%b+\%}, which will perform addition with
 broadcasting no matter what type the input is.
 }
 \examples{

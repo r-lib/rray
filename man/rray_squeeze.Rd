@@ -24,9 +24,9 @@ The dimension name handling of \code{rray_squeeze()} is essentially identical to
 \code{drop()}, but some explanation is always helpful:
 \itemize{
 \item Dimension names are removed from the axes that are squeezed. So squeezing
-a \code{(2, 1, 2)} object results in a \code{(2, 2)} object using the dimension names
+a \verb{(2, 1, 2)} object results in a \verb{(2, 2)} object using the dimension names
 from the original first and third dimensions.
-\item When all dimensions are squeezed, as in the case of \code{(1, 1, 1)}, then
+\item When all dimensions are squeezed, as in the case of \verb{(1, 1, 1)}, then
 the first dimension names that are found are the ones that are used in the
 \code{(1)} result.
 }

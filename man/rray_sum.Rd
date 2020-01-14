@@ -51,8 +51,10 @@ rray_sum(y, c(1, 2))
 
 }
 \seealso{
-Other reducers: \code{\link{rray_max}},
-  \code{\link{rray_mean}}, \code{\link{rray_min}},
-  \code{\link{rray_prod}}
+Other reducers: 
+\code{\link{rray_max}()},
+\code{\link{rray_mean}()},
+\code{\link{rray_min}()},
+\code{\link{rray_prod}()}
 }
 \concept{reducers}

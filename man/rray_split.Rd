@@ -22,9 +22,9 @@ A list of sub arrays of type \code{x}.
 \code{rray_split()} works by splitting along the \code{axes}. The result is a list
 of sub arrays, where the \code{axes} of each sub array have been reduced to
 length 1. This is consistent with how reducers like \code{\link[=rray_sum]{rray_sum()}} work. As
-an example, splitting a \code{(2, 3, 5)} array along \code{axes = c(2, 3)} would
+an example, splitting a \verb{(2, 3, 5)} array along \code{axes = c(2, 3)} would
 result in a list of 15 (from \code{3 * 5}) sub arrays, each with
-shape \code{(2, 1, 1)}.
+shape \verb{(2, 1, 1)}.
 }
 \examples{
 

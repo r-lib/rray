@@ -43,7 +43,7 @@ rray_set_col_names(x, names, meta = NULL)
 \arguments{
 \item{x}{The object to extract the dimension names for.}
 
-\item{value}{For \code{rray_dim_names<-()}, a list containing either character
+\item{value}{For \verb{rray_dim_names<-()}, a list containing either character
 vectors or \code{NULL} corresponding to the new dimension names
 to use for \code{x}. Otherwise, identical to \code{names}.}
 
@@ -76,7 +76,7 @@ names corresponding to the \code{axis} dimension.
 row and column names respectively.
 \item Each of these four functions also has "set" variants: a functional form
 (i.e. \code{rray_set_row_names()}), and an assignment
-form (i.e. \code{rray_row_names<-()}).
+form (i.e. \verb{rray_row_names<-()}).
 }
 }
 \details{

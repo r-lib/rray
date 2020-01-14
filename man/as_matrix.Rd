@@ -22,7 +22,7 @@ A matrix.
 
 For a >2D object to be coercible to a matrix, all of the dimensions
 except for the first two must be size 1. Meaning an array with dimensions
-\code{(3, 2, 1)} would be coercible to a \code{(3, 2)} matrix, but one with \code{(3, 1, 2)}
+\verb{(3, 2, 1)} would be coercible to a \verb{(3, 2)} matrix, but one with \verb{(3, 1, 2)}
 would not be.
 }
 \examples{

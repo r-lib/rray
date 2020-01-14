@@ -15,7 +15,7 @@ rray_reshape(x, dim)
 \code{x} reshaped to the new dimensions of \code{dim}.
 }
 \description{
-\code{rray_reshape()} is similar to \code{dim()<-}. It reshapes \code{x} in such a way
+\code{rray_reshape()} is similar to \verb{dim()<-}. It reshapes \code{x} in such a way
 that the dimensions are different, but the total size of the array is still
 the same (as measured by \code{\link[=rray_elems]{rray_elems()}}).
 }

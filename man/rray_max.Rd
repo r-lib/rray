@@ -34,8 +34,10 @@ rray_max(x, 2)
 
 }
 \seealso{
-Other reducers: \code{\link{rray_mean}},
-  \code{\link{rray_min}}, \code{\link{rray_prod}},
-  \code{\link{rray_sum}}
+Other reducers: 
+\code{\link{rray_mean}()},
+\code{\link{rray_min}()},
+\code{\link{rray_prod}()},
+\code{\link{rray_sum}()}
 }
 \concept{reducers}

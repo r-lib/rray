@@ -34,8 +34,8 @@ Note that a rotation is \emph{not} the same thing as a transpose.
 
 Generally, you can predict the output of rotating using \code{from} and \code{to}
 by switching the dimensions at the \code{from} and \code{to} axes position. This gives
-you the shape of the output. So, a \code{(5, 2, 4)} array rotated using \code{from = 1}
-and \code{to = 3} would have a resulting shape of \code{(4, 2, 5)}. Note that using
+you the shape of the output. So, a \verb{(5, 2, 4)} array rotated using \code{from = 1}
+and \code{to = 3} would have a resulting shape of \verb{(4, 2, 5)}. Note that using
 \code{from = 3} and \code{to = 1} would give the same shape. The "direction"
 of how these are rotated is controlled by the ordering of \code{from} and \code{to}.
 }
