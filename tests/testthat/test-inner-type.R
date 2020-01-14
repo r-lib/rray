@@ -14,7 +14,7 @@ for (x in xs) {
 # ------------------------------------------------------------------------------
 # Bad `x`
 
-bad_x <- new_vctr(1, class = "unknown")
+bad_x <- new_vctr(1, class = "unknown", inherit_base_type = FALSE)
 
 test_that("unknown inner types are caught", {
   expect_error(vec_ptype_inner(bad_x))

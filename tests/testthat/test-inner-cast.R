@@ -17,7 +17,7 @@ for (x in xs) {
 # ------------------------------------------------------------------------------
 # Bad `to`
 
-bad_to <- new_vctr(1, class = "unknown")
+bad_to <- new_vctr(1, class = "unknown", inherit_base_type = FALSE)
 
 for (x in xs) {
   test_that(glue::glue("inner casting {typeof(x)} errors with unknown `to`."), {
@@ -28,7 +28,7 @@ for (x in xs) {
 # ------------------------------------------------------------------------------
 # Bad `x`
 
-bad_x <- new_vctr(1, class = "unknown")
+bad_x <- new_vctr(1, class = "unknown", inherit_base_type = FALSE)
 
 for (to in tos) {
   test_that("inner casting fails with unknown `x`", {
@@ -78,7 +78,7 @@ for (x in xs) {
 # ------------------------------------------------------------------------------
 # rray default
 
-bad_x <- new_vctr(1, class = "unknown")
+bad_x <- new_vctr(1, class = "unknown", inherit_base_type = FALSE)
 
 for (to in tos_rray) {
   test_that("inner casting rray errors with unknown `x`.", {

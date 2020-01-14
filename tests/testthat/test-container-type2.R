@@ -17,7 +17,7 @@ for (x in xs) {
 # ------------------------------------------------------------------------------
 # Bad `y`
 
-bad_y <- new_vctr(1, class = "unknown")
+bad_y <- new_vctr(1, class = "unknown", inherit_base_type = FALSE)
 
 for (x in xs) {
   test_that(glue::glue("container type2 {typeof(x)} errors with unknown `y`."), {
@@ -28,7 +28,7 @@ for (x in xs) {
 # ------------------------------------------------------------------------------
 # Bad `x`
 
-bad_x <- new_vctr(1, class = "unknown")
+bad_x <- new_vctr(1, class = "unknown", inherit_base_type = FALSE)
 
 for (y in ys) {
   test_that("container type2 fails with unknown `x`", {
@@ -72,7 +72,7 @@ for (x in xs) {
 # ------------------------------------------------------------------------------
 # rray default
 
-bad_x <- new_vctr(1, class = "unknown")
+bad_x <- new_vctr(1, class = "unknown", inherit_base_type = FALSE)
 
 test_that("container type2 rray errors with unknown `x`.", {
   expect_error(vec_ptype_container2(bad_x, rray(1)), class = "vctrs_error_incompatible_type")
