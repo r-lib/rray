@@ -100,7 +100,7 @@ rray_yank <- function(x, i) {
 
 rray_yank_impl <- function(x, i) {
   i <- maybe_missing(i, TRUE)
-  i <- as_yank_indexer(i, x)
+  i <- as_yank_location(i, x)
 
   # TODO
   if (is.integer(i) && is_any_na_int(list(i))) {
@@ -115,7 +115,7 @@ rray_yank_impl <- function(x, i) {
 
 # ------------------------------------------------------------------------------
 
-as_yank_indexer <- function(i, x) {
+as_yank_location <- function(i, x) {
   if (is.character(i)) {
     glubort("Cannot yank with a character `i`.")
   }
@@ -125,7 +125,7 @@ as_yank_indexer <- function(i, x) {
     return(i)
   }
 
-  vec_as_index(i, rray_elems(x)) - 1L
+  vec_as_location(i, rray_elems(x)) - 1L
 }
 
 # ------------------------------------------------------------------------------

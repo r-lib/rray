@@ -199,7 +199,7 @@ rray_as_index <- function(x, ...) {
       next
     }
 
-    index <- vec_as_index(index, dim[i], dim_names[[i]])
+    index <- vec_as_location(index, dim[i], dim_names[[i]])
 
     # Convert contiguous increasing indices to range lists
     if (is_contiguous_increasing(index)) {
