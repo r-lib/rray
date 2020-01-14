@@ -1,0 +1,4 @@
+> rray_extract(x, c(TRUE, TRUE, TRUE))
+Error: Logical indices must have length 1 or be as long as the indexed vector.
+The vector has size 2 whereas the subscript has size 3.
+

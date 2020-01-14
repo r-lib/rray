@@ -1,0 +1,4 @@
+> rray_extract(x, "r3")
+Error: Must index existing elements.
+x Can't subset element with unknown name `r3`.
+

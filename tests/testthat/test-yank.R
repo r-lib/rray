@@ -14,8 +14,11 @@ test_that("yank strips rray class", {
 
 test_that("can't index beyond vector in a yank", {
   x <- rray(1:8, dim = c(2, 2, 2))
-  expect_error(rray_yank(x, 9), "length 8")
-  expect_error(rray_yank(x, 8:10), "length 8")
+
+  verify_output(
+    test_path("out/test-error-rray-yank-oob.txt"),
+    rray_yank(x, 9)
+  )
 })
 
 test_that("names are not kept with yank", {
@@ -42,7 +45,11 @@ test_that("can yank with a logical", {
 test_that("shaped logicals with non-identical shape fail with yank", {
   x <- rray(1:8, dim = c(2, 2, 2))
   idx <- matrix(c(TRUE, FALSE), nrow = 1)
-  expect_error(rray_yank(x, idx), "size 8")
+
+  verify_output(
+    test_path("out/test-error-rray-yank-shaped-logical.txt"),
+    rray_yank(x, idx)
+  )
 })
 
 test_that("yank with NULL", {

@@ -73,8 +73,11 @@ test_that("subset works with base R", {
 
 test_that("can't index beyond vector in subset", {
   x <- rray(1:8, dim = c(2, 2, 2))
-  expect_error(rray_subset(x, 3), "length 2")
-  expect_error(rray_subset(x, 1:3), "length 2")
+
+  verify_output(
+    test_path("out/test-error-rray-subset-oob.txt"),
+    rray_subset(x, 3)
+  )
 })
 
 test_that("can subset with a logical", {
@@ -85,7 +88,10 @@ test_that("can subset with a logical", {
 
   expect_equal(rray_subset(x, TRUE, FALSE), x[,0])
 
-  expect_error(rray_subset(x, c(TRUE, TRUE, TRUE)), "must have length 1 or")
+  verify_output(
+    test_path("out/test-error-rray-subset-logical-size.txt"),
+    rray_subset(x, c(TRUE, TRUE, TRUE))
+  )
 
   expect_equal(rray_subset(x, c(TRUE, FALSE)), x[1])
 })
@@ -169,9 +175,16 @@ test_that("subset with character", {
 test_that("subset with character fails gracefully", {
   x <- rray(1:8, dim = c(2, 2, 2))
   x <- rray_set_row_names(x, c("r1", "r2"))
-  expect_error(rray_subset(x, "r3"), "non-existing")
 
-  expect_error(rray_subset(1, "x"), "unnamed")
+  verify_output(
+    test_path("out/test-error-rray-subset-oob-character.txt"),
+    rray_subset(x, "r3")
+  )
+
+  verify_output(
+    test_path("out/test-error-rray-subset-unnamed.txt"),
+    rray_subset(1, "x")
+  )
 })
 
 test_that("can't subset past the dimensions of x", {
@@ -182,7 +195,11 @@ test_that("can't subset past the dimensions of x", {
 test_that("can use a negative subset", {
   x <- rray(1:8, dim = c(2, 2, 2))
   expect_equal(x[-1], x[2])
-  expect_error(x[-3], "length 2")
+
+  verify_output(
+    test_path("out/test-error-rray-subset-oob-negative.txt"),
+    x[-3]
+  )
 })
 
 test_that("subset ignored `drop`", {

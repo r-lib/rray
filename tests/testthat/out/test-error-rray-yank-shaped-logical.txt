@@ -1,0 +1,3 @@
+> rray_yank(x, idx)
+Error: `i` must have one dimension, not 2.
+
