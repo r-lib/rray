@@ -1,5 +1,5 @@
 > rray_extract(x, 3)
 Error: Must index existing elements.
-x Can't subset position 3.
+x Can't subset location 3.
 i There are only 2 elements.
 
