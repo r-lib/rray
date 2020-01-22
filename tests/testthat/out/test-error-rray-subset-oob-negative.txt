@@ -1,5 +1,5 @@
 > x[-3]
-Error: Must index existing elements.
-x Can't subset location 3.
+Error: Can't negate elements that don't exist.
+x The location 3 doesn't exist.
 i There are only 2 elements.
 

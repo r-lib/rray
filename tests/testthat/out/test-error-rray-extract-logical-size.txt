@@ -1,5 +1,5 @@
 > rray_extract(x, c(TRUE, TRUE, TRUE))
-Error: Logical subscripts must match the size of the indexed vector.
-i The indexed vector has size 2.
-x The subscript has size 3.
+Error: Must subset elements with a valid subscript vector.
+i Logical subscripts must match the size of the indexed input.
+x The input has size 2 but the subscript has size 3.
 

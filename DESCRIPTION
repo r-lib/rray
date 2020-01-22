@@ -21,7 +21,7 @@ Imports:
     Rcpp (>= 1.0.3),
     rlang (>= 0.4.0),
     utils,
-    vctrs (>= 0.2.99.9002)
+    vctrs (>= 0.2.99.9004)
 Suggests: 
     covr,
     knitr,

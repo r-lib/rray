@@ -1,4 +1,4 @@
 > rray_extract(x, "r3")
-Error: Must index existing elements.
-x Can't subset element with unknown name `r3`.
+Error: Can't subset elements that don't exist.
+x The element `r3` doesn't exist.
 

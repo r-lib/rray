@@ -1,5 +1,5 @@
 > rray_yank(x, 9)
-Error: Must index existing elements.
-x Can't subset location 9.
+Error: Can't subset elements that don't exist.
+x The location 9 doesn't exist.
 i There are only 8 elements.
 
