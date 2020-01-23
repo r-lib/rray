@@ -1,5 +1,9 @@
 url: https://rray.r-lib.org
 
+template:
+  params:
+    ganalytics: UA-115082821-1
+
 development:
   mode: auto
 
