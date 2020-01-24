@@ -14,7 +14,6 @@
 #' @param to Type to cast to.
 #' @param op An arithmetic operator as a string.
 #' @param ... Used to pass along error message information.
-#' @inheritParams vec_ptype2
 #'
 #' @return
 #'
