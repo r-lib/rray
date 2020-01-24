@@ -64,8 +64,11 @@ test_that("extract works with base R", {
 
 test_that("can't index beyond vector in extract", {
   x <- rray(1:8, dim = c(2, 2, 2))
-  expect_error(rray_extract(x, 3), "length 2")
-  expect_error(rray_extract(x, 1:3), "length 2")
+
+  verify_output(
+    test_path("out/test-error-rray-extract-oob.txt"),
+    rray_extract(x, 3)
+  )
 })
 
 test_that("can extract with a logical", {
@@ -76,7 +79,10 @@ test_that("can extract with a logical", {
 
   expect_equal(rray_extract(x, TRUE, FALSE), new_array(x[0]))
 
-  expect_error(rray_extract(x, c(TRUE, TRUE, TRUE)), "must have length 1 or")
+  verify_output(
+    test_path("out/test-error-rray-extract-logical-size.txt"),
+    rray_extract(x, c(TRUE, TRUE, TRUE))
+  )
 
   expect_equal(rray_extract(x, c(TRUE, FALSE)), new_array(c(1L, 3L, 5L, 7L)))
 })
@@ -160,9 +166,16 @@ test_that("extract with character", {
 test_that("extract with character fails gracefully", {
   x <- rray(1:8, dim = c(2, 2, 2))
   x <- rray_set_row_names(x, c("r1", "r2"))
-  expect_error(rray_extract(x, "r3"), "non-existing")
 
-  expect_error(rray_extract(1, "x"), "unnamed")
+  verify_output(
+    test_path("out/test-error-rray-extract-oob-character.txt"),
+    rray_extract(x, "r3")
+  )
+
+  verify_output(
+    test_path("out/test-error-rray-extract-unnamed.txt"),
+    rray_extract(1, "x")
+  )
 })
 
 test_that("can't extract past the dimensions of x", {
@@ -174,5 +187,9 @@ test_that("can use a negative extract", {
   x <- rray(1:8, dim = c(2, 2, 2))
 
   expect_equal(rray_extract(x, -1), rray_extract(x, 2))
-  expect_error(rray_extract(x, -3), "length 2")
+
+  verify_output(
+    test_path("out/test-error-rray-extract-oob-negative.txt"),
+    rray_extract(x, -3)
+  )
 })

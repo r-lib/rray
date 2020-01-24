@@ -15,7 +15,7 @@
 #' @export
 rray_yank_assign <- function(x, i, value) {
   i <- maybe_missing(i, TRUE)
-  i <- as_yank_indexer(i, x)
+  i <- as_yank_location(i, x)
 
   vec_assert(value, arg = "value")
   value <- vec_cast_inner(value, x)

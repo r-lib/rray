@@ -46,7 +46,7 @@ pad <- function() {
 }
 
 new_pad <- function() {
-  new_vctr(1L, class = "vctrs_pad")
+  new_vctr(1L, class = "vctrs_pad", inherit_base_type = FALSE)
 }
 
 #' @export

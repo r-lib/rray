@@ -17,7 +17,7 @@ for (x in xs) {
 # ------------------------------------------------------------------------------
 # Bad `to`
 
-bad_to <- new_vctr(1, class = "unknown")
+bad_to <- new_vctr(1, class = "unknown", inherit_base_type = FALSE)
 
 for (x in xs) {
   test_that(glue::glue("container casting {typeof(x)} errors with unknown `to`."), {
@@ -28,7 +28,7 @@ for (x in xs) {
 # ------------------------------------------------------------------------------
 # Bad `x`
 
-bad_x <- new_vctr(1, class = "unknown")
+bad_x <- new_vctr(1, class = "unknown", inherit_base_type = FALSE)
 
 for (to in tos) {
   test_that("container casting fails with unknown `x`", {
@@ -68,7 +68,7 @@ for (x in xs) {
 # ------------------------------------------------------------------------------
 # rray default
 
-bad_x <- new_vctr(1, class = "unknown")
+bad_x <- new_vctr(1, class = "unknown", inherit_base_type = FALSE)
 
 test_that("container casting rray errors with unknown `x`.", {
   expect_error(vec_cast_container(bad_x, rray(1)), class = "vctrs_error_incompatible_cast")

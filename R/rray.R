@@ -74,7 +74,8 @@ new_rray <- function(.data = numeric(0),
     dim = .dim,
     dimnames = dim_names,
     ...,
-    class = c(subclass, sub_type, "vctrs_rray")
+    class = c(subclass, sub_type, "vctrs_rray"),
+    inherit_base_type = FALSE
   )
 
 }

@@ -1,0 +1,3 @@
+> rray_subset(1, "x")
+Error: Can't use character names to index an unnamed vector.
+
