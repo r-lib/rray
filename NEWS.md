@@ -1,4 +1,4 @@
-# rray (development version)
+# rray 0.1.1
 
 * Updated to be compatible with changes in vctrs 0.2.2.
 
