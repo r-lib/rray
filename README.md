@@ -25,6 +25,10 @@ three main goals:
     manipulation, usable by both the new rray objects and base R
     matrices/arrays.
 
+A set of slides, presented by David Vaughan at useR\! 2019, introducing
+the package and showing it’s utility can be found on
+[speakerdeck](https://speakerdeck.com/davisvaughan/user-2019-rray).
+
 View the vignettes for each goal on [the
 website](https://rray.r-lib.org) to learn more about how to use rray.
 
