@@ -29,7 +29,9 @@ rray (said: "r-ray") is an array manipulation library for R. It has three main g
 - To support broadcasting throughout the package, which allows for novel yet intuitive array operations that have been missing from the R ecosystem.
 - To provide a consistent, powerful toolkit for array based manipulation, usable by both the new rray objects and base R matrices/arrays.
 
-View the vignettes for each goal on [the website](https://rray.r-lib.org) to learn more about how to use rray.
+A set of slides, presented by Davis Vaughan at useR! 2019, introducing the package and showing its utility can be found on [speakerdeck](https://speakerdeck.com/davisvaughan/user-2019-rray). 
+
+View the vignettes for each goal on [the website](https://rray.r-lib.org) to learn more about how to use rray. 
 
 - `vignette("the-rray")`
 - `vignette("broadcasting")`
@@ -38,6 +40,8 @@ View the vignettes for each goal on [the website](https://rray.r-lib.org) to lea
 ```{r}
 library(rray)
 ```
+
+
 
 ## What can it do?
 
