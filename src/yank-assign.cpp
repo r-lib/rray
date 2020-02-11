@@ -55,6 +55,12 @@ Rcpp::RObject rray__yank_assign_impl(const xt::rarray<T>& x, Rcpp::RObject i, Rc
     out_view = value;
   }
   else if (TYPEOF(i) == INTSXP) {
+    // Avoid USBAN errors. This is integer(0) which seems to have undefined
+    // behavior with xtensor
+    if (Rf_length(i) == 0) {
+      return Rcpp::as<Rcpp::RObject>(out);
+    }
+
     auto out_view = rray__yank_non_const_index_impl(out, i);
     rray__validate_broadcastable_to(value, out_view);
     out_view = value;
