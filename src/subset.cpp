@@ -50,8 +50,12 @@ bool is_contiguous_increasing(Rcpp::RObject x) {
 
   int previous = x_int[0];
 
+  if (previous == NA_INTEGER) {
+    return false;
+  }
+
   if (x_size == 1) {
-    return previous != NA_INTEGER ? true : false;
+    return true;
   }
 
   // Only checking for increasing contiguous (1) not decreasing (-1)
