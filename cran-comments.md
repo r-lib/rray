@@ -7,6 +7,15 @@
 
 0 errors | 0 warnings | 0 notes
 
+## 0.1.1 Resubmission
+
+This is a resubmission of rray that attempts to fix the detected runtime errors detected in the original 0.1.1 submission. There is still a separate GCC 10 warning that comes from xtensor, but they are convinced that it is not an issue. Specifically it is:
+
+> `warning: array subscript 1 is outside array bounds of 'std::size_t [1]'`
+
+This is my conversation with them:
+https://github.com/xtensor-stack/xtensor/issues/1909
+
 ## 0.1.1 Submission
 
 This is a patch release of rray to be compatible with vctrs 0.2.2.
