@@ -3,12 +3,14 @@
 
 #include "rlang.h"
 
+extern r_obj* ffi_rray_capacity(r_obj* x);
 extern r_obj* ffi_rray_dimensionality(r_obj* x);
 extern r_obj* ffi_rray_dimension_sizes(r_obj* x);
 
 r_obj* ffi_rray4_init_library(r_obj* ns);
 
 static const R_CallMethodDef CallEntries[] = {
+  {"ffi_rray_capacity", (DL_FUNC) &ffi_rray_capacity, 1},
   {"ffi_rray_dimension_sizes", (DL_FUNC) &ffi_rray_dimension_sizes, 1},
   {"ffi_rray_dimensionality", (DL_FUNC) &ffi_rray_dimensionality, 1},
   {"ffi_rray4_init_library", (DL_FUNC) &ffi_rray4_init_library, 1},
