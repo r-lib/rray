@@ -31,6 +31,15 @@ rray_capacity(x) # returns 2*3*4
 rray_dimensionality(x) # returns 3
 ```
 
+## C code conventions
+
+- Each feature gets a `src/{name}.c` and `src/{name}.h` pair.
+- Internal C functions: `rray_{name}()` — return C types (e.g., `R_xlen_t`).
+- FFI wrappers: `ffi_rray_{name}()` — thin SEXP-to-C bridges. Go above internal functions in the `.c` file.
+- Headers only declare internal C functions, not FFI wrappers.
+- `src/init.c` uses `extern` declarations for FFI functions — does not include feature headers.
+- Prefer `R_xlen_t` over `int`, `Rf_xlength()` over `Rf_length()`, `Rf_getAttrib()` + `R_NilValue` checks over `Rf_isArray()`.
+
 ## R package development
 
 ### Key commands

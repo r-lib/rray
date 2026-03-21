@@ -1,0 +1,2 @@
+- [feedback_permissions.md](feedback_permissions.md) - Basic file operations should not require permission prompts
+- [feedback_always_add_tests.md](feedback_always_add_tests.md) - Always write tests immediately after new features
