@@ -4,7 +4,11 @@ At the START of every session, before doing anything else, create a new conversa
 
 ## rray4
 
-This is a reimagining of rray, the original is located at `~/files/r/packages/rray`, which you always have read only access to and should use as a reference. This reimagining of rray will be written in pure C without xtensor. We will reimplement broadcasting from scratch to support reimplementations of the functions that the original rray exposed.
+This is a reimagining of rray. This reimagining of rray will be written in pure C without xtensor. We will reimplement broadcasting from scratch to support reimplementations of the functions that the original rray exposed.
+
+Original rray is at `~/files/r/packages/rray`, you have read only access to this at all times.
+
+When in doubt, prefer the code style of vctrs and rlang, particularly for the C code, located at `~/files/r/packages/vctrs` and `~/files/r/packages/rlang`, which you also have read only access to at all times.
 
 ### Terminology
 
