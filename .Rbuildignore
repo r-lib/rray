@@ -3,3 +3,5 @@
 ^\.claude$
 ^LICENSE\.md$
 ^\conversations$
+^compile_commands\.json$
+^\.cache$
