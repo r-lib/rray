@@ -5,6 +5,7 @@
     "allow": [
       "Bash(air:*)",
       "Bash(cat:*)",
+      "Bash(clang-format:*)",
       "Bash(find:*)",
       "Bash(gh issue list:*)",
       "Bash(gh issue view:*)",

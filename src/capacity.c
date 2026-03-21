@@ -11,3 +11,16 @@ r_ssize rray_capacity(r_obj* x, struct r_lazy error_call) {
   check_array(x, error_call);
   return r_length(x);
 }
+
+R_xlen_t rray_capacity_from_dimension_sizes(
+  const int* v_dimension_sizes,
+  R_xlen_t dimensionality
+) {
+  R_xlen_t out = 1;
+
+  for (R_xlen_t i = 0; i < dimensionality; ++i) {
+    out *= v_dimension_sizes[i];
+  }
+
+  return out;
+}

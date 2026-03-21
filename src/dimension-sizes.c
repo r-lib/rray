@@ -18,3 +18,42 @@ r_obj* rray_dimension_sizes(r_obj* x, struct r_lazy error_call) {
     return dimension_sizes;
   }
 }
+
+void check_dimension_sizes(r_obj* dimension_sizes, struct r_lazy error_call) {
+  if (r_typeof(dimension_sizes) != R_TYPE_integer) {
+    r_abort_lazy_call(
+      error_call,
+      "`dimension_sizes` must be an integer vector, not %s.",
+      r_obj_type_friendly(dimension_sizes)
+    );
+  }
+
+  const R_xlen_t dimensionality = r_length(dimension_sizes);
+
+  if (dimensionality == 0) {
+    r_abort_lazy_call(
+      error_call,
+      "`dimension_sizes` must have at least one element."
+    );
+  }
+
+  const int* v_dimension_sizes = r_int_cbegin(dimension_sizes);
+
+  for (R_xlen_t i = 0; i < dimensionality; ++i) {
+    const int dimension_size = v_dimension_sizes[i];
+
+    if (dimension_size == r_globals.na_int) {
+      r_abort_lazy_call(
+        error_call,
+        "`dimension_sizes` must not contain missing values."
+      );
+    }
+
+    if (dimension_size < 0) {
+      r_abort_lazy_call(
+        error_call,
+        "`dimension_sizes` must not contain negative values."
+      );
+    }
+  }
+}

@@ -5,4 +5,6 @@
 
 r_obj* rray_dimension_sizes(r_obj* x, struct r_lazy error_call);
 
+void check_dimension_sizes(r_obj* dimension_sizes, struct r_lazy error_call);
+
 #endif

@@ -8,4 +8,5 @@ BinPackParameters: false
 AlignAfterOpenBracket: BlockIndent
 AllowShortFunctionsOnASingleLine: None
 SpaceAfterCStyleCast: true
+Cpp11BracedListStyle: false
 PenaltyReturnTypeOnItsOwnLine: 10000

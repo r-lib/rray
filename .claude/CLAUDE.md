@@ -1,6 +1,6 @@
 ## Session startup
 
-At the START of every session, before doing anything else, create a new conversation file in `conversations/` following the naming convention `{YYYY-MM-DD}-{index}-{topic}.md`. Check existing files to determine the next index. Keep the file up to date after each round of back and forth.
+At the START of every session, before doing anything else, create a new conversation file in `conversations/` following the naming convention `{YYYY-MM-DD}-{index}-{topic}.md`. Check existing files to determine the next index. Keep the file up to date after each round of back and forth. Always report the up to date cost of this conversation at the very top of the file.
 
 ## rray4
 
@@ -42,10 +42,12 @@ rray_dimensionality(x) # returns 3
 - FFI wrappers: `ffi_rray_{name}()` — thin SEXP-to-C bridges. Go above internal functions in the `.c` file.
 - Headers only declare internal C functions, not FFI wrappers.
 - `src/init.c` uses `extern` declarations for FFI functions — does not include feature headers.
+- Always prefer rlang's C library wrappers over raw R API (e.g., `r_globals.na_int` over `NA_INTEGER`, `r_length()` over `Rf_length()`).
 - Prefer `R_xlen_t` over `int`, `Rf_xlength()` over `Rf_length()`, `Rf_getAttrib()` + `R_NilValue` checks over `Rf_isArray()`.
 - Any `r_obj*` returned by a C function that allocates must be protected with `KEEP()` / `FREE()` (rlang's wrappers around `PROTECT()` / `UNPROTECT()`) if used after any further allocation could occur.
 - When looping over a vector, obtain a pointer to the underlying data first, e.g., `const int* v_dimension_sizes = r_int_cbegin(dimension_sizes)`, then index into that directly.
 - Mark variables as `const` where possible.
+- Always run `clang-format -i src/*.c src/*.h` after generating C code.
 
 ## R package development
 

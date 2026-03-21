@@ -1,0 +1,12 @@
+#ifndef RRAY_TYPES_H
+#define RRAY_TYPES_H
+
+#define RRAY_TYPE_LOGICAL 0
+#define RRAY_TYPE_INTEGER 1
+#define RRAY_TYPE_DOUBLE 2
+#define RRAY_TYPE_COMPLEX 3
+#define RRAY_TYPE_RAW 4
+#define RRAY_TYPE_CHARACTER 5
+#define RRAY_TYPE_LIST 6
+
+#endif
