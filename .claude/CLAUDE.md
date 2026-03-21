@@ -1,3 +1,32 @@
+## rray4
+
+This is a reimagining of rray, the original is located at `~/files/r/packages/rray`, which you always have read only access to and should use as a reference. This reimagining of rray will be written in pure C without xtensor. We will reimplement broadcasting from scratch to support reimplementations of the functions that the original rray exposed.
+
+### Terminology
+
+- Dimension: A single integer used to specify a direction along the array (i.e. the second dimension)
+- Dimension Size: The size/length of a specific dimension (the second dimension has size 4)
+- Dimension Sizes: An integer vector of dimension sizes that completely describe the bounds of an array
+- Capacity: The total number of elements in an array. `prod(dimension_sizes)`
+- Dimensionality: The length of the vector of dimension sizes. The number of dimensions in an array.
+
+This terminology makes names consistent while coding:
+
+```r
+for (dimension in dimensions) {
+  dimension_size <- dimension_sizes[[dimension]]
+  # do stuff
+}
+```
+
+```r
+x <- array(dim = c(2, 3, 4))
+rray_dimension_sizes(x) # returns c(2, 3, 4)
+rray_dimension_size(x, dimension = 2) # returns 3
+rray_capacity(x) # returns 2*3*4
+rray_dimensionality(x) # returns 3
+```
+
 ## R package development
 
 ### Key commands
@@ -36,11 +65,11 @@ air format .
 * Always run `air format .` after generating code
 * Use the base pipe operator (`|>`) not the magrittr pipe (`%>%`)
 * Don't use `_$x` or `_$[["x"]]` since this package must work on R 4.1.
-* Use `\() ...` for single-line anonymous functions. For all other cases, use `function() {...}` 
+* Use `\() ...` for single-line anonymous functions. For all other cases, use `function() {...}`
 
 ### Testing
 
-- Tests for `R/{name}.R` go in `tests/testthat/test-{name}.R`. 
+- Tests for `R/{name}.R` go in `tests/testthat/test-{name}.R`.
 - All new code should have an accompanying test.
 - If there are existing tests, place new tests next to similar existing tests.
 - Strive to keep your tests minimal with few comments.
@@ -53,7 +82,7 @@ air format .
 - Every user-facing function should be exported and have roxygen2 documentation.
 - Wrap roxygen comments at 80 characters.
 - Internal functions should not have roxygen documentation.
-- Whenever you add a new (non-internal) documentation topic, also add the topic to `_pkgdown.yml`. 
+- Whenever you add a new (non-internal) documentation topic, also add the topic to `_pkgdown.yml`.
 - Always re-document the package after changing a roxygen2 comment.
 - Use `pkgdown::check_pkgdown()` to check that all topics are included in the reference index.
 
@@ -76,9 +105,9 @@ air format .
 
 ### Proofreading
 
-If the user asks you to proofread a file, act as an expert proofreader and editor with a deep understanding of clear, engaging, and well-structured writing. 
+If the user asks you to proofread a file, act as an expert proofreader and editor with a deep understanding of clear, engaging, and well-structured writing.
 
-Work paragraph by paragraph, always starting by making a TODO list that includes individual items for each top-level heading. 
+Work paragraph by paragraph, always starting by making a TODO list that includes individual items for each top-level heading.
 
 Fix spelling, grammar, and other minor problems without asking the user. Label any unclear, confusing, or ambiguous sentences with a FIXME comment.
 
