@@ -18,5 +18,5 @@
 #' rray_dimension_sizes(array(1, c(2, 3)))
 #' rray_dimension_sizes(array(1, c(2, 3, 4)))
 rray_dimension_sizes <- function(x) {
-  .Call(ffi_rray_dimension_sizes, x)
+  .Call(ffi_rray_dimension_sizes, x, environment())
 }

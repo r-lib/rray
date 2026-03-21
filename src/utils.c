@@ -1,6 +1,6 @@
 #include "utils.h"
 
-void check_array(r_obj* x) {
+void check_array(r_obj* x, struct r_lazy error_call) {
   switch (r_typeof(x)) {
     case R_TYPE_logical:
     case R_TYPE_integer:
@@ -12,7 +12,7 @@ void check_array(r_obj* x) {
       return;
     default:
       r_abort_lazy_call(
-        r_lazy_null,
+        error_call,
         "`x` must be an array, not %s.",
         r_obj_type_friendly(x)
       );

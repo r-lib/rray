@@ -3,7 +3,7 @@
     Code
       rray_capacity(NULL)
     Condition
-      Error:
+      Error in `rray_capacity()`:
       ! `x` must be an array, not `NULL`.
 
 ---
@@ -11,6 +11,6 @@
     Code
       rray_capacity(mean)
     Condition
-      Error:
+      Error in `rray_capacity()`:
       ! `x` must be an array, not a function.
 

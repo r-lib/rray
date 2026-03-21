@@ -14,5 +14,5 @@
 #' rray_capacity(array(1, c(2, 3)))
 #' rray_capacity(array(1, c(2, 3, 4)))
 rray_capacity <- function(x) {
-  .Call(ffi_rray_capacity, x)
+  .Call(ffi_rray_capacity, x, environment())
 }

@@ -14,5 +14,5 @@
 #' rray_dimensionality(array(1, c(2, 3)))
 #' rray_dimensionality(array(1, c(2, 3, 4)))
 rray_dimensionality <- function(x) {
-  .Call(ffi_rray_dimensionality, x)
+  .Call(ffi_rray_dimensionality, x, environment())
 }

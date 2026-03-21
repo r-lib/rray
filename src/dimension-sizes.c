@@ -2,12 +2,13 @@
 
 #include "utils.h"
 
-r_obj* ffi_rray_dimension_sizes(r_obj* x) {
-  return rray_dimension_sizes(x);
+r_obj* ffi_rray_dimension_sizes(r_obj* x, r_obj* frame) {
+  struct r_lazy error_call = { .x = frame, .env = r_null };
+  return rray_dimension_sizes(x, error_call);
 }
 
-r_obj* rray_dimension_sizes(r_obj* x) {
-  check_array(x);
+r_obj* rray_dimension_sizes(r_obj* x, struct r_lazy error_call) {
+  check_array(x, error_call);
 
   r_obj* dimension_sizes = r_dim(x);
 

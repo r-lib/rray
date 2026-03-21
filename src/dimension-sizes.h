@@ -3,6 +3,6 @@
 
 #include "rlang.h"
 
-r_obj* rray_dimension_sizes(r_obj* x);
+r_obj* rray_dimension_sizes(r_obj* x, struct r_lazy error_call);
 
 #endif
