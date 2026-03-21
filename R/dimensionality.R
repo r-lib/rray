@@ -1,9 +1,9 @@
-#' Find the dimensionality of an object
+#' Find the dimensionality of an array
 #'
-#' `rray_dimensionality()` returns the number of dimensions of an object as
+#' `rray_dimensionality()` returns the number of dimensions of an array as
 #' a single integer.
 #'
-#' @param x An object.
+#' @param x An array.
 #'
 #' @returns
 #' A single integer representing the number of dimensions.

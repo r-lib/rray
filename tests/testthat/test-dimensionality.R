@@ -16,6 +16,12 @@ test_that("returns 2 for matrices", {
   expect_identical(rray_dimensionality(matrix(1, 2, 3)), 2L)
 })
 
-test_that("returns 1 for NULL", {
-  expect_identical(rray_dimensionality(NULL), 1L)
+test_that("errors on NULL", {
+  expect_snapshot(rray_dimensionality(NULL), error = TRUE)
+})
+
+test_that("errors on non-vector types", {
+  expect_snapshot(rray_dimensionality(mean), error = TRUE)
+  expect_snapshot(rray_dimensionality(quote(x)), error = TRUE)
+  expect_snapshot(rray_dimensionality(environment()), error = TRUE)
 })

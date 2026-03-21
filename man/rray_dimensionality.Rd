@@ -2,18 +2,18 @@
 % Please edit documentation in R/dimensionality.R
 \name{rray_dimensionality}
 \alias{rray_dimensionality}
-\title{Find the dimensionality of an object}
+\title{Find the dimensionality of an array}
 \usage{
 rray_dimensionality(x)
 }
 \arguments{
-\item{x}{An object.}
+\item{x}{An array.}
 }
 \value{
 A single integer representing the number of dimensions.
 }
 \description{
-\code{rray_dimensionality()} returns the number of dimensions of an object as
+\code{rray_dimensionality()} returns the number of dimensions of an array as
 a single integer.
 }
 \examples{
