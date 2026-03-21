@@ -1,8 +1,8 @@
 #ifndef RRAY_DIMENSIONALITY_H
 #define RRAY_DIMENSIONALITY_H
 
-#include <Rinternals.h>
+#include "rlang.h"
 
-R_xlen_t rray_dimensionality(SEXP x);
+r_ssize rray_dimensionality(r_obj* x);
 
 #endif

@@ -2,9 +2,9 @@
 #include <R_ext/Rdynload.h>
 #include <stdlib.h>
 
-extern SEXP ffi_rray_dimensionality(SEXP x);
+extern r_obj* ffi_rray_dimensionality(r_obj* x);
 
-SEXP ffi_rray4_init_library(SEXP ns);
+r_obj* ffi_rray4_init_library(r_obj* ns);
 
 static const R_CallMethodDef CallEntries[] = {
   {"ffi_rray_dimensionality", (DL_FUNC) &ffi_rray_dimensionality, 1},
@@ -17,7 +17,7 @@ void R_init_rray4(DllInfo *dll) {
   R_useDynamicSymbols(dll, FALSE);
 }
 
-SEXP ffi_rray4_init_library(SEXP ns) {
+r_obj* ffi_rray4_init_library(r_obj* ns) {
   r_init_library(ns);
-  return R_NilValue;
+  return r_null;
 }

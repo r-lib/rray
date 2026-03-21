@@ -1,15 +1,15 @@
 #include "dimensionality.h"
 
-SEXP ffi_rray_dimensionality(SEXP x) {
-  return Rf_ScalarInteger((int) rray_dimensionality(x));
+r_obj* ffi_rray_dimensionality(r_obj* x) {
+  return r_int((int) rray_dimensionality(x));
 }
 
-R_xlen_t rray_dimensionality(SEXP x) {
-  SEXP dimensions = Rf_getAttrib(x, R_DimSymbol);
+r_ssize rray_dimensionality(r_obj* x) {
+  r_obj* dimensions = r_dim(x);
 
-  if (dimensions == R_NilValue) {
+  if (dimensions == r_null) {
     return 1;
   } else {
-    return Rf_xlength(dimensions);
+    return r_length(dimensions);
   }
 }
