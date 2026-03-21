@@ -9,7 +9,7 @@ r_obj* ffi_rray_dimensionality(r_obj* x) {
 r_ssize rray_dimensionality(r_obj* x) {
   check_array(x);
 
-  r_obj* dimension_sizes = r_dim(x);
+  r_obj* const dimension_sizes = r_dim(x);
 
   if (dimension_sizes == r_null) {
     return 1;

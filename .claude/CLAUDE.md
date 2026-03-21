@@ -43,6 +43,9 @@ rray_dimensionality(x) # returns 3
 - Headers only declare internal C functions, not FFI wrappers.
 - `src/init.c` uses `extern` declarations for FFI functions — does not include feature headers.
 - Prefer `R_xlen_t` over `int`, `Rf_xlength()` over `Rf_length()`, `Rf_getAttrib()` + `R_NilValue` checks over `Rf_isArray()`.
+- Any `r_obj*` returned by a C function that allocates must be protected with `KEEP()` / `FREE()` (rlang's wrappers around `PROTECT()` / `UNPROTECT()`) if used after any further allocation could occur.
+- When looping over a vector, obtain a pointer to the underlying data first, e.g., `const int* v_dimension_sizes = r_int_cbegin(dimension_sizes)`, then index into that directly.
+- Mark variables as `const` where possible.
 
 ## R package development
 
