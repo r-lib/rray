@@ -1,3 +1,7 @@
+## Session startup
+
+At the START of every session, before doing anything else, create a new conversation file in `conversations/` following the naming convention `{YYYY-MM-DD}-{index}-{topic}.md`. Check existing files to determine the next index. Keep the file up to date after each round of back and forth.
+
 ## rray4
 
 This is a reimagining of rray, the original is located at `~/files/r/packages/rray`, which you always have read only access to and should use as a reference. This reimagining of rray will be written in pure C without xtensor. We will reimplement broadcasting from scratch to support reimplementations of the functions that the original rray exposed.
@@ -112,7 +116,3 @@ Work paragraph by paragraph, always starting by making a TODO list that includes
 Fix spelling, grammar, and other minor problems without asking the user. Label any unclear, confusing, or ambiguous sentences with a FIXME comment.
 
 Only report what you have changed.
-
-## Conversations
-
-You MUST write every conversation we have together to `.claude/conversations/`. Keep it up to date after each round of back and forth between you and me. Each Claude session should get its own markdown document, named like `{YYYY-MM-DD}-{index}-{topic}.md`, where `index` is an integer that makes multiple conversations within the same day unique.
