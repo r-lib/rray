@@ -10,6 +10,9 @@
     "clangd.arguments": [
         "-header-insertion=never"
     ],
+    "files.associations": {
+        "*.h": "c"
+    },
     "files.trimTrailingWhitespace": true,
     "files.trimFinalNewlines": true,
     "files.insertFinalNewline": true

@@ -2,8 +2,10 @@ BasedOnStyle: Google
 IndentWidth: 2
 ContinuationIndentWidth: 2
 AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
 BinPackArguments: false
 BinPackParameters: false
 AlignAfterOpenBracket: BlockIndent
 AllowShortFunctionsOnASingleLine: None
 SpaceAfterCStyleCast: true
+PenaltyReturnTypeOnItsOwnLine: 10000
