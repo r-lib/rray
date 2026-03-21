@@ -1,4 +1,5 @@
 #include "dimensionality.h"
+
 #include "utils.h"
 
 r_obj* ffi_rray_dimensionality(r_obj* x) {

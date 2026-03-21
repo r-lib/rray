@@ -1,0 +1,9 @@
+BasedOnStyle: Google
+IndentWidth: 2
+ContinuationIndentWidth: 2
+AllowAllArgumentsOnNextLine: false
+BinPackArguments: false
+BinPackParameters: false
+AlignAfterOpenBracket: BlockIndent
+AllowShortFunctionsOnASingleLine: None
+SpaceAfterCStyleCast: true
