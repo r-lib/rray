@@ -112,3 +112,7 @@ Work paragraph by paragraph, always starting by making a TODO list that includes
 Fix spelling, grammar, and other minor problems without asking the user. Label any unclear, confusing, or ambiguous sentences with a FIXME comment.
 
 Only report what you have changed.
+
+## Conversations
+
+You MUST write every conversation we have together to `.claude/conversations/`. Keep it up to date after each round of back and forth between you and me. Each Claude session should get its own markdown document, named like `{YYYY-MM-DD}-{index}-{topic}.md`, where `index` is an integer that makes multiple conversations within the same day unique.
