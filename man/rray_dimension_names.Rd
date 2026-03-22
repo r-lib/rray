@@ -10,24 +10,22 @@ rray_dimension_names(x)
 \item{x}{An array.}
 }
 \value{
-A list with length equal to the dimensionality of \code{x}. Each
-element is either a character vector of names or \code{NULL}.
+Either:
+\itemize{
+\item A list with length equal to the dimensionality of \code{x}, where each element
+is either a character vector of names or \code{NULL}.
+\item \code{NULL} if \code{x} has no dimension names.
+}
 }
 \description{
 \code{rray_dimension_names()} returns the names for each dimension of an
-array. Unlike \code{\link[=dimnames]{dimnames()}}, it always returns a list with length equal
-to the dimensionality of \code{x}, even for plain vectors (which have a
-dimensionality of 1).
-}
-\details{
-For an array with a \code{dimnames} attribute, this returns the
-\code{dimnames} directly. For a plain vector, this returns a
-one-element list containing the \code{names} of the vector (or \code{NULL}
-if the vector is unnamed).
+array, or \code{NULL} if \code{x} has no dimension names at all. Unlike
+\code{\link[=dimnames]{dimnames()}}, it returns a one-element list for named vectors.
 }
 \examples{
-# Plain vectors return a one-element list
+# No names at all
 rray_dimension_names(1:3)
+# Named vectors return a one-element list
 rray_dimension_names(c(a = 1, b = 2))
 
 # Arrays return all dimension names

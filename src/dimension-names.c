@@ -1,6 +1,5 @@
 #include "dimension-names.h"
 
-#include "dimensionality.h"
 #include "utils.h"
 
 r_obj* ffi_rray_dimension_names(r_obj* x, r_obj* frame) {
@@ -17,18 +16,19 @@ r_obj* rray_dimension_names(r_obj* x, struct r_lazy error_call) {
     return out;
   }
 
-  const r_ssize dimensionality = rray_dimensionality(x, error_call);
-  out = KEEP(r_alloc_list(dimensionality));
-
-  // If we have a bare vector, use its `names` if they exist,
-  // otherwise just return the list of `NULL`
-  if (dimensionality == 1 && r_dim(x) == r_null) {
+  // Bare vectors with `names` result in a 1 element list
+  if (r_dim(x) == r_null) {
     r_obj* names = r_names(x);
+
     if (names != r_null) {
+      KEEP(names);
+      r_obj* out = KEEP(r_alloc_list(1));
       r_list_poke(out, 0, names);
+      FREE(2);
+      return out;
     }
   }
 
-  FREE(1);
-  return out;
+  // No dimension names at all
+  return r_null;
 }
