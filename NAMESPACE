@@ -2,6 +2,7 @@
 
 export(rray_broadcast)
 export(rray_capacity)
+export(rray_dimension_names)
 export(rray_dimension_sizes)
 export(rray_dimensionality)
 import(rlang)
