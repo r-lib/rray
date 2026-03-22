@@ -143,30 +143,9 @@ r_obj* rray_broadcast_dimension_names(
 ) {
   r_obj* const* v_x_dimension_names = r_list_cbegin(x_dimension_names);
 
-  bool anything_changed = false;
+  r_ssize i = 0;
 
-  if (x_dimensionality == dimensionality) {
-    for (r_ssize i = 0; i < x_dimensionality; ++i) {
-      if (v_x_dimension_names[i] != r_null &&
-          v_x_dimension_sizes[i] != v_dimension_sizes[i]) {
-        // Dimension size changed
-        anything_changed = true;
-        break;
-      }
-    }
-  } else {
-    // Dimensionality changed
-    anything_changed = true;
-  }
-
-  if (!anything_changed) {
-    return x_dimension_names;
-  }
-
-  r_obj* out = KEEP(r_alloc_list(dimensionality));
-  bool any_dimension_names = false;
-
-  for (r_ssize i = 0; i < x_dimensionality; ++i) {
+  for (; i < x_dimensionality; ++i) {
     if (v_x_dimension_names[i] == r_null) {
       // `out` stays `r_null` when there were no names before
       continue;
@@ -175,56 +154,29 @@ r_obj* rray_broadcast_dimension_names(
       // `out` is "cleared" to `r_null` when dimension size changes
       continue;
     }
-    // Otherwise retain pre-existing names
+    break;
+  }
+
+  if (i == x_dimensionality) {
+    // Return `r_null` if:
+    // - All dimension names were `r_null` to begin with
+    // - Broadcasting resulted in all `r_null` dimension names
+    return r_null;
+  }
+
+  // Pick up where we left off, actually assigning this time
+  r_obj* out = KEEP(r_alloc_list(dimensionality));
+
+  for (; i < x_dimensionality; ++i) {
+    if (v_x_dimension_names[i] == r_null) {
+      // `out` stays `r_null` when there were no names before
+      continue;
+    }
+    if (v_x_dimension_sizes[i] != v_dimension_sizes[i]) {
+      // `out` is "cleared" to `r_null` when dimension size changes
+      continue;
+    }
     r_list_poke(out, i, v_x_dimension_names[i]);
-    any_dimension_names = true;
-  }
-
-  // Now handle the titles
-  r_obj* x_dimension_titles = r_names(x_dimension_names);
-  if (x_dimension_titles != r_null) {
-    KEEP(x_dimension_titles);
-    r_attrib_poke_names(
-      out,
-      rray_broadcast_dimension_titles(
-        x_dimension_titles,
-        x_dimensionality,
-        dimensionality
-      )
-    );
-    FREE(1);
-    any_dimension_names = true;
-  }
-
-  // As a special case, if broadcasting clears all dimension names and we don't
-  // have any dimension titles, we simplify the result by dropping dimension
-  // names entirely.
-  if (!any_dimension_names) {
-    out = r_null;
-  }
-
-  FREE(1);
-  return out;
-}
-
-r_obj* rray_broadcast_dimension_titles(
-  r_obj* x_dimension_titles,
-  r_ssize x_dimensionality,
-  r_ssize dimensionality
-) {
-  if (x_dimensionality == dimensionality) {
-    // No dimensionality change
-    return x_dimension_titles;
-  }
-
-  r_obj* const* v_x_dimension_titles = r_chr_cbegin(x_dimension_titles);
-
-  r_obj* out = KEEP(r_alloc_character(dimensionality));
-
-  // Copy `x_dimension_titles` into `out`.
-  // Any extra dimensions are set to `""`.
-  for (r_ssize i = 0; i < x_dimensionality; ++i) {
-    r_chr_poke(out, i, v_x_dimension_titles[i]);
   }
 
   FREE(1);

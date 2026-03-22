@@ -11,10 +11,4 @@ r_obj* rray_broadcast_dimension_names(
   r_ssize dimensionality
 );
 
-r_obj* rray_broadcast_dimension_titles(
-  r_obj* x_dimension_titles,
-  r_ssize x_dimensionality,
-  r_ssize dimensionality
-);
-
 #endif
