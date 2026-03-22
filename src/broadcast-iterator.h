@@ -30,6 +30,15 @@ static inline void rray_broadcast_iterator_init(
   const int* v_view_dimension_sizes,
   R_xlen_t view_dimensionality
 ) {
+  if (view_dimensionality > RRAY_MAX_DIMENSIONALITY) {
+    r_abort(
+      "rray can't support arrays with a dimensionality greater than %i. "
+      "A dimensionality of %i was requested.",
+      (int) RRAY_MAX_DIMENSIONALITY,
+      (int) view_dimensionality
+    );
+  }
+
   it->dimensionality = view_dimensionality;
 
   for (R_xlen_t i = 0; i < dimensionality; ++i) {

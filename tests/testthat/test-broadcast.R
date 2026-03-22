@@ -207,3 +207,9 @@ test_that("errors on missing dimension_sizes", {
 test_that("errors on negative dimension_sizes", {
   expect_snapshot(rray_broadcast(1, -1L), error = TRUE)
 })
+
+test_that("errors on dimensionality upper bound", {
+  expect_snapshot(error = TRUE, {
+    rray_broadcast(array(1, dim = rep(1L, 64)), rep(1L, 65))
+  })
+})

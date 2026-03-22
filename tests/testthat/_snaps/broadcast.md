@@ -78,3 +78,11 @@
       Error in `rray_broadcast()`:
       ! `dimension_sizes` must not contain negative values.
 
+# errors on dimensionality upper bound
+
+    Code
+      rray_broadcast(array(1, dim = rep(1L, 64)), rep(1L, 65))
+    Condition
+      Error in `rray_broadcast()`:
+      ! rray can't support arrays with a dimensionality greater than 64. A dimensionality of 65 was requested.
+
