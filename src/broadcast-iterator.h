@@ -14,8 +14,11 @@ struct rray_broadcast_iterator {
   int view_dimension_sizes[RRAY_MAX_DIMENSIONALITY];
   R_xlen_t strides[RRAY_MAX_DIMENSIONALITY];
 
-  R_xlen_t location[RRAY_MAX_DIMENSIONALITY];
-  R_xlen_t flat_location;
+  // Current position in multi-dimensional space
+  R_xlen_t point[RRAY_MAX_DIMENSIONALITY];
+
+  // Current position in 1-D space
+  R_xlen_t location;
 };
 
 // Initialize the iterator. `v_dimension_sizes` can be shorter than
@@ -45,14 +48,14 @@ static inline void rray_broadcast_iterator_init(
     it->strides[i] = it->strides[i - 1] * it->dimension_sizes[i - 1];
   }
 
-  memset(it->location, 0, sizeof(R_xlen_t) * view_dimensionality);
-  it->flat_location = 0;
+  memset(it->point, 0, sizeof(R_xlen_t) * view_dimensionality);
+  it->location = 0;
 }
 
-static inline R_xlen_t rray_broadcast_iterator_flat_location(
+static inline R_xlen_t rray_broadcast_iterator_location(
   const struct rray_broadcast_iterator* it
 ) {
-  return it->flat_location;
+  return it->location;
 }
 
 // Advance the iterator by one step in column-major order.
@@ -60,19 +63,19 @@ static inline void rray_broadcast_iterator_next(
   struct rray_broadcast_iterator* it
 ) {
   for (R_xlen_t i = 0; i < it->dimensionality; ++i) {
-    ++it->location[i];
+    ++it->point[i];
 
-    if (it->location[i] < it->view_dimension_sizes[i]) {
+    if (it->point[i] < it->view_dimension_sizes[i]) {
       if (it->dimension_sizes[i] != 1) {
-        it->flat_location += it->strides[i];
+        it->location += it->strides[i];
       }
       return;
     }
 
-    it->location[i] = 0;
+    it->point[i] = 0;
 
     if (it->dimension_sizes[i] != 1) {
-      it->flat_location -= (it->dimension_sizes[i] - 1) * it->strides[i];
+      it->location -= (it->dimension_sizes[i] - 1) * it->strides[i];
     }
   }
 }

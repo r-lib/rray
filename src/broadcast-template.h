@@ -117,7 +117,7 @@ static inline r_obj* RRAY_FN(
   RRAY_OUT_DEREF
 
   for (r_ssize i = 0; i < capacity; ++i) {
-    RRAY_ASSIGN(i, it.flat_location);
+    RRAY_ASSIGN(i, rray_broadcast_iterator_location(&it));
     rray_broadcast_iterator_next(&it);
   }
 
