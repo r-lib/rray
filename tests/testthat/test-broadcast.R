@@ -100,6 +100,104 @@ test_that("broadcasts list arrays", {
   expect_identical(out[, 3], list("a", 1L))
 })
 
+test_that("preserves dimension names when sizes match", {
+  x <- array(
+    1:6,
+    c(2L, 3L),
+    dimnames = list(c("r1", "r2"), c("c1", "c2", "c3"))
+  )
+  out <- rray_broadcast(x, c(2L, 3L))
+  expect_identical(dimnames(out), list(c("r1", "r2"), c("c1", "c2", "c3")))
+})
+
+test_that("drops dimension names when a dimension is broadcast", {
+  x <- array(1:2, c(2L, 1L), dimnames = list(c("r1", "r2"), "c1"))
+  out <- rray_broadcast(x, c(2L, 3L))
+  expect_identical(dimnames(out), list(c("r1", "r2"), NULL))
+})
+
+test_that("drops all dimension names when all dimensions are broadcast", {
+  x <- array(1L, c(1L, 1L), dimnames = list("r1", "c1"))
+  out <- rray_broadcast(x, c(2L, 3L))
+  expect_null(dimnames(out))
+})
+
+test_that("preserves names when broadcasting a named vector", {
+  x <- c(a = 1L, b = 2L, c = 3L)
+  out <- rray_broadcast(x, c(3L, 2L))
+  expect_identical(dimnames(out), list(c("a", "b", "c"), NULL))
+})
+
+test_that("no dimnames when broadcasting an unnamed vector", {
+  out <- rray_broadcast(1:3, c(3L, 2L))
+  expect_null(dimnames(out))
+})
+
+test_that("new dimensions get NULL names", {
+  x <- array(
+    1:6,
+    c(2L, 3L),
+    dimnames = list(c("r1", "r2"), c("c1", "c2", "c3"))
+  )
+  out <- rray_broadcast(x, c(2L, 3L, 2L))
+  expect_identical(
+    dimnames(out),
+    list(c("r1", "r2"), c("c1", "c2", "c3"), NULL)
+  )
+})
+
+test_that("handles partially named dimnames during broadcast", {
+  x <- array(1:6, c(2L, 3L), dimnames = list(NULL, c("c1", "c2", "c3")))
+  out <- rray_broadcast(x, c(2L, 3L))
+  expect_identical(dimnames(out), list(NULL, c("c1", "c2", "c3")))
+})
+
+test_that("preserves dimension titles when sizes match", {
+  x <- array(
+    1:6,
+    c(2L, 3L),
+    dimnames = list(rows = c("r1", "r2"), cols = c("c1", "c2", "c3"))
+  )
+  out <- rray_broadcast(x, c(2L, 3L))
+  expect_identical(
+    dimnames(out),
+    list(rows = c("r1", "r2"), cols = c("c1", "c2", "c3"))
+  )
+})
+
+test_that("preserves dimension titles when adding new dimensions", {
+  x <- array(
+    1:6,
+    c(2L, 3L),
+    dimnames = list(rows = c("r1", "r2"), cols = c("c1", "c2", "c3"))
+  )
+  out <- rray_broadcast(x, c(2L, 3L, 2L))
+  expect_identical(
+    dimnames(out),
+    list(rows = c("r1", "r2"), cols = c("c1", "c2", "c3"), NULL)
+  )
+})
+
+test_that("preserves dimension titles when all dimension names are dropped", {
+  x <- array(
+    1L,
+    c(1L, 1L),
+    dimnames = list(rows = "x", cols = "y")
+  )
+  out <- rray_broadcast(x, c(2L, 3L))
+  expect_identical(dimnames(out), list(rows = NULL, cols = NULL))
+})
+
+test_that("preserves dimension titles when some dimension names are dropped", {
+  x <- array(
+    1:2,
+    c(2L, 1L),
+    dimnames = list(rows = c("r1", "r2"), cols = "c1")
+  )
+  out <- rray_broadcast(x, c(2L, 3L))
+  expect_identical(dimnames(out), list(rows = c("r1", "r2"), cols = NULL))
+})
+
 test_that("errors on non-array input", {
   expect_snapshot(rray_broadcast(NULL, 1L), error = TRUE)
   expect_snapshot(rray_broadcast(mean, 1L), error = TRUE)
