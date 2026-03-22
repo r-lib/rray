@@ -80,6 +80,16 @@ static inline r_obj* RRAY_FN(
   const r_ssize dimensionality =
     rray_dimensionality_from_dimension_sizes(dimension_sizes);
 
+  if (rray_dimension_sizes_are_equal(
+        v_x_dimension_sizes,
+        x_dimensionality,
+        v_dimension_sizes,
+        dimensionality
+      )) {
+    FREE(1);
+    return x;
+  }
+
   check_broadcastable(
     v_x_dimension_sizes,
     x_dimensionality,

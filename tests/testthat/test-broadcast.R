@@ -125,11 +125,15 @@ test_that("drops all dimension names when all dimensions are broadcast", {
 test_that("drops all dimension names when all dimension names were `NULL`", {
   x <- array(1L, c(1L, 1L), dimnames = list(NULL, NULL))
 
-  out <- rray_broadcast(x, c(1L, 1L))
+  # When we actually perform any broadcasting, the `dimnames` are cleared
+  out <- rray_broadcast(x, c(2L, 1L))
   expect_null(dimnames(out))
 
-  out <- rray_broadcast(x, c(2L, 2L))
-  expect_null(dimnames(out))
+  # If we no-op due to same dimension sizes, they aren't cleared.
+  # We accept this irregularity in favor of performance, since it is fairly
+  # common to want to broadcast to no-op common dimension sizes.
+  out <- rray_broadcast(x, c(1L, 1L))
+  expect_identical(dimnames(out), list(NULL, NULL))
 })
 
 test_that("preserves names when broadcasting a named vector", {
@@ -162,17 +166,24 @@ test_that("handles partially named dimnames during broadcast", {
   expect_identical(dimnames(out), list(NULL, c("c1", "c2", "c3")))
 })
 
-test_that("dimension titles are always lost", {
+test_that("dimension titles are lost", {
   x <- array(1L, c(1L, 1L), dimnames = list(rows = "r1", cols = "c1"))
 
-  out <- rray_broadcast(x, c(1L, 1L))
-  expect_identical(
-    rray_dimension_names(out),
-    list("r1", "c1")
-  )
+  # When we actually perform any broadcasting, the titles are cleared
+  out <- rray_broadcast(x, c(2L, 1L))
+  expect_identical(rray_dimension_names(out), list(NULL, "c1"))
 
   out <- rray_broadcast(x, c(2L, 2L))
   expect_null(rray_dimension_names(out))
+
+  # If we no-op due to same dimension sizes, they aren't cleared.
+  # We accept this irregularity in favor of performance, since it is fairly
+  # common to want to broadcast to no-op common dimension sizes.
+  out <- rray_broadcast(x, c(1L, 1L))
+  expect_identical(
+    rray_dimension_names(out),
+    list(rows = "r1", cols = "c1")
+  )
 })
 
 test_that("errors on non-array input", {
