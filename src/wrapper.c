@@ -40,9 +40,13 @@ r_obj* r_wrap(r_obj* x) {
 // -----------------------------------------------------------------------------
 // Class
 
+static R_altrep_class_t wrapper_logical_class;
 static R_altrep_class_t wrapper_integer_class;
 static R_altrep_class_t wrapper_double_class;
+static R_altrep_class_t wrapper_complex_class;
+static R_altrep_class_t wrapper_raw_class;
 static R_altrep_class_t wrapper_character_class;
+static R_altrep_class_t wrapper_list_class;
 
 static inline bool is_wrapper(r_obj* x) {
   if (!ALTREP(x)) {
@@ -50,12 +54,20 @@ static inline bool is_wrapper(r_obj* x) {
   }
 
   switch (r_typeof(x)) {
+    case R_TYPE_logical:
+      return R_altrep_inherits(x, wrapper_logical_class);
     case R_TYPE_integer:
       return R_altrep_inherits(x, wrapper_integer_class);
     case R_TYPE_double:
       return R_altrep_inherits(x, wrapper_double_class);
+    case R_TYPE_complex:
+      return R_altrep_inherits(x, wrapper_complex_class);
+    case R_TYPE_raw:
+      return R_altrep_inherits(x, wrapper_raw_class);
     case R_TYPE_character:
       return R_altrep_inherits(x, wrapper_character_class);
+    case R_TYPE_list:
+      return R_altrep_inherits(x, wrapper_list_class);
     default:
       return false;
   }
@@ -63,12 +75,20 @@ static inline bool is_wrapper(r_obj* x) {
 
 static inline R_altrep_class_t wrapper_class(enum r_type type) {
   switch (type) {
+    case R_TYPE_logical:
+      return wrapper_logical_class;
     case R_TYPE_integer:
       return wrapper_integer_class;
     case R_TYPE_double:
       return wrapper_double_class;
+    case R_TYPE_complex:
+      return wrapper_complex_class;
+    case R_TYPE_raw:
+      return wrapper_raw_class;
     case R_TYPE_character:
       return wrapper_character_class;
+    case R_TYPE_list:
+      return wrapper_list_class;
     default:
       r_abort("Can't wrap a %s.", Rf_type2char(type));
   }
@@ -216,6 +236,14 @@ static r_ssize wrapper_length(r_obj* x) {
 // -----------------------------------------------------------------------------
 // Dataptr
 
+static void* wrapper_logical_dataptr(r_obj* x, Rboolean writeable) {
+  if (writeable) {
+    return r_lgl_begin(wrapper_writable(x));
+  } else {
+    return (void*) r_lgl_cbegin(wrapper_readonly(x));
+  }
+}
+
 static void* wrapper_integer_dataptr(r_obj* x, Rboolean writeable) {
   if (writeable) {
     return r_int_begin(wrapper_writable(x));
@@ -232,16 +260,44 @@ static void* wrapper_double_dataptr(r_obj* x, Rboolean writeable) {
   }
 }
 
+static void* wrapper_complex_dataptr(r_obj* x, Rboolean writeable) {
+  if (writeable) {
+    return r_cpl_begin(wrapper_writable(x));
+  } else {
+    return (void*) r_cpl_cbegin(wrapper_readonly(x));
+  }
+}
+
+static void* wrapper_raw_dataptr(r_obj* x, Rboolean writeable) {
+  if (writeable) {
+    return r_raw_begin(wrapper_writable(x));
+  } else {
+    return (void*) r_raw_cbegin(wrapper_readonly(x));
+  }
+}
+
 static void* wrapper_character_dataptr(r_obj* x, Rboolean writeable) {
   if (writeable) {
-    Rf_error("Can't request writable dataptr to character wrapper.");
+    r_abort("Can't request a writable dataptr to a character wrapper.");
   } else {
     return (void*) r_chr_cbegin(wrapper_readonly(x));
   }
 }
 
+static void* wrapper_list_dataptr(r_obj* x, Rboolean writeable) {
+  if (writeable) {
+    r_abort("Can't request a writable dataptr to a list wrapper.");
+  } else {
+    return (void*) r_list_cbegin(wrapper_readonly(x));
+  }
+}
+
 // -----------------------------------------------------------------------------
 // Dataptr_or_null
+
+static const void* wrapper_logical_dataptr_or_null(r_obj* x) {
+  return LOGICAL_OR_NULL(wrapper_readonly(x));
+}
 
 static const void* wrapper_integer_dataptr_or_null(r_obj* x) {
   return INTEGER_OR_NULL(wrapper_readonly(x));
@@ -251,13 +307,30 @@ static const void* wrapper_double_dataptr_or_null(r_obj* x) {
   return REAL_OR_NULL(wrapper_readonly(x));
 }
 
+static const void* wrapper_complex_dataptr_or_null(r_obj* x) {
+  return COMPLEX_OR_NULL(wrapper_readonly(x));
+}
+
+static const void* wrapper_raw_dataptr_or_null(r_obj* x) {
+  return RAW_OR_NULL(wrapper_readonly(x));
+}
+
 static const void* wrapper_character_dataptr_or_null(r_obj* x) {
-  // There is no `STRING_OR_NULL`
+  // There is no `STRING_PTR_RO_OR_NULL`
   return r_chr_cbegin(wrapper_readonly(x));
+}
+
+static const void* wrapper_list_dataptr_or_null(r_obj* x) {
+  // There is no `VECTOR_PTR_RO_OR_NULL`
+  return r_list_cbegin(wrapper_readonly(x));
 }
 
 // -----------------------------------------------------------------------------
 // Elt
+
+static int wrapper_logical_elt(r_obj* x, r_ssize i) {
+  return r_lgl_get(wrapper_readonly(x), i);
+}
 
 static int wrapper_integer_elt(r_obj* x, r_ssize i) {
   return r_int_get(wrapper_readonly(x), i);
@@ -267,12 +340,33 @@ static double wrapper_double_elt(r_obj* x, r_ssize i) {
   return r_dbl_get(wrapper_readonly(x), i);
 }
 
+static r_complex wrapper_complex_elt(r_obj* x, r_ssize i) {
+  return r_cpl_get(wrapper_readonly(x), i);
+}
+
+static Rbyte wrapper_raw_elt(r_obj* x, r_ssize i) {
+  return r_raw_get(wrapper_readonly(x), i);
+}
+
 static r_obj* wrapper_character_elt(r_obj* x, r_ssize i) {
   return r_chr_get(wrapper_readonly(x), i);
 }
 
+static r_obj* wrapper_list_elt(r_obj* x, r_ssize i) {
+  return r_list_get(wrapper_readonly(x), i);
+}
+
 // -----------------------------------------------------------------------------
 // Get_region
+
+static r_ssize wrapper_logical_get_region(
+  r_obj* x,
+  r_ssize i,
+  r_ssize n,
+  int* buf
+) {
+  return LOGICAL_GET_REGION(wrapper_readonly(x), i, n, buf);
+}
 
 static r_ssize wrapper_integer_get_region(
   r_obj* x,
@@ -292,15 +386,54 @@ static r_ssize wrapper_double_get_region(
   return REAL_GET_REGION(wrapper_readonly(x), i, n, buf);
 }
 
+static r_ssize wrapper_complex_get_region(
+  r_obj* x,
+  r_ssize i,
+  r_ssize n,
+  Rcomplex* buf
+) {
+  return COMPLEX_GET_REGION(wrapper_readonly(x), i, n, buf);
+}
+
+static r_ssize wrapper_raw_get_region(
+  r_obj* x,
+  r_ssize i,
+  r_ssize n,
+  Rbyte* buf
+) {
+  return RAW_GET_REGION(wrapper_readonly(x), i, n, buf);
+}
+
 // -----------------------------------------------------------------------------
 // Set_elt
 
 static void wrapper_character_set_elt(r_obj* x, r_ssize i, r_obj* v) {
-  SET_STRING_ELT(wrapper_writable(x), i, v);
+  r_chr_poke(wrapper_writable(x), i, v);
+}
+
+static void wrapper_list_set_elt(r_obj* x, r_ssize i, r_obj* v) {
+  r_list_poke(wrapper_writable(x), i, v);
 }
 
 // -----------------------------------------------------------------------------
 // Initializers
+
+static void init_wrapper_logical(DllInfo* dll) {
+  R_altrep_class_t cls =
+    R_make_altlogical_class("wrapper_logical", package, dll);
+  wrapper_logical_class = cls;
+
+  R_set_altrep_Serialized_state_method(cls, wrapper_serialized_state);
+  R_set_altrep_Duplicate_method(cls, wrapper_duplicate);
+  R_set_altrep_Inspect_method(cls, wrapper_inspect);
+  R_set_altrep_Length_method(cls, wrapper_length);
+
+  R_set_altvec_Dataptr_method(cls, wrapper_logical_dataptr);
+  R_set_altvec_Dataptr_or_null_method(cls, wrapper_logical_dataptr_or_null);
+
+  R_set_altlogical_Elt_method(cls, wrapper_logical_elt);
+  R_set_altlogical_Get_region_method(cls, wrapper_logical_get_region);
+}
 
 static void init_wrapper_integer(DllInfo* dll) {
   R_altrep_class_t cls =
@@ -335,6 +468,39 @@ static void init_wrapper_double(DllInfo* dll) {
   R_set_altreal_Get_region_method(cls, wrapper_double_get_region);
 }
 
+static void init_wrapper_complex(DllInfo* dll) {
+  R_altrep_class_t cls =
+    R_make_altcomplex_class("wrapper_complex", package, dll);
+  wrapper_complex_class = cls;
+
+  R_set_altrep_Serialized_state_method(cls, wrapper_serialized_state);
+  R_set_altrep_Duplicate_method(cls, wrapper_duplicate);
+  R_set_altrep_Inspect_method(cls, wrapper_inspect);
+  R_set_altrep_Length_method(cls, wrapper_length);
+
+  R_set_altvec_Dataptr_method(cls, wrapper_complex_dataptr);
+  R_set_altvec_Dataptr_or_null_method(cls, wrapper_complex_dataptr_or_null);
+
+  R_set_altcomplex_Elt_method(cls, wrapper_complex_elt);
+  R_set_altcomplex_Get_region_method(cls, wrapper_complex_get_region);
+}
+
+static void init_wrapper_raw(DllInfo* dll) {
+  R_altrep_class_t cls = R_make_altraw_class("wrapper_raw", package, dll);
+  wrapper_raw_class = cls;
+
+  R_set_altrep_Serialized_state_method(cls, wrapper_serialized_state);
+  R_set_altrep_Duplicate_method(cls, wrapper_duplicate);
+  R_set_altrep_Inspect_method(cls, wrapper_inspect);
+  R_set_altrep_Length_method(cls, wrapper_length);
+
+  R_set_altvec_Dataptr_method(cls, wrapper_raw_dataptr);
+  R_set_altvec_Dataptr_or_null_method(cls, wrapper_raw_dataptr_or_null);
+
+  R_set_altraw_Elt_method(cls, wrapper_raw_elt);
+  R_set_altraw_Get_region_method(cls, wrapper_raw_get_region);
+}
+
 static void init_wrapper_character(DllInfo* dll) {
   R_altrep_class_t cls =
     R_make_altstring_class("wrapper_character", package, dll);
@@ -352,8 +518,28 @@ static void init_wrapper_character(DllInfo* dll) {
   R_set_altstring_Set_elt_method(cls, wrapper_character_set_elt);
 }
 
+static void init_wrapper_list(DllInfo* dll) {
+  R_altrep_class_t cls = R_make_altlist_class("wrapper_list", package, dll);
+  wrapper_list_class = cls;
+
+  R_set_altrep_Serialized_state_method(cls, wrapper_serialized_state);
+  R_set_altrep_Duplicate_method(cls, wrapper_duplicate);
+  R_set_altrep_Inspect_method(cls, wrapper_inspect);
+  R_set_altrep_Length_method(cls, wrapper_length);
+
+  R_set_altvec_Dataptr_method(cls, wrapper_list_dataptr);
+  R_set_altvec_Dataptr_or_null_method(cls, wrapper_list_dataptr_or_null);
+
+  R_set_altlist_Elt_method(cls, wrapper_list_elt);
+  R_set_altlist_Set_elt_method(cls, wrapper_list_set_elt);
+}
+
 void r_init_wrapper(DllInfo* dll) {
+  init_wrapper_logical(dll);
   init_wrapper_integer(dll);
   init_wrapper_double(dll);
+  init_wrapper_complex(dll);
+  init_wrapper_raw(dll);
   init_wrapper_character(dll);
+  init_wrapper_list(dll);
 }

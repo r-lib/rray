@@ -36,18 +36,7 @@ r_obj* rray_reshape(
     );
   }
 
-  r_obj* out;
-
-  switch (r_typeof(x)) {
-    case R_TYPE_integer:
-    case R_TYPE_double:
-    case R_TYPE_character:
-      out = KEEP(r_wrap(x));
-      break;
-    default:
-      out = KEEP(r_clone(x));
-      break;
-  }
+  r_obj* out = KEEP(r_wrap(x));
 
   // TODO: Maybe `check_array()` should become `as_array()` and handle
   // upgrading vectors to arrays (by adding dim and promoting names to
