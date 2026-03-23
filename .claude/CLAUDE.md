@@ -10,9 +10,13 @@ ALWAYS report an up to date running cost of this conversation at the very top of
 
 This is a reimagining of rray. This reimagining of rray will be written in pure C without xtensor. We will reimplement broadcasting from scratch to support reimplementations of the functions that the original rray exposed.
 
+You have write access to this `rray4/` folder at all times.
+
 Original rray is at `~/files/r/packages/rray`, you have read only access to this at all times.
 
 When in doubt, prefer the code style of vctrs and rlang, particularly for the C code, located at `~/files/r/packages/vctrs` and `~/files/r/packages/rlang`, which you also have read only access to at all times.
+
+You also have read only access to the R sources, located at `/Users/davis/files/r/r-svn`. This can be particularly useful for checking C implementations.
 
 ### Terminology
 
