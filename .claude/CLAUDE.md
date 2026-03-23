@@ -51,7 +51,7 @@ rray_dimensionality(x) # returns 3
 - Any `r_obj*` returned by a C function that allocates must be protected with `KEEP()` / `FREE()` (rlang's wrappers around `PROTECT()` / `UNPROTECT()`) if used after any further allocation could occur.
 - When looping over a vector, obtain a pointer to the underlying data first, e.g., `const int* v_dimension_sizes = r_int_cbegin(dimension_sizes)`, then index into that directly.
 - Mark variables as `const` where possible.
-- Always run `clang-format -i src/*.c src/*.h` after generating C code.
+- Always run `clang-format -i src/*.c src/*.h` after generating C code. Always run it over all files, not just changed files.
 
 ## R package development
 
