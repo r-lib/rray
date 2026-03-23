@@ -2,9 +2,9 @@
 
 At the START of every session, before doing anything else, create a new conversation file in `conversations/` following the naming convention `{YYYY-MM-DD}-{index}-{topic}.md`. Check existing files to determine the next index.
 
-You MUST keep this file up to date with our FULL conversation. Update it as often as possible. Even record plans that we make.
+You MUST update this file after every single action you perform. Record our FULL conversation. You should ALWAYS record my prompts verbatim.
 
-ALWAYS report an up to date running cost of this conversation at the very top of the file.
+ALWAYS report an up to date running cost of this conversation at the very top of the file. This must be updated after every single action.
 
 ## rray4
 
