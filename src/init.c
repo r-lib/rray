@@ -14,6 +14,8 @@ extern r_obj* ffi_rray_dimension_sizes(r_obj* x, r_obj* frame);
 extern r_obj* ffi_rray_dimension_names(r_obj* x, r_obj* frame);
 extern r_obj* ffi_rray_reshape(r_obj* x, r_obj* dimension_sizes, r_obj* frame);
 
+extern void r_init_wrapper(DllInfo* dll);
+
 r_obj* ffi_rray4_init_library(r_obj* ns);
 
 static const R_CallMethodDef CallEntries[] = {
@@ -30,6 +32,7 @@ static const R_CallMethodDef CallEntries[] = {
 void R_init_rray4(DllInfo* dll) {
   R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
   R_useDynamicSymbols(dll, FALSE);
+  r_init_wrapper(dll);
 }
 
 r_obj* ffi_rray4_init_library(r_obj* ns) {

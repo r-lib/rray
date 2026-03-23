@@ -3,6 +3,7 @@
 #include "capacity.h"
 #include "dimension-sizes.h"
 #include "utils.h"
+#include "wrapper.h"
 
 r_obj* ffi_rray_reshape(r_obj* x, r_obj* dimension_sizes, r_obj* frame) {
   struct r_lazy error_call = { .x = frame, .env = r_null };
@@ -35,8 +36,18 @@ r_obj* rray_reshape(
     );
   }
 
-  // TODO: Should be able to make a cheaper ALTREP attribute clone here.
-  r_obj* out = KEEP(r_clone(x));
+  r_obj* out;
+
+  switch (r_typeof(x)) {
+    case R_TYPE_integer:
+    case R_TYPE_double:
+    case R_TYPE_character:
+      out = KEEP(r_wrap(x));
+      break;
+    default:
+      out = KEEP(r_clone(x));
+      break;
+  }
 
   // TODO: Maybe `check_array()` should become `as_array()` and handle
   // upgrading vectors to arrays (by adding dim and promoting names to
