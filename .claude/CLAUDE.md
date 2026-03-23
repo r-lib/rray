@@ -1,6 +1,10 @@
 ## Session startup
 
-At the START of every session, before doing anything else, create a new conversation file in `conversations/` following the naming convention `{YYYY-MM-DD}-{index}-{topic}.md`. Check existing files to determine the next index. Keep the file up to date after each round of back and forth. Always report the up to date cost of this conversation at the very top of the file.
+At the START of every session, before doing anything else, create a new conversation file in `conversations/` following the naming convention `{YYYY-MM-DD}-{index}-{topic}.md`. Check existing files to determine the next index.
+
+You MUST keep this file up to date with our FULL conversation. Update it as often as possible. Even record plans that we make.
+
+ALWAYS report an up to date running cost of this conversation at the very top of the file.
 
 ## rray4
 
