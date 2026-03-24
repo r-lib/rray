@@ -1,5 +1,6 @@
 #include "utils.h"
 
+#include "decl/utils-decl.h"
 #include "wrapper.h"
 
 // Normalize a vector into an array
@@ -54,4 +55,39 @@ r_obj* arg_as_array(r_obj* x, const char* arg, struct r_lazy error_call) {
   }
 
   return x;
+}
+
+r_obj* vec_cast(r_obj* x, r_obj* to, r_obj* x_arg, r_obj* to_arg) {
+  r_obj* mask = KEEP(r_alloc_environment(4, r_envs.global));
+
+  r_env_bind(mask, r_syms.x, x);
+  r_env_bind(mask, to_sym, to);
+  r_env_bind(mask, x_arg_sym, x_arg);
+  r_env_bind(mask, to_arg_sym, to_arg);
+
+  r_obj* out = r_eval(vec_cast_call, mask);
+
+  FREE(1);
+  return out;
+}
+
+r_obj* to_sym = NULL;
+r_obj* to_arg_sym = NULL;
+r_obj* x_arg_sym = NULL;
+
+r_obj* dimension_sizes_chr = NULL;
+
+r_obj* vec_cast_call = NULL;
+
+void rray_init_utils(r_obj* ns) {
+  to_sym = r_sym("to");
+  to_arg_sym = r_sym("to_arg");
+  x_arg_sym = r_sym("x_arg");
+
+  dimension_sizes_chr = r_chr("dimension_sizes");
+  r_preserve(dimension_sizes_chr);
+
+  vec_cast_call =
+    r_parse("vctrs::vec_cast(x, to, x_arg = x_arg, to_arg = to_arg)");
+  r_preserve(vec_cast_call);
 }

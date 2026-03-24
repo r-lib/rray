@@ -38,21 +38,22 @@
       Error in `rray_broadcast()`:
       ! `x` must be an array, not a function.
 
-# errors on non-integer dimension_sizes
+# coerces dimension_sizes to integer
 
     Code
-      rray_broadcast(1, 1)
+      rray_broadcast(1, 2.5)
     Condition
-      Error in `rray_broadcast()`:
-      ! `dimension_sizes` must be an integer vector, not the number 1.
+      Error:
+      ! Can't convert from `dimension_sizes` <double> to <integer> due to loss of precision.
+      * Locations: 1
 
----
+# errors on non-coercible dimension_sizes
 
     Code
       rray_broadcast(1, "a")
     Condition
-      Error in `rray_broadcast()`:
-      ! `dimension_sizes` must be an integer vector, not the string "a".
+      Error:
+      ! Can't convert `dimension_sizes` <character> to <integer>.
 
 # errors on empty dimension_sizes
 

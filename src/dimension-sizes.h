@@ -12,6 +12,6 @@ bool rray_dimension_sizes_are_equal(
   r_ssize y_dimensionality
 );
 
-void check_dimension_sizes(r_obj* dimension_sizes, struct r_lazy error_call);
+r_obj* arg_as_dimension_sizes(r_obj* dimension_sizes, struct r_lazy error_call);
 
 #endif

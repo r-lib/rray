@@ -3,6 +3,10 @@
 
 #include "rlang.h"
 
+extern r_obj* dimension_sizes_chr;
+
 r_obj* arg_as_array(r_obj* x, const char* arg, struct r_lazy error_call);
+
+r_obj* vec_cast(r_obj* x, r_obj* to, r_obj* x_arg, r_obj* to_arg);
 
 #endif

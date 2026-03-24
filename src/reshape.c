@@ -16,7 +16,7 @@ r_obj* rray_reshape(
   struct r_lazy error_call
 ) {
   x = KEEP(arg_as_array(x, "x", error_call));
-  check_dimension_sizes(dimension_sizes, error_call);
+  dimension_sizes = KEEP(arg_as_dimension_sizes(dimension_sizes, error_call));
 
   const r_ssize x_capacity = rray_capacity(x, error_call);
 
@@ -41,6 +41,6 @@ r_obj* rray_reshape(
   r_attrib_poke_dim_names(out, r_null);
   r_attrib_poke_dim(out, dimension_sizes);
 
-  FREE(2);
+  FREE(3);
   return out;
 }

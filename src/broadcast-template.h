@@ -68,7 +68,7 @@ static inline r_obj* RRAY_FN(
   r_obj* dimension_sizes,
   struct r_lazy error_call
 ) {
-  check_dimension_sizes(dimension_sizes, error_call);
+  dimension_sizes = KEEP(arg_as_dimension_sizes(dimension_sizes, error_call));
 
   r_obj* x_dimension_sizes = KEEP(rray_dimension_sizes(x, error_call));
 
@@ -86,7 +86,7 @@ static inline r_obj* RRAY_FN(
         v_dimension_sizes,
         dimensionality
       )) {
-    FREE(1);
+    FREE(2);
     return x;
   }
 
@@ -137,7 +137,7 @@ static inline r_obj* RRAY_FN(
     FREE(1);
   }
 
-  FREE(2);
+  FREE(3);
   return out;
 }
 

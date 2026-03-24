@@ -98,8 +98,16 @@ test_that("errors on non-array input", {
   expect_snapshot(rray_reshape(mean, 1L), error = TRUE)
 })
 
-test_that("errors on non-integer dimension_sizes", {
-  expect_snapshot(rray_reshape(1, 1), error = TRUE)
+test_that("coerces dimension_sizes to integer", {
+  out <- rray_reshape(1:6, c(2, 3))
+  expect_identical(rray_dimension_sizes(out), c(2L, 3L))
+
+  expect_snapshot(error = TRUE, {
+    rray_reshape(1, 2.5)
+  })
+})
+
+test_that("errors on non-coercible dimension_sizes", {
   expect_snapshot(rray_reshape(1, "a"), error = TRUE)
 })
 

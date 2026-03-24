@@ -33,16 +33,25 @@ bool rray_dimension_sizes_are_equal(
   return true;
 }
 
-void check_dimension_sizes(r_obj* dimension_sizes, struct r_lazy error_call) {
+r_obj* arg_as_dimension_sizes(
+  r_obj* dimension_sizes,
+  struct r_lazy error_call
+) {
   if (r_typeof(dimension_sizes) != R_TYPE_integer) {
-    r_abort_lazy_call(
-      error_call,
-      "`dimension_sizes` must be an integer vector, not %s.",
-      r_obj_type_friendly(dimension_sizes)
+    dimension_sizes = vec_cast(
+      dimension_sizes,
+      r_globals.empty_int,
+      dimension_sizes_chr,
+      r_null
     );
   }
+  KEEP(dimension_sizes);
 
-  const R_xlen_t dimensionality = r_length(dimension_sizes);
+  if (r_attrib_has_any(dimension_sizes)) {
+    r_abort_lazy_call(error_call, "`dimension_sizes` can't have attributes.");
+  }
+
+  const r_ssize dimensionality = r_length(dimension_sizes);
 
   if (dimensionality == 0) {
     r_abort_lazy_call(
@@ -53,7 +62,7 @@ void check_dimension_sizes(r_obj* dimension_sizes, struct r_lazy error_call) {
 
   const int* v_dimension_sizes = r_int_cbegin(dimension_sizes);
 
-  for (R_xlen_t i = 0; i < dimensionality; ++i) {
+  for (r_ssize i = 0; i < dimensionality; ++i) {
     const int dimension_size = v_dimension_sizes[i];
 
     if (dimension_size == r_globals.na_int) {
@@ -70,4 +79,7 @@ void check_dimension_sizes(r_obj* dimension_sizes, struct r_lazy error_call) {
       );
     }
   }
+
+  FREE(1);
+  return dimension_sizes;
 }
