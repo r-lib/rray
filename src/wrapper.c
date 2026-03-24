@@ -4,7 +4,7 @@
 
 #include "decl/wrapper-decl.h"
 
-const char* package = "rray4";
+static char* package = "rray4";
 
 // Wrap an R object in a lightweight ALTREP wrapper
 //
@@ -12,26 +12,28 @@ const char* package = "rray4";
 // without touching the underlying data.
 //
 // - Read only accesses to the data are "passed through" to the wrapped object
-// - Writable access forces a shallow duplication of the wrapped object
+// - Writable access forces a shallow duplication of the wrapped object if it
+//   EVER looks shared, which happens if we are wrapping a basic R object
+//   supplied from the R side by a user, or if we rewrap a wrapper's underlying
+//   data (because the original wrapper also shares it).
 r_obj* r_wrap(r_obj* x) {
-  if (is_wrapper(x)) {
-    // If we already have a wrapper, don't wrap it in another wrapper, which
-    // would create many layers of indirection. Instead, just shallow duplicate
-    // the wrapper itself. This gives you a fresh attribute pairlist, just like
-    // creating a wrapper would do, and the wrapper object itself is very cheap
-    // to clone (a `CONS()` result).
-    return r_clone(x);
-  }
-
   R_altrep_class_t cls = wrapper_class(r_typeof(x));
 
-  r_obj* out = KEEP(R_new_altrep(cls, x, r_false));
+  // If `x` is a wrapper, unwrap it to gain access to the underlying data. This
+  // is what we wrap and bump the reference count of. This avoids a
+  // proliferation of wrappers. We manage writable access to the underlying data
+  // by always cloning it before giving out a writable handle if it is ever
+  // `MAYBE_SHARED()` (i.e. a ref count >1), meaning that we aren't the sole
+  // owner of it at that time.
+  r_obj* data = is_wrapper(x) ? wrapper_readonly(x) : x;
 
-  // Fresh attribute pairlist!
+  // Reference count on `data` is bumped when we wrap it here.
+  // It now looks at least "referenced", but not necessarily "shared".
+  r_obj* out = KEEP(R_new_altrep(cls, data, r_null));
+
+  // Creates a fresh attribute pairlist!
+  // Note that we always use `x` here, not `data`.
   r_attrib_clone_from(out, x);
-
-  // Declare that `x` is now immutable because we wrap it.
-  r_mark_shared(x);
 
   FREE(1);
   return out;
@@ -97,14 +99,6 @@ static inline R_altrep_class_t wrapper_class(enum r_type type) {
 // -----------------------------------------------------------------------------
 // Data
 
-// Initially holds "wrapped" read only data1 with data2 set to `r_false`.
-//
-// Overridden with "owned" data1 and data2 set to `r_true` if writable access is
-// ever requested.
-static inline bool wrapper_is_owned(r_obj* x) {
-  return R_altrep_data2(x) == r_true;
-}
-
 static inline r_obj* wrapper_readonly(r_obj* x) {
   return R_altrep_data1(x);
 }
@@ -112,19 +106,18 @@ static inline r_obj* wrapper_readonly(r_obj* x) {
 static inline r_obj* wrapper_writable(r_obj* x) {
   r_obj* data = R_altrep_data1(x);
 
-  if (wrapper_is_owned(x)) {
-    return data;
+  // If ANYONE besides us shares the wrapped data, clone it
+  // before giving out a writable handle.
+  if (MAYBE_SHARED(data)) {
+    data = r_clone_data(data);
+    R_set_altrep_data1(x, data);
   }
-
-  data = r_clone_data(data);
-  R_set_altrep_data1(x, data);
-  R_set_altrep_data2(x, r_true);
 
   return data;
 }
 
-// Shallow duplicates only the data, not the attributes,
-// since we don't ever touch them
+// Shallow duplicates only the data, not its attributes,
+// since we don't ever pull them from the wrapped object
 static inline r_obj* r_clone_data(r_obj* x) {
   switch (r_typeof(x)) {
     case R_TYPE_logical: {
@@ -132,7 +125,7 @@ static inline r_obj* r_clone_data(r_obj* x) {
       const r_ssize size = r_length(x);
       r_obj* out = KEEP(r_alloc_logical(size));
       int* v_out = r_lgl_begin(out);
-      memcpy(v_out, v_x, sizeof(int) * size);
+      r_memcpy(v_out, v_x, sizeof(int) * size);
       FREE(1);
       return out;
     }
@@ -141,7 +134,7 @@ static inline r_obj* r_clone_data(r_obj* x) {
       const r_ssize size = r_length(x);
       r_obj* out = KEEP(r_alloc_integer(size));
       int* v_out = r_int_begin(out);
-      memcpy(v_out, v_x, sizeof(int) * size);
+      r_memcpy(v_out, v_x, sizeof(int) * size);
       FREE(1);
       return out;
     }
@@ -150,7 +143,7 @@ static inline r_obj* r_clone_data(r_obj* x) {
       const r_ssize size = r_length(x);
       r_obj* out = KEEP(r_alloc_double(size));
       double* v_out = r_dbl_begin(out);
-      memcpy(v_out, v_x, sizeof(double) * size);
+      r_memcpy(v_out, v_x, sizeof(double) * size);
       FREE(1);
       return out;
     }
@@ -159,7 +152,7 @@ static inline r_obj* r_clone_data(r_obj* x) {
       const r_ssize size = r_length(x);
       r_obj* out = KEEP(r_alloc_complex(size));
       r_complex* v_out = r_cpl_begin(out);
-      memcpy(v_out, v_x, sizeof(r_complex) * size);
+      r_memcpy(v_out, v_x, sizeof(r_complex) * size);
       FREE(1);
       return out;
     }
@@ -168,7 +161,7 @@ static inline r_obj* r_clone_data(r_obj* x) {
       const r_ssize size = r_length(x);
       r_obj* out = KEEP(r_alloc_raw(size));
       Rbyte* v_out = r_raw_begin(out);
-      memcpy(v_out, v_x, sizeof(Rbyte) * size);
+      r_memcpy(v_out, v_x, sizeof(Rbyte) * size);
       FREE(1);
       return out;
     }
@@ -206,13 +199,15 @@ static r_obj* wrapper_serialized_state(r_obj* x) {
   return NULL;
 }
 
+// Powers `Rf_duplicate()` and `Rf_shallow_duplicate()`
 static r_obj* wrapper_duplicate(r_obj* x, Rboolean deep) {
   if (deep) {
     // Wrapper only guarantees shallow ownership.
     // No need to return another wrapper if we fully duplicate.
     return Rf_duplicate(wrapper_readonly(x));
   } else {
-    // Rewrap (this avoids wrappers of wrappers)
+    // Perform shallow duplication by rewrapping the wrapped
+    // data in a new wrapper. This won't wrap the wrapper itself.
     return r_wrap(x);
   }
 }
@@ -413,6 +408,25 @@ static void wrapper_character_set_elt(r_obj* x, r_ssize i, r_obj* v) {
 
 static void wrapper_list_set_elt(r_obj* x, r_ssize i, r_obj* v) {
   r_list_poke(wrapper_writable(x), i, v);
+}
+
+// -----------------------------------------------------------------------------
+// FFI test helpers
+
+r_obj* ffi_test_wrap(r_obj* x) {
+  return r_wrap(x);
+}
+
+r_obj* ffi_test_wrapper_readonly(r_obj* x) {
+  return wrapper_readonly(x);
+}
+
+r_obj* ffi_test_wrapper_writable(r_obj* x) {
+  return wrapper_writable(x);
+}
+
+r_obj* ffi_test_is_wrapper(r_obj* x) {
+  return r_lgl(is_wrapper(x));
 }
 
 // -----------------------------------------------------------------------------
