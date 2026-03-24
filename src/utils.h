@@ -3,6 +3,6 @@
 
 #include "rlang.h"
 
-void check_array(r_obj* x, struct r_lazy error_call);
+r_obj* arg_as_array(r_obj* x, const char* arg, struct r_lazy error_call);
 
 #endif

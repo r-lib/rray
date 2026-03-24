@@ -15,7 +15,7 @@ r_obj* rray_reshape(
   r_obj* dimension_sizes,
   struct r_lazy error_call
 ) {
-  check_array(x, error_call);
+  x = KEEP(arg_as_array(x, "x", error_call));
   check_dimension_sizes(dimension_sizes, error_call);
 
   const r_ssize x_capacity = rray_capacity(x, error_call);
@@ -38,14 +38,9 @@ r_obj* rray_reshape(
 
   r_obj* out = KEEP(r_wrap(x));
 
-  // TODO: Maybe `check_array()` should become `as_array()` and handle
-  // upgrading vectors to arrays (by adding dim and promoting names to
-  // dimnames), so then we only set one of these.
   r_attrib_poke_dim_names(out, r_null);
-  r_attrib_poke_names(out, r_null);
-
   r_attrib_poke_dim(out, dimension_sizes);
 
-  FREE(1);
+  FREE(2);
   return out;
 }

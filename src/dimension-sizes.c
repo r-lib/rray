@@ -8,15 +8,10 @@ r_obj* ffi_rray_dimension_sizes(r_obj* x, r_obj* frame) {
 }
 
 r_obj* rray_dimension_sizes(r_obj* x, struct r_lazy error_call) {
-  check_array(x, error_call);
-
-  r_obj* dimension_sizes = r_dim(x);
-
-  if (dimension_sizes == r_null) {
-    return r_int(r_ssize_as_integer(r_length(x)));
-  } else {
-    return dimension_sizes;
-  }
+  x = KEEP(arg_as_array(x, "x", error_call));
+  r_obj* out = r_dim(x);
+  FREE(1);
+  return out;
 }
 
 bool rray_dimension_sizes_are_equal(

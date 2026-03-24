@@ -34,26 +34,38 @@ r_obj* rray_broadcast(
   r_obj* dimension_sizes,
   struct r_lazy error_call
 ) {
-  check_array(x, error_call);
+  x = KEEP(arg_as_array(x, "x", error_call));
+
+  r_obj* out;
 
   switch (r_typeof(x)) {
     case R_TYPE_logical:
-      return rray_broadcast_lgl(x, dimension_sizes, error_call);
+      out = rray_broadcast_lgl(x, dimension_sizes, error_call);
+      break;
     case R_TYPE_integer:
-      return rray_broadcast_int(x, dimension_sizes, error_call);
+      out = rray_broadcast_int(x, dimension_sizes, error_call);
+      break;
     case R_TYPE_double:
-      return rray_broadcast_dbl(x, dimension_sizes, error_call);
+      out = rray_broadcast_dbl(x, dimension_sizes, error_call);
+      break;
     case R_TYPE_complex:
-      return rray_broadcast_cpl(x, dimension_sizes, error_call);
+      out = rray_broadcast_cpl(x, dimension_sizes, error_call);
+      break;
     case R_TYPE_raw:
-      return rray_broadcast_raw(x, dimension_sizes, error_call);
+      out = rray_broadcast_raw(x, dimension_sizes, error_call);
+      break;
     case R_TYPE_character:
-      return rray_broadcast_chr(x, dimension_sizes, error_call);
+      out = rray_broadcast_chr(x, dimension_sizes, error_call);
+      break;
     case R_TYPE_list:
-      return rray_broadcast_list(x, dimension_sizes, error_call);
+      out = rray_broadcast_list(x, dimension_sizes, error_call);
+      break;
     default:
       r_stop_unreachable();
   }
+
+  FREE(1);
+  return out;
 }
 
 void check_broadcastable(
