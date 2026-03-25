@@ -15,3 +15,14 @@ r_ssize rray_dimensionality(r_obj* x, struct r_lazy error_call) {
 r_ssize rray_dimensionality_from_dimension_sizes(r_obj* dimension_sizes) {
   return r_length(dimension_sizes);
 }
+
+void check_max_dimensionality(r_ssize dimensionality) {
+  if (dimensionality > RRAY_MAX_DIMENSIONALITY) {
+    r_abort(
+      "rray can't support arrays with a dimensionality greater than %i. "
+      "A dimensionality of %i was requested.",
+      (int) RRAY_MAX_DIMENSIONALITY,
+      (int) dimensionality
+    );
+  }
+}

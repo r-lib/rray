@@ -104,7 +104,7 @@ static inline r_obj* RRAY_FN(
   r_obj* out = KEEP(r_alloc_vector(RRAY_R_TYPE, capacity));
   r_attrib_poke_dim(out, dimension_sizes);
 
-  struct rray_broadcast_iterator it;
+  struct rray_iterator it;
   rray_broadcast_iterator_init(
     &it,
     v_x_dimension_sizes,
@@ -117,15 +117,16 @@ static inline r_obj* RRAY_FN(
   RRAY_OUT_DEREF
 
   for (r_ssize i = 0; i < capacity; ++i) {
-    RRAY_ASSIGN(i, rray_broadcast_iterator_location(&it));
-    rray_broadcast_iterator_next(&it);
+    RRAY_ASSIGN(i, rray_iterator_location(&it));
+    rray_iterator_next(&it);
   }
 
   r_obj* x_dimension_names = rray_dimension_names(x, error_call);
   if (x_dimension_names != r_null) {
     KEEP(x_dimension_names);
+    r_obj* const* v_x_dimension_names = r_list_cbegin(x_dimension_names);
     r_obj* out_dimension_names = rray_broadcast_dimension_names(
-      x_dimension_names,
+      v_x_dimension_names,
       v_x_dimension_sizes,
       x_dimensionality,
       v_dimension_sizes,
@@ -145,29 +146,27 @@ static inline r_obj* RRAY_FN(
 #define RRAY_ONCE
 
 r_obj* rray_broadcast_dimension_names(
-  r_obj* x_dimension_names,
-  const int* v_x_dimension_sizes,
-  r_ssize x_dimensionality,
+  r_obj* const* v_dimension_names,
   const int* v_dimension_sizes,
-  r_ssize dimensionality
+  r_ssize dimensionality,
+  const int* v_out_dimension_sizes,
+  r_ssize out_dimensionality
 ) {
-  r_obj* const* v_x_dimension_names = r_list_cbegin(x_dimension_names);
-
   r_ssize i = 0;
 
-  for (; i < x_dimensionality; ++i) {
-    if (v_x_dimension_names[i] == r_null) {
+  for (; i < dimensionality; ++i) {
+    if (v_dimension_names[i] == r_null) {
       // `out` stays `r_null` when there were no names before
       continue;
     }
-    if (v_x_dimension_sizes[i] != v_dimension_sizes[i]) {
+    if (v_dimension_sizes[i] != v_out_dimension_sizes[i]) {
       // `out` is "cleared" to `r_null` when dimension size changes
       continue;
     }
     break;
   }
 
-  if (i == x_dimensionality) {
+  if (i == dimensionality) {
     // Return `r_null` if:
     // - All dimension names were `r_null` to begin with
     // - Broadcasting resulted in all `r_null` dimension names
@@ -175,18 +174,18 @@ r_obj* rray_broadcast_dimension_names(
   }
 
   // Pick up where we left off, actually assigning this time
-  r_obj* out = KEEP(r_alloc_list(dimensionality));
+  r_obj* out = KEEP(r_alloc_list(out_dimensionality));
 
-  for (; i < x_dimensionality; ++i) {
-    if (v_x_dimension_names[i] == r_null) {
+  for (; i < dimensionality; ++i) {
+    if (v_dimension_names[i] == r_null) {
       // `out` stays `r_null` when there were no names before
       continue;
     }
-    if (v_x_dimension_sizes[i] != v_dimension_sizes[i]) {
+    if (v_dimension_sizes[i] != v_out_dimension_sizes[i]) {
       // `out` is "cleared" to `r_null` when dimension size changes
       continue;
     }
-    r_list_poke(out, i, v_x_dimension_names[i]);
+    r_list_poke(out, i, v_dimension_names[i]);
   }
 
   FREE(1);

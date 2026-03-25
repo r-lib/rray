@@ -1,0 +1,87 @@
+#include "reduce.h"
+
+r_obj* rray_reduce_dimension_sizes(
+  const int* v_dimension_sizes,
+  r_ssize dimensionality,
+  const int* v_axes,
+  r_ssize axes_size
+) {
+  r_obj* out = KEEP(r_alloc_integer(dimensionality));
+  int* v_out = r_int_begin(out);
+
+  // Start with `v_dimension_sizes`
+  memcpy(v_out, v_dimension_sizes, sizeof(int) * dimensionality);
+
+  // Set `axes` to 1
+  for (r_ssize i = 0; i < axes_size; ++i) {
+    v_out[v_axes[i] - 1] = 1;
+  }
+
+  FREE(1);
+  return out;
+}
+
+r_obj* rray_reduce_dimension_names(
+  r_obj* const* v_dimension_names,
+  r_ssize dimensionality,
+  const int* v_axes,
+  r_ssize axes_size
+) {
+  r_ssize i = 0;
+
+  for (; i < dimensionality; ++i) {
+    r_obj* elt_dimension_names = v_dimension_names[i];
+
+    if (elt_dimension_names == r_null) {
+      continue;
+    }
+
+    bool has_dimension_names = true;
+
+    // If there are dimension names for this axis, but we are reducing this
+    // axis, then those dimension names will be dropped and don't actually
+    // count for our early exit criteria
+    for (r_ssize j = 0; j < axes_size; ++j) {
+      if (v_axes[j] - 1 == i) {
+        has_dimension_names = false;
+        break;
+      }
+    }
+
+    if (has_dimension_names) {
+      break;
+    }
+  }
+
+  if (i == dimensionality) {
+    // No dimension names left after reducing
+    return r_null;
+  }
+
+  // Everything up to `i` is `r_null`
+  r_obj* out = KEEP(r_alloc_list(dimensionality));
+
+  for (; i < dimensionality; ++i) {
+    r_obj* elt_dimension_names = v_dimension_names[i];
+
+    if (elt_dimension_names == r_null) {
+      continue;
+    }
+
+    bool has_dimension_names = true;
+
+    for (r_ssize j = 0; j < axes_size; ++j) {
+      if (v_axes[j] - 1 == i) {
+        has_dimension_names = false;
+        break;
+      }
+    }
+
+    if (has_dimension_names) {
+      r_list_poke(out, i, elt_dimension_names);
+    }
+  }
+
+  FREE(1);
+  return out;
+}

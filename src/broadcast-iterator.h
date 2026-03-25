@@ -1,92 +1,45 @@
 #ifndef RRAY_BROADCAST_ITERATOR_H
 #define RRAY_BROADCAST_ITERATOR_H
 
-#include <string.h>
+#include "iterator.h"
 
-#include "rlang.h"
-
-#define RRAY_MAX_DIMENSIONALITY 64
-
-struct rray_broadcast_iterator {
-  R_xlen_t dimensionality;
-
-  int dimension_sizes[RRAY_MAX_DIMENSIONALITY];
-  int view_dimension_sizes[RRAY_MAX_DIMENSIONALITY];
-  R_xlen_t strides[RRAY_MAX_DIMENSIONALITY];
-
-  // Current position in multi-dimensional space
-  R_xlen_t point[RRAY_MAX_DIMENSIONALITY];
-
-  // Current position in 1-D space
-  R_xlen_t location;
-};
-
-// Initialize the iterator. `v_dimension_sizes` can be shorter than
-// `v_view_dimension_sizes` — trailing dimensions are padded with 1.
+// Initialize a broadcast iterator
+//
+// - Iterates one step at a time through the "view"s multidimensional space
+// - Reports a 1D location mapping back to the original input space
+//
+// `v_dimension_sizes` can be shorter than `v_view_dimension_sizes`, trailing
+// dimensions are padded with 1.
 static inline void rray_broadcast_iterator_init(
-  struct rray_broadcast_iterator* it,
+  struct rray_iterator* it,
   const int* v_dimension_sizes,
-  R_xlen_t dimensionality,
+  r_ssize dimensionality,
   const int* v_view_dimension_sizes,
-  R_xlen_t view_dimensionality
+  r_ssize view_dimensionality
 ) {
-  if (view_dimensionality > RRAY_MAX_DIMENSIONALITY) {
-    r_abort(
-      "rray can't support arrays with a dimensionality greater than %i. "
-      "A dimensionality of %i was requested.",
-      (int) RRAY_MAX_DIMENSIONALITY,
-      (int) view_dimensionality
-    );
-  }
+  check_max_dimensionality(view_dimensionality);
 
   it->dimensionality = view_dimensionality;
 
-  for (R_xlen_t i = 0; i < dimensionality; ++i) {
-    it->dimension_sizes[i] = v_dimension_sizes[i];
-  }
-  for (R_xlen_t i = dimensionality; i < view_dimensionality; ++i) {
-    it->dimension_sizes[i] = 1;
+  for (r_ssize i = 0; i < view_dimensionality; ++i) {
+    it->v_point_dimension_sizes[i] = v_view_dimension_sizes[i];
   }
 
-  for (R_xlen_t i = 0; i < view_dimensionality; ++i) {
-    it->view_dimension_sizes[i] = v_view_dimension_sizes[i];
+  for (r_ssize i = 0; i < dimensionality; ++i) {
+    it->v_location_dimension_sizes[i] = v_dimension_sizes[i];
+  }
+  for (r_ssize i = dimensionality; i < view_dimensionality; ++i) {
+    it->v_location_dimension_sizes[i] = 1;
   }
 
-  it->strides[0] = 1;
-  for (R_xlen_t i = 1; i < view_dimensionality; ++i) {
-    it->strides[i] = it->strides[i - 1] * it->dimension_sizes[i - 1];
+  it->v_location_strides[0] = 1;
+  for (r_ssize i = 1; i < view_dimensionality; ++i) {
+    it->v_location_strides[i] =
+      it->v_location_strides[i - 1] * it->v_location_dimension_sizes[i - 1];
   }
 
-  memset(it->point, 0, sizeof(R_xlen_t) * view_dimensionality);
+  memset(it->v_point, 0, sizeof(r_ssize) * view_dimensionality);
   it->location = 0;
-}
-
-static inline R_xlen_t rray_broadcast_iterator_location(
-  const struct rray_broadcast_iterator* it
-) {
-  return it->location;
-}
-
-// Advance the iterator by one step in column-major order.
-static inline void rray_broadcast_iterator_next(
-  struct rray_broadcast_iterator* it
-) {
-  for (R_xlen_t i = 0; i < it->dimensionality; ++i) {
-    ++it->point[i];
-
-    if (it->point[i] < it->view_dimension_sizes[i]) {
-      if (it->dimension_sizes[i] != 1) {
-        it->location += it->strides[i];
-      }
-      return;
-    }
-
-    it->point[i] = 0;
-
-    if (it->dimension_sizes[i] != 1) {
-      it->location -= (it->dimension_sizes[i] - 1) * it->strides[i];
-    }
-  }
 }
 
 #endif

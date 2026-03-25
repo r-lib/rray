@@ -1,0 +1,183 @@
+#include "axes.h"
+#include "capacity.h"
+#include "decl/sum-template-decl.h"
+#include "dimension-names.h"
+#include "dimension-sizes.h"
+#include "dimensionality.h"
+#include "reduce.h"
+#include "reduction-iterator.h"
+
+#if RRAY_TYPE == RRAY_TYPE_LOGICAL
+#define RRAY_FN rray_sum_lgl
+#define RRAY_FN_ONE rray_sum_lgl_one
+#define RRAY_X_C_TYPE int
+#define RRAY_X_CONST_DEREF r_lgl_cbegin
+#define RRAY_OUT_C_TYPE int
+#define RRAY_OUT_ALLOC r_alloc_integer
+#define RRAY_OUT_DEREF r_int_begin
+
+#elif RRAY_TYPE == RRAY_TYPE_INTEGER
+#define RRAY_FN rray_sum_int
+#define RRAY_FN_ONE rray_sum_int_one
+#define RRAY_X_C_TYPE int
+#define RRAY_X_CONST_DEREF r_int_cbegin
+#define RRAY_OUT_C_TYPE int
+#define RRAY_OUT_ALLOC r_alloc_integer
+#define RRAY_OUT_DEREF r_int_begin
+
+#elif RRAY_TYPE == RRAY_TYPE_DOUBLE
+#define RRAY_FN rray_sum_dbl
+#define RRAY_FN_ONE rray_sum_dbl_one
+#define RRAY_X_C_TYPE double
+#define RRAY_X_CONST_DEREF r_dbl_cbegin
+#define RRAY_OUT_C_TYPE double
+#define RRAY_OUT_ALLOC r_alloc_double
+#define RRAY_OUT_DEREF r_dbl_begin
+
+#elif RRAY_TYPE == RRAY_TYPE_COMPLEX
+#define RRAY_FN rray_sum_cpl
+#define RRAY_FN_ONE rray_sum_cpl_one
+#define RRAY_X_C_TYPE r_complex
+#define RRAY_X_CONST_DEREF r_cpl_cbegin
+#define RRAY_OUT_C_TYPE r_complex
+#define RRAY_OUT_ALLOC r_alloc_complex
+#define RRAY_OUT_DEREF r_cpl_begin
+#endif
+
+static inline r_obj* RRAY_FN(r_obj* x, r_obj* axes, struct r_lazy error_call) {
+  r_obj* x_dimension_sizes = KEEP(rray_dimension_sizes(x, error_call));
+  const int* v_x_dimension_sizes = r_int_cbegin(x_dimension_sizes);
+
+  const r_ssize dimensionality =
+    rray_dimensionality_from_dimension_sizes(x_dimension_sizes);
+
+  axes = KEEP(arg_as_axes(axes, dimensionality, error_call));
+  const int* v_axes = r_int_cbegin(axes);
+  const r_ssize axes_size = r_length(axes);
+
+  r_obj* out_dimension_sizes = KEEP(rray_reduce_dimension_sizes(
+    v_x_dimension_sizes,
+    dimensionality,
+    v_axes,
+    axes_size
+  ));
+  const int* v_out_dimension_sizes = r_int_cbegin(out_dimension_sizes);
+
+  const r_ssize x_capacity =
+    rray_capacity_from_dimension_sizes(v_x_dimension_sizes, dimensionality);
+  const r_ssize out_capacity =
+    rray_capacity_from_dimension_sizes(v_out_dimension_sizes, dimensionality);
+
+  r_obj* out = KEEP(RRAY_OUT_ALLOC(out_capacity));
+  r_attrib_poke_dim(out, out_dimension_sizes);
+
+  RRAY_OUT_C_TYPE* v_out = RRAY_OUT_DEREF(out);
+  memset(v_out, 0, sizeof(RRAY_OUT_C_TYPE) * out_capacity);
+
+  struct rray_iterator it;
+  rray_reduction_iterator_init(
+    &it,
+    v_x_dimension_sizes,
+    v_out_dimension_sizes,
+    dimensionality
+  );
+
+  RRAY_X_C_TYPE const* v_x = RRAY_X_CONST_DEREF(x);
+
+  for (r_ssize i = 0; i < x_capacity; ++i) {
+    const r_ssize out_loc = rray_iterator_location(&it);
+    v_out[out_loc] = RRAY_FN_ONE(v_out[out_loc], v_x[i]);
+    rray_iterator_next(&it);
+  }
+
+  r_obj* x_dimension_names = rray_dimension_names(x, error_call);
+  if (x_dimension_names != r_null) {
+    KEEP(x_dimension_names);
+    r_obj* const* v_x_dimension_names = r_list_cbegin(x_dimension_names);
+    r_obj* out_dimension_names = rray_reduce_dimension_names(
+      v_x_dimension_names,
+      dimensionality,
+      v_axes,
+      axes_size
+    );
+    if (out_dimension_names != r_null) {
+      r_attrib_poke_dim_names(out, out_dimension_names);
+    }
+    FREE(1);
+  }
+
+  FREE(4);
+  return out;
+}
+
+#ifndef RRAY_ONCE
+#define RRAY_ONCE
+
+#define RRAY_INT_MAX INT_MAX
+#define RRAY_INT_MIN -INT_MAX
+
+static inline int rray_sum_lgl_one(int out, int x) {
+  if (out == r_globals.na_int) {
+    return r_globals.na_int;
+  }
+
+  if (x == r_globals.na_lgl) {
+    return r_globals.na_int;
+  }
+
+  // Since long vectors aren't supported in arrays,
+  // we can't ever integer overflow in a logical array
+
+  return out + x;
+}
+
+static inline int rray_sum_int_one(int out, int x) {
+  if (out == r_globals.na_int) {
+    return r_globals.na_int;
+  }
+
+  if (x == r_globals.na_int) {
+    return r_globals.na_int;
+  }
+
+  if ((x > 0 && out > RRAY_INT_MAX - x) || (x < 0 && out < RRAY_INT_MIN - x)) {
+    r_abort("Integer overflow in `rray_sum()`.");
+  }
+
+  return out + x;
+}
+
+static inline double rray_sum_dbl_one(double out, double x) {
+  if (ISNAN(out) || ISNAN(x)) {
+    if (R_IsNA(out) || R_IsNA(x)) {
+      // `NA` wins over numbers and `NaN`
+      return r_globals.na_dbl;
+    } else {
+      // `NaN` wins over numbers
+      return R_NaN;
+    }
+  } else {
+    return out + x;
+  }
+}
+
+static inline r_complex rray_sum_cpl_one(r_complex out, r_complex x) {
+  return (r_complex){
+    .r = rray_sum_dbl_one(out.r, x.r),
+    .i = rray_sum_dbl_one(out.i, x.i),
+  };
+}
+
+#undef RRAY_INT_MAX
+#undef RRAY_INT_MIN
+
+#endif  // RRAY_ONCE
+
+#undef RRAY_TYPE
+#undef RRAY_FN
+#undef RRAY_FN_ONE
+#undef RRAY_X_C_TYPE
+#undef RRAY_X_CONST_DEREF
+#undef RRAY_OUT_C_TYPE
+#undef RRAY_OUT_ALLOC
+#undef RRAY_OUT_DEREF

@@ -75,6 +75,7 @@ r_obj* to_sym = NULL;
 r_obj* to_arg_sym = NULL;
 r_obj* x_arg_sym = NULL;
 
+r_obj* axes_chr = NULL;
 r_obj* dimension_sizes_chr = NULL;
 
 r_obj* vec_cast_call = NULL;
@@ -83,6 +84,9 @@ void rray_init_utils(r_obj* ns) {
   to_sym = r_sym("to");
   to_arg_sym = r_sym("to_arg");
   x_arg_sym = r_sym("x_arg");
+
+  axes_chr = r_chr("axes");
+  r_preserve(axes_chr);
 
   dimension_sizes_chr = r_chr("dimension_sizes");
   r_preserve(dimension_sizes_chr);
