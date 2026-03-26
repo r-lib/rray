@@ -23,6 +23,12 @@ test_that("can reduce over all axes", {
   expect_identical(rray_dimension_sizes(out), c(1L, 1L))
 })
 
+test_that("reducing over no axes returns the input unchanged", {
+  x <- array(1:10, c(5L, 2L))
+  out <- rray_sum(x, integer())
+  expect_identical(out, x)
+})
+
 test_that("can reduce over multiple axes of a 3D array", {
   x <- array(1, c(2L, 3L, 4L))
   out <- rray_sum(x, c(1L, 2L))

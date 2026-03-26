@@ -18,10 +18,6 @@ r_obj* arg_as_axes(
 
   const r_ssize axes_size = r_length(axes);
 
-  if (axes_size == 0) {
-    r_abort_lazy_call(error_call, "`axes` must have at least one element.");
-  }
-
   const int* v_axes = r_int_cbegin(axes);
 
   for (r_ssize i = 0; i < axes_size; ++i) {
