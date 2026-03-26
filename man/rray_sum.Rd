@@ -4,13 +4,17 @@
 \alias{rray_sum}
 \title{Sum an array along axes}
 \usage{
-rray_sum(x, axes)
+rray_sum(x, axes, ..., na_rm = FALSE)
 }
 \arguments{
 \item{x}{An array.}
 
 \item{axes}{An integer vector of axes to reduce over. \code{1} reduces
 rows, \code{2} reduces columns, and so on.}
+
+\item{...}{These dots are for future extensions and must be empty.}
+
+\item{na_rm}{If \code{TRUE}, missing values are removed before summing.}
 }
 \value{
 An array with the same dimensionality as \code{x}, but with the

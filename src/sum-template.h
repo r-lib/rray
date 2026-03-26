@@ -10,6 +10,7 @@
 #if RRAY_TYPE == RRAY_TYPE_LOGICAL
 #define RRAY_FN rray_sum_lgl
 #define RRAY_FN_ONE rray_sum_lgl_one
+#define RRAY_FN_NA_RM_ONE rray_sum_lgl_one_na_rm
 #define RRAY_X_C_TYPE int
 #define RRAY_X_CONST_DEREF r_lgl_cbegin
 #define RRAY_OUT_C_TYPE int
@@ -19,6 +20,7 @@
 #elif RRAY_TYPE == RRAY_TYPE_INTEGER
 #define RRAY_FN rray_sum_int
 #define RRAY_FN_ONE rray_sum_int_one
+#define RRAY_FN_NA_RM_ONE rray_sum_int_one_na_rm
 #define RRAY_X_C_TYPE int
 #define RRAY_X_CONST_DEREF r_int_cbegin
 #define RRAY_OUT_C_TYPE int
@@ -28,6 +30,7 @@
 #elif RRAY_TYPE == RRAY_TYPE_DOUBLE
 #define RRAY_FN rray_sum_dbl
 #define RRAY_FN_ONE rray_sum_dbl_one
+#define RRAY_FN_NA_RM_ONE rray_sum_dbl_one_na_rm
 #define RRAY_X_C_TYPE double
 #define RRAY_X_CONST_DEREF r_dbl_cbegin
 #define RRAY_OUT_C_TYPE double
@@ -37,6 +40,7 @@
 #elif RRAY_TYPE == RRAY_TYPE_COMPLEX
 #define RRAY_FN rray_sum_cpl
 #define RRAY_FN_ONE rray_sum_cpl_one
+#define RRAY_FN_NA_RM_ONE rray_sum_cpl_one_na_rm
 #define RRAY_X_C_TYPE r_complex
 #define RRAY_X_CONST_DEREF r_cpl_cbegin
 #define RRAY_OUT_C_TYPE r_complex
@@ -44,7 +48,12 @@
 #define RRAY_OUT_DEREF r_cpl_begin
 #endif
 
-static inline r_obj* RRAY_FN(r_obj* x, r_obj* axes, struct r_lazy error_call) {
+static inline r_obj* RRAY_FN(
+  r_obj* x,
+  r_obj* axes,
+  bool na_rm,
+  struct r_lazy error_call
+) {
   r_obj* x_dimension_sizes = KEEP(rray_dimension_sizes(x, error_call));
   const int* v_x_dimension_sizes = r_int_cbegin(x_dimension_sizes);
 
@@ -84,10 +93,18 @@ static inline r_obj* RRAY_FN(r_obj* x, r_obj* axes, struct r_lazy error_call) {
 
   RRAY_X_C_TYPE const* v_x = RRAY_X_CONST_DEREF(x);
 
-  for (r_ssize i = 0; i < x_capacity; ++i) {
-    const r_ssize out_loc = rray_iterator_location(&it);
-    v_out[out_loc] = RRAY_FN_ONE(v_out[out_loc], v_x[i]);
-    rray_iterator_next(&it);
+  if (na_rm) {
+    for (r_ssize i = 0; i < x_capacity; ++i) {
+      const r_ssize loc = rray_iterator_location(&it);
+      v_out[loc] = RRAY_FN_NA_RM_ONE(v_out[loc], v_x[i]);
+      rray_iterator_next(&it);
+    }
+  } else {
+    for (r_ssize i = 0; i < x_capacity; ++i) {
+      const r_ssize loc = rray_iterator_location(&it);
+      v_out[loc] = RRAY_FN_ONE(v_out[loc], v_x[i]);
+      rray_iterator_next(&it);
+    }
   }
 
   r_obj* x_dimension_names = rray_dimension_names(x, error_call);
@@ -116,6 +133,15 @@ static inline r_obj* RRAY_FN(r_obj* x, r_obj* axes, struct r_lazy error_call) {
 #define RRAY_INT_MAX INT_MAX
 #define RRAY_INT_MIN -INT_MAX
 
+static inline void check_sum_int_overflow(int out, int x) {
+  if ((x > 0 && out > RRAY_INT_MAX - x) || (x < 0 && out < RRAY_INT_MIN - x)) {
+    r_abort("Integer overflow in `rray_sum()`.");
+  }
+}
+
+#undef RRAY_INT_MAX
+#undef RRAY_INT_MIN
+
 static inline int rray_sum_lgl_one(int out, int x) {
   if (out == r_globals.na_int) {
     return r_globals.na_int;
@@ -131,6 +157,14 @@ static inline int rray_sum_lgl_one(int out, int x) {
   return out + x;
 }
 
+static inline int rray_sum_lgl_one_na_rm(int out, int x) {
+  if (x == r_globals.na_lgl) {
+    return out;
+  }
+
+  return out + x;
+}
+
 static inline int rray_sum_int_one(int out, int x) {
   if (out == r_globals.na_int) {
     return r_globals.na_int;
@@ -140,9 +174,17 @@ static inline int rray_sum_int_one(int out, int x) {
     return r_globals.na_int;
   }
 
-  if ((x > 0 && out > RRAY_INT_MAX - x) || (x < 0 && out < RRAY_INT_MIN - x)) {
-    r_abort("Integer overflow in `rray_sum()`.");
+  check_sum_int_overflow(out, x);
+
+  return out + x;
+}
+
+static inline int rray_sum_int_one_na_rm(int out, int x) {
+  if (x == r_globals.na_int) {
+    return out;
   }
+
+  check_sum_int_overflow(out, x);
 
   return out + x;
 }
@@ -161,21 +203,34 @@ static inline double rray_sum_dbl_one(double out, double x) {
   }
 }
 
+static inline double rray_sum_dbl_one_na_rm(double out, double x) {
+  if (ISNAN(x)) {
+    return out;
+  }
+
+  return out + x;
+}
+
 static inline r_complex rray_sum_cpl_one(r_complex out, r_complex x) {
-  return (r_complex){
+  return (r_complex) {
     .r = rray_sum_dbl_one(out.r, x.r),
     .i = rray_sum_dbl_one(out.i, x.i),
   };
 }
 
-#undef RRAY_INT_MAX
-#undef RRAY_INT_MIN
+static inline r_complex rray_sum_cpl_one_na_rm(r_complex out, r_complex x) {
+  return (r_complex) {
+    .r = rray_sum_dbl_one_na_rm(out.r, x.r),
+    .i = rray_sum_dbl_one_na_rm(out.i, x.i),
+  };
+}
 
 #endif  // RRAY_ONCE
 
 #undef RRAY_TYPE
 #undef RRAY_FN
 #undef RRAY_FN_ONE
+#undef RRAY_FN_NA_RM_ONE
 #undef RRAY_X_C_TYPE
 #undef RRAY_X_CONST_DEREF
 #undef RRAY_OUT_C_TYPE

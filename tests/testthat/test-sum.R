@@ -150,6 +150,56 @@ test_that("logical NA propagates", {
   expect_identical(as.vector(out), NA_integer_)
 })
 
+test_that("na_rm removes integer NA", {
+  x <- array(c(1L, NA_integer_, 3L, 4L), c(2L, 2L))
+  out <- rray_sum(x, 1L, na_rm = TRUE)
+  expect_identical(as.vector(out), c(1L, 7L))
+})
+
+test_that("na_rm removes double NA and NaN", {
+  x <- c(1, NA_real_, 3)
+  expect_identical(as.vector(rray_sum(x, 1L, na_rm = TRUE)), 4)
+
+  x <- c(1, NaN, 3)
+  expect_identical(as.vector(rray_sum(x, 1L, na_rm = TRUE)), 4)
+
+  x <- c(NA_real_, NaN)
+  expect_identical(as.vector(rray_sum(x, 1L, na_rm = TRUE)), 0)
+})
+
+test_that("na_rm removes logical NA", {
+  x <- array(c(TRUE, NA, FALSE, TRUE), c(2L, 2L))
+  out <- rray_sum(x, 1L, na_rm = TRUE)
+  expect_identical(as.vector(out), c(1L, 1L))
+})
+
+test_that("na_rm removes complex NA", {
+  x <- c(1 + 2i, NA_complex_)
+  out <- as.vector(rray_sum(x, 1L, na_rm = TRUE))
+  expect_identical(out, 1 + 2i)
+
+  x <- c(complex(real = 1, imaginary = NaN), 1 + 1i)
+  out <- as.vector(rray_sum(x, 1L, na_rm = TRUE))
+  expect_identical(Re(out), 2)
+  expect_identical(Im(out), 1)
+})
+
+test_that("na_rm with all NA returns identity", {
+  x <- c(NA_integer_, NA_integer_)
+  expect_identical(as.vector(rray_sum(x, 1L, na_rm = TRUE)), 0L)
+
+  x <- c(NA_real_, NA_real_)
+  expect_identical(as.vector(rray_sum(x, 1L, na_rm = TRUE)), 0)
+})
+
+test_that("na_rm with no NA matches default", {
+  x <- array(1:10, c(5L, 2L))
+  expect_identical(
+    rray_sum(x, 1L, na_rm = TRUE),
+    rray_sum(x, 1L)
+  )
+})
+
 test_that("plain vector input works", {
   out <- rray_sum(1:3, 1L)
   expect_identical(as.vector(out), 6L)
