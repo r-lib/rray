@@ -2,7 +2,7 @@
 % Please edit documentation in R/dimensions.R
 \name{rray_dimensions}
 \alias{rray_dimensions}
-\title{Find the dimensions of an array}
+\title{Get the dimensions of an array}
 \usage{
 rray_dimensions(x)
 }

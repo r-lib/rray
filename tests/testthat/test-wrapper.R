@@ -312,27 +312,27 @@ test_that("wrapper works with zero-length vectors", {
 })
 
 # ------------------------------------------------------------------------------
-# Integration with rray_reshape
+# Integration with rray_set_dimensions
 
-test_that("rray_reshape returns a wrapper", {
-  expect_true(is_wrapper(rray_reshape(1:6, c(2L, 3L))))
-  expect_true(is_wrapper(rray_reshape(as.double(1:6), c(2L, 3L))))
-  expect_true(is_wrapper(rray_reshape(letters[1:6], c(2L, 3L))))
-  expect_true(is_wrapper(rray_reshape(c(TRUE, FALSE), c(1L, 2L))))
-  expect_true(is_wrapper(rray_reshape(as.raw(1:2), c(1L, 2L))))
-  expect_true(is_wrapper(rray_reshape(c(1i, 2i), c(1L, 2L))))
-  expect_true(is_wrapper(rray_reshape(list("a", "b"), c(1L, 2L))))
+test_that("rray_set_dimensions returns a wrapper", {
+  expect_true(is_wrapper(rray_set_dimensions(1:6, c(2L, 3L))))
+  expect_true(is_wrapper(rray_set_dimensions(as.double(1:6), c(2L, 3L))))
+  expect_true(is_wrapper(rray_set_dimensions(letters[1:6], c(2L, 3L))))
+  expect_true(is_wrapper(rray_set_dimensions(c(TRUE, FALSE), c(1L, 2L))))
+  expect_true(is_wrapper(rray_set_dimensions(as.raw(1:2), c(1L, 2L))))
+  expect_true(is_wrapper(rray_set_dimensions(c(1i, 2i), c(1L, 2L))))
+  expect_true(is_wrapper(rray_set_dimensions(list("a", "b"), c(1L, 2L))))
 })
 
-test_that("rray_reshape wrapper shares the underlying data", {
+test_that("rray_set_dimensions wrapper shares the underlying data", {
   x <- 1:6
-  y <- rray_reshape(x, c(2L, 3L))
+  y <- rray_set_dimensions(x, c(2L, 3L))
   expect_identical(obj_address(x), obj_address(wrapper_readonly(y)))
 })
 
 test_that("modifying reshaped array does not affect original", {
   x <- 1:6
-  out <- rray_reshape(x, c(2L, 3L))
+  out <- rray_set_dimensions(x, c(2L, 3L))
   out[1, 1] <- 99L
   expect_identical(x, 1:6)
 })

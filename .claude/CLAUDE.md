@@ -138,6 +138,7 @@ air format .
 - Whenever you add a new (non-internal) documentation topic, also add the topic to `_pkgdown.yml`.
 - Always re-document the package after changing a roxygen2 comment.
 - Use `pkgdown::check_pkgdown()` to check that all topics are included in the reference index.
+- Always include a full blank line between `@param`s.
 
 ### `NEWS.md`
 
