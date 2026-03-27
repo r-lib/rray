@@ -1,5 +1,6 @@
 #include "dimensions.h"
 
+#include "decl/dimensions-decl.h"
 #include "size.h"
 #include "utils.h"
 #include "wrapper.h"
@@ -71,6 +72,97 @@ r_obj* rray_set_dimensions(
   r_attrib_poke_dim(out, dimensions);
 
   FREE(3);
+  return out;
+}
+
+r_obj* ffi_rray_dimensions_common(r_obj* xs, r_obj* dimensions, r_obj* frame) {
+  struct r_lazy error_call = { .x = frame, .env = r_null };
+  return rray_dimensions_common(xs, dimensions, error_call);
+}
+
+r_obj* rray_dimensions_common(
+  r_obj* xs,
+  r_obj* dimensions,
+  struct r_lazy error_call
+) {
+  if (dimensions != r_null) {
+    return arg_as_dimensions(dimensions, error_call);
+  }
+
+  const r_ssize n = r_length(xs);
+  r_obj* const* v_xs = r_list_cbegin(xs);
+
+  r_obj* out = r_null;
+  KEEP(out);
+
+  for (r_ssize i = 0; i < n; ++i) {
+    r_obj* x = v_xs[i];
+
+    if (x == r_null) {
+      continue;
+    }
+
+    r_obj* x_dimensions = KEEP(rray_dimensions(x, error_call));
+
+    if (out == r_null) {
+      KEEP_AT(x_dimensions, 0);
+      out = x_dimensions;
+      FREE(1);
+      continue;
+    }
+
+    out = rray_dimensions2(out, x_dimensions, error_call);
+    KEEP_AT(out, 0);
+    FREE(1);
+  }
+
+  if (out == r_null) {
+    r_abort_lazy_call(error_call, "Must supply at least one array to `...`.");
+  }
+
+  FREE(1);
+  return out;
+}
+
+static inline r_obj* rray_dimensions2(
+  r_obj* x_dimensions,
+  r_obj* y_dimensions,
+  struct r_lazy error_call
+) {
+  const r_ssize x_dimensionality = r_length(x_dimensions);
+  const r_ssize y_dimensionality = r_length(y_dimensions);
+  const r_ssize out_dimensionality =
+    (x_dimensionality > y_dimensionality) ? x_dimensionality : y_dimensionality;
+
+  const int* v_x_dimensions = r_int_cbegin(x_dimensions);
+  const int* v_y_dimensions = r_int_cbegin(y_dimensions);
+
+  r_obj* out = KEEP(r_alloc_integer(out_dimensionality));
+  int* v_out = r_int_begin(out);
+
+  for (r_ssize i = 0; i < out_dimensionality; ++i) {
+    const int x_dimension = (i < x_dimensionality) ? v_x_dimensions[i] : 1;
+    const int y_dimension = (i < y_dimensionality) ? v_y_dimensions[i] : 1;
+
+    if (x_dimension == y_dimension) {
+      v_out[i] = x_dimension;
+    } else if (x_dimension == 1) {
+      v_out[i] = y_dimension;
+    } else if (y_dimension == 1) {
+      v_out[i] = x_dimension;
+    } else {
+      r_abort_lazy_call(
+        error_call,
+        "Can't find common dimensions at axis %td. "
+        "Dimensions %d and %d are incompatible.",
+        (ptrdiff_t) (i + 1),
+        x_dimension,
+        y_dimension
+      );
+    }
+  }
+
+  FREE(1);
   return out;
 }
 

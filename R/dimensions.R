@@ -21,6 +21,30 @@ rray_dimensions <- function(x) {
   .Call(ffi_rray_dimensions, x, environment())
 }
 
+#' Find common dimensions
+#'
+#' @description
+#' `rray_dimensions_common()` finds the common dimensions among multiple
+#' arrays using broadcasting rules. For each axis, dimensions are compatible
+#' if they are equal or if one of them is 1.
+#'
+#' @param ... Arrays. `NULL` inputs are silently dropped.
+#'
+#' @param .dimensions If provided, an integer vector of dimensions to use
+#'   as an override, rather than computing common dimensions from `...`.
+#'
+#' @returns
+#' An integer vector of common dimensions.
+#'
+#' @export
+#' @examples
+#' rray_dimensions_common(array(1, c(2, 3)), array(1, c(1, 3)))
+#' rray_dimensions_common(1:5, array(1, c(1, 3)))
+#' rray_dimensions_common(1:5, .dimensions = c(5L, 3L))
+rray_dimensions_common <- function(..., .dimensions = NULL) {
+  .Call(ffi_rray_dimensions_common, list2(...), .dimensions, environment())
+}
+
 #' Set the dimensions of an array
 #'
 #' @description

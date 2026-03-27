@@ -3,6 +3,7 @@
 export(rray_broadcast)
 export(rray_dimensionality)
 export(rray_dimensions)
+export(rray_dimensions_common)
 export(rray_names)
 export(rray_set_dimensions)
 export(rray_size)
