@@ -1,8 +1,8 @@
 #include "axes.h"
 #include "decl/sum-template-decl.h"
 #include "dimension-names.h"
-#include "dimension-sizes.h"
 #include "dimensionality.h"
+#include "dimensions.h"
 #include "reduce.h"
 #include "reduction-iterator.h"
 #include "size.h"
@@ -54,31 +54,28 @@ static inline r_obj* RRAY_FN(
   bool na_rm,
   struct r_lazy error_call
 ) {
-  r_obj* x_dimension_sizes = KEEP(rray_dimension_sizes(x, error_call));
-  const int* v_x_dimension_sizes = r_int_cbegin(x_dimension_sizes);
+  r_obj* x_dimensions = KEEP(rray_dimensions(x, error_call));
+  const int* v_x_dimensions = r_int_cbegin(x_dimensions);
 
   const r_ssize dimensionality =
-    rray_dimensionality_from_dimension_sizes(x_dimension_sizes);
+    rray_dimensionality_from_dimensions(x_dimensions);
 
   axes = KEEP(arg_as_axes(axes, dimensionality, error_call));
   const int* v_axes = r_int_cbegin(axes);
   const r_ssize axes_size = r_length(axes);
 
-  r_obj* out_dimension_sizes = KEEP(rray_reduce_dimension_sizes(
-    v_x_dimension_sizes,
-    dimensionality,
-    v_axes,
-    axes_size
-  ));
-  const int* v_out_dimension_sizes = r_int_cbegin(out_dimension_sizes);
+  r_obj* out_dimensions = KEEP(
+    rray_reduce_dimensions(v_x_dimensions, dimensionality, v_axes, axes_size)
+  );
+  const int* v_out_dimensions = r_int_cbegin(out_dimensions);
 
   const r_ssize x_size =
-    rray_size_from_dimensions(v_x_dimension_sizes, dimensionality);
+    rray_size_from_dimensions(v_x_dimensions, dimensionality);
   const r_ssize out_size =
-    rray_size_from_dimensions(v_out_dimension_sizes, dimensionality);
+    rray_size_from_dimensions(v_out_dimensions, dimensionality);
 
   r_obj* out = KEEP(RRAY_OUT_ALLOC(out_size));
-  r_attrib_poke_dim(out, out_dimension_sizes);
+  r_attrib_poke_dim(out, out_dimensions);
 
   RRAY_OUT_C_TYPE* v_out = RRAY_OUT_DEREF(out);
   memset(v_out, 0, sizeof(RRAY_OUT_C_TYPE) * out_size);
@@ -86,8 +83,8 @@ static inline r_obj* RRAY_FN(
   struct rray_iterator it;
   rray_reduction_iterator_init(
     &it,
-    v_x_dimension_sizes,
-    v_out_dimension_sizes,
+    v_x_dimensions,
+    v_out_dimensions,
     dimensionality
   );
 

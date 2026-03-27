@@ -5,9 +5,9 @@
 
 r_obj* rray_broadcast_dimension_names(
   r_obj* const* v_dimension_names,
-  const int* v_dimension_sizes,
+  const int* v_dimensions,
   r_ssize dimensionality,
-  const int* v_out_dimension_sizes,
+  const int* v_out_dimensions,
   r_ssize out_dimensionality
 );
 

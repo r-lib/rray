@@ -17,8 +17,8 @@ rows, \code{2} reduces columns, and so on.}
 \item{na_rm}{If \code{TRUE}, missing values are removed before summing.}
 }
 \value{
-An array with the same dimensionality as \code{x}, but with the
-dimension sizes along \code{axes} reduced to 1.
+An array with the same dimensionality as \code{x}, but with the dimensions along
+\code{axes} reduced to 1.
 }
 \description{
 \code{rray_sum()} computes the sum along the specified \code{axes}. The

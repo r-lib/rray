@@ -3,8 +3,8 @@
 
 #include "rlang.h"
 
-r_obj* rray_reduce_dimension_sizes(
-  const int* v_dimension_sizes,
+r_obj* rray_reduce_dimensions(
+  const int* v_dimensions,
   r_ssize dimensionality,
   const int* v_axes,
   r_ssize axes_size

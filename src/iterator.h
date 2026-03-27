@@ -4,28 +4,28 @@
 #include "dimensionality.h"
 #include "rlang.h"
 
-// Iterates one step at a time through the `v_point_dimension_sizes` space,
+// Iterates one step at a time through the `v_point_dimensions` space,
 // where each step is recorded in `v_point`
 //
-// Reports the corresponding 1-D `location` in `v_location_dimension_sizes`
+// Reports the corresponding 1-D `location` in `v_location_dimensions`
 // space
 struct rray_iterator {
   r_ssize dimensionality;
 
-  // Dimension sizes that bound `v_point`
-  int v_point_dimension_sizes[RRAY_MAX_DIMENSIONALITY];
+  // Dimensions that bound `v_point`
+  int v_point_dimensions[RRAY_MAX_DIMENSIONALITY];
 
   // Current multi-dimensional position
   r_ssize v_point[RRAY_MAX_DIMENSIONALITY];
 
-  // Dimension sizes that determine `location`.
+  // Dimensions that determine `location`.
   // Size-1 dimensions contribute no stride.
-  int v_location_dimension_sizes[RRAY_MAX_DIMENSIONALITY];
+  int v_location_dimensions[RRAY_MAX_DIMENSIONALITY];
 
-  // Column-major strides computed from `v_location_dimension_sizes`
+  // Column-major strides computed from `v_location_dimensions`
   r_ssize v_location_strides[RRAY_MAX_DIMENSIONALITY];
 
-  // Current 1-D position derived from `v_location_dimension_sizes`
+  // Current 1-D position derived from `v_location_dimensions`
   r_ssize location;
 };
 
@@ -39,8 +39,8 @@ static inline void rray_iterator_next(struct rray_iterator* it) {
   for (r_ssize i = 0; i < it->dimensionality; ++i) {
     ++it->v_point[i];
 
-    if (it->v_point[i] < it->v_point_dimension_sizes[i]) {
-      if (it->v_location_dimension_sizes[i] != 1) {
+    if (it->v_point[i] < it->v_point_dimensions[i]) {
+      if (it->v_location_dimensions[i] != 1) {
         it->location += it->v_location_strides[i];
       }
       return;
@@ -48,9 +48,9 @@ static inline void rray_iterator_next(struct rray_iterator* it) {
 
     it->v_point[i] = 0;
 
-    if (it->v_location_dimension_sizes[i] != 1) {
+    if (it->v_location_dimensions[i] != 1) {
       it->location -=
-        (it->v_location_dimension_sizes[i] - 1) * it->v_location_strides[i];
+        (it->v_location_dimensions[i] - 1) * it->v_location_strides[i];
     }
   }
 }

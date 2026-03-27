@@ -18,8 +18,8 @@
 #' @param na_rm If `TRUE`, missing values are removed before summing.
 #'
 #' @returns
-#' An array with the same dimensionality as `x`, but with the
-#' dimension sizes along `axes` reduced to 1.
+#' An array with the same dimensionality as `x`, but with the dimensions along
+#' `axes` reduced to 1.
 #'
 #' @export
 #' @examples

@@ -1,6 +1,6 @@
 #include "dimensionality.h"
 
-#include "dimension-sizes.h"
+#include "dimensions.h"
 
 r_obj* ffi_rray_dimensionality(r_obj* x, r_obj* frame) {
   struct r_lazy error_call = { .x = frame, .env = r_null };
@@ -8,12 +8,12 @@ r_obj* ffi_rray_dimensionality(r_obj* x, r_obj* frame) {
 }
 
 r_ssize rray_dimensionality(r_obj* x, struct r_lazy error_call) {
-  r_obj* dimension_sizes = rray_dimension_sizes(x, error_call);
-  return rray_dimensionality_from_dimension_sizes(dimension_sizes);
+  r_obj* dimensions = rray_dimensions(x, error_call);
+  return rray_dimensionality_from_dimensions(dimensions);
 }
 
-r_ssize rray_dimensionality_from_dimension_sizes(r_obj* dimension_sizes) {
-  return r_length(dimension_sizes);
+r_ssize rray_dimensionality_from_dimensions(r_obj* dimensions) {
+  return r_length(dimensions);
 }
 
 void check_max_dimensionality(r_ssize dimensionality) {

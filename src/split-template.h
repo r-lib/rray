@@ -1,8 +1,8 @@
 #include "axes.h"
 #include "decl/split-template-decl.h"
 #include "dimension-names.h"
-#include "dimension-sizes.h"
 #include "dimensionality.h"
+#include "dimensions.h"
 #include "reduce.h"
 #include "reduction-iterator.h"
 #include "size.h"
@@ -72,47 +72,36 @@
 static inline r_obj* RRAY_FN(r_obj* x, r_obj* axes, struct r_lazy error_call) {
   int n_kept = 0;
 
-  r_obj* x_dimension_sizes =
-    KEEP_N(rray_dimension_sizes(x, error_call), &n_kept);
-  const int* v_x_dimension_sizes = r_int_cbegin(x_dimension_sizes);
+  r_obj* x_dimensions = KEEP_N(rray_dimensions(x, error_call), &n_kept);
+  const int* v_x_dimensions = r_int_cbegin(x_dimensions);
 
   const r_ssize dimensionality =
-    rray_dimensionality_from_dimension_sizes(x_dimension_sizes);
+    rray_dimensionality_from_dimensions(x_dimensions);
 
   axes = KEEP_N(arg_as_axes(axes, dimensionality, error_call), &n_kept);
   const int* v_axes = r_int_cbegin(axes);
   const r_ssize axes_size = r_length(axes);
 
-  // Splitting 4x3x2 on axis 3 gives 4x3x1 out dimension sizes
-  r_obj* out_elt_dimension_sizes = KEEP_N(
-    rray_reduce_dimension_sizes(
-      v_x_dimension_sizes,
-      dimensionality,
-      v_axes,
-      axes_size
-    ),
+  // Splitting 4x3x2 on axis 3 gives 4x3x1 out dimensions
+  r_obj* out_elt_dimensions = KEEP_N(
+    rray_reduce_dimensions(v_x_dimensions, dimensionality, v_axes, axes_size),
     &n_kept
   );
-  const int* v_out_elt_dimension_sizes = r_int_cbegin(out_elt_dimension_sizes);
+  const int* v_out_elt_dimensions = r_int_cbegin(out_elt_dimensions);
 
-  // Splitting 4x3x2 on axis 3 gives 1x1x2 split dimension sizes
-  r_obj* out_dimension_sizes = KEEP_N(
-    rray_split_dimension_sizes(
-      v_x_dimension_sizes,
-      dimensionality,
-      v_axes,
-      axes_size
-    ),
+  // Splitting 4x3x2 on axis 3 gives 1x1x2 split dimensions
+  r_obj* out_dimensions = KEEP_N(
+    rray_split_dimensions(v_x_dimensions, dimensionality, v_axes, axes_size),
     &n_kept
   );
-  const int* v_out_dimension_sizes = r_int_cbegin(out_dimension_sizes);
+  const int* v_out_dimensions = r_int_cbegin(out_dimensions);
 
   const r_ssize x_size =
-    rray_size_from_dimensions(v_x_dimension_sizes, dimensionality);
+    rray_size_from_dimensions(v_x_dimensions, dimensionality);
   const r_ssize out_elt_size =
-    rray_size_from_dimensions(v_out_elt_dimension_sizes, dimensionality);
+    rray_size_from_dimensions(v_out_elt_dimensions, dimensionality);
   const r_ssize out_size =
-    rray_size_from_dimensions(v_out_dimension_sizes, dimensionality);
+    rray_size_from_dimensions(v_out_dimensions, dimensionality);
 
   r_obj* out = KEEP_N(r_alloc_list(out_size), &n_kept);
   r_obj* const* v_out = r_list_cbegin(out);
@@ -120,22 +109,22 @@ static inline r_obj* RRAY_FN(r_obj* x, r_obj* axes, struct r_lazy error_call) {
   for (r_ssize i = 0; i < out_size; ++i) {
     r_obj* out_elt = r_alloc_vector(RRAY_R_TYPE, out_elt_size);
     r_list_poke(out, i, out_elt);
-    r_attrib_poke_dim(out_elt, out_elt_dimension_sizes);
+    r_attrib_poke_dim(out_elt, out_elt_dimensions);
   }
 
   struct rray_iterator out_elt_it;
   rray_reduction_iterator_init(
     &out_elt_it,
-    v_x_dimension_sizes,
-    v_out_elt_dimension_sizes,
+    v_x_dimensions,
+    v_out_elt_dimensions,
     dimensionality
   );
 
   struct rray_iterator out_it;
   rray_reduction_iterator_init(
     &out_it,
-    v_x_dimension_sizes,
-    v_out_dimension_sizes,
+    v_x_dimensions,
+    v_out_dimensions,
     dimensionality
   );
 
@@ -168,7 +157,7 @@ static inline r_obj* RRAY_FN(r_obj* x, r_obj* axes, struct r_lazy error_call) {
       out,
       v_x_dimension_names,
       dimensionality,
-      v_x_dimension_sizes,
+      v_x_dimensions,
       v_axes,
       axes_size,
       out_size
@@ -182,8 +171,8 @@ static inline r_obj* RRAY_FN(r_obj* x, r_obj* axes, struct r_lazy error_call) {
 #ifndef RRAY_ONCE
 #define RRAY_ONCE
 
-r_obj* rray_split_dimension_sizes(
-  const int* v_dimension_sizes,
+r_obj* rray_split_dimensions(
+  const int* v_dimensions,
   r_ssize dimensionality,
   const int* v_axes,
   r_ssize axes_size
@@ -196,7 +185,7 @@ r_obj* rray_split_dimension_sizes(
   }
 
   for (r_ssize i = 0; i < axes_size; ++i) {
-    v_out[v_axes[i] - 1] = v_dimension_sizes[v_axes[i] - 1];
+    v_out[v_axes[i] - 1] = v_dimensions[v_axes[i] - 1];
   }
 
   FREE(1);
@@ -220,7 +209,7 @@ void rray_split_dimension_names(
   r_obj* out,
   r_obj* const* v_x_dimension_names,
   r_ssize dimensionality,
-  const int* v_x_dimension_sizes,
+  const int* v_x_dimensions,
   const int* v_axes,
   r_ssize axes_size,
   r_ssize out_size
@@ -273,18 +262,18 @@ void rray_split_dimension_names(
       continue;
     }
 
-    const r_ssize x_dimension_size = v_x_dimension_sizes[i];
+    const r_ssize x_dimension = v_x_dimensions[i];
     r_obj* x_axis_names = v_x_dimension_names[i];
 
     if (x_axis_names != r_null) {
       r_obj* const* v_x_axis_names = r_chr_cbegin(x_axis_names);
 
-      for (r_ssize j = 0; j < x_dimension_size; ++j) {
+      for (r_ssize j = 0; j < x_dimension; ++j) {
         r_obj* axis_names = KEEP(r_alloc_character(1));
         r_chr_poke(axis_names, 0, v_x_axis_names[j]);
 
         for (r_ssize base = j * stride; base < out_size;
-             base += stride * x_dimension_size) {
+             base += stride * x_dimension) {
           for (r_ssize offset = 0; offset < stride; ++offset) {
             r_obj* dimension_names = v_all_dimension_names[base + offset];
             r_list_poke(dimension_names, i, axis_names);
@@ -295,7 +284,7 @@ void rray_split_dimension_names(
       }
     }
 
-    stride *= x_dimension_size;
+    stride *= x_dimension;
   }
 
   for (r_ssize i = 0; i < out_size; ++i) {

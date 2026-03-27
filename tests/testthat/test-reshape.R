@@ -1,6 +1,6 @@
 test_that("reshapes a vector into a matrix", {
   out <- rray_reshape(1:6, c(2L, 3L))
-  expect_identical(rray_dimension_sizes(out), c(2L, 3L))
+  expect_identical(rray_dimensions(out), c(2L, 3L))
   expect_identical(out[, 1], 1:2)
   expect_identical(out[, 2], 3:4)
   expect_identical(out[, 3], 5:6)
@@ -8,7 +8,7 @@ test_that("reshapes a vector into a matrix", {
 
 test_that("reshapes a vector into a 3D array", {
   out <- rray_reshape(1:6, c(3L, 2L, 1L))
-  expect_identical(rray_dimension_sizes(out), c(3L, 2L, 1L))
+  expect_identical(rray_dimensions(out), c(3L, 2L, 1L))
   expect_identical(out[, 1, 1], 1:3)
   expect_identical(out[, 2, 1], 4:6)
 })
@@ -16,46 +16,46 @@ test_that("reshapes a vector into a 3D array", {
 test_that("reshapes a matrix into a different matrix", {
   x <- array(1:6, c(2L, 3L))
   out <- rray_reshape(x, c(3L, 2L))
-  expect_identical(rray_dimension_sizes(out), c(3L, 2L))
+  expect_identical(rray_dimensions(out), c(3L, 2L))
   expect_identical(as.integer(out), 1:6)
 })
 
 test_that("reshapes a matrix into a vector", {
   x <- array(1:6, c(2L, 3L))
   out <- rray_reshape(x, 6L)
-  expect_identical(rray_dimension_sizes(out), 6L)
+  expect_identical(rray_dimensions(out), 6L)
   expect_identical(as.integer(out), 1:6)
 })
 
-test_that("returns input unchanged when dimension sizes already match", {
+test_that("returns input unchanged when dimensions already match", {
   x <- array(1:6, c(2L, 3L))
   expect_identical(rray_reshape(x, c(2L, 3L)), x)
 })
 
-test_that("turns vectors into arrays even if implied dimension sizes stay the same", {
+test_that("turns vectors into arrays even if implied dimensions stay the same", {
   x <- 1:5
   expect_identical(rray_reshape(x, 5L), array(1:5))
 })
 
 test_that("works with all atomic types", {
   expect_identical(
-    rray_dimension_sizes(rray_reshape(c(TRUE, FALSE), c(1L, 2L))),
+    rray_dimensions(rray_reshape(c(TRUE, FALSE), c(1L, 2L))),
     c(1L, 2L)
   )
   expect_identical(
-    rray_dimension_sizes(rray_reshape(c(1.5, 2.5), c(1L, 2L))),
+    rray_dimensions(rray_reshape(c(1.5, 2.5), c(1L, 2L))),
     c(1L, 2L)
   )
   expect_identical(
-    rray_dimension_sizes(rray_reshape(c(1 + 2i, 3 + 4i), c(1L, 2L))),
+    rray_dimensions(rray_reshape(c(1 + 2i, 3 + 4i), c(1L, 2L))),
     c(1L, 2L)
   )
   expect_identical(
-    rray_dimension_sizes(rray_reshape(c("a", "b"), c(1L, 2L))),
+    rray_dimensions(rray_reshape(c("a", "b"), c(1L, 2L))),
     c(1L, 2L)
   )
   expect_identical(
-    rray_dimension_sizes(rray_reshape(as.raw(1:2), c(1L, 2L))),
+    rray_dimensions(rray_reshape(as.raw(1:2), c(1L, 2L))),
     c(1L, 2L)
   )
 })
@@ -63,12 +63,12 @@ test_that("works with all atomic types", {
 test_that("works with list arrays", {
   x <- list("a", 1L)
   out <- rray_reshape(x, c(1L, 2L))
-  expect_identical(rray_dimension_sizes(out), c(1L, 2L))
+  expect_identical(rray_dimensions(out), c(1L, 2L))
 })
 
 test_that("works with zero-size arrays", {
   out <- rray_reshape(integer(), c(0L, 5L))
-  expect_identical(rray_dimension_sizes(out), c(0L, 5L))
+  expect_identical(rray_dimensions(out), c(0L, 5L))
   expect_identical(rray_size(out), 0)
 })
 
@@ -98,27 +98,27 @@ test_that("errors on non-array input", {
   expect_snapshot(rray_reshape(mean, 1L), error = TRUE)
 })
 
-test_that("coerces dimension_sizes to integer", {
+test_that("coerces dimensions to integer", {
   out <- rray_reshape(1:6, c(2, 3))
-  expect_identical(rray_dimension_sizes(out), c(2L, 3L))
+  expect_identical(rray_dimensions(out), c(2L, 3L))
 
   expect_snapshot(error = TRUE, {
     rray_reshape(1, 2.5)
   })
 })
 
-test_that("errors on non-coercible dimension_sizes", {
+test_that("errors on non-coercible dimensions", {
   expect_snapshot(rray_reshape(1, "a"), error = TRUE)
 })
 
-test_that("errors on empty dimension_sizes", {
+test_that("errors on empty dimensions", {
   expect_snapshot(rray_reshape(1, integer()), error = TRUE)
 })
 
-test_that("errors on missing dimension_sizes", {
+test_that("errors on missing dimensions", {
   expect_snapshot(rray_reshape(1, NA_integer_), error = TRUE)
 })
 
-test_that("errors on negative dimension_sizes", {
+test_that("errors on negative dimensions", {
   expect_snapshot(rray_reshape(1, -1L), error = TRUE)
 })

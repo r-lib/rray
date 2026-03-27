@@ -1,7 +1,7 @@
 test_that("broadcasts dimension of size 1 to size N", {
   x <- array(1L, c(1L, 2L))
   out <- rray_broadcast(x, c(3L, 2L))
-  expect_identical(rray_dimension_sizes(out), c(3L, 2L))
+  expect_identical(rray_dimensions(out), c(3L, 2L))
   expect_identical(out, array(1L, c(3L, 2L)))
 })
 
@@ -13,14 +13,14 @@ test_that("returns input unchanged when dimensions already match", {
 test_that("can broadcast up to a new dimension", {
   x <- array(1:6, c(2L, 3L))
   out <- rray_broadcast(x, c(2L, 3L, 2L))
-  expect_identical(rray_dimension_sizes(out), c(2L, 3L, 2L))
+  expect_identical(rray_dimensions(out), c(2L, 3L, 2L))
   expect_identical(out[,, 1], x)
   expect_identical(out[,, 2], x)
 })
 
 test_that("broadcasts a plain vector", {
   out <- rray_broadcast(1:3, c(3L, 2L))
-  expect_identical(rray_dimension_sizes(out), c(3L, 2L))
+  expect_identical(rray_dimensions(out), c(3L, 2L))
   expect_identical(out[, 1], 1:3)
   expect_identical(out[, 2], 1:3)
 })
@@ -28,7 +28,7 @@ test_that("broadcasts a plain vector", {
 test_that("broadcasts with zero-length dimensions", {
   x <- integer()
   out <- rray_broadcast(x, c(0L, 2L))
-  expect_identical(rray_dimension_sizes(out), c(0L, 2L))
+  expect_identical(rray_dimensions(out), c(0L, 2L))
   expect_identical(rray_size(out), 0)
 })
 
@@ -129,9 +129,9 @@ test_that("drops all dimension names when all dimension names were `NULL`", {
   out <- rray_broadcast(x, c(2L, 1L))
   expect_null(dimnames(out))
 
-  # If we no-op due to same dimension sizes, they aren't cleared.
+  # If we no-op due to same dimensions, they aren't cleared.
   # We accept this irregularity in favor of performance, since it is fairly
-  # common to want to broadcast to no-op common dimension sizes.
+  # common to want to broadcast to no-op common dimensions.
   out <- rray_broadcast(x, c(1L, 1L))
   expect_identical(dimnames(out), list(NULL, NULL))
 })
@@ -176,9 +176,9 @@ test_that("dimension titles are lost", {
   out <- rray_broadcast(x, c(2L, 2L))
   expect_null(rray_dimension_names(out))
 
-  # If we no-op due to same dimension sizes, they aren't cleared.
+  # If we no-op due to same dimensions, they aren't cleared.
   # We accept this irregularity in favor of performance, since it is fairly
-  # common to want to broadcast to no-op common dimension sizes.
+  # common to want to broadcast to no-op common dimensions.
   out <- rray_broadcast(x, c(1L, 1L))
   expect_identical(
     rray_dimension_names(out),
@@ -191,28 +191,28 @@ test_that("errors on non-array input", {
   expect_snapshot(rray_broadcast(mean, 1L), error = TRUE)
 })
 
-test_that("coerces dimension_sizes to integer", {
+test_that("coerces dimensions to integer", {
   out <- rray_broadcast(1, c(2, 3))
-  expect_identical(rray_dimension_sizes(out), c(2L, 3L))
+  expect_identical(rray_dimensions(out), c(2L, 3L))
 
   expect_snapshot(error = TRUE, {
     rray_broadcast(1, 2.5)
   })
 })
 
-test_that("errors on non-coercible dimension_sizes", {
+test_that("errors on non-coercible dimensions", {
   expect_snapshot(rray_broadcast(1, "a"), error = TRUE)
 })
 
-test_that("errors on empty dimension_sizes", {
+test_that("errors on empty dimensions", {
   expect_snapshot(rray_broadcast(1, integer()), error = TRUE)
 })
 
-test_that("errors on missing dimension_sizes", {
+test_that("errors on missing dimensions", {
   expect_snapshot(rray_broadcast(1, NA_integer_), error = TRUE)
 })
 
-test_that("errors on negative dimension_sizes", {
+test_that("errors on negative dimensions", {
   expect_snapshot(rray_broadcast(1, -1L), error = TRUE)
 })
 

@@ -4,7 +4,7 @@
 #include "rlang.h"
 
 extern r_obj* axes_chr;
-extern r_obj* dimension_sizes_chr;
+extern r_obj* dimensions_chr;
 
 r_obj* arg_as_array(r_obj* x, const char* arg, struct r_lazy error_call);
 

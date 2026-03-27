@@ -15,8 +15,8 @@ static inline r_obj* vec_as_array(r_obj* x) {
   r_obj* out = KEEP(r_wrap(x));
 
   const r_ssize size = r_length(x);
-  r_obj* dimension_sizes = r_int(r_ssize_as_integer(size));
-  r_attrib_poke_dim(out, dimension_sizes);
+  r_obj* dimensions = r_int(r_ssize_as_integer(size));
+  r_attrib_poke_dim(out, dimensions);
 
   r_obj* names = r_names(x);
   if (names != r_null) {
@@ -76,7 +76,7 @@ r_obj* to_arg_sym = NULL;
 r_obj* x_arg_sym = NULL;
 
 r_obj* axes_chr = NULL;
-r_obj* dimension_sizes_chr = NULL;
+r_obj* dimensions_chr = NULL;
 
 r_obj* vec_cast_call = NULL;
 
@@ -88,8 +88,8 @@ void rray_init_utils(r_obj* ns) {
   axes_chr = r_chr("axes");
   r_preserve(axes_chr);
 
-  dimension_sizes_chr = r_chr("dimension_sizes");
-  r_preserve(dimension_sizes_chr);
+  dimensions_chr = r_chr("dimensions");
+  r_preserve(dimensions_chr);
 
   vec_cast_call =
     r_parse("vctrs::vec_cast(x, to, x_arg = x_arg, to_arg = to_arg)");

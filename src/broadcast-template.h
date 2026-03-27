@@ -2,8 +2,8 @@
 #include "broadcast.h"
 #include "decl/broadcast-template-decl.h"
 #include "dimension-names.h"
-#include "dimension-sizes.h"
 #include "dimensionality.h"
+#include "dimensions.h"
 #include "size.h"
 #include "types.h"
 
@@ -65,25 +65,25 @@
 
 static inline r_obj* RRAY_FN(
   r_obj* x,
-  r_obj* dimension_sizes,
+  r_obj* dimensions,
   struct r_lazy error_call
 ) {
-  dimension_sizes = KEEP(arg_as_dimension_sizes(dimension_sizes, error_call));
+  dimensions = KEEP(arg_as_dimensions(dimensions, error_call));
 
-  r_obj* x_dimension_sizes = KEEP(rray_dimension_sizes(x, error_call));
+  r_obj* x_dimensions = KEEP(rray_dimensions(x, error_call));
 
-  const int* v_x_dimension_sizes = r_int_cbegin(x_dimension_sizes);
-  const int* v_dimension_sizes = r_int_cbegin(dimension_sizes);
+  const int* v_x_dimensions = r_int_cbegin(x_dimensions);
+  const int* v_dimensions = r_int_cbegin(dimensions);
 
   const r_ssize x_dimensionality =
-    rray_dimensionality_from_dimension_sizes(x_dimension_sizes);
+    rray_dimensionality_from_dimensions(x_dimensions);
   const r_ssize dimensionality =
-    rray_dimensionality_from_dimension_sizes(dimension_sizes);
+    rray_dimensionality_from_dimensions(dimensions);
 
-  if (rray_dimension_sizes_are_equal(
-        v_x_dimension_sizes,
+  if (rray_dimensions_are_equal(
+        v_x_dimensions,
         x_dimensionality,
-        v_dimension_sizes,
+        v_dimensions,
         dimensionality
       )) {
     FREE(2);
@@ -91,25 +91,24 @@ static inline r_obj* RRAY_FN(
   }
 
   check_broadcastable(
-    v_x_dimension_sizes,
+    v_x_dimensions,
     x_dimensionality,
-    v_dimension_sizes,
+    v_dimensions,
     dimensionality,
     error_call
   );
 
-  const r_ssize size =
-    rray_size_from_dimensions(v_dimension_sizes, dimensionality);
+  const r_ssize size = rray_size_from_dimensions(v_dimensions, dimensionality);
 
   r_obj* out = KEEP(r_alloc_vector(RRAY_R_TYPE, size));
-  r_attrib_poke_dim(out, dimension_sizes);
+  r_attrib_poke_dim(out, dimensions);
 
   struct rray_iterator it;
   rray_broadcast_iterator_init(
     &it,
-    v_x_dimension_sizes,
+    v_x_dimensions,
     x_dimensionality,
-    v_dimension_sizes,
+    v_dimensions,
     dimensionality
   );
 
@@ -127,9 +126,9 @@ static inline r_obj* RRAY_FN(
     r_obj* const* v_x_dimension_names = r_list_cbegin(x_dimension_names);
     r_obj* out_dimension_names = rray_broadcast_dimension_names(
       v_x_dimension_names,
-      v_x_dimension_sizes,
+      v_x_dimensions,
       x_dimensionality,
-      v_dimension_sizes,
+      v_dimensions,
       dimensionality
     );
     if (out_dimension_names != r_null) {
@@ -147,9 +146,9 @@ static inline r_obj* RRAY_FN(
 
 r_obj* rray_broadcast_dimension_names(
   r_obj* const* v_dimension_names,
-  const int* v_dimension_sizes,
+  const int* v_dimensions,
   r_ssize dimensionality,
-  const int* v_out_dimension_sizes,
+  const int* v_out_dimensions,
   r_ssize out_dimensionality
 ) {
   r_ssize i = 0;
@@ -159,7 +158,7 @@ r_obj* rray_broadcast_dimension_names(
       // `out` stays `r_null` when there were no names before
       continue;
     }
-    if (v_dimension_sizes[i] != v_out_dimension_sizes[i]) {
+    if (v_dimensions[i] != v_out_dimensions[i]) {
       // `out` is "cleared" to `r_null` when dimension size changes
       continue;
     }
@@ -181,7 +180,7 @@ r_obj* rray_broadcast_dimension_names(
       // `out` stays `r_null` when there were no names before
       continue;
     }
-    if (v_dimension_sizes[i] != v_out_dimension_sizes[i]) {
+    if (v_dimensions[i] != v_out_dimensions[i]) {
       // `out` is "cleared" to `r_null` when dimension size changes
       continue;
     }

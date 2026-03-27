@@ -1,7 +1,7 @@
 #include "reduce.h"
 
-r_obj* rray_reduce_dimension_sizes(
-  const int* v_dimension_sizes,
+r_obj* rray_reduce_dimensions(
+  const int* v_dimensions,
   r_ssize dimensionality,
   const int* v_axes,
   r_ssize axes_size
@@ -9,8 +9,8 @@ r_obj* rray_reduce_dimension_sizes(
   r_obj* out = KEEP(r_alloc_integer(dimensionality));
   int* v_out = r_int_begin(out);
 
-  // Start with `v_dimension_sizes`
-  memcpy(v_out, v_dimension_sizes, sizeof(int) * dimensionality);
+  // Start with `v_dimensions`
+  memcpy(v_out, v_dimensions, sizeof(int) * dimensionality);
 
   // Set `axes` to 1
   for (r_ssize i = 0; i < axes_size; ++i) {

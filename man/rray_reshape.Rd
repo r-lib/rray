@@ -4,19 +4,19 @@
 \alias{rray_reshape}
 \title{Reshape an array}
 \usage{
-rray_reshape(x, dimension_sizes)
+rray_reshape(x, dimensions)
 }
 \arguments{
 \item{x}{An array.}
 
-\item{dimension_sizes}{An integer vector of new dimension sizes.}
+\item{dimensions}{An integer vector of new dimensions.}
 }
 \value{
-An array with the shape specified by \code{dimension_sizes} and the same
+An array with the shape specified by \code{dimensions} and the same
 size as \code{x}.
 }
 \description{
-\code{rray_reshape()} reshapes \code{x} to a new set of dimension sizes without
+\code{rray_reshape()} reshapes \code{x} to a new set of dimensions without
 changing the total number of elements. Unlike \code{\link[=rray_broadcast]{rray_broadcast()}}, which
 repeats elements to fill new dimensions, \code{rray_reshape()} simply rearranges
 the existing elements into a new shape without changing its size.

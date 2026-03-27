@@ -2,25 +2,25 @@
 % Please edit documentation in R/broadcast.R
 \name{rray_broadcast}
 \alias{rray_broadcast}
-\title{Broadcast an array to new dimension sizes}
+\title{Broadcast an array to new dimensions}
 \usage{
-rray_broadcast(x, dimension_sizes)
+rray_broadcast(x, dimensions)
 }
 \arguments{
 \item{x}{An array.}
 
-\item{dimension_sizes}{An integer vector of target dimension sizes.}
+\item{dimensions}{An integer vector of target dimensions.}
 }
 \value{
-An array with the shape specified by \code{dimension_sizes}.
+An array with dimensions of \code{dimensions}.
 }
 \description{
-\code{rray_broadcast()} broadcasts an array to a new set of dimension sizes using
+\code{rray_broadcast()} broadcasts an array to a new set of dimensions using
 tidyverse recycling rules. Each dimension of \code{x} must either match the
 corresponding target dimension or be 1, in which case it is repeated to fill
 the target.
 
-New dimensions can be added by supplying a \code{dimension_sizes} with greater
+Dimensionality can be expanded by supplying \code{dimensions} with greater
 dimensionality than \code{x} has. For example, a 2x3 array can be broadcast to a
 2x3x4 array.
 }

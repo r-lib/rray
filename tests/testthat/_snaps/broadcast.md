@@ -38,46 +38,46 @@
       Error in `rray_broadcast()`:
       ! `x` must be an array, not a function.
 
-# coerces dimension_sizes to integer
+# coerces dimensions to integer
 
     Code
       rray_broadcast(1, 2.5)
     Condition
       Error:
-      ! Can't convert from `dimension_sizes` <double> to <integer> due to loss of precision.
+      ! Can't convert from `dimensions` <double> to <integer> due to loss of precision.
       * Locations: 1
 
-# errors on non-coercible dimension_sizes
+# errors on non-coercible dimensions
 
     Code
       rray_broadcast(1, "a")
     Condition
       Error:
-      ! Can't convert `dimension_sizes` <character> to <integer>.
+      ! Can't convert `dimensions` <character> to <integer>.
 
-# errors on empty dimension_sizes
+# errors on empty dimensions
 
     Code
       rray_broadcast(1, integer())
     Condition
       Error in `rray_broadcast()`:
-      ! `dimension_sizes` must have at least one element.
+      ! `dimensions` must have at least one element.
 
-# errors on missing dimension_sizes
+# errors on missing dimensions
 
     Code
       rray_broadcast(1, NA_integer_)
     Condition
       Error in `rray_broadcast()`:
-      ! `dimension_sizes` must not contain missing values.
+      ! `dimensions` must not contain missing values.
 
-# errors on negative dimension_sizes
+# errors on negative dimensions
 
     Code
       rray_broadcast(1, -1L)
     Condition
       Error in `rray_broadcast()`:
-      ! `dimension_sizes` must not contain negative values.
+      ! `dimensions` must not contain negative values.
 
 # errors on dimensionality upper bound
 

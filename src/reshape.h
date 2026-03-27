@@ -3,6 +3,6 @@
 
 #include "rlang.h"
 
-r_obj* rray_reshape(r_obj* x, r_obj* dimension_sizes, struct r_lazy error_call);
+r_obj* rray_reshape(r_obj* x, r_obj* dimensions, struct r_lazy error_call);
 
 #endif

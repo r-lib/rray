@@ -1,20 +1,20 @@
-#' Broadcast an array to new dimension sizes
+#' Broadcast an array to new dimensions
 #'
 #' @description
-#' `rray_broadcast()` broadcasts an array to a new set of dimension sizes using
+#' `rray_broadcast()` broadcasts an array to a new set of dimensions using
 #' tidyverse recycling rules. Each dimension of `x` must either match the
 #' corresponding target dimension or be 1, in which case it is repeated to fill
 #' the target.
 #'
-#' New dimensions can be added by supplying a `dimension_sizes` with greater
+#' Dimensionality can be expanded by supplying `dimensions` with greater
 #' dimensionality than `x` has. For example, a 2x3 array can be broadcast to a
 #' 2x3x4 array.
 #'
 #' @param x An array.
-#' @param dimension_sizes An integer vector of target dimension sizes.
+#' @param dimensions An integer vector of target dimensions.
 #'
 #' @returns
-#' An array with the shape specified by `dimension_sizes`.
+#' An array with dimensions of `dimensions`.
 #'
 #' @export
 #' @examples
@@ -26,6 +26,6 @@
 #'
 #' # Add a new dimension
 #' rray_broadcast(array(1:6, c(2L, 3L)), c(2L, 3L, 4L))
-rray_broadcast <- function(x, dimension_sizes) {
-  .Call(ffi_rray_broadcast, x, dimension_sizes, environment())
+rray_broadcast <- function(x, dimensions) {
+  .Call(ffi_rray_broadcast, x, dimensions, environment())
 }
