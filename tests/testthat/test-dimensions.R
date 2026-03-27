@@ -1,3 +1,6 @@
+# ------------------------------------------------------------------------------
+# rray_dimensions()
+
 test_that("returns length for non-arrays", {
   expect_identical(rray_dimensions(1), 1L)
   expect_identical(rray_dimensions(1:5), 5L)
@@ -29,6 +32,9 @@ test_that("errors on non-vector types", {
   expect_snapshot(rray_dimensions(quote(x)), error = TRUE)
   expect_snapshot(rray_dimensions(environment()), error = TRUE)
 })
+
+# ------------------------------------------------------------------------------
+# rray_dimensions_common()
 
 test_that("common dimensions of identical inputs", {
   expect_identical(
@@ -92,6 +98,12 @@ test_that("more than two inputs work", {
 test_that("`.dimensions` overrides", {
   expect_identical(
     rray_dimensions_common(1:5, .dimensions = c(5L, 3L)),
+    c(5L, 3L)
+  )
+
+  # Even if incompatible! Broadcasting handles it.
+  expect_identical(
+    rray_dimensions_common(1:6, .dimensions = c(5L, 3L)),
     c(5L, 3L)
   )
 })
