@@ -91,7 +91,7 @@ void check_broadcastable(
 
     r_abort_lazy_call(
       error_call,
-      "Can't broadcast dimension %td from size %d to %d.",
+      "Can't broadcast axis %td from dimension %d to %d.",
       (ptrdiff_t) (i + 1),
       x_dimension,
       dimension

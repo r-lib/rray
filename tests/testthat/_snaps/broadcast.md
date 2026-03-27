@@ -4,7 +4,7 @@
       rray_broadcast(x, c(1L, 2L))
     Condition
       Error in `rray_broadcast()`:
-      ! Can't broadcast dimension 1 from size 0 to 1.
+      ! Can't broadcast axis 1 from dimension 0 to 1.
 
 # can't broadcast from N to M when N > 1 and N != M
 
@@ -12,7 +12,7 @@
       rray_broadcast(x, c(2L, 4L))
     Condition
       Error in `rray_broadcast()`:
-      ! Can't broadcast dimension 2 from size 3 to 4.
+      ! Can't broadcast axis 2 from dimension 3 to 4.
 
 # can't decrease dimensionality
 
