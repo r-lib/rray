@@ -13,6 +13,7 @@ extern r_obj* ffi_rray_dimensionality(r_obj* x, r_obj* frame);
 extern r_obj* ffi_rray_dimension_sizes(r_obj* x, r_obj* frame);
 extern r_obj* ffi_rray_dimension_names(r_obj* x, r_obj* frame);
 extern r_obj* ffi_rray_reshape(r_obj* x, r_obj* dimension_sizes, r_obj* frame);
+extern r_obj* ffi_rray_split(r_obj* ffi_x, r_obj* ffi_axes, r_obj* ffi_frame);
 extern r_obj* ffi_rray_sum(
   r_obj* ffi_x,
   r_obj* ffi_axes,
@@ -35,6 +36,7 @@ static const R_CallMethodDef CallEntries[] = {
   { "ffi_rray_dimensionality", (DL_FUNC) &ffi_rray_dimensionality, 2 },
   { "ffi_rray_dimension_names", (DL_FUNC) &ffi_rray_dimension_names, 2 },
   { "ffi_rray_reshape", (DL_FUNC) &ffi_rray_reshape, 3 },
+  { "ffi_rray_split", (DL_FUNC) &ffi_rray_split, 3 },
   { "ffi_rray_sum", (DL_FUNC) &ffi_rray_sum, 4 },
   { "ffi_test_wrap", (DL_FUNC) &ffi_test_wrap, 1 },
   { "ffi_test_wrapper_readonly", (DL_FUNC) &ffi_test_wrapper_readonly, 1 },
