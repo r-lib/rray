@@ -1,10 +1,10 @@
-# errors when capacity would change
+# errors when size would change
 
     Code
       rray_reshape(1:6, c(6L, 2L))
     Condition
       Error in `rray_reshape()`:
-      ! Can't reshape to these dimension sizes. Can't change from a capacity of 6 to a capacity of 12.
+      ! Can't reshape to these dimension sizes. Can't change from a size of 6 to a size of 12.
 
 # errors on non-array input
 

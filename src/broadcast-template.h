@@ -1,10 +1,10 @@
 #include "broadcast-iterator.h"
 #include "broadcast.h"
-#include "capacity.h"
 #include "decl/broadcast-template-decl.h"
 #include "dimension-names.h"
 #include "dimension-sizes.h"
 #include "dimensionality.h"
+#include "size.h"
 #include "types.h"
 
 #if RRAY_TYPE == RRAY_TYPE_LOGICAL
@@ -98,10 +98,10 @@ static inline r_obj* RRAY_FN(
     error_call
   );
 
-  const r_ssize capacity =
-    rray_capacity_from_dimension_sizes(v_dimension_sizes, dimensionality);
+  const r_ssize size =
+    rray_size_from_dimensions(v_dimension_sizes, dimensionality);
 
-  r_obj* out = KEEP(r_alloc_vector(RRAY_R_TYPE, capacity));
+  r_obj* out = KEEP(r_alloc_vector(RRAY_R_TYPE, size));
   r_attrib_poke_dim(out, dimension_sizes);
 
   struct rray_iterator it;
@@ -116,7 +116,7 @@ static inline r_obj* RRAY_FN(
   RRAY_X_CONST_DEREF
   RRAY_OUT_DEREF
 
-  for (r_ssize i = 0; i < capacity; ++i) {
+  for (r_ssize i = 0; i < size; ++i) {
     RRAY_ASSIGN(i, rray_iterator_location(&it));
     rray_iterator_next(&it);
   }

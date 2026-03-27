@@ -66,10 +66,10 @@ test_that("works with list arrays", {
   expect_identical(rray_dimension_sizes(out), c(1L, 2L))
 })
 
-test_that("works with zero-capacity arrays", {
+test_that("works with zero-size arrays", {
   out <- rray_reshape(integer(), c(0L, 5L))
   expect_identical(rray_dimension_sizes(out), c(0L, 5L))
-  expect_identical(rray_capacity(out), 0)
+  expect_identical(rray_size(out), 0)
 })
 
 test_that("drops dimension names", {
@@ -89,7 +89,7 @@ test_that("drops names from a named vector", {
   expect_null(dimnames(out))
 })
 
-test_that("errors when capacity would change", {
+test_that("errors when size would change", {
   expect_snapshot(rray_reshape(1:6, c(6L, 2L)), error = TRUE)
 })
 

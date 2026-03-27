@@ -29,7 +29,7 @@ test_that("broadcasts with zero-length dimensions", {
   x <- integer()
   out <- rray_broadcast(x, c(0L, 2L))
   expect_identical(rray_dimension_sizes(out), c(0L, 2L))
-  expect_identical(rray_capacity(out), 0)
+  expect_identical(rray_size(out), 0)
 })
 
 test_that("can broadcast 0 to 0 but not 0 to N", {

@@ -1,11 +1,11 @@
 #include "axes.h"
-#include "capacity.h"
 #include "decl/sum-template-decl.h"
 #include "dimension-names.h"
 #include "dimension-sizes.h"
 #include "dimensionality.h"
 #include "reduce.h"
 #include "reduction-iterator.h"
+#include "size.h"
 
 #if RRAY_TYPE == RRAY_TYPE_LOGICAL
 #define RRAY_FN rray_sum_lgl
@@ -72,16 +72,16 @@ static inline r_obj* RRAY_FN(
   ));
   const int* v_out_dimension_sizes = r_int_cbegin(out_dimension_sizes);
 
-  const r_ssize x_capacity =
-    rray_capacity_from_dimension_sizes(v_x_dimension_sizes, dimensionality);
-  const r_ssize out_capacity =
-    rray_capacity_from_dimension_sizes(v_out_dimension_sizes, dimensionality);
+  const r_ssize x_size =
+    rray_size_from_dimensions(v_x_dimension_sizes, dimensionality);
+  const r_ssize out_size =
+    rray_size_from_dimensions(v_out_dimension_sizes, dimensionality);
 
-  r_obj* out = KEEP(RRAY_OUT_ALLOC(out_capacity));
+  r_obj* out = KEEP(RRAY_OUT_ALLOC(out_size));
   r_attrib_poke_dim(out, out_dimension_sizes);
 
   RRAY_OUT_C_TYPE* v_out = RRAY_OUT_DEREF(out);
-  memset(v_out, 0, sizeof(RRAY_OUT_C_TYPE) * out_capacity);
+  memset(v_out, 0, sizeof(RRAY_OUT_C_TYPE) * out_size);
 
   struct rray_iterator it;
   rray_reduction_iterator_init(
@@ -94,13 +94,13 @@ static inline r_obj* RRAY_FN(
   RRAY_X_C_TYPE const* v_x = RRAY_X_CONST_DEREF(x);
 
   if (na_rm) {
-    for (r_ssize i = 0; i < x_capacity; ++i) {
+    for (r_ssize i = 0; i < x_size; ++i) {
       const r_ssize loc = rray_iterator_location(&it);
       v_out[loc] = RRAY_FN_NA_RM_ONE(v_out[loc], v_x[i]);
       rray_iterator_next(&it);
     }
   } else {
-    for (r_ssize i = 0; i < x_capacity; ++i) {
+    for (r_ssize i = 0; i < x_size; ++i) {
       const r_ssize loc = rray_iterator_location(&it);
       v_out[loc] = RRAY_FN_ONE(v_out[loc], v_x[i]);
       rray_iterator_next(&it);

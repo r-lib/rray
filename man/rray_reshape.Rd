@@ -13,13 +13,13 @@ rray_reshape(x, dimension_sizes)
 }
 \value{
 An array with the shape specified by \code{dimension_sizes} and the same
-capacity as \code{x}.
+size as \code{x}.
 }
 \description{
 \code{rray_reshape()} reshapes \code{x} to a new set of dimension sizes without
 changing the total number of elements. Unlike \code{\link[=rray_broadcast]{rray_broadcast()}}, which
 repeats elements to fill new dimensions, \code{rray_reshape()} simply rearranges
-the existing elements into a new shape without changing its capacity.
+the existing elements into a new shape without changing its size.
 }
 \examples{
 x <- 1:6
@@ -30,6 +30,6 @@ rray_reshape(x, c(2L, 3L))
 # Reshape a vector into a 3D array
 rray_reshape(x, c(3L, 2L, 1L))
 
-# Reshaping can't change the capacity
+# Reshaping can't change the size
 try(rray_reshape(x, c(6L, 2L)))
 }

@@ -8,7 +8,7 @@ extern r_obj* ffi_rray_broadcast(
   r_obj* dimension_sizes,
   r_obj* frame
 );
-extern r_obj* ffi_rray_capacity(r_obj* x, r_obj* frame);
+extern r_obj* ffi_rray_size(r_obj* x, r_obj* frame);
 extern r_obj* ffi_rray_dimensionality(r_obj* x, r_obj* frame);
 extern r_obj* ffi_rray_dimension_sizes(r_obj* x, r_obj* frame);
 extern r_obj* ffi_rray_dimension_names(r_obj* x, r_obj* frame);
@@ -31,7 +31,7 @@ r_obj* ffi_rray4_init_library(r_obj* ns);
 
 static const R_CallMethodDef CallEntries[] = {
   { "ffi_rray_broadcast", (DL_FUNC) &ffi_rray_broadcast, 3 },
-  { "ffi_rray_capacity", (DL_FUNC) &ffi_rray_capacity, 2 },
+  { "ffi_rray_size", (DL_FUNC) &ffi_rray_size, 2 },
   { "ffi_rray_dimension_sizes", (DL_FUNC) &ffi_rray_dimension_sizes, 2 },
   { "ffi_rray_dimensionality", (DL_FUNC) &ffi_rray_dimensionality, 2 },
   { "ffi_rray_dimension_names", (DL_FUNC) &ffi_rray_dimension_names, 2 },
