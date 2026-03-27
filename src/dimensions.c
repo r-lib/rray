@@ -1,6 +1,7 @@
 #include "dimensions.h"
 
 #include "decl/dimensions-decl.h"
+#include "dimensionality.h"
 #include "size.h"
 #include "utils.h"
 #include "wrapper.h"
@@ -92,8 +93,16 @@ r_obj* rray_dimensions_common(
   const r_ssize n = r_length(xs);
   r_obj* const* v_xs = r_list_cbegin(xs);
 
-  r_obj* out = r_null;
-  KEEP(out);
+  bool any = false;
+
+  r_ssize out_dimensionality = 1;
+
+  // Stack allocated array of known max size that we accumulate the common
+  // dimensions in. Initialized to 1, which works very nicely with broadcasting.
+  int v_out_dimensions[RRAY_MAX_DIMENSIONALITY];
+  for (r_ssize i = 0; i < RRAY_MAX_DIMENSIONALITY; ++i) {
+    v_out_dimensions[i] = 1;
+  }
 
   for (r_ssize i = 0; i < n; ++i) {
     r_obj* x = v_xs[i];
@@ -102,68 +111,78 @@ r_obj* rray_dimensions_common(
       continue;
     }
 
+    any = true;
+
     r_obj* x_dimensions = KEEP(rray_dimensions(x, error_call));
+    const int* v_x_dimensions = r_int_cbegin(x_dimensions);
+    const r_ssize x_dimensionality =
+      rray_dimensionality_from_dimensions(x_dimensions);
+    check_max_dimensionality(x_dimensionality);
 
-    if (out == r_null) {
-      KEEP_AT(x_dimensions, 0);
-      out = x_dimensions;
-      FREE(1);
-      continue;
-    }
+    // Update `v_out_dimensions` and `out_dimensionality` in place
+    // with common dimensions
+    rray_dimensions2(
+      v_out_dimensions,
+      &out_dimensionality,
+      v_x_dimensions,
+      x_dimensionality,
+      error_call
+    );
 
-    out = rray_dimensions2(out, x_dimensions, error_call);
-    KEEP_AT(out, 0);
     FREE(1);
   }
 
-  if (out == r_null) {
+  if (!any) {
     r_abort_lazy_call(error_call, "Must supply at least one array to `...`.");
   }
+
+  r_obj* out = KEEP(r_alloc_integer(out_dimensionality));
+  int* v_out = r_int_begin(out);
+  memcpy(v_out, v_out_dimensions, sizeof(int) * out_dimensionality);
 
   FREE(1);
   return out;
 }
 
-static inline r_obj* rray_dimensions2(
-  r_obj* x_dimensions,
-  r_obj* y_dimensions,
+static inline void rray_dimensions2(
+  int* v_out_dimensions,
+  r_ssize* p_out_dimensionality,
+  const int* v_x_dimensions,
+  r_ssize x_dimensionality,
   struct r_lazy error_call
 ) {
-  const r_ssize x_dimensionality = r_length(x_dimensions);
-  const r_ssize y_dimensionality = r_length(y_dimensions);
-  const r_ssize out_dimensionality =
-    (x_dimensionality > y_dimensionality) ? x_dimensionality : y_dimensionality;
+  const r_ssize out_dimensionality = *p_out_dimensionality;
 
-  const int* v_x_dimensions = r_int_cbegin(x_dimensions);
-  const int* v_y_dimensions = r_int_cbegin(y_dimensions);
+  const r_ssize common_dimensionality = (out_dimensionality > x_dimensionality)
+                                          ? out_dimensionality
+                                          : x_dimensionality;
 
-  r_obj* out = KEEP(r_alloc_integer(out_dimensionality));
-  int* v_out = r_int_begin(out);
+  *p_out_dimensionality = common_dimensionality;
 
-  for (r_ssize i = 0; i < out_dimensionality; ++i) {
+  for (r_ssize i = 0; i < common_dimensionality; ++i) {
+    const int out_dimension =
+      (i < out_dimensionality) ? v_out_dimensions[i] : 1;
     const int x_dimension = (i < x_dimensionality) ? v_x_dimensions[i] : 1;
-    const int y_dimension = (i < y_dimensionality) ? v_y_dimensions[i] : 1;
 
-    if (x_dimension == y_dimension) {
-      v_out[i] = x_dimension;
+    if (out_dimension == x_dimension) {
+      // Nothing to do
+      // v_out_dimensions[i] = out_dimension;
+    } else if (out_dimension == 1) {
+      v_out_dimensions[i] = x_dimension;
     } else if (x_dimension == 1) {
-      v_out[i] = y_dimension;
-    } else if (y_dimension == 1) {
-      v_out[i] = x_dimension;
+      // Nothing to do
+      // v_out_dimensions[i] = out_dimension;
     } else {
       r_abort_lazy_call(
         error_call,
         "Can't find common dimensions at axis %td. "
         "Dimensions %d and %d are incompatible.",
         (ptrdiff_t) (i + 1),
-        x_dimension,
-        y_dimension
+        out_dimension,
+        x_dimension
       );
     }
   }
-
-  FREE(1);
-  return out;
 }
 
 r_obj* arg_as_dimensions(r_obj* dimensions, struct r_lazy error_call) {

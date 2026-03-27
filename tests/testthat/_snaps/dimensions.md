@@ -44,7 +44,7 @@
       rray_dimensions_common()
     Condition
       Error in `rray_dimensions_common()`:
-      ! Must supply at least one non-NULL input to `...`.
+      ! Must supply at least one array to `...`.
 
 ---
 
@@ -52,5 +52,5 @@
       rray_dimensions_common(NULL, NULL)
     Condition
       Error in `rray_dimensions_common()`:
-      ! Must supply at least one non-NULL input to `...`.
+      ! Must supply at least one array to `...`.
 
