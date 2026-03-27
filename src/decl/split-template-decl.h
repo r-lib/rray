@@ -3,9 +3,9 @@
 
 #include "rlang.h"
 
-void rray_split_dimension_names(
+void rray_split_names(
   r_obj* out,
-  r_obj* const* v_x_dimension_names,
+  r_obj* const* v_x_names,
   r_ssize dimensionality,
   const int* v_x_dimensions,
   const int* v_axes,

@@ -1,8 +1,8 @@
 #include "axes.h"
 #include "decl/split-template-decl.h"
-#include "dimension-names.h"
 #include "dimensionality.h"
 #include "dimensions.h"
+#include "names.h"
 #include "reduce.h"
 #include "reduction-iterator.h"
 #include "size.h"
@@ -149,13 +149,13 @@ static inline r_obj* RRAY_FN(r_obj* x, r_obj* axes, struct r_lazy error_call) {
     rray_iterator_next(&out_elt_it);
   }
 
-  r_obj* x_dimension_names = rray_dimension_names(x, error_call);
-  if (x_dimension_names != r_null) {
-    KEEP_N(x_dimension_names, &n_kept);
-    r_obj* const* v_x_dimension_names = r_list_cbegin(x_dimension_names);
-    rray_split_dimension_names(
+  r_obj* x_names = rray_names(x, error_call);
+  if (x_names != r_null) {
+    KEEP_N(x_names, &n_kept);
+    r_obj* const* v_x_names = r_list_cbegin(x_names);
+    rray_split_names(
       out,
-      v_x_dimension_names,
+      v_x_names,
       dimensionality,
       v_x_dimensions,
       v_axes,
@@ -205,9 +205,9 @@ static inline bool rray_is_split_axis(
   return false;
 }
 
-void rray_split_dimension_names(
+void rray_split_names(
   r_obj* out,
-  r_obj* const* v_x_dimension_names,
+  r_obj* const* v_x_names,
   r_ssize dimensionality,
   const int* v_x_dimensions,
   const int* v_axes,
@@ -218,7 +218,7 @@ void rray_split_dimension_names(
 
   bool any_split_axis_has_names = false;
   for (r_ssize i = 0; i < axes_size; ++i) {
-    if (v_x_dimension_names[v_axes[i] - 1] != r_null) {
+    if (v_x_names[v_axes[i] - 1] != r_null) {
       any_split_axis_has_names = true;
       break;
     }
@@ -226,12 +226,12 @@ void rray_split_dimension_names(
 
   if (!any_split_axis_has_names) {
     // Easy case, keep all names as is
-    r_obj* dimension_names = KEEP(r_alloc_list(dimensionality));
+    r_obj* names = KEEP(r_alloc_list(dimensionality));
     for (r_ssize i = 0; i < dimensionality; ++i) {
-      r_list_poke(dimension_names, i, v_x_dimension_names[i]);
+      r_list_poke(names, i, v_x_names[i]);
     }
     for (r_ssize i = 0; i < out_size; ++i) {
-      r_attrib_poke_dim_names(v_out[i], dimension_names);
+      r_attrib_poke_dim_names(v_out[i], names);
     }
     FREE(1);
     return;
@@ -240,17 +240,17 @@ void rray_split_dimension_names(
   // Complicated case, we want to keep all non-split axis
   // names as is, but we need to chop all split axis names
   // into size 1 names on each out element's split axis
-  r_obj* all_dimension_names = KEEP(r_alloc_list(out_size));
-  r_obj* const* v_all_dimension_names = r_list_cbegin(all_dimension_names);
+  r_obj* all_names = KEEP(r_alloc_list(out_size));
+  r_obj* const* v_all_names = r_list_cbegin(all_names);
 
   for (r_ssize i = 0; i < out_size; ++i) {
-    r_obj* dimension_names = r_alloc_list(dimensionality);
-    r_list_poke(all_dimension_names, i, dimension_names);
+    r_obj* names = r_alloc_list(dimensionality);
+    r_list_poke(all_names, i, names);
 
     // Go ahead and fill non-split axis names with original names
     for (r_ssize j = 0; j < dimensionality; ++j) {
       if (!rray_is_split_axis(j, v_axes, axes_size)) {
-        r_list_poke(dimension_names, j, v_x_dimension_names[j]);
+        r_list_poke(names, j, v_x_names[j]);
       }
     }
   }
@@ -263,7 +263,7 @@ void rray_split_dimension_names(
     }
 
     const r_ssize x_dimension = v_x_dimensions[i];
-    r_obj* x_axis_names = v_x_dimension_names[i];
+    r_obj* x_axis_names = v_x_names[i];
 
     if (x_axis_names != r_null) {
       r_obj* const* v_x_axis_names = r_chr_cbegin(x_axis_names);
@@ -275,8 +275,7 @@ void rray_split_dimension_names(
         for (r_ssize base = j * stride; base < out_size;
              base += stride * x_dimension) {
           for (r_ssize offset = 0; offset < stride; ++offset) {
-            r_obj* dimension_names = v_all_dimension_names[base + offset];
-            r_list_poke(dimension_names, i, axis_names);
+            r_list_poke(v_all_names[base + offset], i, axis_names);
           }
         }
 
@@ -288,7 +287,7 @@ void rray_split_dimension_names(
   }
 
   for (r_ssize i = 0; i < out_size; ++i) {
-    r_attrib_poke_dim_names(v_out[i], v_all_dimension_names[i]);
+    r_attrib_poke_dim_names(v_out[i], v_all_names[i]);
   }
 
   FREE(1);

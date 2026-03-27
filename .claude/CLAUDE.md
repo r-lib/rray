@@ -51,10 +51,10 @@ x <- array(
 )
 
 rray_dimensions(x) # c(2, 3, 4)
-rray_dimension(x, axis)
+rray_axis_dimension(x, axis)
 
-rray_all_names(x) # list(c("a", "b"), c("c", "d", "e"), ...)
-rray_names(x, axis) # c("a", "b") for axis = 1
+rray_names(x) # list(c("a", "b"), c("c", "d", "e"), ...)
+rray_axis_names(x, axis) # c("a", "b") for axis = 1
 rray_row_names(x)
 rray_column_names(x)
 

@@ -1,8 +1,8 @@
 #include "axes.h"
 #include "decl/sum-template-decl.h"
-#include "dimension-names.h"
 #include "dimensionality.h"
 #include "dimensions.h"
+#include "names.h"
 #include "reduce.h"
 #include "reduction-iterator.h"
 #include "size.h"
@@ -104,18 +104,14 @@ static inline r_obj* RRAY_FN(
     }
   }
 
-  r_obj* x_dimension_names = rray_dimension_names(x, error_call);
-  if (x_dimension_names != r_null) {
-    KEEP(x_dimension_names);
-    r_obj* const* v_x_dimension_names = r_list_cbegin(x_dimension_names);
-    r_obj* out_dimension_names = rray_reduce_dimension_names(
-      v_x_dimension_names,
-      dimensionality,
-      v_axes,
-      axes_size
-    );
-    if (out_dimension_names != r_null) {
-      r_attrib_poke_dim_names(out, out_dimension_names);
+  r_obj* x_names = rray_names(x, error_call);
+  if (x_names != r_null) {
+    KEEP(x_names);
+    r_obj* const* v_x_names = r_list_cbegin(x_names);
+    r_obj* out_names =
+      rray_reduce_names(v_x_names, dimensionality, v_axes, axes_size);
+    if (out_names != r_null) {
+      r_attrib_poke_dim_names(out, out_names);
     }
     FREE(1);
   }

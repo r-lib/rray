@@ -7,7 +7,7 @@ extern r_obj* ffi_rray_broadcast(r_obj* x, r_obj* dimensions, r_obj* frame);
 extern r_obj* ffi_rray_size(r_obj* x, r_obj* frame);
 extern r_obj* ffi_rray_dimensionality(r_obj* x, r_obj* frame);
 extern r_obj* ffi_rray_dimensions(r_obj* x, r_obj* frame);
-extern r_obj* ffi_rray_dimension_names(r_obj* x, r_obj* frame);
+extern r_obj* ffi_rray_names(r_obj* x, r_obj* frame);
 extern r_obj* ffi_rray_reshape(r_obj* x, r_obj* dimensions, r_obj* frame);
 extern r_obj* ffi_rray_split(r_obj* ffi_x, r_obj* ffi_axes, r_obj* ffi_frame);
 extern r_obj* ffi_rray_sum(
@@ -30,7 +30,7 @@ static const R_CallMethodDef CallEntries[] = {
   { "ffi_rray_size", (DL_FUNC) &ffi_rray_size, 2 },
   { "ffi_rray_dimensions", (DL_FUNC) &ffi_rray_dimensions, 2 },
   { "ffi_rray_dimensionality", (DL_FUNC) &ffi_rray_dimensionality, 2 },
-  { "ffi_rray_dimension_names", (DL_FUNC) &ffi_rray_dimension_names, 2 },
+  { "ffi_rray_names", (DL_FUNC) &ffi_rray_names, 2 },
   { "ffi_rray_reshape", (DL_FUNC) &ffi_rray_reshape, 3 },
   { "ffi_rray_split", (DL_FUNC) &ffi_rray_split, 3 },
   { "ffi_rray_sum", (DL_FUNC) &ffi_rray_sum, 4 },

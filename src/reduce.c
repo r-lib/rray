@@ -21,8 +21,8 @@ r_obj* rray_reduce_dimensions(
   return out;
 }
 
-r_obj* rray_reduce_dimension_names(
-  r_obj* const* v_dimension_names,
+r_obj* rray_reduce_names(
+  r_obj* const* v_names,
   r_ssize dimensionality,
   const int* v_axes,
   r_ssize axes_size
@@ -30,31 +30,32 @@ r_obj* rray_reduce_dimension_names(
   r_ssize i = 0;
 
   for (; i < dimensionality; ++i) {
-    r_obj* elt_dimension_names = v_dimension_names[i];
+    r_obj* axis_names = v_names[i];
 
-    if (elt_dimension_names == r_null) {
+    // No names for this axis
+    if (axis_names == r_null) {
       continue;
     }
 
-    bool has_dimension_names = true;
-
-    // If there are dimension names for this axis, but we are reducing this
-    // axis, then those dimension names will be dropped and don't actually
+    // If there are names for this axis, but we are reducing this
+    // axis, then those names will be dropped and don't actually
     // count for our early exit criteria
     for (r_ssize j = 0; j < axes_size; ++j) {
       if (v_axes[j] - 1 == i) {
-        has_dimension_names = false;
+        axis_names = r_null;
         break;
       }
     }
-
-    if (has_dimension_names) {
-      break;
+    if (axis_names == r_null) {
+      continue;
     }
+
+    // Usable names for an axis, break
+    break;
   }
 
   if (i == dimensionality) {
-    // No dimension names left after reducing
+    // No names left after reducing
     return r_null;
   }
 
@@ -62,24 +63,24 @@ r_obj* rray_reduce_dimension_names(
   r_obj* out = KEEP(r_alloc_list(dimensionality));
 
   for (; i < dimensionality; ++i) {
-    r_obj* elt_dimension_names = v_dimension_names[i];
+    r_obj* axis_names = v_names[i];
 
-    if (elt_dimension_names == r_null) {
+    if (axis_names == r_null) {
       continue;
     }
 
-    bool has_dimension_names = true;
-
     for (r_ssize j = 0; j < axes_size; ++j) {
       if (v_axes[j] - 1 == i) {
-        has_dimension_names = false;
+        axis_names = r_null;
         break;
       }
     }
 
-    if (has_dimension_names) {
-      r_list_poke(out, i, elt_dimension_names);
+    if (axis_names == r_null) {
+      continue;
     }
+
+    r_list_poke(out, i, axis_names);
   }
 
   FREE(1);

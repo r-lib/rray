@@ -171,17 +171,17 @@ test_that("dimension titles are lost", {
 
   # When we actually perform any broadcasting, the titles are cleared
   out <- rray_broadcast(x, c(2L, 1L))
-  expect_identical(rray_dimension_names(out), list(NULL, "c1"))
+  expect_identical(rray_names(out), list(NULL, "c1"))
 
   out <- rray_broadcast(x, c(2L, 2L))
-  expect_null(rray_dimension_names(out))
+  expect_null(rray_names(out))
 
   # If we no-op due to same dimensions, they aren't cleared.
   # We accept this irregularity in favor of performance, since it is fairly
   # common to want to broadcast to no-op common dimensions.
   out <- rray_broadcast(x, c(1L, 1L))
   expect_identical(
-    rray_dimension_names(out),
+    rray_names(out),
     list(rows = "r1", cols = "c1")
   )
 })
