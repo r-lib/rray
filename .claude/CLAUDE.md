@@ -20,40 +20,60 @@ You also have read only access to the R sources, located at `/Users/davis/files/
 
 ### Terminology
 
-- Dimension: A single integer used to specify a direction along the array (i.e. the second dimension)
-- Dimension Size: The size/length of a specific dimension (the second dimension has size 4)
-- Dimension Sizes: An integer vector of dimension sizes that completely describe the bounds of an array
-- Capacity: The total number of elements in an array. `prod(dimension_sizes)`
-- Dimensionality: The length of the vector of dimension sizes. The number of dimensions in an array.
+- Size: Total number of elements in the array.
+
+- Axis: A single integer used to specify a direction along the array (i.e. reduce along the second axis).
+
+- Dimension: An integer measure along a specific axis (i.e. the second axis has a dimension of 4).
+
+- Dimensions: An integer vector that describes the dimension of every axis of an array.
+
+- Dimensionality: The length of dimensions.
 
 This terminology makes names consistent while coding:
 
 ```r
-for (dimension in dimensions) {
-  dimension_size <- dimension_sizes[[dimension]]
+for (axis in axes) {
+  dimension <- dimensions[[axis]]
   # do stuff
 }
 ```
 
 ```r
-x <- array(dim = c(2, 3, 4))
-rray_dimension_sizes(x) # returns c(2, 3, 4)
-rray_dimension_size(x, dimension = 2) # returns 3
-rray_capacity(x) # returns 2*3*4
-rray_dimensionality(x) # returns 3
+x <- array(
+  1:24,
+  dim = c(2, 3, 4),
+  dimnames = list(
+    c("a", "b"),
+    c("c", "d", "e"),
+    c("f", "g", "h", "i")
+  )
+)
+
+rray_dimensions(x) # c(2, 3, 4)
+rray_dimension(x, axis)
+
+rray_all_names(x) # list(c("a", "b"), c("c", "d", "e"), ...)
+rray_names(x, axis) # c("a", "b") for axis = 1
+rray_row_names(x)
+rray_column_names(x)
+
+rray_size(x) # 2*3*4, shortcut as length(x)
+
+rray_dimensionality(x) # length(rray_dimensions(x))
 ```
 
 ## C code conventions
 
 - Each feature gets a `src/{name}.c` and `src/{name}.h` pair.
-- Internal C functions: `rray_{name}()` — return C types (e.g., `R_xlen_t`).
+- Internal C functions: `rray_{name}()` — return C types (e.g., `r_ssize`).
 - FFI wrappers: `ffi_rray_{name}()` — thin SEXP-to-C bridges. Go above internal functions in the `.c` file.
 - Headers only declare internal C functions, not FFI wrappers.
 - `src/init.c` uses `extern` declarations for FFI functions — does not include feature headers.
 - Always prefer rlang's C library wrappers over raw R API (e.g., `r_globals.na_int` over `NA_INTEGER`, `r_length()` over `Rf_length()`).
-- Prefer `R_xlen_t` over `int`, `Rf_xlength()` over `Rf_length()`, `Rf_getAttrib()` + `R_NilValue` checks over `Rf_isArray()`.
+- Prefer `r_ssize` over `int`, `r_length()` over `Rf_length()`, `r_attrib_get()` + `r_null` checks over `Rf_isArray()`.
 - Any `r_obj*` returned by a C function that allocates must be protected with `KEEP()` / `FREE()` (rlang's wrappers around `PROTECT()` / `UNPROTECT()`) if used after any further allocation could occur.
-- When looping over a vector, obtain a pointer to the underlying data first, e.g., `const int* v_dimension_sizes = r_int_cbegin(dimension_sizes)`, then index into that directly.
+- When looping over a vector, obtain a pointer to the underlying data first, e.g., `const int* v_dimensions = r_int_cbegin(dimensions)`, then index into that directly.
 - Mark variables as `const` where possible.
 - Always run `clang-format -i src/*.c src/*.h` after generating C code. Always run it over all files, not just changed files.
 
@@ -100,9 +120,11 @@ air format .
 ### Testing
 
 - Tests for `R/{name}.R` go in `tests/testthat/test-{name}.R`.
+- Helpers for `tests/testthat/test-{name}.R` go in `tests/testthat/helper-{name}.R`.
 - All new code should have an accompanying test.
 - If there are existing tests, place new tests next to similar existing tests.
 - Strive to keep your tests minimal with few comments.
+- Never put code in a `test-{name}.R` file outside of a `test_that()` block.
 - Avoid `expect_true()` and `expect_false()` in favour of a specific expectation which will give a better failure message. A few expectations in newer releases that you might not know about are `expect_all_true()`, `expect_all_equal()`, and `expect_r6_class()`.
 - When testing errors and warnings, don't us `expect_error()` or `expect_warning()`. Instead, use `expect_snapshot(error = TRUE)` for errors and `expect_snapshot()` for warnings because these allow the user to review the full text of the output.
 - Avoid the `.package` argument to `local_mocked_bindings()`; this modifies the namespace of another package which is not good practice. Instead create a mockable version of the function in the current package. See `?local_mocked_bindings` for more details.
