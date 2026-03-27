@@ -10,8 +10,6 @@
 #' @param axes An integer vector of axes to split along. The number of resulting
 #'   subarrays is the product of the dimensions along `axes`.
 #'
-#' @param ... These dots are for future extensions and must be empty.
-#'
 #' @returns
 #' A list of arrays, each with the same dimensionality as `x` but
 #' with a dimension of 1 along the split `axes`.
@@ -31,7 +29,6 @@
 #' # Split along multiple axes
 #' # (4, 3, 2) -> twelve (1, 1, 2) arrays
 #' rray_split(x, c(1, 2))
-rray_split <- function(x, axes, ...) {
-  check_dots_empty0(...)
+rray_split <- function(x, axes) {
   .Call(ffi_rray_split, x, axes, environment())
 }

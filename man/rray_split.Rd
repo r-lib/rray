@@ -4,15 +4,13 @@
 \alias{rray_split}
 \title{Split an array along axes}
 \usage{
-rray_split(x, axes, ...)
+rray_split(x, axes)
 }
 \arguments{
 \item{x}{An array.}
 
 \item{axes}{An integer vector of axes to split along. The number of resulting
 subarrays is the product of the dimensions along \code{axes}.}
-
-\item{...}{These dots are for future extensions and must be empty.}
 }
 \value{
 A list of arrays, each with the same dimensionality as \code{x} but
