@@ -20,5 +20,13 @@
       rray_split(x, c(1, 1))
     Condition
       Error in `rray_split()`:
-      ! `axes` must not contain duplicate values. 1 is duplicated.
+      ! `axes` must be in strictly increasing order.
+
+---
+
+    Code
+      rray_split(x, c(2, 1))
+    Condition
+      Error in `rray_split()`:
+      ! `axes` must be in strictly increasing order.
 

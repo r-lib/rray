@@ -252,9 +252,10 @@ test_that("errors on axes out of range", {
   expect_snapshot(rray_sum(x, 3L), error = TRUE)
 })
 
-test_that("errors on axes with duplicates", {
-  x <- array(1:4, c(2L, 2L))
+test_that("errors on axes not in strictly increasing order", {
+  x <- array(1:24, c(2L, 3L, 4L))
   expect_snapshot(rray_sum(x, c(1L, 1L)), error = TRUE)
+  expect_snapshot(rray_sum(x, c(2L, 1L)), error = TRUE)
 })
 
 test_that("errors on axes less than 1", {

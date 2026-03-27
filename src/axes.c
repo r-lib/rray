@@ -45,14 +45,11 @@ r_obj* arg_as_axes(
       );
     }
 
-    for (r_ssize j = i + 1; j < axes_size; ++j) {
-      if (axis == v_axes[j]) {
-        r_abort_lazy_call(
-          error_call,
-          "`axes` must not contain duplicate values. %d is duplicated.",
-          axis
-        );
-      }
+    if (i > 0 && axis <= v_axes[i - 1]) {
+      r_abort_lazy_call(
+        error_call,
+        "`axes` must be in strictly increasing order."
+      );
     }
   }
 

@@ -100,4 +100,5 @@ test_that("axes are validated", {
   expect_snapshot(rray_split(x, 3), error = TRUE)
   expect_snapshot(rray_split(x, 0), error = TRUE)
   expect_snapshot(rray_split(x, c(1, 1)), error = TRUE)
+  expect_snapshot(rray_split(x, c(2, 1)), error = TRUE)
 })
