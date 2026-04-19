@@ -35,21 +35,21 @@ extern r_obj* ffi_test_is_wrapper(r_obj* x);
 r_obj* ffi_rray4_init_library(r_obj* ns);
 
 static const R_CallMethodDef CallEntries[] = {
-  { "ffi_rray_broadcast", (DL_FUNC) &ffi_rray_broadcast, 3 },
-  { "ffi_rray_size", (DL_FUNC) &ffi_rray_size, 2 },
-  { "ffi_rray_dimensions", (DL_FUNC) &ffi_rray_dimensions, 2 },
-  { "ffi_rray_dimensions_common", (DL_FUNC) &ffi_rray_dimensions_common, 3 },
-  { "ffi_rray_dimensionality", (DL_FUNC) &ffi_rray_dimensionality, 2 },
-  { "ffi_rray_names", (DL_FUNC) &ffi_rray_names, 2 },
-  { "ffi_rray_set_dimensions", (DL_FUNC) &ffi_rray_set_dimensions, 3 },
-  { "ffi_rray_split", (DL_FUNC) &ffi_rray_split, 3 },
-  { "ffi_rray_sum", (DL_FUNC) &ffi_rray_sum, 4 },
-  { "ffi_test_wrap", (DL_FUNC) &ffi_test_wrap, 1 },
-  { "ffi_test_wrapper_readonly", (DL_FUNC) &ffi_test_wrapper_readonly, 1 },
-  { "ffi_test_wrapper_writable", (DL_FUNC) &ffi_test_wrapper_writable, 1 },
-  { "ffi_test_is_wrapper", (DL_FUNC) &ffi_test_is_wrapper, 1 },
-  { "ffi_rray4_init_library", (DL_FUNC) &ffi_rray4_init_library, 1 },
-  { NULL, NULL, 0 }
+  {"ffi_rray_broadcast", (DL_FUNC) &ffi_rray_broadcast, 3},
+  {"ffi_rray_size", (DL_FUNC) &ffi_rray_size, 2},
+  {"ffi_rray_dimensions", (DL_FUNC) &ffi_rray_dimensions, 2},
+  {"ffi_rray_dimensions_common", (DL_FUNC) &ffi_rray_dimensions_common, 3},
+  {"ffi_rray_dimensionality", (DL_FUNC) &ffi_rray_dimensionality, 2},
+  {"ffi_rray_names", (DL_FUNC) &ffi_rray_names, 2},
+  {"ffi_rray_set_dimensions", (DL_FUNC) &ffi_rray_set_dimensions, 3},
+  {"ffi_rray_split", (DL_FUNC) &ffi_rray_split, 3},
+  {"ffi_rray_sum", (DL_FUNC) &ffi_rray_sum, 4},
+  {"ffi_test_wrap", (DL_FUNC) &ffi_test_wrap, 1},
+  {"ffi_test_wrapper_readonly", (DL_FUNC) &ffi_test_wrapper_readonly, 1},
+  {"ffi_test_wrapper_writable", (DL_FUNC) &ffi_test_wrapper_writable, 1},
+  {"ffi_test_is_wrapper", (DL_FUNC) &ffi_test_is_wrapper, 1},
+  {"ffi_rray4_init_library", (DL_FUNC) &ffi_rray4_init_library, 1},
+  {NULL, NULL, 0}
 };
 
 extern void r_init_wrapper(DllInfo* dll);

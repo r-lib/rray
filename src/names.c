@@ -3,7 +3,7 @@
 #include "utils.h"
 
 r_obj* ffi_rray_names(r_obj* x, r_obj* frame) {
-  struct r_lazy error_call = { .x = frame, .env = r_null };
+  struct r_lazy error_call = {.x = frame, .env = r_null};
   return rray_names(x, error_call);
 }
 

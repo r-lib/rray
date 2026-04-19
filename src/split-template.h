@@ -13,7 +13,7 @@
 #define RRAY_C_TYPE int
 #define RRAY_CONST_DEREF r_lgl_cbegin
 #define RRAY_DEREF r_lgl_begin
-#define RRAY_OUT_ASSIGN(out_loc, elt_loc, val) \
+#define RRAY_OUT_ASSIGN(out_loc, elt_loc, val)                                 \
   v_v_out_elt[out_loc][elt_loc] = val
 
 #elif RRAY_TYPE == RRAY_TYPE_INTEGER
@@ -22,7 +22,7 @@
 #define RRAY_C_TYPE int
 #define RRAY_CONST_DEREF r_int_cbegin
 #define RRAY_DEREF r_int_begin
-#define RRAY_OUT_ASSIGN(out_loc, elt_loc, val) \
+#define RRAY_OUT_ASSIGN(out_loc, elt_loc, val)                                 \
   v_v_out_elt[out_loc][elt_loc] = val
 
 #elif RRAY_TYPE == RRAY_TYPE_DOUBLE
@@ -31,7 +31,7 @@
 #define RRAY_C_TYPE double
 #define RRAY_CONST_DEREF r_dbl_cbegin
 #define RRAY_DEREF r_dbl_begin
-#define RRAY_OUT_ASSIGN(out_loc, elt_loc, val) \
+#define RRAY_OUT_ASSIGN(out_loc, elt_loc, val)                                 \
   v_v_out_elt[out_loc][elt_loc] = val
 
 #elif RRAY_TYPE == RRAY_TYPE_COMPLEX
@@ -40,7 +40,7 @@
 #define RRAY_C_TYPE r_complex
 #define RRAY_CONST_DEREF r_cpl_cbegin
 #define RRAY_DEREF r_cpl_begin
-#define RRAY_OUT_ASSIGN(out_loc, elt_loc, val) \
+#define RRAY_OUT_ASSIGN(out_loc, elt_loc, val)                                 \
   v_v_out_elt[out_loc][elt_loc] = val
 
 #elif RRAY_TYPE == RRAY_TYPE_RAW
@@ -49,7 +49,7 @@
 #define RRAY_C_TYPE Rbyte
 #define RRAY_CONST_DEREF r_raw_cbegin
 #define RRAY_DEREF r_raw_begin
-#define RRAY_OUT_ASSIGN(out_loc, elt_loc, val) \
+#define RRAY_OUT_ASSIGN(out_loc, elt_loc, val)                                 \
   v_v_out_elt[out_loc][elt_loc] = val
 
 #elif RRAY_TYPE == RRAY_TYPE_CHARACTER
@@ -57,7 +57,7 @@
 #define RRAY_R_TYPE R_TYPE_character
 #define RRAY_C_TYPE r_obj*
 #define RRAY_CONST_DEREF r_chr_cbegin
-#define RRAY_OUT_ASSIGN(out_loc, elt_loc, val) \
+#define RRAY_OUT_ASSIGN(out_loc, elt_loc, val)                                 \
   r_chr_poke(v_out[out_loc], elt_loc, val)
 
 #elif RRAY_TYPE == RRAY_TYPE_LIST
@@ -65,7 +65,7 @@
 #define RRAY_R_TYPE R_TYPE_list
 #define RRAY_C_TYPE r_obj*
 #define RRAY_CONST_DEREF r_list_cbegin
-#define RRAY_OUT_ASSIGN(out_loc, elt_loc, val) \
+#define RRAY_OUT_ASSIGN(out_loc, elt_loc, val)                                 \
   r_list_poke(v_out[out_loc], elt_loc, val)
 #endif
 
@@ -293,7 +293,7 @@ void rray_split_names(
   FREE(1);
 }
 
-#endif  // RRAY_ONCE
+#endif // RRAY_ONCE
 
 #undef RRAY_TYPE
 #undef RRAY_FN

@@ -4,7 +4,7 @@
 #include "utils.h"
 
 r_obj* ffi_rray_broadcast(r_obj* x, r_obj* dimensions, r_obj* frame) {
-  struct r_lazy error_call = { .x = frame, .env = r_null };
+  struct r_lazy error_call = {.x = frame, .env = r_null};
   return rray_broadcast(x, dimensions, error_call);
 }
 
@@ -35,29 +35,29 @@ r_obj* rray_broadcast(r_obj* x, r_obj* dimensions, struct r_lazy error_call) {
   r_obj* out;
 
   switch (r_typeof(x)) {
-    case R_TYPE_logical:
-      out = rray_broadcast_lgl(x, dimensions, error_call);
-      break;
-    case R_TYPE_integer:
-      out = rray_broadcast_int(x, dimensions, error_call);
-      break;
-    case R_TYPE_double:
-      out = rray_broadcast_dbl(x, dimensions, error_call);
-      break;
-    case R_TYPE_complex:
-      out = rray_broadcast_cpl(x, dimensions, error_call);
-      break;
-    case R_TYPE_raw:
-      out = rray_broadcast_raw(x, dimensions, error_call);
-      break;
-    case R_TYPE_character:
-      out = rray_broadcast_chr(x, dimensions, error_call);
-      break;
-    case R_TYPE_list:
-      out = rray_broadcast_list(x, dimensions, error_call);
-      break;
-    default:
-      r_stop_unreachable();
+  case R_TYPE_logical:
+    out = rray_broadcast_lgl(x, dimensions, error_call);
+    break;
+  case R_TYPE_integer:
+    out = rray_broadcast_int(x, dimensions, error_call);
+    break;
+  case R_TYPE_double:
+    out = rray_broadcast_dbl(x, dimensions, error_call);
+    break;
+  case R_TYPE_complex:
+    out = rray_broadcast_cpl(x, dimensions, error_call);
+    break;
+  case R_TYPE_raw:
+    out = rray_broadcast_raw(x, dimensions, error_call);
+    break;
+  case R_TYPE_character:
+    out = rray_broadcast_chr(x, dimensions, error_call);
+    break;
+  case R_TYPE_list:
+    out = rray_broadcast_list(x, dimensions, error_call);
+    break;
+  default:
+    r_stop_unreachable();
   }
 
   FREE(1);

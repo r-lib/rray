@@ -56,43 +56,43 @@ static inline bool is_wrapper(r_obj* x) {
   }
 
   switch (r_typeof(x)) {
-    case R_TYPE_logical:
-      return R_altrep_inherits(x, wrapper_logical_class);
-    case R_TYPE_integer:
-      return R_altrep_inherits(x, wrapper_integer_class);
-    case R_TYPE_double:
-      return R_altrep_inherits(x, wrapper_double_class);
-    case R_TYPE_complex:
-      return R_altrep_inherits(x, wrapper_complex_class);
-    case R_TYPE_raw:
-      return R_altrep_inherits(x, wrapper_raw_class);
-    case R_TYPE_character:
-      return R_altrep_inherits(x, wrapper_character_class);
-    case R_TYPE_list:
-      return R_altrep_inherits(x, wrapper_list_class);
-    default:
-      return false;
+  case R_TYPE_logical:
+    return R_altrep_inherits(x, wrapper_logical_class);
+  case R_TYPE_integer:
+    return R_altrep_inherits(x, wrapper_integer_class);
+  case R_TYPE_double:
+    return R_altrep_inherits(x, wrapper_double_class);
+  case R_TYPE_complex:
+    return R_altrep_inherits(x, wrapper_complex_class);
+  case R_TYPE_raw:
+    return R_altrep_inherits(x, wrapper_raw_class);
+  case R_TYPE_character:
+    return R_altrep_inherits(x, wrapper_character_class);
+  case R_TYPE_list:
+    return R_altrep_inherits(x, wrapper_list_class);
+  default:
+    return false;
   }
 }
 
 static inline R_altrep_class_t wrapper_class(enum r_type type) {
   switch (type) {
-    case R_TYPE_logical:
-      return wrapper_logical_class;
-    case R_TYPE_integer:
-      return wrapper_integer_class;
-    case R_TYPE_double:
-      return wrapper_double_class;
-    case R_TYPE_complex:
-      return wrapper_complex_class;
-    case R_TYPE_raw:
-      return wrapper_raw_class;
-    case R_TYPE_character:
-      return wrapper_character_class;
-    case R_TYPE_list:
-      return wrapper_list_class;
-    default:
-      r_abort("Can't wrap a %s.", Rf_type2char(type));
+  case R_TYPE_logical:
+    return wrapper_logical_class;
+  case R_TYPE_integer:
+    return wrapper_integer_class;
+  case R_TYPE_double:
+    return wrapper_double_class;
+  case R_TYPE_complex:
+    return wrapper_complex_class;
+  case R_TYPE_raw:
+    return wrapper_raw_class;
+  case R_TYPE_character:
+    return wrapper_character_class;
+  case R_TYPE_list:
+    return wrapper_list_class;
+  default:
+    r_abort("Can't wrap a %s.", Rf_type2char(type));
   }
 }
 
@@ -120,74 +120,74 @@ static inline r_obj* wrapper_writable(r_obj* x) {
 // since we don't ever pull them from the wrapped object
 static inline r_obj* r_clone_data(r_obj* x) {
   switch (r_typeof(x)) {
-    case R_TYPE_logical: {
-      const int* v_x = r_lgl_cbegin(x);
-      const r_ssize size = r_length(x);
-      r_obj* out = KEEP(r_alloc_logical(size));
-      int* v_out = r_lgl_begin(out);
-      r_memcpy(v_out, v_x, sizeof(int) * size);
-      FREE(1);
-      return out;
+  case R_TYPE_logical: {
+    const int* v_x = r_lgl_cbegin(x);
+    const r_ssize size = r_length(x);
+    r_obj* out = KEEP(r_alloc_logical(size));
+    int* v_out = r_lgl_begin(out);
+    r_memcpy(v_out, v_x, sizeof(int) * size);
+    FREE(1);
+    return out;
+  }
+  case R_TYPE_integer: {
+    const int* v_x = r_int_cbegin(x);
+    const r_ssize size = r_length(x);
+    r_obj* out = KEEP(r_alloc_integer(size));
+    int* v_out = r_int_begin(out);
+    r_memcpy(v_out, v_x, sizeof(int) * size);
+    FREE(1);
+    return out;
+  }
+  case R_TYPE_double: {
+    const double* v_x = r_dbl_cbegin(x);
+    const r_ssize size = r_length(x);
+    r_obj* out = KEEP(r_alloc_double(size));
+    double* v_out = r_dbl_begin(out);
+    r_memcpy(v_out, v_x, sizeof(double) * size);
+    FREE(1);
+    return out;
+  }
+  case R_TYPE_complex: {
+    const r_complex* v_x = r_cpl_cbegin(x);
+    const r_ssize size = r_length(x);
+    r_obj* out = KEEP(r_alloc_complex(size));
+    r_complex* v_out = r_cpl_begin(out);
+    r_memcpy(v_out, v_x, sizeof(r_complex) * size);
+    FREE(1);
+    return out;
+  }
+  case R_TYPE_raw: {
+    const Rbyte* v_x = r_raw_cbegin(x);
+    const r_ssize size = r_length(x);
+    r_obj* out = KEEP(r_alloc_raw(size));
+    Rbyte* v_out = r_raw_begin(out);
+    r_memcpy(v_out, v_x, sizeof(Rbyte) * size);
+    FREE(1);
+    return out;
+  }
+  case R_TYPE_character: {
+    r_obj* const* v_x = r_chr_cbegin(x);
+    const r_ssize size = r_length(x);
+    r_obj* out = KEEP(r_alloc_character(size));
+    for (r_ssize i = 0; i < size; ++i) {
+      r_chr_poke(out, i, v_x[i]);
     }
-    case R_TYPE_integer: {
-      const int* v_x = r_int_cbegin(x);
-      const r_ssize size = r_length(x);
-      r_obj* out = KEEP(r_alloc_integer(size));
-      int* v_out = r_int_begin(out);
-      r_memcpy(v_out, v_x, sizeof(int) * size);
-      FREE(1);
-      return out;
+    FREE(1);
+    return out;
+  }
+  case R_TYPE_list: {
+    r_obj* const* v_x = r_list_cbegin(x);
+    const r_ssize size = r_length(x);
+    r_obj* out = KEEP(r_alloc_list(size));
+    for (r_ssize i = 0; i < size; ++i) {
+      r_list_poke(out, i, v_x[i]);
     }
-    case R_TYPE_double: {
-      const double* v_x = r_dbl_cbegin(x);
-      const r_ssize size = r_length(x);
-      r_obj* out = KEEP(r_alloc_double(size));
-      double* v_out = r_dbl_begin(out);
-      r_memcpy(v_out, v_x, sizeof(double) * size);
-      FREE(1);
-      return out;
-    }
-    case R_TYPE_complex: {
-      const r_complex* v_x = r_cpl_cbegin(x);
-      const r_ssize size = r_length(x);
-      r_obj* out = KEEP(r_alloc_complex(size));
-      r_complex* v_out = r_cpl_begin(out);
-      r_memcpy(v_out, v_x, sizeof(r_complex) * size);
-      FREE(1);
-      return out;
-    }
-    case R_TYPE_raw: {
-      const Rbyte* v_x = r_raw_cbegin(x);
-      const r_ssize size = r_length(x);
-      r_obj* out = KEEP(r_alloc_raw(size));
-      Rbyte* v_out = r_raw_begin(out);
-      r_memcpy(v_out, v_x, sizeof(Rbyte) * size);
-      FREE(1);
-      return out;
-    }
-    case R_TYPE_character: {
-      r_obj* const* v_x = r_chr_cbegin(x);
-      const r_ssize size = r_length(x);
-      r_obj* out = KEEP(r_alloc_character(size));
-      for (r_ssize i = 0; i < size; ++i) {
-        r_chr_poke(out, i, v_x[i]);
-      }
-      FREE(1);
-      return out;
-    }
-    case R_TYPE_list: {
-      r_obj* const* v_x = r_list_cbegin(x);
-      const r_ssize size = r_length(x);
-      r_obj* out = KEEP(r_alloc_list(size));
-      for (r_ssize i = 0; i < size; ++i) {
-        r_list_poke(out, i, v_x[i]);
-      }
-      FREE(1);
-      return out;
-    }
-    default: {
-      r_stop_unimplemented_type(r_typeof(x));
-    }
+    FREE(1);
+    return out;
+  }
+  default: {
+    r_stop_unimplemented_type(r_typeof(x));
+  }
   }
 }
 

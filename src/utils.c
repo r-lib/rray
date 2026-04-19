@@ -34,20 +34,20 @@ static inline r_obj* vec_as_array(r_obj* x) {
 
 r_obj* arg_as_array(r_obj* x, const char* arg, struct r_lazy error_call) {
   switch (r_typeof(x)) {
-    case R_TYPE_logical:
-    case R_TYPE_integer:
-    case R_TYPE_double:
-    case R_TYPE_complex:
-    case R_TYPE_character:
-    case R_TYPE_raw:
-    case R_TYPE_list:
-      break;
-    default:
-      r_abort_lazy_call(
-        error_call,
-        "`x` must be an array, not %s.",
-        r_obj_type_friendly(x)
-      );
+  case R_TYPE_logical:
+  case R_TYPE_integer:
+  case R_TYPE_double:
+  case R_TYPE_complex:
+  case R_TYPE_character:
+  case R_TYPE_raw:
+  case R_TYPE_list:
+    break;
+  default:
+    r_abort_lazy_call(
+      error_call,
+      "`x` must be an array, not %s.",
+      r_obj_type_friendly(x)
+    );
   }
 
   if (r_dim(x) == r_null) {

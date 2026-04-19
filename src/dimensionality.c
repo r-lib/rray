@@ -3,7 +3,7 @@
 #include "dimensions.h"
 
 r_obj* ffi_rray_dimensionality(r_obj* x, r_obj* frame) {
-  struct r_lazy error_call = { .x = frame, .env = r_null };
+  struct r_lazy error_call = {.x = frame, .env = r_null};
   return r_int((int) rray_dimensionality(x, error_call));
 }
 

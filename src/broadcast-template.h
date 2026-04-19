@@ -80,12 +80,14 @@ static inline r_obj* RRAY_FN(
   const r_ssize dimensionality =
     rray_dimensionality_from_dimensions(dimensions);
 
-  if (rray_dimensions_are_equal(
-        v_x_dimensions,
-        x_dimensionality,
-        v_dimensions,
-        dimensionality
-      )) {
+  if (
+    rray_dimensions_are_equal(
+      v_x_dimensions,
+      x_dimensionality,
+      v_dimensions,
+      dimensionality
+    )
+  ) {
     FREE(2);
     return x;
   }
@@ -191,7 +193,7 @@ r_obj* rray_broadcast_names(
   return out;
 }
 
-#endif  // RRAY_ONCE
+#endif // RRAY_ONCE
 
 #undef RRAY_TYPE
 #undef RRAY_FN

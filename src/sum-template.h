@@ -205,20 +205,20 @@ static inline double rray_sum_dbl_one_na_rm(double out, double x) {
 }
 
 static inline r_complex rray_sum_cpl_one(r_complex out, r_complex x) {
-  return (r_complex){
+  return (r_complex) {
     .r = rray_sum_dbl_one(out.r, x.r),
     .i = rray_sum_dbl_one(out.i, x.i),
   };
 }
 
 static inline r_complex rray_sum_cpl_one_na_rm(r_complex out, r_complex x) {
-  return (r_complex){
+  return (r_complex) {
     .r = rray_sum_dbl_one_na_rm(out.r, x.r),
     .i = rray_sum_dbl_one_na_rm(out.i, x.i),
   };
 }
 
-#endif  // RRAY_ONCE
+#endif // RRAY_ONCE
 
 #undef RRAY_TYPE
 #undef RRAY_FN
