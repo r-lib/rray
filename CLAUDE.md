@@ -55,6 +55,34 @@ rray_size(x) # 2*3*4, shortcut as length(x)
 rray_dimensionality(x) # length(rray_dimensions(x))
 ```
 
+## Editing files
+
+Use the Read, Edit, and Write tools for all file access and edits (even where a mode instruction says to prefer the shell).
+
+## Comments
+
+Extremely minimal. Far fewer than you think, and far shorter. Explain what is not obvious from the code; never restate it, and never write a paragraph of rationale. If a comment is going to end up being long, do not write it. Long comments should be written by a human.
+
+## Prose
+
+Applies to comments, roxygen documentation, and error messages.
+
+- Write for an easy read. Plain words over jargon, short sentences over long ones. If a term needs its own explanation, it is probably the wrong term.
+
+- Prefer a small code example over a verbose paragraph. Show the input and the output and let the reader draw the conclusion.
+
+- Never use em dashes. Use a comma, a colon, a full stop, or parentheses.
+
+## Responses
+
+The prose rules above also apply to what you write back to me in conversation, not just to code and documentation. An easy read matters just as much here.
+
+- Plain words. No jargon or complicated phrasing where a simple sentence does the job. If you must use a term of art, define it in a few words.
+
+- Lead with the answer, then the detail I need to check it.
+
+- Say what you did and what you found. Skip the preamble and the restatement of my request.
+
 ## C code conventions
 
 - Each feature gets a `src/{name}.c` and `src/{name}.h` pair.
@@ -131,8 +159,3 @@ air format .
 - Always re-document the package after changing a roxygen2 comment.
 - Use `pkgdown::check_pkgdown()` to check that all topics are included in the reference index.
 - Always include a full blank line between `@param`s.
-
-### Writing
-
-- Use sentence case for headings.
-- Use US English.
