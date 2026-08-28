@@ -73,10 +73,6 @@ Applies to comments, roxygen documentation, and error messages.
 
 - Never use em dashes. Use a comma, a colon, a full stop, or parentheses.
 
-- Use sentence case for headings.
-
-- Use US English.
-
 ## Responses
 
 The prose rules above also apply to what you write back to me in conversation, not just to code and documentation. An easy read matters just as much here.
