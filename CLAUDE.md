@@ -1,11 +1,3 @@
-## Session startup
-
-At the START of every session, before doing anything else, create a new conversation file in `conversations/` following the naming convention `{YYYY-MM-DD}-{index}-{topic}.md`. Check existing files to determine the next index.
-
-You MUST update this file after every single action you perform. Record our FULL conversation. You should ALWAYS record my prompts verbatim.
-
-ALWAYS report an up to date running cost of this conversation at the very top of the file. This must be updated after every single action.
-
 ## rray4
 
 This is a reimagining of rray. This reimagining of rray will be written in pure C without xtensor. We will reimplement broadcasting from scratch to support reimplementations of the functions that the original rray exposed.
