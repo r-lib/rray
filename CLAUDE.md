@@ -77,6 +77,16 @@ Applies to comments, roxygen documentation, and error messages.
 
 - Use US English.
 
+## Responses
+
+The prose rules above also apply to what you write back to me in conversation, not just to code and documentation. An easy read matters just as much here.
+
+- Plain words. No jargon or complicated phrasing where a simple sentence does the job. If you must use a term of art, define it in a few words.
+
+- Lead with the answer, then the detail I need to check it.
+
+- Say what you did and what you found. Skip the preamble and the restatement of my request.
+
 ## C code conventions
 
 - Each feature gets a `src/{name}.c` and `src/{name}.h` pair.
