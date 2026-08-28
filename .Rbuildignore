@@ -1,7 +1,6 @@
 ^rray4\.Rproj$
 ^\.Rproj\.user$
-^\.claude$
+^CLAUDE\.md$
 ^LICENSE\.md$
-^\conversations$
 ^compile_commands\.json$
 ^\.cache$
