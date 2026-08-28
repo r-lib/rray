@@ -2,11 +2,11 @@
 
 This is a reimagining of rray. This reimagining of rray will be written in pure C without xtensor. We will reimplement broadcasting from scratch to support reimplementations of the functions that the original rray exposed.
 
-You have write access to this `rray4/` folder at all times.
+### References
 
 Original rray is at `~/files/r/packages/rray`, you have read only access to this at all times.
 
-When in doubt, prefer the code style of vctrs and rlang, particularly for the C code, located at `~/files/r/packages/vctrs` and `~/files/r/packages/rlang`, which you also have read only access to at all times.
+Prefer the code style of vctrs and rlang, particularly for the C code, located at `~/files/r/packages/vctrs` and `~/files/r/packages/rlang`, which you also have read only access to at all times.
 
 You also have read only access to the R sources, located at `/Users/davis/files/r/r-svn`. This can be particularly useful for checking C implementations.
 
@@ -132,29 +132,7 @@ air format .
 - Use `pkgdown::check_pkgdown()` to check that all topics are included in the reference index.
 - Always include a full blank line between `@param`s.
 
-### `NEWS.md`
-
-- Every user-facing change should be given a bullet in `NEWS.md`. Do not add bullets for small documentation changes or internal refactorings.
-- Each bullet should briefly describe the change to the end user and mention the related issue in parentheses.
-- A bullet can consist of multiple sentences but should not contain any new lines (i.e. DO NOT line wrap).
-- If the change is related to a function, put the name of the function early in the bullet.
-- Order bullets alphabetically by function name. Put all bullets that don't mention function names at the beginning.
-
-### GitHub
-
-- If you use `gh` to retrieve information about an issue, always use `--comments` to read all the comments.
-
 ### Writing
 
 - Use sentence case for headings.
 - Use US English.
-
-### Proofreading
-
-If the user asks you to proofread a file, act as an expert proofreader and editor with a deep understanding of clear, engaging, and well-structured writing.
-
-Work paragraph by paragraph, always starting by making a TODO list that includes individual items for each top-level heading.
-
-Fix spelling, grammar, and other minor problems without asking the user. Label any unclear, confusing, or ambiguous sentences with a FIXME comment.
-
-Only report what you have changed.
