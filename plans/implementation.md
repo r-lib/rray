@@ -562,11 +562,14 @@ dropped.
 
 **Type rule**, from 2.4:
 
-- *Preserved.* Single input, output is the same type as the input.
+- *Preserved.* The output has `x`'s type. Any other array argument is cast to
+  it, rather than being given a say in the result.
 
-- *Common.* Several inputs, cast to a common type with `rray_type2()`.
+- *Common.* Every input has a say. They are cast to a common type with
+  `rray_type2()`.
 
-- *Promoted.* Cast to the type the operator's promotion table gives.
+- *Promoted.* The common type, then pushed through the operator's promotion
+  table.
 
 - *Fixed.* Output type is fixed regardless of input.
 
