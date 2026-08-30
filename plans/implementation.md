@@ -149,24 +149,21 @@ support makes something genuinely hard, drop it and say so in the pull request.
 
 ## 2.3 Names
 
-`rray_names(x)` returns the `dimnames` attribute as it is. A one dimensional
-array with names returns a one element list. No normalization on read.
+There are five rules. Every function in Part 5 declares which one it follows.
 
-Setters take a list of length exactly the dimensionality, where each element is
-either `NULL` or a character vector of exactly that axis' dimension. `NULL`
-clears everything. Short lists are not padded, they are an error.
+**Follow the axis.** An axis keeps its names if its dimension is unchanged, and
+loses them if its dimension changed. Whatever it keeps travels with it to
+wherever the axis ends up. New axes have no names.
 
-There are no `<-` replacement forms.
-
-Every function in Part 5 declares which of these four rules it follows.
-
-**Broadcast.** An axis keeps its names if its dimension is unchanged, and loses
-them if its dimension changed. New trailing axes have no names. An axis of
+This is the rule for almost everything that reshapes an array. An axis of
 dimension 1 broadcast to 1 counts as unchanged and keeps its length 1 names.
 
 **Reduce.** Reduced axes lose their names. Every other axis keeps them.
 
-**Coalesce**, used by anything with two or more array inputs. For each axis of
+Nearly the same rule, but a reduced axis loses its names even when its dimension
+was already 1, so it needs stating separately.
+
+**Coalesce.** Used by anything with two or more array inputs. For each axis of
 the common dimensions:
 
 1. Use `x`'s names if `x`'s dimension there equals the common dimension and `x`
@@ -178,6 +175,9 @@ the common dimensions:
 
 This lives in an internal `rray_names_common()`.
 
+**Subset.** Names are subset alongside the data, so an axis keeps the names of
+the elements that survived.
+
 **Dropped.** All names are discarded. Used where no axis survives in a
 recognisable form, such as a reshape.
 
@@ -186,6 +186,17 @@ still functionally the same array, so names travel with the axes that did not
 move. A function with two inputs builds a genuinely new array, but dropping
 every name would make `rray_add(named_matrix, 1)` lose its names, which reads as
 a bug.
+
+### The names API
+
+`rray_names(x)` returns the `dimnames` attribute as it is. A one dimensional
+array with names returns a one element list. No normalization on read.
+
+Setters take a list of length exactly the dimensionality, where each element is
+either `NULL` or a character vector of exactly that axis' dimension. `NULL`
+clears everything. Short lists are not padded, they are an error.
+
+There are no `<-` replacement forms.
 
 ## 2.4 Types
 
@@ -342,10 +353,8 @@ Every function pull request covers:
 - **Names.** Kept where the rule says kept, dropped where the rule says dropped.
   Include the case where only some axes have names.
 
-- **Classed input is refused**, with a snapshot of the error.
-
 - **Errors.** Every error path, with `expect_snapshot(error = TRUE)`, so the
-  full message is reviewable.
+  full message is reviewable. That includes classed input being refused.
 
 Mechanics:
 
@@ -367,8 +376,9 @@ Mechanics:
 
 # Part 4: The pull requests
 
-PRs 1 to 11 are ordered and each depends on the one before. After that, work
-through Part 5 in any order that respects the dependencies noted there.
+PRs 1 to 11 build the foundations. Work through them in order, since each
+assumes the ones before it have landed. After that, work through Part 5 in any
+order that respects the dependencies noted there.
 
 ## PR 1: Package housekeeping
 
@@ -539,9 +549,10 @@ Files: `src/type.c`, `R/arithmetic.R`, `src/arithmetic.c`.
 # Part 5: Function reference
 
 Each entry gives what the function does, what the original rray did, the
-proposed signature, and two rules.
+proposed signature, the files it touches, and two rules.
 
-**Names rule**, from 2.3: broadcast, reduce, coalesce, or dropped.
+**Names rule**, from 2.3: follow the axis, reduce, coalesce, subset, or
+dropped.
 
 **Type rule**, from 2.4:
 
@@ -583,8 +594,8 @@ Collapse to one dimension.
 rray_flatten(array(1:10, c(5, 2)))     # (5, 2) -> (10)
 ```
 
-Names: broadcast. So they survive only when the first axis' dimension is
-unchanged.
+Names: follow the axis. Type: preserved. So names survive only when the first
+axis' dimension is unchanged.
 
 ```r
 y <- array(1:2, 2, dimnames = list(c("a", "b")))
@@ -594,8 +605,6 @@ rray_flatten(array(1:2, c(2, 1), dimnames = list(c("a", "b"), NULL)))
 rray_flatten(array(1:2, c(1, 2), dimnames = list(NULL, c("a", "b"))))
                                                   # (1, 2) -> (2), names dropped
 ```
-
-Type: preserved.
 
 Signature: `rray_flatten(x)`. Attributes only.
 
@@ -614,7 +623,8 @@ rray_squeeze(y, c(2, 3))                 # (10, 1, 1) -> (10)
 rray_squeeze(y, 2)                       # (10, 1, 1) -> (10, 1)
 ```
 
-Names on surviving axes are kept and move with them. Type: preserved.
+Names: follow the axis. Type: preserved. Surviving axes keep their names and
+carry them to their new position.
 
 Signature: `rray_squeeze(x, axes)`. Axes required, following the reduction
 convention. Attributes only.
@@ -632,11 +642,9 @@ rray_expand(x, 2)             # (5, 1, 2)
 rray_expand(x, 3)             # (5, 2, 1)
 ```
 
-Names follow their original axis to its new position. In `rray_expand(x, 1)` the
-5 row names become the names of the new second axis, and the new first axis has
-none. This is the difference from a plain reshape, which drops everything.
-
-Type: preserved.
+Names: follow the axis. Type: preserved. In `rray_expand(x, 1)` the 5 row names
+become the names of the new second axis, and the inserted first axis has none.
+This is the difference from a plain reshape, which drops everything.
 
 Signature: `rray_expand(x, axis)`. Single axis. Attributes only.
 
@@ -656,7 +664,8 @@ rray_transpose(x_3d)                 # (3, 2, 2) -> (2, 2, 3), reverses all axes
 rray_transpose(x_3d, c(2, 1, 3))     # flips the first two, leaves the third
 ```
 
-Names travel with their axis. Type: preserved.
+Names: follow the axis. Type: preserved. No dimension changes, so every axis
+keeps its names and carries them to its new position.
 
 Signature: `rray_transpose(x, permutation = NULL)`, where `NULL` reverses all
 axes. It moves data, so it needs a real C loop.
@@ -681,8 +690,8 @@ rray_tile(x, c(1, 2, 2))    # tile into a third dimension
 Different from broadcasting: broadcasting only repeats an axis whose dimension
 is 1, tiling repeats any axis.
 
-Names: broadcast. Tiled axes change dimension so they lose their names,
-untiled axes keep theirs. Type: preserved.
+Names: follow the axis. Type: preserved. Tiled axes change dimension so they
+lose their names, untiled axes keep theirs.
 
 Signature: `rray_tile(x, times)`.
 
@@ -698,8 +707,11 @@ rray_flip(x, 1)      # reverse the rows
 rray_flip(x, 2)      # reverse the columns
 ```
 
-Names on the flipped axis are reversed with it. Other axes are untouched. Type:
-preserved.
+Names: follow the axis, with one exception. The flipped axis keeps its dimension,
+so it keeps its names, but they must be **reversed** alongside the data rather
+than copied across.
+
+Type: preserved.
 
 Signature: `rray_flip(x, axis)`. Single axis.
 
@@ -808,8 +820,8 @@ rray_ones_like(x)
 rray_zeros_like(x)
 ```
 
-Names: kept, since every axis keeps its dimension. Type: preserved, with `value`
-cast to `x`'s type.
+Names: follow the axis. Every axis keeps its dimension, so everything is kept.
+Type: preserved, with `value` cast to `x`'s type.
 
 Signature: `rray_full_like(x, value)`, `rray_ones_like(x)`, `rray_zeros_like(x)`.
 
@@ -914,7 +926,7 @@ Base R cannot do the second one without fully specifying every axis and passing
 Index types: integer-ish selects elements, logical must be length 1 or the
 dimension, character requires names on that axis, `NULL` means 0.
 
-Names: subset alongside the data.
+Names: subset.
 
 ### `rray_extract()`, by index, always drops
 
@@ -956,7 +968,7 @@ Subset a single axis by index, keeping dimensionality.
 rray_slice(x, i, axis)
 ```
 
-Names: subset alongside the data.
+Names: subset.
 
 ### The assignment forms
 
@@ -1019,7 +1031,8 @@ rray_sort(x, 2)      # along the columns
 rray_sort(x, 3)      # along the third axis
 ```
 
-Names on the sorted axis are dropped, because they no longer line up. Other axes
+Names: follow the axis, with one exception. The sorted axis keeps its dimension
+but its names no longer line up with the data, so they are dropped. Other axes
 keep theirs.
 
 Signature: `rray_sort(x, axis)`.
