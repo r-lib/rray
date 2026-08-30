@@ -23,8 +23,7 @@ purpose.
 Then find your pull request in Part 4, or your function in Part 5. Each entry
 says what to build, which files to touch, and what "done" means.
 
-One pull request per entry. Keep them small. Use the `gh-stack` skill when
-several depend on each other.
+One pull request per entry. Keep them small.
 
 ---
 
