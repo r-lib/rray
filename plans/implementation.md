@@ -1031,60 +1031,6 @@ NULL)`, `rray_cbind(..., .ptype = NULL)`.
 
 Files: `R/bind.R`, `src/bind.c`, `src/bind.h`, `src/bind-template.h`.
 
-## 5.8 Order and duplicates
-
-**A human should design review this before implementation.** The axis semantics
-need care, and comparing whole slices rather than individual elements is a
-different shape of problem from everything else in the package.
-
-Type: preserved, except where noted.
-
-### `rray_sort()`
-
-```r
-x <- array(c(20:11, 1:10), c(5, 2, 2))
-
-rray_sort(x, 1)      # sort looking along the rows
-rray_sort(x, 2)      # along the columns
-rray_sort(x, 3)      # along the third axis
-```
-
-Names: follow the axis, with one exception. The sorted axis keeps its dimension
-but its names no longer line up with the data, so they are dropped. Other axes
-keep theirs.
-
-Signature: `rray_sort(x, axis)`.
-
-### `rray_unique()`, `rray_unique_loc()`, `rray_unique_count()`
-
-Deduplicate slices along an axis.
-
-```r
-x <- array(c(1, 1, 3, 3, 2, 2, 4, 4), c(2, 2, 2))
-
-rray_unique(x, 1)          # unique rows
-rray_unique_loc(x, 2)      # positions of the unique columns
-rray_unique_count(x, 2)    # how many unique columns
-```
-
-`rray_unique_loc()` has a fixed integer output. `rray_unique_count()` returns a
-single integer.
-
-### `rray_duplicate_any()`, `rray_duplicate_detect()`, `rray_duplicate_id()`
-
-```r
-x <- array(c(1, 1, 2, 2), c(2, 2))
-
-rray_duplicate_any(x, 1)       # are any rows duplicated
-rray_duplicate_detect(x, 1)    # TRUE wherever a duplicate exists, first included
-rray_duplicate_id(x, 1)        # position of the first occurrence of each slice
-```
-
-All three take a single axis. `_any` returns a single logical, `_detect` has a
-fixed logical output, `_id` has a fixed integer output.
-
-Files: `R/sort.R`, `R/unique.R`, `R/duplicate.R`, each with a C pair.
-
 ---
 
 # Part 6: Out of scope
@@ -1125,6 +1071,13 @@ Deferred rather than dropped:
 - **Support for classed arrays**, through a proxy and restore system and a
   generic type system. Written up in full in `plans/extensions.md`, including
   why it is deferred and the cases that must shape its design.
+
+- **Order and duplicates.** `rray_sort()`, `rray_unique()`,
+  `rray_unique_loc()`, `rray_unique_count()`, `rray_duplicate_any()`,
+  `rray_duplicate_detect()`, `rray_duplicate_id()`. Comparing whole slices
+  rather than individual elements is a different shape of problem from
+  everything else here, and it wants a comparison and equality story that does
+  not exist yet. Design it properly when the rest of the package is working.
 
 ---
 
