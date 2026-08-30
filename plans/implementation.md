@@ -762,19 +762,27 @@ Files: `R/extremum.R`, `src/extremum.c`, `src/extremum.h`.
 
 ### `rray_clip()`
 
-Bound values between a low and a high.
+Bound values between a low and a high, elementwise.
 
 ```r
 x <- matrix(1:10, ncol = 2)
 rray_clip(x, 1, 5)
 ```
 
-**A human should design review this before implementation.** Three way
-broadcasting raises questions the original rray did not answer well: whether
-`low` and `high` broadcast against `x` or must be scalars, and what happens when
-`low > high`.
+`low` and `high` are broadcast to `x`'s dimensions. They do not have to be
+scalars, so each element can have its own bounds. `x` itself is never broadcast,
+so the output always has `x`'s dimensions.
 
-Names: coalesce. Type: promoted.
+It is an error for any `low` to be greater than its matching `high`.
+
+Names: follow the axis. Type: preserved, with `low` and `high` cast to `x`'s
+type. Since `x` is never broadcast, every axis keeps its dimension, so in
+practice all of `x`'s names survive and none of `low`'s or `high`'s are
+consulted.
+
+`x` is the subject here and the bounds are parameters, which is why neither rule
+looks at `low` or `high`. This is the one function with several array inputs that
+does not coalesce.
 
 Signature: `rray_clip(x, low, high)`.
 
