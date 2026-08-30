@@ -254,11 +254,10 @@ Each family gets its own operator enum and its own type function.
 
 ```c
 enum r_type rray_binary_type(enum rray_binary_op op, enum r_type x, enum r_type y);
-enum r_type rray_unary_type(enum rray_unary_op op, enum r_type x);
 enum r_type rray_reduction_type(enum rray_reduction_op op, enum r_type x);
 ```
 
-Three enums rather than one shared vocabulary, so each function can only be
+Separate enums rather than one shared vocabulary, so each function can only be
 handed an operator its family actually has.
 
 Each returns **one type**, used both to cast the inputs and to allocate the
@@ -281,12 +280,6 @@ Binary elementwise:
 | `%%` `%/%` | int | int | dbl | error |
 | `maximum` `minimum` | int | int | dbl | error |
 | `hypot` | dbl | dbl | dbl | error |
-
-Unary elementwise:
-
-| op | lgl | int | dbl | cpl |
-|---|---|---|---|---|
-| `-` | int | int | dbl | cpl |
 
 Reduction:
 
@@ -383,7 +376,7 @@ Mechanics:
 
 # Part 4: The pull requests
 
-PRs 1 to 11 build the foundations. Work through them in order, since each
+PRs 1 to 10 build the foundations. Work through them in order, since each
 assumes the ones before it have landed. After that, work through Part 5 in any
 order that respects the dependencies noted there.
 
@@ -549,13 +542,6 @@ Fix the comment in `src/sum-template.h` claiming a logical array can never
 overflow an integer sum. That is false once long arrays are supported.
 
 Files: `src/type.c`, `R/sum.R`, `src/sum.c`, `src/sum-template.h`.
-
-## PR 11: `rray_opposite()`
-
-`enum rray_unary_op`, `rray_unary_type()`, the unary table, and its one caller.
-It lands here rather than up front because there is nothing else that needs it.
-
-Files: `src/type.c`, `R/arithmetic.R`, `src/arithmetic.c`.
 
 ---
 
@@ -734,8 +720,8 @@ Files: `R/flip.R`, `src/flip.c`, `src/flip.h`, `src/flip-template.h`.
 
 Names: coalesce. Type: promoted.
 
-All share one template and the pipeline from 2.4: promote, cast both, find
-common dimensions, loop with two broadcast iterators.
+All binary, all sharing one template and the pipeline from 2.4: promote, cast
+both, find common dimensions, loop with two broadcast iterators.
 
 | function | op |
 |---|---|
@@ -746,7 +732,9 @@ common dimensions, loop with two broadcast iterators.
 | `rray_power(x, y)` | `^` |
 | `rray_modulo(x, y)` | `%%` |
 | `rray_integer_divide(x, y)` | `%/%` |
-| `rray_opposite(x)` | unary `-` |
+
+There is no unary negation. `-x` already works on a bare array, so a function
+for it would add nothing.
 
 Match R's own semantics for missing values, `NaN`, and division by zero. Check
 `/Users/davis/files/r/r-svn` when a case is unclear rather than guessing.
@@ -1148,6 +1136,15 @@ pull request, with benchmarks against the version that came before it.
 
 Functions most likely to benefit: `rray_broadcast()`, the elementwise arithmetic
 family, and `rray_tile()`.
+
+## Unary elementwise math
+
+There is no unary elementwise family today. `-x` works on a bare array already,
+and `abs()`, `sqrt()` and friends are out of scope.
+
+If one is ever wanted, it follows the shape of the other two families: an
+`enum rray_unary_op` and an `rray_unary_type()` beside `rray_binary_type()` and
+`rray_reduction_type()`.
 
 ## An unspecified type
 
