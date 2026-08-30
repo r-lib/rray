@@ -760,17 +760,6 @@ Signature: `rray_maximum(x, y, ..., na_rm = FALSE)`.
 
 Files: `R/extremum.R`, `src/extremum.c`, `src/extremum.h`.
 
-### `rray_multiply_add()`
-
-`x * y + z`, fused. Three way broadcasting.
-
-Names: coalesce, extended to three inputs, which is a straight extension of the
-two input rule. Type: promoted.
-
-Signature: `rray_multiply_add(x, y, z)`.
-
-Files: `R/multiply-add.R`, `src/multiply-add.c`, `src/multiply-add.h`.
-
 ### `rray_clip()`
 
 Bound values between a low and a high.
