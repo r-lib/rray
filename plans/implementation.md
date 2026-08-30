@@ -41,6 +41,10 @@ Functions that need a per type implementation get a `src/{name}-template.h`
 included once per type from `src/{name}.c`. Copy the shape of
 `src/broadcast-template.h`.
 
+**This one is under review.** PR 5 trials a shell and core split instead. If it
+lands, this section changes and there will be no `-template.h` files. Check
+whether PR 5 has been decided before writing a new template.
+
 Private declarations go in `src/decl/{name}-decl.h`.
 
 ## Naming
@@ -383,7 +387,7 @@ Mechanics:
 
 # Part 4: The pull requests
 
-PRs 1 to 10 build the foundations. Work through them in order, since each
+PRs 1 to 11 build the foundations. Work through them in order, since each
 assumes the ones before it have landed. After that, work through Part 5 in any
 order that respects the dependencies noted there.
 
@@ -486,7 +490,106 @@ Files: `src/lazy.h`, `src/names.c`, `src/names.h`, `src/iterator.h`,
 **Done when** the existing tests pass unchanged and the three helpers are
 noticeably shorter.
 
-## PR 5: `rray_broadcast_common()`
+## PR 5: Shell and core spike
+
+A trial, not a commitment. Convert `rray_broadcast()` to a different shape for
+per type code, measure it, and decide whether the rest of the package follows.
+
+### Why
+
+The `src/{name}-template.h` pattern templates the whole function, but almost
+none of the function depends on the type:
+
+| template | templated body | lines touching a type |
+|---|---|---|
+| `broadcast` | ~80 | 6 |
+| `split` | ~99 | 9 |
+| `sum` | ~72 | 8 |
+
+Roughly 92% of each body is dimension checks, allocation, iterator setup and
+names handling, none of which is typed, and all of which is compiled seven
+times. `RRAY_ONCE` exists to carve out the parts that are not really templates,
+which is the same problem showing through.
+
+### The shape to try
+
+Split each function into a type-independent shell and a small typed core. The
+shell is ordinary C, written once:
+
+```c
+r_obj* rray_broadcast(r_obj* x, r_obj* dimensions, struct r_lazy error_call) {
+  // dimensions, checks, allocation, iterator setup: all untyped
+
+  switch (r_typeof(x)) {
+  case R_TYPE_logical: broadcast_lgl(x, out, size, &it); break;
+  case R_TYPE_integer: broadcast_int(x, out, size, &it); break;
+  // ...
+  }
+
+  // names
+}
+```
+
+The core is a short macro with one row per type, following the shape of `SLICE`
+in vctrs' `src/slice.c`:
+
+```c
+#define RRAY_BROADCAST_LOOP(CTYPE, CONST_DEREF, DEREF)   \
+  const CTYPE* v_x = CONST_DEREF(x);                     \
+  CTYPE* v_out = DEREF(out);                             \
+  for (r_ssize i = 0; i < size; ++i) {                   \
+    v_out[i] = v_x[rray_iterator_location(p_it)];        \
+    rray_iterator_next(p_it);                            \
+  }
+
+static void broadcast_lgl(BROADCAST_ARGS) { RRAY_BROADCAST_LOOP(int, r_lgl_cbegin, r_lgl_begin); }
+static void broadcast_int(BROADCAST_ARGS) { RRAY_BROADCAST_LOOP(int, r_int_cbegin, r_int_begin); }
+static void broadcast_dbl(BROADCAST_ARGS) { RRAY_BROADCAST_LOOP(double, r_dbl_cbegin, r_dbl_begin); }
+```
+
+Write `chr` and `list` out by hand. They need the write barrier, so they are
+genuinely different, and `RRAY_OUT_ASSIGN` currently hides that by making all
+seven look alike.
+
+### What this is trying to buy
+
+- The untyped 92% written once instead of seven times.
+
+- No `#if/#elif` config block, no `#undef` list to keep in sync, no `RRAY_ONCE`.
+
+- A call site table you can read at a glance and diff between types.
+
+- Working clangd. A `-template.h` opened on its own has no `RRAY_TYPE` defined,
+  so the file you edit most is full of false errors.
+
+- A better answer for the combinatorial case. Seven arithmetic operators across
+  four types is 28 loops, which is 28 one line rows if the macro takes the
+  scalar operation, against 28 template inclusions.
+
+### The risk to measure
+
+The loop now sits behind a function call that the compiler may not inline.
+Benchmark `rray_broadcast()` before and after, across small and large arrays and
+across a few types. The call happens once per array rather than once per
+element, so it should not matter, but check rather than assume.
+
+### The decision
+
+**If it works:** update the Files section in Part 1 to describe the shell and
+core pattern instead of `-template.h`, and open follow up pull requests to
+convert `split` and `sum`. Everything in Part 5 then uses the new shape, so no
+function entry needs a `-template.h` file listed.
+
+**If it does not:** keep the templates, and record the benchmark here so nobody
+re-opens this.
+
+Either way the outcome gets written into the plan. Do not leave both patterns in
+the package.
+
+Files: `src/broadcast.c`, `src/broadcast.h`, deleting
+`src/broadcast-template.h` if it goes ahead.
+
+## PR 6: `rray_broadcast_common()`
 
 ```r
 rray_broadcast_common(..., .dimensions = NULL)
@@ -497,7 +600,7 @@ Returns a list of arrays, all broadcast to the common dimensions. Mirrors
 
 Files: `R/broadcast.R`, `src/broadcast.c`, `src/broadcast.h`.
 
-## PR 6: `rray_names_common()`
+## PR 7: `rray_names_common()`
 
 The coalesce rule from 2.3. Internal C plus an unexported R wrapper so it can be
 tested directly before it has a real caller.
@@ -508,7 +611,7 @@ common dimensions, so that argument is not optional decoration.
 
 Files: `src/names.c`, `src/names.h`, `R/names.R`.
 
-## PR 7: Native types
+## PR 8: Native types
 
 The internal type interface from 2.4. All C, no exports, with unexported R
 wrappers so it can be tested directly.
@@ -522,7 +625,7 @@ wrappers so it can be tested directly.
 Files: `src/type.c`, `src/type.h`, `src/cast.c`, `src/cast.h`,
 `src/cast-template.h`.
 
-## PR 8: Binary promotion and `rray_add()`
+## PR 9: Binary promotion and `rray_add()`
 
 `enum rray_binary_op`, `rray_binary_type()` and its table, then one function
 using it end to end.
@@ -533,14 +636,14 @@ The C loop uses two broadcast iterators stepped side by side. Names come from
 Files: `src/op.h` for the enums, `src/type.c` for the table, `R/arithmetic.R`,
 `src/arithmetic.c`, `src/arithmetic.h`, `src/arithmetic-template.h`.
 
-## PR 9: The rest of the binary arithmetic
+## PR 10: The rest of the binary arithmetic
 
 `rray_subtract()`, `rray_multiply()`, `rray_divide()`, `rray_power()`,
 `rray_modulo()`, `rray_integer_divide()`.
 
 All the same shape as `rray_add()`. Share the template.
 
-## PR 10: Reduction promotion and `rray_sum()`
+## PR 11: Reduction promotion and `rray_sum()`
 
 `rray_reduction_type()` and its table. Retrofit `rray_sum()` to use it, which
 gives it the `lgl` to `int` promotion.
@@ -572,6 +675,10 @@ dropped.
   table.
 
 - *Fixed.* Output type is fixed regardless of input.
+
+Entries below list a `src/{name}-template.h` where a function needs per type
+code. If PR 5 lands, those files do not exist and the per type code lives in
+`src/{name}.c` instead. Nothing else about an entry changes.
 
 ## 5.1 Shape
 
@@ -912,7 +1019,7 @@ Names: reduce.
 
 | function | op | type rule |
 |---|---|---|
-| `rray_sum(x, axes, ..., na_rm = FALSE)` | `sum` | promoted, exists, retrofit in PR 10 |
+| `rray_sum(x, axes, ..., na_rm = FALSE)` | `sum` | promoted, exists, retrofit in PR 11 |
 | `rray_prod(x, axes, ..., na_rm = FALSE)` | `prod` | promoted, int to dbl |
 | `rray_mean(x, axes, ..., na_rm = FALSE)` | `mean` | promoted, lgl and int to dbl |
 | `rray_max(x, axes, ..., na_rm = FALSE)` | `max` | preserved, errors on cpl |
@@ -1105,12 +1212,12 @@ version to measure against.
 
 ## Iterator runs
 
-Every template today steps the iterator once per element, even when no
+Every per type loop today steps the iterator once per element, even when no
 broadcasting is happening and the mapping is the identity.
 
 Instead of a bespoke fast path in each function, the iterator could report a
 **run length**: the next N output elements map to N consecutive input locations,
-or to the same location N times. Every template then shares one shape:
+or to the same location N times. Every loop then shares one shape:
 
 ```c
 while (i < size) {
