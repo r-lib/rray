@@ -845,10 +845,10 @@ Names: coalesce. Type: fixed, logical output.
 |---|---|
 | `rray_equal(x, y)` | `==` |
 | `rray_not_equal(x, y)` | `!=` |
-| `rray_greater(x, y)` | `>` |
-| `rray_greater_equal(x, y)` | `>=` |
-| `rray_lesser(x, y)` | `<` |
-| `rray_lesser_equal(x, y)` | `<=` |
+| `rray_greater_than(x, y)` | `>` |
+| `rray_greater_than_or_equal(x, y)` | `>=` |
+| `rray_less_than(x, y)` | `<` |
+| `rray_less_than_or_equal(x, y)` | `<=` |
 
 Files: `R/compare.R`, `src/compare.c`, `src/compare.h`,
 `src/compare-template.h`.
