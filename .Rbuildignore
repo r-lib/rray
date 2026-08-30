@@ -11,4 +11,3 @@
 ^\.vscode$
 \.clangd$
 ^\.github$
-^codecov\.yml$
