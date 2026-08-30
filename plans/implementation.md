@@ -278,7 +278,6 @@ Binary elementwise:
 | `+` `-` `*` | int | int | dbl | cpl |
 | `/` `^` | dbl | dbl | dbl | cpl |
 | `%%` `%/%` | int | int | dbl | error |
-| `maximum` `minimum` | int | int | dbl | error |
 
 Reduction:
 
@@ -287,11 +286,20 @@ Reduction:
 | `sum` | int | int | dbl | cpl |
 | `prod` | dbl | dbl | dbl | cpl |
 | `mean` | dbl | dbl | dbl | cpl |
-| `max` `min` | int | int | dbl | error |
 
 `sum` on an integer array stays integer and errors on overflow. `prod` promotes
 to double, matching base R's `prod()`, because integer products overflow almost
 immediately.
+
+### Operators that promote nothing
+
+`maximum`, `minimum`, `max` and `min` are in the tables' families but not in the
+tables, because picking the largest of some values cannot change their type. The
+maximum of two logicals is a logical.
+
+They still go through `rray_binary_type()` and `rray_reduction_type()`, which for
+them return the type unchanged and error on `cpl`, since complex numbers have no
+ordering. So the type function is doing validation rather than promotion.
 
 ### Operators with a fixed output type
 
@@ -754,7 +762,8 @@ Files: `R/arithmetic.R`, `src/arithmetic.c`, `src/arithmetic.h`,
 Elementwise maximum and minimum of two arrays, with broadcasting. Not to be
 confused with `rray_max()` and `rray_min()`, which reduce.
 
-Names: coalesce. Type: promoted, ops `maximum` and `minimum`.
+Names: coalesce. Type: common, errors on `cpl`. Ops `maximum` and `minimum`,
+which promote nothing, as 2.4 explains.
 
 Signature: `rray_maximum(x, y, ..., na_rm = FALSE)`.
 
@@ -889,8 +898,8 @@ Names: reduce.
 | `rray_sum(x, axes, ..., na_rm = FALSE)` | `sum` | promoted, exists, retrofit in PR 10 |
 | `rray_prod(x, axes, ..., na_rm = FALSE)` | `prod` | promoted, int to dbl |
 | `rray_mean(x, axes, ..., na_rm = FALSE)` | `mean` | promoted, lgl and int to dbl |
-| `rray_max(x, axes, ..., na_rm = FALSE)` | `max` | promoted |
-| `rray_min(x, axes, ..., na_rm = FALSE)` | `min` | promoted |
+| `rray_max(x, axes, ..., na_rm = FALSE)` | `max` | preserved, errors on cpl |
+| `rray_min(x, axes, ..., na_rm = FALSE)` | `min` | preserved, errors on cpl |
 | `rray_all(x, axes)` | | fixed, logical in, logical out |
 | `rray_any(x, axes)` | | fixed, logical in, logical out |
 
