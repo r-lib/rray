@@ -857,17 +857,19 @@ Logical operators take logical input and return a logical array.
 
 | function | meaning |
 |---|---|
-| `rray_logical_and(x, y)` | `&` |
-| `rray_logical_or(x, y)` | `\|` |
-| `rray_logical_not(x)` | `!` |
+| `rray_and(x, y)` | `&` |
+| `rray_or(x, y)` | `\|` |
+
+There is no negation. `!x` already works on a bare array, so a function for it
+would add nothing.
 
 Edge cases worth testing, from the original's documentation:
 
 ```r
 x <- array(TRUE, c(1, 2))
-rray_logical_and(logical(), x)                        # common dimensions (0, 2)
-rray_logical_and(x, array(logical(), c(0, 1, 2)))     # common dimensions (0, 2, 2)
-try(rray_logical_and(x, array(logical(), c(1, 0))))   # 2 and 0 do not broadcast
+rray_and(logical(), x)                        # common dimensions (0, 2)
+rray_and(x, array(logical(), c(0, 1, 2)))     # common dimensions (0, 2, 2)
+try(rray_and(x, array(logical(), c(1, 0))))   # 2 and 0 do not broadcast
 ```
 
 Files: `R/logical.R`, `src/logical.c`, `src/logical.h`.
