@@ -130,7 +130,7 @@ r_obj* rray_set_axis_names(
 
   check_axis_names(names, axis + 1, dimension, error_call);
 
-  r_obj* old_names = rray_names(x, error_call);
+  r_obj* old_names = KEEP(rray_names(x, error_call));
 
   r_obj* new_names = KEEP(r_alloc_list(dimensionality));
   if (old_names != r_null) {
@@ -144,7 +144,7 @@ r_obj* rray_set_axis_names(
   r_obj* out = KEEP(r_wrap(x));
   r_attrib_poke_dim_names(out, new_names);
 
-  FREE(3);
+  FREE(4);
   return out;
 }
 
