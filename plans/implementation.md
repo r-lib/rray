@@ -565,23 +565,23 @@ dropped.
 
 ## 5.1 Shape
 
-### `rray_reshape()`
+### `rray_set_dimensions()`
 
 Reinterpret the same elements under new dimensions. Size cannot change.
 
 ```r
 x <- matrix(1:6, ncol = 1)
-rray_reshape(x, c(2, 3))
-rray_reshape(x, c(3, 2, 1))
-try(rray_reshape(x, c(6, 2)))
+rray_set_dimensions(x, c(2, 3))
+rray_set_dimensions(x, c(3, 2, 1))
+try(rray_set_dimensions(x, c(6, 2)))
 ```
 
 Names: dropped. Type: preserved.
 
-`rray_set_dimensions()` already does exactly this. Decide in this pull request
-whether `rray_reshape()` is a second name for it or whether one of them goes.
+Signature: `rray_set_dimensions(x, dimensions)`. It only changes attributes, so
+it uses `r_wrap()` rather than allocating.
 
-Signature: `rray_reshape(x, dimensions)`. Attributes only, so use `r_wrap()`.
+There is no `rray_reshape()`. It would be a second name for this.
 
 Files: already exist as `R/dimensions.R` and `src/dimensions.c`.
 
@@ -643,7 +643,7 @@ rray_expand(x, 3)             # (5, 2, 1)
 
 Names: follow the axis. Type: preserved. In `rray_expand(x, 1)` the 5 row names
 become the names of the new second axis, and the inserted first axis has none.
-This is the difference from a plain reshape, which drops everything.
+This is the difference from `rray_set_dimensions()`, which drops everything.
 
 Signature: `rray_expand(x, axis)`. Single axis. Attributes only.
 
