@@ -655,19 +655,25 @@ Permute axes.
 
 ```r
 x <- array(1:6, c(3, 2))
-rray_transpose(x)                    # (3, 2) -> (2, 3)
-rray_transpose(x, rev(1:2))          # identical
+rray_transpose(x, c(2, 1))           # (3, 2) -> (2, 3)
 
 x_3d <- rray_broadcast(x, c(3, 2, 2))
-rray_transpose(x_3d)                 # (3, 2, 2) -> (2, 2, 3), reverses all axes
+rray_transpose(x_3d, c(3, 2, 1))     # (3, 2, 2) -> (2, 2, 3), reverses all axes
 rray_transpose(x_3d, c(2, 1, 3))     # flips the first two, leaves the third
 ```
 
 Names: follow the axis. Type: preserved. No dimension changes, so every axis
 keeps its names and carries them to its new position.
 
-Signature: `rray_transpose(x, permutation = NULL)`, where `NULL` reverses all
-axes. It moves data, so it needs a real C loop.
+Signature: `rray_transpose(x, permutation)`. Required, with no default, matching
+`axes` on the reductions and on `rray_squeeze()`. A full reversal is easy enough
+to write out:
+
+```r
+rray_transpose(x, rev(seq_len(rray_dimensionality(x))))
+```
+
+It moves data, so it needs a real C loop.
 
 Needs a new iterator, or an existing one initialised with permuted strides. Work
 that out in the pull request and say which you chose.
