@@ -34,10 +34,9 @@ That is a short list, and most of it is hypothetical.
 ## It is most of the work
 
 The design costs roughly nine of the fifteen foundation pull requests the plan
-originally had: proxy, restore, retrofit, ptype, ptype2, cast, and three
-operator type hooks. On top of that comes C dispatch machinery, two documented
-recipes for method authors, and a proxy test in every function pull request
-afterward.
+originally had: proxy, restore, retrofit, ptype, ptype2, cast, and the operator
+type hooks. On top of that comes C dispatch machinery, two documented recipes for
+method authors, and a proxy test in every function pull request afterward.
 
 ## It gives class authors less than it looks like
 
@@ -187,19 +186,21 @@ taken when neither side has a class.
 
 The type system alone cannot answer "what type does this operator work in",
 because `lgl + lgl` is `int` and `int / int` is `dbl`. The internal promotion
-tables in the main plan become three generics.
+tables in the main plan become generics.
 
 | family | hook | dispatch | ops |
 |---|---|---|---|
-| binary elementwise | `rray_arithmetic_ptype2(op, x, y)` | double | `+ - * / ^ %% %/%`, `maximum`, `minimum` |
-| unary elementwise | `rray_arithmetic_ptype(op, x)` | single | unary `-` |
+| binary elementwise | `rray_binary_ptype2(op, x, y)` | double | `+ - * / ^ %% %/%`, `maximum`, `minimum` |
 | reduction | `rray_reduction_ptype(op, x)` | single | `sum`, `prod`, `mean`, `max`, `min` |
 
-The split that matters is elementwise versus reduction, not arity. Unary `-` and
-`sum` are both single input, but they are as different from each other as `+`
-and `sum` are. Reductions accumulate, which raises overflow and precision
-questions that elementwise operators never face, and a separate hook leaves room
-to pass more than an operator through later.
+One generic per family, matching the internal `rray_binary_type()` and
+`rray_reduction_type()` they replace. The split that matters is elementwise
+versus reduction, not arity: reductions accumulate, which raises overflow and
+precision questions that elementwise operators never face, and a separate hook
+leaves room to pass more than an operator through later.
+
+If a unary elementwise family is ever added, it takes an
+`rray_unary_ptype(op, x)` beside these two.
 
 Each returns **one ptype**, used both to cast the inputs and to restore the
 output. That works because we always promote before computing, so the input type
@@ -211,7 +212,7 @@ invent new operators.
 ### The pipeline
 
 ```
-p    <- rray_arithmetic_ptype2(op, x, y)
+p    <- rray_binary_ptype2(op, x, y)
 x    <- rray_cast(x, p)
 y    <- rray_cast(y, p)
 px   <- rray_proxy(x)
@@ -247,7 +248,7 @@ Two recipes, both worth putting in the documentation.
 corrupt the class:
 
 ```r
-rray_arithmetic_ptype2.dollars_array.dollars_array <- function(op, x, y) {
+rray_binary_ptype2.dollars_array.dollars_array <- function(op, x, y) {
   switch(
     op,
     "+" = ,
@@ -269,8 +270,8 @@ intentional.
 then put the class back:
 
 ```r
-rray_arithmetic_ptype2.wrapper_array.wrapper_array <- function(op, x, y) {
-  ptype <- rray_arithmetic_ptype2(op, rray_proxy(x), rray_proxy(y))
+rray_binary_ptype2.wrapper_array.wrapper_array <- function(op, x, y) {
+  ptype <- rray_binary_ptype2(op, rray_proxy(x), rray_proxy(y))
   rray_restore(ptype, x)
 }
 ```
@@ -286,7 +287,7 @@ simply errors. That is what protects `dollars_array` from silent promotion.
 
 The cost, same as vctrs: interoperating with bare arrays needs methods against
 them too, so `rray_add(dollars, 1L)` needs
-`rray_arithmetic_ptype2.dollars_array.integer`.
+`rray_binary_ptype2.dollars_array.integer`.
 
 ---
 
@@ -366,13 +367,25 @@ Rough order, matching the pull request granularity of the main plan:
 
 5. `rray_cast()` and `rray_cast_common()`, wrapping the internal cast.
 
-6. `rray_arithmetic_ptype2()`, then `rray_reduction_ptype()`, then
-   `rray_arithmetic_ptype()`, each wrapping the internal promotion table it
-   replaces.
+6. `rray_binary_ptype2()` and `rray_reduction_ptype()`, each wrapping the
+   internal promotion table it replaces.
 
 The internal type rules in the main plan are already written against native
 types, so each of these is a generic placed in front of a C function that
 already exists. None of it is a rewrite.
+
+## What happens to the boundary helpers
+
+`arg_as_array()` should **not** become proxy aware. `rray_proxy()`'s default
+method already turns a bare vector into a one dimensional array, which is the
+only thing `arg_as_array()` does, so it becomes redundant and is deleted rather
+than rewritten.
+
+`check_unclassed()` goes too. Refusing classed input is exactly the behavior this
+work replaces.
+
+So step 2 is mostly a deletion. Each function swaps two boundary calls for one
+`rray_proxy()`, and gains an `rray_restore()` on the way out.
 
 Before starting, pick a real class and write its methods first. If the recipes
 in Part 3 do not fall out cleanly for it, the design is wrong and this is the
