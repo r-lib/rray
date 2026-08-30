@@ -3,10 +3,13 @@
 ## What this is
 
 rray4 is a reimagining of rray, written in pure C with no xtensor. It is a
-toolkit of `rray_*()` functions that work on base R arrays, plus an extension
-system that lets other packages plug their own array classes in.
+toolkit of `rray_*()` functions that broadcast, reshape, reduce and index base R
+arrays.
 
-There is no rray class. rray4 ships functions, not a type.
+It works on bare arrays only. There is no rray class, and classed input is an
+error. The extension system that would let other packages plug their own array
+classes in is deliberately deferred, and is written up separately in
+`plans/extensions.md`.
 
 This document is the guide for agents working on rray4 across many sessions.
 Part 4 is the ordered list of pull requests. Part 5 is the catalogue of
@@ -54,8 +57,8 @@ Private declarations go in `src/decl/{name}-decl.h`.
 
 ## C style
 
-Follow vctrs and rlang closely. Prefer an rlang wrapper over the raw R API
-every time (`r_globals.na_int`, `r_length()`, `r_attrib_get()`).
+Follow vctrs and rlang closely. Prefer an rlang wrapper over the raw R API every
+time (`r_globals.na_int`, `r_length()`, `r_attrib_get()`).
 
 Prefer `r_ssize` over `int`. Mark variables `const` where you can. Grab a data
 pointer before a loop rather than indexing the `r_obj*`.
@@ -73,9 +76,9 @@ overrides the usual defaults.
 
 ## R style
 
-Run `air format .` after any R change. Use `|>`, not `%>%`. Use `\() ...` for
-one line anonymous functions and `function() {...}` otherwise. The package must
-work on R 4.1, so no `_$x`.
+Run `air format .` after any R change. Use `|>`, not `%>%`. Use `\() ...` for one
+line anonymous functions and `function() {...}` otherwise. The package must work
+on R 4.1, so no `_$x`.
 
 ## Prose
 
@@ -86,271 +89,32 @@ paragraph. No em dashes.
 
 # Part 2: The core ideas
 
-## 2.1 Proxy and restore
+## 2.1 Arrays in, arrays out
 
-The proxy system is the boundary between an R object and the C implementation.
-
-```
-x    <- rray_proxy(x)      # a native, unclassed array, or an error
-out  <- <C implementation>
-out  <- rray_restore(out, x)
-```
+Every rray4 function takes arrays and returns arrays.
 
 A **native** type is one of the seven R vector types: logical, integer, double,
-complex, raw, character, list.
+complex, raw, character, list. Every function works on native types, and the
+per type templates cover all seven unless a function says otherwise.
 
-### The proxy contract
+Three rules at the boundary, all enforced in `arg_as_array()`:
 
-`rray_proxy(x)` returns an unclassed array of a native type that has the **same
-dimensions and the same names** as `x`.
+**Bare input only.** If `x` has a class attribute, that is an error. Bare
+matrices and arrays pass, because `matrix` and `array` are implicit classes with
+no attribute set. Anything else is refused rather than silently unclassed or
+silently corrupted.
 
-Because of that, `rray_dimensions()`, `rray_names()`, `rray_size()` and
-`rray_dimensionality()` are all "take the proxy, then read an attribute".
-
-A bare vector proxies to a one dimensional array. `rray_proxy(1:5)` is
+**A bare vector becomes a one dimensional array.** `1:5` is treated as
 `array(1:5, 5L)`, and any `names` move to `dimnames`.
 
-That means **arrays go in and arrays come out**, everywhere. `rray_sum(1:5, 1)`
-returns `array(15L, 1L)`, not `15L`. We lean into this rather than trying to
-hide it.
+**Arrays always come back.** `rray_sum(1:5, 1)` returns `array(15L, 1L)`, not
+`15L`. We lean into this rather than trying to hide it.
 
-### The restore contract
+Because a vector is normalized on the way in, `rray_dimensions()`,
+`rray_names()`, `rray_size()` and `rray_dimensionality()` are all "normalize,
+then read an attribute".
 
-`rray_restore(x, to)` takes the **class and type defining attributes from
-`to`**, and the **dimensions and names from `x`**.
-
-Restore must never assume anything about `to`'s dimensions. It is routinely
-called with a `to` that has a dimension of 0 while `x` has real data.
-
-### Dispatch
-
-Both are generics that dispatch on `class(x)[[1]]` only, with **no
-inheritance**, exactly like vctrs. Methods are ordinary S3 methods registered
-with `S3method()`, so a user writes:
-
-```r
-rray_proxy.my_array <- function(x) { ... }
-rray_restore.my_array <- function(x, to) { ... }
-```
-
-Dispatch happens in C, with a fast path that skips it entirely when `x` has no
-class attribute.
-
-### What we do not ship
-
-No built in methods for factor, Date, POSIXct or difftime. Those are not
-arrays.
-
-## 2.2 The type system
-
-Modelled on vctrs, with manual double dispatch and no inheritance.
-
-### Ptypes
-
-A ptype describes type and nothing else. It has no relationship to dimensions.
-
-```r
-rray_ptype(array(1, c(2, 3)))
-#> <double array, dim 0>
-
-rray_ptype(array(1, c(4, 5, 6)))
-#> the same object
-```
-
-Concretely, the ptype of any double array is `structure(double(), dim = 0L)`.
-Dimensionality 1, dimension 0, no names. The native ptypes are shared static
-objects.
-
-`rray_ptype()` proxies, computes the native ptype, and restores, so a ptype
-**carries the class**. That is what gives `rray_ptype2()` something to dispatch
-on.
-
-### The invariant that matters
-
-> A ptype must fully determine storage. `rray_proxy(rray_ptype(x))` must give a
-> zero length native array of exactly the storage type that `x` uses.
-
-For a class with fixed storage, like a `dollars_array` that is always integer
-backed, this is free.
-
-For a class that is generic over storage, it means there is **no single ptype**
-for that class. There is an integer backed one and a double backed one, and they
-are different types. That is the honest answer, and once it holds everything
-downstream works.
-
-This is documented, not checked.
-
-### Ptype2 and cast
-
-```r
-rray_ptype2(x, y)        # methods: rray_ptype2.<x_class>.<y_class>
-rray_cast(x, to)         # methods: rray_cast.<to_class>.<x_class>
-rray_ptype_common(..., .ptype = NULL)
-rray_cast_common(..., .ptype = NULL)
-```
-
-`rray_cast(x, to)` means "cast `x` to the type of `to`". It changes type only.
-It **never** changes dimensions or names. Broadcasting is always a separate
-step.
-
-`.ptype` is run through `rray_ptype()` first, so `.ptype = double()` works and
-means "a double array".
-
-There is **no fallback method of any kind**. Not even for identical classes. If
-`rray_ptype2.foo.foo` is missing, that is an error, and the message says which
-method is missing. This is stricter than vctrs on purpose, because a class that
-is generic over storage must not have integer backed and double backed variants
-silently collapsed.
-
-There is no unspecified type. `rray_add(x, NA)` does not work today. Document
-that gap. We may need it later.
-
-Native rules, implemented in C, with a fast path when neither side has a class:
-
-- Numeric tower: `lgl` to `int` to `dbl` to `cpl`.
-
-- `chr`, `list` and `raw` each stand alone. They coerce only with themselves.
-
-Lossy casts error, and the error says what was lost.
-
-### Writing methods for a class
-
-Two recipes, both worth putting in the documentation.
-
-Fixed storage, where nothing may be inferred:
-
-```r
-rray_ptype2.dollars_array.dollars_array <- function(x, y) x
-```
-
-Generic over storage, deferring to the native rule by proxying and recursing:
-
-```r
-rray_ptype2.wrapper_array.wrapper_array <- function(x, y) {
-  ptype <- rray_ptype2(rray_proxy(x), rray_proxy(y))
-  rray_restore(ptype, x)
-}
-```
-
-The proxies are bare native arrays, so the recursion lands on the native method
-and terminates. This "proxy and recurse" shape is the one pattern to learn, and
-it shows up again in 2.3.
-
-## 2.3 Arithmetic and reduction types
-
-The type system alone cannot answer "what type does this op work in", because
-`lgl + lgl` is `int` and `int / int` is `dbl`. So there are three more hooks.
-
-| family | hook | dispatch | ops |
-|---|---|---|---|
-| binary elementwise | `rray_arithmetic_ptype2(op, x, y)` | double | `+ - * / ^ %% %/%`, `maximum`, `minimum`, `hypot` |
-| unary elementwise | `rray_arithmetic_ptype(op, x)` | single | unary `-` |
-| reduction | `rray_reduction_ptype(op, x)` | single | `sum`, `prod`, `mean`, `max`, `min` |
-
-Each returns **one ptype**, used both to cast the inputs and to restore the
-output. That works because we always promote before computing, so the input type
-and the output type are the same.
-
-`op` is a single string from a closed vocabulary that rray4 ships. Users cannot
-invent new ops.
-
-### The pipeline
-
-```
-p    <- rray_arithmetic_ptype2(op, x, y)
-x    <- rray_cast(x, p)
-y    <- rray_cast(y, p)
-px   <- rray_proxy(x)
-py   <- rray_proxy(y)
-dims <- rray_dimensions_common(px, py)
-out  <- <C loop over two broadcast iterators>
-out  <- rray_restore(out, p)
-```
-
-Unary and reduction ops use the same pipeline with one input.
-
-### Native promotion tables
-
-For binary ops, read these as "apply `rray_ptype2()` first, then promote".
-
-Binary elementwise:
-
-| op | lgl | int | dbl | cpl |
-|---|---|---|---|---|
-| `+` `-` `*` | int | int | dbl | cpl |
-| `/` `^` | dbl | dbl | dbl | cpl |
-| `%%` `%/%` | int | int | dbl | error |
-| `maximum` `minimum` | int | int | dbl | error |
-| `hypot` | dbl | dbl | dbl | error |
-
-Unary elementwise:
-
-| op | lgl | int | dbl | cpl |
-|---|---|---|---|---|
-| `-` | int | int | dbl | cpl |
-
-Reduction:
-
-| op | lgl | int | dbl | cpl |
-|---|---|---|---|---|
-| `sum` | int | int | dbl | cpl |
-| `prod` | dbl | dbl | dbl | cpl |
-| `mean` | dbl | dbl | dbl | cpl |
-| `max` `min` | int | int | dbl | error |
-
-`sum` on an integer array stays integer and errors on overflow. `prod` promotes
-to double, matching base R's `prod()`, because integer products overflow almost
-immediately.
-
-### Ops that are not covered
-
-An op whose output type is fixed regardless of its input does not use these
-hooks at all. It casts its inputs with plain `rray_ptype2()`, computes, and
-returns a **bare** array with no class restored.
-
-- Comparison (`rray_equal()` and friends) returns a bare logical array.
-
-- `rray_all()` and `rray_any()` take logical and return a bare logical array.
-
-- `rray_max_pos()` and `rray_min_pos()` return a bare integer array.
-
-A comparison of two `foo_array`s is a logical array, not a `foo_array`. That is
-the rule, stated once: **these hooks are only for ops whose output type equals
-their input type.**
-
-### Writing methods
-
-Same two recipes as 2.2. Fixed storage enumerates ops:
-
-```r
-rray_arithmetic_ptype2.dollars_array.dollars_array <- function(op, x, y) {
-  switch(
-    op,
-    "+" = ,
-    "-" = ,
-    "%%" = ,
-    "%/%" = x,
-    "/" = double(),
-    stop_unsupported_op(op)
-  )
-}
-```
-
-Note `"/"` returning a bare `double()`. Both sides get cast to a plain double
-array and the result has no class, because a ratio of dollars is a plain number.
-A method **may** return a bare ptype, dropping its own class. That is
-intentional.
-
-Generic over storage proxies and recurses, exactly as in 2.2.
-
-Because there is no fallback, a class that has not thought about arithmetic
-simply errors. That is what protects `dollars_array` from silent promotion.
-
-The cost, same as vctrs: interoperating with bare arrays needs methods against
-them too, so `rray_add(dollars, 1L)` needs
-`rray_arithmetic_ptype2.dollars_array.integer`.
-
-## 2.4 Broadcasting
+## 2.2 Broadcasting
 
 Broadcasting is independent of type, the same way recycling is.
 
@@ -383,7 +147,7 @@ length to exceed 2^31 while every individual dimension stays under it, because
 `rray_dimensions()` returns integer. Use `r_ssize` throughout. If long array
 support makes something genuinely hard, drop it and say so in the pull request.
 
-## 2.5 Names
+## 2.3 Names
 
 `rray_names(x)` returns the `dimnames` attribute as it is. A one dimensional
 array with names returns a one element list. No normalization on read.
@@ -392,9 +156,9 @@ Setters take a list of length exactly the dimensionality, where each element is
 either `NULL` or a character vector of exactly that axis' dimension. `NULL`
 clears everything. Short lists are not padded, they are an error.
 
-There are no `<-` replacement forms for now.
+There are no `<-` replacement forms.
 
-### The three names rules
+Every function in Part 5 declares which of these four rules it follows.
 
 **Broadcast.** An axis keeps its names if its dimension is unchanged, and loses
 them if its dimension changed. New trailing axes have no names. An axis of
@@ -402,7 +166,8 @@ dimension 1 broadcast to 1 counts as unchanged and keeps its length 1 names.
 
 **Reduce.** Reduced axes lose their names. Every other axis keeps them.
 
-**Coalesce**, used by binary ops. For each axis of the common dimensions:
+**Coalesce**, used by anything with two or more array inputs. For each axis of
+the common dimensions:
 
 1. Use `x`'s names if `x`'s dimension there equals the common dimension and `x`
    has names there.
@@ -411,14 +176,129 @@ dimension 1 broadcast to 1 counts as unchanged and keeps its length 1 names.
 
 3. Otherwise `NULL`.
 
-This lives in an internal `rray_names_common()`. It is not exported for now.
+This lives in an internal `rray_names_common()`.
 
-The reasoning for the split: a function that manipulates an existing array is
+**Dropped.** All names are discarded. Used where no axis survives in a
+recognisable form, such as a reshape.
+
+The reasoning behind the split: a function that manipulates an existing array is
 still functionally the same array, so names travel with the axes that did not
-move. A binary op builds a genuinely new array, but dropping every name would
-make `rray_add(named_matrix, 1)` lose its names, which reads as a bug.
+move. A function with two inputs builds a genuinely new array, but dropping
+every name would make `rray_add(named_matrix, 1)` lose its names, which reads as
+a bug.
 
-## 2.6 Iterators
+## 2.4 Types
+
+There is no user facing type system. A **type** here is just an `enum r_type`,
+because without classes there is nothing else for it to carry.
+
+The internal type rules exist because three kinds of function need them:
+
+- `rray_bind()` needs a common type across many inputs.
+
+- `rray_add()` needs a common type across two inputs, plus a promotion that
+  depends on the operator.
+
+- `rray_sum()` needs a promotion that depends on the operator.
+
+The C interface is small:
+
+```c
+enum r_type rray_type2(enum r_type x, enum r_type y);
+enum r_type rray_type_common(r_obj* xs, struct r_lazy error_call);
+r_obj*      rray_cast(r_obj* x, enum r_type to, struct r_lazy error_call);
+r_obj*      rray_cast_common(r_obj* xs, enum r_type to, struct r_lazy error_call);
+```
+
+`rray_cast()` changes type only. It never touches dimensions or names.
+Broadcasting is always a separate step. Lossy casts are an error, and the error
+says what was lost.
+
+### The common type rules
+
+- Numeric tower: `lgl` to `int` to `dbl` to `cpl`.
+
+- `chr`, `list` and `raw` each stand alone. They combine only with themselves.
+
+There is no fallback and no coercion across families. `rray_type2(chr, int)` is
+an error.
+
+A user facing function that needs a type override takes a `.ptype` argument,
+matching `.dimensions` elsewhere. It takes a prototype object, so
+`.ptype = double()` means "a double array", and we read its `r_typeof()`.
+
+Note that `NA` is logical, so it sits at the bottom of the numeric tower and
+`rray_add(x, NA)` works with no special handling. vctrs needs an unspecified
+type for this. We do not, at least until `rray_bind()` wants
+`rray_bind(chr_array, NA)` to work. See Part 7.
+
+### Operator promotion
+
+Some operators need a type the common type rules cannot give, because
+`lgl + lgl` is `int` and `int / int` is `dbl`.
+
+```c
+enum r_type rray_arithmetic_type2(enum rray_op op, enum r_type x, enum r_type y);
+enum r_type rray_arithmetic_type(enum rray_op op, enum r_type x);
+enum r_type rray_reduction_type(enum rray_op op, enum r_type x);
+```
+
+Each returns **one type**, used both to cast the inputs and to allocate the
+output. That works because we always promote before computing, so the input type
+and the output type are the same.
+
+The tables below cover four types. `chr`, `raw` and `list` are an error for
+every operator, so the arithmetic and reduction families are the one place where
+a template does not cover all seven native types.
+
+For binary operators, read the tables as "apply `rray_type2()` first, then
+promote".
+
+Binary elementwise:
+
+| op | lgl | int | dbl | cpl |
+|---|---|---|---|---|
+| `+` `-` `*` | int | int | dbl | cpl |
+| `/` `^` | dbl | dbl | dbl | cpl |
+| `%%` `%/%` | int | int | dbl | error |
+| `maximum` `minimum` | int | int | dbl | error |
+| `hypot` | dbl | dbl | dbl | error |
+
+Unary elementwise:
+
+| op | lgl | int | dbl | cpl |
+|---|---|---|---|---|
+| `-` | int | int | dbl | cpl |
+
+Reduction:
+
+| op | lgl | int | dbl | cpl |
+|---|---|---|---|---|
+| `sum` | int | int | dbl | cpl |
+| `prod` | dbl | dbl | dbl | cpl |
+| `mean` | dbl | dbl | dbl | cpl |
+| `max` `min` | int | int | dbl | error |
+
+`sum` on an integer array stays integer and errors on overflow. `prod` promotes
+to double, matching base R's `prod()`, because integer products overflow almost
+immediately.
+
+### Operators with a fixed output type
+
+An operator whose output type is fixed regardless of its input does not use the
+promotion tables. It finds the common type of its inputs with `rray_type2()`,
+casts, computes, and allocates the output at its own fixed type.
+
+- Comparison (`rray_equal()` and friends) returns a logical array.
+
+- `rray_all()` and `rray_any()` take logical and return a logical array.
+
+- `rray_max_pos()` and `rray_min_pos()` return an integer array.
+
+Stated once: **the promotion tables are only for operators whose output type
+equals their input type.**
+
+## 2.5 Iterators
 
 `struct rray_iterator` walks a multidimensional space one step at a time and
 reports a 1D location in a possibly different space. It is what lets us step
@@ -436,8 +316,8 @@ Two initialisers today:
 Accessors are `rray_iterator_location()` and, once PR 4 lands,
 `rray_iterator_point()`.
 
-Binary ops use two plain iterators stepped side by side. There is no binary
-iterator type.
+Functions with two array inputs use two plain iterators stepped side by side.
+There is no binary iterator type.
 
 Invent a new iterator only when a function genuinely cannot be expressed with
 these. Say so explicitly in the pull request when you do.
@@ -462,11 +342,10 @@ Every function pull request covers:
 - **Names.** Kept where the rule says kept, dropped where the rule says dropped.
   Include the case where only some axes have names.
 
+- **Classed input is refused**, with a snapshot of the error.
+
 - **Errors.** Every error path, with `expect_snapshot(error = TRUE)`, so the
   full message is reviewable.
-
-- **The proxy path**, once it exists. A small test class defined in a
-  `helper-*.R` file, exercised through the function.
 
 Mechanics:
 
@@ -488,7 +367,7 @@ Mechanics:
 
 # Part 4: The pull requests
 
-PRs 1 to 15 are ordered and each depends on the one before. After that, work
+PRs 1 to 11 are ordered and each depends on the one before. After that, work
 through Part 5 in any order that respects the dependencies noted there.
 
 ## PR 1: Package housekeeping
@@ -503,20 +382,28 @@ No behavior change.
 
 **Done when** `devtools::check()` and `pkgdown::check_pkgdown()` are clean.
 
-## PR 2: Argument names in errors
+## PR 2: Argument checking
 
-`arg_as_array()` takes an `arg` string but hardcodes `"x"` in its message
-(`src/utils.c`). Thread the argument name through properly.
+Two fixes in `arg_as_array()`.
 
-Style is a plain `const char*`. No vctrs style arg struct.
+**Refuse classed input.** Today a classed array is accepted, and the class then
+survives or is dropped depending on which function you called, because
+`vec_as_array()` clones attributes through `r_wrap()` while
+`rray_broadcast()` pokes only `dim` onto a fresh allocation. That inconsistency
+is a bug. Error instead, on any `x` where `attr(x, "class")` is not `NULL`.
 
-- `src/utils.c`, `src/utils.h`: fix `arg_as_array()`.
+**Use the argument name.** `arg_as_array()` takes an `arg` string and hardcodes
+`"x"` in its message. Thread the name through properly. Style is a plain
+`const char*`, no vctrs style arg struct.
+
+- `src/utils.c`, `src/utils.h`: both fixes.
 
 - `src/dimensions.c`: `arg_as_dimensions()` takes and uses `arg`.
 
 - `src/axes.c`: same for `arg_as_axes()`.
 
-**Done when** snapshot tests show the right argument name for each call site.
+**Done when** snapshot tests show the right argument name for each call site, and
+a classed array is refused by every existing function.
 
 ## PR 3: Names API
 
@@ -528,14 +415,14 @@ Style is a plain `const char*`. No vctrs style arg struct.
 - `rray_set_names(x, names)`, `rray_set_axis_names(x, axis, names)`,
   `rray_set_row_names(x, names)`, `rray_set_col_names(x, names)`.
 
-Validation as described in 2.5. Exact lengths, `NULL` clears.
+Validation as described in 2.3. Exact lengths, `NULL` clears.
 
 Files: `R/names.R`, `src/names.c`, `src/names.h`, `tests/testthat/test-names.R`.
 
 ## PR 4: Names builder and the point iterator
 
-This is a refactor with no behavior change, and it cleans up the ugliest code in
-the package.
+A refactor with no behavior change, and it cleans up the ugliest code in the
+package.
 
 `rray_broadcast_names()` and `rray_reduce_names()` both scan once to see whether
 anything survives, then allocate and fill while repeating the same conditions.
@@ -589,7 +476,7 @@ Files: `R/broadcast.R`, `src/broadcast.c`, `src/broadcast.h`.
 
 ## PR 6: `rray_names_common()`
 
-The coalesce rule from 2.5. Internal C plus an unexported R wrapper so it can be
+The coalesce rule from 2.3. Internal C plus an unexported R wrapper so it can be
 tested directly before it has a real caller.
 
 Signature is `rray_names_common(..., .dimensions = NULL)`, where `.dimensions`
@@ -598,120 +485,73 @@ apply the rule at all, so that argument is load bearing.
 
 Files: `src/names.c`, `src/names.h`, `R/names.R`.
 
-## PR 7: `rray_proxy()` and `rray_restore()`
+## PR 7: Native types
 
-The dispatch machinery from 2.1.
+The internal type interface from 2.4. All C, no exports, with unexported R
+wrappers so it can be tested directly.
 
-- C dispatch on `class(x)[[1]]` with no inheritance, following how vctrs looks
-  methods up in the S3 table.
+- `rray_type2()` and `rray_type_common()`. The numeric tower, with `chr`, `list`
+  and `raw` standing alone.
 
-- Fast path that skips dispatch entirely when `x` has no class attribute.
+- `rray_cast()` and `rray_cast_common()`. Type only, dimensions and names
+  untouched, lossy casts error and say what was lost.
 
-- The default for a bare native vector with no `dim` produces a one dimensional
-  array, moving `names` to `dimnames`. This is what `vec_as_array()` in
-  `src/utils.c` already does, so move it here.
+Files: `src/type.c`, `src/type.h`, `src/cast.c`, `src/cast.h`,
+`src/cast-template.h`.
 
-- Validate that a method returned a native type, and error clearly if not.
+## PR 8: Arithmetic promotion and `rray_add()`
 
-Files: `R/proxy.R`, `src/proxy.c`, `src/proxy.h`, `src/decl/proxy-decl.h`.
-
-Tests need a small classed array in `tests/testthat/helper-proxy.R`. Keep it
-around, later pull requests reuse it.
-
-## PR 8: Retrofit the proxy
-
-Route every existing function through the proxy and restore. `arg_as_array()`
-becomes proxy aware.
-
-Covers `rray_dimensions()`, `rray_dimensionality()`, `rray_size()`,
-`rray_names()`, `rray_broadcast()`, `rray_set_dimensions()`, `rray_split()`,
-`rray_sum()`, and everything from PRs 3, 5 and 6.
-
-All of these are structural, so they restore to `x`'s own class.
-
-**Done when** the helper class from PR 7 round trips through every one of them.
-
-## PR 9: `rray_ptype()`
-
-Native ptypes as shared static objects. Proxy, compute, restore.
-
-Document the "a ptype must fully determine storage" invariant here.
-
-Files: `R/ptype.R`, `src/ptype.c`, `src/ptype.h`.
-
-## PR 10: `rray_ptype2()` and `rray_ptype_common()`
-
-Double dispatch, no inheritance, no fallback. Native rules in C with a fast path
-when neither side has a class.
-
-`.ptype` runs through `rray_ptype()` inside `rray_ptype_common()`, not at the
-call sites.
-
-The "method is missing" error names the exact method that would fix it.
-
-Files: `R/ptype2.R`, `src/ptype2.c`, `src/ptype2.h`.
-
-## PR 11: `rray_cast()` and `rray_cast_common()`
-
-Double dispatch on `to` then `x`. Type only, dimensions and names untouched.
-Lossy casts error and say what was lost.
-
-Files: `R/cast.R`, `src/cast.c`, `src/cast.h`.
-
-## PR 12: `rray_arithmetic_ptype2()` and `rray_add()`
-
-The hook, the native promotion table, the full binary pipeline from 2.3, and one
-function using it end to end.
+`enum rray_op`, `rray_arithmetic_type2()` and its table, then one function using
+it end to end.
 
 The C loop uses two broadcast iterators stepped side by side. Names come from
 `rray_names_common()`.
 
-Files: `R/arithmetic-ptype.R`, `src/arithmetic-ptype.c`,
-`src/arithmetic-ptype.h`, `R/add.R`, `src/add.c`, `src/add.h`,
-`src/add-template.h`.
+Files: `src/op.h` for the enum, `src/type.c` for the table, `R/arithmetic.R`,
+`src/arithmetic.c`, `src/arithmetic.h`, `src/arithmetic-template.h`.
 
-Tests must cover a class with fixed storage and a class that is generic over
-storage, using both recipes from 2.3.
-
-## PR 13: The rest of the binary arithmetic
+## PR 9: The rest of the binary arithmetic
 
 `rray_subtract()`, `rray_multiply()`, `rray_divide()`, `rray_power()`,
 `rray_modulo()`, `rray_integer_divide()`.
 
 All the same shape as `rray_add()`. Share the template.
 
-## PR 14: `rray_reduction_ptype()` and `rray_sum()`
+## PR 10: Reduction promotion and `rray_sum()`
 
-The reduction hook and its native table. Retrofit `rray_sum()` to use it, which
-gives it class support and the `lgl` to `int` promotion.
-
-Files: `R/reduction-ptype.R`, `src/reduction-ptype.c`,
-`src/reduction-ptype.h`, `R/sum.R`, `src/sum.c`.
+`rray_reduction_type()` and its table. Retrofit `rray_sum()` to use it, which
+gives it the `lgl` to `int` promotion.
 
 Fix the comment in `src/sum-template.h` claiming a logical array can never
 overflow an integer sum. That is false once long arrays are supported.
 
-## PR 15: `rray_arithmetic_ptype()` and `rray_opposite()`
+Files: `src/type.c`, `R/sum.R`, `src/sum.c`, `src/sum-template.h`.
 
-The unary elementwise hook. It has exactly one caller, so it lands here rather
-than up front.
+## PR 11: `rray_opposite()`
+
+`rray_arithmetic_type()`, the unary elementwise table, and its one caller. It
+lands here rather than up front because there is nothing else that needs it.
+
+Files: `src/type.c`, `R/arithmetic.R`, `src/arithmetic.c`.
 
 ---
 
 # Part 5: Function reference
 
 Each entry gives what the function does, what the original rray did, the
-proposed signature, and which family it belongs to.
+proposed signature, and two rules.
 
-Families, from 2.3 and 2.5:
+**Names rule**, from 2.3: broadcast, reduce, coalesce, or dropped.
 
-- **Structural.** Proxy, operate, restore to `x`'s own class. Names follow the
-  per axis rules.
+**Type rule**, from 2.4:
 
-- **Computational.** Cast to a common type, broadcast, allocate fresh, restore
-  to the computed ptype. Names coalesce.
+- *Preserved.* Single input, output is the same type as the input.
 
-- **Fixed output.** Cast inputs with plain `rray_ptype2()`, return a bare array.
+- *Common.* Several inputs, cast to a common type with `rray_type2()`.
+
+- *Promoted.* Cast to the type the operator's promotion table gives.
+
+- *Fixed.* Output type is fixed regardless of input.
 
 ## 5.1 Shape
 
@@ -726,13 +566,12 @@ rray_reshape(x, c(3, 2, 1))
 try(rray_reshape(x, c(6, 2)))
 ```
 
-Drops all names, because no axis survives in a recognisable form.
+Names: dropped. Type: preserved.
 
 `rray_set_dimensions()` already does exactly this. Decide in this pull request
 whether `rray_reshape()` is a second name for it or whether one of them goes.
 
-Signature: `rray_reshape(x, dimensions)`. Structural. Attributes only, so use
-`r_wrap()`.
+Signature: `rray_reshape(x, dimensions)`. Attributes only, so use `r_wrap()`.
 
 Files: already exist as `R/dimensions.R` and `src/dimensions.c`.
 
@@ -741,19 +580,24 @@ Files: already exist as `R/dimensions.R` and `src/dimensions.c`.
 Collapse to one dimension.
 
 ```r
-rray_flatten(rray(1:10, c(5, 2)))     # (5, 2) -> (10)
+rray_flatten(array(1:10, c(5, 2)))     # (5, 2) -> (10)
 ```
 
-Names are kept when the first axis' dimension is unchanged, which is the general
-broadcast rule applied to a collapse.
+Names: broadcast. So they survive only when the first axis' dimension is
+unchanged.
 
 ```r
 y <- array(1:2, 2, dimnames = list(c("a", "b")))
-rray_flatten(y)                       # (2) -> (2), names kept
-rray_flatten(t(rray_reshape(y, c(2, 1))))  # (1, 2) -> (2), names dropped
+rray_flatten(y)                                   # (2) -> (2), names kept
+rray_flatten(array(1:2, c(2, 1), dimnames = list(c("a", "b"), NULL)))
+                                                  # (2, 1) -> (2), names kept
+rray_flatten(array(1:2, c(1, 2), dimnames = list(NULL, c("a", "b"))))
+                                                  # (1, 2) -> (2), names dropped
 ```
 
-Signature: `rray_flatten(x)`. Structural. Attributes only.
+Type: preserved.
+
+Signature: `rray_flatten(x)`. Attributes only.
 
 Files: `R/flatten.R`, `src/flatten.c`, `src/flatten.h`.
 
@@ -762,18 +606,18 @@ Files: `R/flatten.R`, `src/flatten.c`, `src/flatten.h`.
 Drop axes whose dimension is 1.
 
 ```r
-x <- rray(1:10, c(10, 1))
-rray_squeeze(x)                 # (10, 1) -> (10)
+x <- array(1:10, c(10, 1))
+rray_squeeze(x, 2)                       # (10, 1) -> (10)
 
-y <- rray_reshape(x, c(10, 1, 1))
-rray_squeeze(y)                 # (10, 1, 1) -> (10)
-rray_squeeze(y, axes = 2)       # (10, 1, 1) -> (10, 1)
+y <- array(1:10, c(10, 1, 1))
+rray_squeeze(y, c(2, 3))                 # (10, 1, 1) -> (10)
+rray_squeeze(y, 2)                       # (10, 1, 1) -> (10, 1)
 ```
 
-Names on surviving axes are kept and move with them.
+Names on surviving axes are kept and move with them. Type: preserved.
 
 Signature: `rray_squeeze(x, axes)`. Axes required, following the reduction
-convention. Structural. Attributes only.
+convention. Attributes only.
 
 Files: `R/squeeze.R`, `src/squeeze.c`, `src/squeeze.h`.
 
@@ -782,17 +626,19 @@ Files: `R/squeeze.R`, `src/squeeze.c`, `src/squeeze.h`.
 Insert an axis of dimension 1.
 
 ```r
-x <- rray(1:10, c(5, 2))     # row names a-e, col names c1, c2
-rray_expand(x, 1)            # (1, 5, 2)
-rray_expand(x, 2)            # (5, 1, 2)
-rray_expand(x, 3)            # (5, 2, 1)
+x <- array(1:10, c(5, 2))     # row names a-e, col names c1, c2
+rray_expand(x, 1)             # (1, 5, 2)
+rray_expand(x, 2)             # (5, 1, 2)
+rray_expand(x, 3)             # (5, 2, 1)
 ```
 
 Names follow their original axis to its new position. In `rray_expand(x, 1)` the
 5 row names become the names of the new second axis, and the new first axis has
 none. This is the difference from a plain reshape, which drops everything.
 
-Signature: `rray_expand(x, axis)`. Single axis. Structural. Attributes only.
+Type: preserved.
+
+Signature: `rray_expand(x, axis)`. Single axis. Attributes only.
 
 Files: `R/expand.R`, `src/expand.c`, `src/expand.h`.
 
@@ -801,7 +647,7 @@ Files: `R/expand.R`, `src/expand.c`, `src/expand.h`.
 Permute axes.
 
 ```r
-x <- rray(1:6, c(3, 2))
+x <- array(1:6, c(3, 2))
 rray_transpose(x)                    # (3, 2) -> (2, 3)
 rray_transpose(x, rev(1:2))          # identical
 
@@ -810,13 +656,13 @@ rray_transpose(x_3d)                 # (3, 2, 2) -> (2, 2, 3), reverses all axes
 rray_transpose(x_3d, c(2, 1, 3))     # flips the first two, leaves the third
 ```
 
-Names travel with their axis.
+Names travel with their axis. Type: preserved.
 
 Signature: `rray_transpose(x, permutation = NULL)`, where `NULL` reverses all
-axes. Structural, but it moves data, so it needs a real C loop.
+axes. It moves data, so it needs a real C loop.
 
-Needs a new iterator, or an existing one initialised with permuted strides.
-Work that out in the pull request and say which you chose.
+Needs a new iterator, or an existing one initialised with permuted strides. Work
+that out in the pull request and say which you chose.
 
 Files: `R/transpose.R`, `src/transpose.c`, `src/transpose.h`,
 `src/transpose-template.h`.
@@ -835,9 +681,10 @@ rray_tile(x, c(1, 2, 2))    # tile into a third dimension
 Different from broadcasting: broadcasting only repeats an axis whose dimension
 is 1, tiling repeats any axis.
 
-All names on tiled axes are dropped. Untitled axes keep theirs.
+Names: broadcast. Tiled axes change dimension so they lose their names,
+untiled axes keep theirs. Type: preserved.
 
-Signature: `rray_tile(x, times)`. Structural.
+Signature: `rray_tile(x, times)`.
 
 Files: `R/tile.R`, `src/tile.c`, `src/tile.h`, `src/tile-template.h`.
 
@@ -846,21 +693,24 @@ Files: `R/tile.R`, `src/tile.c`, `src/tile.h`, `src/tile-template.h`.
 Reverse the order along an axis.
 
 ```r
-x <- rray(1:10, c(5, 2))
+x <- array(1:10, c(5, 2))
 rray_flip(x, 1)      # reverse the rows
 rray_flip(x, 2)      # reverse the columns
 ```
 
-Names on the flipped axis are reversed with it. Other axes are untouched.
+Names on the flipped axis are reversed with it. Other axes are untouched. Type:
+preserved.
 
-Signature: `rray_flip(x, axis)`. Single axis. Structural.
+Signature: `rray_flip(x, axis)`. Single axis.
 
 Files: `R/flip.R`, `src/flip.c`, `src/flip.h`, `src/flip-template.h`.
 
 ## 5.2 Elementwise arithmetic
 
-All computational, all using `rray_arithmetic_ptype2()` and the pipeline from
-2.3, all sharing one template.
+Names: coalesce. Type: promoted.
+
+All share one template and the pipeline from 2.4: promote, cast both, find
+common dimensions, loop with two broadcast iterators.
 
 | function | op |
 |---|---|
@@ -877,8 +727,7 @@ Match R's own semantics for missing values, `NaN`, and division by zero. Check
 `/Users/davis/files/r/r-svn` when a case is unclear rather than guessing.
 
 Files: `R/arithmetic.R`, `src/arithmetic.c`, `src/arithmetic.h`,
-`src/arithmetic-template.h`. `rray_add()` lands first in PR 12 and may live in
-its own file until PR 13 generalises it.
+`src/arithmetic-template.h`.
 
 ## 5.3 Other elementwise numeric
 
@@ -887,7 +736,7 @@ its own file until PR 13 generalises it.
 Elementwise maximum and minimum of two arrays, with broadcasting. Not to be
 confused with `rray_max()` and `rray_min()`, which reduce.
 
-Computational, ops `"maximum"` and `"minimum"`.
+Names: coalesce. Type: promoted, ops `maximum` and `minimum`.
 
 Signature: `rray_maximum(x, y, ..., na_rm = FALSE)`.
 
@@ -897,7 +746,7 @@ Files: `R/extremum.R`, `src/extremum.c`, `src/extremum.h`.
 
 Elementwise `sqrt(x^2 + y^2)`, computed without intermediate overflow.
 
-Computational, op `"hypot"`, always double.
+Names: coalesce. Type: promoted, op `hypot`, always double.
 
 Signature: `rray_hypot(x, y)`.
 
@@ -907,8 +756,8 @@ Files: `R/hypot.R`, `src/hypot.c`, `src/hypot.h`.
 
 `x * y + z`, fused. Three way broadcasting.
 
-Computational. Three way names coalescing, which is a straight extension of the
-two way rule.
+Names: coalesce, extended to three inputs, which is a straight extension of the
+two input rule. Type: promoted.
 
 Signature: `rray_multiply_add(x, y, z)`.
 
@@ -928,7 +777,9 @@ broadcasting raises questions the original rray did not answer well: whether
 `low` and `high` broadcast against `x` or must be scalars, and what happens when
 `low > high`.
 
-Signature: `rray_clip(x, low, high)`. Computational.
+Names: coalesce. Type: promoted.
+
+Signature: `rray_clip(x, low, high)`.
 
 Files: `R/clip.R`, `src/clip.c`, `src/clip.h`.
 
@@ -938,10 +789,12 @@ Elementwise choice between two arrays based on a logical array.
 
 **A human should design review this before implementation.** Three way
 broadcasting again, plus the question of how `condition` relates to the type
-system when `true` and `false` have different types.
+rules when `true` and `false` have different types.
 
-Signature: `rray_if_else(condition, true, false)`. Computational on `true` and
-`false`, with `condition` cast to logical.
+Names: coalesce. Type: common across `true` and `false`, with `condition` cast to
+logical.
+
+Signature: `rray_if_else(condition, true, false)`.
 
 Files: `R/if-else.R`, `src/if-else.c`, `src/if-else.h`.
 
@@ -955,18 +808,16 @@ rray_ones_like(x)
 rray_zeros_like(x)
 ```
 
-Structural in the sense that they keep `x`'s class, but they build a fresh
-array. Names are kept, since every axis keeps its dimension.
+Names: kept, since every axis keeps its dimension. Type: preserved, with `value`
+cast to `x`'s type.
 
-Signature: `rray_full_like(x, value)`, `rray_ones_like(x)`,
-`rray_zeros_like(x)`.
+Signature: `rray_full_like(x, value)`, `rray_ones_like(x)`, `rray_zeros_like(x)`.
 
 Files: `R/full-like.R`, `src/full-like.c`, `src/full-like.h`.
 
 ## 5.4 Comparison and logical
 
-All fixed output. Inputs cast with plain `rray_ptype2()`, result is a **bare
-logical array** with no class restored. Names coalesce as usual.
+Names: coalesce. Type: fixed, logical output.
 
 | function | meaning |
 |---|---|
@@ -980,7 +831,7 @@ logical array** with no class restored. Names coalesce as usual.
 Files: `R/compare.R`, `src/compare.c`, `src/compare.h`,
 `src/compare-template.h`.
 
-Logical ops take logical input and return a bare logical array.
+Logical operators take logical input and return a logical array.
 
 | function | meaning |
 |---|---|
@@ -992,9 +843,9 @@ Edge cases worth testing, from the original's documentation:
 
 ```r
 x <- array(TRUE, c(1, 2))
-logical() & x                        # common dimensions are (0, 2)
-x & array(logical(), c(0, 1, 2))     # common dimensions are (0, 2, 2)
-try(x & array(logical(), c(1, 0)))   # 2 and 0 do not broadcast
+rray_logical_and(logical(), x)                        # common dimensions (0, 2)
+rray_logical_and(x, array(logical(), c(0, 1, 2)))     # common dimensions (0, 2, 2)
+try(rray_logical_and(x, array(logical(), c(1, 0))))   # 2 and 0 do not broadcast
 ```
 
 Files: `R/logical.R`, `src/logical.c`, `src/logical.h`.
@@ -1004,33 +855,29 @@ Optional, decide when you get there: `rray_all_equal(x, y)` and
 
 ## 5.5 Reductions
 
-All use `rray_reduction_ptype()` and the reduction iterator. All keep
-dimensionality, with reduced axes collapsed to a dimension of 1. There is no
-`keep_dimensions` argument.
+All use the reduction iterator. All keep dimensionality, with reduced axes
+collapsed to a dimension of 1. There is no `keep_dimensions` argument.
 
 `axes` is **required** on every one of them. The original defaulted it to `NULL`
 meaning "all axes". We do not.
 
-Names follow the reduce rule: reduced axes lose their names, everything else
-keeps them.
+Names: reduce.
 
-| function | op | notes |
+| function | op | type rule |
 |---|---|---|
-| `rray_sum(x, axes, ..., na_rm = FALSE)` | `sum` | exists, retrofit in PR 14 |
-| `rray_prod(x, axes, ..., na_rm = FALSE)` | `prod` | promotes int to dbl |
-| `rray_mean(x, axes, ..., na_rm = FALSE)` | `mean` | promotes lgl and int to dbl |
-| `rray_max(x, axes, ..., na_rm = FALSE)` | `max` | |
-| `rray_min(x, axes, ..., na_rm = FALSE)` | `min` | |
+| `rray_sum(x, axes, ..., na_rm = FALSE)` | `sum` | promoted, exists, retrofit in PR 10 |
+| `rray_prod(x, axes, ..., na_rm = FALSE)` | `prod` | promoted, int to dbl |
+| `rray_mean(x, axes, ..., na_rm = FALSE)` | `mean` | promoted, lgl and int to dbl |
+| `rray_max(x, axes, ..., na_rm = FALSE)` | `max` | promoted |
+| `rray_min(x, axes, ..., na_rm = FALSE)` | `min` | promoted |
+| `rray_all(x, axes)` | | fixed, logical in, logical out |
+| `rray_any(x, axes)` | | fixed, logical in, logical out |
 
-`rray_all(x, axes)` and `rray_any(x, axes)` are fixed output. Logical input,
-bare logical array out.
-
-`rray_max_pos(x, axis)` and `rray_min_pos(x, axis)` are fixed output. They give
-the position of the maximum or minimum along a single axis as a bare integer
-array.
+`rray_max_pos(x, axis)` and `rray_min_pos(x, axis)` give the position of the
+maximum or minimum along a single axis. Type: fixed, integer output.
 
 ```r
-x <- rray(c(1:10, 20:11), dim = c(5, 2, 2))
+x <- array(c(1:10, 20:11), c(5, 2, 2))
 rray_max_pos(x, 1)     # position of the max along the rows
 rray_max_pos(x, 2)     # along the columns
 ```
@@ -1047,13 +894,15 @@ so the review has something concrete to react to.
 
 Three ways to pull data out, distinguished by what happens to dimensionality.
 
+Type: preserved throughout.
+
 ### `rray_subset()`, by index, keeps dimensionality
 
 Never drops dimensions. Ignores trailing commas, so `x[1]` and `x[1, ]` agree.
 Missing arguments select a whole axis.
 
 ```r
-x <- rray(1:8, c(2, 2, 2))
+x <- array(1:8, c(2, 2, 2))
 
 rray_subset(x, 1)        # first row, still (1, 2, 2)
 rray_subset(x, , 1)      # all rows, first column, still (2, 1, 2)
@@ -1065,12 +914,14 @@ Base R cannot do the second one without fully specifying every axis and passing
 Index types: integer-ish selects elements, logical must be length 1 or the
 dimension, character requires names on that axis, `NULL` means 0.
 
+Names: subset alongside the data.
+
 ### `rray_extract()`, by index, always drops
 
 Always returns a one dimensional result, and never keeps names.
 
 ```r
-x <- rray(1:16, c(2, 4, 2), dim_names = list(c("r1", "r2"), NULL, NULL))
+x <- array(1:16, c(2, 4, 2), dimnames = list(c("r1", "r2"), NULL, NULL))
 
 rray_extract(x, 1)          # first row, flattened
 rray_extract(x, 1, 1:2)     # first row, first two columns, flattened
@@ -1078,13 +929,15 @@ rray_extract(x, 1, 1:2)     # first row, first two columns, flattened
 
 Like `x[[i, j, ...]]` but each subscript may have length greater than 1.
 
+Names: dropped.
+
 ### `rray_yank()`, by position, always flattens
 
 Pulls elements out by their position in the flat array, ignoring dimensions
-entirely. Always one dimensional, never keeps names.
+entirely. Always one dimensional.
 
 ```r
-x <- rray(10:17, c(2, 2, 2))
+x <- array(10:17, c(2, 2, 2))
 
 rray_yank(x, 1:3)
 rray_yank(x, FALSE)
@@ -1093,6 +946,8 @@ rray_yank(x, FALSE)
 `i` is an integer vector of positions, a logical of length 1 or `rray_size(x)`,
 or a logical with exactly `x`'s dimensions.
 
+Names: dropped.
+
 ### `rray_slice()`
 
 Subset a single axis by index, keeping dimensionality.
@@ -1100,6 +955,8 @@ Subset a single axis by index, keeping dimensionality.
 ```r
 rray_slice(x, i, axis)
 ```
+
+Names: subset alongside the data.
 
 ### The assignment forms
 
@@ -1110,7 +967,7 @@ The original cast `value` to `x` rather than the other way round, and broadcast
 `value` to the shape of the selection. Both decisions are worth re-examining in
 the design review.
 
-No `<-` replacement forms for now, consistent with the names API.
+No `<-` replacement forms, consistent with the names API.
 
 Files: one pair per function, plus a shared `src/index.c` and `src/index.h` for
 turning user supplied subscripts into locations.
@@ -1133,25 +990,29 @@ rray_bind(a, b, .axis = 3)    # bind up into a new third axis
 The second one is not possible with `rbind()`, because `a` and `b` have
 different column counts and `b` has to broadcast.
 
-Signatures: `rray_bind(..., .axis)`, `rray_rbind(...)`, `rray_cbind(...)`.
+Names: coalesce on the axes that are not bound. The bound axis concatenates its
+names, which needs its own rule worked out in the design review.
 
-Computational, since a common type is needed across all inputs.
+Type: common. This is the main consumer of `rray_type_common()`, so it takes a
+`.ptype` argument for an override, matching `.dimensions` elsewhere.
+
+Signatures: `rray_bind(..., .axis, .ptype = NULL)`, `rray_rbind(..., .ptype =
+NULL)`, `rray_cbind(..., .ptype = NULL)`.
 
 Files: `R/bind.R`, `src/bind.c`, `src/bind.h`, `src/bind-template.h`.
 
 ## 5.8 Order and duplicates
 
-**A human should design review this before implementation.** It also depends on
-`rray_proxy_compare()` and `rray_proxy_equal()`, which we deferred and which
-need designing first.
+**A human should design review this before implementation.** The axis semantics
+need care, and comparing whole slices rather than individual elements is a
+different shape of problem from everything else in the package.
 
-Everything here works along an axis, comparing whole slices rather than
-individual elements.
+Type: preserved, except where noted.
 
 ### `rray_sort()`
 
 ```r
-x <- rray(c(20:11, 1:10), dim = c(5, 2, 2))
+x <- array(c(20:11, 1:10), c(5, 2, 2))
 
 rray_sort(x, 1)      # sort looking along the rows
 rray_sort(x, 2)      # along the columns
@@ -1161,38 +1022,37 @@ rray_sort(x, 3)      # along the third axis
 Names on the sorted axis are dropped, because they no longer line up. Other axes
 keep theirs.
 
-Signature: `rray_sort(x, axis)`. Structural.
+Signature: `rray_sort(x, axis)`.
 
 ### `rray_unique()`, `rray_unique_loc()`, `rray_unique_count()`
 
 Deduplicate slices along an axis.
 
 ```r
-x <- rray(c(1, 1, 3, 3, 2, 2, 4, 4), c(2, 2, 2))
+x <- array(c(1, 1, 3, 3, 2, 2, 4, 4), c(2, 2, 2))
 
 rray_unique(x, 1)          # unique rows
 rray_unique_loc(x, 2)      # positions of the unique columns
 rray_unique_count(x, 2)    # how many unique columns
 ```
 
-`rray_unique_loc()` returns a bare integer array. `rray_unique_count()` returns
-a single integer.
+`rray_unique_loc()` has a fixed integer output. `rray_unique_count()` returns a
+single integer.
 
 ### `rray_duplicate_any()`, `rray_duplicate_detect()`, `rray_duplicate_id()`
 
 ```r
-x <- rray(c(1, 1, 2, 2), c(2, 2))
+x <- array(c(1, 1, 2, 2), c(2, 2))
 
 rray_duplicate_any(x, 1)       # are any rows duplicated
 rray_duplicate_detect(x, 1)    # TRUE wherever a duplicate exists, first included
 rray_duplicate_id(x, 1)        # position of the first occurrence of each slice
 ```
 
-All three take a single axis. `_any` returns a single logical, the other two
-return bare arrays.
+All three take a single axis. `_any` returns a single logical, `_detect` has a
+fixed logical output, `_id` has a fixed integer output.
 
-Files: `R/sort.R`, `R/unique.R`, `R/duplicate.R`, each with a C pair, plus
-whatever the compare and equal proxies need.
+Files: `R/sort.R`, `R/unique.R`, `R/duplicate.R`, each with a C pair.
 
 ---
 
@@ -1217,11 +1077,18 @@ Deliberately not ported from the original rray.
 
 - **`rray_shape()`, `rray_shape2()`, `rray_shapecast()`.**
 
-- **The container and inner type split.** rray4 has one type system, not two.
+- **The container and inner type split.** rray4 has one set of type rules, and
+  they are internal.
 
 - **The purrr compatibility shims** in `compat-purrr.R`.
 
 - **`rray_identity()`, `rray_elems()`.**
+
+Deferred rather than dropped:
+
+- **Support for classed arrays**, through a proxy and restore system and a
+  generic type system. Written up in full in `plans/extensions.md`, including
+  why it is deferred and the cases that must shape its design.
 
 ---
 
@@ -1253,15 +1120,18 @@ one mechanism, and it is one thing to test rather than a fast path per function.
 It is more machinery in `iterator.h`, which is why it waits. Do it as its own
 pull request, with benchmarks against the version that came before it.
 
-Functions most likely to benefit: `rray_broadcast()`, the elementwise
-arithmetic family, and `rray_tile()`.
+Functions most likely to benefit: `rray_broadcast()`, the elementwise arithmetic
+family, and `rray_tile()`.
 
 ## An unspecified type
 
-`rray_add(x, NA)` does not work, because there is no unspecified type. vctrs has
-one and it has been painful. See whether we can live without it first.
+`NA` is logical, so it sits at the bottom of the numeric tower and needs no
+special handling for arithmetic. But `rray_bind(chr_array, NA)` fails, because
+`rray_type2(chr, lgl)` is an error.
 
-## `rray_proxy_compare()` and `rray_proxy_equal()`
+vctrs solves this with an unspecified type, and it has been painful. See whether
+`rray_bind()` can live without it first.
 
-Needed by everything in 5.8. Design them when the first sorting or deduplication
-function is written, not before.
+## Classed arrays
+
+See `plans/extensions.md`.
