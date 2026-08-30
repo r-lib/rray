@@ -874,9 +874,6 @@ try(rray_and(x, array(logical(), c(1, 0))))   # 2 and 0 do not broadcast
 
 Files: `R/logical.R`, `src/logical.c`, `src/logical.h`.
 
-Optional, decide when you get there: `rray_all_equal(x, y)` and
-`rray_any_not_equal(x, y)`, which reduce a comparison to a single logical.
-
 ## 5.5 Reductions
 
 All use the reduction iterator. All keep dimensionality, with reduced axes
@@ -1108,6 +1105,11 @@ Deliberately not ported from the original rray.
 - **The purrr compatibility shims** in `compat-purrr.R`.
 
 - **`rray_identity()`, `rray_elems()`.**
+
+- **`rray_all_equal()`, `rray_any_not_equal()`.**
+
+- **Unary wrappers around base operators.** No `rray_opposite()` and no
+  negation, because `-x` and `!x` already work on a bare array.
 
 Deferred rather than dropped:
 
