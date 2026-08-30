@@ -30,6 +30,7 @@ r_obj* ffi_rray_broadcast(r_obj* x, r_obj* dimensions, r_obj* frame) {
 #include "broadcast-template.h"
 
 r_obj* rray_broadcast(r_obj* x, r_obj* dimensions, struct r_lazy error_call) {
+  check_unclassed(x, "x", error_call);
   x = KEEP(arg_as_array(x, "x", error_call));
 
   r_obj* out;

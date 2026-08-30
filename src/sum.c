@@ -27,6 +27,7 @@ r_obj* ffi_rray_sum(
 #include "sum-template.h"
 
 r_obj* rray_sum(r_obj* x, r_obj* axes, bool na_rm, struct r_lazy error_call) {
+  check_unclassed(x, "x", error_call);
   x = KEEP(arg_as_array(x, "x", error_call));
 
   r_obj* out;

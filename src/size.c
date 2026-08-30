@@ -8,6 +8,7 @@ r_obj* ffi_rray_size(r_obj* x, r_obj* frame) {
 }
 
 r_ssize rray_size(r_obj* x, struct r_lazy error_call) {
+  check_unclassed(x, "x", error_call);
   x = arg_as_array(x, "x", error_call);
   return r_length(x);
 }

@@ -38,6 +38,14 @@
       Error in `rray_broadcast()`:
       ! `x` must be an array, not a function.
 
+# errors on classed input
+
+    Code
+      rray_broadcast(x, c(2L, 2L))
+    Condition
+      Error in `rray_broadcast()`:
+      ! `x` must be a bare array, not a <foo> object.
+
 # coerces dimensions to integer
 
     Code

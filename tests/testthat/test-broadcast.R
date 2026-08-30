@@ -191,6 +191,11 @@ test_that("errors on non-array input", {
   expect_snapshot(rray_broadcast(mean, 1L), error = TRUE)
 })
 
+test_that("errors on classed input", {
+  x <- structure(array(1:4, c(2, 2)), class = "foo")
+  expect_snapshot(rray_broadcast(x, c(2L, 2L)), error = TRUE)
+})
+
 test_that("coerces dimensions to integer", {
   out <- rray_broadcast(1, c(2, 3))
   expect_identical(rray_dimensions(out), c(2L, 3L))
