@@ -193,7 +193,9 @@ r_obj* arg_as_dimensions(
   struct r_lazy error_call
 ) {
   if (r_typeof(dimensions) != R_TYPE_integer) {
-    dimensions = vec_cast(dimensions, r_globals.empty_int, r_chr(arg), r_null);
+    r_obj* arg_chr = KEEP(r_chr(arg));
+    dimensions = vec_cast(dimensions, r_globals.empty_int, arg_chr, r_null);
+    FREE(1);
   }
   KEEP(dimensions);
 

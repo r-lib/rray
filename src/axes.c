@@ -9,7 +9,9 @@ r_obj* arg_as_axes(
   struct r_lazy error_call
 ) {
   if (r_typeof(axes) != R_TYPE_integer) {
-    axes = vec_cast(axes, r_globals.empty_int, r_chr(arg), r_null);
+    r_obj* arg_chr = KEEP(r_chr(arg));
+    axes = vec_cast(axes, r_globals.empty_int, arg_chr, r_null);
+    FREE(1);
   }
   KEEP(axes);
 
