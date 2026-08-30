@@ -33,6 +33,11 @@ test_that("errors on non-vector types", {
   expect_snapshot(rray_dimensions(environment()), error = TRUE)
 })
 
+test_that("errors on classed input", {
+  x <- structure(array(1:4, c(2, 2)), class = "foo")
+  expect_snapshot(rray_dimensions(x), error = TRUE)
+})
+
 # ------------------------------------------------------------------------------
 # rray_dimensions_common()
 
@@ -118,6 +123,19 @@ test_that("errors on incompatible dimensions", {
 test_that("errors on zero non-NULL inputs", {
   expect_snapshot(rray_dimensions_common(), error = TRUE)
   expect_snapshot(rray_dimensions_common(NULL, NULL), error = TRUE)
+})
+
+test_that("errors on classed input", {
+  x <- structure(array(1:4, c(2, 2)), class = "foo")
+  expect_snapshot(rray_dimensions_common(x), error = TRUE)
+})
+
+test_that("`.dimensions` errors use its own argument name", {
+  expect_snapshot(rray_dimensions_common(1, .dimensions = "a"), error = TRUE)
+  expect_snapshot(
+    rray_dimensions_common(1, .dimensions = integer()),
+    error = TRUE
+  )
 })
 
 # ------------------------------------------------------------------------------
@@ -221,6 +239,11 @@ test_that("errors when size would change", {
 test_that("errors on non-array input", {
   expect_snapshot(rray_set_dimensions(NULL, 1L), error = TRUE)
   expect_snapshot(rray_set_dimensions(mean, 1L), error = TRUE)
+})
+
+test_that("errors on classed input", {
+  x <- structure(array(1:4, c(2, 2)), class = "foo")
+  expect_snapshot(rray_set_dimensions(x, 4L), error = TRUE)
 })
 
 test_that("coerces dimensions to integer", {

@@ -282,3 +282,8 @@ test_that("errors on non-numeric input", {
   x <- array(letters[1:4], c(2L, 2L))
   expect_snapshot(rray_sum(x, 1L), error = TRUE)
 })
+
+test_that("errors on classed input", {
+  x <- structure(array(1:4, c(2, 2)), class = "foo")
+  expect_snapshot(rray_sum(x, 1L), error = TRUE)
+})

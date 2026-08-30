@@ -30,6 +30,7 @@ r_obj* ffi_rray_split(r_obj* ffi_x, r_obj* ffi_axes, r_obj* ffi_frame) {
 #include "split-template.h"
 
 r_obj* rray_split(r_obj* x, r_obj* axes, struct r_lazy error_call) {
+  check_unclassed(x, "x", error_call);
   x = KEEP(arg_as_array(x, "x", error_call));
 
   r_obj* out;

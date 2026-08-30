@@ -78,7 +78,7 @@ static inline r_obj* RRAY_FN(r_obj* x, r_obj* axes, struct r_lazy error_call) {
   const r_ssize dimensionality =
     rray_dimensionality_from_dimensions(x_dimensions);
 
-  axes = KEEP_N(arg_as_axes(axes, dimensionality, error_call), &n_kept);
+  axes = KEEP_N(arg_as_axes(axes, dimensionality, "axes", error_call), &n_kept);
   const int* v_axes = r_int_cbegin(axes);
   const r_ssize axes_size = r_length(axes);
 

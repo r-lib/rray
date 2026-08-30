@@ -32,6 +32,17 @@ static inline r_obj* vec_as_array(r_obj* x) {
   return out;
 }
 
+void check_unclassed(r_obj* x, const char* arg, struct r_lazy error_call) {
+  if (r_is_object(x)) {
+    r_abort_lazy_call(
+      error_call,
+      "`%s` must be a bare array, not %s.",
+      arg,
+      r_obj_type_friendly(x)
+    );
+  }
+}
+
 r_obj* arg_as_array(r_obj* x, const char* arg, struct r_lazy error_call) {
   switch (r_typeof(x)) {
   case R_TYPE_logical:
@@ -45,7 +56,8 @@ r_obj* arg_as_array(r_obj* x, const char* arg, struct r_lazy error_call) {
   default:
     r_abort_lazy_call(
       error_call,
-      "`x` must be an array, not %s.",
+      "`%s` must be an array, not %s.",
+      arg,
       r_obj_type_friendly(x)
     );
   }
@@ -75,21 +87,12 @@ r_obj* to_sym = NULL;
 r_obj* to_arg_sym = NULL;
 r_obj* x_arg_sym = NULL;
 
-r_obj* axes_chr = NULL;
-r_obj* dimensions_chr = NULL;
-
 r_obj* vec_cast_call = NULL;
 
 void rray_init_utils(r_obj* ns) {
   to_sym = r_sym("to");
   to_arg_sym = r_sym("to_arg");
   x_arg_sym = r_sym("x_arg");
-
-  axes_chr = r_chr("axes");
-  r_preserve(axes_chr);
-
-  dimensions_chr = r_chr("dimensions");
-  r_preserve(dimensions_chr);
 
   vec_cast_call =
     r_parse("vctrs::vec_cast(x, to, x_arg = x_arg, to_arg = to_arg)");

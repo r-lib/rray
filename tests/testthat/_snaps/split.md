@@ -30,3 +30,11 @@
       Error in `rray_split()`:
       ! `axes` must be in strictly increasing order.
 
+# errors on classed input
+
+    Code
+      rray_split(x, 1L)
+    Condition
+      Error in `rray_split()`:
+      ! `x` must be a bare array, not a <foo> object.
+

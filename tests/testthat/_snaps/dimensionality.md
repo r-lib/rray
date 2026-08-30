@@ -30,3 +30,11 @@
       Error in `rray_dimensionality()`:
       ! `x` must be an array, not an environment.
 
+# errors on classed input
+
+    Code
+      rray_dimensionality(x)
+    Condition
+      Error in `rray_dimensionality()`:
+      ! `x` must be a bare array, not a <foo> object.
+

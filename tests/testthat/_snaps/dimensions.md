@@ -30,6 +30,30 @@
       Error in `rray_dimensions()`:
       ! `x` must be an array, not an environment.
 
+# errors on classed input
+
+    Code
+      rray_dimensions(x)
+    Condition
+      Error in `rray_dimensions()`:
+      ! `x` must be a bare array, not a <foo> object.
+
+---
+
+    Code
+      rray_dimensions_common(x)
+    Condition
+      Error in `rray_dimensions_common()`:
+      ! `x` must be a bare array, not a <foo> object.
+
+---
+
+    Code
+      rray_set_dimensions(x, 4L)
+    Condition
+      Error in `rray_set_dimensions()`:
+      ! `x` must be a bare array, not a <foo> object.
+
 # errors on incompatible dimensions
 
     Code
@@ -53,6 +77,22 @@
     Condition
       Error in `rray_dimensions_common()`:
       ! Must supply at least one array to `...`.
+
+# `.dimensions` errors use its own argument name
+
+    Code
+      rray_dimensions_common(1, .dimensions = "a")
+    Condition
+      Error:
+      ! Can't convert `.dimensions` <character> to <integer>.
+
+---
+
+    Code
+      rray_dimensions_common(1, .dimensions = integer())
+    Condition
+      Error in `rray_dimensions_common()`:
+      ! `.dimensions` must have at least one element.
 
 # errors when size would change
 

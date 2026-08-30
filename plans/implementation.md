@@ -403,7 +403,7 @@ No behavior change.
 
 **Done when** `devtools::check()` and `pkgdown::check_pkgdown()` are clean.
 
-## PR 2: Argument checking
+## PR 2: Argument checking — done
 
 **Add `check_unclassed()`.** A small helper that tests `r_is_object()` and errors
 if it is true. Every entry point calls it first, before `arg_as_array()`.

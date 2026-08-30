@@ -30,3 +30,8 @@ test_that("errors on non-vector types", {
   expect_snapshot(rray_names(NULL), error = TRUE)
   expect_snapshot(rray_names(mean), error = TRUE)
 })
+
+test_that("errors on classed input", {
+  x <- structure(array(1:4, c(2, 2)), class = "foo")
+  expect_snapshot(rray_names(x), error = TRUE)
+})

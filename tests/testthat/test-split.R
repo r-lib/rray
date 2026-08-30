@@ -102,3 +102,8 @@ test_that("axes are validated", {
   expect_snapshot(rray_split(x, c(1, 1)), error = TRUE)
   expect_snapshot(rray_split(x, c(2, 1)), error = TRUE)
 })
+
+test_that("errors on classed input", {
+  x <- structure(array(1:4, c(2, 2)), class = "foo")
+  expect_snapshot(rray_split(x, 1L), error = TRUE)
+})

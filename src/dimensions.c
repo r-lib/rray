@@ -12,6 +12,7 @@ r_obj* ffi_rray_dimensions(r_obj* x, r_obj* frame) {
 }
 
 r_obj* rray_dimensions(r_obj* x, struct r_lazy error_call) {
+  check_unclassed(x, "x", error_call);
   x = KEEP(arg_as_array(x, "x", error_call));
   r_obj* out = r_dim(x);
   FREE(1);
@@ -47,8 +48,9 @@ r_obj* rray_set_dimensions(
   r_obj* dimensions,
   struct r_lazy error_call
 ) {
+  check_unclassed(x, "x", error_call);
   x = KEEP(arg_as_array(x, "x", error_call));
-  dimensions = KEEP(arg_as_dimensions(dimensions, error_call));
+  dimensions = KEEP(arg_as_dimensions(dimensions, "dimensions", error_call));
 
   const r_ssize x_size = rray_size(x, error_call);
 
@@ -87,7 +89,7 @@ r_obj* rray_dimensions_common(
   struct r_lazy error_call
 ) {
   if (dimensions != r_null) {
-    return arg_as_dimensions(dimensions, error_call);
+    return arg_as_dimensions(dimensions, ".dimensions", error_call);
   }
 
   const r_ssize n = r_length(xs);
@@ -185,24 +187,24 @@ static inline void rray_dimensions2(
   }
 }
 
-r_obj* arg_as_dimensions(r_obj* dimensions, struct r_lazy error_call) {
+r_obj* arg_as_dimensions(
+  r_obj* dimensions,
+  const char* arg,
+  struct r_lazy error_call
+) {
   if (r_typeof(dimensions) != R_TYPE_integer) {
-    dimensions =
-      vec_cast(dimensions, r_globals.empty_int, dimensions_chr, r_null);
+    dimensions = vec_cast(dimensions, r_globals.empty_int, r_chr(arg), r_null);
   }
   KEEP(dimensions);
 
   if (r_attrib_has_any(dimensions)) {
-    r_abort_lazy_call(error_call, "`dimensions` can't have attributes.");
+    r_abort_lazy_call(error_call, "`%s` can't have attributes.", arg);
   }
 
   const r_ssize dimensionality = r_length(dimensions);
 
   if (dimensionality == 0) {
-    r_abort_lazy_call(
-      error_call,
-      "`dimensions` must have at least one element."
-    );
+    r_abort_lazy_call(error_call, "`%s` must have at least one element.", arg);
   }
 
   const int* v_dimensions = r_int_cbegin(dimensions);
@@ -213,14 +215,16 @@ r_obj* arg_as_dimensions(r_obj* dimensions, struct r_lazy error_call) {
     if (dimension == r_globals.na_int) {
       r_abort_lazy_call(
         error_call,
-        "`dimensions` must not contain missing values."
+        "`%s` must not contain missing values.",
+        arg
       );
     }
 
     if (dimension < 0) {
       r_abort_lazy_call(
         error_call,
-        "`dimensions` must not contain negative values."
+        "`%s` must not contain negative values.",
+        arg
       );
     }
   }
