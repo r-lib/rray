@@ -1,15 +1,17 @@
 Package: rray4
-Title: What the Package Does (One Line, Title Case)
+Title: Array Helpers
 Version: 0.0.0.9000
-Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+Authors@R:
+    person("Davis", "Vaughan", , "davis@posit.co", role = c("aut", "cre"))
+Description: A toolkit for broadcasting, reshaping, reducing, and indexing
+    arrays.
 License: MIT + file LICENSE
-Imports: 
-    cli,
+URL: https://github.com/DavisVaughan/rray4
+BugReports: https://github.com/DavisVaughan/rray4/issues
+Imports:
     rlang,
     vctrs
-Suggests: 
+Suggests:
     testthat (>= 3.0.0)
 Config/build/compilation-database: true
 Config/testthat/edition: 3

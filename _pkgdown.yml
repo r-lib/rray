@@ -1,0 +1,26 @@
+url: https://github.com/DavisVaughan/rray4
+
+development:
+  mode: auto
+
+reference:
+- title: Dimensions
+  contents:
+  - rray_dimensions
+  - rray_dimensions_common
+  - rray_dimensionality
+  - rray_size
+  - rray_set_dimensions
+
+- title: Names
+  contents:
+  - rray_names
+
+- title: Manipulation
+  contents:
+  - rray_broadcast
+  - rray_split
+
+- title: Reducers
+  contents:
+  - rray_sum
