@@ -10,3 +10,5 @@
 ^\.clang-format$
 ^\.vscode$
 \.clangd$
+^\.github$
+^codecov\.yml$
