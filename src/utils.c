@@ -87,12 +87,25 @@ r_obj* to_sym = NULL;
 r_obj* to_arg_sym = NULL;
 r_obj* x_arg_sym = NULL;
 
+r_obj* dimensions_chr = NULL;
+r_obj* dot_dimensions_chr = NULL;
+r_obj* axes_chr = NULL;
+
 r_obj* vec_cast_call = NULL;
 
 void rray_init_utils(r_obj* ns) {
   to_sym = r_sym("to");
   to_arg_sym = r_sym("to_arg");
   x_arg_sym = r_sym("x_arg");
+
+  dimensions_chr = r_chr("dimensions");
+  r_preserve(dimensions_chr);
+
+  dot_dimensions_chr = r_chr(".dimensions");
+  r_preserve(dot_dimensions_chr);
+
+  axes_chr = r_chr("axes");
+  r_preserve(axes_chr);
 
   vec_cast_call =
     r_parse("vctrs::vec_cast(x, to, x_arg = x_arg, to_arg = to_arg)");

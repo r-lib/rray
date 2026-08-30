@@ -6,6 +6,7 @@
 #include "names.h"
 #include "size.h"
 #include "types.h"
+#include "utils.h"
 
 #if RRAY_TYPE == RRAY_TYPE_LOGICAL
 #define RRAY_FN rray_broadcast_lgl
@@ -68,7 +69,7 @@ static inline r_obj* RRAY_FN(
   r_obj* dimensions,
   struct r_lazy error_call
 ) {
-  dimensions = KEEP(arg_as_dimensions(dimensions, "dimensions", error_call));
+  dimensions = KEEP(arg_as_dimensions(dimensions, dimensions_chr, error_call));
 
   r_obj* x_dimensions = KEEP(rray_dimensions(x, error_call));
 

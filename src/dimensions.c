@@ -50,7 +50,7 @@ r_obj* rray_set_dimensions(
 ) {
   check_unclassed(x, "x", error_call);
   x = KEEP(arg_as_array(x, "x", error_call));
-  dimensions = KEEP(arg_as_dimensions(dimensions, "dimensions", error_call));
+  dimensions = KEEP(arg_as_dimensions(dimensions, dimensions_chr, error_call));
 
   const r_ssize x_size = rray_size(x, error_call);
 
@@ -89,7 +89,7 @@ r_obj* rray_dimensions_common(
   struct r_lazy error_call
 ) {
   if (dimensions != r_null) {
-    return arg_as_dimensions(dimensions, ".dimensions", error_call);
+    return arg_as_dimensions(dimensions, dot_dimensions_chr, error_call);
   }
 
   const r_ssize n = r_length(xs);
@@ -189,24 +189,28 @@ static inline void rray_dimensions2(
 
 r_obj* arg_as_dimensions(
   r_obj* dimensions,
-  const char* arg,
+  r_obj* arg,
   struct r_lazy error_call
 ) {
+  const char* c_arg = r_chr_get_c_string(arg, 0);
+
   if (r_typeof(dimensions) != R_TYPE_integer) {
-    r_obj* arg_chr = KEEP(r_chr(arg));
-    dimensions = vec_cast(dimensions, r_globals.empty_int, arg_chr, r_null);
-    FREE(1);
+    dimensions = vec_cast(dimensions, r_globals.empty_int, arg, r_null);
   }
   KEEP(dimensions);
 
   if (r_attrib_has_any(dimensions)) {
-    r_abort_lazy_call(error_call, "`%s` can't have attributes.", arg);
+    r_abort_lazy_call(error_call, "`%s` can't have attributes.", c_arg);
   }
 
   const r_ssize dimensionality = r_length(dimensions);
 
   if (dimensionality == 0) {
-    r_abort_lazy_call(error_call, "`%s` must have at least one element.", arg);
+    r_abort_lazy_call(
+      error_call,
+      "`%s` must have at least one element.",
+      c_arg
+    );
   }
 
   const int* v_dimensions = r_int_cbegin(dimensions);
@@ -218,7 +222,7 @@ r_obj* arg_as_dimensions(
       r_abort_lazy_call(
         error_call,
         "`%s` must not contain missing values.",
-        arg
+        c_arg
       );
     }
 
@@ -226,7 +230,7 @@ r_obj* arg_as_dimensions(
       r_abort_lazy_call(
         error_call,
         "`%s` must not contain negative values.",
-        arg
+        c_arg
       );
     }
   }

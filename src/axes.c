@@ -5,18 +5,18 @@
 r_obj* arg_as_axes(
   r_obj* axes,
   r_ssize dimensionality,
-  const char* arg,
+  r_obj* arg,
   struct r_lazy error_call
 ) {
+  const char* c_arg = r_chr_get_c_string(arg, 0);
+
   if (r_typeof(axes) != R_TYPE_integer) {
-    r_obj* arg_chr = KEEP(r_chr(arg));
-    axes = vec_cast(axes, r_globals.empty_int, arg_chr, r_null);
-    FREE(1);
+    axes = vec_cast(axes, r_globals.empty_int, arg, r_null);
   }
   KEEP(axes);
 
   if (r_attrib_has_any(axes)) {
-    r_abort_lazy_call(error_call, "`%s` can't have attributes.", arg);
+    r_abort_lazy_call(error_call, "`%s` can't have attributes.", c_arg);
   }
 
   const r_ssize axes_size = r_length(axes);
@@ -30,7 +30,7 @@ r_obj* arg_as_axes(
       r_abort_lazy_call(
         error_call,
         "`%s` must not contain missing values.",
-        arg
+        c_arg
       );
     }
 
@@ -38,7 +38,7 @@ r_obj* arg_as_axes(
       r_abort_lazy_call(
         error_call,
         "`%s` must contain values greater than or equal to 1, not %d.",
-        arg,
+        c_arg,
         axis
       );
     }
@@ -48,7 +48,7 @@ r_obj* arg_as_axes(
         error_call,
         "`%s` must contain values less than or equal to the "
         "dimensionality of %td, not %d.",
-        arg,
+        c_arg,
         (ptrdiff_t) dimensionality,
         axis
       );
@@ -58,7 +58,7 @@ r_obj* arg_as_axes(
       r_abort_lazy_call(
         error_call,
         "`%s` must be in strictly increasing order.",
-        arg
+        c_arg
       );
     }
   }

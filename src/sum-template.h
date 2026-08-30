@@ -6,6 +6,7 @@
 #include "reduce.h"
 #include "reduction-iterator.h"
 #include "size.h"
+#include "utils.h"
 
 #if RRAY_TYPE == RRAY_TYPE_LOGICAL
 #define RRAY_FN rray_sum_lgl
@@ -60,7 +61,7 @@ static inline r_obj* RRAY_FN(
   const r_ssize dimensionality =
     rray_dimensionality_from_dimensions(x_dimensions);
 
-  axes = KEEP(arg_as_axes(axes, dimensionality, "axes", error_call));
+  axes = KEEP(arg_as_axes(axes, dimensionality, axes_chr, error_call));
   const int* v_axes = r_int_cbegin(axes);
   const r_ssize axes_size = r_length(axes);
 

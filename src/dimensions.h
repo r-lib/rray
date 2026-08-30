@@ -26,7 +26,7 @@ r_obj* rray_dimensions_common(
 
 r_obj* arg_as_dimensions(
   r_obj* dimensions,
-  const char* arg,
+  r_obj* arg,
   struct r_lazy error_call
 );
 
