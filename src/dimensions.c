@@ -192,15 +192,17 @@ r_obj* arg_as_dimensions(
   r_obj* arg,
   struct r_lazy error_call
 ) {
-  const char* c_arg = r_chr_get_c_string(arg, 0);
-
   if (r_typeof(dimensions) != R_TYPE_integer) {
     dimensions = vec_cast(dimensions, r_globals.empty_int, arg, r_null);
   }
   KEEP(dimensions);
 
   if (r_attrib_has_any(dimensions)) {
-    r_abort_lazy_call(error_call, "`%s` can't have attributes.", c_arg);
+    r_abort_lazy_call(
+      error_call,
+      "`%s` can't have attributes.",
+      r_chr_get_c_string(arg, 0)
+    );
   }
 
   const r_ssize dimensionality = r_length(dimensions);
@@ -209,7 +211,7 @@ r_obj* arg_as_dimensions(
     r_abort_lazy_call(
       error_call,
       "`%s` must have at least one element.",
-      c_arg
+      r_chr_get_c_string(arg, 0)
     );
   }
 
@@ -222,7 +224,7 @@ r_obj* arg_as_dimensions(
       r_abort_lazy_call(
         error_call,
         "`%s` must not contain missing values.",
-        c_arg
+        r_chr_get_c_string(arg, 0)
       );
     }
 
@@ -230,7 +232,7 @@ r_obj* arg_as_dimensions(
       r_abort_lazy_call(
         error_call,
         "`%s` must not contain negative values.",
-        c_arg
+        r_chr_get_c_string(arg, 0)
       );
     }
   }
