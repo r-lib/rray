@@ -401,19 +401,23 @@ No behavior change.
 
 ## PR 2: Argument checking
 
-Two fixes in `arg_as_array()`.
+**Add `check_unclassed()`.** A small helper that tests `r_is_object()` and errors
+if it is true. Every entry point calls it first, before `arg_as_array()`.
 
-**Refuse classed input.** Today a classed array is accepted, and the class then
+This fixes a real bug. Today a classed array is accepted, and the class then
 survives or is dropped depending on which function you called, because
-`vec_as_array()` clones attributes through `r_wrap()` while
-`rray_broadcast()` pokes only `dim` onto a fresh allocation. That inconsistency
-is a bug. Error instead, on any `x` where `attr(x, "class")` is not `NULL`.
+`vec_as_array()` clones attributes through `r_wrap()` while `rray_broadcast()`
+pokes only `dim` onto a fresh allocation.
+
+Keeping the check separate leaves `arg_as_array()` doing one thing: turning a
+bare vector into a one dimensional array.
 
 **Use the argument name.** `arg_as_array()` takes an `arg` string and hardcodes
 `"x"` in its message. Thread the name through properly. Style is a plain
 `const char*`, no vctrs style arg struct.
 
-- `src/utils.c`, `src/utils.h`: both fixes.
+- `src/utils.c`, `src/utils.h`: `check_unclassed()`, and the `arg` fix in
+  `arg_as_array()`.
 
 - `src/dimensions.c`: `arg_as_dimensions()` takes and uses `arg`.
 
