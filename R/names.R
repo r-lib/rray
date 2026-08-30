@@ -25,3 +25,152 @@
 rray_names <- function(x) {
   .Call(ffi_rray_names, x, environment())
 }
+
+#' Get names for a single axis of an array
+#'
+#' `rray_axis_names()` returns the names for a single `axis` of an array, or
+#' `NULL` if that axis has no names.
+#'
+#' @param x An array.
+#'
+#' @param axis A single integer. The axis to get names for.
+#'
+#' @returns
+#' A character vector of names, or `NULL` if `axis` has no names.
+#'
+#' @export
+#' @examples
+#' x <- array(1:6, c(2, 3), dimnames = list(c("r1", "r2"), c("c1", "c2", "c3")))
+#'
+#' rray_axis_names(x, 1)
+#' rray_axis_names(x, 2)
+rray_axis_names <- function(x, axis) {
+  .Call(ffi_rray_axis_names, x, axis, environment())
+}
+
+#' Get the row names of an array
+#'
+#' `rray_row_names()` is a shortcut for `rray_axis_names(x, 1)`.
+#'
+#' @param x An array.
+#'
+#' @returns
+#' A character vector of names, or `NULL` if the first axis has no names.
+#'
+#' @export
+#' @examples
+#' x <- array(1:6, c(2, 3), dimnames = list(c("r1", "r2"), c("c1", "c2", "c3")))
+#' rray_row_names(x)
+rray_row_names <- function(x) {
+  rray_axis_names(x, 1L)
+}
+
+#' Get the column names of an array
+#'
+#' `rray_col_names()` is a shortcut for `rray_axis_names(x, 2)`.
+#'
+#' @param x An array.
+#'
+#' @returns
+#' A character vector of names, or `NULL` if the second axis has no names.
+#'
+#' @export
+#' @examples
+#' x <- array(1:6, c(2, 3), dimnames = list(c("r1", "r2"), c("c1", "c2", "c3")))
+#' rray_col_names(x)
+rray_col_names <- function(x) {
+  rray_axis_names(x, 2L)
+}
+
+#' Set names for every axis of an array
+#'
+#' `rray_set_names()` sets the names for every axis of an array at once.
+#'
+#' @param x An array.
+#'
+#' @param names A list with length equal to the dimensionality of `x`, where
+#'   each element is either a character vector of names for that axis or
+#'   `NULL`. Can also be `NULL` to remove all names from `x`.
+#'
+#' @returns
+#' `x` with new dimension names.
+#'
+#' @export
+#' @examples
+#' x <- array(1:6, c(2, 3))
+#'
+#' rray_set_names(x, list(c("r1", "r2"), c("c1", "c2", "c3")))
+#'
+#' # `NULL` clears all names
+#' y <- rray_set_names(x, list(c("r1", "r2"), NULL))
+#' rray_set_names(y, NULL)
+rray_set_names <- function(x, names) {
+  .Call(ffi_rray_set_names, x, names, environment())
+}
+
+#' Set names for a single axis of an array
+#'
+#' `rray_set_axis_names()` sets the names for a single `axis` of an array,
+#' leaving every other axis untouched.
+#'
+#' @param x An array.
+#'
+#' @param axis A single integer. The axis to set names for.
+#'
+#' @param names A character vector of names for `axis`, the same length as
+#'   the dimension of `axis`. Can also be `NULL` to remove names from `axis`.
+#'
+#' @returns
+#' `x` with new names for `axis`.
+#'
+#' @export
+#' @examples
+#' x <- array(1:6, c(2, 3))
+#'
+#' rray_set_axis_names(x, 1, c("r1", "r2"))
+#' rray_set_axis_names(x, 2, c("c1", "c2", "c3"))
+rray_set_axis_names <- function(x, axis, names) {
+  .Call(ffi_rray_set_axis_names, x, axis, names, environment())
+}
+
+#' Set the row names of an array
+#'
+#' `rray_set_row_names()` is a shortcut for `rray_set_axis_names(x, 1, names)`.
+#'
+#' @param x An array.
+#'
+#' @param names A character vector of new names, the same length as the
+#'   dimension of the first axis. Can also be `NULL` to remove names from the
+#'   first axis.
+#'
+#' @returns
+#' `x` with new names for the first axis.
+#'
+#' @export
+#' @examples
+#' x <- array(1:6, c(2, 3))
+#' rray_set_row_names(x, c("r1", "r2"))
+rray_set_row_names <- function(x, names) {
+  rray_set_axis_names(x, 1L, names)
+}
+
+#' Set the column names of an array
+#'
+#' `rray_set_col_names()` is a shortcut for `rray_set_axis_names(x, 2, names)`.
+#'
+#' @param x An array.
+#'
+#' @param names A character vector of new names, the same length as the
+#'   dimension of the second axis. Can also be `NULL` to remove names from the
+#'   second axis.
+#'
+#' @returns
+#' `x` with new names for the second axis.
+#'
+#' @export
+#' @examples
+#' x <- array(1:6, c(2, 3))
+#' rray_set_col_names(x, c("c1", "c2", "c3"))
+rray_set_col_names <- function(x, names) {
+  rray_set_axis_names(x, 2L, names)
+}

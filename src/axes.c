@@ -68,3 +68,26 @@ r_obj* arg_as_axes(
   FREE(1);
   return axes;
 }
+
+r_ssize arg_as_axis(
+  r_obj* axis,
+  r_ssize dimensionality,
+  r_obj* arg,
+  struct r_lazy error_call
+) {
+  axis = KEEP(arg_as_axes(axis, dimensionality, arg, error_call));
+
+  if (r_length(axis) != 1) {
+    r_abort_lazy_call(
+      error_call,
+      "`%s` must be a single axis, not length %td.",
+      r_chr_get_c_string(arg, 0),
+      (ptrdiff_t) r_length(axis)
+    );
+  }
+
+  const r_ssize out = r_int_get(axis, 0);
+
+  FREE(1);
+  return out;
+}

@@ -6,6 +6,7 @@
 extern r_obj* dimensions_chr;
 extern r_obj* dot_dimensions_chr;
 extern r_obj* axes_chr;
+extern r_obj* axis_chr;
 
 void check_unclassed(r_obj* x, const char* arg, struct r_lazy error_call);
 

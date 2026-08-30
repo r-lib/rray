@@ -90,6 +90,7 @@ r_obj* x_arg_sym = NULL;
 r_obj* dimensions_chr = NULL;
 r_obj* dot_dimensions_chr = NULL;
 r_obj* axes_chr = NULL;
+r_obj* axis_chr = NULL;
 
 r_obj* vec_cast_call = NULL;
 
@@ -106,6 +107,9 @@ void rray_init_utils(r_obj* ns) {
 
   axes_chr = r_chr("axes");
   r_preserve(axes_chr);
+
+  axis_chr = r_chr("axis");
+  r_preserve(axis_chr);
 
   vec_cast_call =
     r_parse("vctrs::vec_cast(x, to, x_arg = x_arg, to_arg = to_arg)");

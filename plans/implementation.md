@@ -441,7 +441,7 @@ bare vector into a one dimensional array.
 **Done when** snapshot tests show the right argument name for each call site, and
 a classed array is refused by every existing function.
 
-## PR 3: Names API
+## PR 3: Names API — done
 
 - `rray_axis_names(x, axis)`. Single axis only, returns a character vector or
   `NULL`.
