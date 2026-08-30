@@ -28,15 +28,19 @@ rray_names <- function(x) {
 
 #' Get names for a single axis of an array
 #'
-#' `rray_axis_names()` returns the names for a single `axis` of an array, or
-#' `NULL` if that axis has no names.
+#' @description
+#' - `rray_axis_names()` returns the names for a single `axis` of an array,
+#'   or `NULL` if that axis has no names.
+#'
+#' - `rray_row_names()` and `rray_col_names()` are shortcuts for
+#'   `rray_axis_names(x, 1)` and `rray_axis_names(x, 2)`.
 #'
 #' @param x An array.
 #'
 #' @param axis A single integer. The axis to get names for.
 #'
 #' @returns
-#' A character vector of names, or `NULL` if `axis` has no names.
+#' A character vector of names, or `NULL` if that axis has no names.
 #'
 #' @export
 #' @examples
@@ -44,40 +48,21 @@ rray_names <- function(x) {
 #'
 #' rray_axis_names(x, 1)
 #' rray_axis_names(x, 2)
+#'
+#' rray_row_names(x)
+#' rray_col_names(x)
 rray_axis_names <- function(x, axis) {
   .Call(ffi_rray_axis_names, x, axis, environment())
 }
 
-#' Get the row names of an array
-#'
-#' `rray_row_names()` is a shortcut for `rray_axis_names(x, 1)`.
-#'
-#' @param x An array.
-#'
-#' @returns
-#' A character vector of names, or `NULL` if the first axis has no names.
-#'
+#' @rdname rray_axis_names
 #' @export
-#' @examples
-#' x <- array(1:6, c(2, 3), dimnames = list(c("r1", "r2"), c("c1", "c2", "c3")))
-#' rray_row_names(x)
 rray_row_names <- function(x) {
   .Call(ffi_rray_row_names, x, environment())
 }
 
-#' Get the column names of an array
-#'
-#' `rray_col_names()` is a shortcut for `rray_axis_names(x, 2)`.
-#'
-#' @param x An array.
-#'
-#' @returns
-#' A character vector of names, or `NULL` if the second axis has no names.
-#'
+#' @rdname rray_axis_names
 #' @export
-#' @examples
-#' x <- array(1:6, c(2, 3), dimnames = list(c("r1", "r2"), c("c1", "c2", "c3")))
-#' rray_col_names(x)
 rray_col_names <- function(x) {
   .Call(ffi_rray_col_names, x, environment())
 }

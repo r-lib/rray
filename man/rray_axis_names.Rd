@@ -2,9 +2,15 @@
 % Please edit documentation in R/names.R
 \name{rray_axis_names}
 \alias{rray_axis_names}
+\alias{rray_row_names}
+\alias{rray_col_names}
 \title{Get names for a single axis of an array}
 \usage{
 rray_axis_names(x, axis)
+
+rray_row_names(x)
+
+rray_col_names(x)
 }
 \arguments{
 \item{x}{An array.}
@@ -12,15 +18,22 @@ rray_axis_names(x, axis)
 \item{axis}{A single integer. The axis to get names for.}
 }
 \value{
-A character vector of names, or \code{NULL} if \code{axis} has no names.
+A character vector of names, or \code{NULL} if that axis has no names.
 }
 \description{
-\code{rray_axis_names()} returns the names for a single \code{axis} of an array, or
-\code{NULL} if that axis has no names.
+\itemize{
+\item \code{rray_axis_names()} returns the names for a single \code{axis} of an array,
+or \code{NULL} if that axis has no names.
+\item \code{rray_row_names()} and \code{rray_col_names()} are shortcuts for
+\code{rray_axis_names(x, 1)} and \code{rray_axis_names(x, 2)}.
+}
 }
 \examples{
 x <- array(1:6, c(2, 3), dimnames = list(c("r1", "r2"), c("c1", "c2", "c3")))
 
 rray_axis_names(x, 1)
 rray_axis_names(x, 2)
+
+rray_row_names(x)
+rray_col_names(x)
 }
