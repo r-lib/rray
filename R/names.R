@@ -62,7 +62,7 @@ rray_axis_names <- function(x, axis) {
 #' x <- array(1:6, c(2, 3), dimnames = list(c("r1", "r2"), c("c1", "c2", "c3")))
 #' rray_row_names(x)
 rray_row_names <- function(x) {
-  rray_axis_names(x, 1L)
+  .Call(ffi_rray_row_names, x, environment())
 }
 
 #' Get the column names of an array
@@ -79,7 +79,7 @@ rray_row_names <- function(x) {
 #' x <- array(1:6, c(2, 3), dimnames = list(c("r1", "r2"), c("c1", "c2", "c3")))
 #' rray_col_names(x)
 rray_col_names <- function(x) {
-  rray_axis_names(x, 2L)
+  .Call(ffi_rray_col_names, x, environment())
 }
 
 #' Set names for every axis of an array
@@ -151,7 +151,7 @@ rray_set_axis_names <- function(x, axis, names) {
 #' x <- array(1:6, c(2, 3))
 #' rray_set_row_names(x, c("r1", "r2"))
 rray_set_row_names <- function(x, names) {
-  rray_set_axis_names(x, 1L, names)
+  .Call(ffi_rray_set_row_names, x, names, environment())
 }
 
 #' Set the column names of an array
@@ -172,5 +172,5 @@ rray_set_row_names <- function(x, names) {
 #' x <- array(1:6, c(2, 3))
 #' rray_set_col_names(x, c("c1", "c2", "c3"))
 rray_set_col_names <- function(x, names) {
-  rray_set_axis_names(x, 2L, names)
+  .Call(ffi_rray_set_col_names, x, names, environment())
 }

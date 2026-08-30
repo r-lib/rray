@@ -75,8 +75,24 @@
     Code
       rray_col_names(1:5)
     Condition
-      Error in `rray_axis_names()`:
+      Error in `rray_col_names()`:
       ! `axis` must contain values less than or equal to the dimensionality of 1, not 2.
+
+# rray_row_names() and rray_col_names() error on classed input
+
+    Code
+      rray_row_names(x)
+    Condition
+      Error in `rray_row_names()`:
+      ! `x` must be a bare array, not a <foo> object.
+
+---
+
+    Code
+      rray_col_names(x)
+    Condition
+      Error in `rray_col_names()`:
+      ! `x` must be a bare array, not a <foo> object.
 
 # rray_set_names() errors if `names` isn't a list or `NULL`
 
@@ -164,5 +180,21 @@
       rray_set_axis_names(x, 1, NULL)
     Condition
       Error in `rray_set_axis_names()`:
+      ! `x` must be a bare array, not a <foo> object.
+
+# rray_set_row_names() and rray_set_col_names() error on classed input
+
+    Code
+      rray_set_row_names(x, NULL)
+    Condition
+      Error in `rray_set_row_names()`:
+      ! `x` must be a bare array, not a <foo> object.
+
+---
+
+    Code
+      rray_set_col_names(x, NULL)
+    Condition
+      Error in `rray_set_col_names()`:
       ! `x` must be a bare array, not a <foo> object.
 
