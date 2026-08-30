@@ -98,15 +98,16 @@ A **native** type is one of the seven R vector types: logical, integer, double,
 complex, raw, character, list. Every function works on native types, and the
 per type templates cover all seven unless a function says otherwise.
 
-Three rules at the boundary, all enforced in `arg_as_array()`:
+Three rules at the boundary:
 
-**Bare input only.** If `x` has a class attribute, that is an error. Bare
-matrices and arrays pass, because `matrix` and `array` are implicit classes with
-no attribute set. Anything else is refused rather than silently unclassed or
-silently corrupted.
+**Bare input only.** A small `check_unclassed()` helper tests `r_is_object()` and
+errors if it is true. Bare matrices and arrays pass, because `matrix` and `array`
+are implicit classes with no attribute set. Anything else is refused rather than
+silently unclassed or silently corrupted.
 
 **A bare vector becomes a one dimensional array.** `1:5` is treated as
-`array(1:5, 5L)`, and any `names` move to `dimnames`.
+`array(1:5, 5L)`, and any `names` move to `dimnames`. This is what
+`arg_as_array()` does, once `check_unclassed()` has passed.
 
 **Arrays always come back.** `rray_sum(1:5, 1)` returns `array(15L, 1L)`, not
 `15L`. We lean into this rather than trying to hide it.
