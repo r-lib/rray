@@ -279,7 +279,6 @@ Binary elementwise:
 | `/` `^` | dbl | dbl | dbl | cpl |
 | `%%` `%/%` | int | int | dbl | error |
 | `maximum` `minimum` | int | int | dbl | error |
-| `hypot` | dbl | dbl | dbl | error |
 
 Reduction:
 
@@ -760,16 +759,6 @@ Names: coalesce. Type: promoted, ops `maximum` and `minimum`.
 Signature: `rray_maximum(x, y, ..., na_rm = FALSE)`.
 
 Files: `R/extremum.R`, `src/extremum.c`, `src/extremum.h`.
-
-### `rray_hypot()`
-
-Elementwise `sqrt(x^2 + y^2)`, computed without intermediate overflow.
-
-Names: coalesce. Type: promoted, op `hypot`, always double.
-
-Signature: `rray_hypot(x, y)`.
-
-Files: `R/hypot.R`, `src/hypot.c`, `src/hypot.h`.
 
 ### `rray_multiply_add()`
 

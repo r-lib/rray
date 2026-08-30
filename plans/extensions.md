@@ -191,7 +191,7 @@ tables in the main plan become three generics.
 
 | family | hook | dispatch | ops |
 |---|---|---|---|
-| binary elementwise | `rray_arithmetic_ptype2(op, x, y)` | double | `+ - * / ^ %% %/%`, `maximum`, `minimum`, `hypot` |
+| binary elementwise | `rray_arithmetic_ptype2(op, x, y)` | double | `+ - * / ^ %% %/%`, `maximum`, `minimum` |
 | unary elementwise | `rray_arithmetic_ptype(op, x)` | single | unary `-` |
 | reduction | `rray_reduction_ptype(op, x)` | single | `sum`, `prod`, `mean`, `max`, `min` |
 
