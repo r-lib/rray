@@ -440,7 +440,7 @@ Validation as described in 2.3. Exact lengths, `NULL` clears.
 
 Files: `R/names.R`, `src/names.c`, `src/names.h`, `tests/testthat/test-names.R`.
 
-## PR 4: Names builder and the point iterator
+## PR 4: Lazy list and the point iterator
 
 A refactor with no behavior change, and it cleans up the ugliest code in the
 package.
@@ -450,18 +450,20 @@ anything survives, then allocate and fill while repeating the same conditions.
 `rray_split_names()` does manual stride arithmetic to spread names across output
 elements.
 
-Add `struct rray_names_builder`:
+Add `struct rray_lazy_list`, following `struct lazy_raw` in vctrs' `src/lazy.h`:
 
-- The caller allocates a one slot list, `KEEP`s it, and passes it to
-  `rray_names_builder_init()`. This is the shelter.
+- `new_rray_lazy_list(size)` stores the struct in a raw vector and leaves the
+  list itself unallocated.
 
-- `rray_names_builder_poke(&b, axis, names)` allocates the real names list into
-  slot 0 on the first non `NULL` poke.
+- The struct holds a `PROTECT_INDEX`, so it reprotects itself on allocation
+  rather than asking the caller to arrange a shelter.
 
-- `rray_names_builder_result(&b)` returns `r_null` if nothing was ever poked.
+- `init_rray_lazy_list()` allocates on first use and is a no-op after that.
 
-Nothing is allocated when nothing survives, and protection is already in place
-when it is.
+Names are the first user. A names list is only allocated once an axis actually
+survives, so the common case where nothing survives allocates nothing. Keep it
+general rather than calling it a names builder, since it is a plain lazy
+`VECSXP` and other functions will want one.
 
 Add `rray_iterator_point()` to `src/iterator.h`, alongside
 `rray_iterator_location()`. Nothing reads `v_point` today, so this is a new
@@ -469,8 +471,8 @@ capability.
 
 Then rewrite all three helpers:
 
-- `rray_broadcast_names()` and `rray_reduce_names()` collapse to one loop each
-  using the builder.
+- `rray_broadcast_names()` and `rray_reduce_names()` collapse to one loop each,
+  poking into a lazy list.
 
 - `rray_split_names()` drops the stride arithmetic entirely. Walk the output
   space with an `rray_iterator` initialised with the out dimensions as both the
@@ -478,7 +480,7 @@ Then rewrite all three helpers:
   `rray_iterator_point()`. The names on split axis `i` are
   `x_names[[i]][point[i]]`, and every other axis copies straight across.
 
-Files: `src/names.c`, `src/names.h`, `src/iterator.h`,
+Files: `src/lazy.h`, `src/names.c`, `src/names.h`, `src/iterator.h`,
 `src/broadcast-template.h`, `src/reduce.c`, `src/split-template.h`.
 
 **Done when** the existing tests pass unchanged and the three helpers are
