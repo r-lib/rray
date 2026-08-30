@@ -85,6 +85,8 @@ on R 4.1, so no `_$x`.
 Plain words, short sentences. Show a small example instead of writing a
 paragraph. No em dashes.
 
+Never use the term "load bearing". Say what the thing actually does.
+
 ---
 
 # Part 2: The core ideas
@@ -490,8 +492,8 @@ The coalesce rule from 2.3. Internal C plus an unexported R wrapper so it can be
 tested directly before it has a real caller.
 
 Signature is `rray_names_common(..., .dimensions = NULL)`, where `.dimensions`
-defaults to `rray_dimensions_common(...)`. It needs the common dimensions to
-apply the rule at all, so that argument is load bearing.
+defaults to `rray_dimensions_common(...)`. The rule cannot be applied without the
+common dimensions, so that argument is not optional decoration.
 
 Files: `src/names.c`, `src/names.h`, `R/names.R`.
 
