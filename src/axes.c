@@ -49,9 +49,9 @@ r_obj* arg_as_axes(
       r_abort_lazy_call(
         error_call,
         "`%s` must contain values less than or equal to the "
-        "dimensionality of %td, not %d.",
+        "dimensionality of %" R_PRIdXLEN_T ", not %d.",
         r_chr_get_c_string(arg, 0),
-        (ptrdiff_t) dimensionality,
+        dimensionality,
         axis
       );
     }
@@ -80,9 +80,9 @@ r_ssize arg_as_axis(
   if (r_length(axis) != 1) {
     r_abort_lazy_call(
       error_call,
-      "`%s` must be a single axis, not length %td.",
+      "`%s` must be a single axis, not length %" R_PRIdXLEN_T ".",
       r_chr_get_c_string(arg, 0),
-      (ptrdiff_t) r_length(axis)
+      r_length(axis)
     );
   }
 
