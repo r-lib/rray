@@ -792,14 +792,28 @@ Files: `R/clip.R`, `src/clip.c`, `src/clip.h`.
 
 Elementwise choice between two arrays based on a logical array.
 
-**A human should design review this before implementation.** Three way
-broadcasting again, plus the question of how `condition` relates to the type
-rules when `true` and `false` have different types.
+Follow vctrs' `vec_if_else()` closely. Read `R/if-else.R` and `src/if-else.c` in
+vctrs before starting. The three things worth taking from it:
 
-Names: coalesce. Type: common across `true` and `false`, with `condition` cast to
-logical.
+- **A `missing` argument.** If not `NULL`, it supplies the value wherever
+  `condition` is `NA`, rather than forcing a missing value into the output. This
+  is the main thing `ifelse()` gets wrong.
 
-Signature: `rray_if_else(condition, true, false)`.
+- **`missing` participates in the type.** The output type is the common type of
+  `true`, `false` **and** `missing`, not just the first two.
+
+- **A `ptype` override**, which wins over that common type.
+
+The array specific part: `condition` drives the shape. `true`, `false` and
+`missing` are broadcast to `condition`'s dimensions, and `condition` itself is
+never broadcast.
+
+Names: coalesce, across `true`, `false` and `missing`. Type: common across
+`true`, `false` and `missing`, overridden by `.ptype`. `condition` is cast to
+logical and takes no part in either rule.
+
+Signature: `rray_if_else(condition, true, false, ..., missing = NULL, .ptype =
+NULL)`.
 
 Files: `R/if-else.R`, `src/if-else.c`, `src/if-else.h`.
 
