@@ -391,7 +391,7 @@ PRs 1 to 11 build the foundations. Work through them in order, since each
 assumes the ones before it have landed. After that, work through Part 5 in any
 order that respects the dependencies noted there.
 
-## PR 1: Package housekeeping
+## PR 1: Package housekeeping — done
 
 No behavior change.
 

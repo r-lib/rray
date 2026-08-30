@@ -5,3 +5,8 @@
 ^compile_commands\.json$
 ^\.cache$
 ^[.]?air[.]toml$
+^plans$
+^_pkgdown\.yml$
+^\.clang-format$
+^\.vscode$
+\.clangd$

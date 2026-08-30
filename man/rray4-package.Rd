@@ -4,12 +4,20 @@
 \name{rray4-package}
 \alias{rray4}
 \alias{rray4-package}
-\title{rray4: What the Package Does (One Line, Title Case)}
+\title{rray4: Array Helpers}
 \description{
-What the package does (one paragraph).
+A toolkit for broadcasting, reshaping, reducing, and indexing arrays.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/DavisVaughan/rray4}
+  \item Report bugs at \url{https://github.com/DavisVaughan/rray4/issues}
+}
+
 }
 \author{
-\strong{Maintainer}: First Last \email{first.last@example.com}
+\strong{Maintainer}: Davis Vaughan \email{davis@posit.co}
 
 }
 \keyword{internal}
