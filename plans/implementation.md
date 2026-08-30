@@ -820,9 +820,23 @@ The array specific part: `condition` drives the shape. `true`, `false` and
 `missing` are broadcast to `condition`'s dimensions, and `condition` itself is
 never broadcast.
 
-Names: coalesce, across `true`, `false` and `missing`. Type: common across
-`true`, `false` and `missing`, overridden by `.ptype`. `condition` is cast to
-logical and takes no part in either rule.
+Names: dropped. Type: common across `true`, `false` and `missing`, overridden by
+`.ptype`. `condition` is cast to logical and takes no part in either rule.
+
+**Names is the one place not to follow `vec_if_else()`.** It assigns names
+elementwise, giving each output element the name from whichever branch supplied
+it:
+
+```r
+vec_if_else(c(TRUE, FALSE, TRUE), c(a = 1, b = 2, c = 3), c(x = 9, y = 8, z = 7))
+#> a y c
+#> 1 8 3
+```
+
+That works because a vector's names are per element. An array's names live on
+axes, so it does not translate: two elements in the same row can come from
+different branches, and the row can only have one name. We drop all names
+instead.
 
 Signature: `rray_if_else(condition, true, false, ..., missing = NULL, .ptype =
 NULL)`.
