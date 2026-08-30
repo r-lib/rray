@@ -250,11 +250,16 @@ type for this. We do not, at least until `rray_bind()` wants
 Some operators need a type the common type rules cannot give, because
 `lgl + lgl` is `int` and `int / int` is `dbl`.
 
+Each family gets its own operator enum and its own type function.
+
 ```c
-enum r_type rray_arithmetic_type2(enum rray_op op, enum r_type x, enum r_type y);
-enum r_type rray_arithmetic_type(enum rray_op op, enum r_type x);
-enum r_type rray_reduction_type(enum rray_op op, enum r_type x);
+enum r_type rray_binary_type(enum rray_binary_op op, enum r_type x, enum r_type y);
+enum r_type rray_unary_type(enum rray_unary_op op, enum r_type x);
+enum r_type rray_reduction_type(enum rray_reduction_op op, enum r_type x);
 ```
+
+Three enums rather than one shared vocabulary, so each function can only be
+handed an operator its family actually has.
 
 Each returns **one type**, used both to cast the inputs and to allocate the
 output. That works because we always promote before computing, so the input type
@@ -511,15 +516,15 @@ wrappers so it can be tested directly.
 Files: `src/type.c`, `src/type.h`, `src/cast.c`, `src/cast.h`,
 `src/cast-template.h`.
 
-## PR 8: Arithmetic promotion and `rray_add()`
+## PR 8: Binary promotion and `rray_add()`
 
-`enum rray_op`, `rray_arithmetic_type2()` and its table, then one function using
-it end to end.
+`enum rray_binary_op`, `rray_binary_type()` and its table, then one function
+using it end to end.
 
 The C loop uses two broadcast iterators stepped side by side. Names come from
 `rray_names_common()`.
 
-Files: `src/op.h` for the enum, `src/type.c` for the table, `R/arithmetic.R`,
+Files: `src/op.h` for the enums, `src/type.c` for the table, `R/arithmetic.R`,
 `src/arithmetic.c`, `src/arithmetic.h`, `src/arithmetic-template.h`.
 
 ## PR 9: The rest of the binary arithmetic
@@ -541,8 +546,8 @@ Files: `src/type.c`, `R/sum.R`, `src/sum.c`, `src/sum-template.h`.
 
 ## PR 11: `rray_opposite()`
 
-`rray_arithmetic_type()`, the unary elementwise table, and its one caller. It
-lands here rather than up front because there is nothing else that needs it.
+`enum rray_unary_op`, `rray_unary_type()`, the unary table, and its one caller.
+It lands here rather than up front because there is nothing else that needs it.
 
 Files: `src/type.c`, `R/arithmetic.R`, `src/arithmetic.c`.
 
