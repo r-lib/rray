@@ -61,7 +61,7 @@ Use the Read, Edit, and Write tools for all file access and edits (even where a 
 
 ## Git
 
-Commit messages must be exactly one sentence, striving for no more than 80 characters.
+Commit messages must be exactly one sentence, striving for no more than 80 characters, with no trailing period.
 
 ## Comments
 
