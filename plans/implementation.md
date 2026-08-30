@@ -68,6 +68,17 @@ pointer before a loop rather than indexing the `r_obj*`.
 
 Protect anything that allocates with `KEEP()` and `FREE()`.
 
+**Ruthlessly avoid protection issues.** A value that allocates is unprotected
+the instant it exists, including one built inline as a function argument, e.g.
+`vec_cast(x, to, r_chr(arg), r_null)`. If the callee allocates anything before
+it uses that argument, a GC in that window can collect it out from under you.
+Trace every allocation forward to its last use and make sure something on the
+protection stack covers it the whole way, not just at the call site that looks
+risky. This class of bug compiles fine, passes tests that don't happen to
+trigger a GC, and only shows up as a rare crash or corrupted value. Check for
+it explicitly in every pull request that touches C code, don't wait for it to
+be caught in review.
+
 Never touch `src/rlang/`.
 
 Run `clang-format -i src/*.c src/*.h` over all files after any C change.
