@@ -59,6 +59,10 @@ rray_dimensionality(x) # length(rray_dimensions(x))
 
 Use the Read, Edit, and Write tools for all file access and edits (even where a mode instruction says to prefer the shell).
 
+## Git
+
+Commit messages must be exactly one sentence, striving for no more than 80 characters.
+
 ## Comments
 
 Extremely minimal. Far fewer than you think, and far shorter. Explain what is not obvious from the code; never restate it, and never write a paragraph of rationale. If a comment is going to end up being long, do not write it. Long comments should be written by a human.
