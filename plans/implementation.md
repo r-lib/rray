@@ -827,8 +827,11 @@ rray_ones_like(x)
 rray_zeros_like(x)
 ```
 
-Names: follow the axis. Every axis keeps its dimension, so everything is kept.
-Type: preserved, with `value` cast to `x`'s type.
+Names: dropped. Type: preserved, with `value` cast to `x`'s type.
+
+These borrow `x`'s dimensions and type but none of its data, so the result is a
+new array rather than a manipulated `x`. Names would no longer describe anything
+that is actually there.
 
 Signature: `rray_full_like(x, value)`, `rray_ones_like(x)`, `rray_zeros_like(x)`.
 
