@@ -2,9 +2,9 @@
 
 #include "dimensions.h"
 
-r_obj* ffi_rray_dimensionality(r_obj* x, r_obj* frame) {
-  struct r_lazy error_call = {.x = frame, .env = r_null};
-  return r_int((int) rray_dimensionality(x, error_call));
+r_obj* ffi_rray_dimensionality(r_obj* ffi_x, r_obj* ffi_frame) {
+  struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
+  return r_int((int) rray_dimensionality(ffi_x, error_call));
 }
 
 r_ssize rray_dimensionality(r_obj* x, struct r_lazy error_call) {
