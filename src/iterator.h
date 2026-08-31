@@ -10,7 +10,7 @@
 // Reports the corresponding 1-D `location` in `v_location_dimensions`
 // space
 struct rray_iterator {
-  r_ssize dimensionality;
+  int dimensionality;
 
   // Dimensions that bound `v_point`
   int v_point_dimensions[RRAY_MAX_DIMENSIONALITY];
@@ -36,7 +36,7 @@ static inline r_ssize rray_iterator_location(const struct rray_iterator* it) {
 // Advance the iterator by one step, updating `it->location` and
 // `it->v_point`
 static inline void rray_iterator_next(struct rray_iterator* it) {
-  for (r_ssize i = 0; i < it->dimensionality; ++i) {
+  for (int i = 0; i < it->dimensionality; ++i) {
     ++it->v_point[i];
 
     if (it->v_point[i] < it->v_point_dimensions[i]) {

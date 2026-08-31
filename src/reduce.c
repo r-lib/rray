@@ -2,7 +2,7 @@
 
 r_obj* rray_reduce_dimensions(
   const int* v_dimensions,
-  r_ssize dimensionality,
+  int dimensionality,
   const int* v_axes,
   r_ssize axes_size
 ) {
@@ -23,11 +23,11 @@ r_obj* rray_reduce_dimensions(
 
 r_obj* rray_reduce_names(
   r_obj* const* v_names,
-  r_ssize dimensionality,
+  int dimensionality,
   const int* v_axes,
   r_ssize axes_size
 ) {
-  r_ssize i = 0;
+  int i = 0;
 
   for (; i < dimensionality; ++i) {
     r_obj* axis_names = v_names[i];

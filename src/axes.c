@@ -4,7 +4,7 @@
 
 r_obj* arg_as_axes(
   r_obj* axes,
-  r_ssize dimensionality,
+  int dimensionality,
   r_obj* arg,
   struct r_lazy error_call
 ) {
@@ -49,7 +49,7 @@ r_obj* arg_as_axes(
       r_abort_lazy_call(
         error_call,
         "`%s` must contain values less than or equal to the "
-        "dimensionality of %" R_PRIdXLEN_T ", not %d.",
+        "dimensionality of %d, not %d.",
         r_chr_get_c_string(arg, 0),
         dimensionality,
         axis

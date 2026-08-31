@@ -15,19 +15,19 @@ static inline void rray_reduction_iterator_init(
   struct rray_iterator* it,
   const int* v_dimensions,
   const int* v_out_dimensions,
-  r_ssize dimensionality
+  int dimensionality
 ) {
   check_max_dimensionality(dimensionality);
 
   it->dimensionality = dimensionality;
 
-  for (r_ssize i = 0; i < dimensionality; ++i) {
+  for (int i = 0; i < dimensionality; ++i) {
     it->v_point_dimensions[i] = v_dimensions[i];
     it->v_location_dimensions[i] = v_out_dimensions[i];
   }
 
   it->v_location_strides[0] = 1;
-  for (r_ssize i = 1; i < dimensionality; ++i) {
+  for (int i = 1; i < dimensionality; ++i) {
     it->v_location_strides[i] =
       it->v_location_strides[i - 1] * it->v_location_dimensions[i - 1];
   }

@@ -5,14 +5,14 @@
 
 r_obj* rray_reduce_dimensions(
   const int* v_dimensions,
-  r_ssize dimensionality,
+  int dimensionality,
   const int* v_axes,
   r_ssize axes_size
 );
 
 r_obj* rray_reduce_names(
   r_obj* const* v_names,
-  r_ssize dimensionality,
+  int dimensionality,
   const int* v_axes,
   r_ssize axes_size
 );

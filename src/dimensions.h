@@ -15,9 +15,9 @@ r_obj* rray_set_dimensions(
 
 bool rray_dimensions_are_equal(
   const int* v_x_dimensions,
-  r_ssize x_dimensionality,
+  int x_dimensionality,
   const int* v_y_dimensions,
-  r_ssize y_dimensionality
+  int y_dimensionality
 );
 
 r_obj* rray_dimensions_common(

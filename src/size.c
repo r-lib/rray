@@ -13,13 +13,10 @@ r_ssize rray_size(r_obj* x, struct r_lazy error_call) {
   return r_length(x);
 }
 
-r_ssize rray_size_from_dimensions(
-  const int* v_dimensions,
-  r_ssize dimensionality
-) {
+r_ssize rray_size_from_dimensions(const int* v_dimensions, int dimensionality) {
   r_ssize out = 1;
 
-  for (r_ssize i = 0; i < dimensionality; ++i) {
+  for (int i = 0; i < dimensionality; ++i) {
     out *= v_dimensions[i];
   }
 

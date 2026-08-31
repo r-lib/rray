@@ -13,27 +13,27 @@
 static inline void rray_broadcast_iterator_init(
   struct rray_iterator* it,
   const int* v_dimensions,
-  r_ssize dimensionality,
+  int dimensionality,
   const int* v_view_dimensions,
-  r_ssize view_dimensionality
+  int view_dimensionality
 ) {
   check_max_dimensionality(view_dimensionality);
 
   it->dimensionality = view_dimensionality;
 
-  for (r_ssize i = 0; i < view_dimensionality; ++i) {
+  for (int i = 0; i < view_dimensionality; ++i) {
     it->v_point_dimensions[i] = v_view_dimensions[i];
   }
 
-  for (r_ssize i = 0; i < dimensionality; ++i) {
+  for (int i = 0; i < dimensionality; ++i) {
     it->v_location_dimensions[i] = v_dimensions[i];
   }
-  for (r_ssize i = dimensionality; i < view_dimensionality; ++i) {
+  for (int i = dimensionality; i < view_dimensionality; ++i) {
     it->v_location_dimensions[i] = 1;
   }
 
   it->v_location_strides[0] = 1;
-  for (r_ssize i = 1; i < view_dimensionality; ++i) {
+  for (int i = 1; i < view_dimensionality; ++i) {
     it->v_location_strides[i] =
       it->v_location_strides[i - 1] * it->v_location_dimensions[i - 1];
   }

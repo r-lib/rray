@@ -71,22 +71,22 @@ r_obj* rray_broadcast(r_obj* x, r_obj* dimensions, struct r_lazy error_call) {
 
 void check_broadcastable(
   const int* v_x_dimensions,
-  r_ssize x_dimensionality,
+  int x_dimensionality,
   const int* v_dimensions,
-  r_ssize dimensionality,
+  int dimensionality,
   struct r_lazy error_call
 ) {
   if (x_dimensionality > dimensionality) {
     r_abort_lazy_call(
       error_call,
-      "Can't broadcast from dimensionality %td to %td. "
+      "Can't broadcast from dimensionality %d to %d. "
       "Can't decrease dimensionality.",
-      (ptrdiff_t) x_dimensionality,
-      (ptrdiff_t) dimensionality
+      x_dimensionality,
+      dimensionality
     );
   }
 
-  for (r_ssize i = 0; i < x_dimensionality; ++i) {
+  for (int i = 0; i < x_dimensionality; ++i) {
     const int x_dimension = v_x_dimensions[i];
     const int dimension = v_dimensions[i];
 
@@ -96,8 +96,8 @@ void check_broadcastable(
 
     r_abort_lazy_call(
       error_call,
-      "Can't broadcast axis %td from dimension %d to %d.",
-      (ptrdiff_t) (i + 1),
+      "Can't broadcast axis %d from dimension %d to %d.",
+      i + 1,
       x_dimension,
       dimension
     );

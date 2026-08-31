@@ -41,7 +41,7 @@ r_obj* rray_axis_names(r_obj* x, int axis, struct r_lazy error_call) {
   check_unclassed(x, "x", error_call);
   x = KEEP(arg_as_array(x, "x", error_call));
 
-  const int dimensionality = (int) rray_dimensionality(x, error_call);
+  const int dimensionality = rray_dimensionality(x, error_call);
   check_axis(axis, dimensionality, "axis", error_call);
 
   r_obj* names = rray_names(x, error_call);
@@ -72,22 +72,21 @@ r_obj* rray_set_names(r_obj* x, r_obj* names, struct r_lazy error_call) {
 
     r_obj* dimensions = KEEP(rray_dimensions(x, error_call));
     const int* v_dimensions = r_int_cbegin(dimensions);
-    const r_ssize dimensionality =
-      rray_dimensionality_from_dimensions(dimensions);
+    const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
 
     if (r_length(names) != dimensionality) {
       r_abort_lazy_call(
         error_call,
-        "`names` must have length %" R_PRIdXLEN_T
-        " to match the dimensionality of `x`, not length %" R_PRIdXLEN_T ".",
+        "`names` must have length %d to match the dimensionality of `x`, "
+        "not length %" R_PRIdXLEN_T ".",
         dimensionality,
         r_length(names)
       );
     }
 
     r_obj* const* v_names = r_list_cbegin(names);
-    for (r_ssize i = 0; i < dimensionality; ++i) {
-      check_axis_names(v_names[i], (int) i + 1, v_dimensions[i], error_call);
+    for (int i = 0; i < dimensionality; ++i) {
+      check_axis_names(v_names[i], i + 1, v_dimensions[i], error_call);
     }
 
     FREE(1);
@@ -138,8 +137,8 @@ r_obj* rray_set_axis_names(
   check_unclassed(x, "x", error_call);
   x = KEEP(arg_as_array(x, "x", error_call));
 
-  const r_ssize dimensionality = rray_dimensionality(x, error_call);
-  check_axis(axis, (int) dimensionality, "axis", error_call);
+  const int dimensionality = rray_dimensionality(x, error_call);
+  check_axis(axis, dimensionality, "axis", error_call);
 
   const int dimension = rray_dimension(x, axis, error_call);
   check_axis_names(names, axis, dimension, error_call);
@@ -149,7 +148,7 @@ r_obj* rray_set_axis_names(
   r_obj* new_names = KEEP(r_alloc_list(dimensionality));
   if (old_names != r_null) {
     r_obj* const* v_old_names = r_list_cbegin(old_names);
-    for (r_ssize i = 0; i < dimensionality; ++i) {
+    for (int i = 0; i < dimensionality; ++i) {
       r_list_poke(new_names, i, v_old_names[i]);
     }
   }
