@@ -413,20 +413,20 @@ static void wrapper_list_set_elt(r_obj* x, r_ssize i, r_obj* v) {
 // -----------------------------------------------------------------------------
 // FFI test helpers
 
-r_obj* ffi_test_wrap(r_obj* x) {
-  return r_wrap(x);
+r_obj* ffi_test_wrap(r_obj* ffi_x) {
+  return r_wrap(ffi_x);
 }
 
-r_obj* ffi_test_wrapper_readonly(r_obj* x) {
-  return wrapper_readonly(x);
+r_obj* ffi_test_wrapper_readonly(r_obj* ffi_x) {
+  return wrapper_readonly(ffi_x);
 }
 
-r_obj* ffi_test_wrapper_writable(r_obj* x) {
-  return wrapper_writable(x);
+r_obj* ffi_test_wrapper_writable(r_obj* ffi_x) {
+  return wrapper_writable(ffi_x);
 }
 
-r_obj* ffi_test_is_wrapper(r_obj* x) {
-  return r_lgl(is_wrapper(x));
+r_obj* ffi_test_is_wrapper(r_obj* ffi_x) {
+  return r_lgl(is_wrapper(ffi_x));
 }
 
 // -----------------------------------------------------------------------------

@@ -92,6 +92,7 @@ The prose rules above also apply to what you write back to me in conversation, n
 - Each feature gets a `src/{name}.c` and `src/{name}.h` pair.
 - Internal C functions: `rray_{name}()` — return C types (e.g., `r_ssize`).
 - FFI wrappers: `ffi_rray_{name}()` — thin SEXP-to-C bridges. Go above internal functions in the `.c` file.
+- FFI wrapper parameters are also prefixed, i.e. `ffi_rray_axis_names(r_obj* ffi_x, r_obj* ffi_axis, r_obj* ffi_frame)`. This frees up the unprefixed name for the converted C value.
 - Headers only declare internal C functions, not FFI wrappers.
 - `src/init.c` uses `extern` declarations for FFI functions — does not include feature headers.
 - Always prefer rlang's C library wrappers over raw R API (e.g., `r_globals.na_int` over `NA_INTEGER`, `r_length()` over `Rf_length()`).

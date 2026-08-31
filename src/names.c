@@ -8,9 +8,9 @@
 
 #include "decl/names-decl.h"
 
-r_obj* ffi_rray_names(r_obj* x, r_obj* frame) {
-  struct r_lazy error_call = {.x = frame, .env = r_null};
-  return rray_names(x, error_call);
+r_obj* ffi_rray_names(r_obj* ffi_x, r_obj* ffi_frame) {
+  struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
+  return rray_names(ffi_x, error_call);
 }
 
 r_obj* rray_names(r_obj* x, struct r_lazy error_call) {
@@ -21,20 +21,20 @@ r_obj* rray_names(r_obj* x, struct r_lazy error_call) {
   return out;
 }
 
-r_obj* ffi_rray_axis_names(r_obj* x, r_obj* axis, r_obj* frame) {
-  struct r_lazy error_call = {.x = frame, .env = r_null};
-  const int c_axis = arg_as_int(axis, axis_chr, error_call);
-  return rray_axis_names(x, c_axis, error_call);
+r_obj* ffi_rray_axis_names(r_obj* ffi_x, r_obj* ffi_axis, r_obj* ffi_frame) {
+  struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
+  const int axis = arg_as_int(ffi_axis, axis_chr, error_call);
+  return rray_axis_names(ffi_x, axis, error_call);
 }
 
-r_obj* ffi_rray_row_names(r_obj* x, r_obj* frame) {
-  struct r_lazy error_call = {.x = frame, .env = r_null};
-  return rray_axis_names(x, 1, error_call);
+r_obj* ffi_rray_row_names(r_obj* ffi_x, r_obj* ffi_frame) {
+  struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
+  return rray_axis_names(ffi_x, 1, error_call);
 }
 
-r_obj* ffi_rray_col_names(r_obj* x, r_obj* frame) {
-  struct r_lazy error_call = {.x = frame, .env = r_null};
-  return rray_axis_names(x, 2, error_call);
+r_obj* ffi_rray_col_names(r_obj* ffi_x, r_obj* ffi_frame) {
+  struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
+  return rray_axis_names(ffi_x, 2, error_call);
 }
 
 r_obj* rray_axis_names(r_obj* x, int axis, struct r_lazy error_call) {
@@ -52,9 +52,9 @@ r_obj* rray_axis_names(r_obj* x, int axis, struct r_lazy error_call) {
   return out;
 }
 
-r_obj* ffi_rray_set_names(r_obj* x, r_obj* names, r_obj* frame) {
-  struct r_lazy error_call = {.x = frame, .env = r_null};
-  return rray_set_names(x, names, error_call);
+r_obj* ffi_rray_set_names(r_obj* ffi_x, r_obj* ffi_names, r_obj* ffi_frame) {
+  struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
+  return rray_set_names(ffi_x, ffi_names, error_call);
 }
 
 r_obj* rray_set_names(r_obj* x, r_obj* names, struct r_lazy error_call) {
@@ -101,24 +101,32 @@ r_obj* rray_set_names(r_obj* x, r_obj* names, struct r_lazy error_call) {
 }
 
 r_obj* ffi_rray_set_axis_names(
-  r_obj* x,
-  r_obj* axis,
-  r_obj* names,
-  r_obj* frame
+  r_obj* ffi_x,
+  r_obj* ffi_axis,
+  r_obj* ffi_names,
+  r_obj* ffi_frame
 ) {
-  struct r_lazy error_call = {.x = frame, .env = r_null};
-  const int c_axis = arg_as_int(axis, axis_chr, error_call);
-  return rray_set_axis_names(x, c_axis, names, error_call);
+  struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
+  const int axis = arg_as_int(ffi_axis, axis_chr, error_call);
+  return rray_set_axis_names(ffi_x, axis, ffi_names, error_call);
 }
 
-r_obj* ffi_rray_set_row_names(r_obj* x, r_obj* names, r_obj* frame) {
-  struct r_lazy error_call = {.x = frame, .env = r_null};
-  return rray_set_axis_names(x, 1, names, error_call);
+r_obj* ffi_rray_set_row_names(
+  r_obj* ffi_x,
+  r_obj* ffi_names,
+  r_obj* ffi_frame
+) {
+  struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
+  return rray_set_axis_names(ffi_x, 1, ffi_names, error_call);
 }
 
-r_obj* ffi_rray_set_col_names(r_obj* x, r_obj* names, r_obj* frame) {
-  struct r_lazy error_call = {.x = frame, .env = r_null};
-  return rray_set_axis_names(x, 2, names, error_call);
+r_obj* ffi_rray_set_col_names(
+  r_obj* ffi_x,
+  r_obj* ffi_names,
+  r_obj* ffi_frame
+) {
+  struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
+  return rray_set_axis_names(ffi_x, 2, ffi_names, error_call);
 }
 
 r_obj* rray_set_axis_names(

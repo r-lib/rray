@@ -3,9 +3,13 @@
 #include "types.h"
 #include "utils.h"
 
-r_obj* ffi_rray_broadcast(r_obj* x, r_obj* dimensions, r_obj* frame) {
-  struct r_lazy error_call = {.x = frame, .env = r_null};
-  return rray_broadcast(x, dimensions, error_call);
+r_obj* ffi_rray_broadcast(
+  r_obj* ffi_x,
+  r_obj* ffi_dimensions,
+  r_obj* ffi_frame
+) {
+  struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
+  return rray_broadcast(ffi_x, ffi_dimensions, error_call);
 }
 
 #define RRAY_TYPE RRAY_TYPE_LOGICAL

@@ -2,9 +2,9 @@
 
 #include "utils.h"
 
-r_obj* ffi_rray_size(r_obj* x, r_obj* frame) {
-  struct r_lazy error_call = {.x = frame, .env = r_null};
-  return r_dbl((double) rray_size(x, error_call));
+r_obj* ffi_rray_size(r_obj* ffi_x, r_obj* ffi_frame) {
+  struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
+  return r_dbl((double) rray_size(ffi_x, error_call));
 }
 
 r_ssize rray_size(r_obj* x, struct r_lazy error_call) {

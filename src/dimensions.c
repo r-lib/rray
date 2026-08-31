@@ -6,9 +6,9 @@
 #include "utils.h"
 #include "wrapper.h"
 
-r_obj* ffi_rray_dimensions(r_obj* x, r_obj* frame) {
-  struct r_lazy error_call = {.x = frame, .env = r_null};
-  return rray_dimensions(x, error_call);
+r_obj* ffi_rray_dimensions(r_obj* ffi_x, r_obj* ffi_frame) {
+  struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
+  return rray_dimensions(ffi_x, error_call);
 }
 
 r_obj* rray_dimensions(r_obj* x, struct r_lazy error_call) {
@@ -43,9 +43,13 @@ bool rray_dimensions_are_equal(
   return true;
 }
 
-r_obj* ffi_rray_set_dimensions(r_obj* x, r_obj* dimensions, r_obj* frame) {
-  struct r_lazy error_call = {.x = frame, .env = r_null};
-  return rray_set_dimensions(x, dimensions, error_call);
+r_obj* ffi_rray_set_dimensions(
+  r_obj* ffi_x,
+  r_obj* ffi_dimensions,
+  r_obj* ffi_frame
+) {
+  struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
+  return rray_set_dimensions(ffi_x, ffi_dimensions, error_call);
 }
 
 r_obj* rray_set_dimensions(
@@ -83,9 +87,13 @@ r_obj* rray_set_dimensions(
   return out;
 }
 
-r_obj* ffi_rray_dimensions_common(r_obj* xs, r_obj* dimensions, r_obj* frame) {
-  struct r_lazy error_call = {.x = frame, .env = r_null};
-  return rray_dimensions_common(xs, dimensions, error_call);
+r_obj* ffi_rray_dimensions_common(
+  r_obj* ffi_xs,
+  r_obj* ffi_dimensions,
+  r_obj* ffi_frame
+) {
+  struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
+  return rray_dimensions_common(ffi_xs, ffi_dimensions, error_call);
 }
 
 r_obj* rray_dimensions_common(
