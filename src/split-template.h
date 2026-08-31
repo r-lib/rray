@@ -157,10 +157,8 @@ static inline r_obj* RRAY_FN(r_obj* x, r_obj* axes, struct r_lazy error_call) {
     rray_split_names(
       out,
       v_x_names,
+      v_out_dimensions,
       dimensionality,
-      v_x_dimensions,
-      v_axes,
-      axes_size,
       out_size
     );
   }
@@ -191,107 +189,6 @@ r_obj* rray_split_dimensions(
 
   FREE(1);
   return out;
-}
-
-static inline bool rray_is_split_axis(
-  int axis,
-  const int* v_axes,
-  r_ssize axes_size
-) {
-  for (r_ssize i = 0; i < axes_size; ++i) {
-    if (v_axes[i] - 1 == axis) {
-      return true;
-    }
-  }
-  return false;
-}
-
-void rray_split_names(
-  r_obj* out,
-  r_obj* const* v_x_names,
-  int dimensionality,
-  const int* v_x_dimensions,
-  const int* v_axes,
-  r_ssize axes_size,
-  r_ssize out_size
-) {
-  r_obj* const* v_out = r_list_cbegin(out);
-
-  bool any_split_axis_has_names = false;
-  for (r_ssize i = 0; i < axes_size; ++i) {
-    if (v_x_names[v_axes[i] - 1] != r_null) {
-      any_split_axis_has_names = true;
-      break;
-    }
-  }
-
-  if (!any_split_axis_has_names) {
-    // Easy case, keep all names as is
-    r_obj* names = KEEP(r_alloc_list(dimensionality));
-    for (int i = 0; i < dimensionality; ++i) {
-      r_list_poke(names, i, v_x_names[i]);
-    }
-    for (r_ssize i = 0; i < out_size; ++i) {
-      r_attrib_poke_dim_names(v_out[i], names);
-    }
-    FREE(1);
-    return;
-  }
-
-  // Complicated case, we want to keep all non-split axis
-  // names as is, but we need to chop all split axis names
-  // into size 1 names on each out element's split axis
-  r_obj* all_names = KEEP(r_alloc_list(out_size));
-  r_obj* const* v_all_names = r_list_cbegin(all_names);
-
-  for (r_ssize i = 0; i < out_size; ++i) {
-    r_obj* names = r_alloc_list(dimensionality);
-    r_list_poke(all_names, i, names);
-
-    // Go ahead and fill non-split axis names with original names
-    for (int j = 0; j < dimensionality; ++j) {
-      if (!rray_is_split_axis(j, v_axes, axes_size)) {
-        r_list_poke(names, j, v_x_names[j]);
-      }
-    }
-  }
-
-  r_ssize stride = 1;
-
-  for (int i = 0; i < dimensionality; ++i) {
-    if (!rray_is_split_axis(i, v_axes, axes_size)) {
-      continue;
-    }
-
-    const int x_dimension = v_x_dimensions[i];
-    r_obj* x_axis_names = v_x_names[i];
-
-    if (x_axis_names != r_null) {
-      r_obj* const* v_x_axis_names = r_chr_cbegin(x_axis_names);
-
-      for (int j = 0; j < x_dimension; ++j) {
-        r_obj* axis_names = KEEP(r_alloc_character(1));
-        r_chr_poke(axis_names, 0, v_x_axis_names[j]);
-
-        for (r_ssize base = j * stride; base < out_size;
-             base += stride * x_dimension) {
-          for (r_ssize offset = 0; offset < stride; ++offset) {
-            r_list_poke(v_all_names[base + offset], i, axis_names);
-          }
-        }
-
-        FREE(1);
-      }
-    }
-
-    stride *= x_dimension;
-  }
-
-  for (r_ssize i = 0; i < out_size; ++i) {
-    r_attrib_poke_dim_names(v_out[i], v_all_names[i]);
-  }
-
-  FREE(1);
 }
 
 #endif // RRAY_ONCE

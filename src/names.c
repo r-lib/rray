@@ -3,6 +3,8 @@
 #include "axes.h"
 #include "dimensionality.h"
 #include "dimensions.h"
+#include "lazy.h"
+#include "reduction-iterator.h"
 #include "utils.h"
 #include "wrapper.h"
 
@@ -159,6 +161,139 @@ r_obj* rray_set_axis_names(
 
   FREE(4);
   return out;
+}
+
+r_obj* rray_broadcast_names(
+  r_obj* const* v_names,
+  const int* v_dimensions,
+  int dimensionality,
+  const int* v_out_dimensions,
+  int out_dimensionality
+) {
+  int n_kept = 0;
+
+  struct rray_lazy_list* p_out = new_rray_lazy_list(out_dimensionality);
+  KEEP_RRAY_LAZY_LIST(p_out, &n_kept);
+
+  for (int i = 0; i < dimensionality; ++i) {
+    if (v_names[i] == r_null) {
+      continue;
+    }
+    if (v_dimensions[i] != v_out_dimensions[i]) {
+      continue;
+    }
+    r_list_poke(init_rray_lazy_list(p_out), i, v_names[i]);
+  }
+
+  r_obj* out = p_out->data;
+
+  FREE(n_kept);
+  return out;
+}
+
+r_obj* rray_reduce_names(
+  r_obj* const* v_names,
+  int dimensionality,
+  const int* v_axes,
+  r_ssize axes_size
+) {
+  int n_kept = 0;
+
+  struct rray_lazy_list* p_out = new_rray_lazy_list(dimensionality);
+  KEEP_RRAY_LAZY_LIST(p_out, &n_kept);
+
+  for (int i = 0; i < dimensionality; ++i) {
+    if (v_names[i] == r_null) {
+      continue;
+    }
+    if (axis_is_reduced(i, v_axes, axes_size)) {
+      continue;
+    }
+    r_list_poke(init_rray_lazy_list(p_out), i, v_names[i]);
+  }
+
+  r_obj* out = p_out->data;
+
+  FREE(n_kept);
+  return out;
+}
+
+void rray_split_names(
+  r_obj* out,
+  r_obj* const* v_x_names,
+  const int* v_out_dimensions,
+  int dimensionality,
+  r_ssize out_size
+) {
+  if (!any_axis_has_names(v_x_names, dimensionality)) {
+    return;
+  }
+
+  r_obj* const* v_out = r_list_cbegin(out);
+
+  struct rray_iterator it;
+  rray_reduction_iterator_init(
+    &it,
+    v_out_dimensions,
+    v_out_dimensions,
+    dimensionality
+  );
+  const r_ssize* v_point = rray_iterator_point(&it);
+
+  for (r_ssize i = 0; i < out_size; ++i) {
+    r_obj* names = KEEP(r_alloc_list(dimensionality));
+
+    for (int j = 0; j < dimensionality; ++j) {
+      r_obj* x_axis_names = v_x_names[j];
+
+      if (x_axis_names == r_null) {
+        continue;
+      }
+
+      if (v_out_dimensions[j] == 1) {
+        // Axis isn't split, its names carry over whole
+        r_list_poke(names, j, x_axis_names);
+        continue;
+      }
+
+      r_obj* axis_names = KEEP(r_alloc_character(1));
+      r_chr_poke(axis_names, 0, r_chr_get(x_axis_names, v_point[j]));
+      r_list_poke(names, j, axis_names);
+      FREE(1);
+    }
+
+    r_attrib_poke_dim_names(v_out[i], names);
+
+    FREE(1);
+    rray_iterator_next(&it);
+  }
+}
+
+static inline bool axis_is_reduced(
+  int axis,
+  const int* v_axes,
+  r_ssize axes_size
+) {
+  for (r_ssize i = 0; i < axes_size; ++i) {
+    if (v_axes[i] - 1 == axis) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+static inline bool any_axis_has_names(
+  r_obj* const* v_names,
+  int dimensionality
+) {
+  for (int i = 0; i < dimensionality; ++i) {
+    if (v_names[i] != r_null) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 static inline void check_axis_names(

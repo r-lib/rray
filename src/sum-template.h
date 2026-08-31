@@ -109,11 +109,11 @@ static inline r_obj* RRAY_FN(
     KEEP(x_names);
     r_obj* const* v_x_names = r_list_cbegin(x_names);
     r_obj* out_names =
-      rray_reduce_names(v_x_names, dimensionality, v_axes, axes_size);
+      KEEP(rray_reduce_names(v_x_names, dimensionality, v_axes, axes_size));
     if (out_names != r_null) {
       r_attrib_poke_dim_names(out, out_names);
     }
-    FREE(1);
+    FREE(2);
   }
 
   FREE(4);

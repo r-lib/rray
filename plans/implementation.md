@@ -346,8 +346,7 @@ Two initialisers today:
 - `rray_reduction_iterator_init()`. Walks the input space, reports a location in
   the output space, where reduced axes have a dimension of 1.
 
-Accessors are `rray_iterator_location()` and, once PR 4 lands,
-`rray_iterator_point()`.
+Accessors are `rray_iterator_location()` and `rray_iterator_point()`.
 
 Functions with two array inputs use two plain iterators stepped side by side.
 There is no binary iterator type.
@@ -455,10 +454,9 @@ Validation as described in 2.3. Exact lengths, `NULL` clears.
 
 Files: `R/names.R`, `src/names.c`, `src/names.h`, `tests/testthat/test-names.R`.
 
-## PR 4: Lazy list and the point iterator
+## PR 4: Lazy list and the point iterator — done
 
-A refactor with no behavior change, and it cleans up the ugliest code in the
-package.
+A refactor, and it cleans up the ugliest code in the package.
 
 `rray_broadcast_names()` and `rray_reduce_names()` both scan once to see whether
 anything survives, then allocate and fill while repeating the same conditions.
@@ -495,11 +493,22 @@ Then rewrite all three helpers:
   `rray_iterator_point()`. The names on split axis `i` are
   `x_names[[i]][point[i]]`, and every other axis copies straight across.
 
+All three helpers now live in `src/names.c`, next to where PR 7 puts
+`rray_names_common()`. `broadcast-template.h` has no `RRAY_ONCE` block left, and
+`split-template.h` keeps one only for `rray_split_dimensions()`.
+
+`rray_split_names()` does not use the lazy list. Every output element has the
+same axes named, so it answers "does anything survive" once, before the loop,
+and allocates a plain list per element. The lazy list would have cost a raw
+vector per output element to answer a question that does not vary.
+
+One behavior change came out of that. Splitting `x` with
+`dimnames = list(NULL, NULL)` used to give every output element an all `NULL`
+dimnames list. It now leaves them with no dimnames, matching what
+`rray_broadcast()` and `rray_sum()` already did.
+
 Files: `src/lazy.h`, `src/names.c`, `src/names.h`, `src/iterator.h`,
 `src/broadcast-template.h`, `src/reduce.c`, `src/split-template.h`.
-
-**Done when** the existing tests pass unchanged and the three helpers are
-noticeably shorter.
 
 ## PR 5: Shell and core spike
 
