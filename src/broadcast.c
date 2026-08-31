@@ -16,7 +16,7 @@ r_obj* ffi_rray_broadcast(
   return rray_broadcast(ffi_x, ffi_dimensions, error_call);
 }
 
-#define RRAY_BROADCAST_LOOP(CTYPE, CONST_DEREF, DEREF)                         \
+#define RRAY_BROADCAST_ATOMIC(CTYPE, CONST_DEREF, DEREF)                       \
   const r_ssize size = r_length(out);                                          \
   const CTYPE* v_x = CONST_DEREF(x);                                           \
   CTYPE* v_out = DEREF(out);                                                   \
@@ -26,46 +26,75 @@ r_obj* ffi_rray_broadcast(
     rray_iterator_next(p_it);                                                  \
   }
 
-static void broadcast_lgl(r_obj* x, r_obj* out, struct rray_iterator* p_it) {
-  RRAY_BROADCAST_LOOP(int, r_lgl_cbegin, r_lgl_begin);
-}
-static void broadcast_int(r_obj* x, r_obj* out, struct rray_iterator* p_it) {
-  RRAY_BROADCAST_LOOP(int, r_int_cbegin, r_int_begin);
-}
-static void broadcast_dbl(r_obj* x, r_obj* out, struct rray_iterator* p_it) {
-  RRAY_BROADCAST_LOOP(double, r_dbl_cbegin, r_dbl_begin);
-}
-static void broadcast_cpl(r_obj* x, r_obj* out, struct rray_iterator* p_it) {
-  RRAY_BROADCAST_LOOP(r_complex, r_cpl_cbegin, r_cpl_begin);
-}
-static void broadcast_raw(r_obj* x, r_obj* out, struct rray_iterator* p_it) {
-  RRAY_BROADCAST_LOOP(Rbyte, r_raw_cbegin, r_raw_begin);
-}
-
-#undef RRAY_BROADCAST_LOOP
-
-// `chr` and `list` write through the barrier, so they don't share the loop
-static void broadcast_chr(r_obj* x, r_obj* out, struct rray_iterator* p_it) {
-  const r_ssize size = r_length(out);
-  r_obj* const* v_x = r_chr_cbegin(x);
-
-  for (r_ssize i = 0; i < size; ++i) {
-    r_chr_poke(out, i, v_x[rray_iterator_location(p_it)]);
-    rray_iterator_next(p_it);
+#define RRAY_BROADCAST_BARRIER(CONST_DEREF, POKE)                              \
+  const r_ssize size = r_length(out);                                          \
+  r_obj* const* v_x = CONST_DEREF(x);                                          \
+                                                                               \
+  for (r_ssize i = 0; i < size; ++i) {                                         \
+    POKE(out, i, v_x[rray_iterator_location(p_it)]);                           \
+    rray_iterator_next(p_it);                                                  \
   }
+
+static void rray_broadcast_lgl(
+  r_obj* x,
+  r_obj* out,
+  struct rray_iterator* p_it
+) {
+  RRAY_BROADCAST_ATOMIC(int, r_lgl_cbegin, r_lgl_begin);
 }
 
-static void broadcast_list(r_obj* x, r_obj* out, struct rray_iterator* p_it) {
-  const r_ssize size = r_length(out);
-  r_obj* const* v_x = r_list_cbegin(x);
-
-  for (r_ssize i = 0; i < size; ++i) {
-    r_list_poke(out, i, v_x[rray_iterator_location(p_it)]);
-    rray_iterator_next(p_it);
-  }
+static void rray_broadcast_int(
+  r_obj* x,
+  r_obj* out,
+  struct rray_iterator* p_it
+) {
+  RRAY_BROADCAST_ATOMIC(int, r_int_cbegin, r_int_begin);
 }
 
-static r_obj* broadcast_names(
+static void rray_broadcast_dbl(
+  r_obj* x,
+  r_obj* out,
+  struct rray_iterator* p_it
+) {
+  RRAY_BROADCAST_ATOMIC(double, r_dbl_cbegin, r_dbl_begin);
+}
+
+static void rray_broadcast_cpl(
+  r_obj* x,
+  r_obj* out,
+  struct rray_iterator* p_it
+) {
+  RRAY_BROADCAST_ATOMIC(r_complex, r_cpl_cbegin, r_cpl_begin);
+}
+
+static void rray_broadcast_raw(
+  r_obj* x,
+  r_obj* out,
+  struct rray_iterator* p_it
+) {
+  RRAY_BROADCAST_ATOMIC(Rbyte, r_raw_cbegin, r_raw_begin);
+}
+
+static void rray_broadcast_chr(
+  r_obj* x,
+  r_obj* out,
+  struct rray_iterator* p_it
+) {
+  RRAY_BROADCAST_BARRIER(r_chr_cbegin, r_chr_poke);
+}
+
+static void rray_broadcast_list(
+  r_obj* x,
+  r_obj* out,
+  struct rray_iterator* p_it
+) {
+  RRAY_BROADCAST_BARRIER(r_list_cbegin, r_list_poke);
+}
+
+#undef RRAY_BROADCAST_ATOMIC
+#undef RRAY_BROADCAST_BARRIER
+
+static r_obj* rray_broadcast_names(
   r_obj* const* v_names,
   const int* v_dimensions,
   int dimensionality,
@@ -147,25 +176,25 @@ r_obj* rray_broadcast(r_obj* x, r_obj* dimensions, struct r_lazy error_call) {
 
   switch (r_typeof(x)) {
   case R_TYPE_logical:
-    broadcast_lgl(x, out, &it);
+    rray_broadcast_lgl(x, out, &it);
     break;
   case R_TYPE_integer:
-    broadcast_int(x, out, &it);
+    rray_broadcast_int(x, out, &it);
     break;
   case R_TYPE_double:
-    broadcast_dbl(x, out, &it);
+    rray_broadcast_dbl(x, out, &it);
     break;
   case R_TYPE_complex:
-    broadcast_cpl(x, out, &it);
+    rray_broadcast_cpl(x, out, &it);
     break;
   case R_TYPE_raw:
-    broadcast_raw(x, out, &it);
+    rray_broadcast_raw(x, out, &it);
     break;
   case R_TYPE_character:
-    broadcast_chr(x, out, &it);
+    rray_broadcast_chr(x, out, &it);
     break;
   case R_TYPE_list:
-    broadcast_list(x, out, &it);
+    rray_broadcast_list(x, out, &it);
     break;
   default:
     r_stop_unreachable();
@@ -176,7 +205,7 @@ r_obj* rray_broadcast(r_obj* x, r_obj* dimensions, struct r_lazy error_call) {
     KEEP(x_names);
     r_obj* const* v_x_names = r_list_cbegin(x_names);
 
-    r_obj* out_names = KEEP(broadcast_names(
+    r_obj* out_names = KEEP(rray_broadcast_names(
       v_x_names,
       v_x_dimensions,
       x_dimensionality,
