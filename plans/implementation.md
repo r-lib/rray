@@ -497,17 +497,18 @@ All three helpers stay where they were, `rray_broadcast_names()` and
 `rray_reduce_names()` in `reduce.c`. PR 5 decides what happens to the templates,
 so moving them now would only be undone.
 
-`rray_split_names()` does not allocate lazily. Every output element has the same
-axes named, so it answers "does anything survive" once, before the loop, and
-allocates a plain list per element.
+`rray_split_names()` allocates lazily in the same way, once per output element
+rather than once for the call. `names` resets to `r_null` at the top of every
+iteration, because each element needs a list of its own, and is allocated the
+first time an axis contributes names.
 
-One behavior change came out of that. Splitting `x` with
+One behavior change comes with that. Splitting `x` with
 `dimnames = list(NULL, NULL)` used to give every output element an all `NULL`
 dimnames list. It now leaves them with no dimnames, matching what
 `rray_broadcast()` and `rray_sum()` already did.
 
-Files: `src/names.c`, `src/names.h`, `src/iterator.h`,
-`src/broadcast-template.h`, `src/reduce.c`, `src/split-template.h`.
+Files: `src/iterator.h`, `src/broadcast-template.h`, `src/reduce.c`,
+`src/split-template.h`.
 
 ## PR 5: Shell and core spike
 
