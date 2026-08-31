@@ -28,7 +28,7 @@
       rray_axis_names(x, 0)
     Condition
       Error in `rray_axis_names()`:
-      ! `axis` must contain values greater than or equal to 1, not 0.
+      ! `axis` must be greater than or equal to 1, not 0.
 
 ---
 
@@ -36,7 +36,7 @@
       rray_axis_names(x, 3)
     Condition
       Error in `rray_axis_names()`:
-      ! `axis` must contain values less than or equal to the dimensionality of 2, not 3.
+      ! `axis` must be less than or equal to the dimensionality of 2, not 3.
 
 ---
 
@@ -44,7 +44,7 @@
       rray_axis_names(x, NA_integer_)
     Condition
       Error in `rray_axis_names()`:
-      ! `axis` must not contain missing values.
+      ! `axis` must not be missing.
 
 ---
 
@@ -52,7 +52,7 @@
       rray_axis_names(x, c(1, 2))
     Condition
       Error in `rray_axis_names()`:
-      ! `axis` must be a single axis, not length 2.
+      ! `axis` must be a single integer, not length 2.
 
 ---
 
@@ -60,7 +60,7 @@
       rray_axis_names(x, integer())
     Condition
       Error in `rray_axis_names()`:
-      ! `axis` must be a single axis, not length 0.
+      ! `axis` must be a single integer, not length 0.
 
 # rray_axis_names() errors on classed input
 
@@ -76,7 +76,7 @@
       rray_col_names(1:5)
     Condition
       Error in `rray_col_names()`:
-      ! `axis` must contain values less than or equal to the dimensionality of 1, not 2.
+      ! `axis` must be less than or equal to the dimensionality of 1, not 2.
 
 # rray_row_names() and rray_col_names() error on classed input
 
@@ -148,7 +148,7 @@
       rray_set_axis_names(x, 0, "a")
     Condition
       Error in `rray_set_axis_names()`:
-      ! `axis` must contain values greater than or equal to 1, not 0.
+      ! `axis` must be greater than or equal to 1, not 0.
 
 ---
 
@@ -156,7 +156,7 @@
       rray_set_axis_names(x, 3, "a")
     Condition
       Error in `rray_set_axis_names()`:
-      ! `axis` must contain values less than or equal to the dimensionality of 2, not 3.
+      ! `axis` must be less than or equal to the dimensionality of 2, not 3.
 
 # rray_set_axis_names() errors if names aren't character or NULL
 

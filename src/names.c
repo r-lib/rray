@@ -23,26 +23,30 @@ r_obj* rray_names(r_obj* x, struct r_lazy error_call) {
 
 r_obj* ffi_rray_axis_names(r_obj* x, r_obj* axis, r_obj* frame) {
   struct r_lazy error_call = {.x = frame, .env = r_null};
-  return axis_names_impl(x, axis, error_call);
+  const int c_axis = arg_as_int(axis, axis_chr, error_call);
+  return rray_axis_names(x, c_axis, error_call);
 }
 
 r_obj* ffi_rray_row_names(r_obj* x, r_obj* frame) {
   struct r_lazy error_call = {.x = frame, .env = r_null};
-  return axis_names_impl(x, row_axis, error_call);
+  return rray_axis_names(x, 1, error_call);
 }
 
 r_obj* ffi_rray_col_names(r_obj* x, r_obj* frame) {
   struct r_lazy error_call = {.x = frame, .env = r_null};
-  return axis_names_impl(x, col_axis, error_call);
+  return rray_axis_names(x, 2, error_call);
 }
 
-r_obj* rray_axis_names(r_obj* x, r_ssize axis, struct r_lazy error_call) {
+r_obj* rray_axis_names(r_obj* x, int axis, struct r_lazy error_call) {
   check_unclassed(x, "x", error_call);
   x = KEEP(arg_as_array(x, "x", error_call));
 
+  const int dimensionality = (int) rray_dimensionality(x, error_call);
+  check_axis(axis, dimensionality, error_call);
+
   r_obj* names = rray_names(x, error_call);
 
-  r_obj* out = (names == r_null) ? r_null : r_list_get(names, axis);
+  r_obj* out = (names == r_null) ? r_null : r_list_get(names, axis - 1);
 
   FREE(1);
   return out;
@@ -83,7 +87,7 @@ r_obj* rray_set_names(r_obj* x, r_obj* names, struct r_lazy error_call) {
 
     r_obj* const* v_names = r_list_cbegin(names);
     for (r_ssize i = 0; i < dimensionality; ++i) {
-      check_axis_names(v_names[i], i + 1, v_dimensions[i], error_call);
+      check_axis_names(v_names[i], (int) i + 1, v_dimensions[i], error_call);
     }
 
     FREE(1);
@@ -103,22 +107,23 @@ r_obj* ffi_rray_set_axis_names(
   r_obj* frame
 ) {
   struct r_lazy error_call = {.x = frame, .env = r_null};
-  return set_axis_names_impl(x, axis, names, error_call);
+  const int c_axis = arg_as_int(axis, axis_chr, error_call);
+  return rray_set_axis_names(x, c_axis, names, error_call);
 }
 
 r_obj* ffi_rray_set_row_names(r_obj* x, r_obj* names, r_obj* frame) {
   struct r_lazy error_call = {.x = frame, .env = r_null};
-  return set_axis_names_impl(x, row_axis, names, error_call);
+  return rray_set_axis_names(x, 1, names, error_call);
 }
 
 r_obj* ffi_rray_set_col_names(r_obj* x, r_obj* names, r_obj* frame) {
   struct r_lazy error_call = {.x = frame, .env = r_null};
-  return set_axis_names_impl(x, col_axis, names, error_call);
+  return rray_set_axis_names(x, 2, names, error_call);
 }
 
 r_obj* rray_set_axis_names(
   r_obj* x,
-  r_ssize axis,
+  int axis,
   r_obj* names,
   struct r_lazy error_call
 ) {
@@ -126,9 +131,10 @@ r_obj* rray_set_axis_names(
   x = KEEP(arg_as_array(x, "x", error_call));
 
   const r_ssize dimensionality = rray_dimensionality(x, error_call);
-  const r_ssize dimension = rray_dimension(x, axis, error_call);
+  check_axis(axis, (int) dimensionality, error_call);
 
-  check_axis_names(names, axis + 1, dimension, error_call);
+  const int dimension = rray_dimension(x, axis - 1, error_call);
+  check_axis_names(names, axis, dimension, error_call);
 
   r_obj* old_names = KEEP(rray_names(x, error_call));
 
@@ -139,7 +145,7 @@ r_obj* rray_set_axis_names(
       r_list_poke(new_names, i, v_old_names[i]);
     }
   }
-  r_list_poke(new_names, axis, names);
+  r_list_poke(new_names, axis - 1, names);
 
   r_obj* out = KEEP(r_wrap(x));
   r_attrib_poke_dim_names(out, new_names);
@@ -148,33 +154,10 @@ r_obj* rray_set_axis_names(
   return out;
 }
 
-static inline r_obj* axis_names_impl(
-  r_obj* x,
-  r_obj* axis,
-  struct r_lazy error_call
-) {
-  const r_ssize dimensionality = rray_dimensionality(x, error_call);
-  const r_ssize c_axis =
-    arg_as_axis(axis, dimensionality, axis_chr, error_call);
-  return rray_axis_names(x, c_axis - 1, error_call);
-}
-
-static inline r_obj* set_axis_names_impl(
-  r_obj* x,
-  r_obj* axis,
-  r_obj* names,
-  struct r_lazy error_call
-) {
-  const r_ssize dimensionality = rray_dimensionality(x, error_call);
-  const r_ssize c_axis =
-    arg_as_axis(axis, dimensionality, axis_chr, error_call);
-  return rray_set_axis_names(x, c_axis - 1, names, error_call);
-}
-
 static inline void check_axis_names(
   r_obj* names,
-  r_ssize axis,
-  r_ssize dimension,
+  int axis,
+  int dimension,
   struct r_lazy error_call
 ) {
   if (names == r_null) {
@@ -184,8 +167,7 @@ static inline void check_axis_names(
   if (r_typeof(names) != R_TYPE_character) {
     r_abort_lazy_call(
       error_call,
-      "Names for axis %" R_PRIdXLEN_T
-      " must be a character vector or `NULL`, not %s.",
+      "Names for axis %d must be a character vector or `NULL`, not %s.",
       axis,
       r_obj_type_friendly(names)
     );
@@ -194,22 +176,10 @@ static inline void check_axis_names(
   if (r_length(names) != dimension) {
     r_abort_lazy_call(
       error_call,
-      "Names for axis %" R_PRIdXLEN_T " must have length %" R_PRIdXLEN_T
-      ", not length %" R_PRIdXLEN_T ".",
+      "Names for axis %d must have length %d, not length %" R_PRIdXLEN_T ".",
       axis,
       dimension,
       r_length(names)
     );
   }
-}
-
-r_obj* row_axis = NULL;
-r_obj* col_axis = NULL;
-
-void rray_init_names(r_obj* ns) {
-  row_axis = r_int(1);
-  r_preserve(row_axis);
-
-  col_axis = r_int(2);
-  r_preserve(col_axis);
 }

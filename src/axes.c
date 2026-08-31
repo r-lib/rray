@@ -69,25 +69,26 @@ r_obj* arg_as_axes(
   return axes;
 }
 
-r_ssize arg_as_axis(
-  r_obj* axis,
-  r_ssize dimensionality,
-  r_obj* arg,
-  struct r_lazy error_call
-) {
-  axis = KEEP(arg_as_axes(axis, dimensionality, arg, error_call));
+void check_axis(int axis, int dimensionality, struct r_lazy error_call) {
+  if (axis == r_globals.na_int) {
+    r_abort_lazy_call(error_call, "`axis` must not be missing.");
+  }
 
-  if (r_length(axis) != 1) {
+  if (axis < 1) {
     r_abort_lazy_call(
       error_call,
-      "`%s` must be a single axis, not length %" R_PRIdXLEN_T ".",
-      r_chr_get_c_string(arg, 0),
-      r_length(axis)
+      "`axis` must be greater than or equal to 1, not %d.",
+      axis
     );
   }
 
-  const r_ssize out = r_int_get(axis, 0);
-
-  FREE(1);
-  return out;
+  if (axis > dimensionality) {
+    r_abort_lazy_call(
+      error_call,
+      "`axis` must be less than or equal to the dimensionality of %d, "
+      "not %d.",
+      dimensionality,
+      axis
+    );
+  }
 }

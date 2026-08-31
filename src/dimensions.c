@@ -19,7 +19,7 @@ r_obj* rray_dimensions(r_obj* x, struct r_lazy error_call) {
   return out;
 }
 
-r_ssize rray_dimension(r_obj* x, r_ssize axis, struct r_lazy error_call) {
+int rray_dimension(r_obj* x, int axis, struct r_lazy error_call) {
   r_obj* dimensions = rray_dimensions(x, error_call);
   return r_int_get(dimensions, axis);
 }

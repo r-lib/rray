@@ -80,11 +80,9 @@ void R_init_rray4(DllInfo* dll) {
 }
 
 extern void rray_init_utils(r_obj* ns);
-extern void rray_init_names(r_obj* ns);
 
 r_obj* ffi_rray4_init_library(r_obj* ns) {
   r_init_library(ns);
   rray_init_utils(ns);
-  rray_init_names(ns);
   return r_null;
 }
