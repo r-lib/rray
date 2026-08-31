@@ -175,17 +175,17 @@ r_obj* rray_broadcast_names(
 
   for (int i = 0; i < dimensionality; ++i) {
     if (v_names[i] == r_null) {
+      // `out` stays `r_null` when there were no names before
       continue;
     }
     if (v_dimensions[i] != v_out_dimensions[i]) {
+      // `out` is "cleared" to `r_null` when dimension changes
       continue;
     }
-
     if (out == r_null) {
       out = r_alloc_list(out_dimensionality);
       KEEP_AT(out, out_loc);
     }
-
     r_list_poke(out, i, v_names[i]);
   }
 
@@ -205,17 +205,17 @@ r_obj* rray_reduce_names(
 
   for (int i = 0; i < dimensionality; ++i) {
     if (v_names[i] == r_null) {
+      // `out` stays `r_null` when there were no names before
       continue;
     }
     if (axis_is_reduced(i, v_axes, axes_size)) {
+      // `out` is "cleared" to `r_null` when an axis is reduced
       continue;
     }
-
     if (out == r_null) {
       out = r_alloc_list(dimensionality);
       KEEP_AT(out, out_loc);
     }
-
     r_list_poke(out, i, v_names[i]);
   }
 
