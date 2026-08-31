@@ -3,8 +3,6 @@
 
 #include "rlang.h"
 
-struct rray_iterator;
-
 static void rray_broadcast_lgl(r_obj* x, r_obj* out, struct rray_iterator* it);
 static void rray_broadcast_int(r_obj* x, r_obj* out, struct rray_iterator* it);
 static void rray_broadcast_dbl(r_obj* x, r_obj* out, struct rray_iterator* it);

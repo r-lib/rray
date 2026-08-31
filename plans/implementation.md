@@ -59,9 +59,11 @@ then everything else. You should meet the shell before the cores it dispatches
 to.
 
 `src/decl/{name}-decl.h` is what makes that ordering work. Declare every helper
-there, so the `.c` file never needs a forward declaration of its own. A decl
-header cannot include a sibling header in `src/`, since only `src/rlang` is on
-the include path, so forward declare types like `struct rray_iterator` instead.
+there, so the `.c` file never needs a forward declaration of its own.
+
+A decl header only includes `rlang.h`. It cannot reach a sibling header in
+`src/`, because only `src/rlang` is on the include path. It does not need to:
+it is included last, so anything it names is already in scope.
 
 ## Naming
 
