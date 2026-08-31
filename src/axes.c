@@ -49,9 +49,9 @@ r_obj* arg_as_axes(
       r_abort_lazy_call(
         error_call,
         "`%s` must contain values less than or equal to the "
-        "dimensionality of %td, not %d.",
+        "dimensionality of %" R_PRIdXLEN_T ", not %d.",
         r_chr_get_c_string(arg, 0),
-        (ptrdiff_t) dimensionality,
+        dimensionality,
         axis
       );
     }
@@ -67,4 +67,35 @@ r_obj* arg_as_axes(
 
   FREE(1);
   return axes;
+}
+
+void check_axis(
+  int axis,
+  int dimensionality,
+  const char* arg,
+  struct r_lazy error_call
+) {
+  if (axis == r_globals.na_int) {
+    r_abort_lazy_call(error_call, "`%s` must not be missing.", arg);
+  }
+
+  if (axis < 1) {
+    r_abort_lazy_call(
+      error_call,
+      "`%s` must be greater than or equal to 1, not %d.",
+      arg,
+      axis
+    );
+  }
+
+  if (axis > dimensionality) {
+    r_abort_lazy_call(
+      error_call,
+      "`%s` must be less than or equal to the dimensionality of %d, "
+      "not %d.",
+      arg,
+      dimensionality,
+      axis
+    );
+  }
 }

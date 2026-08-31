@@ -19,6 +19,11 @@ r_obj* rray_dimensions(r_obj* x, struct r_lazy error_call) {
   return out;
 }
 
+int rray_dimension(r_obj* x, int axis, struct r_lazy error_call) {
+  r_obj* dimensions = rray_dimensions(x, error_call);
+  return r_int_get(dimensions, axis - 1);
+}
+
 bool rray_dimensions_are_equal(
   const int* v_x_dimensions,
   r_ssize x_dimensionality,

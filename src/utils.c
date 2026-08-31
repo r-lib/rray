@@ -69,6 +69,36 @@ r_obj* arg_as_array(r_obj* x, const char* arg, struct r_lazy error_call) {
   return x;
 }
 
+int arg_as_int(r_obj* x, r_obj* arg, struct r_lazy error_call) {
+  if (r_typeof(x) != R_TYPE_integer) {
+    x = KEEP(vec_cast(x, r_globals.empty_int, arg, r_null));
+  } else {
+    KEEP(x);
+  }
+
+  if (r_attrib_has_any(x)) {
+    r_abort_lazy_call(
+      error_call,
+      "`%s` can't have attributes.",
+      r_chr_get_c_string(arg, 0)
+    );
+  }
+
+  if (r_length(x) != 1) {
+    r_abort_lazy_call(
+      error_call,
+      "`%s` must be a single integer, not length %" R_PRIdXLEN_T ".",
+      r_chr_get_c_string(arg, 0),
+      r_length(x)
+    );
+  }
+
+  const int out = r_int_get(x, 0);
+
+  FREE(1);
+  return out;
+}
+
 r_obj* vec_cast(r_obj* x, r_obj* to, r_obj* x_arg, r_obj* to_arg) {
   r_obj* mask = KEEP(r_alloc_environment(4, r_envs.global));
 
@@ -90,6 +120,7 @@ r_obj* x_arg_sym = NULL;
 r_obj* dimensions_chr = NULL;
 r_obj* dot_dimensions_chr = NULL;
 r_obj* axes_chr = NULL;
+r_obj* axis_chr = NULL;
 
 r_obj* vec_cast_call = NULL;
 
@@ -106,6 +137,9 @@ void rray_init_utils(r_obj* ns) {
 
   axes_chr = r_chr("axes");
   r_preserve(axes_chr);
+
+  axis_chr = r_chr("axis");
+  r_preserve(axis_chr);
 
   vec_cast_call =
     r_parse("vctrs::vec_cast(x, to, x_arg = x_arg, to_arg = to_arg)");

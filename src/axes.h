@@ -10,4 +10,11 @@ r_obj* arg_as_axes(
   struct r_lazy error_call
 );
 
+void check_axis(
+  int axis,
+  int dimensionality,
+  const char* arg,
+  struct r_lazy error_call
+);
+
 #endif
