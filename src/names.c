@@ -42,7 +42,7 @@ r_obj* rray_axis_names(r_obj* x, int axis, struct r_lazy error_call) {
   x = KEEP(arg_as_array(x, "x", error_call));
 
   const int dimensionality = (int) rray_dimensionality(x, error_call);
-  check_axis(axis, dimensionality, error_call);
+  check_axis(axis, dimensionality, "axis", error_call);
 
   r_obj* names = rray_names(x, error_call);
 
@@ -131,7 +131,7 @@ r_obj* rray_set_axis_names(
   x = KEEP(arg_as_array(x, "x", error_call));
 
   const r_ssize dimensionality = rray_dimensionality(x, error_call);
-  check_axis(axis, (int) dimensionality, error_call);
+  check_axis(axis, (int) dimensionality, "axis", error_call);
 
   const int dimension = rray_dimension(x, axis - 1, error_call);
   check_axis_names(names, axis, dimension, error_call);

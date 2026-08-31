@@ -69,15 +69,21 @@ r_obj* arg_as_axes(
   return axes;
 }
 
-void check_axis(int axis, int dimensionality, struct r_lazy error_call) {
+void check_axis(
+  int axis,
+  int dimensionality,
+  const char* arg,
+  struct r_lazy error_call
+) {
   if (axis == r_globals.na_int) {
-    r_abort_lazy_call(error_call, "`axis` must not be missing.");
+    r_abort_lazy_call(error_call, "`%s` must not be missing.", arg);
   }
 
   if (axis < 1) {
     r_abort_lazy_call(
       error_call,
-      "`axis` must be greater than or equal to 1, not %d.",
+      "`%s` must be greater than or equal to 1, not %d.",
+      arg,
       axis
     );
   }
@@ -85,8 +91,9 @@ void check_axis(int axis, int dimensionality, struct r_lazy error_call) {
   if (axis > dimensionality) {
     r_abort_lazy_call(
       error_call,
-      "`axis` must be less than or equal to the dimensionality of %d, "
+      "`%s` must be less than or equal to the dimensionality of %d, "
       "not %d.",
+      arg,
       dimensionality,
       axis
     );
