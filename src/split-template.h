@@ -242,10 +242,9 @@ void rray_split_names(
         continue;
       }
 
-      r_obj* axis_names = KEEP(r_alloc_character(1));
-      r_chr_poke(axis_names, 0, r_chr_get(x_axis_names, v_point[j]));
+      r_obj* axis_names = r_alloc_character(1);
       r_list_poke(names, j, axis_names);
-      FREE(1);
+      r_chr_poke(axis_names, 0, r_chr_get(x_axis_names, v_point[j]));
     }
 
     r_attrib_poke_dim_names(v_out[i], names);
