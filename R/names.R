@@ -78,7 +78,7 @@ rray_col_names <- function(x) {
 #'   `NULL`. Can also be `NULL` to remove all names from `x`.
 #'
 #' @returns
-#' `x` with new dimension names.
+#' `x` with new names.
 #'
 #' @export
 #' @examples

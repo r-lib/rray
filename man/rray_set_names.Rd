@@ -14,7 +14,7 @@ each element is either a character vector of names for that axis or
 \code{NULL}. Can also be \code{NULL} to remove all names from \code{x}.}
 }
 \value{
-\code{x} with new dimension names.
+\code{x} with new names.
 }
 \description{
 \code{rray_set_names()} sets the names for every axis of an array at once.
