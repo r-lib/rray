@@ -454,7 +454,7 @@ Validation as described in 2.3. Exact lengths, `NULL` clears.
 
 Files: `R/names.R`, `src/names.c`, `src/names.h`, `tests/testthat/test-names.R`.
 
-## PR 4: Lazy list and the point iterator — done
+## PR 4: Lazy names and the point iterator — done
 
 A refactor, and it cleans up the ugliest code in the package.
 
@@ -463,20 +463,19 @@ anything survives, then allocate and fill while repeating the same conditions.
 `rray_split_names()` does manual stride arithmetic to spread names across output
 elements.
 
-Add `struct rray_lazy_list`, following `struct lazy_raw` in vctrs' `src/lazy.h`:
+Allocate the names list only once an axis actually survives, so the common case
+where nothing survives allocates nothing. Each helper starts with
 
-- `new_rray_lazy_list(size)` stores the struct in a raw vector and leaves the
-  list itself unallocated.
+```c
+r_obj* out = r_null;
+r_keep_loc out_loc;
+KEEP_HERE(out, &out_loc);
+```
 
-- The struct holds a `PROTECT_INDEX`, so it reprotects itself on allocation
-  rather than asking the caller to arrange a shelter.
-
-- `init_rray_lazy_list()` allocates on first use and is a no-op after that.
-
-Names are the first user. A names list is only allocated once an axis actually
-survives, so the common case where nothing survives allocates nothing. Keep it
-general rather than calling it a names builder, since it is a plain lazy
-`VECSXP` and other functions will want one.
+and allocates inside the loop, right before the first assignment, reprotecting
+with `KEEP_AT()`. A `struct rray_lazy_list` wrapping this, in the style of
+vctrs' `struct lazy_raw`, was tried and removed. Two call sites do not pay for
+the machinery.
 
 Add `rray_iterator_point()` to `src/iterator.h`, alongside
 `rray_iterator_location()`. Nothing reads `v_point` today, so this is a new
@@ -485,7 +484,7 @@ capability.
 Then rewrite all three helpers:
 
 - `rray_broadcast_names()` and `rray_reduce_names()` collapse to one loop each,
-  poking into a lazy list.
+  poking into the lazily allocated list.
 
 - `rray_split_names()` drops the stride arithmetic entirely. Walk the output
   space with an `rray_iterator` initialised with the out dimensions as both the
@@ -497,17 +496,16 @@ All three helpers now live in `src/names.c`, next to where PR 7 puts
 `rray_names_common()`. `broadcast-template.h` has no `RRAY_ONCE` block left, and
 `split-template.h` keeps one only for `rray_split_dimensions()`.
 
-`rray_split_names()` does not use the lazy list. Every output element has the
-same axes named, so it answers "does anything survive" once, before the loop,
-and allocates a plain list per element. The lazy list would have cost a raw
-vector per output element to answer a question that does not vary.
+`rray_split_names()` does not allocate lazily. Every output element has the same
+axes named, so it answers "does anything survive" once, before the loop, and
+allocates a plain list per element.
 
 One behavior change came out of that. Splitting `x` with
 `dimnames = list(NULL, NULL)` used to give every output element an all `NULL`
 dimnames list. It now leaves them with no dimnames, matching what
 `rray_broadcast()` and `rray_sum()` already did.
 
-Files: `src/lazy.h`, `src/names.c`, `src/names.h`, `src/iterator.h`,
+Files: `src/names.c`, `src/names.h`, `src/iterator.h`,
 `src/broadcast-template.h`, `src/reduce.c`, `src/split-template.h`.
 
 ## PR 5: Shell and core spike

@@ -3,7 +3,6 @@
 #include "axes.h"
 #include "dimensionality.h"
 #include "dimensions.h"
-#include "lazy.h"
 #include "reduction-iterator.h"
 #include "utils.h"
 #include "wrapper.h"
@@ -170,10 +169,9 @@ r_obj* rray_broadcast_names(
   const int* v_out_dimensions,
   int out_dimensionality
 ) {
-  int n_kept = 0;
-
-  struct rray_lazy_list* p_out = new_rray_lazy_list(out_dimensionality);
-  KEEP_RRAY_LAZY_LIST(p_out, &n_kept);
+  r_obj* out = r_null;
+  r_keep_loc out_loc;
+  KEEP_HERE(out, &out_loc);
 
   for (int i = 0; i < dimensionality; ++i) {
     if (v_names[i] == r_null) {
@@ -182,12 +180,16 @@ r_obj* rray_broadcast_names(
     if (v_dimensions[i] != v_out_dimensions[i]) {
       continue;
     }
-    r_list_poke(init_rray_lazy_list(p_out), i, v_names[i]);
+
+    if (out == r_null) {
+      out = r_alloc_list(out_dimensionality);
+      KEEP_AT(out, out_loc);
+    }
+
+    r_list_poke(out, i, v_names[i]);
   }
 
-  r_obj* out = p_out->data;
-
-  FREE(n_kept);
+  FREE(1);
   return out;
 }
 
@@ -197,10 +199,9 @@ r_obj* rray_reduce_names(
   const int* v_axes,
   r_ssize axes_size
 ) {
-  int n_kept = 0;
-
-  struct rray_lazy_list* p_out = new_rray_lazy_list(dimensionality);
-  KEEP_RRAY_LAZY_LIST(p_out, &n_kept);
+  r_obj* out = r_null;
+  r_keep_loc out_loc;
+  KEEP_HERE(out, &out_loc);
 
   for (int i = 0; i < dimensionality; ++i) {
     if (v_names[i] == r_null) {
@@ -209,12 +210,16 @@ r_obj* rray_reduce_names(
     if (axis_is_reduced(i, v_axes, axes_size)) {
       continue;
     }
-    r_list_poke(init_rray_lazy_list(p_out), i, v_names[i]);
+
+    if (out == r_null) {
+      out = r_alloc_list(dimensionality);
+      KEEP_AT(out, out_loc);
+    }
+
+    r_list_poke(out, i, v_names[i]);
   }
 
-  r_obj* out = p_out->data;
-
-  FREE(n_kept);
+  FREE(1);
   return out;
 }
 
