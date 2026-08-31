@@ -76,10 +76,9 @@ static inline r_obj* RRAY_FN(
   const int* v_x_dimensions = r_int_cbegin(x_dimensions);
   const int* v_dimensions = r_int_cbegin(dimensions);
 
-  const r_ssize x_dimensionality =
+  const int x_dimensionality =
     rray_dimensionality_from_dimensions(x_dimensions);
-  const r_ssize dimensionality =
-    rray_dimensionality_from_dimensions(dimensions);
+  const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
 
   if (
     rray_dimensions_are_equal(
@@ -150,11 +149,11 @@ static inline r_obj* RRAY_FN(
 r_obj* rray_broadcast_names(
   r_obj* const* v_names,
   const int* v_dimensions,
-  r_ssize dimensionality,
+  int dimensionality,
   const int* v_out_dimensions,
-  r_ssize out_dimensionality
+  int out_dimensionality
 ) {
-  r_ssize i = 0;
+  int i = 0;
 
   for (; i < dimensionality; ++i) {
     if (v_names[i] == r_null) {

@@ -2,9 +2,9 @@
 
 r_obj* rray_reduce_dimensions(
   const int* v_dimensions,
-  r_ssize dimensionality,
+  int dimensionality,
   const int* v_axes,
-  r_ssize axes_size
+  int axes_size
 ) {
   r_obj* out = KEEP(r_alloc_integer(dimensionality));
   int* v_out = r_int_begin(out);
@@ -13,7 +13,7 @@ r_obj* rray_reduce_dimensions(
   memcpy(v_out, v_dimensions, sizeof(int) * dimensionality);
 
   // Set `axes` to 1
-  for (r_ssize i = 0; i < axes_size; ++i) {
+  for (int i = 0; i < axes_size; ++i) {
     v_out[v_axes[i] - 1] = 1;
   }
 
@@ -23,11 +23,11 @@ r_obj* rray_reduce_dimensions(
 
 r_obj* rray_reduce_names(
   r_obj* const* v_names,
-  r_ssize dimensionality,
+  int dimensionality,
   const int* v_axes,
-  r_ssize axes_size
+  int axes_size
 ) {
-  r_ssize i = 0;
+  int i = 0;
 
   for (; i < dimensionality; ++i) {
     r_obj* axis_names = v_names[i];
@@ -40,7 +40,7 @@ r_obj* rray_reduce_names(
     // If there are names for this axis, but we are reducing this
     // axis, then those names will be dropped and don't actually
     // count for our early exit criteria
-    for (r_ssize j = 0; j < axes_size; ++j) {
+    for (int j = 0; j < axes_size; ++j) {
       if (v_axes[j] - 1 == i) {
         axis_names = r_null;
         break;
@@ -69,7 +69,7 @@ r_obj* rray_reduce_names(
       continue;
     }
 
-    for (r_ssize j = 0; j < axes_size; ++j) {
+    for (int j = 0; j < axes_size; ++j) {
       if (v_axes[j] - 1 == i) {
         axis_names = r_null;
         break;

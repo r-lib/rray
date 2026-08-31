@@ -7,9 +7,9 @@ r_obj* rray_broadcast(r_obj* x, r_obj* dimensions, struct r_lazy error_call);
 
 void check_broadcastable(
   const int* v_x_dimensions,
-  r_ssize x_dimensionality,
+  int x_dimensionality,
   const int* v_dimensions,
-  r_ssize dimensionality,
+  int dimensionality,
   struct r_lazy error_call
 );
 

@@ -26,15 +26,15 @@ int rray_dimension(r_obj* x, int axis, struct r_lazy error_call) {
 
 bool rray_dimensions_are_equal(
   const int* v_x_dimensions,
-  r_ssize x_dimensionality,
+  int x_dimensionality,
   const int* v_y_dimensions,
-  r_ssize y_dimensionality
+  int y_dimensionality
 ) {
   if (x_dimensionality != y_dimensionality) {
     return false;
   }
 
-  for (r_ssize i = 0; i < x_dimensionality; ++i) {
+  for (int i = 0; i < x_dimensionality; ++i) {
     if (v_x_dimensions[i] != v_y_dimensions[i]) {
       return false;
     }
@@ -63,7 +63,7 @@ r_obj* rray_set_dimensions(
 
   const r_ssize x_size = rray_size(x, error_call);
 
-  const r_ssize dimensionality = r_length(dimensions);
+  const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
   const int* v_dimensions = r_int_cbegin(dimensions);
 
   const r_ssize size = rray_size_from_dimensions(v_dimensions, dimensionality);
@@ -110,12 +110,12 @@ r_obj* rray_dimensions_common(
 
   bool any = false;
 
-  r_ssize out_dimensionality = 1;
+  int out_dimensionality = 1;
 
   // Stack allocated array of known max size that we accumulate the common
   // dimensions in. Initialized to 1, which works very nicely with broadcasting.
   int v_out_dimensions[RRAY_MAX_DIMENSIONALITY];
-  for (r_ssize i = 0; i < RRAY_MAX_DIMENSIONALITY; ++i) {
+  for (int i = 0; i < RRAY_MAX_DIMENSIONALITY; ++i) {
     v_out_dimensions[i] = 1;
   }
 
@@ -130,7 +130,7 @@ r_obj* rray_dimensions_common(
 
     r_obj* x_dimensions = KEEP(rray_dimensions(x, error_call));
     const int* v_x_dimensions = r_int_cbegin(x_dimensions);
-    const r_ssize x_dimensionality =
+    const int x_dimensionality =
       rray_dimensionality_from_dimensions(x_dimensions);
     check_max_dimensionality(x_dimensionality);
 
@@ -161,20 +161,20 @@ r_obj* rray_dimensions_common(
 
 static inline void rray_dimensions2(
   int* v_out_dimensions,
-  r_ssize* p_out_dimensionality,
+  int* p_out_dimensionality,
   const int* v_x_dimensions,
-  r_ssize x_dimensionality,
+  int x_dimensionality,
   struct r_lazy error_call
 ) {
-  const r_ssize out_dimensionality = *p_out_dimensionality;
+  const int out_dimensionality = *p_out_dimensionality;
 
-  const r_ssize common_dimensionality = (out_dimensionality > x_dimensionality)
+  const int common_dimensionality = (out_dimensionality > x_dimensionality)
     ? out_dimensionality
     : x_dimensionality;
 
   *p_out_dimensionality = common_dimensionality;
 
-  for (r_ssize i = 0; i < common_dimensionality; ++i) {
+  for (int i = 0; i < common_dimensionality; ++i) {
     const int out_dimension =
       (i < out_dimensionality) ? v_out_dimensions[i] : 1;
     const int x_dimension = (i < x_dimensionality) ? v_x_dimensions[i] : 1;
@@ -190,9 +190,9 @@ static inline void rray_dimensions2(
     } else {
       r_abort_lazy_call(
         error_call,
-        "Can't find common dimensions at axis %td. "
+        "Can't find common dimensions at axis %d. "
         "Dimensions %d and %d are incompatible.",
-        (ptrdiff_t) (i + 1),
+        i + 1,
         out_dimension,
         x_dimension
       );
@@ -218,7 +218,7 @@ r_obj* arg_as_dimensions(
     );
   }
 
-  const r_ssize dimensionality = r_length(dimensions);
+  const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
 
   if (dimensionality == 0) {
     r_abort_lazy_call(
@@ -230,7 +230,7 @@ r_obj* arg_as_dimensions(
 
   const int* v_dimensions = r_int_cbegin(dimensions);
 
-  for (r_ssize i = 0; i < dimensionality; ++i) {
+  for (int i = 0; i < dimensionality; ++i) {
     const int dimension = v_dimensions[i];
 
     if (dimension == r_globals.na_int) {

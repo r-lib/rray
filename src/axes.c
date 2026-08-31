@@ -4,7 +4,7 @@
 
 r_obj* arg_as_axes(
   r_obj* axes,
-  r_ssize dimensionality,
+  int dimensionality,
   r_obj* arg,
   struct r_lazy error_call
 ) {
@@ -21,11 +21,11 @@ r_obj* arg_as_axes(
     );
   }
 
-  const r_ssize axes_size = r_length(axes);
+  const int axes_size = (int) r_length(axes);
 
   const int* v_axes = r_int_cbegin(axes);
 
-  for (r_ssize i = 0; i < axes_size; ++i) {
+  for (int i = 0; i < axes_size; ++i) {
     const int axis = v_axes[i];
 
     if (axis == r_globals.na_int) {
@@ -49,7 +49,7 @@ r_obj* arg_as_axes(
       r_abort_lazy_call(
         error_call,
         "`%s` must contain values less than or equal to the "
-        "dimensionality of %" R_PRIdXLEN_T ", not %d.",
+        "dimensionality of %d, not %d.",
         r_chr_get_c_string(arg, 0),
         dimensionality,
         axis

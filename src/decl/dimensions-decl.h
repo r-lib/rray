@@ -5,9 +5,9 @@
 
 static inline void rray_dimensions2(
   int* v_out_dimensions,
-  r_ssize* p_out_dimensionality,
+  int* p_out_dimensionality,
   const int* v_x_dimensions,
-  r_ssize x_dimensionality,
+  int x_dimensionality,
   struct r_lazy error_call
 );
 

@@ -5,7 +5,7 @@
 
 r_obj* arg_as_axes(
   r_obj* axes,
-  r_ssize dimensionality,
+  int dimensionality,
   r_obj* arg,
   struct r_lazy error_call
 );

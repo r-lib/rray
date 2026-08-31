@@ -58,12 +58,11 @@ static inline r_obj* RRAY_FN(
   r_obj* x_dimensions = KEEP(rray_dimensions(x, error_call));
   const int* v_x_dimensions = r_int_cbegin(x_dimensions);
 
-  const r_ssize dimensionality =
-    rray_dimensionality_from_dimensions(x_dimensions);
+  const int dimensionality = rray_dimensionality_from_dimensions(x_dimensions);
 
   axes = KEEP(arg_as_axes(axes, dimensionality, axes_chr, error_call));
   const int* v_axes = r_int_cbegin(axes);
-  const r_ssize axes_size = r_length(axes);
+  const int axes_size = (int) r_length(axes);
 
   r_obj* out_dimensions = KEEP(
     rray_reduce_dimensions(v_x_dimensions, dimensionality, v_axes, axes_size)
