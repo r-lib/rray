@@ -498,9 +498,9 @@ All three helpers stay where they were, `rray_broadcast_names()` and
 so moving them now would only be undone.
 
 `rray_split_names()` allocates lazily in the same way, once per output element
-rather than once for the call. `names` resets to `r_null` at the top of every
-iteration, because each element needs a list of its own, and is allocated the
-first time an axis contributes names.
+rather than once for the call. `names` is declared and protected inside the
+loop, because each element needs a list of its own, and is allocated the first
+time an axis contributes names.
 
 One behavior change comes with that. Splitting `x` with
 `dimnames = list(NULL, NULL)` used to give every output element an all `NULL`

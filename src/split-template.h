@@ -208,15 +208,12 @@ void rray_split_names(
     dimensionality
   );
 
-  r_obj* names = r_null;
-  r_keep_loc names_loc;
-  KEEP_HERE(names, &names_loc);
-
   for (r_ssize i = 0; i < out_size; ++i) {
     const r_ssize* v_point = rray_iterator_point(&it);
 
-    // Each out element gets its own names, never a shared one
-    names = r_null;
+    r_obj* names = r_null;
+    r_keep_loc names_loc;
+    KEEP_HERE(names, &names_loc);
 
     for (int j = 0; j < dimensionality; ++j) {
       r_obj* x_axis_names = v_x_names[j];
@@ -239,10 +236,10 @@ void rray_split_names(
     }
 
     r_attrib_poke_dim_names(v_out[i], names);
+
+    FREE(1);
     rray_iterator_next(&it);
   }
-
-  FREE(1);
 }
 
 #endif // RRAY_ONCE
