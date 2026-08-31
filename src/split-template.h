@@ -221,10 +221,12 @@ void rray_split_names(
         // `names` stays `r_null` when there were no names before
         continue;
       }
+
       if (names == r_null) {
         names = r_alloc_list(dimensionality);
         KEEP_AT(names, names_loc);
       }
+
       if (v_out_dimensions[j] == 1) {
         // Axis isn't split, its names carry over whole
         r_list_poke(names, j, x_axis_names);
