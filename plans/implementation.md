@@ -44,10 +44,13 @@ The shell is ordinary C, written once. It holds everything that does not depend
 on the type: argument checks, dimension arithmetic, allocation, iterator setup
 and names. It ends in a `switch` on `r_typeof(x)` that hands off to the core.
 
-The core is one small function per type. Where the loop is the same for every
-type, write it once as a macro and give each type a one line function, following
-`SLICE` in vctrs' `src/slice.c`. `chr` and `list` write through the barrier, so
-they are written out by hand rather than sharing the macro.
+The core is one small function per type, whose whole body is a call into a
+macro, following `SLICE` in vctrs' `src/slice.c`. There are usually two macros.
+`RRAY_{NAME}_ATOMIC` covers `lgl`, `int`, `dbl`, `cpl` and `raw`, which write
+straight to a data pointer. `RRAY_{NAME}_BARRIER` covers `chr` and `list`, which
+write through the barrier. Undefine both once the cores are written.
+
+Write each core's parameter list out in full. Do not hide it behind a macro.
 
 Define the cores above the shell, so they need no forward declarations.
 
@@ -60,7 +63,8 @@ Private declarations go in `src/decl/{name}-decl.h`.
 - FFI wrappers: `ffi_rray_{name}()`, thin SEXP bridges, placed above the
   internal functions in the `.c` file.
 
-- Typed cores are file static and drop the prefix, e.g. `broadcast_dbl()`.
+- Typed cores are file static, and keep the prefix with a type suffix, e.g.
+  `rray_broadcast_dbl()`.
 
 - Headers declare internal functions only, never FFI wrappers.
 
@@ -87,14 +91,26 @@ trigger a GC, and only shows up as a rare crash or corrupted value. Check for
 it explicitly in every pull request that touches C code, don't wait for it to
 be caught in review.
 
+`#include "decl/{name}-decl.h"` always goes last, after every other include,
+separated from them by one blank line.
+
 Never touch `src/rlang/`.
 
 Run `clang-format -i src/*.c src/*.h` over all files after any C change.
 
 ## Comments
 
-No comments in C or R code, other than roxygen2 on exported R functions. This
-overrides the usual defaults.
+**Do not write comments.** Not in C, not in R. The only exception is roxygen2 on
+exported R functions. This overrides the usual defaults.
+
+This is not "write fewer comments", it is "write none". Do not explain what the
+code does, do not justify a choice, do not label a section, do not flag a tricky
+line. Not even one short line. If you think your comment is the exception
+because it explains something genuinely non-obvious, it is not.
+
+Comments already in the code stay. Leave them exactly as they are, and do not
+add new ones next to them. Anything that needs explaining goes in the pull
+request, not the source.
 
 ## R style
 
@@ -548,37 +564,40 @@ which is the same problem showing through.
 ```c
 switch (r_typeof(x)) {
 case R_TYPE_logical:
-  broadcast_lgl(x, out, &it);
+  rray_broadcast_lgl(x, out, &it);
   break;
 // ...
 }
 ```
 
-The core is a macro plus one row per type:
+The core is two macros and one call per type. `RRAY_BROADCAST_ATOMIC` writes
+straight to a data pointer, `RRAY_BROADCAST_BARRIER` writes through the barrier:
 
 ```c
-#define RRAY_BROADCAST_LOOP(CTYPE, CONST_DEREF, DEREF)  \
-  const r_ssize size = r_length(out);                   \
-  const CTYPE* v_x = CONST_DEREF(x);                    \
-  CTYPE* v_out = DEREF(out);                            \
-                                                        \
-  for (r_ssize i = 0; i < size; ++i) {                  \
-    v_out[i] = v_x[rray_iterator_location(p_it)];       \
-    rray_iterator_next(p_it);                           \
+#define RRAY_BROADCAST_ATOMIC(CTYPE, CONST_DEREF, DEREF)  \
+  const r_ssize size = r_length(out);                     \
+  const CTYPE* v_x = CONST_DEREF(x);                      \
+  CTYPE* v_out = DEREF(out);                              \
+                                                          \
+  for (r_ssize i = 0; i < size; ++i) {                    \
+    v_out[i] = v_x[rray_iterator_location(p_it)];         \
+    rray_iterator_next(p_it);                             \
   }
 
-static void broadcast_lgl(r_obj* x, r_obj* out, struct rray_iterator* p_it) {
-  RRAY_BROADCAST_LOOP(int, r_lgl_cbegin, r_lgl_begin);
+static void rray_broadcast_lgl(
+  r_obj* x,
+  r_obj* out,
+  struct rray_iterator* p_it
+) {
+  RRAY_BROADCAST_ATOMIC(int, r_lgl_cbegin, r_lgl_begin);
 }
 ```
 
 The core reads its size from `r_length(out)` rather than taking it as an
-argument. That keeps the signature to three parameters, which is what lets each
-row fit on one line.
+argument, so the parameter list stays at three.
 
-`chr` and `list` are written out by hand. They need the write barrier, so they
-are genuinely different, and `RRAY_OUT_ASSIGN` used to hide that by making all
-seven look alike.
+Splitting the loop into an atomic and a barrier macro says out loud what
+`RRAY_OUT_ASSIGN` used to hide by making all seven types look alike.
 
 ### What this bought
 
