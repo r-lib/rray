@@ -69,6 +69,13 @@ test_that("NULL dimension names are handled", {
   expect_null(dimnames(out[[1]]))
 })
 
+test_that("dimension names that are all `NULL` are dropped", {
+  x <- array(1:6, c(2, 3), dimnames = list(NULL, NULL))
+
+  out <- rray_split(x, 1)
+  expect_null(dimnames(out[[1]]))
+})
+
 test_that("partial dimension names are handled", {
   x <- array(1:6, c(2, 3), dimnames = list(c("a", "b"), NULL))
 

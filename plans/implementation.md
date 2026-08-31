@@ -346,8 +346,7 @@ Two initialisers today:
 - `rray_reduction_iterator_init()`. Walks the input space, reports a location in
   the output space, where reduced axes have a dimension of 1.
 
-Accessors are `rray_iterator_location()` and, once PR 4 lands,
-`rray_iterator_point()`.
+Accessors are `rray_iterator_location()` and `rray_iterator_point()`.
 
 Functions with two array inputs use two plain iterators stepped side by side.
 There is no binary iterator type.
@@ -455,30 +454,28 @@ Validation as described in 2.3. Exact lengths, `NULL` clears.
 
 Files: `R/names.R`, `src/names.c`, `src/names.h`, `tests/testthat/test-names.R`.
 
-## PR 4: Lazy list and the point iterator
+## PR 4: Lazy names and the point iterator — done
 
-A refactor with no behavior change, and it cleans up the ugliest code in the
-package.
+A refactor, and it cleans up the ugliest code in the package.
 
 `rray_broadcast_names()` and `rray_reduce_names()` both scan once to see whether
 anything survives, then allocate and fill while repeating the same conditions.
 `rray_split_names()` does manual stride arithmetic to spread names across output
 elements.
 
-Add `struct rray_lazy_list`, following `struct lazy_raw` in vctrs' `src/lazy.h`:
+Allocate the names list only once an axis actually survives, so the common case
+where nothing survives allocates nothing. Each helper starts with
 
-- `new_rray_lazy_list(size)` stores the struct in a raw vector and leaves the
-  list itself unallocated.
+```c
+r_obj* out = r_null;
+r_keep_loc out_loc;
+KEEP_HERE(out, &out_loc);
+```
 
-- The struct holds a `PROTECT_INDEX`, so it reprotects itself on allocation
-  rather than asking the caller to arrange a shelter.
-
-- `init_rray_lazy_list()` allocates on first use and is a no-op after that.
-
-Names are the first user. A names list is only allocated once an axis actually
-survives, so the common case where nothing survives allocates nothing. Keep it
-general rather than calling it a names builder, since it is a plain lazy
-`VECSXP` and other functions will want one.
+and allocates inside the loop, right before the first assignment, reprotecting
+with `KEEP_AT()`. A `struct rray_lazy_list` wrapping this, in the style of
+vctrs' `struct lazy_raw`, was tried and removed. Two call sites do not pay for
+the machinery.
 
 Add `rray_iterator_point()` to `src/iterator.h`, alongside
 `rray_iterator_location()`. Nothing reads `v_point` today, so this is a new
@@ -487,7 +484,7 @@ capability.
 Then rewrite all three helpers:
 
 - `rray_broadcast_names()` and `rray_reduce_names()` collapse to one loop each,
-  poking into a lazy list.
+  poking into the lazily allocated list.
 
 - `rray_split_names()` drops the stride arithmetic entirely. Walk the output
   space with an `rray_iterator` initialised with the out dimensions as both the
@@ -495,11 +492,23 @@ Then rewrite all three helpers:
   `rray_iterator_point()`. The names on split axis `i` are
   `x_names[[i]][point[i]]`, and every other axis copies straight across.
 
-Files: `src/lazy.h`, `src/names.c`, `src/names.h`, `src/iterator.h`,
-`src/broadcast-template.h`, `src/reduce.c`, `src/split-template.h`.
+All three helpers stay where they were, `rray_broadcast_names()` and
+`rray_split_names()` in the `RRAY_ONCE` blocks of their templates and
+`rray_reduce_names()` in `reduce.c`. PR 5 decides what happens to the templates,
+so moving them now would only be undone.
 
-**Done when** the existing tests pass unchanged and the three helpers are
-noticeably shorter.
+`rray_split_names()` allocates lazily in the same way, once per output element
+rather than once for the call. `names` is declared and protected inside the
+loop, because each element needs a list of its own, and is allocated the first
+time an axis contributes names.
+
+One behavior change comes with that. Splitting `x` with
+`dimnames = list(NULL, NULL)` used to give every output element an all `NULL`
+dimnames list. It now leaves them with no dimnames, matching what
+`rray_broadcast()` and `rray_sum()` already did.
+
+Files: `src/iterator.h`, `src/broadcast-template.h`, `src/reduce.c`,
+`src/split-template.h`.
 
 ## PR 5: Shell and core spike
 

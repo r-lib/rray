@@ -153,9 +153,11 @@ r_obj* rray_broadcast_names(
   const int* v_out_dimensions,
   int out_dimensionality
 ) {
-  int i = 0;
+  r_obj* out = r_null;
+  r_keep_loc out_loc;
+  KEEP_HERE(out, &out_loc);
 
-  for (; i < dimensionality; ++i) {
+  for (int i = 0; i < dimensionality; ++i) {
     if (v_names[i] == r_null) {
       // `out` stays `r_null` when there were no names before
       continue;
@@ -164,27 +166,9 @@ r_obj* rray_broadcast_names(
       // `out` is "cleared" to `r_null` when dimension changes
       continue;
     }
-    break;
-  }
-
-  if (i == dimensionality) {
-    // Return `r_null` if:
-    // - All names were `r_null` to begin with
-    // - Broadcasting resulted in all `r_null` names
-    return r_null;
-  }
-
-  // Pick up where we left off, actually assigning this time
-  r_obj* out = KEEP(r_alloc_list(out_dimensionality));
-
-  for (; i < dimensionality; ++i) {
-    if (v_names[i] == r_null) {
-      // `out` stays `r_null` when there were no names before
-      continue;
-    }
-    if (v_dimensions[i] != v_out_dimensions[i]) {
-      // `out` is "cleared" to `r_null` when dimension changes
-      continue;
+    if (out == r_null) {
+      out = r_alloc_list(out_dimensionality);
+      KEEP_AT(out, out_loc);
     }
     r_list_poke(out, i, v_names[i]);
   }

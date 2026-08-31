@@ -21,66 +21,44 @@ r_obj* rray_reduce_dimensions(
   return out;
 }
 
+static inline bool axis_is_reduced(
+  int axis,
+  const int* v_axes,
+  r_ssize axes_size
+) {
+  for (r_ssize i = 0; i < axes_size; ++i) {
+    if (v_axes[i] - 1 == axis) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 r_obj* rray_reduce_names(
   r_obj* const* v_names,
   int dimensionality,
   const int* v_axes,
   r_ssize axes_size
 ) {
-  int i = 0;
+  r_obj* out = r_null;
+  r_keep_loc out_loc;
+  KEEP_HERE(out, &out_loc);
 
-  for (; i < dimensionality; ++i) {
-    r_obj* axis_names = v_names[i];
-
-    // No names for this axis
-    if (axis_names == r_null) {
+  for (int i = 0; i < dimensionality; ++i) {
+    if (v_names[i] == r_null) {
+      // `out` stays `r_null` when there were no names before
       continue;
     }
-
-    // If there are names for this axis, but we are reducing this
-    // axis, then those names will be dropped and don't actually
-    // count for our early exit criteria
-    for (r_ssize j = 0; j < axes_size; ++j) {
-      if (v_axes[j] - 1 == i) {
-        axis_names = r_null;
-        break;
-      }
-    }
-    if (axis_names == r_null) {
+    if (axis_is_reduced(i, v_axes, axes_size)) {
+      // `out` is "cleared" to `r_null` when an axis is reduced
       continue;
     }
-
-    // Usable names for an axis, break
-    break;
-  }
-
-  if (i == dimensionality) {
-    // No names left after reducing
-    return r_null;
-  }
-
-  // Everything up to `i` is `r_null`
-  r_obj* out = KEEP(r_alloc_list(dimensionality));
-
-  for (; i < dimensionality; ++i) {
-    r_obj* axis_names = v_names[i];
-
-    if (axis_names == r_null) {
-      continue;
+    if (out == r_null) {
+      out = r_alloc_list(dimensionality);
+      KEEP_AT(out, out_loc);
     }
-
-    for (r_ssize j = 0; j < axes_size; ++j) {
-      if (v_axes[j] - 1 == i) {
-        axis_names = r_null;
-        break;
-      }
-    }
-
-    if (axis_names == r_null) {
-      continue;
-    }
-
-    r_list_poke(out, i, axis_names);
+    r_list_poke(out, i, v_names[i]);
   }
 
   FREE(1);

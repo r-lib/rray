@@ -99,6 +99,7 @@ The prose rules above also apply to what you write back to me in conversation, n
 - Prefer `r_ssize` over `int`, `r_length()` over `Rf_length()`, `r_attrib_get()` + `r_null` checks over `Rf_isArray()`.
 - Any `r_obj*` returned by a C function that allocates must be protected with `KEEP()` / `FREE()` (rlang's wrappers around `PROTECT()` / `UNPROTECT()`) if used after any further allocation could occur.
 - Before calling any C change done: for every new or touched `r_obj*` in the diff, name the function it is next passed to or read by, and check whether that function allocates before it protects or consumes the value. A value is not safe just because it looks used immediately — the callee's own allocations count. Do this as an explicit, separate pass over the diff, the same way `clang-format` is a separate mandatory step, not something folded into "look over the code once."
+- Never use `gctorture()` or `gctorture2()` to look for protection problems. They are far too slow to be practical, even on a single call. The reading pass described above is the check.
 - When looping over a vector, obtain a pointer to the underlying data first, e.g., `const int* v_dimensions = r_int_cbegin(dimensions)`, then index into that directly.
 - Mark variables as `const` where possible.
 - Never change code inside of `src/rlang/`, that is a vendored library.

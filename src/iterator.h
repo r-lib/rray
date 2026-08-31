@@ -33,6 +33,12 @@ static inline r_ssize rray_iterator_location(const struct rray_iterator* it) {
   return it->location;
 }
 
+static inline const r_ssize* rray_iterator_point(
+  const struct rray_iterator* it
+) {
+  return it->v_point;
+}
+
 // Advance the iterator by one step, updating `it->location` and
 // `it->v_point`
 static inline void rray_iterator_next(struct rray_iterator* it) {
