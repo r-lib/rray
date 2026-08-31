@@ -243,9 +243,9 @@ void rray_split_names(
     v_out_dimensions,
     dimensionality
   );
-  const r_ssize* v_point = rray_iterator_point(&it);
 
   for (r_ssize i = 0; i < out_size; ++i) {
+    const r_ssize* v_point = rray_iterator_point(&it);
     r_obj* names = KEEP(r_alloc_list(dimensionality));
 
     for (int j = 0; j < dimensionality; ++j) {

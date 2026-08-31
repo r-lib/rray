@@ -33,7 +33,6 @@ static inline r_ssize rray_iterator_location(const struct rray_iterator* it) {
   return it->location;
 }
 
-// The pointer is stable, `rray_iterator_next()` updates what it points to
 static inline const r_ssize* rray_iterator_point(
   const struct rray_iterator* it
 ) {
