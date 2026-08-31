@@ -7,6 +7,8 @@
 #include "size.h"
 #include "utils.h"
 
+#include "decl/broadcast-decl.h"
+
 r_obj* ffi_rray_broadcast(
   r_obj* ffi_x,
   r_obj* ffi_dimensions,
@@ -14,91 +16,6 @@ r_obj* ffi_rray_broadcast(
 ) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
   return rray_broadcast(ffi_x, ffi_dimensions, error_call);
-}
-
-#define RRAY_BROADCAST_ATOMIC(CTYPE, CONST_DEREF, DEREF)                       \
-  const r_ssize size = r_length(out);                                          \
-  const CTYPE* v_x = CONST_DEREF(x);                                           \
-  CTYPE* v_out = DEREF(out);                                                   \
-                                                                               \
-  for (r_ssize i = 0; i < size; ++i) {                                         \
-    v_out[i] = v_x[rray_iterator_location(it)];                                \
-    rray_iterator_next(it);                                                    \
-  }
-
-#define RRAY_BROADCAST_BARRIER(CONST_DEREF, POKE)                              \
-  const r_ssize size = r_length(out);                                          \
-  r_obj* const* v_x = CONST_DEREF(x);                                          \
-                                                                               \
-  for (r_ssize i = 0; i < size; ++i) {                                         \
-    POKE(out, i, v_x[rray_iterator_location(it)]);                             \
-    rray_iterator_next(it);                                                    \
-  }
-
-static void rray_broadcast_lgl(r_obj* x, r_obj* out, struct rray_iterator* it) {
-  RRAY_BROADCAST_ATOMIC(int, r_lgl_cbegin, r_lgl_begin);
-}
-
-static void rray_broadcast_int(r_obj* x, r_obj* out, struct rray_iterator* it) {
-  RRAY_BROADCAST_ATOMIC(int, r_int_cbegin, r_int_begin);
-}
-
-static void rray_broadcast_dbl(r_obj* x, r_obj* out, struct rray_iterator* it) {
-  RRAY_BROADCAST_ATOMIC(double, r_dbl_cbegin, r_dbl_begin);
-}
-
-static void rray_broadcast_cpl(r_obj* x, r_obj* out, struct rray_iterator* it) {
-  RRAY_BROADCAST_ATOMIC(r_complex, r_cpl_cbegin, r_cpl_begin);
-}
-
-static void rray_broadcast_raw(r_obj* x, r_obj* out, struct rray_iterator* it) {
-  RRAY_BROADCAST_ATOMIC(Rbyte, r_raw_cbegin, r_raw_begin);
-}
-
-static void rray_broadcast_chr(r_obj* x, r_obj* out, struct rray_iterator* it) {
-  RRAY_BROADCAST_BARRIER(r_chr_cbegin, r_chr_poke);
-}
-
-static void rray_broadcast_list(
-  r_obj* x,
-  r_obj* out,
-  struct rray_iterator* it
-) {
-  RRAY_BROADCAST_BARRIER(r_list_cbegin, r_list_poke);
-}
-
-#undef RRAY_BROADCAST_ATOMIC
-#undef RRAY_BROADCAST_BARRIER
-
-static r_obj* rray_broadcast_names(
-  r_obj* const* v_names,
-  const int* v_dimensions,
-  int dimensionality,
-  const int* v_out_dimensions,
-  int out_dimensionality
-) {
-  r_obj* out = r_null;
-  r_keep_loc out_loc;
-  KEEP_HERE(out, &out_loc);
-
-  for (int i = 0; i < dimensionality; ++i) {
-    if (v_names[i] == r_null) {
-      // `out` stays `r_null` when there were no names before
-      continue;
-    }
-    if (v_dimensions[i] != v_out_dimensions[i]) {
-      // `out` is "cleared" to `r_null` when dimension changes
-      continue;
-    }
-    if (out == r_null) {
-      out = r_alloc_list(out_dimensionality);
-      KEEP_AT(out, out_loc);
-    }
-    r_list_poke(out, i, v_names[i]);
-  }
-
-  FREE(1);
-  return out;
 }
 
 r_obj* rray_broadcast(r_obj* x, r_obj* dimensions, struct r_lazy error_call) {
@@ -197,6 +114,91 @@ r_obj* rray_broadcast(r_obj* x, r_obj* dimensions, struct r_lazy error_call) {
   }
 
   FREE(4);
+  return out;
+}
+
+#define RRAY_BROADCAST_ATOMIC(CTYPE, CONST_DEREF, DEREF)                       \
+  const r_ssize size = r_length(out);                                          \
+  const CTYPE* v_x = CONST_DEREF(x);                                           \
+  CTYPE* v_out = DEREF(out);                                                   \
+                                                                               \
+  for (r_ssize i = 0; i < size; ++i) {                                         \
+    v_out[i] = v_x[rray_iterator_location(it)];                                \
+    rray_iterator_next(it);                                                    \
+  }
+
+#define RRAY_BROADCAST_BARRIER(CONST_DEREF, POKE)                              \
+  const r_ssize size = r_length(out);                                          \
+  r_obj* const* v_x = CONST_DEREF(x);                                          \
+                                                                               \
+  for (r_ssize i = 0; i < size; ++i) {                                         \
+    POKE(out, i, v_x[rray_iterator_location(it)]);                             \
+    rray_iterator_next(it);                                                    \
+  }
+
+static void rray_broadcast_lgl(r_obj* x, r_obj* out, struct rray_iterator* it) {
+  RRAY_BROADCAST_ATOMIC(int, r_lgl_cbegin, r_lgl_begin);
+}
+
+static void rray_broadcast_int(r_obj* x, r_obj* out, struct rray_iterator* it) {
+  RRAY_BROADCAST_ATOMIC(int, r_int_cbegin, r_int_begin);
+}
+
+static void rray_broadcast_dbl(r_obj* x, r_obj* out, struct rray_iterator* it) {
+  RRAY_BROADCAST_ATOMIC(double, r_dbl_cbegin, r_dbl_begin);
+}
+
+static void rray_broadcast_cpl(r_obj* x, r_obj* out, struct rray_iterator* it) {
+  RRAY_BROADCAST_ATOMIC(r_complex, r_cpl_cbegin, r_cpl_begin);
+}
+
+static void rray_broadcast_raw(r_obj* x, r_obj* out, struct rray_iterator* it) {
+  RRAY_BROADCAST_ATOMIC(Rbyte, r_raw_cbegin, r_raw_begin);
+}
+
+static void rray_broadcast_chr(r_obj* x, r_obj* out, struct rray_iterator* it) {
+  RRAY_BROADCAST_BARRIER(r_chr_cbegin, r_chr_poke);
+}
+
+static void rray_broadcast_list(
+  r_obj* x,
+  r_obj* out,
+  struct rray_iterator* it
+) {
+  RRAY_BROADCAST_BARRIER(r_list_cbegin, r_list_poke);
+}
+
+#undef RRAY_BROADCAST_ATOMIC
+#undef RRAY_BROADCAST_BARRIER
+
+static r_obj* rray_broadcast_names(
+  r_obj* const* v_names,
+  const int* v_dimensions,
+  int dimensionality,
+  const int* v_out_dimensions,
+  int out_dimensionality
+) {
+  r_obj* out = r_null;
+  r_keep_loc out_loc;
+  KEEP_HERE(out, &out_loc);
+
+  for (int i = 0; i < dimensionality; ++i) {
+    if (v_names[i] == r_null) {
+      // `out` stays `r_null` when there were no names before
+      continue;
+    }
+    if (v_dimensions[i] != v_out_dimensions[i]) {
+      // `out` is "cleared" to `r_null` when dimension changes
+      continue;
+    }
+    if (out == r_null) {
+      out = r_alloc_list(out_dimensionality);
+      KEEP_AT(out, out_loc);
+    }
+    r_list_poke(out, i, v_names[i]);
+  }
+
+  FREE(1);
   return out;
 }
 

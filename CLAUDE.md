@@ -98,6 +98,8 @@ The prose rules above also apply to what you write back to me in conversation, n
 - Each feature gets a `src/{name}.c` and `src/{name}.h` pair.
 - Internal C functions: `rray_{name}()` — return C types (e.g., `r_ssize`).
 - FFI wrappers: `ffi_rray_{name}()` — thin SEXP-to-C bridges. Go above internal functions in the `.c` file.
+- Order a `.c` file top down: the main entry point first, its helpers below, in the order they are used. For `src/broadcast.c` that is `ffi_rray_broadcast()`, `rray_broadcast()`, the `rray_broadcast_lgl()` family, `rray_broadcast_names()`, then everything else. Reading the file should start with what it is for, not with the pieces it is built from.
+- `src/decl/{name}-decl.h` exists to make that ordering work. Declare every helper there so the `.c` file never needs a forward declaration of its own.
 - FFI wrapper parameters are also prefixed, i.e. `ffi_rray_axis_names(r_obj* ffi_x, r_obj* ffi_axis, r_obj* ffi_frame)`. This frees up the unprefixed name for the converted C value.
 - Headers only declare internal C functions, not FFI wrappers.
 - `src/init.c` uses `extern` declarations for FFI functions — does not include feature headers.

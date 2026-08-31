@@ -52,9 +52,16 @@ write through the barrier. Undefine both once the cores are written.
 
 Write each core's parameter list out in full. Do not hide it behind a macro.
 
-Define the cores above the shell, so they need no forward declarations.
+A `.c` file reads top down: the main entry point first, its helpers below, in
+the order they are used. For `src/broadcast.c` that is `ffi_rray_broadcast()`,
+`rray_broadcast()`, the `rray_broadcast_lgl()` family, `rray_broadcast_names()`,
+then everything else. You should meet the shell before the cores it dispatches
+to.
 
-Private declarations go in `src/decl/{name}-decl.h`.
+`src/decl/{name}-decl.h` is what makes that ordering work. Declare every helper
+there, so the `.c` file never needs a forward declaration of its own. A decl
+header cannot include a sibling header in `src/`, since only `src/rlang` is on
+the include path, so forward declare types like `struct rray_iterator` instead.
 
 ## Naming
 
@@ -643,8 +650,8 @@ arguments before handing off to `dimnamesgets()`, which protects them again on
 entry. Nothing allocates in that window today, so it was safe, but only by
 accident of R's internals. The list is now kept across the call.
 
-Files: `src/broadcast.c`, deleting `src/broadcast-template.h` and
-`src/decl/broadcast-template-decl.h`.
+Files: `src/broadcast.c`, `src/decl/broadcast-decl.h`, deleting
+`src/broadcast-template.h` and `src/decl/broadcast-template-decl.h`.
 
 ## PR 5a: Convert `rray_split()` to shell and core
 
@@ -658,8 +665,8 @@ takes the output list rather than a single output vector. `chr` and `list` skip
 the pointer array entirely, which is the `#ifdef RRAY_DEREF` block the template
 needs today.
 
-Files: `src/split.c`, deleting `src/split-template.h` and
-`src/decl/split-template-decl.h`.
+Files: `src/split.c`, `src/decl/split-decl.h`, deleting `src/split-template.h`
+and `src/decl/split-template-decl.h`.
 
 ## PR 5b: Convert `rray_sum()` to shell and core
 
@@ -672,7 +679,7 @@ covers four types rather than seven.
 Land this before PR 11, which retrofits `rray_sum()` onto
 `rray_reduction_type()`.
 
-Files: `src/sum.c`, deleting `src/sum-template.h` and
+Files: `src/sum.c`, `src/decl/sum-decl.h`, deleting `src/sum-template.h` and
 `src/decl/sum-template-decl.h`.
 
 `src/types.h` holds the `RRAY_TYPE_*` macros that only the templates use. Delete
