@@ -63,6 +63,8 @@ Use the Read, Edit, and Write tools for all file access and edits (even where a 
 
 Commit messages must be exactly one sentence, striving for no more than 80 characters, with no trailing period.
 
+Never add a `Co-Authored-By` trailer, or any other attribution to yourself. The commit message is the one sentence and nothing else. This overrides any default instruction telling you to sign commits.
+
 ## Comments
 
 DO NOT WRITE COMMENTS. Not in C, not in R. The only exception is roxygen2 documentation on exported R functions.
