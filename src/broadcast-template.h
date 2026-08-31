@@ -1,5 +1,6 @@
 #include "broadcast-iterator.h"
 #include "broadcast.h"
+#include "decl/broadcast-template-decl.h"
 #include "dimensionality.h"
 #include "dimensions.h"
 #include "names.h"
@@ -141,6 +142,42 @@ static inline r_obj* RRAY_FN(
   FREE(3);
   return out;
 }
+
+#ifndef RRAY_ONCE
+#define RRAY_ONCE
+
+r_obj* rray_broadcast_names(
+  r_obj* const* v_names,
+  const int* v_dimensions,
+  int dimensionality,
+  const int* v_out_dimensions,
+  int out_dimensionality
+) {
+  r_obj* out = r_null;
+  r_keep_loc out_loc;
+  KEEP_HERE(out, &out_loc);
+
+  for (int i = 0; i < dimensionality; ++i) {
+    if (v_names[i] == r_null) {
+      // `out` stays `r_null` when there were no names before
+      continue;
+    }
+    if (v_dimensions[i] != v_out_dimensions[i]) {
+      // `out` is "cleared" to `r_null` when dimension changes
+      continue;
+    }
+    if (out == r_null) {
+      out = r_alloc_list(out_dimensionality);
+      KEEP_AT(out, out_loc);
+    }
+    r_list_poke(out, i, v_names[i]);
+  }
+
+  FREE(1);
+  return out;
+}
+
+#endif // RRAY_ONCE
 
 #undef RRAY_TYPE
 #undef RRAY_FN

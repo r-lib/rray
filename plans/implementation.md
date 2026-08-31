@@ -492,9 +492,10 @@ Then rewrite all three helpers:
   `rray_iterator_point()`. The names on split axis `i` are
   `x_names[[i]][point[i]]`, and every other axis copies straight across.
 
-All three helpers now live in `src/names.c`, next to where PR 7 puts
-`rray_names_common()`. `broadcast-template.h` has no `RRAY_ONCE` block left, and
-`split-template.h` keeps one only for `rray_split_dimensions()`.
+All three helpers stay where they were, `rray_broadcast_names()` and
+`rray_split_names()` in the `RRAY_ONCE` blocks of their templates and
+`rray_reduce_names()` in `reduce.c`. PR 5 decides what happens to the templates,
+so moving them now would only be undone.
 
 `rray_split_names()` does not allocate lazily. Every output element has the same
 axes named, so it answers "does anything survive" once, before the loop, and

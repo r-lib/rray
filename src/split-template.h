@@ -191,6 +191,70 @@ r_obj* rray_split_dimensions(
   return out;
 }
 
+static inline bool any_axis_has_names(
+  r_obj* const* v_names,
+  int dimensionality
+) {
+  for (int i = 0; i < dimensionality; ++i) {
+    if (v_names[i] != r_null) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+void rray_split_names(
+  r_obj* out,
+  r_obj* const* v_x_names,
+  const int* v_out_dimensions,
+  int dimensionality,
+  r_ssize out_size
+) {
+  if (!any_axis_has_names(v_x_names, dimensionality)) {
+    return;
+  }
+
+  r_obj* const* v_out = r_list_cbegin(out);
+
+  struct rray_iterator it;
+  rray_reduction_iterator_init(
+    &it,
+    v_out_dimensions,
+    v_out_dimensions,
+    dimensionality
+  );
+
+  for (r_ssize i = 0; i < out_size; ++i) {
+    const r_ssize* v_point = rray_iterator_point(&it);
+    r_obj* names = KEEP(r_alloc_list(dimensionality));
+
+    for (int j = 0; j < dimensionality; ++j) {
+      r_obj* x_axis_names = v_x_names[j];
+
+      if (x_axis_names == r_null) {
+        continue;
+      }
+
+      if (v_out_dimensions[j] == 1) {
+        // Axis isn't split, its names carry over whole
+        r_list_poke(names, j, x_axis_names);
+        continue;
+      }
+
+      r_obj* axis_names = KEEP(r_alloc_character(1));
+      r_chr_poke(axis_names, 0, r_chr_get(x_axis_names, v_point[j]));
+      r_list_poke(names, j, axis_names);
+      FREE(1);
+    }
+
+    r_attrib_poke_dim_names(v_out[i], names);
+
+    FREE(1);
+    rray_iterator_next(&it);
+  }
+}
+
 #endif // RRAY_ONCE
 
 #undef RRAY_TYPE

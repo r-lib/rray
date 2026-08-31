@@ -10,4 +10,11 @@ r_obj* rray_reduce_dimensions(
   r_ssize axes_size
 );
 
+r_obj* rray_reduce_names(
+  r_obj* const* v_names,
+  int dimensionality,
+  const int* v_axes,
+  r_ssize axes_size
+);
+
 #endif
