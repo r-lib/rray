@@ -228,11 +228,11 @@ void rray_split_names(
       if (v_out_dimensions[j] == 1) {
         // Axis isn't split, its names carry over whole
         r_list_poke(names, j, x_axis_names);
-        continue;
+      } else {
+        r_obj* axis_names = r_alloc_character(1);
+        r_list_poke(names, j, axis_names);
+        r_chr_poke(axis_names, 0, r_chr_get(x_axis_names, v_point[j]));
       }
-      r_obj* axis_names = r_alloc_character(1);
-      r_list_poke(names, j, axis_names);
-      r_chr_poke(axis_names, 0, r_chr_get(x_axis_names, v_point[j]));
     }
 
     r_attrib_poke_dim_names(v_out[i], names);
