@@ -19,8 +19,8 @@ int rray_dimensionality_from_dimensions(r_obj* dimensions) {
 void check_max_dimensionality(int dimensionality) {
   if (dimensionality > RRAY_MAX_DIMENSIONALITY) {
     r_abort(
-      "rray can't support arrays with a dimensionality greater than %i. "
-      "A dimensionality of %i was requested.",
+      "rray can't support arrays with a dimensionality greater than %d. "
+      "A dimensionality of %d was requested.",
       RRAY_MAX_DIMENSIONALITY,
       dimensionality
     );
