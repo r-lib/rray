@@ -133,7 +133,7 @@ r_obj* rray_set_axis_names(
   const r_ssize dimensionality = rray_dimensionality(x, error_call);
   check_axis(axis, (int) dimensionality, "axis", error_call);
 
-  const int dimension = rray_dimension(x, axis - 1, error_call);
+  const int dimension = rray_dimension(x, axis, error_call);
   check_axis_names(names, axis, dimension, error_call);
 
   r_obj* old_names = KEEP(rray_names(x, error_call));
