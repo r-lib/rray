@@ -9,7 +9,7 @@ void rray_split_names(
   int dimensionality,
   const int* v_x_dimensions,
   const int* v_axes,
-  int axes_size,
+  r_ssize axes_size,
   r_ssize n_splits
 );
 
@@ -17,7 +17,7 @@ r_obj* rray_split_dimensions(
   const int* v_dimensions,
   int dimensionality,
   const int* v_axes,
-  int axes_size
+  r_ssize axes_size
 );
 
 #endif

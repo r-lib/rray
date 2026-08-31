@@ -81,7 +81,7 @@ static inline r_obj* RRAY_FN(r_obj* x, r_obj* axes, struct r_lazy error_call) {
   axes =
     KEEP_N(arg_as_axes(axes, dimensionality, axes_chr, error_call), &n_kept);
   const int* v_axes = r_int_cbegin(axes);
-  const int axes_size = (int) r_length(axes);
+  const r_ssize axes_size = r_length(axes);
 
   // Splitting 4x3x2 on axis 3 gives 4x3x1 out dimensions
   r_obj* out_elt_dimensions = KEEP_N(
@@ -176,7 +176,7 @@ r_obj* rray_split_dimensions(
   const int* v_dimensions,
   int dimensionality,
   const int* v_axes,
-  int axes_size
+  r_ssize axes_size
 ) {
   r_obj* out = KEEP(r_alloc_integer(dimensionality));
   int* v_out = r_int_begin(out);
@@ -185,7 +185,7 @@ r_obj* rray_split_dimensions(
     v_out[i] = 1;
   }
 
-  for (int i = 0; i < axes_size; ++i) {
+  for (r_ssize i = 0; i < axes_size; ++i) {
     v_out[v_axes[i] - 1] = v_dimensions[v_axes[i] - 1];
   }
 
@@ -196,9 +196,9 @@ r_obj* rray_split_dimensions(
 static inline bool rray_is_split_axis(
   int axis,
   const int* v_axes,
-  int axes_size
+  r_ssize axes_size
 ) {
-  for (int i = 0; i < axes_size; ++i) {
+  for (r_ssize i = 0; i < axes_size; ++i) {
     if (v_axes[i] - 1 == axis) {
       return true;
     }
@@ -212,13 +212,13 @@ void rray_split_names(
   int dimensionality,
   const int* v_x_dimensions,
   const int* v_axes,
-  int axes_size,
+  r_ssize axes_size,
   r_ssize out_size
 ) {
   r_obj* const* v_out = r_list_cbegin(out);
 
   bool any_split_axis_has_names = false;
-  for (int i = 0; i < axes_size; ++i) {
+  for (r_ssize i = 0; i < axes_size; ++i) {
     if (v_x_names[v_axes[i] - 1] != r_null) {
       any_split_axis_has_names = true;
       break;

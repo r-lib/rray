@@ -21,11 +21,11 @@ r_obj* arg_as_axes(
     );
   }
 
-  const int axes_size = (int) r_length(axes);
+  const r_ssize axes_size = r_length(axes);
 
   const int* v_axes = r_int_cbegin(axes);
 
-  for (int i = 0; i < axes_size; ++i) {
+  for (r_ssize i = 0; i < axes_size; ++i) {
     const int axis = v_axes[i];
 
     if (axis == r_globals.na_int) {

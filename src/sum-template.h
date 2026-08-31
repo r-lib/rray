@@ -62,7 +62,7 @@ static inline r_obj* RRAY_FN(
 
   axes = KEEP(arg_as_axes(axes, dimensionality, axes_chr, error_call));
   const int* v_axes = r_int_cbegin(axes);
-  const int axes_size = (int) r_length(axes);
+  const r_ssize axes_size = r_length(axes);
 
   r_obj* out_dimensions = KEEP(
     rray_reduce_dimensions(v_x_dimensions, dimensionality, v_axes, axes_size)
