@@ -580,15 +580,11 @@ straight to a data pointer, `RRAY_BROADCAST_BARRIER` writes through the barrier:
   CTYPE* v_out = DEREF(out);                              \
                                                           \
   for (r_ssize i = 0; i < size; ++i) {                    \
-    v_out[i] = v_x[rray_iterator_location(p_it)];         \
-    rray_iterator_next(p_it);                             \
+    v_out[i] = v_x[rray_iterator_location(it)];           \
+    rray_iterator_next(it);                               \
   }
 
-static void rray_broadcast_lgl(
-  r_obj* x,
-  r_obj* out,
-  struct rray_iterator* p_it
-) {
+static void rray_broadcast_lgl(r_obj* x, r_obj* out, struct rray_iterator* it) {
   RRAY_BROADCAST_ATOMIC(int, r_lgl_cbegin, r_lgl_begin);
 }
 ```

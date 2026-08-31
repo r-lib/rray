@@ -22,8 +22,8 @@ r_obj* ffi_rray_broadcast(
   CTYPE* v_out = DEREF(out);                                                   \
                                                                                \
   for (r_ssize i = 0; i < size; ++i) {                                         \
-    v_out[i] = v_x[rray_iterator_location(p_it)];                              \
-    rray_iterator_next(p_it);                                                  \
+    v_out[i] = v_x[rray_iterator_location(it)];                                \
+    rray_iterator_next(it);                                                    \
   }
 
 #define RRAY_BROADCAST_BARRIER(CONST_DEREF, POKE)                              \
@@ -31,62 +31,38 @@ r_obj* ffi_rray_broadcast(
   r_obj* const* v_x = CONST_DEREF(x);                                          \
                                                                                \
   for (r_ssize i = 0; i < size; ++i) {                                         \
-    POKE(out, i, v_x[rray_iterator_location(p_it)]);                           \
-    rray_iterator_next(p_it);                                                  \
+    POKE(out, i, v_x[rray_iterator_location(it)]);                             \
+    rray_iterator_next(it);                                                    \
   }
 
-static void rray_broadcast_lgl(
-  r_obj* x,
-  r_obj* out,
-  struct rray_iterator* p_it
-) {
+static void rray_broadcast_lgl(r_obj* x, r_obj* out, struct rray_iterator* it) {
   RRAY_BROADCAST_ATOMIC(int, r_lgl_cbegin, r_lgl_begin);
 }
 
-static void rray_broadcast_int(
-  r_obj* x,
-  r_obj* out,
-  struct rray_iterator* p_it
-) {
+static void rray_broadcast_int(r_obj* x, r_obj* out, struct rray_iterator* it) {
   RRAY_BROADCAST_ATOMIC(int, r_int_cbegin, r_int_begin);
 }
 
-static void rray_broadcast_dbl(
-  r_obj* x,
-  r_obj* out,
-  struct rray_iterator* p_it
-) {
+static void rray_broadcast_dbl(r_obj* x, r_obj* out, struct rray_iterator* it) {
   RRAY_BROADCAST_ATOMIC(double, r_dbl_cbegin, r_dbl_begin);
 }
 
-static void rray_broadcast_cpl(
-  r_obj* x,
-  r_obj* out,
-  struct rray_iterator* p_it
-) {
+static void rray_broadcast_cpl(r_obj* x, r_obj* out, struct rray_iterator* it) {
   RRAY_BROADCAST_ATOMIC(r_complex, r_cpl_cbegin, r_cpl_begin);
 }
 
-static void rray_broadcast_raw(
-  r_obj* x,
-  r_obj* out,
-  struct rray_iterator* p_it
-) {
+static void rray_broadcast_raw(r_obj* x, r_obj* out, struct rray_iterator* it) {
   RRAY_BROADCAST_ATOMIC(Rbyte, r_raw_cbegin, r_raw_begin);
 }
 
-static void rray_broadcast_chr(
-  r_obj* x,
-  r_obj* out,
-  struct rray_iterator* p_it
-) {
+static void rray_broadcast_chr(r_obj* x, r_obj* out, struct rray_iterator* it) {
   RRAY_BROADCAST_BARRIER(r_chr_cbegin, r_chr_poke);
 }
 
 static void rray_broadcast_list(
   r_obj* x,
   r_obj* out,
-  struct rray_iterator* p_it
+  struct rray_iterator* it
 ) {
   RRAY_BROADCAST_BARRIER(r_list_cbegin, r_list_poke);
 }
