@@ -44,7 +44,7 @@
       rray_sum(x, 1L)
     Condition
       Error in `rray_sum()`:
-      ! Integer overflow in `rray_sum()`.
+      ! Integer overflow.
 
 # errors on integer underflow
 
@@ -52,7 +52,7 @@
       rray_sum(x, 1L)
     Condition
       Error in `rray_sum()`:
-      ! Integer overflow in `rray_sum()`.
+      ! Integer overflow.
 
 # errors on integer overflow with `na_rm = TRUE`
 
@@ -60,7 +60,7 @@
       rray_sum(x, 1L, na_rm = TRUE)
     Condition
       Error in `rray_sum()`:
-      ! Integer overflow in `rray_sum()`.
+      ! Integer overflow.
 
 # errors on non-numeric input
 

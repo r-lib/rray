@@ -298,6 +298,6 @@ static inline r_complex rray_sum_cpl_one_na_rm(r_complex out, r_complex x) {
 
 static inline void check_sum_int_overflow(int out, int x) {
   if ((x > 0 && out > INT_MAX - x) || (x < 0 && out < -INT_MAX - x)) {
-    r_abort("Integer overflow in `rray_sum()`.");
+    r_abort("Integer overflow.");
   }
 }
