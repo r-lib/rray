@@ -448,7 +448,7 @@ Mechanics:
 
 # Part 4: The pull requests
 
-PRs 1 to 5 are done and are summarised below. Work through the rest in order,
+PRs 1 to 5a are done and are summarised below. Work through the rest in order,
 since each assumes the ones before it have landed. After that, work through Part
 5 in any order that respects the dependencies noted there.
 
@@ -474,20 +474,14 @@ function call, so it was benchmarked before and after across five types and four
 shapes. Every case landed within 1%, which is the run to run noise, because the
 call happens once per array rather than once per element. Do not re-open this.
 
-## PR 5a: Convert `rray_split()` to shell and core
-
-Same conversion as PR 5, applied to `src/split-template.h`.
-
-`rray_split_dimensions()` and `rray_split_names()` come out of `RRAY_ONCE` and
-become file static helpers in `src/split.c`.
-
-The typed part is the array of output pointers and the assignment, so the core
-takes the output list rather than a single output vector. `chr` and `list` skip
-the pointer array entirely, which is the `#ifdef RRAY_DEREF` block the template
-needs today.
-
-Files: `src/split.c`, `src/decl/split-decl.h`, deleting `src/split-template.h`
-and `src/decl/split-template-decl.h`.
+**PR 5a: `rray_split()` shell and core.** The same conversion as PR 5, with
+`src/split-template.h` deleted. The shell allocates the output list and every
+element in it, because `r_typeof(x)` is all you need to allocate at the right
+type. That leaves the core owning only the array of output data pointers and the
+assignment, so it fills a list it is handed rather than returning one. `chr` and
+`list` skip the pointer array and poke through the barrier.
+`rray_split_dimensions()` and `rray_split_names()` are now file static helpers in
+`src/split.c`.
 
 ## PR 5b: Convert `rray_sum()` to shell and core
 
