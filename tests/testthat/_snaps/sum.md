@@ -44,7 +44,7 @@
       rray_sum(x, 1L)
     Condition
       Error in `rray_sum()`:
-      ! Integer overflow in `rray_sum()`.
+      ! Integer overflow.
 
 # errors on integer underflow
 
@@ -52,7 +52,47 @@
       rray_sum(x, 1L)
     Condition
       Error in `rray_sum()`:
-      ! Integer overflow in `rray_sum()`.
+      ! Integer overflow.
+
+# errors on integer overflow with `na_rm = TRUE`
+
+    Code
+      rray_sum(x, 1L, na_rm = TRUE)
+    Condition
+      Error in `rray_sum()`:
+      ! Integer overflow.
+
+# `na_rm` must be `TRUE` or `FALSE`
+
+    Code
+      rray_sum(x, 1L, na_rm = NA)
+    Condition
+      Error in `rray_sum()`:
+      ! `na_rm` must be `TRUE` or `FALSE`.
+
+---
+
+    Code
+      rray_sum(x, 1L, na_rm = logical())
+    Condition
+      Error in `rray_sum()`:
+      ! `na_rm` must be `TRUE` or `FALSE`.
+
+---
+
+    Code
+      rray_sum(x, 1L, na_rm = c(TRUE, FALSE))
+    Condition
+      Error in `rray_sum()`:
+      ! `na_rm` must be `TRUE` or `FALSE`.
+
+---
+
+    Code
+      rray_sum(x, 1L, na_rm = 1)
+    Condition
+      Error in `rray_sum()`:
+      ! `na_rm` must be `TRUE` or `FALSE`.
 
 # errors on non-numeric input
 
@@ -61,6 +101,22 @@
     Condition
       Error in `rray_sum()`:
       ! `x` must be a logical, integer, double, or complex array, not a character matrix.
+
+---
+
+    Code
+      rray_sum(x, 1L)
+    Condition
+      Error in `rray_sum()`:
+      ! `x` must be a logical, integer, double, or complex array, not a raw matrix.
+
+---
+
+    Code
+      rray_sum(x, 1L)
+    Condition
+      Error in `rray_sum()`:
+      ! `x` must be a logical, integer, double, or complex array, not a list matrix.
 
 # errors on classed input
 

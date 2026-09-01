@@ -49,6 +49,15 @@ iterator, allocates the output at its own type, fills it, and returns it.
 Allocation belongs to the core because the type is the one thing the shell does
 not know.
 
+`rray_split()` is the one variation. Its output is a list of arrays rather than
+one array, and `r_typeof(x)` is enough to allocate every element at the right
+type, so the shell builds the list and the core fills what it is handed.
+
+Putting the core behind a function call costs nothing. It was benchmarked across
+five types and four shapes, and every case landed within 1%, which is the run to
+run noise, because the call happens once per array rather than once per element.
+Do not re-open this.
+
 Each core's whole body is a call into a macro, following `SLICE` in vctrs'
 `src/slice.c`. There are usually two. `RRAY_{NAME}_ATOMIC` covers `lgl`, `int`,
 `dbl`, `cpl` and `raw`, which write straight to a data pointer.
@@ -56,6 +65,23 @@ Each core's whole body is a call into a macro, following `SLICE` in vctrs'
 Undefine both once the cores are written.
 
 Write each core's parameter list out in full. Do not hide it behind a macro.
+
+A flag that swaps the scalar operation, like `na_rm`, is resolved in the
+`switch` rather than inside the core:
+
+```c
+case R_TYPE_double:
+  if (na_rm) {
+    out = rray_sum_dbl_na_rm(x, out_size, &it);
+  } else {
+    out = rray_sum_dbl(x, out_size, &it);
+  }
+  break;
+```
+
+So there is one core per type per variant, the flag stays off the core's
+parameter list, and the loop is written once. The other reductions want the same
+shape when they land.
 
 A `.c` file reads top down: the main entry point first, its helpers below, in
 the order they are used. For `src/broadcast.c` that is `ffi_rray_broadcast()`,
@@ -448,57 +474,14 @@ Mechanics:
 
 # Part 4: The pull requests
 
-PRs 1 to 5a are done and are summarised below. Work through the rest in order,
-since each assumes the ones before it have landed. After that, work through Part
-5 in any order that respects the dependencies noted there.
+What exists today: the argument checking helpers, the names API, the dimension
+and shape helpers, and `rray_broadcast()`, `rray_split()` and `rray_sum()`. The
+three array functions all follow the shell and core pattern in Part 1, and no
+templates are left in `src/`.
 
-## Done
-
-**PR 1: Package housekeeping.** `DESCRIPTION`, `_pkgdown.yml`, and `plans/` in
-`.Rbuildignore`.
-
-**PR 2: Argument checking.** `check_unclassed()`, plus `arg` threaded through
-`arg_as_array()`, `arg_as_dimensions()` and `arg_as_axes()` so every error names
-the right argument.
-
-**PR 3: Names API.** Everything in 2.3, in `R/names.R` and `src/names.c`.
-
-**PR 4: Lazy names and the point iterator.** The names helpers allocate only
-once an axis survives, and `rray_split_names()` walks the output space with an
-iterator rather than doing stride arithmetic. `rray_iterator_point()` was added
-for it.
-
-**PR 5: Shell and core.** `rray_broadcast()` converted to the pattern in Part 1,
-and `src/broadcast-template.h` deleted. The typed core now sits behind a
-function call, so it was benchmarked before and after across five types and four
-shapes. Every case landed within 1%, which is the run to run noise, because the
-call happens once per array rather than once per element. Do not re-open this.
-
-**PR 5a: `rray_split()` shell and core.** The same conversion as PR 5, with
-`src/split-template.h` deleted. The shell allocates the output list and every
-element in it, because `r_typeof(x)` is all you need to allocate at the right
-type. That leaves the core owning only the array of output data pointers and the
-assignment, so it fills a list it is handed rather than returning one. `chr` and
-`list` skip the pointer array and poke through the barrier.
-`rray_split_dimensions()` and `rray_split_names()` are now file static helpers in
-`src/split.c`.
-
-## PR 5b: Convert `rray_sum()` to shell and core
-
-Same again, for `src/sum-template.h`.
-
-`sum` is the harder one. It has a per type accumulator and an `na_rm` variant,
-so the macro takes the scalar operation as well as the deref pair. It also only
-covers four types rather than seven.
-
-Land this before PR 11, which retrofits `rray_sum()` onto
-`rray_reduction_type()`.
-
-Files: `src/sum.c`, `src/decl/sum-decl.h`, deleting `src/sum-template.h` and
-`src/decl/sum-template-decl.h`.
-
-`src/types.h` holds the `RRAY_TYPE_*` macros that only the templates use. Delete
-it once PR 5b lands.
+Work through the rest in order, since each assumes the ones before it have
+landed. After that, work through Part 5 in any order that respects the
+dependencies noted there.
 
 ## PR 6: `rray_broadcast_common()`
 
@@ -561,7 +544,8 @@ gives it the `lgl` to `int` promotion.
 Fix the comment in `src/sum.c` claiming a logical array can never overflow an
 integer sum. That is false once long arrays are supported.
 
-Lands after PR 5b, which converts `rray_sum()` to a shell and core.
+Once the promotion casts `lgl` to `int` up front, both `lgl` cores and their two
+scalar operations have no caller left and go away.
 
 Files: `src/type.c`, `R/sum.R`, `src/sum.c`.
 

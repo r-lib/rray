@@ -10,7 +10,7 @@ r_obj* rray_reduce_dimensions(
   int* v_out = r_int_begin(out);
 
   // Start with `v_dimensions`
-  memcpy(v_out, v_dimensions, sizeof(int) * dimensionality);
+  r_memcpy(v_out, v_dimensions, sizeof(int) * dimensionality);
 
   // Set `axes` to 1
   for (r_ssize i = 0; i < axes_size; ++i) {

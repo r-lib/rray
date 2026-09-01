@@ -71,8 +71,10 @@ test_that("logical TRUE is summed as 1", {
 
 test_that("integer NA propagates", {
   x <- array(c(1L, NA_integer_), c(2L, 1L))
-  out <- rray_sum(x, 1L)
-  expect_identical(as.vector(out), NA_integer_)
+  expect_identical(as.vector(rray_sum(x, 1L)), NA_integer_)
+
+  x <- array(c(NA_integer_, 1L), c(2L, 1L))
+  expect_identical(as.vector(rray_sum(x, 1L)), NA_integer_)
 })
 
 test_that("double NA / NaN propagates", {
@@ -152,8 +154,10 @@ test_that("complex NA propagates independently per component", {
 
 test_that("logical NA propagates", {
   x <- array(c(TRUE, NA), c(2L, 1L))
-  out <- rray_sum(x, 1L)
-  expect_identical(as.vector(out), NA_integer_)
+  expect_identical(as.vector(rray_sum(x, 1L)), NA_integer_)
+
+  x <- array(c(NA, TRUE), c(2L, 1L))
+  expect_identical(as.vector(rray_sum(x, 1L)), NA_integer_)
 })
 
 test_that("na_rm removes integer NA", {
@@ -191,11 +195,17 @@ test_that("na_rm removes complex NA", {
 })
 
 test_that("na_rm with all NA returns identity", {
+  x <- c(NA, NA)
+  expect_identical(as.vector(rray_sum(x, 1L, na_rm = TRUE)), 0L)
+
   x <- c(NA_integer_, NA_integer_)
   expect_identical(as.vector(rray_sum(x, 1L, na_rm = TRUE)), 0L)
 
   x <- c(NA_real_, NA_real_)
   expect_identical(as.vector(rray_sum(x, 1L, na_rm = TRUE)), 0)
+
+  x <- c(NA_complex_, NA_complex_)
+  expect_identical(as.vector(rray_sum(x, 1L, na_rm = TRUE)), 0 + 0i)
 })
 
 test_that("na_rm with no NA matches default", {
@@ -247,6 +257,15 @@ test_that("reducing all axes of a zero-length array", {
   expect_identical(as.vector(out), 0)
 })
 
+test_that("the identity of an empty reduction has the output type", {
+  zero_size <- function(x) array(x, c(0L, 1L))
+
+  expect_identical(as.vector(rray_sum(zero_size(logical()), 1L)), 0L)
+  expect_identical(as.vector(rray_sum(zero_size(integer()), 1L)), 0L)
+  expect_identical(as.vector(rray_sum(zero_size(double()), 1L)), 0)
+  expect_identical(as.vector(rray_sum(zero_size(complex()), 1L)), 0 + 0i)
+})
+
 test_that("errors on axes out of range", {
   x <- array(1:4, c(2L, 2L))
   expect_snapshot(rray_sum(x, 3L), error = TRUE)
@@ -278,8 +297,27 @@ test_that("errors on integer underflow", {
   expect_snapshot(rray_sum(x, 1L), error = TRUE)
 })
 
+test_that("errors on integer overflow with `na_rm = TRUE`", {
+  x <- array(c(.Machine$integer.max, NA_integer_, 1L), c(3L, 1L))
+  expect_snapshot(rray_sum(x, 1L, na_rm = TRUE), error = TRUE)
+})
+
+test_that("`na_rm` must be `TRUE` or `FALSE`", {
+  x <- array(1:4, c(2L, 2L))
+  expect_snapshot(rray_sum(x, 1L, na_rm = NA), error = TRUE)
+  expect_snapshot(rray_sum(x, 1L, na_rm = logical()), error = TRUE)
+  expect_snapshot(rray_sum(x, 1L, na_rm = c(TRUE, FALSE)), error = TRUE)
+  expect_snapshot(rray_sum(x, 1L, na_rm = 1), error = TRUE)
+})
+
 test_that("errors on non-numeric input", {
   x <- array(letters[1:4], c(2L, 2L))
+  expect_snapshot(rray_sum(x, 1L), error = TRUE)
+
+  x <- array(as.raw(1:4), c(2L, 2L))
+  expect_snapshot(rray_sum(x, 1L), error = TRUE)
+
+  x <- array(list(1, 2, 3, 4), c(2L, 2L))
   expect_snapshot(rray_sum(x, 1L), error = TRUE)
 })
 
