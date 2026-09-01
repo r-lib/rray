@@ -302,6 +302,14 @@ test_that("errors on integer overflow with `na_rm = TRUE`", {
   expect_snapshot(rray_sum(x, 1L, na_rm = TRUE), error = TRUE)
 })
 
+test_that("`na_rm` must be `TRUE` or `FALSE`", {
+  x <- array(1:4, c(2L, 2L))
+  expect_snapshot(rray_sum(x, 1L, na_rm = NA), error = TRUE)
+  expect_snapshot(rray_sum(x, 1L, na_rm = logical()), error = TRUE)
+  expect_snapshot(rray_sum(x, 1L, na_rm = c(TRUE, FALSE)), error = TRUE)
+  expect_snapshot(rray_sum(x, 1L, na_rm = 1), error = TRUE)
+})
+
 test_that("errors on non-numeric input", {
   x <- array(letters[1:4], c(2L, 2L))
   expect_snapshot(rray_sum(x, 1L), error = TRUE)

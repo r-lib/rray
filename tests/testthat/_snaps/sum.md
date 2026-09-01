@@ -62,6 +62,38 @@
       Error in `rray_sum()`:
       ! Integer overflow.
 
+# `na_rm` must be `TRUE` or `FALSE`
+
+    Code
+      rray_sum(x, 1L, na_rm = NA)
+    Condition
+      Error in `rray_sum()`:
+      ! `na_rm` must be `TRUE` or `FALSE`.
+
+---
+
+    Code
+      rray_sum(x, 1L, na_rm = logical())
+    Condition
+      Error in `rray_sum()`:
+      ! `na_rm` must be `TRUE` or `FALSE`.
+
+---
+
+    Code
+      rray_sum(x, 1L, na_rm = c(TRUE, FALSE))
+    Condition
+      Error in `rray_sum()`:
+      ! `na_rm` must be `TRUE` or `FALSE`.
+
+---
+
+    Code
+      rray_sum(x, 1L, na_rm = 1)
+    Condition
+      Error in `rray_sum()`:
+      ! `na_rm` must be `TRUE` or `FALSE`.
+
 # errors on non-numeric input
 
     Code

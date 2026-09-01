@@ -18,7 +18,7 @@ r_obj* ffi_rray_sum(
   r_obj* ffi_frame
 ) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  const bool na_rm = r_lgl_get(ffi_na_rm, 0);
+  const bool na_rm = r_arg_as_bool(ffi_na_rm, "na_rm");
   return rray_sum(ffi_x, ffi_axes, na_rm, error_call);
 }
 
