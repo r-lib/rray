@@ -61,8 +61,13 @@ A flag that swaps the scalar operation, like `na_rm`, is resolved in the `switch
 rather than inside the core:
 
 ```c
-out = na_rm ? rray_sum_dbl_na_rm(x, out_size, &it)
-            : rray_sum_dbl(x, out_size, &it);
+case R_TYPE_double:
+  if (na_rm) {
+    out = rray_sum_dbl_na_rm(x, out_size, &it);
+  } else {
+    out = rray_sum_dbl(x, out_size, &it);
+  }
+  break;
 ```
 
 So there is one core per type per variant, the flag stays off the core's

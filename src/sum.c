@@ -55,20 +55,32 @@ r_obj* rray_sum(r_obj* x, r_obj* axes, bool na_rm, struct r_lazy error_call) {
 
   switch (r_typeof(x)) {
   case R_TYPE_logical:
-    out = na_rm ? rray_sum_lgl_na_rm(x, out_size, &it)
-                : rray_sum_lgl(x, out_size, &it);
+    if (na_rm) {
+      out = rray_sum_lgl_na_rm(x, out_size, &it);
+    } else {
+      out = rray_sum_lgl(x, out_size, &it);
+    }
     break;
   case R_TYPE_integer:
-    out = na_rm ? rray_sum_int_na_rm(x, out_size, &it)
-                : rray_sum_int(x, out_size, &it);
+    if (na_rm) {
+      out = rray_sum_int_na_rm(x, out_size, &it);
+    } else {
+      out = rray_sum_int(x, out_size, &it);
+    }
     break;
   case R_TYPE_double:
-    out = na_rm ? rray_sum_dbl_na_rm(x, out_size, &it)
-                : rray_sum_dbl(x, out_size, &it);
+    if (na_rm) {
+      out = rray_sum_dbl_na_rm(x, out_size, &it);
+    } else {
+      out = rray_sum_dbl(x, out_size, &it);
+    }
     break;
   case R_TYPE_complex:
-    out = na_rm ? rray_sum_cpl_na_rm(x, out_size, &it)
-                : rray_sum_cpl(x, out_size, &it);
+    if (na_rm) {
+      out = rray_sum_cpl_na_rm(x, out_size, &it);
+    } else {
+      out = rray_sum_cpl(x, out_size, &it);
+    }
     break;
   default:
     r_abort_lazy_call(
