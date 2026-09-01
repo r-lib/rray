@@ -103,7 +103,7 @@ r_obj* rray_sum(r_obj* x, r_obj* axes, bool na_rm, struct r_lazy error_call) {
 #define RRAY_SUM(OUT_RTYPE, CTYPE, X_CONST_DEREF, OUT_DEREF, ONE)              \
   r_obj* out = KEEP(r_alloc_vector(OUT_RTYPE, out_size));                      \
   CTYPE* v_out = OUT_DEREF(out);                                               \
-  memset(v_out, 0, sizeof(CTYPE) * out_size);                                  \
+  r_memset(v_out, 0, sizeof(CTYPE) * out_size);                                \
                                                                                \
   const r_ssize x_size = r_length(x);                                          \
   const CTYPE* v_x = X_CONST_DEREF(x);                                         \
