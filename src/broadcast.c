@@ -33,14 +33,14 @@ r_obj* rray_broadcast(r_obj* x, r_obj* dimensions, struct r_lazy error_call) {
     rray_dimensionality_from_dimensions(x_dimensions);
   const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
 
-  const bool dimensions_are_equal = rray_dimensions_are_equal(
-    v_x_dimensions,
-    x_dimensionality,
-    v_dimensions,
-    dimensionality
-  );
-
-  if (dimensions_are_equal) {
+  if (
+    rray_dimensions_are_equal(
+      v_x_dimensions,
+      x_dimensionality,
+      v_dimensions,
+      dimensionality
+    )
+  ) {
     FREE(3);
     return x;
   }
