@@ -57,6 +57,18 @@ Undefine both once the cores are written.
 
 Write each core's parameter list out in full. Do not hide it behind a macro.
 
+A flag that swaps the scalar operation, like `na_rm`, is resolved in the `switch`
+rather than inside the core:
+
+```c
+out = na_rm ? rray_sum_dbl_na_rm(x, out_size, &it)
+            : rray_sum_dbl(x, out_size, &it);
+```
+
+So there is one core per type per variant, the flag stays off the core's
+parameter list, and the loop is written once. The other reductions want the same
+shape when they land.
+
 A `.c` file reads top down: the main entry point first, its helpers below, in
 the order they are used. For `src/broadcast.c` that is `ffi_rray_broadcast()`,
 `rray_broadcast()`, the `rray_broadcast_lgl()` family, `rray_broadcast_names()`,
@@ -485,12 +497,11 @@ assignment, so it fills a list it is handed rather than returning one. `chr` and
 
 **PR 5b: `rray_sum()` shell and core.** The last template is gone, so
 `src/types.h` went with it. One `RRAY_SUM` macro covers all four types, taking
-the two scalar operations after the deref pair. Input and output share a C type
-in every case, including `lgl`, which reads `int` and writes `int`, so the macro
-takes one C type and only the R type of the output. The type check moved out of
-the dispatch `switch` into `check_sum_type()`, called before any dimension work,
-which keeps the type error ahead of the axis error the way it was when the
-`switch` came first.
+the scalar operation after the deref pair. Input and output share a C type in
+every case, including `lgl`, which reads `int` and writes `int`, so the macro
+takes one C type and only the R type of the output. `na_rm` is resolved at
+dispatch, so there are eight cores rather than four and the type error is the
+`default:` arm of the dispatch `switch`.
 
 ## PR 6: `rray_broadcast_common()`
 
