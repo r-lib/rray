@@ -1,8 +1,3 @@
-#ifndef RRAY_BROADCAST_DECL_H
-#define RRAY_BROADCAST_DECL_H
-
-#include "rlang.h"
-
 static r_obj* rray_broadcast_lgl(
   r_obj* x,
   r_ssize size,
@@ -46,5 +41,3 @@ static r_obj* rray_broadcast_names(
   const int* v_out_dimensions,
   int out_dimensionality
 );
-
-#endif

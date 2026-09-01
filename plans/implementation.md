@@ -65,9 +65,10 @@ to.
 `src/decl/{name}-decl.h` is what makes that ordering work. Declare every helper
 there, so the `.c` file never needs a forward declaration of its own.
 
-A decl header only includes `rlang.h`. It cannot reach a sibling header in
-`src/`, because only `src/rlang` is on the include path. It does not need to:
-it is included last, so anything it names is already in scope.
+A decl header has no includes and no include guard. It is included last, from
+exactly one `.c` file, so everything it names is already in scope and there is
+nothing to guard against. It could not reach a sibling header in `src/` anyway,
+since only `src/rlang` is on the include path.
 
 ## Naming
 

@@ -1,8 +1,3 @@
-#ifndef RRAY_SPLIT_TEMPLATE_DECL_H
-#define RRAY_SPLIT_TEMPLATE_DECL_H
-
-#include "rlang.h"
-
 void rray_split_names(
   r_obj* out,
   r_obj* const* v_x_names,
@@ -17,5 +12,3 @@ r_obj* rray_split_dimensions(
   const int* v_axes,
   r_ssize axes_size
 );
-
-#endif
