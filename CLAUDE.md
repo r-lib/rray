@@ -63,9 +63,17 @@ Use the Read, Edit, and Write tools for all file access and edits (even where a 
 
 Commit messages must be exactly one sentence, striving for no more than 80 characters, with no trailing period.
 
+Never add a `Co-Authored-By` trailer, or any other attribution to yourself. The commit message is the one sentence and nothing else. This overrides any default instruction telling you to sign commits.
+
 ## Comments
 
-Extremely minimal. Far fewer than you think, and far shorter. Explain what is not obvious from the code; never restate it, and never write a paragraph of rationale. If a comment is going to end up being long, do not write it. Long comments should be written by a human.
+DO NOT WRITE COMMENTS. Not in C, not in R. The only exception is roxygen2 documentation on exported R functions.
+
+This is not "write fewer comments", it is "write none". Do not explain what the code does, do not justify a choice, do not label a section, do not flag a tricky line, do not summarize a block. Not even one short line. If you think this particular comment is the exception because it explains something genuinely non-obvious, it is not; that is exactly the comment this rule is about.
+
+Comments already in the code stay. I put them there. Leave them exactly as they are, and do not add new ones next to them.
+
+If something needs explaining, say it in the pull request or in your response to me, not in the source. Long comments are written by me, not by you.
 
 ## Prose
 
@@ -92,9 +100,13 @@ The prose rules above also apply to what you write back to me in conversation, n
 - Each feature gets a `src/{name}.c` and `src/{name}.h` pair.
 - Internal C functions: `rray_{name}()` — return C types (e.g., `r_ssize`).
 - FFI wrappers: `ffi_rray_{name}()` — thin SEXP-to-C bridges. Go above internal functions in the `.c` file.
+- Order a `.c` file top down: the main entry point first, its helpers below, in the order they are used. For `src/broadcast.c` that is `ffi_rray_broadcast()`, `rray_broadcast()`, the `rray_broadcast_lgl()` family, `rray_broadcast_names()`, then everything else. Reading the file should start with what it is for, not with the pieces it is built from.
+- `src/decl/{name}-decl.h` exists to make that ordering work. Declare every helper there so the `.c` file never needs a forward declaration of its own.
+- A decl header has no includes and no include guard. It is included last, from exactly one `.c` file, so everything it names is already in scope and there is nothing to guard against.
 - FFI wrapper parameters are also prefixed, i.e. `ffi_rray_axis_names(r_obj* ffi_x, r_obj* ffi_axis, r_obj* ffi_frame)`. This frees up the unprefixed name for the converted C value.
 - Headers only declare internal C functions, not FFI wrappers.
 - `src/init.c` uses `extern` declarations for FFI functions — does not include feature headers.
+- `#include "decl/{name}-decl.h"` always goes last, after every other include, separated from them by one blank line.
 - Always prefer rlang's C library wrappers over raw R API (e.g., `r_globals.na_int` over `NA_INTEGER`, `r_length()` over `Rf_length()`).
 - Prefer `r_ssize` over `int`, `r_length()` over `Rf_length()`, `r_attrib_get()` + `r_null` checks over `Rf_isArray()`.
 - Any `r_obj*` returned by a C function that allocates must be protected with `KEEP()` / `FREE()` (rlang's wrappers around `PROTECT()` / `UNPROTECT()`) if used after any further allocation could occur.

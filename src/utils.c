@@ -1,7 +1,8 @@
 #include "utils.h"
 
-#include "decl/utils-decl.h"
 #include "wrapper.h"
+
+#include "decl/utils-decl.h"
 
 // Normalize a vector into an array
 //

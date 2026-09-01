@@ -1,10 +1,11 @@
 #include "dimensions.h"
 
-#include "decl/dimensions-decl.h"
 #include "dimensionality.h"
 #include "size.h"
 #include "utils.h"
 #include "wrapper.h"
+
+#include "decl/dimensions-decl.h"
 
 r_obj* ffi_rray_dimensions(r_obj* ffi_x, r_obj* ffi_frame) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};

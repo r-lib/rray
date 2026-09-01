@@ -1,5 +1,4 @@
 #include "axes.h"
-#include "decl/split-template-decl.h"
 #include "dimensionality.h"
 #include "dimensions.h"
 #include "names.h"
@@ -7,6 +6,8 @@
 #include "reduction-iterator.h"
 #include "size.h"
 #include "utils.h"
+
+#include "decl/split-template-decl.h"
 
 #if RRAY_TYPE == RRAY_TYPE_LOGICAL
 #define RRAY_FN rray_split_lgl
