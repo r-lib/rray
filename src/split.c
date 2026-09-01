@@ -46,6 +46,16 @@ r_obj* rray_split(r_obj* x, r_obj* axes, struct r_lazy error_call) {
   const r_ssize out_size =
     rray_size_from_dimensions(v_out_dimensions, dimensionality);
 
+  const enum r_type type = r_typeof(x);
+
+  r_obj* out = KEEP(r_alloc_list(out_size));
+
+  for (r_ssize i = 0; i < out_size; ++i) {
+    r_obj* out_elt = r_alloc_vector(type, out_elt_size);
+    r_list_poke(out, i, out_elt);
+    r_attrib_poke_dim(out_elt, out_elt_dimensions);
+  }
+
   struct rray_iterator out_it;
   rray_reduction_iterator_init(
     &out_it,
@@ -62,84 +72,31 @@ r_obj* rray_split(r_obj* x, r_obj* axes, struct r_lazy error_call) {
     dimensionality
   );
 
-  r_obj* out;
-
-  switch (r_typeof(x)) {
+  switch (type) {
   case R_TYPE_logical:
-    out = rray_split_lgl(
-      x,
-      out_elt_dimensions,
-      out_size,
-      out_elt_size,
-      &out_it,
-      &out_elt_it
-    );
+    rray_split_lgl(x, out, &out_it, &out_elt_it);
     break;
   case R_TYPE_integer:
-    out = rray_split_int(
-      x,
-      out_elt_dimensions,
-      out_size,
-      out_elt_size,
-      &out_it,
-      &out_elt_it
-    );
+    rray_split_int(x, out, &out_it, &out_elt_it);
     break;
   case R_TYPE_double:
-    out = rray_split_dbl(
-      x,
-      out_elt_dimensions,
-      out_size,
-      out_elt_size,
-      &out_it,
-      &out_elt_it
-    );
+    rray_split_dbl(x, out, &out_it, &out_elt_it);
     break;
   case R_TYPE_complex:
-    out = rray_split_cpl(
-      x,
-      out_elt_dimensions,
-      out_size,
-      out_elt_size,
-      &out_it,
-      &out_elt_it
-    );
+    rray_split_cpl(x, out, &out_it, &out_elt_it);
     break;
   case R_TYPE_raw:
-    out = rray_split_raw(
-      x,
-      out_elt_dimensions,
-      out_size,
-      out_elt_size,
-      &out_it,
-      &out_elt_it
-    );
+    rray_split_raw(x, out, &out_it, &out_elt_it);
     break;
   case R_TYPE_character:
-    out = rray_split_chr(
-      x,
-      out_elt_dimensions,
-      out_size,
-      out_elt_size,
-      &out_it,
-      &out_elt_it
-    );
+    rray_split_chr(x, out, &out_it, &out_elt_it);
     break;
   case R_TYPE_list:
-    out = rray_split_list(
-      x,
-      out_elt_dimensions,
-      out_size,
-      out_elt_size,
-      &out_it,
-      &out_elt_it
-    );
+    rray_split_list(x, out, &out_it, &out_elt_it);
     break;
   default:
     r_stop_unreachable();
   }
-
-  KEEP(out);
 
   r_obj* x_names = rray_names(x, error_call);
   if (x_names != r_null) {
@@ -160,26 +117,19 @@ r_obj* rray_split(r_obj* x, r_obj* axes, struct r_lazy error_call) {
   return out;
 }
 
-#define RRAY_SPLIT_ATOMIC(RTYPE, CTYPE, CONST_DEREF, DEREF)                    \
-  r_obj* out = KEEP(r_alloc_list(out_size));                                   \
+#define RRAY_SPLIT_ATOMIC(CTYPE, CONST_DEREF, DEREF)                           \
+  const r_ssize x_size = r_length(x);                                          \
+  const r_ssize out_size = r_length(out);                                      \
                                                                                \
-  for (r_ssize i = 0; i < out_size; ++i) {                                     \
-    r_obj* out_elt = r_alloc_vector(RTYPE, out_elt_size);                      \
-    r_list_poke(out, i, out_elt);                                              \
-    r_attrib_poke_dim(out_elt, out_elt_dimensions);                            \
-  }                                                                            \
+  const CTYPE* v_x = CONST_DEREF(x);                                           \
+  r_obj* const* v_out = r_list_cbegin(out);                                    \
                                                                                \
   r_obj* shelter = KEEP(r_alloc_raw(out_size * sizeof(CTYPE*)));               \
   CTYPE** v_v_out = (CTYPE**) r_raw_begin(shelter);                            \
                                                                                \
-  r_obj* const* v_out = r_list_cbegin(out);                                    \
-                                                                               \
   for (r_ssize i = 0; i < out_size; ++i) {                                     \
     v_v_out[i] = DEREF(v_out[i]);                                              \
   }                                                                            \
-                                                                               \
-  const r_ssize x_size = r_length(x);                                          \
-  const CTYPE* v_x = CONST_DEREF(x);                                           \
                                                                                \
   for (r_ssize i = 0; i < x_size; ++i) {                                       \
     const r_ssize out_loc = rray_iterator_location(out_it);                    \
@@ -191,22 +141,13 @@ r_obj* rray_split(r_obj* x, r_obj* axes, struct r_lazy error_call) {
     rray_iterator_next(out_elt_it);                                            \
   }                                                                            \
                                                                                \
-  FREE(2);                                                                     \
-  return out;
+  FREE(1);
 
-#define RRAY_SPLIT_BARRIER(RTYPE, CONST_DEREF, POKE)                           \
-  r_obj* out = KEEP(r_alloc_list(out_size));                                   \
-                                                                               \
-  for (r_ssize i = 0; i < out_size; ++i) {                                     \
-    r_obj* out_elt = r_alloc_vector(RTYPE, out_elt_size);                      \
-    r_list_poke(out, i, out_elt);                                              \
-    r_attrib_poke_dim(out_elt, out_elt_dimensions);                            \
-  }                                                                            \
-                                                                               \
-  r_obj* const* v_out = r_list_cbegin(out);                                    \
-                                                                               \
+#define RRAY_SPLIT_BARRIER(CONST_DEREF, POKE)                                  \
   const r_ssize x_size = r_length(x);                                          \
+                                                                               \
   r_obj* const* v_x = CONST_DEREF(x);                                          \
+  r_obj* const* v_out = r_list_cbegin(out);                                    \
                                                                                \
   for (r_ssize i = 0; i < x_size; ++i) {                                       \
     const r_ssize out_loc = rray_iterator_location(out_it);                    \
@@ -216,86 +157,69 @@ r_obj* rray_split(r_obj* x, r_obj* axes, struct r_lazy error_call) {
                                                                                \
     rray_iterator_next(out_it);                                                \
     rray_iterator_next(out_elt_it);                                            \
-  }                                                                            \
-                                                                               \
-  FREE(1);                                                                     \
-  return out;
+  }
 
-static r_obj* rray_split_lgl(
+static void rray_split_lgl(
   r_obj* x,
-  r_obj* out_elt_dimensions,
-  r_ssize out_size,
-  r_ssize out_elt_size,
+  r_obj* out,
   struct rray_iterator* out_it,
   struct rray_iterator* out_elt_it
 ) {
-  RRAY_SPLIT_ATOMIC(R_TYPE_logical, int, r_lgl_cbegin, r_lgl_begin);
+  RRAY_SPLIT_ATOMIC(int, r_lgl_cbegin, r_lgl_begin);
 }
 
-static r_obj* rray_split_int(
+static void rray_split_int(
   r_obj* x,
-  r_obj* out_elt_dimensions,
-  r_ssize out_size,
-  r_ssize out_elt_size,
+  r_obj* out,
   struct rray_iterator* out_it,
   struct rray_iterator* out_elt_it
 ) {
-  RRAY_SPLIT_ATOMIC(R_TYPE_integer, int, r_int_cbegin, r_int_begin);
+  RRAY_SPLIT_ATOMIC(int, r_int_cbegin, r_int_begin);
 }
 
-static r_obj* rray_split_dbl(
+static void rray_split_dbl(
   r_obj* x,
-  r_obj* out_elt_dimensions,
-  r_ssize out_size,
-  r_ssize out_elt_size,
+  r_obj* out,
   struct rray_iterator* out_it,
   struct rray_iterator* out_elt_it
 ) {
-  RRAY_SPLIT_ATOMIC(R_TYPE_double, double, r_dbl_cbegin, r_dbl_begin);
+  RRAY_SPLIT_ATOMIC(double, r_dbl_cbegin, r_dbl_begin);
 }
 
-static r_obj* rray_split_cpl(
+static void rray_split_cpl(
   r_obj* x,
-  r_obj* out_elt_dimensions,
-  r_ssize out_size,
-  r_ssize out_elt_size,
+  r_obj* out,
   struct rray_iterator* out_it,
   struct rray_iterator* out_elt_it
 ) {
-  RRAY_SPLIT_ATOMIC(R_TYPE_complex, r_complex, r_cpl_cbegin, r_cpl_begin);
+  RRAY_SPLIT_ATOMIC(r_complex, r_cpl_cbegin, r_cpl_begin);
 }
 
-static r_obj* rray_split_raw(
+static void rray_split_raw(
   r_obj* x,
-  r_obj* out_elt_dimensions,
-  r_ssize out_size,
-  r_ssize out_elt_size,
+  r_obj* out,
   struct rray_iterator* out_it,
   struct rray_iterator* out_elt_it
 ) {
-  RRAY_SPLIT_ATOMIC(R_TYPE_raw, Rbyte, r_raw_cbegin, r_raw_begin);
+  RRAY_SPLIT_ATOMIC(Rbyte, r_raw_cbegin, r_raw_begin);
 }
 
-static r_obj* rray_split_chr(
+static void rray_split_chr(
   r_obj* x,
-  r_obj* out_elt_dimensions,
-  r_ssize out_size,
-  r_ssize out_elt_size,
+  r_obj* out,
   struct rray_iterator* out_it,
   struct rray_iterator* out_elt_it
 ) {
-  RRAY_SPLIT_BARRIER(R_TYPE_character, r_chr_cbegin, r_chr_poke);
+  RRAY_SPLIT_BARRIER(r_chr_cbegin, r_chr_poke);
 }
 
-static r_obj* rray_split_list(
+static void rray_split_list(
   r_obj* x,
-  r_obj* out_elt_dimensions,
-  r_ssize out_size,
-  r_ssize out_elt_size,
+  r_obj* out,
   struct rray_iterator* out_it,
   struct rray_iterator* out_elt_it
 ) {
-  RRAY_SPLIT_BARRIER(R_TYPE_list, r_list_cbegin, r_list_poke);
+  RRAY_SPLIT_BARRIER(r_list_cbegin, r_list_poke);
 }
 
 #undef RRAY_SPLIT_ATOMIC

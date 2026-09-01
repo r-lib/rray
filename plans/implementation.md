@@ -475,12 +475,11 @@ shapes. Every case landed within 1%, which is the run to run noise, because the
 call happens once per array rather than once per element. Do not re-open this.
 
 **PR 5a: `rray_split()` shell and core.** The same conversion as PR 5, with
-`src/split-template.h` deleted. The core builds the whole output: it allocates
-the list, allocates and dimensions each element, then fills them, and returns the
-list. So it takes `out_size` and `out_elt_size` rather than an output to write
-into, and `RRAY_SPLIT_ATOMIC` and `RRAY_SPLIT_BARRIER` both take the R type the
-way the broadcast macros do. The array of output data pointers stays inside the
-atomic macro, since `chr` and `list` poke through the barrier and never need it.
+`src/split-template.h` deleted. The shell allocates the output list and every
+element in it, because `r_typeof(x)` is all you need to allocate at the right
+type. That leaves the core owning only the array of output data pointers and the
+assignment, so it fills a list it is handed rather than returning one. `chr` and
+`list` skip the pointer array and poke through the barrier.
 `rray_split_dimensions()` and `rray_split_names()` are now file static helpers in
 `src/split.c`.
 
