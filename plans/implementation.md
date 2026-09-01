@@ -41,8 +41,12 @@ Functions that need per type code split into a shell and a core, both living in
 `src/{name}.c`. Copy the shape of `src/broadcast.c`.
 
 The shell is ordinary C, written once. It holds everything that does not depend
-on the type: argument checks, dimension arithmetic, allocation, iterator setup
-and names. It ends in a `switch` on `r_typeof(x)` that hands off to the core.
+on the type: argument checks, dimension arithmetic, iterator setup and names. It
+ends in a `switch` on `r_typeof(x)` that hands off to the core.
+
+The core takes `x`, the output size and the iterator, allocates the output at
+its own type, fills it, and returns it. Allocation belongs to the core because
+the type is the one thing the shell does not know.
 
 The core is one small function per type, whose whole body is a call into a
 macro, following `SLICE` in vctrs' `src/slice.c`. There are usually two macros.
@@ -573,7 +577,7 @@ which is the same problem showing through.
 ```c
 switch (r_typeof(x)) {
 case R_TYPE_logical:
-  rray_broadcast_lgl(x, out, &it);
+  out = rray_broadcast_lgl(x, size, &it);
   break;
 // ...
 }
@@ -583,32 +587,43 @@ The core is two macros and one call per type. `RRAY_BROADCAST_ATOMIC` writes
 straight to a data pointer, `RRAY_BROADCAST_BARRIER` writes through the barrier:
 
 ```c
-#define RRAY_BROADCAST_ATOMIC(CTYPE, CONST_DEREF, DEREF)  \
-  const r_ssize size = r_length(out);                     \
-  const CTYPE* v_x = CONST_DEREF(x);                      \
-  CTYPE* v_out = DEREF(out);                              \
-                                                          \
-  for (r_ssize i = 0; i < size; ++i) {                    \
-    v_out[i] = v_x[rray_iterator_location(it)];           \
-    rray_iterator_next(it);                               \
-  }
+#define RRAY_BROADCAST_ATOMIC(RTYPE, CTYPE, CONST_DEREF, DEREF)  \
+  r_obj* out = KEEP(r_alloc_vector(RTYPE, size));                \
+  const CTYPE* v_x = CONST_DEREF(x);                             \
+  CTYPE* v_out = DEREF(out);                                     \
+                                                                 \
+  for (r_ssize i = 0; i < size; ++i) {                           \
+    v_out[i] = v_x[rray_iterator_location(it)];                  \
+    rray_iterator_next(it);                                      \
+  }                                                              \
+                                                                 \
+  FREE(1);                                                       \
+  return out;
 
-static void rray_broadcast_lgl(r_obj* x, r_obj* out, struct rray_iterator* it) {
-  RRAY_BROADCAST_ATOMIC(int, r_lgl_cbegin, r_lgl_begin);
+static r_obj* rray_broadcast_lgl(
+  r_obj* x,
+  r_ssize size,
+  struct rray_iterator* it
+) {
+  RRAY_BROADCAST_ATOMIC(R_TYPE_logical, int, r_lgl_cbegin, r_lgl_begin);
 }
 ```
 
-The core reads its size from `r_length(out)` rather than taking it as an
-argument, so the parameter list stays at three.
+The `KEEP()` matters. `CONST_DEREF(x)` materializes an ALTREP input, which
+allocates, and `rray_broadcast(1:3, c(3L, 2L))` hits exactly that path.
 
 Splitting the loop into an atomic and a barrier macro says out loud what
 `RRAY_OUT_ASSIGN` used to hide by making all seven types look alike.
 
 ### What this bought
 
-- The untyped 92% written once instead of seven times. Broadcasting went from
-  306 lines across three files to 231 in one, and its machine code went from
-  6927 to 3120 bytes.
+- The untyped 92% written once instead of seven times. The machine code for
+  broadcasting went from 6927 to 3080 bytes, a 56% cut.
+
+- Source line count is a wash, 306 lines across three files against 320 across
+  two. clang-format puts each core's three parameters on their own line, in both
+  the definition and the declaration, which eats the saving. The win is the
+  structure and the object code, not the line count.
 
 - No `#if/#elif` config block, no `#undef` list to keep in sync, no `RRAY_ONCE`.
 
@@ -620,9 +635,6 @@ Splitting the loop into an atomic and a barrier macro says out loud what
 - A better answer for the combinatorial case. Seven arithmetic operators across
   four types is 28 loops, which is 28 one line rows if the macro takes the
   scalar operation, against 28 template inclusions.
-
-- The output type is now `r_typeof(x)` rather than a per type constant, so
-  `RRAY_R_TYPE` disappears too.
 
 ### The measurements
 
