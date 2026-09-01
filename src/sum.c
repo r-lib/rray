@@ -83,13 +83,13 @@ r_obj* rray_sum(r_obj* x, r_obj* axes, bool na_rm, struct r_lazy error_call) {
     r_obj* const* v_x_names = r_list_cbegin(x_names);
 
     r_obj* out_names =
-      KEEP(rray_reduce_names(v_x_names, dimensionality, v_axes, axes_size));
+      rray_reduce_names(v_x_names, dimensionality, v_axes, axes_size);
 
     if (out_names != r_null) {
       r_attrib_poke_dim_names(out, out_names);
     }
 
-    FREE(2);
+    FREE(1);
   }
 
   FREE(5);
