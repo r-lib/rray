@@ -55,16 +55,20 @@ r_obj* rray_sum(r_obj* x, r_obj* axes, bool na_rm, struct r_lazy error_call) {
 
   switch (r_typeof(x)) {
   case R_TYPE_logical:
-    out = rray_sum_lgl(x, out_size, na_rm, &it);
+    out = na_rm ? rray_sum_lgl_na_rm(x, out_size, &it)
+                : rray_sum_lgl(x, out_size, &it);
     break;
   case R_TYPE_integer:
-    out = rray_sum_int(x, out_size, na_rm, &it);
+    out = na_rm ? rray_sum_int_na_rm(x, out_size, &it)
+                : rray_sum_int(x, out_size, &it);
     break;
   case R_TYPE_double:
-    out = rray_sum_dbl(x, out_size, na_rm, &it);
+    out = na_rm ? rray_sum_dbl_na_rm(x, out_size, &it)
+                : rray_sum_dbl(x, out_size, &it);
     break;
   case R_TYPE_complex:
-    out = rray_sum_cpl(x, out_size, na_rm, &it);
+    out = na_rm ? rray_sum_cpl_na_rm(x, out_size, &it)
+                : rray_sum_cpl(x, out_size, &it);
     break;
   default:
     r_abort_lazy_call(
@@ -96,7 +100,7 @@ r_obj* rray_sum(r_obj* x, r_obj* axes, bool na_rm, struct r_lazy error_call) {
   return out;
 }
 
-#define RRAY_SUM(OUT_RTYPE, CTYPE, X_CONST_DEREF, OUT_DEREF, ONE, ONE_NA_RM)   \
+#define RRAY_SUM(OUT_RTYPE, CTYPE, X_CONST_DEREF, OUT_DEREF, ONE)              \
   r_obj* out = KEEP(r_alloc_vector(OUT_RTYPE, out_size));                      \
   CTYPE* v_out = OUT_DEREF(out);                                               \
   memset(v_out, 0, sizeof(CTYPE) * out_size);                                  \
@@ -104,18 +108,10 @@ r_obj* rray_sum(r_obj* x, r_obj* axes, bool na_rm, struct r_lazy error_call) {
   const r_ssize x_size = r_length(x);                                          \
   const CTYPE* v_x = X_CONST_DEREF(x);                                         \
                                                                                \
-  if (na_rm) {                                                                 \
-    for (r_ssize i = 0; i < x_size; ++i) {                                     \
-      const r_ssize loc = rray_iterator_location(it);                          \
-      v_out[loc] = ONE_NA_RM(v_out[loc], v_x[i]);                              \
-      rray_iterator_next(it);                                                  \
-    }                                                                          \
-  } else {                                                                     \
-    for (r_ssize i = 0; i < x_size; ++i) {                                     \
-      const r_ssize loc = rray_iterator_location(it);                          \
-      v_out[loc] = ONE(v_out[loc], v_x[i]);                                    \
-      rray_iterator_next(it);                                                  \
-    }                                                                          \
+  for (r_ssize i = 0; i < x_size; ++i) {                                       \
+    const r_ssize loc = rray_iterator_location(it);                            \
+    v_out[loc] = ONE(v_out[loc], v_x[i]);                                      \
+    rray_iterator_next(it);                                                    \
   }                                                                            \
                                                                                \
   FREE(1);                                                                     \
@@ -124,7 +120,14 @@ r_obj* rray_sum(r_obj* x, r_obj* axes, bool na_rm, struct r_lazy error_call) {
 static r_obj* rray_sum_lgl(
   r_obj* x,
   r_ssize out_size,
-  bool na_rm,
+  struct rray_iterator* it
+) {
+  RRAY_SUM(R_TYPE_integer, int, r_lgl_cbegin, r_int_begin, rray_sum_lgl_one);
+}
+
+static r_obj* rray_sum_lgl_na_rm(
+  r_obj* x,
+  r_ssize out_size,
   struct rray_iterator* it
 ) {
   RRAY_SUM(
@@ -132,7 +135,6 @@ static r_obj* rray_sum_lgl(
     int,
     r_lgl_cbegin,
     r_int_begin,
-    rray_sum_lgl_one,
     rray_sum_lgl_one_na_rm
   );
 }
@@ -140,7 +142,14 @@ static r_obj* rray_sum_lgl(
 static r_obj* rray_sum_int(
   r_obj* x,
   r_ssize out_size,
-  bool na_rm,
+  struct rray_iterator* it
+) {
+  RRAY_SUM(R_TYPE_integer, int, r_int_cbegin, r_int_begin, rray_sum_int_one);
+}
+
+static r_obj* rray_sum_int_na_rm(
+  r_obj* x,
+  r_ssize out_size,
   struct rray_iterator* it
 ) {
   RRAY_SUM(
@@ -148,7 +157,6 @@ static r_obj* rray_sum_int(
     int,
     r_int_cbegin,
     r_int_begin,
-    rray_sum_int_one,
     rray_sum_int_one_na_rm
   );
 }
@@ -156,7 +164,14 @@ static r_obj* rray_sum_int(
 static r_obj* rray_sum_dbl(
   r_obj* x,
   r_ssize out_size,
-  bool na_rm,
+  struct rray_iterator* it
+) {
+  RRAY_SUM(R_TYPE_double, double, r_dbl_cbegin, r_dbl_begin, rray_sum_dbl_one);
+}
+
+static r_obj* rray_sum_dbl_na_rm(
+  r_obj* x,
+  r_ssize out_size,
   struct rray_iterator* it
 ) {
   RRAY_SUM(
@@ -164,7 +179,6 @@ static r_obj* rray_sum_dbl(
     double,
     r_dbl_cbegin,
     r_dbl_begin,
-    rray_sum_dbl_one,
     rray_sum_dbl_one_na_rm
   );
 }
@@ -172,7 +186,6 @@ static r_obj* rray_sum_dbl(
 static r_obj* rray_sum_cpl(
   r_obj* x,
   r_ssize out_size,
-  bool na_rm,
   struct rray_iterator* it
 ) {
   RRAY_SUM(
@@ -180,7 +193,20 @@ static r_obj* rray_sum_cpl(
     r_complex,
     r_cpl_cbegin,
     r_cpl_begin,
-    rray_sum_cpl_one,
+    rray_sum_cpl_one
+  );
+}
+
+static r_obj* rray_sum_cpl_na_rm(
+  r_obj* x,
+  r_ssize out_size,
+  struct rray_iterator* it
+) {
+  RRAY_SUM(
+    R_TYPE_complex,
+    r_complex,
+    r_cpl_cbegin,
+    r_cpl_begin,
     rray_sum_cpl_one_na_rm
   );
 }

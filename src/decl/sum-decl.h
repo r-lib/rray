@@ -1,25 +1,41 @@
 static r_obj* rray_sum_lgl(
   r_obj* x,
   r_ssize out_size,
-  bool na_rm,
+  struct rray_iterator* it
+);
+static r_obj* rray_sum_lgl_na_rm(
+  r_obj* x,
+  r_ssize out_size,
   struct rray_iterator* it
 );
 static r_obj* rray_sum_int(
   r_obj* x,
   r_ssize out_size,
-  bool na_rm,
+  struct rray_iterator* it
+);
+static r_obj* rray_sum_int_na_rm(
+  r_obj* x,
+  r_ssize out_size,
   struct rray_iterator* it
 );
 static r_obj* rray_sum_dbl(
   r_obj* x,
   r_ssize out_size,
-  bool na_rm,
+  struct rray_iterator* it
+);
+static r_obj* rray_sum_dbl_na_rm(
+  r_obj* x,
+  r_ssize out_size,
   struct rray_iterator* it
 );
 static r_obj* rray_sum_cpl(
   r_obj* x,
   r_ssize out_size,
-  bool na_rm,
+  struct rray_iterator* it
+);
+static r_obj* rray_sum_cpl_na_rm(
+  r_obj* x,
+  r_ssize out_size,
   struct rray_iterator* it
 );
 
