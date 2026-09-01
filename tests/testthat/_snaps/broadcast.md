@@ -95,7 +95,7 @@
       Error in `rray_broadcast()`:
       ! rray can't support arrays with a dimensionality greater than 64. A dimensionality of 65 was requested.
 
-# common broadcasting errors on `NULL` input
+# errors on `NULL` input
 
     Code
       rray_broadcast_common(NULL, 1:2)
@@ -111,7 +111,7 @@
       Error in `rray_broadcast_common()`:
       ! Must supply at least one array to `...`.
 
-# common broadcasting errors on classed input
+# errors on classed input in `...`
 
     Code
       rray_broadcast_common(y = x)
@@ -119,7 +119,7 @@
       Error in `rray_broadcast_common()`:
       ! `y` must be a bare array, not a <foo> object.
 
-# common broadcasting errors name the input that failed
+# errors name the input that failed
 
     Code
       rray_broadcast_common(x = 1:3, y = 1:2)
