@@ -44,15 +44,16 @@ The shell is ordinary C, written once. It holds everything that does not depend
 on the type: argument checks, dimension arithmetic, iterator setup and names. It
 ends in a `switch` on `r_typeof(x)` that hands off to the core.
 
-The core takes `x`, the output size and the iterator, allocates the output at
-its own type, fills it, and returns it. Allocation belongs to the core because
-the type is the one thing the shell does not know.
+The core is one small function per type. It takes `x`, the output size and the
+iterator, allocates the output at its own type, fills it, and returns it.
+Allocation belongs to the core because the type is the one thing the shell does
+not know.
 
-The core is one small function per type, whose whole body is a call into a
-macro, following `SLICE` in vctrs' `src/slice.c`. There are usually two macros.
-`RRAY_{NAME}_ATOMIC` covers `lgl`, `int`, `dbl`, `cpl` and `raw`, which write
-straight to a data pointer. `RRAY_{NAME}_BARRIER` covers `chr` and `list`, which
-write through the barrier. Undefine both once the cores are written.
+Each core's whole body is a call into a macro, following `SLICE` in vctrs'
+`src/slice.c`. There are usually two. `RRAY_{NAME}_ATOMIC` covers `lgl`, `int`,
+`dbl`, `cpl` and `raw`, which write straight to a data pointer.
+`RRAY_{NAME}_BARRIER` covers `chr` and `list`, which write through the barrier.
+Undefine both once the cores are written.
 
 Write each core's parameter list out in full. Do not hide it behind a macro.
 
@@ -104,6 +105,18 @@ risky. This class of bug compiles fine, passes tests that don't happen to
 trigger a GC, and only shows up as a rare crash or corrupted value. Check for
 it explicitly in every pull request that touches C code, don't wait for it to
 be caught in review.
+
+Allocate a names list only once an axis actually survives, so the common case
+where nothing survives allocates nothing:
+
+```c
+r_obj* out = r_null;
+r_keep_loc out_loc;
+KEEP_HERE(out, &out_loc);
+```
+
+Allocate inside the loop, right before the first assignment, and reprotect with
+`KEEP_AT()`. `rray_broadcast_names()` is the example.
 
 `#include "decl/{name}-decl.h"` always goes last, after every other include,
 separated from them by one blank line.
@@ -435,238 +448,31 @@ Mechanics:
 
 # Part 4: The pull requests
 
-PRs 1 to 11 build the foundations. Work through them in order, since each
-assumes the ones before it have landed. After that, work through Part 5 in any
-order that respects the dependencies noted there.
+PRs 1 to 5 are done and are summarised below. Work through the rest in order,
+since each assumes the ones before it have landed. After that, work through Part
+5 in any order that respects the dependencies noted there.
 
-## PR 1: Package housekeeping — done
+## Done
 
-No behavior change.
+**PR 1: Package housekeeping.** `DESCRIPTION`, `_pkgdown.yml`, and `plans/` in
+`.Rbuildignore`.
 
-- Fill in `DESCRIPTION`. Title, description, author.
+**PR 2: Argument checking.** `check_unclassed()`, plus `arg` threaded through
+`arg_as_array()`, `arg_as_dimensions()` and `arg_as_axes()` so every error names
+the right argument.
 
-- Add `_pkgdown.yml` with a reference index covering the existing exports.
+**PR 3: Names API.** Everything in 2.3, in `R/names.R` and `src/names.c`.
 
-- Add `plans/` to `.Rbuildignore` so `R CMD check` stays clean.
+**PR 4: Lazy names and the point iterator.** The names helpers allocate only
+once an axis survives, and `rray_split_names()` walks the output space with an
+iterator rather than doing stride arithmetic. `rray_iterator_point()` was added
+for it.
 
-**Done when** `devtools::check()` and `pkgdown::check_pkgdown()` are clean.
-
-## PR 2: Argument checking — done
-
-**Add `check_unclassed()`.** A small helper that tests `r_is_object()` and errors
-if it is true. Every entry point calls it first, before `arg_as_array()`.
-
-This fixes a real bug. Today a classed array is accepted, and the class then
-survives or is dropped depending on which function you called, because
-`vec_as_array()` clones attributes through `r_wrap()` while `rray_broadcast()`
-pokes only `dim` onto a fresh allocation.
-
-Keeping the check separate leaves `arg_as_array()` doing one thing: turning a
-bare vector into a one dimensional array.
-
-**Use the argument name.** `arg_as_array()` takes an `arg` string and hardcodes
-`"x"` in its message. Thread the name through properly. Style is a plain
-`const char*`, no vctrs style arg struct.
-
-- `src/utils.c`, `src/utils.h`: `check_unclassed()`, and the `arg` fix in
-  `arg_as_array()`.
-
-- `src/dimensions.c`: `arg_as_dimensions()` takes and uses `arg`.
-
-- `src/axes.c`: same for `arg_as_axes()`.
-
-**Done when** snapshot tests show the right argument name for each call site, and
-a classed array is refused by every existing function.
-
-## PR 3: Names API — done
-
-- `rray_axis_names(x, axis)`. Single axis only, returns a character vector or
-  `NULL`.
-
-- `rray_row_names(x)`, `rray_col_names(x)`. Shortcuts for axes 1 and 2.
-
-- `rray_set_names(x, names)`, `rray_set_axis_names(x, axis, names)`,
-  `rray_set_row_names(x, names)`, `rray_set_col_names(x, names)`.
-
-Validation as described in 2.3. Exact lengths, `NULL` clears.
-
-Files: `R/names.R`, `src/names.c`, `src/names.h`, `tests/testthat/test-names.R`.
-
-## PR 4: Lazy names and the point iterator — done
-
-A refactor, and it cleans up the ugliest code in the package.
-
-`rray_broadcast_names()` and `rray_reduce_names()` both scan once to see whether
-anything survives, then allocate and fill while repeating the same conditions.
-`rray_split_names()` does manual stride arithmetic to spread names across output
-elements.
-
-Allocate the names list only once an axis actually survives, so the common case
-where nothing survives allocates nothing. Each helper starts with
-
-```c
-r_obj* out = r_null;
-r_keep_loc out_loc;
-KEEP_HERE(out, &out_loc);
-```
-
-and allocates inside the loop, right before the first assignment, reprotecting
-with `KEEP_AT()`. A `struct rray_lazy_list` wrapping this, in the style of
-vctrs' `struct lazy_raw`, was tried and removed. Two call sites do not pay for
-the machinery.
-
-Add `rray_iterator_point()` to `src/iterator.h`, alongside
-`rray_iterator_location()`. Nothing reads `v_point` today, so this is a new
-capability.
-
-Then rewrite all three helpers:
-
-- `rray_broadcast_names()` and `rray_reduce_names()` collapse to one loop each,
-  poking into the lazily allocated list.
-
-- `rray_split_names()` drops the stride arithmetic entirely. Walk the output
-  space with an `rray_iterator` initialised with the out dimensions as both the
-  point and location dimensions, and for each output element read
-  `rray_iterator_point()`. The names on split axis `i` are
-  `x_names[[i]][point[i]]`, and every other axis copies straight across.
-
-All three helpers stay where they were, `rray_broadcast_names()` and
-`rray_split_names()` in the `RRAY_ONCE` blocks of their templates and
-`rray_reduce_names()` in `reduce.c`. PR 5 decides what happens to the templates,
-so moving them now would only be undone.
-
-`rray_split_names()` allocates lazily in the same way, once per output element
-rather than once for the call. `names` is declared and protected inside the
-loop, because each element needs a list of its own, and is allocated the first
-time an axis contributes names.
-
-One behavior change comes with that. Splitting `x` with
-`dimnames = list(NULL, NULL)` used to give every output element an all `NULL`
-dimnames list. It now leaves them with no dimnames, matching what
-`rray_broadcast()` and `rray_sum()` already did.
-
-Files: `src/iterator.h`, `src/broadcast-template.h`, `src/reduce.c`,
-`src/split-template.h`.
-
-## PR 5: Shell and core spike — done, adopted
-
-A trial that landed. `rray_broadcast()` is now a type-independent shell plus a
-small typed core, and `src/broadcast-template.h` is gone. Part 1 describes the
-pattern. PRs 5a and 5b convert the two templates that remain.
-
-### Why
-
-The `src/{name}-template.h` pattern templates the whole function, but almost
-none of the function depends on the type:
-
-| template | templated body | lines touching a type |
-|---|---|---|
-| `broadcast` | ~80 | 6 |
-| `split` | ~99 | 9 |
-| `sum` | ~72 | 8 |
-
-Roughly 92% of each body is dimension checks, allocation, iterator setup and
-names handling, none of which is typed, and all of which is compiled seven
-times. `RRAY_ONCE` exists to carve out the parts that are not really templates,
-which is the same problem showing through.
-
-### The shape that landed
-
-`rray_broadcast()` is the shell. It is ordinary C, written once, and ends in a
-`switch`:
-
-```c
-switch (r_typeof(x)) {
-case R_TYPE_logical:
-  out = rray_broadcast_lgl(x, size, &it);
-  break;
-// ...
-}
-```
-
-The core is two macros and one call per type. `RRAY_BROADCAST_ATOMIC` writes
-straight to a data pointer, `RRAY_BROADCAST_BARRIER` writes through the barrier:
-
-```c
-#define RRAY_BROADCAST_ATOMIC(RTYPE, CTYPE, CONST_DEREF, DEREF)  \
-  r_obj* out = KEEP(r_alloc_vector(RTYPE, size));                \
-  const CTYPE* v_x = CONST_DEREF(x);                             \
-  CTYPE* v_out = DEREF(out);                                     \
-                                                                 \
-  for (r_ssize i = 0; i < size; ++i) {                           \
-    v_out[i] = v_x[rray_iterator_location(it)];                  \
-    rray_iterator_next(it);                                      \
-  }                                                              \
-                                                                 \
-  FREE(1);                                                       \
-  return out;
-
-static r_obj* rray_broadcast_lgl(
-  r_obj* x,
-  r_ssize size,
-  struct rray_iterator* it
-) {
-  RRAY_BROADCAST_ATOMIC(R_TYPE_logical, int, r_lgl_cbegin, r_lgl_begin);
-}
-```
-
-The `KEEP()` matters. `CONST_DEREF(x)` materializes an ALTREP input, which
-allocates, and `rray_broadcast(1:3, c(3L, 2L))` hits exactly that path.
-
-Splitting the loop into an atomic and a barrier macro says out loud what
-`RRAY_OUT_ASSIGN` used to hide by making all seven types look alike.
-
-### What this bought
-
-- The untyped 92% written once instead of seven times. The machine code for
-  broadcasting went from 6927 to 3080 bytes, a 56% cut.
-
-- Source line count is a wash, 306 lines across three files against 320 across
-  two. clang-format puts each core's three parameters on their own line, in both
-  the definition and the declaration, which eats the saving. The win is the
-  structure and the object code, not the line count.
-
-- No `#if/#elif` config block, no `#undef` list to keep in sync, no `RRAY_ONCE`.
-
-- A call site table you can read at a glance and diff between types.
-
-- Working clangd. A `-template.h` opened on its own has no `RRAY_TYPE` defined,
-  so the file you edit most was full of false errors.
-
-- A better answer for the combinatorial case. Seven arithmetic operators across
-  four types is 28 loops, which is 28 one line rows if the macro takes the
-  scalar operation, against 28 template inclusions.
-
-### The measurements
-
-The risk was that the loop now sits behind a function call the compiler may not
-inline. It does not show up. Best of two runs of `bench::mark()`, macOS arm64,
-Apple clang 17, `-O2`:
-
-| case | before | after |
-|---|---|---|
-| `int` 1x2 to 3x2 | 492 ns | 492 ns |
-| `int` 10x1 to 10x10 | 656 ns | 656 ns |
-| `int` 1000x1 to 1000x1000 | 1.88 ms | 1.87 ms |
-| `dbl` 1000x1 to 1000x1000 | 2.13 ms | 2.14 ms |
-| `lgl` 1000x1 to 1000x1000 | 1.88 ms | 1.87 ms |
-| `chr` 1000x1 to 1000x1000 | 3.50 ms | 3.51 ms |
-| `cpl` 1000x1 to 1000x1000 | 1.98 ms | 1.98 ms |
-| `int` 1000x1000 to 1000x1000x1 | 1.89 ms | 1.89 ms |
-
-Every case lands within 1%, which is the run to run noise. The call happens once
-per array, not once per element, so this is what we expected.
-
-### One protection fix
-
-`rray_broadcast_names()` returned an unprotected list that went straight into
-`r_attrib_poke_dim_names()`. That is `Rf_setAttrib()`, which unprotects its
-arguments before handing off to `dimnamesgets()`, which protects them again on
-entry. Nothing allocates in that window today, so it was safe, but only by
-accident of R's internals. The list is now kept across the call.
-
-Files: `src/broadcast.c`, `src/decl/broadcast-decl.h`, deleting
-`src/broadcast-template.h` and `src/decl/broadcast-template-decl.h`.
+**PR 5: Shell and core.** `rray_broadcast()` converted to the pattern in Part 1,
+and `src/broadcast-template.h` deleted. The typed core now sits behind a
+function call, so it was benchmarked before and after across five types and four
+shapes. Every case landed within 1%, which is the run to run noise, because the
+call happens once per array rather than once per element. Do not re-open this.
 
 ## PR 5a: Convert `rray_split()` to shell and core
 
