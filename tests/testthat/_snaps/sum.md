@@ -70,14 +70,6 @@
       Error in `rray_sum()`:
       ! `x` must be a logical, integer, double, or complex array, not a raw matrix.
 
-# the type of `x` is checked before `axes`
-
-    Code
-      rray_sum(x, 99L)
-    Condition
-      Error in `rray_sum()`:
-      ! `x` must be a logical, integer, double, or complex array, not a character matrix.
-
 # errors on classed input
 
     Code
