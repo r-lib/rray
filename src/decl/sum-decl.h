@@ -23,8 +23,6 @@ static r_obj* rray_sum_cpl(
   struct rray_iterator* it
 );
 
-static void check_sum_type(r_obj* x, struct r_lazy error_call);
-
 static inline int rray_sum_lgl_one(int out, int x);
 static inline int rray_sum_lgl_one_na_rm(int out, int x);
 static inline int rray_sum_int_one(int out, int x);

@@ -25,7 +25,6 @@ r_obj* ffi_rray_sum(
 r_obj* rray_sum(r_obj* x, r_obj* axes, bool na_rm, struct r_lazy error_call) {
   check_unclassed(x, "x", error_call);
   x = KEEP(arg_as_array(x, "x", error_call));
-  check_sum_type(x, error_call);
 
   r_obj* x_dimensions = KEEP(rray_dimensions(x, error_call));
   const int* v_x_dimensions = r_int_cbegin(x_dimensions);
@@ -68,7 +67,11 @@ r_obj* rray_sum(r_obj* x, r_obj* axes, bool na_rm, struct r_lazy error_call) {
     out = rray_sum_cpl(x, out_size, na_rm, &it);
     break;
   default:
-    r_stop_unreachable();
+    r_abort_lazy_call(
+      error_call,
+      "`x` must be a logical, integer, double, or complex array, not %s.",
+      r_obj_type_friendly(x)
+    );
   }
 
   KEEP(out);
@@ -183,22 +186,6 @@ static r_obj* rray_sum_cpl(
 }
 
 #undef RRAY_SUM
-
-static void check_sum_type(r_obj* x, struct r_lazy error_call) {
-  switch (r_typeof(x)) {
-  case R_TYPE_logical:
-  case R_TYPE_integer:
-  case R_TYPE_double:
-  case R_TYPE_complex:
-    return;
-  default:
-    r_abort_lazy_call(
-      error_call,
-      "`x` must be a logical, integer, double, or complex array, not %s.",
-      r_obj_type_friendly(x)
-    );
-  }
-}
 
 static inline int rray_sum_lgl_one(int out, int x) {
   if (out == r_globals.na_int) {
