@@ -281,6 +281,14 @@ test_that("errors on integer underflow", {
 test_that("errors on non-numeric input", {
   x <- array(letters[1:4], c(2L, 2L))
   expect_snapshot(rray_sum(x, 1L), error = TRUE)
+
+  x <- array(as.raw(1:4), c(2L, 2L))
+  expect_snapshot(rray_sum(x, 1L), error = TRUE)
+})
+
+test_that("the type of `x` is checked before `axes`", {
+  x <- array(letters[1:4], c(2L, 2L))
+  expect_snapshot(rray_sum(x, 99L), error = TRUE)
 })
 
 test_that("errors on classed input", {

@@ -448,7 +448,7 @@ Mechanics:
 
 # Part 4: The pull requests
 
-PRs 1 to 5a are done and are summarised below. Work through the rest in order,
+PRs 1 to 5b are done and are summarised below. Work through the rest in order,
 since each assumes the ones before it have landed. After that, work through Part
 5 in any order that respects the dependencies noted there.
 
@@ -483,22 +483,14 @@ assignment, so it fills a list it is handed rather than returning one. `chr` and
 `rray_split_dimensions()` and `rray_split_names()` are now file static helpers in
 `src/split.c`.
 
-## PR 5b: Convert `rray_sum()` to shell and core
-
-Same again, for `src/sum-template.h`.
-
-`sum` is the harder one. It has a per type accumulator and an `na_rm` variant,
-so the macro takes the scalar operation as well as the deref pair. It also only
-covers four types rather than seven.
-
-Land this before PR 11, which retrofits `rray_sum()` onto
-`rray_reduction_type()`.
-
-Files: `src/sum.c`, `src/decl/sum-decl.h`, deleting `src/sum-template.h` and
-`src/decl/sum-template-decl.h`.
-
-`src/types.h` holds the `RRAY_TYPE_*` macros that only the templates use. Delete
-it once PR 5b lands.
+**PR 5b: `rray_sum()` shell and core.** The last template is gone, so
+`src/types.h` went with it. One `RRAY_SUM` macro covers all four types, taking
+the two scalar operations after the deref pair. Input and output share a C type
+in every case, including `lgl`, which reads `int` and writes `int`, so the macro
+takes one C type and only the R type of the output. The type check moved out of
+the dispatch `switch` into `check_sum_type()`, called before any dimension work,
+which keeps the type error ahead of the axis error the way it was when the
+`switch` came first.
 
 ## PR 6: `rray_broadcast_common()`
 
@@ -561,7 +553,8 @@ gives it the `lgl` to `int` promotion.
 Fix the comment in `src/sum.c` claiming a logical array can never overflow an
 integer sum. That is false once long arrays are supported.
 
-Lands after PR 5b, which converts `rray_sum()` to a shell and core.
+Once the promotion casts `lgl` to `int` up front, `rray_sum_lgl()` and its two
+scalar operations have no caller left and go away.
 
 Files: `src/type.c`, `R/sum.R`, `src/sum.c`.
 
