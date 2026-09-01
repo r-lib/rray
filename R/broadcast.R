@@ -29,3 +29,33 @@
 rray_broadcast <- function(x, dimensions) {
   .Call(ffi_rray_broadcast, x, dimensions, environment())
 }
+
+#' Broadcast arrays to common dimensions
+#'
+#' @description
+#' `rray_broadcast_common()` broadcasts every array in `...` to the common
+#' dimensions found by [rray_dimensions_common()].
+#'
+#' Unlike [rray_dimensions_common()], `NULL` is not allowed, because there is
+#' no array to return in its place.
+#'
+#' @param ... Arrays to broadcast. Names are kept on the result.
+#'
+#' @param .dimensions If provided, an integer vector of dimensions to
+#'   broadcast to, rather than computing common dimensions from `...`.
+#'
+#' @returns
+#' A list of arrays, all with the common dimensions.
+#'
+#' @export
+#' @examples
+#' rray_broadcast_common(array(1:3, c(3L, 1L)), array(1:2, c(1L, 2L)))
+#'
+#' # Names of `...` are kept
+#' rray_broadcast_common(x = 1:3, y = 1L)
+#'
+#' # `.dimensions` overrides the common dimensions
+#' rray_broadcast_common(1:3, .dimensions = c(3L, 2L))
+rray_broadcast_common <- function(..., .dimensions = NULL) {
+  .Call(ffi_rray_broadcast_common, list2(...), .dimensions, environment())
+}

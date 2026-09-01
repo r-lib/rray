@@ -111,6 +111,11 @@ since only `src/rlang` is on the include path.
 
 - `src/init.c` uses `extern` declarations, it does not include feature headers.
 
+- A function taking `...` names its inputs in errors with `arg_from_xs()`, which
+  gives an input's name when it has one and `..1` otherwise. It writes into a
+  `char[RRAY_ARG_SIZE]` the caller owns, so it never allocates. Pass the result
+  down as the `arg` that `check_unclassed()` and friends already take.
+
 ## C style
 
 Follow vctrs and rlang closely. Prefer an rlang wrapper over the raw R API every
@@ -232,6 +237,11 @@ Rules, per axis:
 
 Dimensionality can never shrink. `rray_broadcast()` errors on any decrease, even
 when the dimensions being dropped are all 1.
+
+`rray_dimensions_common()` drops `NULL` inputs, since a `NULL` contributes no
+dimensions. `rray_broadcast_common()` errors on them, since there is no array to
+hand back in its place. The names of `...` are kept on the list it returns, the
+same way `vec_recycle_common()` keeps them.
 
 `RRAY_MAX_DIMENSIONALITY` is 64.
 
@@ -475,24 +485,13 @@ Mechanics:
 # Part 4: The pull requests
 
 What exists today: the argument checking helpers, the names API, the dimension
-and shape helpers, and `rray_broadcast()`, `rray_split()` and `rray_sum()`. The
-three array functions all follow the shell and core pattern in Part 1, and no
-templates are left in `src/`.
+and shape helpers, and `rray_broadcast()`, `rray_broadcast_common()`,
+`rray_split()` and `rray_sum()`. The array functions all follow the shell and
+core pattern in Part 1, and no templates are left in `src/`.
 
 Work through the rest in order, since each assumes the ones before it have
 landed. After that, work through Part 5 in any order that respects the
 dependencies noted there.
-
-## PR 6: `rray_broadcast_common()`
-
-```r
-rray_broadcast_common(..., .dimensions = NULL)
-```
-
-Returns a list of arrays, all broadcast to the common dimensions. Mirrors
-`rray_dimensions_common()`. `NULL` inputs are dropped.
-
-Files: `R/broadcast.R`, `src/broadcast.c`, `src/broadcast.h`.
 
 ## PR 7: `rray_names_common()`
 

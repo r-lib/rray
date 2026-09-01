@@ -9,19 +9,19 @@
 
 r_obj* ffi_rray_dimensions(r_obj* ffi_x, r_obj* ffi_frame) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  return rray_dimensions(ffi_x, error_call);
+  return rray_dimensions(ffi_x, "x", error_call);
 }
 
-r_obj* rray_dimensions(r_obj* x, struct r_lazy error_call) {
-  check_unclassed(x, "x", error_call);
-  x = KEEP(arg_as_array(x, "x", error_call));
+r_obj* rray_dimensions(r_obj* x, const char* arg, struct r_lazy error_call) {
+  check_unclassed(x, arg, error_call);
+  x = KEEP(arg_as_array(x, arg, error_call));
   r_obj* out = r_dim(x);
   FREE(1);
   return out;
 }
 
 int rray_dimension(r_obj* x, int axis, struct r_lazy error_call) {
-  r_obj* dimensions = rray_dimensions(x, error_call);
+  r_obj* dimensions = rray_dimensions(x, "x", error_call);
   return r_int_get(dimensions, axis - 1);
 }
 
@@ -109,6 +109,7 @@ r_obj* rray_dimensions_common(
 
   const r_ssize n = r_length(xs);
   r_obj* const* v_xs = r_list_cbegin(xs);
+  r_obj* xs_names = KEEP(r_names(xs));
 
   bool any = false;
 
@@ -130,7 +131,10 @@ r_obj* rray_dimensions_common(
 
     any = true;
 
-    r_obj* x_dimensions = KEEP(rray_dimensions(x, error_call));
+    char buffer[RRAY_ARG_SIZE];
+    const char* arg = arg_from_xs(xs_names, i, buffer);
+
+    r_obj* x_dimensions = KEEP(rray_dimensions(x, arg, error_call));
     const int* v_x_dimensions = r_int_cbegin(x_dimensions);
     const int x_dimensionality =
       rray_dimensionality_from_dimensions(x_dimensions);
@@ -143,6 +147,7 @@ r_obj* rray_dimensions_common(
       &out_dimensionality,
       v_x_dimensions,
       x_dimensionality,
+      arg,
       error_call
     );
 
@@ -157,7 +162,7 @@ r_obj* rray_dimensions_common(
   int* v_out = r_int_begin(out);
   r_memcpy(v_out, v_out_dimensions, sizeof(int) * out_dimensionality);
 
-  FREE(1);
+  FREE(2);
   return out;
 }
 
@@ -166,6 +171,7 @@ static inline void rray_dimensions2(
   int* p_out_dimensionality,
   const int* v_x_dimensions,
   int x_dimensionality,
+  const char* x_arg,
   struct r_lazy error_call
 ) {
   const int out_dimensionality = *p_out_dimensionality;
@@ -193,10 +199,11 @@ static inline void rray_dimensions2(
       r_abort_lazy_call(
         error_call,
         "Can't find common dimensions at axis %d. "
-        "Dimensions %d and %d are incompatible.",
+        "`%s` has dimension %d, which is incompatible with dimension %d.",
         i + 1,
-        out_dimension,
-        x_dimension
+        x_arg,
+        x_dimension,
+        out_dimension
       );
     }
   }

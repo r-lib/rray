@@ -70,7 +70,7 @@ r_obj* rray_set_names(r_obj* x, r_obj* names, struct r_lazy error_call) {
       );
     }
 
-    r_obj* dimensions = KEEP(rray_dimensions(x, error_call));
+    r_obj* dimensions = KEEP(rray_dimensions(x, "x", error_call));
     const int* v_dimensions = r_int_cbegin(dimensions);
     const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
 

@@ -15,16 +15,21 @@ r_obj* ffi_rray_broadcast(
   r_obj* ffi_frame
 ) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  return rray_broadcast(ffi_x, ffi_dimensions, error_call);
+  return rray_broadcast(ffi_x, ffi_dimensions, "x", error_call);
 }
 
-r_obj* rray_broadcast(r_obj* x, r_obj* dimensions, struct r_lazy error_call) {
-  check_unclassed(x, "x", error_call);
-  x = KEEP(arg_as_array(x, "x", error_call));
+r_obj* rray_broadcast(
+  r_obj* x,
+  r_obj* dimensions,
+  const char* arg,
+  struct r_lazy error_call
+) {
+  check_unclassed(x, arg, error_call);
+  x = KEEP(arg_as_array(x, arg, error_call));
 
   dimensions = KEEP(arg_as_dimensions(dimensions, dimensions_chr, error_call));
 
-  r_obj* x_dimensions = KEEP(rray_dimensions(x, error_call));
+  r_obj* x_dimensions = KEEP(rray_dimensions(x, arg, error_call));
 
   const int* v_x_dimensions = r_int_cbegin(x_dimensions);
   const int* v_dimensions = r_int_cbegin(dimensions);
@@ -50,6 +55,7 @@ r_obj* rray_broadcast(r_obj* x, r_obj* dimensions, struct r_lazy error_call) {
     x_dimensionality,
     v_dimensions,
     dimensionality,
+    arg,
     error_call
   );
 
@@ -234,18 +240,54 @@ static r_obj* rray_broadcast_names(
   return out;
 }
 
+r_obj* ffi_rray_broadcast_common(
+  r_obj* ffi_xs,
+  r_obj* ffi_dimensions,
+  r_obj* ffi_frame
+) {
+  struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
+  return rray_broadcast_common(ffi_xs, ffi_dimensions, error_call);
+}
+
+r_obj* rray_broadcast_common(
+  r_obj* xs,
+  r_obj* dimensions,
+  struct r_lazy error_call
+) {
+  dimensions = KEEP(rray_dimensions_common(xs, dimensions, error_call));
+
+  const r_ssize n = r_length(xs);
+  r_obj* const* v_xs = r_list_cbegin(xs);
+  r_obj* xs_names = KEEP(r_names(xs));
+
+  r_obj* out = KEEP(r_alloc_list(n));
+  r_attrib_poke_names(out, xs_names);
+
+  for (r_ssize i = 0; i < n; ++i) {
+    char buffer[RRAY_ARG_SIZE];
+    const char* arg = arg_from_xs(xs_names, i, buffer);
+
+    r_list_poke(out, i, rray_broadcast(v_xs[i], dimensions, arg, error_call));
+  }
+
+  FREE(3);
+  return out;
+}
+
 void check_broadcastable(
   const int* v_x_dimensions,
   int x_dimensionality,
   const int* v_dimensions,
   int dimensionality,
+  const char* arg,
   struct r_lazy error_call
 ) {
   if (x_dimensionality > dimensionality) {
     r_abort_lazy_call(
       error_call,
-      "Can't broadcast from dimensionality %d to %d. "
+      "Can't broadcast `%s` from dimensionality %d to %d. "
       "Can't decrease dimensionality.",
+      arg,
       x_dimensionality,
       dimensionality
     );
@@ -261,8 +303,9 @@ void check_broadcastable(
 
     r_abort_lazy_call(
       error_call,
-      "Can't broadcast axis %d from dimension %d to %d.",
+      "Can't broadcast axis %d of `%s` from dimension %d to %d.",
       i + 1,
+      arg,
       x_dimension,
       dimension
     );

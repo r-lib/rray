@@ -44,7 +44,7 @@
       rray_dimensions_common(x)
     Condition
       Error in `rray_dimensions_common()`:
-      ! `x` must be a bare array, not a <foo> object.
+      ! `..1` must be a bare array, not a <foo> object.
 
 ---
 
@@ -60,7 +60,15 @@
       rray_dimensions_common(array(1, c(2, 3)), array(1, c(4, 3)))
     Condition
       Error in `rray_dimensions_common()`:
-      ! Can't find common dimensions at axis 1. Dimensions 2 and 4 are incompatible.
+      ! Can't find common dimensions at axis 1. `..2` has dimension 4, which is incompatible with dimension 2.
+
+# errors name the input that couldn't be reconciled
+
+    Code
+      rray_dimensions_common(x = array(1, c(2, 3)), y = array(1, c(4, 3)))
+    Condition
+      Error in `rray_dimensions_common()`:
+      ! Can't find common dimensions at axis 1. `y` has dimension 4, which is incompatible with dimension 2.
 
 # errors on zero non-NULL inputs
 
