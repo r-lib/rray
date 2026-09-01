@@ -155,7 +155,7 @@ r_obj* rray_dimensions_common(
 
   r_obj* out = KEEP(r_alloc_integer(out_dimensionality));
   int* v_out = r_int_begin(out);
-  memcpy(v_out, v_out_dimensions, sizeof(int) * out_dimensionality);
+  r_memcpy(v_out, v_out_dimensions, sizeof(int) * out_dimensionality);
 
   FREE(1);
   return out;
