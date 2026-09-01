@@ -95,11 +95,48 @@ test_that("works with 1D arrays", {
   expect_equal(out[[5]], array(5L))
 })
 
-test_that("works with different types", {
-  expect_length(rray_split(array(c(TRUE, FALSE), c(1, 2)), 2), 2)
-  expect_length(rray_split(array(c(1.5, 2.5), c(1, 2)), 2), 2)
-  expect_length(rray_split(array(c("a", "b"), c(1, 2)), 2), 2)
-  expect_length(rray_split(array(as.raw(1:2), c(1, 2)), 2), 2)
+test_that("works with zero size arrays", {
+  x <- array(integer(), c(0, 2))
+  expect_identical(rray_split(x, 1), list())
+  expect_identical(
+    rray_split(x, 2),
+    list(array(integer(), c(0, 1)), array(integer(), c(0, 1)))
+  )
+
+  x <- array(integer(), c(0, 0))
+  expect_identical(rray_split(x, 1), list())
+  expect_identical(rray_split(x, 2), list())
+})
+
+test_that("works with every type", {
+  expect_identical(
+    rray_split(array(c(TRUE, NA, FALSE, TRUE), c(2, 2)), 2),
+    list(array(c(TRUE, NA), c(2, 1)), array(c(FALSE, TRUE), c(2, 1)))
+  )
+  expect_identical(
+    rray_split(array(c(1L, NA, 3L, 4L), c(2, 2)), 2),
+    list(array(c(1L, NA), c(2, 1)), array(c(3L, 4L), c(2, 1)))
+  )
+  expect_identical(
+    rray_split(array(c(1.5, NA, 3.5, 4.5), c(2, 2)), 2),
+    list(array(c(1.5, NA), c(2, 1)), array(c(3.5, 4.5), c(2, 1)))
+  )
+  expect_identical(
+    rray_split(array(c(1 + 1i, NA, 3 + 3i, 4 + 4i), c(2, 2)), 2),
+    list(array(c(1 + 1i, NA), c(2, 1)), array(c(3 + 3i, 4 + 4i), c(2, 1)))
+  )
+  expect_identical(
+    rray_split(array(as.raw(1:4), c(2, 2)), 2),
+    list(array(as.raw(1:2), c(2, 1)), array(as.raw(3:4), c(2, 1)))
+  )
+  expect_identical(
+    rray_split(array(c("a", NA, "c", "d"), c(2, 2)), 2),
+    list(array(c("a", NA), c(2, 1)), array(c("c", "d"), c(2, 1)))
+  )
+  expect_identical(
+    rray_split(array(list(1, "a", NULL, TRUE), c(2, 2)), 2),
+    list(array(list(1, "a"), c(2, 1)), array(list(NULL, TRUE), c(2, 1)))
+  )
 })
 
 test_that("axes are validated", {
