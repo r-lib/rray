@@ -292,7 +292,24 @@ the common dimensions:
 
 3. Otherwise `NULL`.
 
-This lives in an internal `rray_names_common()`.
+This lives in three internal functions, one per arity:
+
+```c
+r_obj* rray_broadcast_names(r_obj* x, r_obj* dimensions);
+r_obj* rray_broadcast_names2(r_obj* x, r_obj* y, r_obj* dimensions);
+r_obj* rray_broadcast_names_common(r_obj* xs, r_obj* dimensions);
+```
+
+All three fill one output list from a shared helper, never overwriting a slot
+that an earlier input already filled. Coalescing is just that "don't overwrite"
+rule, so the one-input case is the follow the axis rule and needs no separate
+implementation.
+
+They take arrays rather than extracted names, because `arg_as_array()` gives
+every input a real `dim`, which makes `r_dim()` and `r_dim_names()` free reads
+off an object the caller already protects. They assume validated, broadcastable
+inputs, so they take no `arg` and no `error_call` and cannot fail. Validation
+belongs in the caller, which has always done it already.
 
 **Subset.** Names are subset alongside the data, so an axis keeps the names of
 the elements that survived.
@@ -500,27 +517,16 @@ Mechanics:
 # Part 4: The pull requests
 
 What exists today: the argument tags, the argument checking helpers, the names
-API, the dimension and shape helpers, and `rray_broadcast()`,
-`rray_broadcast_common()`, `rray_split()` and `rray_sum()`. The array functions
-all follow the shell and core pattern in Part 1, and no templates are left in
-`src/`.
+API, the coalesce rule as the `rray_broadcast_names()` family, the dimension and
+shape helpers, and `rray_broadcast()`, `rray_broadcast_common()`,
+`rray_split()` and `rray_sum()`. The array functions all follow the shell and
+core pattern in Part 1, and no templates are left in `src/`.
 
 Work through the rest in order, since each assumes the ones before it have
 landed. After that, work through Part 5 in any order that respects the
 dependencies noted there.
 
-## PR 7: `rray_names_common()`
-
-The coalesce rule from 2.3. Internal C plus an unexported R wrapper so it can be
-tested directly before it has a real caller.
-
-Signature is `rray_names_common(..., .dimensions = NULL)`, where `.dimensions`
-defaults to `rray_dimensions_common(...)`. The rule cannot be applied without the
-common dimensions, so that argument is not optional decoration.
-
-Files: `src/names.c`, `src/names.h`, `R/names.R`.
-
-## PR 8: Native types
+## PR 7: Native types
 
 The internal type interface from 2.4. All C, no exports, with unexported R
 wrappers so it can be tested directly.
@@ -533,25 +539,25 @@ wrappers so it can be tested directly.
 
 Files: `src/type.c`, `src/type.h`, `src/cast.c`, `src/cast.h`.
 
-## PR 9: Binary promotion and `rray_add()`
+## PR 8: Binary promotion and `rray_add()`
 
 `enum rray_binary_op`, `rray_binary_type()` and its table, then one function
 using it end to end.
 
 The C loop uses two broadcast iterators stepped side by side. Names come from
-`rray_names_common()`.
+`rray_broadcast_names2()`.
 
 Files: `src/op.h` for the enums, `src/type.c` for the table, `R/arithmetic.R`,
 `src/arithmetic.c`, `src/arithmetic.h`.
 
-## PR 10: The rest of the binary arithmetic
+## PR 9: The rest of the binary arithmetic
 
 `rray_subtract()`, `rray_multiply()`, `rray_divide()`, `rray_power()`,
 `rray_modulo()`, `rray_integer_divide()`.
 
 All the same shape as `rray_add()`. Share the core.
 
-## PR 11: Reduction promotion and `rray_sum()`
+## PR 10: Reduction promotion and `rray_sum()`
 
 `rray_reduction_type()` and its table. Retrofit `rray_sum()` to use it, which
 gives it the `lgl` to `int` promotion.
@@ -923,7 +929,7 @@ Names: reduce.
 
 | function | op | type rule |
 |---|---|---|
-| `rray_sum(x, axes, ..., na_rm = FALSE)` | `sum` | promoted, exists, retrofit in PR 11 |
+| `rray_sum(x, axes, ..., na_rm = FALSE)` | `sum` | promoted, exists, retrofit in PR 10 |
 | `rray_prod(x, axes, ..., na_rm = FALSE)` | `prod` | promoted, int to dbl |
 | `rray_mean(x, axes, ..., na_rm = FALSE)` | `mean` | promoted, lgl and int to dbl |
 | `rray_max(x, axes, ..., na_rm = FALSE)` | `max` | preserved, errors on cpl |
@@ -1050,6 +1056,10 @@ different column counts and `b` has to broadcast.
 
 Names: coalesce on the axes that are not bound. The bound axis concatenates its
 names, which needs its own rule worked out in the design review.
+
+`rray_broadcast_names_common()` handles the unbound axes as is: on the bound
+axis every input's dimension differs from the output's, so it is skipped for
+every input and bind pokes the concatenation in afterwards.
 
 Type: common. This is the main consumer of `rray_type_common()`, so it takes a
 `.ptype` argument for an override, matching `.dimensions` elsewhere.

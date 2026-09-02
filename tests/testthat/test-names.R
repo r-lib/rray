@@ -1,3 +1,6 @@
+# ------------------------------------------------------------------------------
+# rray_names()
+
 test_that("returns NULL for unnamed plain vectors", {
   expect_null(rray_names(1:3))
   expect_null(rray_names("a"))
@@ -35,6 +38,9 @@ test_that("errors on classed input", {
   x <- structure(array(1:4, c(2, 2)), class = "foo")
   expect_snapshot(rray_names(x), error = TRUE)
 })
+
+# ------------------------------------------------------------------------------
+# rray_axis_names()
 
 test_that("rray_axis_names() gets names for a single axis", {
   x <- array(1:6, c(2, 3), dimnames = list(c("r1", "r2"), c("c1", "c2", "c3")))
@@ -93,6 +99,9 @@ test_that("rray_row_names() and rray_col_names() error on classed input", {
   expect_snapshot(rray_row_names(x), error = TRUE)
   expect_snapshot(rray_col_names(x), error = TRUE)
 })
+
+# ------------------------------------------------------------------------------
+# rray_set_names()
 
 test_that("rray_set_names() sets names for every axis", {
   x <- array(1:6, c(2, 3))
@@ -160,6 +169,9 @@ test_that("rray_set_names() errors on classed input", {
   x <- structure(array(1:4, c(2, 2)), class = "foo")
   expect_snapshot(rray_set_names(x, NULL), error = TRUE)
 })
+
+# ------------------------------------------------------------------------------
+# rray_set_axis_names()
 
 test_that("rray_set_axis_names() sets names for a single axis", {
   x <- array(1:6, c(2, 3))
