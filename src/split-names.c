@@ -40,20 +40,21 @@ r_obj* rray_split_names(r_obj* x, r_obj* dimensions) {
 
   r_obj* const* v_axes_names = r_list_cbegin(axes_names);
 
-  const r_ssize size = rray_size_from_dimensions(v_dimensions, dimensionality);
-
-  r_obj* out = KEEP(r_alloc_list(size));
-
-  struct rray_iterator it;
-  rray_reduction_iterator_init(&it, v_dimensions, v_dimensions, dimensionality);
-
-  r_obj* const* v_v_axis_names[RRAY_MAX_DIMENSIONALITY];
+  r_obj* const** v_v_axis_names =
+    (r_obj* const**) R_alloc(dimensionality, sizeof(r_obj* const*));
 
   for (int i = 0; i < dimensionality; ++i) {
     r_obj* axis_names = v_axes_names[i];
     v_v_axis_names[i] =
       (axis_names == r_null) ? NULL : r_list_cbegin(axis_names);
   }
+
+  const r_ssize size = rray_size_from_dimensions(v_dimensions, dimensionality);
+
+  r_obj* out = KEEP(r_alloc_list(size));
+
+  struct rray_iterator it;
+  rray_reduction_iterator_init(&it, v_dimensions, v_dimensions, dimensionality);
 
   for (r_ssize i = 0; i < size; ++i) {
     const r_ssize* v_point = rray_iterator_point(&it);
