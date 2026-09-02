@@ -86,6 +86,7 @@ static r_obj* rray_broadcast_names_fill(
       continue;
     }
     if (out != r_null && r_list_get(out, i) != r_null) {
+      // Names already exist on this axis
       continue;
     }
     if (out == r_null) {
