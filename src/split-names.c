@@ -116,10 +116,12 @@ static r_obj* rray_split_axes_names(
       continue;
     }
 
+    r_obj* const* v_x_axis_names = r_chr_cbegin(x_axis_names);
+
     for (int j = 0; j < dimension; ++j) {
       r_obj* names = r_alloc_character(1);
       r_list_poke(axis_names, j, names);
-      r_chr_poke(names, 0, r_chr_get(x_axis_names, j));
+      r_chr_poke(names, 0, v_x_axis_names[j]);
     }
   }
 
