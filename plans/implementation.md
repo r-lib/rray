@@ -247,6 +247,10 @@ dimensions. `rray_broadcast_common()` errors on them, since there is no array to
 hand back in its place. The names of `...` are kept on the list it returns, the
 same way `vec_recycle_common()` keeps them.
 
+That split does not survive. PR 7 makes `rray_dimensions_common()` refuse `NULL`
+too, so the rule everywhere becomes: a `NULL` is not an array, and anything
+taking arrays refuses it. See `plans/args.md`.
+
 `RRAY_MAX_DIMENSIONALITY` is 64.
 
 Long arrays are supported where it is not painful. R allows an array's total
@@ -499,11 +503,15 @@ dependencies noted there.
 
 ## PR 7: Argument tags
 
-Replace `const char* arg` with a `struct rray_arg` ported from vctrs, so a
-function taking `...` can name the input that failed, and so tags can nest.
+Part A. Replace `const char* arg` with a `struct rray_arg` ported from vctrs, so
+a function taking `...` can name the input that failed, and so tags can nest.
 
-This one comes first because everything after it takes `...` or two array
-inputs, and would otherwise be written twice.
+Part B. Stop `rray_dimensions_common()` accepting `NULL`, which brings it in line
+with `rray_dimensions()` and `rray_broadcast_common()`. It rides along because
+Part A rewrites that loop anyway.
+
+Part A comes first because everything after it takes `...` or two array inputs,
+and would otherwise be written twice.
 
 Written up in full in `plans/args.md`.
 

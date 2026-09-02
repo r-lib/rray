@@ -2,8 +2,16 @@
 
 ## What this is
 
-A plan for one pull request: replace rray's `const char* arg` with a
+A plan for one pull request, in two parts.
+
+**Part A**, Parts 1 to 4 below: replace rray's `const char* arg` with a
 `struct rray_arg`, ported from vctrs.
+
+**Part B**, Part 5 below: stop `rray_dimensions_common()` accepting `NULL`.
+
+They travel together because Part A rewrites the `rray_dimensions_common()`
+loop anyway, and Part B deletes two branches out of the loop Part A is writing.
+Landing them apart means writing that loop twice.
 
 It lands as PR 7, before `rray_names_common()`. Everything after it takes `...`
 or two array inputs, so every one of those functions wants argument tags on the
@@ -413,9 +421,132 @@ in the `r_abort_lazy_call()` that follows and never store it.
 
 ---
 
-# Part 5: Testing
+# Part 5: Part B, `rray_dimensions_common()` drops `NULL`
 
-There is no exported surface here, so this is tested through the functions that
+## The change
+
+`rray_dimensions_common(NULL, 1:5)` returns `5L` today, because the loop skips
+`NULL` inputs. After this, it is an error:
+
+```
+`..1` must be an array, not `NULL`.
+```
+
+That is the message `rray_dimensions()` already gives, and the message
+`rray_broadcast_common()` already gives. Three functions, one answer.
+
+## Why
+
+`rray_dimensions(NULL)` has always been an error. `NULL` is not an array, and
+rray has no `NULL` array to point at. `rray_dimensions_common()` accepting what
+`rray_dimensions()` rejects is the odd one out, and the only reason it does is
+that it was written before there was a rule.
+
+It also removes a wart that PR 6 had to leave in place. `rray_broadcast_common()`
+rejects `NULL`, but the rejection arrives from the wrong place, because
+`rray_dimensions_common()` runs first and silently drops it:
+
+```r
+rray_broadcast_common(NULL)
+#> Must supply at least one array to `...`.
+```
+
+That reads as though nothing was supplied. Something was, and it was wrong. Once
+`NULL` is refused where it is first seen, the message is the accurate one.
+
+**What this costs.** vctrs allows `NULL` in `vec_size_common()` on purpose, so an
+optional argument can be threaded through without the caller filtering it. rray
+gives that up. A caller holding an array that might be absent has to drop it
+before the call:
+
+```r
+xs <- Filter(Negate(is.null), xs)
+```
+
+That is the trade, and it is worth it while rray has no function whose array
+argument is optional. Revisit if one turns up, and if it does, prefer giving that
+one function an explicit way to say "absent" over making `NULL` mean two things
+everywhere.
+
+## The code
+
+`rray_dimensions_common()` loses its `NULL` branch and its `any` flag:
+
+```c
+// Both of these go
+if (x == r_null) {
+  continue;
+}
+any = true;
+```
+
+The "nothing was supplied" error stays, since `rray_dimensions_common()` with an
+empty `...` is still an error. It just tests `n` directly, and it moves to the
+top of the function where it reads as the precondition it is:
+
+```c
+if (n == 0) {
+  r_abort_lazy_call(error_call, "Must supply at least one array to `...`.");
+}
+```
+
+Check that against `.dimensions`. When `.dimensions` is supplied,
+`rray_dimensions_common()` returns before it looks at `...` at all, so
+`rray_dimensions_common(.dimensions = c(2L, 3L))` keeps working with an empty
+`...`. Keep that early return above the new check.
+
+`rray_broadcast_common()` needs no change. It already loops over every element
+and hands each to `rray_broadcast()`, which rejects `NULL` on its own.
+
+## Documentation
+
+`R/dimensions.R`, the `...` parameter:
+
+```r
+#' @param ... Arrays. `NULL` inputs are silently dropped.
+```
+
+becomes
+
+```r
+#' @param ... Arrays.
+```
+
+`plans/implementation.md` section 2.2 currently says `rray_dimensions_common()`
+drops `NULL` while `rray_broadcast_common()` errors. Replace that with the single
+rule: `NULL` is not an array, so every function that takes arrays refuses it.
+
+## Tests
+
+In `tests/testthat/test-dimensions.R`, this test inverts:
+
+```r
+test_that("NULL inputs are dropped", {
+  expect_identical(rray_dimensions_common(NULL, 1:5, NULL), 5L)
+})
+```
+
+It becomes an `expect_snapshot(error = TRUE)` covering `NULL` in the first
+position and in a later position, so the index in the tag is checked and not just
+the refusal.
+
+Keep the existing "errors on zero non-`NULL` inputs" test, but it is now two
+different errors rather than one. `rray_dimensions_common()` still reports that
+nothing was supplied, while `rray_dimensions_common(NULL, NULL)` now reports that
+`..1` is not an array. Snapshot both.
+
+In `tests/testthat/test-broadcast.R`, the existing `rray_broadcast_common(NULL)`
+snapshot changes message. That is the wart above being fixed, so accept it and
+check the new text says `..1`.
+
+---
+
+# Part 6: Testing Part A
+
+Part B's tests are in Part 5, next to the change they cover. This part is the
+argument tag machinery.
+
+There is no exported surface here, so it is tested through the functions that
 use it. The R level `rray_dimensions_common()` and `rray_broadcast_common()`
 already have most of the shape.
 
@@ -439,7 +570,7 @@ snapshot diff being empty.
 
 ---
 
-# Part 6: Out of scope
+# Part 7: Out of scope
 
 **`x_arg` and `call` arguments on the exported R functions.** vctrs has them so
 that another package's wrapper can make an error blame its own argument.
@@ -452,6 +583,11 @@ is its own pull request. Do it when a real caller wants it, not before.
 
 **`new_counter_arg()` and `reduce()`.** See Part 3.
 
-**Any change to what the errors say**, beyond the two in Part 4. The point of
-this pull request is the machinery. A message that reads badly today should be
-fixed in its own commit, so the diff stays reviewable.
+**Any change to what the errors say**, beyond the two in Part 4 and the ones
+Part B forces. The point of this pull request is the machinery. A message that
+reads badly today should be fixed in its own commit, so the diff stays
+reviewable.
+
+**`NULL` handling anywhere except `rray_dimensions_common()`.** Part B settles
+one function, because it is the only one left that disagrees with the rest. Do
+not go looking for others to change.
