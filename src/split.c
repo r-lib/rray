@@ -3,10 +3,10 @@
 #include "axes.h"
 #include "dimensionality.h"
 #include "dimensions.h"
-#include "names.h"
 #include "reduce.h"
 #include "reduction-iterator.h"
 #include "size.h"
+#include "split-names.h"
 #include "utils.h"
 
 #include "decl/split-decl.h"
@@ -103,22 +103,18 @@ r_obj* rray_split(
     r_stop_unreachable();
   }
 
-  r_obj* x_names = rray_names(x, arg, error_call);
-  if (x_names != r_null) {
-    KEEP(x_names);
+  r_obj* names = KEEP(rray_split_names(x, out_dimensions));
 
-    rray_split_names(
-      out,
-      r_list_cbegin(x_names),
-      v_out_dimensions,
-      dimensionality,
-      out_size
-    );
+  if (names != r_null) {
+    r_obj* const* v_names = r_list_cbegin(names);
+    r_obj* const* v_out = r_list_cbegin(out);
 
-    FREE(1);
+    for (r_ssize i = 0; i < out_size; ++i) {
+      r_attrib_poke_dim_names(v_out[i], v_names[i]);
+    }
   }
 
-  FREE(6);
+  FREE(7);
   return out;
 }
 
@@ -249,57 +245,4 @@ static r_obj* rray_split_dimensions(
 
   FREE(1);
   return out;
-}
-
-static void rray_split_names(
-  r_obj* out,
-  r_obj* const* v_x_names,
-  const int* v_out_dimensions,
-  int dimensionality,
-  r_ssize out_size
-) {
-  r_obj* const* v_out = r_list_cbegin(out);
-
-  struct rray_iterator it;
-  rray_reduction_iterator_init(
-    &it,
-    v_out_dimensions,
-    v_out_dimensions,
-    dimensionality
-  );
-
-  for (r_ssize i = 0; i < out_size; ++i) {
-    const r_ssize* v_point = rray_iterator_point(&it);
-
-    r_obj* names = r_null;
-    r_keep_loc names_loc;
-    KEEP_HERE(names, &names_loc);
-
-    for (int j = 0; j < dimensionality; ++j) {
-      r_obj* x_axis_names = v_x_names[j];
-      if (x_axis_names == r_null) {
-        // `names` stays `r_null` when there were no names before
-        continue;
-      }
-
-      if (names == r_null) {
-        names = r_alloc_list(dimensionality);
-        KEEP_AT(names, names_loc);
-      }
-
-      if (v_out_dimensions[j] == 1) {
-        // Axis isn't split, its names carry over whole
-        r_list_poke(names, j, x_axis_names);
-      } else {
-        r_obj* axis_names = r_alloc_character(1);
-        r_list_poke(names, j, axis_names);
-        r_chr_poke(axis_names, 0, r_chr_get(x_axis_names, v_point[j]));
-      }
-    }
-
-    r_attrib_poke_dim_names(v_out[i], names);
-
-    FREE(1);
-    rray_iterator_next(&it);
-  }
 }

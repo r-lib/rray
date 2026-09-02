@@ -56,6 +56,7 @@ extern r_obj* ffi_rray_broadcast_names_common(
   r_obj* ffi_dimensions
 );
 extern r_obj* ffi_rray_reduce_names(r_obj* ffi_x, r_obj* ffi_axes);
+extern r_obj* ffi_rray_split_names(r_obj* ffi_x, r_obj* ffi_dimensions);
 extern r_obj* ffi_rray_dimensions_common(
   r_obj* ffi_xs,
   r_obj* ffi_dimensions,
@@ -103,6 +104,7 @@ static const R_CallMethodDef CallEntries[] = {
    (DL_FUNC) &ffi_rray_broadcast_names_common,
    2},
   {"ffi_rray_reduce_names", (DL_FUNC) &ffi_rray_reduce_names, 2},
+  {"ffi_rray_split_names", (DL_FUNC) &ffi_rray_split_names, 2},
   {"ffi_rray_set_dimensions", (DL_FUNC) &ffi_rray_set_dimensions, 3},
   {"ffi_rray_split", (DL_FUNC) &ffi_rray_split, 3},
   {"ffi_rray_sum", (DL_FUNC) &ffi_rray_sum, 4},
