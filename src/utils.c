@@ -1,5 +1,7 @@
 #include "utils.h"
 
+#include <stdio.h>
+
 #include "wrapper.h"
 
 #include "decl/utils-decl.h"
@@ -98,6 +100,22 @@ int arg_as_int(r_obj* x, r_obj* arg, struct r_lazy error_call) {
 
   FREE(1);
   return out;
+}
+
+const char* arg_from_xs(
+  r_obj* xs_names,
+  r_ssize i,
+  char buffer[RRAY_ARG_SIZE]
+) {
+  if (xs_names != r_null) {
+    const char* name = r_chr_get_c_string(xs_names, i);
+    if (name[0] != '\0') {
+      return name;
+    }
+  }
+
+  snprintf(buffer, RRAY_ARG_SIZE, "..%" R_PRIdXLEN_T, i + 1);
+  return buffer;
 }
 
 r_obj* vec_cast(r_obj* x, r_obj* to, r_obj* x_arg, r_obj* to_arg) {

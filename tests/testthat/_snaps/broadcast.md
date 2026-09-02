@@ -4,7 +4,7 @@
       rray_broadcast(x, c(1L, 2L))
     Condition
       Error in `rray_broadcast()`:
-      ! Can't broadcast axis 1 from dimension 0 to 1.
+      ! Can't broadcast axis 1 of `x` from dimension 0 to 1.
 
 # can't broadcast from N to M when N > 1 and N != M
 
@@ -12,7 +12,7 @@
       rray_broadcast(x, c(2L, 4L))
     Condition
       Error in `rray_broadcast()`:
-      ! Can't broadcast axis 2 from dimension 3 to 4.
+      ! Can't broadcast axis 2 of `x` from dimension 3 to 4.
 
 # can't decrease dimensionality
 
@@ -20,7 +20,7 @@
       rray_broadcast(x, c(2L, 3L))
     Condition
       Error in `rray_broadcast()`:
-      ! Can't broadcast from dimensionality 3 to 2. Can't decrease dimensionality.
+      ! Can't broadcast `x` from dimensionality 3 to 2. Can't decrease dimensionality.
 
 # errors on non-array input
 
@@ -94,4 +94,52 @@
     Condition
       Error in `rray_broadcast()`:
       ! rray can't support arrays with a dimensionality greater than 64. A dimensionality of 65 was requested.
+
+# errors on `NULL` input
+
+    Code
+      rray_broadcast_common(NULL, 1:2)
+    Condition
+      Error in `rray_broadcast_common()`:
+      ! `..1` must be an array, not `NULL`.
+
+---
+
+    Code
+      rray_broadcast_common(NULL)
+    Condition
+      Error in `rray_broadcast_common()`:
+      ! Must supply at least one array to `...`.
+
+# errors on classed input in `...`
+
+    Code
+      rray_broadcast_common(y = x)
+    Condition
+      Error in `rray_broadcast_common()`:
+      ! `y` must be a bare array, not a <foo> object.
+
+# errors name the input that failed
+
+    Code
+      rray_broadcast_common(x = 1:3, y = 1:2)
+    Condition
+      Error in `rray_broadcast_common()`:
+      ! Can't find common dimensions at axis 1. `y` has dimension 2, which is incompatible with dimension 3.
+
+---
+
+    Code
+      rray_broadcast_common(a = 1:2, b = 1:3, .dimensions = c(2L, 2L))
+    Condition
+      Error in `rray_broadcast_common()`:
+      ! Can't broadcast axis 1 of `b` from dimension 3 to 2.
+
+---
+
+    Code
+      rray_broadcast_common(1:2, array(1L, c(2L, 2L)), .dimensions = 2L)
+    Condition
+      Error in `rray_broadcast_common()`:
+      ! Can't broadcast `..2` from dimensionality 2 to 1. Can't decrease dimensionality.
 

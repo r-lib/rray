@@ -1,3 +1,6 @@
+# ------------------------------------------------------------------------------
+# rray_broadcast()
+
 test_that("broadcasts dimension of size 1 to size N", {
   x <- array(1L, c(1L, 2L))
   out <- rray_broadcast(x, c(3L, 2L))
@@ -224,5 +227,93 @@ test_that("errors on negative dimensions", {
 test_that("errors on dimensionality upper bound", {
   expect_snapshot(error = TRUE, {
     rray_broadcast(array(1, dim = rep(1L, 64)), rep(1L, 65))
+  })
+})
+
+# ------------------------------------------------------------------------------
+# rray_broadcast_common()
+
+test_that("broadcasts every input to the common dimensions", {
+  x <- array(1:3, c(3L, 1L))
+  y <- array(1:2, c(1L, 2L))
+  out <- rray_broadcast_common(x, y)
+  expect_identical(rray_dimensions(out[[1]]), c(3L, 2L))
+  expect_identical(rray_dimensions(out[[2]]), c(3L, 2L))
+  expect_identical(out[[1]][, 1], 1:3)
+  expect_identical(out[[2]][1, ], 1:2)
+})
+
+test_that("dimensionality is extended", {
+  out <- rray_broadcast_common(1:2, array(1L, c(2L, 3L, 4L)))
+  expect_identical(rray_dimensions(out[[1]]), c(2L, 3L, 4L))
+  expect_identical(rray_dimensions(out[[2]]), c(2L, 3L, 4L))
+})
+
+test_that("leaves inputs alone when nothing changes", {
+  x <- array(1:6, c(2L, 3L))
+  expect_identical(rray_broadcast_common(x, x), list(x, x))
+})
+
+test_that("single input works", {
+  expect_identical(rray_broadcast_common(1:3), list(array(1:3)))
+})
+
+test_that("works with zero size dimensions", {
+  out <- rray_broadcast_common(
+    array(integer(), c(0L, 1L)),
+    array(1L, c(1L, 2L))
+  )
+  expect_identical(rray_dimensions(out[[1]]), c(0L, 2L))
+  expect_identical(rray_dimensions(out[[2]]), c(0L, 2L))
+})
+
+test_that("doesn't touch types", {
+  out <- rray_broadcast_common(1L, 2.5, "a", TRUE, 1i, as.raw(1), list(1))
+  expect_identical(
+    vapply(out, typeof, character(1)),
+    c("integer", "double", "character", "logical", "complex", "raw", "list")
+  )
+})
+
+test_that("keeps the names of `...`", {
+  out <- rray_broadcast_common(x = 1:3, y = 1L)
+  expect_named(out, c("x", "y"))
+
+  out <- rray_broadcast_common(1:3, y = 1L)
+  expect_named(out, c("", "y"))
+
+  expect_null(names(rray_broadcast_common(1:3, 1L)))
+})
+
+test_that("follows the dimension names rule", {
+  x <- array(1:2, c(2L, 1L), dimnames = list(c("r1", "r2"), "c1"))
+  out <- rray_broadcast_common(x, array(1L, c(2L, 3L)))
+  expect_identical(dimnames(out[[1]]), list(c("r1", "r2"), NULL))
+})
+
+test_that("`.dimensions` overrides the common dimensions", {
+  out <- rray_broadcast_common(1:3, .dimensions = c(3L, 2L))
+  expect_identical(rray_dimensions(out[[1]]), c(3L, 2L))
+})
+
+test_that("errors on `NULL` input", {
+  expect_snapshot(rray_broadcast_common(NULL, 1:2), error = TRUE)
+  expect_snapshot(rray_broadcast_common(NULL), error = TRUE)
+})
+
+test_that("errors on classed input in `...`", {
+  x <- structure(array(1:4, c(2, 2)), class = "foo")
+  expect_snapshot(rray_broadcast_common(y = x), error = TRUE)
+})
+
+test_that("errors name the input that failed", {
+  expect_snapshot(error = TRUE, {
+    rray_broadcast_common(x = 1:3, y = 1:2)
+  })
+  expect_snapshot(error = TRUE, {
+    rray_broadcast_common(a = 1:2, b = 1:3, .dimensions = c(2L, 2L))
+  })
+  expect_snapshot(error = TRUE, {
+    rray_broadcast_common(1:2, array(1L, c(2L, 2L)), .dimensions = 2L)
   })
 })

@@ -26,6 +26,7 @@ reference:
 - title: Manipulation
   contents:
   - rray_broadcast
+  - rray_broadcast_common
   - rray_split
 
 - title: Reducers

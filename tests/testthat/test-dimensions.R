@@ -120,6 +120,13 @@ test_that("errors on incompatible dimensions", {
   )
 })
 
+test_that("errors name the problematic input", {
+  expect_snapshot(
+    rray_dimensions_common(x = array(1, c(2, 3)), y = array(1, c(4, 3))),
+    error = TRUE
+  )
+})
+
 test_that("errors on zero non-NULL inputs", {
   expect_snapshot(rray_dimensions_common(), error = TRUE)
   expect_snapshot(rray_dimensions_common(NULL, NULL), error = TRUE)

@@ -111,6 +111,15 @@ since only `src/rlang` is on the include path.
 
 - `src/init.c` uses `extern` declarations, it does not include feature headers.
 
+- A function taking `...` names its inputs in errors with `arg_from_xs()`, which
+  gives an input's name when it has one and `..1` otherwise. It writes into a
+  `char[RRAY_ARG_SIZE]` the caller owns, so it never allocates. Pass the result
+  down as the `arg` that `check_unclassed()` and friends already take.
+
+  This is a stopgap. It cannot nest and it cannot be renamed by a caller. PR 7
+  replaces it, and every `arg` in `src/`, with a `struct rray_arg` ported from
+  vctrs. See `plans/args.md`.
+
 ## C style
 
 Follow vctrs and rlang closely. Prefer an rlang wrapper over the raw R API every
@@ -232,6 +241,15 @@ Rules, per axis:
 
 Dimensionality can never shrink. `rray_broadcast()` errors on any decrease, even
 when the dimensions being dropped are all 1.
+
+`rray_dimensions_common()` drops `NULL` inputs, since a `NULL` contributes no
+dimensions. `rray_broadcast_common()` errors on them, since there is no array to
+hand back in its place. The names of `...` are kept on the list it returns, the
+same way `vec_recycle_common()` keeps them.
+
+That split does not survive. PR 7 makes `rray_dimensions_common()` refuse `NULL`
+too, so the rule everywhere becomes: a `NULL` is not an array, and anything
+taking arrays refuses it. See `plans/args.md`.
 
 `RRAY_MAX_DIMENSIONALITY` is 64.
 
@@ -475,26 +493,31 @@ Mechanics:
 # Part 4: The pull requests
 
 What exists today: the argument checking helpers, the names API, the dimension
-and shape helpers, and `rray_broadcast()`, `rray_split()` and `rray_sum()`. The
-three array functions all follow the shell and core pattern in Part 1, and no
-templates are left in `src/`.
+and shape helpers, and `rray_broadcast()`, `rray_broadcast_common()`,
+`rray_split()` and `rray_sum()`. The array functions all follow the shell and
+core pattern in Part 1, and no templates are left in `src/`.
 
 Work through the rest in order, since each assumes the ones before it have
 landed. After that, work through Part 5 in any order that respects the
 dependencies noted there.
 
-## PR 6: `rray_broadcast_common()`
+## PR 7: Argument tags
 
-```r
-rray_broadcast_common(..., .dimensions = NULL)
-```
+Part A. Replace `const char* arg` with a `struct rray_arg` ported from vctrs, so
+a function taking `...` can name the input that failed, and so tags can nest.
 
-Returns a list of arrays, all broadcast to the common dimensions. Mirrors
-`rray_dimensions_common()`. `NULL` inputs are dropped.
+Part B. Stop `rray_dimensions_common()` accepting `NULL`, which brings it in line
+with `rray_dimensions()` and `rray_broadcast_common()`. It rides along because
+Part A rewrites that loop anyway.
 
-Files: `R/broadcast.R`, `src/broadcast.c`, `src/broadcast.h`.
+Part A comes first because everything after it takes `...` or two array inputs,
+and would otherwise be written twice.
 
-## PR 7: `rray_names_common()`
+Written up in full in `plans/args.md`.
+
+Files: `src/arg.c`, `src/arg.h`, plus every file that passes an `arg`.
+
+## PR 8: `rray_names_common()`
 
 The coalesce rule from 2.3. Internal C plus an unexported R wrapper so it can be
 tested directly before it has a real caller.
@@ -505,7 +528,7 @@ common dimensions, so that argument is not optional decoration.
 
 Files: `src/names.c`, `src/names.h`, `R/names.R`.
 
-## PR 8: Native types
+## PR 9: Native types
 
 The internal type interface from 2.4. All C, no exports, with unexported R
 wrappers so it can be tested directly.
@@ -518,7 +541,7 @@ wrappers so it can be tested directly.
 
 Files: `src/type.c`, `src/type.h`, `src/cast.c`, `src/cast.h`.
 
-## PR 9: Binary promotion and `rray_add()`
+## PR 10: Binary promotion and `rray_add()`
 
 `enum rray_binary_op`, `rray_binary_type()` and its table, then one function
 using it end to end.
@@ -529,14 +552,14 @@ The C loop uses two broadcast iterators stepped side by side. Names come from
 Files: `src/op.h` for the enums, `src/type.c` for the table, `R/arithmetic.R`,
 `src/arithmetic.c`, `src/arithmetic.h`.
 
-## PR 10: The rest of the binary arithmetic
+## PR 11: The rest of the binary arithmetic
 
 `rray_subtract()`, `rray_multiply()`, `rray_divide()`, `rray_power()`,
 `rray_modulo()`, `rray_integer_divide()`.
 
 All the same shape as `rray_add()`. Share the core.
 
-## PR 11: Reduction promotion and `rray_sum()`
+## PR 12: Reduction promotion and `rray_sum()`
 
 `rray_reduction_type()` and its table. Retrofit `rray_sum()` to use it, which
 gives it the `lgl` to `int` promotion.
@@ -908,7 +931,7 @@ Names: reduce.
 
 | function | op | type rule |
 |---|---|---|
-| `rray_sum(x, axes, ..., na_rm = FALSE)` | `sum` | promoted, exists, retrofit in PR 11 |
+| `rray_sum(x, axes, ..., na_rm = FALSE)` | `sum` | promoted, exists, retrofit in PR 12 |
 | `rray_prod(x, axes, ..., na_rm = FALSE)` | `prod` | promoted, int to dbl |
 | `rray_mean(x, axes, ..., na_rm = FALSE)` | `mean` | promoted, lgl and int to dbl |
 | `rray_max(x, axes, ..., na_rm = FALSE)` | `max` | preserved, errors on cpl |
