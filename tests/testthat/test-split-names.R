@@ -62,6 +62,18 @@ test_that("rray_split_names() returns NULL when `x` has no names", {
   expect_null(rray_split_names(x, c(1L, 3L)))
 })
 
+test_that("rray_split_names() returns NULL when every axis is unnamed", {
+  x <- rray_set_names(array(1:6, c(2L, 3L)), list(NULL, NULL))
+  expect_null(rray_split_names(x, c(1L, 3L)))
+})
+
+test_that("rray_split_names() reuses the names of an axis across elements", {
+  x <- array(1:4, c(2L, 2L), dimnames = list(c("r1", "r2"), c("c1", "c2")))
+  out <- rray_split_names(x, c(2L, 2L))
+  expect_identical(out[[1]][[1]], out[[3]][[1]])
+  expect_identical(out[[1]][[2]], out[[2]][[2]])
+})
+
 test_that("rray_split_names() leaves unnamed axes alone", {
   x <- array(1:6, c(2L, 3L), dimnames = list(c("r1", "r2"), NULL))
   expect_identical(
