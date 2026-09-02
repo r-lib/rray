@@ -66,7 +66,6 @@ r_obj* rray_split_names(r_obj* x, r_obj* dimensions) {
 
     for (int j = 0; j < dimensionality; ++j) {
       r_obj* const* v_axis_names = v_v_axis_names[j];
-
       if (v_axis_names != NULL) {
         r_list_poke(names, j, v_axis_names[v_point[j]]);
       }
