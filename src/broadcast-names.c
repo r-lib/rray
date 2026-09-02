@@ -59,12 +59,13 @@ static r_obj* rray_broadcast_names_fill(
   r_obj* x,
   r_obj* dimensions
 ) {
-  r_obj* x_names = KEEP(rray_names(x, rray_args.x, r_lazy_null));
+  r_obj* x_names = rray_names(x, rray_args.x, r_lazy_null);
 
   if (x_names == r_null) {
-    FREE(1);
     return out;
   }
+
+  KEEP(x_names);
 
   r_obj* const* v_x_names = r_list_cbegin(x_names);
 
