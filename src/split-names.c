@@ -20,11 +20,9 @@ r_obj* ffi_rray_split_names(r_obj* ffi_x, r_obj* ffi_dimensions) {
 // per output element
 r_obj* rray_split_names(r_obj* x, r_obj* dimensions) {
   r_obj* x_names = rray_names(x, rray_args.x, r_lazy_null);
-
   if (x_names == r_null) {
     return r_null;
   }
-
   KEEP(x_names);
 
   r_obj* const* v_x_names = r_list_cbegin(x_names);
@@ -33,12 +31,12 @@ r_obj* rray_split_names(r_obj* x, r_obj* dimensions) {
   const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
 
   r_obj* axes_names =
-    KEEP(rray_split_axes_names(v_x_names, v_dimensions, dimensionality));
-
+    rray_split_axes_names(v_x_names, v_dimensions, dimensionality);
   if (axes_names == r_null) {
-    FREE(2);
+    FREE(1);
     return r_null;
   }
+  KEEP(axes_names);
 
   r_obj* const* v_axes_names = r_list_cbegin(axes_names);
 
