@@ -12,6 +12,8 @@ r_obj* ffi_rray_reduce_names(r_obj* ffi_x, r_obj* ffi_axes) {
 //
 // Assumes the inputs are validated arrays and that `axes` are valid axes of
 // `x`. The caller typically checks all of this already.
+//
+// Mimics `rray_broadcast_names()` ideas, but reduction only ever has 1 input
 r_obj* rray_reduce_names(r_obj* x, r_obj* axes) {
   r_obj* x_names = r_dim_names(x);
 
