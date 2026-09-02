@@ -77,12 +77,6 @@ r_obj* rray_split_names(r_obj* x, r_obj* dimensions) {
   return out;
 }
 
-// Every set of names an axis can contribute, indexed by that axis' point
-//
-// An unsplit axis has a split dimension of 1, so its point is always 0 and its
-// names carry over whole from the single slot. A split axis holds one length 1
-// vector per element of the axis, built once and shared by every output element
-// that lands on it.
 static r_obj* rray_split_axes_names(
   r_obj* const* v_x_names,
   const int* v_dimensions,
