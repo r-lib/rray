@@ -27,12 +27,13 @@ r_obj* rray_split_names(r_obj* x, r_obj* dimensions) {
 
   KEEP(x_names);
 
+  r_obj* const* v_x_names = r_list_cbegin(x_names);
+
   const int* v_dimensions = r_int_cbegin(dimensions);
   const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
 
-  r_obj* axes_names = KEEP(
-    rray_split_axes_names(r_list_cbegin(x_names), v_dimensions, dimensionality)
-  );
+  r_obj* axes_names =
+    KEEP(rray_split_axes_names(v_x_names, v_dimensions, dimensionality));
 
   if (axes_names == r_null) {
     FREE(2);
