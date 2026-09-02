@@ -62,7 +62,7 @@
       Error in `rray_dimensions_common()`:
       ! Can't find common dimensions at axis 1. `..2` has dimension 4, which is incompatible with dimension 2.
 
-# errors name the input that couldn't be reconciled
+# errors name the problematic input
 
     Code
       rray_dimensions_common(x = array(1, c(2, 3)), y = array(1, c(4, 3)))

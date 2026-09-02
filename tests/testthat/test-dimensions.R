@@ -120,7 +120,7 @@ test_that("errors on incompatible dimensions", {
   )
 })
 
-test_that("errors name the input that couldn't be reconciled", {
+test_that("errors name the problematic input", {
   expect_snapshot(
     rray_dimensions_common(x = array(1, c(2, 3)), y = array(1, c(4, 3))),
     error = TRUE
