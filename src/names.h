@@ -29,21 +29,12 @@ r_obj* rray_set_axis_names(
   struct r_lazy error_call
 );
 
-r_obj* rray_broadcast_names2(
-  r_obj* x,
-  r_obj* y,
-  r_obj* dimensions,
-  struct rray_arg* x_arg,
-  struct rray_arg* y_arg,
-  struct r_lazy error_call
-);
-
-r_obj* rray_broadcast_names(
-  r_obj* names,
-  const int* v_x_dimensions,
-  int x_dimensionality,
-  const int* v_dimensions,
-  int dimensionality
-);
+// Broadcasting of array names
+//
+// Assumes the inputs are validated arrays and are broadcastable to the
+// `dimensions`. The caller typically checks all of this already.
+r_obj* rray_broadcast_names(r_obj* x, r_obj* dimensions);
+r_obj* rray_broadcast_names2(r_obj* x, r_obj* y, r_obj* dimensions);
+r_obj* rray_broadcast_names_common(r_obj* xs, r_obj* dimensions);
 
 #endif

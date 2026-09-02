@@ -102,21 +102,13 @@ r_obj* rray_broadcast(
   KEEP(out);
   r_attrib_poke_dim(out, dimensions);
 
-  r_obj* x_names = KEEP(rray_names(x, arg, error_call));
-
-  r_obj* out_names = KEEP(rray_broadcast_names(
-    x_names,
-    v_x_dimensions,
-    x_dimensionality,
-    v_dimensions,
-    dimensionality
-  ));
+  r_obj* out_names = KEEP(rray_broadcast_names(x, dimensions));
 
   if (out_names != r_null) {
     r_attrib_poke_dim_names(out, out_names);
   }
 
-  FREE(6);
+  FREE(5);
   return out;
 }
 

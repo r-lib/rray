@@ -205,92 +205,76 @@ static inline void check_axis_names(
   }
 }
 
+r_obj* ffi_rray_broadcast_names(r_obj* ffi_x, r_obj* ffi_dimensions) {
+  return rray_broadcast_names(ffi_x, ffi_dimensions);
+}
+
+r_obj* rray_broadcast_names(r_obj* x, r_obj* dimensions) {
+  return rray_broadcast_names_fill(r_null, x, dimensions);
+}
+
 r_obj* ffi_rray_broadcast_names2(
   r_obj* ffi_x,
   r_obj* ffi_y,
-  r_obj* ffi_dimensions,
-  r_obj* ffi_frame
+  r_obj* ffi_dimensions
 ) {
-  struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  return rray_broadcast_names2(
-    ffi_x,
-    ffi_y,
-    ffi_dimensions,
-    rray_args.x,
-    rray_args.y,
-    error_call
-  );
+  return rray_broadcast_names2(ffi_x, ffi_y, ffi_dimensions);
 }
 
-r_obj* rray_broadcast_names2(
-  r_obj* x,
-  r_obj* y,
-  r_obj* dimensions,
-  struct rray_arg* x_arg,
-  struct rray_arg* y_arg,
-  struct r_lazy error_call
-) {
-  r_obj* x_names = KEEP(rray_names(x, x_arg, error_call));
-  r_obj* y_names = KEEP(rray_names(y, y_arg, error_call));
-
-  dimensions =
-    KEEP(arg_as_dimensions(dimensions, rray_args.dimensions, error_call));
-
-  if (x_names == r_null && y_names == r_null) {
-    FREE(3);
-    return r_null;
-  }
-
-  r_obj* x_dimensions = KEEP(rray_dimensions(x, x_arg, error_call));
-  r_obj* y_dimensions = KEEP(rray_dimensions(y, y_arg, error_call));
-
-  const int* v_dimensions = r_int_cbegin(dimensions);
-  const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
-
-  x_names = KEEP(rray_broadcast_names(
-    x_names,
-    r_int_cbegin(x_dimensions),
-    rray_dimensionality_from_dimensions(x_dimensions),
-    v_dimensions,
-    dimensionality
-  ));
-
-  y_names = KEEP(rray_broadcast_names(
-    y_names,
-    r_int_cbegin(y_dimensions),
-    rray_dimensionality_from_dimensions(y_dimensions),
-    v_dimensions,
-    dimensionality
-  ));
-
-  r_obj* out = rray_names_coalesce(x_names, y_names, dimensionality);
-
-  FREE(7);
+r_obj* rray_broadcast_names2(r_obj* x, r_obj* y, r_obj* dimensions) {
+  r_obj* out = KEEP(rray_broadcast_names(x, dimensions));
+  out = rray_broadcast_names_fill(out, y, dimensions);
+  FREE(1);
   return out;
 }
 
-r_obj* rray_broadcast_names(
-  r_obj* names,
-  const int* v_x_dimensions,
-  int x_dimensionality,
-  const int* v_dimensions,
-  int dimensionality
-) {
-  if (names == r_null) {
-    return r_null;
-  }
+r_obj* ffi_rray_broadcast_names_common(r_obj* ffi_xs, r_obj* ffi_dimensions) {
+  return rray_broadcast_names_common(ffi_xs, ffi_dimensions);
+}
 
-  r_obj* const* v_names = r_list_cbegin(names);
-
-  const int n =
-    (x_dimensionality < dimensionality) ? x_dimensionality : dimensionality;
+r_obj* rray_broadcast_names_common(r_obj* xs, r_obj* dimensions) {
+  const r_ssize n = r_length(xs);
+  r_obj* const* v_xs = r_list_cbegin(xs);
 
   r_obj* out = r_null;
   r_keep_loc out_loc;
   KEEP_HERE(out, &out_loc);
 
-  for (int i = 0; i < n; ++i) {
-    if (v_names[i] == r_null) {
+  for (r_ssize i = 0; i < n; ++i) {
+    out = rray_broadcast_names_fill(out, v_xs[i], dimensions);
+    KEEP_AT(out, out_loc);
+  }
+
+  FREE(1);
+  return out;
+}
+
+static r_obj* rray_broadcast_names_fill(
+  r_obj* out,
+  r_obj* x,
+  r_obj* dimensions
+) {
+  r_obj* x_names = r_dim_names(x);
+
+  if (x_names == r_null) {
+    return out;
+  }
+
+  r_obj* const* v_x_names = r_list_cbegin(x_names);
+
+  r_obj* x_dimensions = r_dim(x);
+  const int* v_x_dimensions = r_int_cbegin(x_dimensions);
+  const int x_dimensionality =
+    rray_dimensionality_from_dimensions(x_dimensions);
+
+  const int* v_dimensions = r_int_cbegin(dimensions);
+  const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
+
+  r_keep_loc out_loc;
+  KEEP_HERE(out, &out_loc);
+
+  for (int i = 0; i < x_dimensionality; ++i) {
+    if (v_x_names[i] == r_null) {
       // `out` stays `r_null` when there were no names before
       continue;
     }
@@ -298,36 +282,14 @@ r_obj* rray_broadcast_names(
       // `out` is "cleared" to `r_null` when dimension changes
       continue;
     }
+    if (out != r_null && r_list_get(out, i) != r_null) {
+      continue;
+    }
     if (out == r_null) {
       out = r_alloc_list(dimensionality);
       KEEP_AT(out, out_loc);
     }
-    r_list_poke(out, i, v_names[i]);
-  }
-
-  FREE(1);
-  return out;
-}
-
-static r_obj* rray_names_coalesce(
-  r_obj* x_names,
-  r_obj* y_names,
-  int dimensionality
-) {
-  if (x_names == r_null) {
-    return y_names;
-  }
-  if (y_names == r_null) {
-    return x_names;
-  }
-
-  r_obj* const* v_x_names = r_list_cbegin(x_names);
-  r_obj* const* v_y_names = r_list_cbegin(y_names);
-
-  r_obj* out = KEEP(r_alloc_list(dimensionality));
-
-  for (int i = 0; i < dimensionality; ++i) {
-    r_list_poke(out, i, (v_x_names[i] == r_null) ? v_y_names[i] : v_x_names[i]);
+    r_list_poke(out, i, v_x_names[i]);
   }
 
   FREE(1);

@@ -13,7 +13,6 @@ struct rray_arg {
 struct rray_args {
   struct rray_arg* empty;
   struct rray_arg* x;
-  struct rray_arg* y;
   struct rray_arg* names;
   struct rray_arg* axis;
   struct rray_arg* axes;

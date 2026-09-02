@@ -5,8 +5,8 @@ static inline void check_axis_names(
   struct r_lazy error_call
 );
 
-static r_obj* rray_names_coalesce(
-  r_obj* x_names,
-  r_obj* y_names,
-  int dimensionality
+static r_obj* rray_broadcast_names_fill(
+  r_obj* out,
+  r_obj* x,
+  r_obj* dimensions
 );

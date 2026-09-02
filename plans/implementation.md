@@ -292,14 +292,24 @@ the common dimensions:
 
 3. Otherwise `NULL`.
 
-This lives in an internal `rray_broadcast_names2()`. It is built on
-`rray_broadcast_names()`, which applies the follow the axis rule to a single
-input and is what `rray_broadcast()` uses. Coalescing is then just taking the
-first non-`NULL` names at each axis.
+This lives in three internal functions, one per arity:
 
-Almost every consumer is binary, so `rray_broadcast_names2()` is the entry point
-and the n-ary `rray_broadcast_names_common()` is the special case. It lands with
-`rray_bind()`, its only caller.
+```c
+r_obj* rray_broadcast_names(r_obj* x, r_obj* dimensions);
+r_obj* rray_broadcast_names2(r_obj* x, r_obj* y, r_obj* dimensions);
+r_obj* rray_broadcast_names_common(r_obj* xs, r_obj* dimensions);
+```
+
+All three fill one output list from a shared helper, never overwriting a slot
+that an earlier input already filled. Coalescing is just that "don't overwrite"
+rule, so the one-input case is the follow the axis rule and needs no separate
+implementation.
+
+They take arrays rather than extracted names, because `arg_as_array()` gives
+every input a real `dim`, which makes `r_dim()` and `r_dim_names()` free reads
+off an object the caller already protects. They assume validated, broadcastable
+inputs, so they take no `arg` and no `error_call` and cannot fail. Validation
+belongs in the caller, which has always done it already.
 
 **Subset.** Names are subset alongside the data, so an axis keeps the names of
 the elements that survived.
@@ -507,10 +517,10 @@ Mechanics:
 # Part 4: The pull requests
 
 What exists today: the argument tags, the argument checking helpers, the names
-API, the coalesce rule as `rray_broadcast_names2()`, the dimension and shape
-helpers, and `rray_broadcast()`, `rray_broadcast_common()`, `rray_split()` and
-`rray_sum()`. The array functions all follow the shell and core pattern in
-Part 1, and no templates are left in `src/`.
+API, the coalesce rule as the `rray_broadcast_names()` family, the dimension and
+shape helpers, and `rray_broadcast()`, `rray_broadcast_common()`,
+`rray_split()` and `rray_sum()`. The array functions all follow the shell and
+core pattern in Part 1, and no templates are left in `src/`.
 
 Work through the rest in order, since each assumes the ones before it have
 landed. After that, work through Part 5 in any order that respects the
@@ -1047,10 +1057,9 @@ different column counts and `b` has to broadcast.
 Names: coalesce on the axes that are not bound. The bound axis concatenates its
 names, which needs its own rule worked out in the design review.
 
-This is the only n-ary consumer of coalesce, so it also brings
-`rray_broadcast_names_common(xs, dimensions)`, a fold of `rray_broadcast_names()`
-over `xs`. Settle its exact shape in the design review, since the bound axis may
-want to be skipped rather than coalesced and then overwritten.
+`rray_broadcast_names_common()` handles the unbound axes as is: on the bound
+axis every input's dimension differs from the output's, so it is skipped for
+every input and bind pokes the concatenation in afterwards.
 
 Type: common. This is the main consumer of `rray_type_common()`, so it takes a
 `.ptype` argument for an override, matching `.dimensions` elsewhere.
