@@ -4,6 +4,10 @@
 
 #include "decl/broadcast-names-decl.h"
 
+// Broadcasting of array names
+//
+// Assumes the inputs are validated arrays and are broadcastable to the
+// `dimensions`. The caller typically checks all of this already.
 r_obj* ffi_rray_broadcast_names(r_obj* ffi_x, r_obj* ffi_dimensions) {
   return rray_broadcast_names(ffi_x, ffi_dimensions);
 }
