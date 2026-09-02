@@ -19,6 +19,8 @@ Three things came out differently from the sketch below.
 `rray_args` is a file scope `const struct` of static wrapper args in `src/arg.c`
 rather than an init function. A wrapper arg is a function pointer plus a string
 literal, both address constants, so there is nothing to build at load time.
+`new_wrapper_arg()` went with it, since that left it with no callers. Bring it
+back when something needs a wrapper arg that isn't known at compile time.
 
 `r_c_str_format_error_arg()` was not ported. Every literal in rray is a wrapper
 arg in `rray_args`, so it had no caller. Bring it over if one turns up.

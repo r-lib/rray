@@ -26,8 +26,6 @@ r_obj* rray_arg(struct rray_arg* arg);
 
 const char* rray_arg_format(struct rray_arg* arg);
 
-struct rray_arg new_wrapper_arg(struct rray_arg* parent, const char* arg);
-
 struct rray_arg new_lazy_arg(struct r_lazy* arg);
 
 struct rray_arg* new_subscript_arg(
