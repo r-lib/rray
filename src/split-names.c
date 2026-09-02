@@ -27,10 +27,19 @@ r_obj* rray_split_names(r_obj* x, r_obj* dimensions) {
 
   KEEP(x_names);
 
-  r_obj* const* v_x_names = r_list_cbegin(x_names);
-
   const int* v_dimensions = r_int_cbegin(dimensions);
   const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
+
+  r_obj* axes_names = KEEP(
+    rray_split_axes_names(r_list_cbegin(x_names), v_dimensions, dimensionality)
+  );
+
+  if (axes_names == r_null) {
+    FREE(2);
+    return r_null;
+  }
+
+  r_obj* const* v_axes_names = r_list_cbegin(axes_names);
 
   const r_ssize size = rray_size_from_dimensions(v_dimensions, dimensionality);
 
@@ -40,28 +49,39 @@ r_obj* rray_split_names(r_obj* x, r_obj* dimensions) {
   rray_reduction_iterator_init(&it, v_dimensions, v_dimensions, dimensionality);
 
   for (r_ssize i = 0; i < size; ++i) {
-    r_list_poke(
-      out,
-      i,
-      rray_split_names_one(
-        v_x_names,
-        v_dimensions,
-        dimensionality,
-        rray_iterator_point(&it)
-      )
-    );
+    const r_ssize* v_point = rray_iterator_point(&it);
+
+    r_obj* names = r_alloc_list(dimensionality);
+    r_list_poke(out, i, names);
+
+    for (int j = 0; j < dimensionality; ++j) {
+      r_obj* axis_names = v_axes_names[j];
+
+      if (axis_names == r_null) {
+        // No names to contribute on this axis
+        continue;
+      }
+
+      r_list_poke(names, j, r_list_get(axis_names, v_point[j]));
+    }
+
     rray_iterator_next(&it);
   }
 
-  FREE(2);
+  FREE(3);
   return out;
 }
 
-static r_obj* rray_split_names_one(
+// Every set of names an axis can contribute, indexed by that axis' point
+//
+// An unsplit axis has a split dimension of 1, so its point is always 0 and its
+// names carry over whole from the single slot. A split axis holds one length 1
+// vector per element of the axis, built once and shared by every output element
+// that lands on it.
+static r_obj* rray_split_axes_names(
   r_obj* const* v_x_names,
   const int* v_dimensions,
-  int dimensionality,
-  const r_ssize* v_point
+  int dimensionality
 ) {
   r_obj* out = r_null;
   r_keep_loc out_loc;
@@ -80,13 +100,21 @@ static r_obj* rray_split_names_one(
       KEEP_AT(out, out_loc);
     }
 
-    if (v_dimensions[i] == 1) {
+    const int dimension = v_dimensions[i];
+
+    r_obj* axis_names = r_alloc_list(dimension);
+    r_list_poke(out, i, axis_names);
+
+    if (dimension == 1) {
       // Axis isn't split, its names carry over whole
-      r_list_poke(out, i, x_axis_names);
-    } else {
-      r_obj* axis_names = r_alloc_character(1);
-      r_list_poke(out, i, axis_names);
-      r_chr_poke(axis_names, 0, r_chr_get(x_axis_names, v_point[i]));
+      r_list_poke(axis_names, 0, x_axis_names);
+      continue;
+    }
+
+    for (int j = 0; j < dimension; ++j) {
+      r_obj* names = r_alloc_character(1);
+      r_list_poke(axis_names, j, names);
+      r_chr_poke(names, 0, r_chr_get(x_axis_names, j));
     }
   }
 
