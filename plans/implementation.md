@@ -506,14 +506,15 @@ dependencies noted there.
 
 ## PR 7: Argument tags
 
+**Done.**
+
 Replace `const char* arg` with a `struct rray_arg` ported from vctrs, so a
 function taking `...` can name the input that failed, and so tags can nest.
 
 This comes first because everything after it takes `...` or two array inputs,
 and would otherwise be written twice.
 
-Written up in full in `plans/args.md`. Part B, dropping `NULL` from
-`rray_dimensions_common()`, has already landed.
+Written up in full in `plans/args.md`.
 
 Files: `src/arg.c`, `src/arg.h`, plus every file that passes an `arg`.
 

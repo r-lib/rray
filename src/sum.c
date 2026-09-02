@@ -19,19 +19,25 @@ r_obj* ffi_rray_sum(
 ) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
   const bool na_rm = r_arg_as_bool(ffi_na_rm, "na_rm");
-  return rray_sum(ffi_x, ffi_axes, na_rm, error_call);
+  return rray_sum(ffi_x, ffi_axes, na_rm, rray_args.x, error_call);
 }
 
-r_obj* rray_sum(r_obj* x, r_obj* axes, bool na_rm, struct r_lazy error_call) {
-  check_unclassed(x, "x", error_call);
-  x = KEEP(arg_as_array(x, "x", error_call));
+r_obj* rray_sum(
+  r_obj* x,
+  r_obj* axes,
+  bool na_rm,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+) {
+  check_unclassed(x, arg, error_call);
+  x = KEEP(arg_as_array(x, arg, error_call));
 
-  r_obj* x_dimensions = KEEP(rray_dimensions(x, "x", error_call));
+  r_obj* x_dimensions = KEEP(rray_dimensions(x, arg, error_call));
   const int* v_x_dimensions = r_int_cbegin(x_dimensions);
 
   const int dimensionality = rray_dimensionality_from_dimensions(x_dimensions);
 
-  axes = KEEP(arg_as_axes(axes, dimensionality, axes_chr, error_call));
+  axes = KEEP(arg_as_axes(axes, dimensionality, rray_args.axes, error_call));
   const int* v_axes = r_int_cbegin(axes);
   const r_ssize axes_size = r_length(axes);
 
@@ -93,7 +99,7 @@ r_obj* rray_sum(r_obj* x, r_obj* axes, bool na_rm, struct r_lazy error_call) {
   KEEP(out);
   r_attrib_poke_dim(out, out_dimensions);
 
-  r_obj* x_names = rray_names(x, error_call);
+  r_obj* x_names = rray_names(x, arg, error_call);
   if (x_names != r_null) {
     KEEP(x_names);
     r_obj* const* v_x_names = r_list_cbegin(x_names);

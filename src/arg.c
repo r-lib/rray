@@ -1,0 +1,220 @@
+#include "arg.h"
+
+#include <stdio.h>
+#include <string.h>
+
+#include "utils.h"
+
+#include "decl/arg-decl.h"
+
+#define RRAY_ARG_BUFFER_SIZE 100
+
+r_obj* rray_arg(struct rray_arg* arg) {
+  if (arg == NULL) {
+    return r_chrs.empty_string;
+  }
+
+  r_ssize size = RRAY_ARG_BUFFER_SIZE;
+
+  while (true) {
+    r_obj* shelter = KEEP(r_alloc_raw(size));
+    char* buf = (char*) r_raw_begin(shelter);
+
+    if (fill_arg_buffer(arg, buf, 0, size) >= 0) {
+      r_obj* out = r_chr(buf);
+      FREE(1);
+      return out;
+    }
+
+    FREE(1);
+    size += size / 2;
+  }
+}
+
+const char* rray_arg_format(struct rray_arg* arg) {
+  r_obj* chr = KEEP(rray_arg(arg));
+  const char* out = r_format_error_arg(chr);
+  FREE(1);
+  return out;
+}
+
+static r_ssize fill_arg_buffer(
+  struct rray_arg* arg,
+  char* buf,
+  r_ssize cur_size,
+  r_ssize tot_size
+) {
+  if (arg->parent != NULL) {
+    cur_size = fill_arg_buffer(arg->parent, buf, cur_size, tot_size);
+
+    if (cur_size < 0) {
+      return cur_size;
+    }
+  }
+
+  const r_ssize written =
+    arg->fill(arg->data, buf + cur_size, tot_size - cur_size);
+
+  if (written < 0) {
+    return written;
+  }
+
+  return cur_size + written;
+}
+
+static r_ssize str_arg_fill(const char* data, char* buf, r_ssize remaining) {
+  const r_ssize len = (r_ssize) strlen(data);
+
+  if (len >= remaining) {
+    return -1;
+  }
+
+  r_memcpy(buf, data, len);
+  buf[len] = '\0';
+
+  return len;
+}
+
+struct rray_arg new_wrapper_arg(struct rray_arg* parent, const char* arg) {
+  struct rray_arg out =
+    {.parent = parent, .fill = &wrapper_arg_fill, .data = (void*) arg};
+  return out;
+}
+
+static r_ssize wrapper_arg_fill(void* data, char* buf, r_ssize remaining) {
+  return str_arg_fill((const char*) data, buf, remaining);
+}
+
+struct rray_arg new_lazy_arg(struct r_lazy* arg) {
+  return (struct rray_arg){.fill = &lazy_arg_fill, .data = arg};
+}
+
+static r_ssize lazy_arg_fill(void* data, char* buf, r_ssize remaining) {
+  r_obj* arg = KEEP(r_lazy_eval(*(struct r_lazy*) data));
+
+  const char* string = "";
+
+  if (r_is_string(arg)) {
+    string = r_chr_get_c_string(arg, 0);
+  } else if (arg != r_null) {
+    r_abort(
+      "`arg` must be a string or `NULL`, not %s.",
+      r_obj_type_friendly(arg)
+    );
+  }
+
+  const r_ssize out = str_arg_fill(string, buf, remaining);
+
+  FREE(1);
+  return out;
+}
+
+struct subscript_arg_data {
+  struct rray_arg self;
+  r_obj* names;
+  r_ssize n;
+  r_ssize* p_i;
+};
+
+struct rray_arg* new_subscript_arg(
+  struct rray_arg* parent,
+  r_obj* names,
+  r_ssize n,
+  r_ssize* p_i
+) {
+  r_obj* shelter = KEEP(r_alloc_list(2));
+  r_list_poke(shelter, 0, r_alloc_raw(sizeof(struct subscript_arg_data)));
+  r_list_poke(shelter, 1, names);
+
+  struct subscript_arg_data* p_data = r_raw_begin(r_list_get(shelter, 0));
+
+  p_data->self = (struct rray_arg){
+    .shelter = shelter,
+    .parent = parent,
+    .fill = &subscript_arg_fill,
+    .data = p_data
+  };
+  p_data->names = names;
+  p_data->n = n;
+  p_data->p_i = p_i;
+
+  FREE(1);
+  return (struct rray_arg*) p_data;
+}
+
+static r_ssize subscript_arg_fill(void* data, char* buf, r_ssize remaining) {
+  struct subscript_arg_data* p_data = (struct subscript_arg_data*) data;
+
+  const r_ssize i = *p_data->p_i;
+  const r_ssize n = p_data->n;
+  r_obj* names = p_data->names;
+
+  if (i >= n) {
+    r_stop_internal(
+      "`i` of %" R_PRI_SSIZE " can't be past the end of %" R_PRI_SSIZE ".",
+      i,
+      n
+    );
+  }
+
+  const size_t space = (size_t) remaining;
+  const bool named = r_has_name_at(names, i);
+  const bool child = !is_empty_arg(p_data->self.parent);
+
+  int len;
+
+  if (child) {
+    if (named) {
+      len = snprintf(buf, space, "$%s", r_chr_get_c_string(names, i));
+    } else {
+      len = snprintf(buf, space, "[[%" R_PRI_SSIZE "]]", i + 1);
+    }
+  } else {
+    if (named) {
+      len = snprintf(buf, space, "%s", r_chr_get_c_string(names, i));
+    } else {
+      len = snprintf(buf, space, "..%" R_PRI_SSIZE, i + 1);
+    }
+  }
+
+  if (len >= remaining) {
+    return -1;
+  }
+
+  return len;
+}
+
+static bool is_empty_arg(struct rray_arg* arg) {
+  if (arg == NULL) {
+    return true;
+  }
+
+  char buf[1];
+  return arg->fill(arg->data, buf, 1) == 0;
+}
+
+#define RRAY_WRAPPER_ARG(NAME, STRING)                                         \
+  static struct rray_arg NAME = {                                              \
+    .fill = &wrapper_arg_fill,                                                 \
+    .data = (void*) STRING                                                     \
+  }
+
+RRAY_WRAPPER_ARG(arg_empty, "");
+RRAY_WRAPPER_ARG(arg_x, "x");
+RRAY_WRAPPER_ARG(arg_names, "names");
+RRAY_WRAPPER_ARG(arg_axis, "axis");
+RRAY_WRAPPER_ARG(arg_axes, "axes");
+RRAY_WRAPPER_ARG(arg_dimensions, "dimensions");
+RRAY_WRAPPER_ARG(arg_dot_dimensions, ".dimensions");
+
+#undef RRAY_WRAPPER_ARG
+
+const struct rray_args rray_args = {
+  .empty = &arg_empty,
+  .x = &arg_x,
+  .names = &arg_names,
+  .axis = &arg_axis,
+  .axes = &arg_axes,
+  .dimensions = &arg_dimensions,
+  .dot_dimensions = &arg_dot_dimensions
+};

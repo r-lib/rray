@@ -5,7 +5,7 @@
 A plan for PR 7, in two parts.
 
 **Part A**, Parts 1 to 4 below: replace rray's `const char* arg` with a
-`struct rray_arg`, ported from vctrs. Still to do.
+`struct rray_arg`, ported from vctrs. **Done.**
 
 **Part B**, Part 5 below: stop `rray_dimensions_common()` accepting `NULL`.
 **Done**, landed on its own ahead of Part A.
@@ -13,6 +13,19 @@ A plan for PR 7, in two parts.
 Part A lands before `rray_names_common()`. Everything after it takes `...` or
 two array inputs, so every one of those functions wants argument tags on the day
 it is written. Converting first means none of them get written twice.
+
+Three things came out differently from the sketch below.
+
+`rray_args` is a file scope `const struct` of static wrapper args in `src/arg.c`
+rather than an init function. A wrapper arg is a function pointer plus a string
+literal, both address constants, so there is nothing to build at load time.
+
+`r_c_str_format_error_arg()` was not ported. Every literal in rray is a wrapper
+arg in `rray_args`, so it had no caller. Bring it over if one turns up.
+
+`rray_dimensions2()` returns the axis of the first incompatible dimension, or
+`-1`, instead of raising. `rray_dimensions_common()` owns the message and both
+tags, which keeps the argument machinery out of the reduction entirely.
 
 Read Part 1 and Part 2 of `plans/implementation.md` first. This document assumes
 the conventions there.

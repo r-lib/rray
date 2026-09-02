@@ -133,6 +133,31 @@ test_that("errors name the problematic input", {
   )
 })
 
+test_that("errors name the input that set the conflicting axis", {
+  expect_snapshot(error = TRUE, {
+    rray_dimensions_common(
+      a = array(1, c(2, 1)),
+      b = array(1, c(1, 3)),
+      c = array(1, c(2, 4))
+    )
+  })
+})
+
+test_that("errors handle a name longer than the argument tag buffer", {
+  args <- list(NULL)
+  names(args) <- strrep("a", 150)
+
+  expect_snapshot(error = TRUE, {
+    do.call(rray_dimensions_common, args)
+  })
+})
+
+test_that("errors handle a non-syntactic name", {
+  expect_snapshot(error = TRUE, {
+    rray_dimensions_common(`a b` = NULL)
+  })
+})
+
 test_that("errors on zero inputs", {
   expect_snapshot(rray_dimensions_common(), error = TRUE)
 })

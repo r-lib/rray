@@ -15,19 +15,20 @@ r_obj* ffi_rray_broadcast(
   r_obj* ffi_frame
 ) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  return rray_broadcast(ffi_x, ffi_dimensions, "x", error_call);
+  return rray_broadcast(ffi_x, ffi_dimensions, rray_args.x, error_call);
 }
 
 r_obj* rray_broadcast(
   r_obj* x,
   r_obj* dimensions,
-  const char* arg,
+  struct rray_arg* arg,
   struct r_lazy error_call
 ) {
   check_unclassed(x, arg, error_call);
   x = KEEP(arg_as_array(x, arg, error_call));
 
-  dimensions = KEEP(arg_as_dimensions(dimensions, dimensions_chr, error_call));
+  dimensions =
+    KEEP(arg_as_dimensions(dimensions, rray_args.dimensions, error_call));
 
   r_obj* x_dimensions = KEEP(rray_dimensions(x, arg, error_call));
 
@@ -101,7 +102,7 @@ r_obj* rray_broadcast(
   KEEP(out);
   r_attrib_poke_dim(out, dimensions);
 
-  r_obj* x_names = rray_names(x, error_call);
+  r_obj* x_names = rray_names(x, arg, error_call);
   if (x_names != r_null) {
     KEEP(x_names);
     r_obj* const* v_x_names = r_list_cbegin(x_names);
@@ -263,14 +264,19 @@ r_obj* rray_broadcast_common(
   r_obj* out = KEEP(r_alloc_list(n));
   r_attrib_poke_names(out, xs_names);
 
-  for (r_ssize i = 0; i < n; ++i) {
-    char buffer[RRAY_ARG_SIZE];
-    const char* arg = arg_from_xs(xs_names, i, buffer);
+  r_ssize i = 0;
+  struct rray_arg* p_x_arg = new_subscript_arg(NULL, xs_names, n, &i);
+  KEEP(p_x_arg->shelter);
 
-    r_list_poke(out, i, rray_broadcast(v_xs[i], dimensions, arg, error_call));
+  for (; i < n; ++i) {
+    r_list_poke(
+      out,
+      i,
+      rray_broadcast(v_xs[i], dimensions, p_x_arg, error_call)
+    );
   }
 
-  FREE(3);
+  FREE(4);
   return out;
 }
 
@@ -279,15 +285,15 @@ void check_broadcastable(
   int x_dimensionality,
   const int* v_dimensions,
   int dimensionality,
-  const char* arg,
+  struct rray_arg* arg,
   struct r_lazy error_call
 ) {
   if (x_dimensionality > dimensionality) {
     r_abort_lazy_call(
       error_call,
-      "Can't broadcast `%s` from dimensionality %d to %d. "
+      "Can't broadcast %s from dimensionality %d to %d. "
       "Can't decrease dimensionality.",
-      arg,
+      rray_arg_format(arg),
       x_dimensionality,
       dimensionality
     );
@@ -303,9 +309,9 @@ void check_broadcastable(
 
     r_abort_lazy_call(
       error_call,
-      "Can't broadcast axis %d of `%s` from dimension %d to %d.",
+      "Can't broadcast axis %d of %s from dimension %d to %d.",
       i + 1,
-      arg,
+      rray_arg_format(arg),
       x_dimension,
       dimension
     );

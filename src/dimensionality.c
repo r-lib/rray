@@ -4,11 +4,15 @@
 
 r_obj* ffi_rray_dimensionality(r_obj* ffi_x, r_obj* ffi_frame) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  return r_int(rray_dimensionality(ffi_x, error_call));
+  return r_int(rray_dimensionality(ffi_x, rray_args.x, error_call));
 }
 
-int rray_dimensionality(r_obj* x, struct r_lazy error_call) {
-  r_obj* dimensions = rray_dimensions(x, "x", error_call);
+int rray_dimensionality(
+  r_obj* x,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+) {
+  r_obj* dimensions = rray_dimensions(x, arg, error_call);
   return rray_dimensionality_from_dimensions(dimensions);
 }
 

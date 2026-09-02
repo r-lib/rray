@@ -3,10 +3,12 @@
 
 #include "rlang.h"
 
+#include "arg.h"
+
 r_obj* rray_broadcast(
   r_obj* x,
   r_obj* dimensions,
-  const char* arg,
+  struct rray_arg* arg,
   struct r_lazy error_call
 );
 
@@ -21,7 +23,7 @@ void check_broadcastable(
   int x_dimensionality,
   const int* v_dimensions,
   int dimensionality,
-  const char* arg,
+  struct rray_arg* arg,
   struct r_lazy error_call
 );
 

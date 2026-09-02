@@ -83,7 +83,7 @@
       rray_dimensions_common(array(1, c(2, 3)), array(1, c(4, 3)))
     Condition
       Error in `rray_dimensions_common()`:
-      ! Can't find common dimensions at axis 1. `..2` has dimension 4, which is incompatible with dimension 2.
+      ! Can't find common dimensions at axis 1. `..1` has dimension 2 and `..2` has dimension 4.
 
 # errors name the problematic input
 
@@ -91,7 +91,32 @@
       rray_dimensions_common(x = array(1, c(2, 3)), y = array(1, c(4, 3)))
     Condition
       Error in `rray_dimensions_common()`:
-      ! Can't find common dimensions at axis 1. `y` has dimension 4, which is incompatible with dimension 2.
+      ! Can't find common dimensions at axis 1. `x` has dimension 2 and `y` has dimension 4.
+
+# errors name the input that set the conflicting axis
+
+    Code
+      rray_dimensions_common(a = array(1, c(2, 1)), b = array(1, c(1, 3)), c = array(
+        1, c(2, 4)))
+    Condition
+      Error in `rray_dimensions_common()`:
+      ! Can't find common dimensions at axis 2. `b` has dimension 3 and `c` has dimension 4.
+
+# errors handle a name longer than the argument tag buffer
+
+    Code
+      do.call(rray_dimensions_common, args)
+    Condition
+      Error:
+      ! `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa` must be an array, not `NULL`.
+
+# errors handle a non-syntactic name
+
+    Code
+      rray_dimensions_common(`a b` = NULL)
+    Condition
+      Error in `rray_dimensions_common()`:
+      ! `a b` must be an array, not `NULL`.
 
 # errors on zero inputs
 

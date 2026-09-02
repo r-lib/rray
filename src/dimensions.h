@@ -3,13 +3,25 @@
 
 #include "rlang.h"
 
-r_obj* rray_dimensions(r_obj* x, const char* arg, struct r_lazy error_call);
+#include "arg.h"
 
-int rray_dimension(r_obj* x, int axis, struct r_lazy error_call);
+r_obj* rray_dimensions(
+  r_obj* x,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+);
+
+int rray_dimension(
+  r_obj* x,
+  int axis,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+);
 
 r_obj* rray_set_dimensions(
   r_obj* x,
   r_obj* dimensions,
+  struct rray_arg* arg,
   struct r_lazy error_call
 );
 
@@ -28,7 +40,7 @@ r_obj* rray_dimensions_common(
 
 r_obj* arg_as_dimensions(
   r_obj* dimensions,
-  r_obj* arg,
+  struct rray_arg* arg,
   struct r_lazy error_call
 );
 
