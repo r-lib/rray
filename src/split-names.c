@@ -80,14 +80,22 @@ r_obj* rray_split_names(r_obj* x, r_obj* dimensions) {
 
 // Splitting a 2x2x2 array on axes 1 and 3 gives split dimensions of 2x1x2
 //
+// x           array(1:8, c(2, 2, 2))
 // v_x_names   list(c("a1", "a2"), c("b1", "b2"), c("c1", "c2"))
 // out         list(list("a1", "a2"), list(c("b1", "b2")), list("c1", "c2"))
 //
 // Axes 1 and 3 are split so they get 1 slot per name, axis 2 isn't split so
 // it gets 1 slot with all its names
 //
-// The split produces 4 arrays that share these slots, and the more axes you
-// split on the more arrays there are to share them
+// The split gives 4 arrays of 1x2x1 that take their names from `out`
+//
+//   [[1]] 1 3   list("a1", c("b1", "b2"), "c1")
+//   [[2]] 2 4   list("a2", c("b1", "b2"), "c1")
+//   [[3]] 5 7   list("a1", c("b1", "b2"), "c2")
+//   [[4]] 6 8   list("a2", c("b1", "b2"), "c2")
+//
+// "a1" is the same vector in [[1]] and [[3]], "c1" in [[1]] and [[2]], so 4
+// length 1 vectors cover all 8 slots
 static r_obj* rray_split_axes_names(
   r_obj* const* v_x_names,
   const int* v_dimensions,
