@@ -75,6 +75,12 @@ static r_ssize str_arg_fill(const char* data, char* buf, r_ssize remaining) {
   return len;
 }
 
+struct rray_arg new_wrapper_arg(struct rray_arg* parent, const char* arg) {
+  struct rray_arg out =
+    {.parent = parent, .fill = &wrapper_arg_fill, .data = (void*) arg};
+  return out;
+}
+
 static r_ssize wrapper_arg_fill(void* data, char* buf, r_ssize remaining) {
   return str_arg_fill((const char*) data, buf, remaining);
 }
@@ -187,28 +193,24 @@ static bool is_empty_arg(struct rray_arg* arg) {
   return arg->fill(arg->data, buf, 1) == 0;
 }
 
-#define RRAY_WRAPPER_ARG(NAME, STRING)                                         \
-  static struct rray_arg NAME = {                                              \
-    .fill = &wrapper_arg_fill,                                                 \
-    .data = (void*) STRING                                                     \
-  }
+struct rray_args rray_args;
 
-RRAY_WRAPPER_ARG(arg_empty, "");
-RRAY_WRAPPER_ARG(arg_x, "x");
-RRAY_WRAPPER_ARG(arg_names, "names");
-RRAY_WRAPPER_ARG(arg_axis, "axis");
-RRAY_WRAPPER_ARG(arg_axes, "axes");
-RRAY_WRAPPER_ARG(arg_dimensions, "dimensions");
-RRAY_WRAPPER_ARG(arg_dot_dimensions, ".dimensions");
+#define INIT_ARG(ARG)                                                          \
+  static struct rray_arg ARG;                                                  \
+  ARG = new_wrapper_arg(NULL, #ARG);                                           \
+  rray_args.ARG = &ARG
 
-#undef RRAY_WRAPPER_ARG
+#define INIT_ARG2(ARG, STR)                                                    \
+  static struct rray_arg ARG;                                                  \
+  ARG = new_wrapper_arg(NULL, STR);                                            \
+  rray_args.ARG = &ARG
 
-const struct rray_args rray_args = {
-  .empty = &arg_empty,
-  .x = &arg_x,
-  .names = &arg_names,
-  .axis = &arg_axis,
-  .axes = &arg_axes,
-  .dimensions = &arg_dimensions,
-  .dot_dimensions = &arg_dot_dimensions
-};
+void rray_init_args(r_obj* ns) {
+  INIT_ARG2(empty, "");
+  INIT_ARG(x);
+  INIT_ARG(names);
+  INIT_ARG(axis);
+  INIT_ARG(axes);
+  INIT_ARG(dimensions);
+  INIT_ARG2(dot_dimensions, ".dimensions");
+}
