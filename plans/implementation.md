@@ -242,14 +242,17 @@ Rules, per axis:
 Dimensionality can never shrink. `rray_broadcast()` errors on any decrease, even
 when the dimensions being dropped are all 1.
 
-`rray_dimensions_common()` drops `NULL` inputs, since a `NULL` contributes no
-dimensions. `rray_broadcast_common()` errors on them, since there is no array to
-hand back in its place. The names of `...` are kept on the list it returns, the
-same way `vec_recycle_common()` keeps them.
+A `NULL` is not an array, so anything taking arrays refuses it. That holds for
+one input and for `...` alike, so `rray_dimensions_common(NULL, 1:5)` is an
+error, not a way to skip an argument. A caller holding an array that might be
+absent drops it before the call.
 
-That split does not survive. PR 7 makes `rray_dimensions_common()` refuse `NULL`
-too, so the rule everywhere becomes: a `NULL` is not an array, and anything
-taking arrays refuses it. See `plans/args.md`.
+The one exception is `.dimensions`. It returns before `...` is looked at, so
+nothing in `...` is checked when it is supplied. That matches `.size` in
+`vec_size_common()`.
+
+`rray_broadcast_common()` keeps the names of `...` on the list it returns, the
+same way `vec_recycle_common()` keeps them.
 
 `RRAY_MAX_DIMENSIONALITY` is 64.
 
@@ -503,17 +506,14 @@ dependencies noted there.
 
 ## PR 7: Argument tags
 
-Part A. Replace `const char* arg` with a `struct rray_arg` ported from vctrs, so
-a function taking `...` can name the input that failed, and so tags can nest.
+Replace `const char* arg` with a `struct rray_arg` ported from vctrs, so a
+function taking `...` can name the input that failed, and so tags can nest.
 
-Part B. Stop `rray_dimensions_common()` accepting `NULL`, which brings it in line
-with `rray_dimensions()` and `rray_broadcast_common()`. It rides along because
-Part A rewrites that loop anyway.
-
-Part A comes first because everything after it takes `...` or two array inputs,
+This comes first because everything after it takes `...` or two array inputs,
 and would otherwise be written twice.
 
-Written up in full in `plans/args.md`.
+Written up in full in `plans/args.md`. Part B, dropping `NULL` from
+`rray_dimensions_common()`, has already landed.
 
 Files: `src/arg.c`, `src/arg.h`, plus every file that passes an `arg`.
 

@@ -74,11 +74,17 @@ test_that("dimensionality is extended", {
   )
 })
 
-test_that("NULL inputs are dropped", {
-  expect_identical(
-    rray_dimensions_common(NULL, 1:5, NULL),
-    5L
-  )
+test_that("errors on NULL inputs", {
+  expect_snapshot(error = TRUE, {
+    rray_dimensions_common(NULL, 1:5)
+    rray_dimensions_common(1:5, NULL)
+    rray_dimensions_common(x = 1:5, y = NULL)
+    rray_dimensions_common(NULL, NULL)
+  })
+})
+
+test_that("`.dimensions` returns before `...` is looked at", {
+  expect_identical(rray_dimensions_common(NULL, .dimensions = 2L), 2L)
 })
 
 test_that("single input works", {
@@ -127,9 +133,8 @@ test_that("errors name the problematic input", {
   )
 })
 
-test_that("errors on zero non-NULL inputs", {
+test_that("errors on zero inputs", {
   expect_snapshot(rray_dimensions_common(), error = TRUE)
-  expect_snapshot(rray_dimensions_common(NULL, NULL), error = TRUE)
 })
 
 test_that("errors on classed input", {

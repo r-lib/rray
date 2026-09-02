@@ -28,7 +28,7 @@ rray_dimensions <- function(x) {
 #' arrays using broadcasting rules. For each axis, dimensions are compatible
 #' if they are equal or if one of them is 1.
 #'
-#' @param ... Arrays. `NULL` inputs are silently dropped.
+#' @param ... Arrays.
 #'
 #' @param .dimensions If provided, an integer vector of dimensions to use
 #'   as an override, rather than computing common dimensions from `...`.

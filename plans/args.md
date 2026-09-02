@@ -2,20 +2,17 @@
 
 ## What this is
 
-A plan for one pull request, in two parts.
+A plan for PR 7, in two parts.
 
 **Part A**, Parts 1 to 4 below: replace rray's `const char* arg` with a
-`struct rray_arg`, ported from vctrs.
+`struct rray_arg`, ported from vctrs. Still to do.
 
 **Part B**, Part 5 below: stop `rray_dimensions_common()` accepting `NULL`.
+**Done**, landed on its own ahead of Part A.
 
-They travel together because Part A rewrites the `rray_dimensions_common()`
-loop anyway, and Part B deletes two branches out of the loop Part A is writing.
-Landing them apart means writing that loop twice.
-
-It lands as PR 7, before `rray_names_common()`. Everything after it takes `...`
-or two array inputs, so every one of those functions wants argument tags on the
-day it is written. Converting first means none of them get written twice.
+Part A lands before `rray_names_common()`. Everything after it takes `...` or
+two array inputs, so every one of those functions wants argument tags on the day
+it is written. Converting first means none of them get written twice.
 
 Read Part 1 and Part 2 of `plans/implementation.md` first. This document assumes
 the conventions there.
@@ -422,6 +419,18 @@ in the `r_abort_lazy_call()` that follows and never store it.
 ---
 
 # Part 5: Part B, `rray_dimensions_common()` drops `NULL`
+
+**Done.** Kept here for the reasoning, which Part A's rewrite of the same loop
+should not undo.
+
+One thing came out differently from the sketch below. The `.dimensions` early
+return stays above the new `n == 0` check, so `rray_dimensions_common()` never
+looks at `...` when `.dimensions` is supplied. That means
+`rray_dimensions_common(NULL, .dimensions = 2L)` succeeds while
+`rray_broadcast_common(NULL, .dimensions = 2L)` errors, since the broadcast loop
+still touches every element. This is deliberate, matches `.size` in
+`vec_size_common()`, and is already true of every other check `.dimensions`
+skips. There is a test pinning it.
 
 ## The change
 

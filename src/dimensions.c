@@ -108,10 +108,13 @@ r_obj* rray_dimensions_common(
   }
 
   const r_ssize n = r_length(xs);
+
+  if (n == 0) {
+    r_abort_lazy_call(error_call, "Must supply at least one array to `...`.");
+  }
+
   r_obj* const* v_xs = r_list_cbegin(xs);
   r_obj* xs_names = KEEP(r_names(xs));
-
-  bool any = false;
 
   int out_dimensionality = 1;
 
@@ -124,12 +127,6 @@ r_obj* rray_dimensions_common(
 
   for (r_ssize i = 0; i < n; ++i) {
     r_obj* x = v_xs[i];
-
-    if (x == r_null) {
-      continue;
-    }
-
-    any = true;
 
     char buffer[RRAY_ARG_SIZE];
     const char* arg = arg_from_xs(xs_names, i, buffer);
@@ -152,10 +149,6 @@ r_obj* rray_dimensions_common(
     );
 
     FREE(1);
-  }
-
-  if (!any) {
-    r_abort_lazy_call(error_call, "Must supply at least one array to `...`.");
   }
 
   r_obj* out = KEEP(r_alloc_integer(out_dimensionality));
