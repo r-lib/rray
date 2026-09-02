@@ -41,6 +41,7 @@ r_obj* rray_split_names(r_obj* x, r_obj* dimensions) {
 
   r_obj* const* v_axes_names = r_list_cbegin(axes_names);
 
+  // Direct pointers into the names lists for faster accesses
   r_obj* const** v_v_axis_names =
     (r_obj* const**) R_alloc(dimensionality, sizeof(r_obj* const*));
 
