@@ -25,7 +25,7 @@ r_obj* ffi_rray_broadcast_names2(
 }
 
 r_obj* rray_broadcast_names2(r_obj* x, r_obj* y, r_obj* dimensions) {
-  r_obj* out = KEEP(rray_broadcast_names(x, dimensions));
+  r_obj* out = KEEP(rray_broadcast_names_fill(r_null, x, dimensions));
   out = rray_broadcast_names_fill(out, y, dimensions);
   FREE(1);
   return out;
