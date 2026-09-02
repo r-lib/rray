@@ -54,6 +54,29 @@
       Error in `rray_set_dimensions()`:
       ! `x` must be a bare array, not a <foo> object.
 
+# errors on NULL inputs
+
+    Code
+      rray_dimensions_common(NULL, 1:5)
+    Condition
+      Error in `rray_dimensions_common()`:
+      ! `..1` must be an array, not `NULL`.
+    Code
+      rray_dimensions_common(1:5, NULL)
+    Condition
+      Error in `rray_dimensions_common()`:
+      ! `..2` must be an array, not `NULL`.
+    Code
+      rray_dimensions_common(x = 1:5, y = NULL)
+    Condition
+      Error in `rray_dimensions_common()`:
+      ! `y` must be an array, not `NULL`.
+    Code
+      rray_dimensions_common(NULL, NULL)
+    Condition
+      Error in `rray_dimensions_common()`:
+      ! `..1` must be an array, not `NULL`.
+
 # errors on incompatible dimensions
 
     Code
@@ -70,18 +93,10 @@
       Error in `rray_dimensions_common()`:
       ! Can't find common dimensions at axis 1. `y` has dimension 4, which is incompatible with dimension 2.
 
-# errors on zero non-NULL inputs
+# errors on zero inputs
 
     Code
       rray_dimensions_common()
-    Condition
-      Error in `rray_dimensions_common()`:
-      ! Must supply at least one array to `...`.
-
----
-
-    Code
-      rray_dimensions_common(NULL, NULL)
     Condition
       Error in `rray_dimensions_common()`:
       ! Must supply at least one array to `...`.

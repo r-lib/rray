@@ -109,7 +109,7 @@
       rray_broadcast_common(NULL)
     Condition
       Error in `rray_broadcast_common()`:
-      ! Must supply at least one array to `...`.
+      ! `..1` must be an array, not `NULL`.
 
 # errors on classed input in `...`
 

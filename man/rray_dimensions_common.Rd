@@ -7,7 +7,7 @@
 rray_dimensions_common(..., .dimensions = NULL)
 }
 \arguments{
-\item{...}{Arrays. \code{NULL} inputs are silently dropped.}
+\item{...}{Arrays.}
 
 \item{.dimensions}{If provided, an integer vector of dimensions to use
 as an override, rather than computing common dimensions from \code{...}.}
