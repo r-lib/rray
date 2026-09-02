@@ -16,8 +16,8 @@ broadcast to, rather than computing common dimensions from \code{...}.}
 A list of arrays, all with the common dimensions.
 }
 \description{
-\code{rray_broadcast_common()} broadcasts every array in \code{...} to the common
-dimensions found by \code{\link[=rray_dimensions_common]{rray_dimensions_common()}}.
+\code{rray_broadcast_common()} broadcasts every array to the common dimensions
+found by \code{\link[=rray_dimensions_common]{rray_dimensions_common()}}.
 
 Unlike \code{\link[=rray_dimensions_common]{rray_dimensions_common()}}, \code{NULL} is not allowed, because there is
 no array to return in its place.
