@@ -56,12 +56,9 @@ r_obj* rray_split_names(r_obj* x, r_obj* dimensions) {
     for (int j = 0; j < dimensionality; ++j) {
       r_obj* axis_names = v_axes_names[j];
 
-      if (axis_names == r_null) {
-        // No names to contribute on this axis
-        continue;
+      if (axis_names != r_null) {
+        r_list_poke(names, j, r_list_get(axis_names, v_point[j]));
       }
-
-      r_list_poke(names, j, r_list_get(axis_names, v_point[j]));
     }
 
     rray_iterator_next(&it);
