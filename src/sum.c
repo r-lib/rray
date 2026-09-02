@@ -3,7 +3,7 @@
 #include "axes.h"
 #include "dimensionality.h"
 #include "dimensions.h"
-#include "names.h"
+#include "reduce-names.h"
 #include "reduce.h"
 #include "reduction-iterator.h"
 #include "size.h"
@@ -99,22 +99,13 @@ r_obj* rray_sum(
   KEEP(out);
   r_attrib_poke_dim(out, out_dimensions);
 
-  r_obj* x_names = rray_names(x, arg, error_call);
-  if (x_names != r_null) {
-    KEEP(x_names);
-    r_obj* const* v_x_names = r_list_cbegin(x_names);
+  r_obj* out_names = KEEP(rray_reduce_names(x, axes));
 
-    r_obj* out_names =
-      rray_reduce_names(v_x_names, dimensionality, v_axes, axes_size);
-
-    if (out_names != r_null) {
-      r_attrib_poke_dim_names(out, out_names);
-    }
-
-    FREE(1);
+  if (out_names != r_null) {
+    r_attrib_poke_dim_names(out, out_names);
   }
 
-  FREE(5);
+  FREE(6);
   return out;
 }
 

@@ -282,6 +282,10 @@ dimension 1 broadcast to 1 counts as unchanged and keeps its length 1 names.
 Nearly the same rule, but a reduced axis loses its names even when its dimension
 was already 1, so it needs stating separately.
 
+This lives in `rray_reduce_names(x, axes)`. Reductions take one array, so unlike
+the broadcasting family below there is no `2` or `_common` form, and no fill
+helper to share between them.
+
 **Coalesce.** Used by anything with two or more array inputs. For each axis of
 the common dimensions:
 

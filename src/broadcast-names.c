@@ -1,6 +1,8 @@
 #include "broadcast-names.h"
 
 #include "dimensionality.h"
+#include "dimensions.h"
+#include "names.h"
 
 #include "decl/broadcast-names-decl.h"
 
@@ -57,15 +59,17 @@ static r_obj* rray_broadcast_names_fill(
   r_obj* x,
   r_obj* dimensions
 ) {
-  r_obj* x_names = r_dim_names(x);
+  r_obj* x_names = rray_names(x, rray_args.x, r_lazy_null);
 
   if (x_names == r_null) {
     return out;
   }
 
+  KEEP(x_names);
+
   r_obj* const* v_x_names = r_list_cbegin(x_names);
 
-  r_obj* x_dimensions = r_dim(x);
+  r_obj* x_dimensions = KEEP(rray_dimensions(x, rray_args.x, r_lazy_null));
   const int* v_x_dimensions = r_int_cbegin(x_dimensions);
   const int x_dimensionality =
     rray_dimensionality_from_dimensions(x_dimensions);
@@ -96,6 +100,6 @@ static r_obj* rray_broadcast_names_fill(
     r_list_poke(out, i, v_x_names[i]);
   }
 
-  FREE(1);
+  FREE(3);
   return out;
 }
