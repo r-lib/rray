@@ -30,6 +30,9 @@ r_obj* rray_split_names(r_obj* x, r_obj* dimensions) {
   const int* v_dimensions = r_int_cbegin(dimensions);
   const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
 
+  // Pre-split axis names into size 1 elements we can reuse across multiple
+  // output arrays. Reusing these size 1 names saves quite a bit of time and
+  // memory when splitting across multiple axes.
   r_obj* axes_names =
     rray_split_axes_names(v_x_names, v_dimensions, dimensionality);
   if (axes_names == r_null) {
