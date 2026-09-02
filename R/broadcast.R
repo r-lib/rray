@@ -36,9 +36,6 @@ rray_broadcast <- function(x, dimensions) {
 #' `rray_broadcast_common()` broadcasts every array to the common dimensions
 #' found by [rray_dimensions_common()].
 #'
-#' Unlike [rray_dimensions_common()], `NULL` is not allowed, because there is
-#' no array to return in its place.
-#'
 #' @param ... Arrays to broadcast. Names are kept on the result.
 #'
 #' @param .dimensions If provided, an integer vector of dimensions to
