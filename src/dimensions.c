@@ -126,10 +126,12 @@ r_obj* rray_dimensions_common(
   }
 
   for (r_ssize i = 0; i < n; ++i) {
+    r_obj* x = v_xs[i];
+
     char buffer[RRAY_ARG_SIZE];
     const char* arg = arg_from_xs(xs_names, i, buffer);
 
-    r_obj* x_dimensions = KEEP(rray_dimensions(v_xs[i], arg, error_call));
+    r_obj* x_dimensions = KEEP(rray_dimensions(x, arg, error_call));
     const int* v_x_dimensions = r_int_cbegin(x_dimensions);
     const int x_dimensionality =
       rray_dimensionality_from_dimensions(x_dimensions);
