@@ -111,14 +111,15 @@ since only `src/rlang` is on the include path.
 
 - `src/init.c` uses `extern` declarations, it does not include feature headers.
 
-- A function taking `...` names its inputs in errors with `arg_from_xs()`, which
-  gives an input's name when it has one and `..1` otherwise. It writes into a
-  `char[RRAY_ARG_SIZE]` the caller owns, so it never allocates. Pass the result
-  down as the `arg` that `check_unclassed()` and friends already take.
+- An `arg` is a `struct rray_arg*`, the argument tag ported from vctrs. Tags
+  nest, and nothing is materialised until an error is actually raised, so
+  carrying one through a loop costs nothing. `src/arg.c` is the whole of it.
 
-  This is a stopgap. It cannot nest and it cannot be renamed by a caller. PR 7
-  replaces it, and every `arg` in `src/`, with a `struct rray_arg` ported from
-  vctrs. See `plans/args.md`.
+  `rray_args` holds the fixed ones, so `check_unclassed(x, rray_args.x, ...)`.
+  A function taking `...` builds one tag with `new_subscript_arg()`, which reads
+  a pointer to the caller's loop index and gives an input's name when it has one
+  and `..2` otherwise. `rray_arg_format()` turns a tag into a string with the
+  backticks already on, so messages write `%s` and not `` `%s` ``.
 
 ## C style
 
@@ -132,14 +133,14 @@ Protect anything that allocates with `KEEP()` and `FREE()`.
 
 **Ruthlessly avoid protection issues.** A value that allocates is unprotected
 the instant it exists, including one built inline as a function argument, e.g.
-`vec_cast(x, to, r_chr(arg), r_null)`. If the callee allocates anything before
-it uses that argument, a GC in that window can collect it out from under you.
-Trace every allocation forward to its last use and make sure something on the
-protection stack covers it the whole way, not just at the call site that looks
-risky. This class of bug compiles fine, passes tests that don't happen to
-trigger a GC, and only shows up as a rare crash or corrupted value. Check for
-it explicitly in every pull request that touches C code, don't wait for it to
-be caught in review.
+`f(x, r_chr(arg))`. If the callee allocates anything before it uses that
+argument, a GC in that window can collect it out from under you. Trace every
+allocation forward to its last use and make sure something on the protection
+stack covers it the whole way, not just at the call site that looks risky. This
+class of bug compiles fine, passes tests that don't happen to trigger a GC, and
+only shows up as a rare crash or corrupted value. Check for it explicitly in
+every pull request that touches C code, don't wait for it to be caught in
+review.
 
 Allocate a names list only once an axis actually survives, so the common case
 where nothing survives allocates nothing:
@@ -234,7 +235,10 @@ Rules, per axis:
 
 - A dimension of 1 broadcasts to anything, including 0.
 
-- Anything else is an error, with a message naming the axis and both dimensions.
+- Anything else is an error, with a message naming the axis, both dimensions and
+  both inputs. Which input owns the existing dimension is tracked per axis,
+  since the input that set axis 1 can differ from the one that set axis 2. That
+  is why vctrs' single `arg-counter.c` counter does not fit here.
 
 - Missing trailing axes are treated as a dimension of 1, so dimensionality can
   grow.
@@ -495,30 +499,17 @@ Mechanics:
 
 # Part 4: The pull requests
 
-What exists today: the argument checking helpers, the names API, the dimension
-and shape helpers, and `rray_broadcast()`, `rray_broadcast_common()`,
-`rray_split()` and `rray_sum()`. The array functions all follow the shell and
-core pattern in Part 1, and no templates are left in `src/`.
+What exists today: the argument tags, the argument checking helpers, the names
+API, the dimension and shape helpers, and `rray_broadcast()`,
+`rray_broadcast_common()`, `rray_split()` and `rray_sum()`. The array functions
+all follow the shell and core pattern in Part 1, and no templates are left in
+`src/`.
 
 Work through the rest in order, since each assumes the ones before it have
 landed. After that, work through Part 5 in any order that respects the
 dependencies noted there.
 
-## PR 7: Argument tags
-
-**Done.**
-
-Replace `const char* arg` with a `struct rray_arg` ported from vctrs, so a
-function taking `...` can name the input that failed, and so tags can nest.
-
-This comes first because everything after it takes `...` or two array inputs,
-and would otherwise be written twice.
-
-Written up in full in `plans/args.md`.
-
-Files: `src/arg.c`, `src/arg.h`, plus every file that passes an `arg`.
-
-## PR 8: `rray_names_common()`
+## PR 7: `rray_names_common()`
 
 The coalesce rule from 2.3. Internal C plus an unexported R wrapper so it can be
 tested directly before it has a real caller.
@@ -529,7 +520,7 @@ common dimensions, so that argument is not optional decoration.
 
 Files: `src/names.c`, `src/names.h`, `R/names.R`.
 
-## PR 9: Native types
+## PR 8: Native types
 
 The internal type interface from 2.4. All C, no exports, with unexported R
 wrappers so it can be tested directly.
@@ -542,7 +533,7 @@ wrappers so it can be tested directly.
 
 Files: `src/type.c`, `src/type.h`, `src/cast.c`, `src/cast.h`.
 
-## PR 10: Binary promotion and `rray_add()`
+## PR 9: Binary promotion and `rray_add()`
 
 `enum rray_binary_op`, `rray_binary_type()` and its table, then one function
 using it end to end.
@@ -553,14 +544,14 @@ The C loop uses two broadcast iterators stepped side by side. Names come from
 Files: `src/op.h` for the enums, `src/type.c` for the table, `R/arithmetic.R`,
 `src/arithmetic.c`, `src/arithmetic.h`.
 
-## PR 11: The rest of the binary arithmetic
+## PR 10: The rest of the binary arithmetic
 
 `rray_subtract()`, `rray_multiply()`, `rray_divide()`, `rray_power()`,
 `rray_modulo()`, `rray_integer_divide()`.
 
 All the same shape as `rray_add()`. Share the core.
 
-## PR 12: Reduction promotion and `rray_sum()`
+## PR 11: Reduction promotion and `rray_sum()`
 
 `rray_reduction_type()` and its table. Retrofit `rray_sum()` to use it, which
 gives it the `lgl` to `int` promotion.
@@ -932,7 +923,7 @@ Names: reduce.
 
 | function | op | type rule |
 |---|---|---|
-| `rray_sum(x, axes, ..., na_rm = FALSE)` | `sum` | promoted, exists, retrofit in PR 12 |
+| `rray_sum(x, axes, ..., na_rm = FALSE)` | `sum` | promoted, exists, retrofit in PR 11 |
 | `rray_prod(x, axes, ..., na_rm = FALSE)` | `prod` | promoted, int to dbl |
 | `rray_mean(x, axes, ..., na_rm = FALSE)` | `mean` | promoted, lgl and int to dbl |
 | `rray_max(x, axes, ..., na_rm = FALSE)` | `max` | preserved, errors on cpl |
@@ -1148,6 +1139,17 @@ pull request, with benchmarks against the version that came before it.
 
 Functions most likely to benefit: `rray_broadcast()`, the elementwise arithmetic
 family, and `rray_tile()`.
+
+## `x_arg` and `call` on the exported functions
+
+vctrs gives its functions these so another package's wrapper can make an error
+blame its own argument. `new_lazy_arg()` is ported and ready for exactly that,
+which is why it sits in `src/arg.c` with no caller. It reads a promise out of a
+frame only if an error is actually raised, so `rray_broadcast(x, dimensions,
+x_arg = "values")` costs nothing when nothing goes wrong.
+
+Adding an argument to every exported function, and documenting it, is its own
+pull request. Do it when a real caller wants it, not before.
 
 ## Unary elementwise math
 
