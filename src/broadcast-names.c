@@ -78,11 +78,11 @@ static r_obj* rray_broadcast_names_fill(
 
   for (int i = 0; i < x_dimensionality; ++i) {
     if (v_x_names[i] == r_null) {
-      // `out` stays `r_null` when there were no names before
+      // No names to contribute on this axis
       continue;
     }
     if (v_x_dimensions[i] != v_dimensions[i]) {
-      // `out` is "cleared" to `r_null` when dimension changes
+      // No names to contribute when axis is broadcast
       continue;
     }
     if (out != r_null && r_list_get(out, i) != r_null) {
