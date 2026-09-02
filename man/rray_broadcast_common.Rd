@@ -7,7 +7,7 @@
 rray_broadcast_common(..., .dimensions = NULL)
 }
 \arguments{
-\item{...}{Arrays to broadcast. Names are kept on the result.}
+\item{...}{Arrays to broadcast.}
 
 \item{.dimensions}{If provided, an integer vector of dimensions to
 broadcast to, rather than computing common dimensions from \code{...}.}
