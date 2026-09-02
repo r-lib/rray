@@ -1,6 +1,8 @@
 #include "reduce-names.h"
 
 #include "dimensionality.h"
+#include "dimensions.h"
+#include "names.h"
 
 #include "decl/reduce-names-decl.h"
 
@@ -15,7 +17,7 @@ r_obj* ffi_rray_reduce_names(r_obj* ffi_x, r_obj* ffi_axes) {
 //
 // Mimics `rray_broadcast_names()` ideas, but reduction only ever has 1 input
 r_obj* rray_reduce_names(r_obj* x, r_obj* axes) {
-  r_obj* x_names = r_dim_names(x);
+  r_obj* x_names = rray_names(x, rray_args.x, r_lazy_null);
 
   if (x_names == r_null) {
     return r_null;
@@ -23,7 +25,8 @@ r_obj* rray_reduce_names(r_obj* x, r_obj* axes) {
 
   r_obj* const* v_x_names = r_list_cbegin(x_names);
 
-  const int dimensionality = rray_dimensionality_from_dimensions(r_dim(x));
+  r_obj* x_dimensions = rray_dimensions(x, rray_args.x, r_lazy_null);
+  const int dimensionality = rray_dimensionality_from_dimensions(x_dimensions);
 
   const int* v_axes = r_int_cbegin(axes);
   const r_ssize axes_size = r_length(axes);
