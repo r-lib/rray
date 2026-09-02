@@ -141,6 +141,8 @@ r_obj* rray_dimensions_common(
   // dimensions in. Initialized to 1, which works very nicely with broadcasting.
   int v_out_dimensions[RRAY_MAX_DIMENSIONALITY];
 
+  // Index of the input that set each axis of `v_out_dimensions`, always
+  // populated by the time that axis can conflict
   r_ssize v_out_args[RRAY_MAX_DIMENSIONALITY];
 
   for (int i = 0; i < RRAY_MAX_DIMENSIONALITY; ++i) {
