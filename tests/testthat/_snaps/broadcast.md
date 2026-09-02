@@ -125,7 +125,7 @@
       rray_broadcast_common(x = 1:3, y = 1:2)
     Condition
       Error in `rray_broadcast_common()`:
-      ! Can't find common dimensions at axis 1. `y` has dimension 2, which is incompatible with dimension 3.
+      ! Can't find common dimensions at axis 1. `x` has dimension 3 and `y` has dimension 2.
 
 ---
 

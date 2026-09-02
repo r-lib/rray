@@ -4,12 +4,12 @@
 
 r_obj* ffi_rray_size(r_obj* ffi_x, r_obj* ffi_frame) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  return r_dbl((double) rray_size(ffi_x, error_call));
+  return r_dbl((double) rray_size(ffi_x, rray_args.x, error_call));
 }
 
-r_ssize rray_size(r_obj* x, struct r_lazy error_call) {
-  check_unclassed(x, "x", error_call);
-  x = arg_as_array(x, "x", error_call);
+r_ssize rray_size(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
+  check_unclassed(x, arg, error_call);
+  x = arg_as_array(x, arg, error_call);
   return r_length(x);
 }
 

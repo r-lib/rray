@@ -5,19 +5,19 @@
 r_obj* arg_as_axes(
   r_obj* axes,
   int dimensionality,
-  r_obj* arg,
+  struct rray_arg* arg,
   struct r_lazy error_call
 ) {
   if (r_typeof(axes) != R_TYPE_integer) {
-    axes = vec_cast(axes, r_globals.empty_int, arg, r_null);
+    axes = vec_cast(axes, r_globals.empty_int, arg, NULL);
   }
   KEEP(axes);
 
   if (r_attrib_has_any(axes)) {
     r_abort_lazy_call(
       error_call,
-      "`%s` can't have attributes.",
-      r_chr_get_c_string(arg, 0)
+      "%s can't have attributes.",
+      rray_arg_format(arg)
     );
   }
 
@@ -31,16 +31,16 @@ r_obj* arg_as_axes(
     if (axis == r_globals.na_int) {
       r_abort_lazy_call(
         error_call,
-        "`%s` must not contain missing values.",
-        r_chr_get_c_string(arg, 0)
+        "%s must not contain missing values.",
+        rray_arg_format(arg)
       );
     }
 
     if (axis < 1) {
       r_abort_lazy_call(
         error_call,
-        "`%s` must contain values greater than or equal to 1, not %d.",
-        r_chr_get_c_string(arg, 0),
+        "%s must contain values greater than or equal to 1, not %d.",
+        rray_arg_format(arg),
         axis
       );
     }
@@ -48,9 +48,9 @@ r_obj* arg_as_axes(
     if (axis > dimensionality) {
       r_abort_lazy_call(
         error_call,
-        "`%s` must contain values less than or equal to the "
+        "%s must contain values less than or equal to the "
         "dimensionality of %d, not %d.",
-        r_chr_get_c_string(arg, 0),
+        rray_arg_format(arg),
         dimensionality,
         axis
       );
@@ -59,8 +59,8 @@ r_obj* arg_as_axes(
     if (i > 0 && axis <= v_axes[i - 1]) {
       r_abort_lazy_call(
         error_call,
-        "`%s` must be in strictly increasing order.",
-        r_chr_get_c_string(arg, 0)
+        "%s must be in strictly increasing order.",
+        rray_arg_format(arg)
       );
     }
   }
@@ -72,18 +72,22 @@ r_obj* arg_as_axes(
 void check_axis(
   int axis,
   int dimensionality,
-  const char* arg,
+  struct rray_arg* arg,
   struct r_lazy error_call
 ) {
   if (axis == r_globals.na_int) {
-    r_abort_lazy_call(error_call, "`%s` must not be missing.", arg);
+    r_abort_lazy_call(
+      error_call,
+      "%s must not be missing.",
+      rray_arg_format(arg)
+    );
   }
 
   if (axis < 1) {
     r_abort_lazy_call(
       error_call,
-      "`%s` must be greater than or equal to 1, not %d.",
-      arg,
+      "%s must be greater than or equal to 1, not %d.",
+      rray_arg_format(arg),
       axis
     );
   }
@@ -91,9 +95,9 @@ void check_axis(
   if (axis > dimensionality) {
     r_abort_lazy_call(
       error_call,
-      "`%s` must be less than or equal to the dimensionality of %d, "
+      "%s must be less than or equal to the dimensionality of %d, "
       "not %d.",
-      arg,
+      rray_arg_format(arg),
       dimensionality,
       axis
     );

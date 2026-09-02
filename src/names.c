@@ -10,12 +10,12 @@
 
 r_obj* ffi_rray_names(r_obj* ffi_x, r_obj* ffi_frame) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  return rray_names(ffi_x, error_call);
+  return rray_names(ffi_x, rray_args.x, error_call);
 }
 
-r_obj* rray_names(r_obj* x, struct r_lazy error_call) {
-  check_unclassed(x, "x", error_call);
-  x = KEEP(arg_as_array(x, "x", error_call));
+r_obj* rray_names(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
+  check_unclassed(x, arg, error_call);
+  x = KEEP(arg_as_array(x, arg, error_call));
   r_obj* out = r_dim_names(x);
   FREE(1);
   return out;
@@ -23,28 +23,33 @@ r_obj* rray_names(r_obj* x, struct r_lazy error_call) {
 
 r_obj* ffi_rray_axis_names(r_obj* ffi_x, r_obj* ffi_axis, r_obj* ffi_frame) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  const int axis = arg_as_int(ffi_axis, axis_chr, error_call);
-  return rray_axis_names(ffi_x, axis, error_call);
+  const int axis = arg_as_int(ffi_axis, rray_args.axis, error_call);
+  return rray_axis_names(ffi_x, axis, rray_args.x, error_call);
 }
 
 r_obj* ffi_rray_row_names(r_obj* ffi_x, r_obj* ffi_frame) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  return rray_axis_names(ffi_x, 1, error_call);
+  return rray_axis_names(ffi_x, 1, rray_args.x, error_call);
 }
 
 r_obj* ffi_rray_col_names(r_obj* ffi_x, r_obj* ffi_frame) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  return rray_axis_names(ffi_x, 2, error_call);
+  return rray_axis_names(ffi_x, 2, rray_args.x, error_call);
 }
 
-r_obj* rray_axis_names(r_obj* x, int axis, struct r_lazy error_call) {
-  check_unclassed(x, "x", error_call);
-  x = KEEP(arg_as_array(x, "x", error_call));
+r_obj* rray_axis_names(
+  r_obj* x,
+  int axis,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+) {
+  check_unclassed(x, arg, error_call);
+  x = KEEP(arg_as_array(x, arg, error_call));
 
-  const int dimensionality = rray_dimensionality(x, error_call);
-  check_axis(axis, dimensionality, "axis", error_call);
+  const int dimensionality = rray_dimensionality(x, arg, error_call);
+  check_axis(axis, dimensionality, rray_args.axis, error_call);
 
-  r_obj* names = rray_names(x, error_call);
+  r_obj* names = rray_names(x, arg, error_call);
 
   r_obj* out = (names == r_null) ? r_null : r_list_get(names, axis - 1);
 
@@ -54,32 +59,40 @@ r_obj* rray_axis_names(r_obj* x, int axis, struct r_lazy error_call) {
 
 r_obj* ffi_rray_set_names(r_obj* ffi_x, r_obj* ffi_names, r_obj* ffi_frame) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  return rray_set_names(ffi_x, ffi_names, error_call);
+  return rray_set_names(ffi_x, ffi_names, rray_args.x, error_call);
 }
 
-r_obj* rray_set_names(r_obj* x, r_obj* names, struct r_lazy error_call) {
-  check_unclassed(x, "x", error_call);
-  x = KEEP(arg_as_array(x, "x", error_call));
+r_obj* rray_set_names(
+  r_obj* x,
+  r_obj* names,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+) {
+  check_unclassed(x, arg, error_call);
+  x = KEEP(arg_as_array(x, arg, error_call));
 
   if (names != r_null) {
     if (r_typeof(names) != R_TYPE_list) {
       r_abort_lazy_call(
         error_call,
-        "`names` must be a list or `NULL`, not %s.",
+        "%s must be a list or `NULL`, not %s.",
+        rray_arg_format(rray_args.names),
         r_obj_type_friendly(names)
       );
     }
 
-    r_obj* dimensions = KEEP(rray_dimensions(x, "x", error_call));
+    r_obj* dimensions = KEEP(rray_dimensions(x, arg, error_call));
     const int* v_dimensions = r_int_cbegin(dimensions);
     const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
 
     if (r_length(names) != dimensionality) {
       r_abort_lazy_call(
         error_call,
-        "`names` must have length %d to match the dimensionality of `x`, "
+        "%s must have length %d to match the dimensionality of %s, "
         "not length %" R_PRIdXLEN_T ".",
+        rray_arg_format(rray_args.names),
         dimensionality,
+        rray_arg_format(arg),
         r_length(names)
       );
     }
@@ -106,8 +119,8 @@ r_obj* ffi_rray_set_axis_names(
   r_obj* ffi_frame
 ) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  const int axis = arg_as_int(ffi_axis, axis_chr, error_call);
-  return rray_set_axis_names(ffi_x, axis, ffi_names, error_call);
+  const int axis = arg_as_int(ffi_axis, rray_args.axis, error_call);
+  return rray_set_axis_names(ffi_x, axis, ffi_names, rray_args.x, error_call);
 }
 
 r_obj* ffi_rray_set_row_names(
@@ -116,7 +129,7 @@ r_obj* ffi_rray_set_row_names(
   r_obj* ffi_frame
 ) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  return rray_set_axis_names(ffi_x, 1, ffi_names, error_call);
+  return rray_set_axis_names(ffi_x, 1, ffi_names, rray_args.x, error_call);
 }
 
 r_obj* ffi_rray_set_col_names(
@@ -125,25 +138,26 @@ r_obj* ffi_rray_set_col_names(
   r_obj* ffi_frame
 ) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  return rray_set_axis_names(ffi_x, 2, ffi_names, error_call);
+  return rray_set_axis_names(ffi_x, 2, ffi_names, rray_args.x, error_call);
 }
 
 r_obj* rray_set_axis_names(
   r_obj* x,
   int axis,
   r_obj* names,
+  struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  check_unclassed(x, "x", error_call);
-  x = KEEP(arg_as_array(x, "x", error_call));
+  check_unclassed(x, arg, error_call);
+  x = KEEP(arg_as_array(x, arg, error_call));
 
-  const int dimensionality = rray_dimensionality(x, error_call);
-  check_axis(axis, dimensionality, "axis", error_call);
+  const int dimensionality = rray_dimensionality(x, arg, error_call);
+  check_axis(axis, dimensionality, rray_args.axis, error_call);
 
-  const int dimension = rray_dimension(x, axis, error_call);
+  const int dimension = rray_dimension(x, axis, arg, error_call);
   check_axis_names(names, axis, dimension, error_call);
 
-  r_obj* old_names = KEEP(rray_names(x, error_call));
+  r_obj* old_names = KEEP(rray_names(x, arg, error_call));
 
   r_obj* new_names = KEEP(r_alloc_list(dimensionality));
   if (old_names != r_null) {

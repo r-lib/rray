@@ -3,21 +3,21 @@
 
 #include "rlang.h"
 
-#define RRAY_ARG_SIZE 32
+#include "arg.h"
 
-extern r_obj* dimensions_chr;
-extern r_obj* dot_dimensions_chr;
-extern r_obj* axes_chr;
-extern r_obj* axis_chr;
+void check_unclassed(r_obj* x, struct rray_arg* arg, struct r_lazy error_call);
 
-void check_unclassed(r_obj* x, const char* arg, struct r_lazy error_call);
+r_obj* arg_as_array(r_obj* x, struct rray_arg* arg, struct r_lazy error_call);
 
-r_obj* arg_as_array(r_obj* x, const char* arg, struct r_lazy error_call);
+int arg_as_int(r_obj* x, struct rray_arg* arg, struct r_lazy error_call);
 
-int arg_as_int(r_obj* x, r_obj* arg, struct r_lazy error_call);
+bool r_has_name_at(r_obj* names, r_ssize i);
 
-const char* arg_from_xs(r_obj* xs_names, r_ssize i, char buffer[RRAY_ARG_SIZE]);
-
-r_obj* vec_cast(r_obj* x, r_obj* to, r_obj* x_arg, r_obj* to_arg);
+r_obj* vec_cast(
+  r_obj* x,
+  r_obj* to,
+  struct rray_arg* x_arg,
+  struct rray_arg* to_arg
+);
 
 #endif

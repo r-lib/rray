@@ -3,6 +3,13 @@
 
 #include "rlang.h"
 
-r_obj* rray_split(r_obj* x, r_obj* axes, struct r_lazy error_call);
+#include "arg.h"
+
+r_obj* rray_split(
+  r_obj* x,
+  r_obj* axes,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+);
 
 #endif

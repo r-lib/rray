@@ -3,17 +3,19 @@
 
 #include "rlang.h"
 
+#include "arg.h"
+
 r_obj* arg_as_axes(
   r_obj* axes,
   int dimensionality,
-  r_obj* arg,
+  struct rray_arg* arg,
   struct r_lazy error_call
 );
 
 void check_axis(
   int axis,
   int dimensionality,
-  const char* arg,
+  struct rray_arg* arg,
   struct r_lazy error_call
 );
 
