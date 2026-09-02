@@ -33,6 +33,7 @@ r_obj* rray_split_names(r_obj* x, r_obj* dimensions) {
   r_obj* axes_names =
     rray_split_axes_names(v_x_names, v_dimensions, dimensionality);
   if (axes_names == r_null) {
+    // Names existed, but all axis names were `NULL`
     FREE(1);
     return r_null;
   }
