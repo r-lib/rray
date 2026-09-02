@@ -14,14 +14,9 @@ Part A lands before `rray_names_common()`. Everything after it takes `...` or
 two array inputs, so every one of those functions wants argument tags on the day
 it is written. Converting first means none of them get written twice.
 
-Two things came out differently from the sketch below.
-
+One thing came out differently from the sketch below.
 `r_c_str_format_error_arg()` was not ported. Every literal in rray is a wrapper
 arg in `rray_args`, so it had no caller. Bring it over if one turns up.
-
-`rray_dimensions2()` returns the axis of the first incompatible dimension, or
-`-1`, instead of raising. `rray_dimensions_common()` owns the message and both
-tags, which keeps the argument machinery out of the reduction entirely.
 
 Read Part 1 and Part 2 of `plans/implementation.md` first. This document assumes
 the conventions there.

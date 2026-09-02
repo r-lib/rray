@@ -159,29 +159,18 @@ r_obj* rray_dimensions_common(
 
     // Update `v_out_dimensions` and `out_dimensionality` in place
     // with common dimensions
-    const int axis = rray_dimensions2(
+    rray_dimensions2(
       v_out_dimensions,
       &out_dimensionality,
       v_out_args,
       v_x_dimensions,
       x_dimensionality,
-      x_i
+      x_i,
+      &out_i,
+      p_out_arg,
+      p_x_arg,
+      error_call
     );
-
-    if (axis >= 0) {
-      out_i = v_out_args[axis];
-
-      r_abort_lazy_call(
-        error_call,
-        "Can't find common dimensions at axis %d. "
-        "%s has dimension %d and %s has dimension %d.",
-        axis + 1,
-        rray_arg_format(p_out_arg),
-        v_out_dimensions[axis],
-        rray_arg_format(p_x_arg),
-        v_x_dimensions[axis]
-      );
-    }
 
     FREE(1);
   }
@@ -194,13 +183,17 @@ r_obj* rray_dimensions_common(
   return out;
 }
 
-static inline int rray_dimensions2(
+static inline void rray_dimensions2(
   int* v_out_dimensions,
   int* p_out_dimensionality,
   r_ssize* v_out_args,
   const int* v_x_dimensions,
   int x_dimensionality,
-  r_ssize x_i
+  r_ssize x_i,
+  r_ssize* p_out_i,
+  struct rray_arg* p_out_arg,
+  struct rray_arg* p_x_arg,
+  struct r_lazy error_call
 ) {
   const int out_dimensionality = *p_out_dimensionality;
 
@@ -225,11 +218,20 @@ static inline int rray_dimensions2(
       // Nothing to do
       // v_out_dimensions[i] = out_dimension;
     } else {
-      return i;
+      *p_out_i = v_out_args[i];
+
+      r_abort_lazy_call(
+        error_call,
+        "Can't find common dimensions at axis %d. "
+        "%s has dimension %d and %s has dimension %d.",
+        i + 1,
+        rray_arg_format(p_out_arg),
+        out_dimension,
+        rray_arg_format(p_x_arg),
+        x_dimension
+      );
     }
   }
-
-  return -1;
 }
 
 r_obj* arg_as_dimensions(
