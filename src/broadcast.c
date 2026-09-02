@@ -102,27 +102,21 @@ r_obj* rray_broadcast(
   KEEP(out);
   r_attrib_poke_dim(out, dimensions);
 
-  r_obj* x_names = rray_names(x, arg, error_call);
-  if (x_names != r_null) {
-    KEEP(x_names);
-    r_obj* const* v_x_names = r_list_cbegin(x_names);
+  r_obj* x_names = KEEP(rray_names(x, arg, error_call));
 
-    r_obj* out_names = KEEP(rray_broadcast_names(
-      v_x_names,
-      v_x_dimensions,
-      x_dimensionality,
-      v_dimensions,
-      dimensionality
-    ));
+  r_obj* out_names = KEEP(rray_broadcast_names(
+    x_names,
+    v_x_dimensions,
+    x_dimensionality,
+    v_dimensions,
+    dimensionality
+  ));
 
-    if (out_names != r_null) {
-      r_attrib_poke_dim_names(out, out_names);
-    }
-
-    FREE(2);
+  if (out_names != r_null) {
+    r_attrib_poke_dim_names(out, out_names);
   }
 
-  FREE(4);
+  FREE(6);
   return out;
 }
 
@@ -209,37 +203,6 @@ static r_obj* rray_broadcast_list(
 
 #undef RRAY_BROADCAST_ATOMIC
 #undef RRAY_BROADCAST_BARRIER
-
-static r_obj* rray_broadcast_names(
-  r_obj* const* v_names,
-  const int* v_dimensions,
-  int dimensionality,
-  const int* v_out_dimensions,
-  int out_dimensionality
-) {
-  r_obj* out = r_null;
-  r_keep_loc out_loc;
-  KEEP_HERE(out, &out_loc);
-
-  for (int i = 0; i < dimensionality; ++i) {
-    if (v_names[i] == r_null) {
-      // `out` stays `r_null` when there were no names before
-      continue;
-    }
-    if (v_dimensions[i] != v_out_dimensions[i]) {
-      // `out` is "cleared" to `r_null` when dimension changes
-      continue;
-    }
-    if (out == r_null) {
-      out = r_alloc_list(out_dimensionality);
-      KEEP_AT(out, out_loc);
-    }
-    r_list_poke(out, i, v_names[i]);
-  }
-
-  FREE(1);
-  return out;
-}
 
 r_obj* ffi_rray_broadcast_common(
   r_obj* ffi_xs,

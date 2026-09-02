@@ -29,4 +29,21 @@ r_obj* rray_set_axis_names(
   struct r_lazy error_call
 );
 
+r_obj* rray_broadcast_names2(
+  r_obj* x,
+  r_obj* y,
+  r_obj* dimensions,
+  struct rray_arg* x_arg,
+  struct rray_arg* y_arg,
+  struct r_lazy error_call
+);
+
+r_obj* rray_broadcast_names(
+  r_obj* names,
+  const int* v_x_dimensions,
+  int x_dimensionality,
+  const int* v_dimensions,
+  int dimensionality
+);
+
 #endif

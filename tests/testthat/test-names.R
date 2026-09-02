@@ -233,3 +233,103 @@ test_that("rray_set_row_names() and rray_set_col_names() error on classed input"
   expect_snapshot(rray_set_row_names(x, NULL), error = TRUE)
   expect_snapshot(rray_set_col_names(x, NULL), error = TRUE)
 })
+
+test_that("rray_broadcast_names2() prefers `x` where its dimension is kept", {
+  x <- array(1:6, c(2, 3), dimnames = list(c("r1", "r2"), c("c1", "c2", "c3")))
+  y <- array(1:6, c(2, 3), dimnames = list(c("a", "b"), c("d", "e", "g")))
+  expect_identical(
+    rray_broadcast_names2(x, y, c(2L, 3L)),
+    list(c("r1", "r2"), c("c1", "c2", "c3"))
+  )
+})
+
+test_that("rray_broadcast_names2() falls through to `y` where `x` broadcasts", {
+  x <- array(1:3, c(1, 3), dimnames = list("only", c("c1", "c2", "c3")))
+  y <- array(1:6, c(2, 3), dimnames = list(c("a", "b"), c("d", "e", "g")))
+  expect_identical(
+    rray_broadcast_names2(x, y, c(2L, 3L)),
+    list(c("a", "b"), c("c1", "c2", "c3"))
+  )
+})
+
+test_that("rray_broadcast_names2() falls through to `y` on an unnamed axis", {
+  x <- array(1:6, c(2, 3), dimnames = list(c("r1", "r2"), NULL))
+  y <- array(1:6, c(2, 3), dimnames = list(c("a", "b"), c("d", "e", "g")))
+  expect_identical(
+    rray_broadcast_names2(x, y, c(2L, 3L)),
+    list(c("r1", "r2"), c("d", "e", "g"))
+  )
+})
+
+test_that("rray_broadcast_names2() takes each axis from a different input", {
+  x <- array(1:3, c(3, 1), dimnames = list(c("r1", "r2", "r3"), NULL))
+  y <- array(1:2, c(1, 2), dimnames = list(NULL, c("c1", "c2")))
+  expect_identical(
+    rray_broadcast_names2(x, y, c(3L, 2L)),
+    list(c("r1", "r2", "r3"), c("c1", "c2"))
+  )
+})
+
+test_that("rray_broadcast_names2() returns NULL when neither input has names", {
+  x <- array(1:6, c(2, 3))
+  y <- array(1:6, c(2, 3))
+  expect_null(rray_broadcast_names2(x, y, c(2L, 3L)))
+})
+
+test_that("rray_broadcast_names2() returns NULL when every axis broadcasts", {
+  x <- array(1, c(1, 1), dimnames = list("a", "b"))
+  y <- array(1, c(1, 1), dimnames = list("c", "d"))
+  expect_null(rray_broadcast_names2(x, y, c(2L, 2L)))
+})
+
+test_that("rray_broadcast_names2() keeps names of an axis broadcast from 1 to 1", {
+  x <- array(1, c(1, 1), dimnames = list("a", "b"))
+  y <- array(1:3, c(1, 3))
+  expect_identical(rray_broadcast_names2(x, y, c(1L, 3L)), list("a", NULL))
+})
+
+test_that("rray_broadcast_names2() handles new trailing axes", {
+  x <- c(a = 1, b = 2)
+  y <- array(1:6, c(2, 3), dimnames = list(NULL, c("p", "q", "r")))
+  expect_identical(
+    rray_broadcast_names2(x, y, c(2L, 3L)),
+    list(c("a", "b"), c("p", "q", "r"))
+  )
+})
+
+test_that("rray_broadcast_names2() works with 3+ dimensional arrays", {
+  x <- array(1:24, c(2, 3, 4))
+  x <- rray_set_axis_names(x, 3, letters[1:4])
+  y <- array(1:6, c(2, 3), dimnames = list(c("r1", "r2"), NULL))
+  expect_identical(
+    rray_broadcast_names2(x, y, c(2L, 3L, 4L)),
+    list(c("r1", "r2"), NULL, letters[1:4])
+  )
+})
+
+test_that("rray_broadcast_names2() works with zero-size axes", {
+  x <- array(integer(), c(0, 3), dimnames = list(NULL, c("c1", "c2", "c3")))
+  y <- array(integer(), c(0, 3))
+  expect_identical(
+    rray_broadcast_names2(x, y, c(0L, 3L)),
+    list(NULL, c("c1", "c2", "c3"))
+  )
+})
+
+test_that("rray_broadcast_names2() errors on classed input", {
+  x <- structure(array(1:4, c(2, 2)), class = "foo")
+  expect_snapshot(rray_broadcast_names2(x, 1L, c(2L, 2L)), error = TRUE)
+  expect_snapshot(rray_broadcast_names2(1L, x, c(2L, 2L)), error = TRUE)
+})
+
+test_that("rray_broadcast_names2() errors on non-vector input", {
+  expect_snapshot(rray_broadcast_names2(NULL, 1L, 1L), error = TRUE)
+  expect_snapshot(rray_broadcast_names2(1L, NULL, 1L), error = TRUE)
+})
+
+test_that("rray_broadcast_names2() errors on invalid `dimensions`", {
+  x <- c(a = 1, b = 2)
+  expect_snapshot(rray_broadcast_names2(x, 1L, "a"), error = TRUE)
+  expect_snapshot(rray_broadcast_names2(x, 1L, integer()), error = TRUE)
+  expect_snapshot(rray_broadcast_names2(x, 1L, NA_integer_), error = TRUE)
+})

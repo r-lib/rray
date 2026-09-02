@@ -136,3 +136,7 @@ rray_set_row_names <- function(x, names) {
 rray_set_col_names <- function(x, names) {
   .Call(ffi_rray_set_col_names, x, names, environment())
 }
+
+rray_broadcast_names2 <- function(x, y, dimensions) {
+  .Call(ffi_rray_broadcast_names2, x, y, dimensions, environment())
+}

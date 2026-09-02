@@ -198,3 +198,59 @@
       Error in `rray_set_col_names()`:
       ! `x` must be a bare array, not a <foo> object.
 
+# rray_broadcast_names2() errors on classed input
+
+    Code
+      rray_broadcast_names2(x, 1L, c(2L, 2L))
+    Condition
+      Error in `rray_broadcast_names2()`:
+      ! `x` must be a bare array, not a <foo> object.
+
+---
+
+    Code
+      rray_broadcast_names2(1L, x, c(2L, 2L))
+    Condition
+      Error in `rray_broadcast_names2()`:
+      ! `y` must be a bare array, not a <foo> object.
+
+# rray_broadcast_names2() errors on non-vector input
+
+    Code
+      rray_broadcast_names2(NULL, 1L, 1L)
+    Condition
+      Error in `rray_broadcast_names2()`:
+      ! `x` must be an array, not `NULL`.
+
+---
+
+    Code
+      rray_broadcast_names2(1L, NULL, 1L)
+    Condition
+      Error in `rray_broadcast_names2()`:
+      ! `y` must be an array, not `NULL`.
+
+# rray_broadcast_names2() errors on invalid `dimensions`
+
+    Code
+      rray_broadcast_names2(x, 1L, "a")
+    Condition
+      Error:
+      ! Can't convert `dimensions` <character> to <integer>.
+
+---
+
+    Code
+      rray_broadcast_names2(x, 1L, integer())
+    Condition
+      Error in `rray_broadcast_names2()`:
+      ! `dimensions` must have at least one element.
+
+---
+
+    Code
+      rray_broadcast_names2(x, 1L, NA_integer_)
+    Condition
+      Error in `rray_broadcast_names2()`:
+      ! `dimensions` must not contain missing values.
+
