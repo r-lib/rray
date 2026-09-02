@@ -78,13 +78,16 @@ r_obj* rray_split_names(r_obj* x, r_obj* dimensions) {
   return out;
 }
 
-// Splitting a 2x3 array on axis 2 gives split dimensions of 1x3
+// Splitting a 2x2x2 array on axes 1 and 3 gives split dimensions of 2x1x2
 //
-// v_x_names   list(c("r1", "r2"), c("c1", "c2", "c3"))
-// out         list(list(c("r1", "r2")), list("c1", "c2", "c3"))
+// v_x_names   list(c("r1", "r2"), c("c1", "c2"), c("z1", "z2"))
+// out         list(list("r1", "r2"), list(c("c1", "c2")), list("z1", "z2"))
 //
-// Axis 1 isn't split so it gets 1 slot with all its names, axis 2 is split so
-// it gets 1 slot per column
+// Axes 1 and 3 are split so they get 1 slot per element, axis 2 isn't split so
+// it gets 1 slot with all its names
+//
+// The 4 output elements share these slots, and the more axes you split on the
+// more elements there are to share them
 static r_obj* rray_split_axes_names(
   r_obj* const* v_x_names,
   const int* v_dimensions,
