@@ -110,7 +110,7 @@ r_obj* rray_split(
     r_stop_unreachable();
   }
 
-  r_obj* names = KEEP(rray_split_names(x, out_dimensions));
+  r_obj* names = KEEP(rray_split_names(x, axes));
 
   if (names != r_null) {
     r_obj* const* v_names = r_list_cbegin(names);
