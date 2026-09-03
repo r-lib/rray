@@ -362,15 +362,37 @@ The internal type rules exist because three kinds of function need them:
 The C interface is small:
 
 ```c
-enum r_type rray_type2(enum r_type x, enum r_type y);
-enum r_type rray_type_common(r_obj* xs, struct r_lazy error_call);
-r_obj*      rray_cast(r_obj* x, enum r_type to, struct r_lazy error_call);
-r_obj*      rray_cast_common(r_obj* xs, enum r_type to, struct r_lazy error_call);
+enum r_type rray_ptype2(
+  enum r_type x,
+  enum r_type y,
+  struct rray_arg* x_arg,
+  struct rray_arg* y_arg,
+  struct r_lazy error_call
+);
+enum r_type rray_ptype_common(r_obj* xs, struct r_lazy error_call);
+
+r_obj* rray_cast(
+  r_obj* x,
+  enum r_type to,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+);
+r_obj* rray_cast_common(r_obj* xs, enum r_type to, struct r_lazy error_call);
 ```
 
 `rray_cast()` changes type only. It never touches dimensions or names.
 Broadcasting is always a separate step. Lossy casts are an error, and the error
-says what was lost.
+says what was lost and where.
+
+Casting up the tower always works. Casting down works only when nothing is lost:
+
+```r
+rray_cast(c(0, 1), logical())       # fine
+try(rray_cast(c(0, 2), logical()))  # 2 is not a logical value
+```
+
+Complex is one way. Anything can cast into it, nothing casts out of it, matching
+vctrs.
 
 ### The common type rules
 
@@ -378,7 +400,7 @@ says what was lost.
 
 - `chr`, `list` and `raw` each stand alone. They combine only with themselves.
 
-There is no fallback and no coercion across families. `rray_type2(chr, int)` is
+There is no fallback and no coercion across families. `rray_ptype2(chr, int)` is
 an error.
 
 A user facing function that needs a type override takes a `.ptype` argument,
@@ -398,8 +420,12 @@ Some operators need a type the common type rules cannot give, because
 Each family gets its own operator enum and its own type function.
 
 ```c
-enum r_type rray_binary_type(enum rray_binary_op op, enum r_type x, enum r_type y);
-enum r_type rray_reduction_type(enum rray_reduction_op op, enum r_type x);
+enum r_type rray_binary_ptype(
+  enum rray_binary_op op,
+  enum r_type x,
+  enum r_type y
+);
+enum r_type rray_reduction_ptype(enum rray_reduction_op op, enum r_type x);
 ```
 
 Separate enums rather than one shared vocabulary, so each function can only be
@@ -413,7 +439,7 @@ The tables below cover four types. `chr`, `raw` and `list` are an error for
 every operator, so the arithmetic and reduction families are the one place where
 the per type cores do not cover all seven native types.
 
-For binary operators, read the tables as "apply `rray_type2()` first, then
+For binary operators, read the tables as "apply `rray_ptype2()` first, then
 promote".
 
 Binary elementwise:
@@ -442,14 +468,15 @@ immediately.
 tables, because picking the largest of some values cannot change their type. The
 maximum of two logicals is a logical.
 
-They still go through `rray_binary_type()` and `rray_reduction_type()`, which for
-them return the type unchanged and error on `cpl`, since complex numbers have no
-ordering. So the type function is doing validation rather than promotion.
+They still go through `rray_binary_ptype()` and `rray_reduction_ptype()`, which
+for them return the type unchanged and error on `cpl`, since complex numbers
+have no ordering. So the type function is doing validation rather than
+promotion.
 
 ### Operators with a fixed output type
 
 An operator whose output type is fixed regardless of its input does not use the
-promotion tables. It finds the common type of its inputs with `rray_type2()`,
+promotion tables. It finds the common type of its inputs with `rray_ptype2()`,
 casts, computes, and allocates the output at its own fixed type.
 
 - Comparison (`rray_equal()` and friends) returns a logical array.
@@ -529,48 +556,36 @@ Mechanics:
 
 What exists today: the argument tags, the argument checking helpers, the names
 API, the coalesce rule as the `rray_broadcast_names()` family, the dimension and
-shape helpers, and `rray_broadcast()`, `rray_broadcast_common()`,
-`rray_split()` and `rray_sum()`. The array functions all follow the shell and
-core pattern in Part 1, and no templates are left in `src/`.
+shape helpers, the type rules as the `rray_ptype2()` and `rray_cast()` families,
+and `rray_broadcast()`, `rray_broadcast_common()`, `rray_split()` and
+`rray_sum()`. The array functions all follow the shell and core pattern in
+Part 1, and no templates are left in `src/`.
 
 Work through the rest in order, since each assumes the ones before it have
 landed. After that, work through Part 5 in any order that respects the
 dependencies noted there.
 
-## PR 7: Native types
+## PR 7: Binary promotion and `rray_add()`
 
-The internal type interface from 2.4. All C, no exports, with unexported R
-wrappers so it can be tested directly.
-
-- `rray_type2()` and `rray_type_common()`. The numeric tower, with `chr`, `list`
-  and `raw` standing alone.
-
-- `rray_cast()` and `rray_cast_common()`. Type only, dimensions and names
-  untouched, lossy casts error and say what was lost.
-
-Files: `src/type.c`, `src/type.h`, `src/cast.c`, `src/cast.h`.
-
-## PR 8: Binary promotion and `rray_add()`
-
-`enum rray_binary_op`, `rray_binary_type()` and its table, then one function
+`enum rray_binary_op`, `rray_binary_ptype()` and its table, then one function
 using it end to end.
 
 The C loop uses two broadcast iterators stepped side by side. Names come from
 `rray_broadcast_names2()`.
 
-Files: `src/op.h` for the enums, `src/type.c` for the table, `R/arithmetic.R`,
+Files: `src/op.h` for the enums, `src/ptype.c` for the table, `R/arithmetic.R`,
 `src/arithmetic.c`, `src/arithmetic.h`.
 
-## PR 9: The rest of the binary arithmetic
+## PR 8: The rest of the binary arithmetic
 
 `rray_subtract()`, `rray_multiply()`, `rray_divide()`, `rray_power()`,
 `rray_modulo()`, `rray_integer_divide()`.
 
 All the same shape as `rray_add()`. Share the core.
 
-## PR 10: Reduction promotion and `rray_sum()`
+## PR 9: Reduction promotion and `rray_sum()`
 
-`rray_reduction_type()` and its table. Retrofit `rray_sum()` to use it, which
+`rray_reduction_ptype()` and its table. Retrofit `rray_sum()` to use it, which
 gives it the `lgl` to `int` promotion.
 
 Fix the comment in `src/sum.c` claiming a logical array can never overflow an
@@ -579,7 +594,7 @@ integer sum. That is false once long arrays are supported.
 Once the promotion casts `lgl` to `int` up front, both `lgl` cores and their two
 scalar operations have no caller left and go away.
 
-Files: `src/type.c`, `R/sum.R`, `src/sum.c`.
+Files: `src/ptype.c`, `R/sum.R`, `src/sum.c`.
 
 ---
 
@@ -597,7 +612,7 @@ dropped.
   it, rather than being given a say in the result.
 
 - *Common.* Every input has a say. They are cast to a common type with
-  `rray_type2()`.
+  `rray_ptype2()`.
 
 - *Promoted.* The common type, then pushed through the operator's promotion
   table.
@@ -940,7 +955,7 @@ Names: reduce.
 
 | function | op | type rule |
 |---|---|---|
-| `rray_sum(x, axes, ..., na_rm = FALSE)` | `sum` | promoted, exists, retrofit in PR 10 |
+| `rray_sum(x, axes, ..., na_rm = FALSE)` | `sum` | promoted, exists, retrofit in PR 9 |
 | `rray_prod(x, axes, ..., na_rm = FALSE)` | `prod` | promoted, int to dbl |
 | `rray_mean(x, axes, ..., na_rm = FALSE)` | `mean` | promoted, lgl and int to dbl |
 | `rray_max(x, axes, ..., na_rm = FALSE)` | `max` | preserved, errors on cpl |
@@ -1072,7 +1087,7 @@ names, which needs its own rule worked out in the design review.
 axis every input's dimension differs from the output's, so it is skipped for
 every input and bind pokes the concatenation in afterwards.
 
-Type: common. This is the main consumer of `rray_type_common()`, so it takes a
+Type: common. This is the main consumer of `rray_ptype_common()`, so it takes a
 `.ptype` argument for an override, matching `.dimensions` elsewhere.
 
 Signatures: `rray_bind(..., .axis, .ptype = NULL)`, `rray_rbind(..., .ptype =
@@ -1178,14 +1193,14 @@ There is no unary elementwise family today. `-x` works on a bare array already,
 and `abs()`, `sqrt()` and friends are out of scope.
 
 If one is ever wanted, it follows the shape of the other two families: an
-`enum rray_unary_op` and an `rray_unary_type()` beside `rray_binary_type()` and
-`rray_reduction_type()`.
+`enum rray_unary_op` and an `rray_unary_ptype()` beside `rray_binary_ptype()`
+and `rray_reduction_ptype()`.
 
 ## An unspecified type
 
 `NA` is logical, so it sits at the bottom of the numeric tower and needs no
 special handling for arithmetic. But `rray_bind(chr_array, NA)` fails, because
-`rray_type2(chr, lgl)` is an error.
+`rray_ptype2(chr, lgl)` is an error.
 
 vctrs solves this with an unspecified type, and it has been painful. See whether
 `rray_bind()` can live without it first.

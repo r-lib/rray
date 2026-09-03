@@ -13,11 +13,14 @@ struct rray_arg {
 struct rray_args {
   struct rray_arg* empty;
   struct rray_arg* x;
+  struct rray_arg* y;
+  struct rray_arg* to;
   struct rray_arg* names;
   struct rray_arg* axis;
   struct rray_arg* axes;
   struct rray_arg* dimensions;
   struct rray_arg* dot_dimensions;
+  struct rray_arg* dot_to;
 };
 
 extern struct rray_args rray_args;

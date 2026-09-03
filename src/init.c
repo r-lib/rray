@@ -74,6 +74,14 @@ extern r_obj* ffi_rray_sum(
   r_obj* ffi_na_rm,
   r_obj* ffi_frame
 );
+extern r_obj* ffi_rray_ptype2(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame);
+extern r_obj* ffi_rray_ptype_common(r_obj* ffi_xs, r_obj* ffi_frame);
+extern r_obj* ffi_rray_cast(r_obj* ffi_x, r_obj* ffi_to, r_obj* ffi_frame);
+extern r_obj* ffi_rray_cast_common(
+  r_obj* ffi_xs,
+  r_obj* ffi_to,
+  r_obj* ffi_frame
+);
 
 extern r_obj* ffi_test_wrap(r_obj* ffi_x);
 extern r_obj* ffi_test_wrapper_readonly(r_obj* ffi_x);
@@ -108,6 +116,10 @@ static const R_CallMethodDef CallEntries[] = {
   {"ffi_rray_set_dimensions", (DL_FUNC) &ffi_rray_set_dimensions, 3},
   {"ffi_rray_split", (DL_FUNC) &ffi_rray_split, 3},
   {"ffi_rray_sum", (DL_FUNC) &ffi_rray_sum, 4},
+  {"ffi_rray_ptype2", (DL_FUNC) &ffi_rray_ptype2, 3},
+  {"ffi_rray_ptype_common", (DL_FUNC) &ffi_rray_ptype_common, 2},
+  {"ffi_rray_cast", (DL_FUNC) &ffi_rray_cast, 3},
+  {"ffi_rray_cast_common", (DL_FUNC) &ffi_rray_cast_common, 3},
   {"ffi_test_wrap", (DL_FUNC) &ffi_test_wrap, 1},
   {"ffi_test_wrapper_readonly", (DL_FUNC) &ffi_test_wrapper_readonly, 1},
   {"ffi_test_wrapper_writable", (DL_FUNC) &ffi_test_wrapper_writable, 1},

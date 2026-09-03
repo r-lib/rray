@@ -45,6 +45,29 @@ void check_unclassed(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
 }
 
 r_obj* arg_as_array(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
+  check_array(x, arg, error_call);
+
+  if (r_dim(x) == r_null) {
+    return vec_as_array(x);
+  }
+
+  return x;
+}
+
+enum r_type arg_as_ptype(
+  r_obj* x,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+) {
+  check_array(x, arg, error_call);
+  return r_typeof(x);
+}
+
+static void check_array(
+  r_obj* x,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+) {
   switch (r_typeof(x)) {
   case R_TYPE_logical:
   case R_TYPE_integer:
@@ -53,7 +76,7 @@ r_obj* arg_as_array(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
   case R_TYPE_character:
   case R_TYPE_raw:
   case R_TYPE_list:
-    break;
+    return;
   default:
     r_abort_lazy_call(
       error_call,
@@ -62,12 +85,6 @@ r_obj* arg_as_array(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
       r_obj_type_friendly(x)
     );
   }
-
-  if (r_dim(x) == r_null) {
-    return vec_as_array(x);
-  }
-
-  return x;
 }
 
 int arg_as_int(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
