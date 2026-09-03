@@ -26,18 +26,186 @@ enum r_type rray_ptype2(
   struct rray_arg* y_arg,
   struct r_lazy error_call
 ) {
-  if (x == y) {
-    return x;
-  }
+  switch (rray_typeof2(x, y)) {
+  case RRAY_TYPE2_logical_logical:
+    return R_TYPE_logical;
 
-  const int x_rank = rray_ptype_rank(x);
-  const int y_rank = rray_ptype_rank(y);
+  case RRAY_TYPE2_logical_integer:
+  case RRAY_TYPE2_integer_integer:
+    return R_TYPE_integer;
 
-  if (x_rank == -1 || y_rank == -1) {
+  case RRAY_TYPE2_logical_double:
+  case RRAY_TYPE2_integer_double:
+  case RRAY_TYPE2_double_double:
+    return R_TYPE_double;
+
+  case RRAY_TYPE2_logical_complex:
+  case RRAY_TYPE2_integer_complex:
+  case RRAY_TYPE2_double_complex:
+  case RRAY_TYPE2_complex_complex:
+    return R_TYPE_complex;
+
+  case RRAY_TYPE2_character_character:
+    return R_TYPE_character;
+
+  case RRAY_TYPE2_raw_raw:
+    return R_TYPE_raw;
+
+  case RRAY_TYPE2_list_list:
+    return R_TYPE_list;
+
+  default:
     stop_incompatible_ptype(x, y, x_arg, y_arg, error_call);
   }
+}
 
-  return (x_rank > y_rank) ? x : y;
+enum rray_type2 rray_typeof2(enum r_type x, enum r_type y) {
+  switch (x) {
+  case R_TYPE_logical:
+    switch (y) {
+    case R_TYPE_logical:
+      return RRAY_TYPE2_logical_logical;
+    case R_TYPE_integer:
+      return RRAY_TYPE2_logical_integer;
+    case R_TYPE_double:
+      return RRAY_TYPE2_logical_double;
+    case R_TYPE_complex:
+      return RRAY_TYPE2_logical_complex;
+    case R_TYPE_character:
+      return RRAY_TYPE2_logical_character;
+    case R_TYPE_raw:
+      return RRAY_TYPE2_logical_raw;
+    case R_TYPE_list:
+      return RRAY_TYPE2_logical_list;
+    default:
+      break;
+    }
+    break;
+  case R_TYPE_integer:
+    switch (y) {
+    case R_TYPE_logical:
+      return RRAY_TYPE2_logical_integer;
+    case R_TYPE_integer:
+      return RRAY_TYPE2_integer_integer;
+    case R_TYPE_double:
+      return RRAY_TYPE2_integer_double;
+    case R_TYPE_complex:
+      return RRAY_TYPE2_integer_complex;
+    case R_TYPE_character:
+      return RRAY_TYPE2_integer_character;
+    case R_TYPE_raw:
+      return RRAY_TYPE2_integer_raw;
+    case R_TYPE_list:
+      return RRAY_TYPE2_integer_list;
+    default:
+      break;
+    }
+    break;
+  case R_TYPE_double:
+    switch (y) {
+    case R_TYPE_logical:
+      return RRAY_TYPE2_logical_double;
+    case R_TYPE_integer:
+      return RRAY_TYPE2_integer_double;
+    case R_TYPE_double:
+      return RRAY_TYPE2_double_double;
+    case R_TYPE_complex:
+      return RRAY_TYPE2_double_complex;
+    case R_TYPE_character:
+      return RRAY_TYPE2_double_character;
+    case R_TYPE_raw:
+      return RRAY_TYPE2_double_raw;
+    case R_TYPE_list:
+      return RRAY_TYPE2_double_list;
+    default:
+      break;
+    }
+    break;
+  case R_TYPE_complex:
+    switch (y) {
+    case R_TYPE_logical:
+      return RRAY_TYPE2_logical_complex;
+    case R_TYPE_integer:
+      return RRAY_TYPE2_integer_complex;
+    case R_TYPE_double:
+      return RRAY_TYPE2_double_complex;
+    case R_TYPE_complex:
+      return RRAY_TYPE2_complex_complex;
+    case R_TYPE_character:
+      return RRAY_TYPE2_complex_character;
+    case R_TYPE_raw:
+      return RRAY_TYPE2_complex_raw;
+    case R_TYPE_list:
+      return RRAY_TYPE2_complex_list;
+    default:
+      break;
+    }
+    break;
+  case R_TYPE_character:
+    switch (y) {
+    case R_TYPE_logical:
+      return RRAY_TYPE2_logical_character;
+    case R_TYPE_integer:
+      return RRAY_TYPE2_integer_character;
+    case R_TYPE_double:
+      return RRAY_TYPE2_double_character;
+    case R_TYPE_complex:
+      return RRAY_TYPE2_complex_character;
+    case R_TYPE_character:
+      return RRAY_TYPE2_character_character;
+    case R_TYPE_raw:
+      return RRAY_TYPE2_character_raw;
+    case R_TYPE_list:
+      return RRAY_TYPE2_character_list;
+    default:
+      break;
+    }
+    break;
+  case R_TYPE_raw:
+    switch (y) {
+    case R_TYPE_logical:
+      return RRAY_TYPE2_logical_raw;
+    case R_TYPE_integer:
+      return RRAY_TYPE2_integer_raw;
+    case R_TYPE_double:
+      return RRAY_TYPE2_double_raw;
+    case R_TYPE_complex:
+      return RRAY_TYPE2_complex_raw;
+    case R_TYPE_character:
+      return RRAY_TYPE2_character_raw;
+    case R_TYPE_raw:
+      return RRAY_TYPE2_raw_raw;
+    case R_TYPE_list:
+      return RRAY_TYPE2_raw_list;
+    default:
+      break;
+    }
+    break;
+  case R_TYPE_list:
+    switch (y) {
+    case R_TYPE_logical:
+      return RRAY_TYPE2_logical_list;
+    case R_TYPE_integer:
+      return RRAY_TYPE2_integer_list;
+    case R_TYPE_double:
+      return RRAY_TYPE2_double_list;
+    case R_TYPE_complex:
+      return RRAY_TYPE2_complex_list;
+    case R_TYPE_character:
+      return RRAY_TYPE2_character_list;
+    case R_TYPE_raw:
+      return RRAY_TYPE2_raw_list;
+    case R_TYPE_list:
+      return RRAY_TYPE2_list_list;
+    default:
+      break;
+    }
+    break;
+  default:
+    break;
+  }
+
+  r_stop_unreachable();
 }
 
 r_obj* ffi_rray_ptype_common(r_obj* ffi_xs, r_obj* ffi_frame) {
@@ -84,21 +252,6 @@ enum r_type rray_ptype_common(r_obj* xs, struct r_lazy error_call) {
 
   FREE(3);
   return out;
-}
-
-static int rray_ptype_rank(enum r_type type) {
-  switch (type) {
-  case R_TYPE_logical:
-    return 0;
-  case R_TYPE_integer:
-    return 1;
-  case R_TYPE_double:
-    return 2;
-  case R_TYPE_complex:
-    return 3;
-  default:
-    return -1;
-  }
 }
 
 static r_no_return void stop_incompatible_ptype(

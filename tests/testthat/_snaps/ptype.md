@@ -1,3 +1,18 @@
+# the common type of every pair of native types
+
+    Code
+      native_ptype_matrix(rray_ptype2, c("x", "y"))
+    Output
+            y
+      x      lgl       int       dbl       cpl       chr         raw   list  
+        lgl  "logical" "integer" "double"  "complex" NA          NA    NA    
+        int  "integer" "integer" "double"  "complex" NA          NA    NA    
+        dbl  "double"  "double"  "double"  "complex" NA          NA    NA    
+        cpl  "complex" "complex" "complex" "complex" NA          NA    NA    
+        chr  NA        NA        NA        NA        "character" NA    NA    
+        raw  NA        NA        NA        NA        NA          "raw" NA    
+        list NA        NA        NA        NA        NA          NA    "list"
+
 # errors on types that don't combine
 
     Code

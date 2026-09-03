@@ -1,3 +1,7 @@
+test_that("which pairs of native types convert", {
+  expect_snapshot(native_ptype_matrix(rray_cast, c("from", "to")))
+})
+
 test_that("can cast up the numeric tower", {
   expect_identical(rray_cast(TRUE, integer()), array(1L, 1L))
   expect_identical(rray_cast(TRUE, double()), array(1, 1L))

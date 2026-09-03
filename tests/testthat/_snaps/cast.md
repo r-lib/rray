@@ -1,3 +1,18 @@
+# which pairs of native types convert
+
+    Code
+      native_ptype_matrix(rray_cast, c("from", "to"))
+    Output
+            to
+      from   lgl       int       dbl      cpl       chr         raw   list  
+        lgl  "logical" "integer" "double" "complex" NA          NA    NA    
+        int  "logical" "integer" "double" "complex" NA          NA    NA    
+        dbl  "logical" "integer" "double" "complex" NA          NA    NA    
+        cpl  NA        NA        NA       "complex" NA          NA    NA    
+        chr  NA        NA        NA       NA        "character" NA    NA    
+        raw  NA        NA        NA       NA        NA          "raw" NA    
+        list NA        NA        NA       NA        NA          NA    "list"
+
 # errors on a lossy cast, reporting the location
 
     Code

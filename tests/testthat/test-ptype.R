@@ -1,25 +1,5 @@
-test_that("the numeric tower promotes to the wider type", {
-  expect_identical(rray_ptype2(logical(), integer()), integer())
-  expect_identical(rray_ptype2(logical(), double()), double())
-  expect_identical(rray_ptype2(logical(), complex()), complex())
-  expect_identical(rray_ptype2(integer(), double()), double())
-  expect_identical(rray_ptype2(integer(), complex()), complex())
-  expect_identical(rray_ptype2(double(), complex()), complex())
-})
-
-test_that("the numeric tower is symmetric", {
-  expect_identical(rray_ptype2(integer(), logical()), integer())
-  expect_identical(rray_ptype2(complex(), double()), complex())
-})
-
-test_that("every native type combines with itself", {
-  expect_identical(rray_ptype2(logical(), logical()), logical())
-  expect_identical(rray_ptype2(integer(), integer()), integer())
-  expect_identical(rray_ptype2(double(), double()), double())
-  expect_identical(rray_ptype2(complex(), complex()), complex())
-  expect_identical(rray_ptype2(character(), character()), character())
-  expect_identical(rray_ptype2(raw(), raw()), raw())
-  expect_identical(rray_ptype2(list(), list()), list())
+test_that("the common type of every pair of native types", {
+  expect_snapshot(native_ptype_matrix(rray_ptype2, c("x", "y")))
 })
 
 test_that("the type is read off arrays of any dimensionality or size", {
