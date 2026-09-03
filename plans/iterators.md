@@ -1,7 +1,7 @@
 # Iterator follow ups
 
-Two improvements to the array iterators. They are independent, and the first one
-makes the second one smaller, so do them in order.
+Two improvements to the array iterators. Both are done. This records what they
+were for and how they landed.
 
 ---
 
@@ -37,6 +37,10 @@ index, each with its own dimensionality, and covers both existing uses.
 
 - Broadcast walks the view and reports back into the original input. The input
   may have fewer axes, and the missing trailing axes are treated as 1.
+
+`src/iterator2.h` holds `struct rray_iterator2`, which walks one space and
+reports two locations. Both inits share `rray_location_strides_init()`, which
+validates one location space against the walked space and fills its strides.
 
 ---
 
@@ -155,7 +159,7 @@ walked space is the view and the indexed space is the input.
 
 ---
 
-# Improvement 2: `rray_iterator2`, two locations from one walk
+# Improvement 2: `rray_iterator2`, two locations from one walk (done)
 
 ## Why
 
@@ -275,13 +279,15 @@ actually lands, rather than paying for that generality now.
 
 ---
 
-# Open question
+# Settled question
 
-The name `rray_iterator2`. In this codebase a trailing `2` currently means two
-inputs, as in `rray_broadcast_names2(x, y, dimensions)`. Here it would mean two
+The name `rray_iterator2`. In this codebase a trailing `2` elsewhere means two
+inputs, as in `rray_broadcast_names2(x, y, dimensions)`. Here it means two
 location spaces. Those coincide for binary operations, but not for split, which
-is one input with two output spaces. Worth settling before it is spelled that
-way across several files.
+is one input with two output spaces.
+
+The name was kept. If it ever reads wrong, the thing to rename is the struct,
+not the concept.
 
 ---
 
