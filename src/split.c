@@ -40,10 +40,18 @@ r_obj* rray_split(
   );
   const int* v_out_elt_dimensions = r_int_cbegin(out_elt_dimensions);
 
+  r_obj* axes_complement =
+    KEEP(rray_axes_complement(v_axes, axes_size, dimensionality));
+  const int* v_axes_complement = r_int_cbegin(axes_complement);
+  const r_ssize axes_complement_size = r_length(axes_complement);
+
   // Splitting 4x3x2 on axis 3 gives 1x1x2 split dimensions
-  r_obj* out_dimensions = KEEP(
-    rray_split_dimensions(v_x_dimensions, dimensionality, v_axes, axes_size)
-  );
+  r_obj* out_dimensions = KEEP(rray_reduce_dimensions(
+    v_x_dimensions,
+    dimensionality,
+    v_axes_complement,
+    axes_complement_size
+  ));
   const int* v_out_dimensions = r_int_cbegin(out_dimensions);
 
   const r_ssize out_elt_size =
@@ -114,7 +122,7 @@ r_obj* rray_split(
     }
   }
 
-  FREE(7);
+  FREE(8);
   return out;
 }
 
@@ -225,24 +233,3 @@ static void rray_split_list(
 
 #undef RRAY_SPLIT_ATOMIC
 #undef RRAY_SPLIT_BARRIER
-
-static r_obj* rray_split_dimensions(
-  const int* v_dimensions,
-  int dimensionality,
-  const int* v_axes,
-  r_ssize axes_size
-) {
-  r_obj* out = KEEP(r_alloc_integer(dimensionality));
-  int* v_out = r_int_begin(out);
-
-  for (int i = 0; i < dimensionality; ++i) {
-    v_out[i] = 1;
-  }
-
-  for (r_ssize i = 0; i < axes_size; ++i) {
-    v_out[v_axes[i] - 1] = v_dimensions[v_axes[i] - 1];
-  }
-
-  FREE(1);
-  return out;
-}

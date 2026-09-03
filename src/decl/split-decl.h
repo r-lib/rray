@@ -40,10 +40,3 @@ static void rray_split_list(
   struct rray_iterator* out_it,
   struct rray_iterator* out_elt_it
 );
-
-static r_obj* rray_split_dimensions(
-  const int* v_dimensions,
-  int dimensionality,
-  const int* v_axes,
-  r_ssize axes_size
-);

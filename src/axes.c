@@ -103,3 +103,27 @@ void check_axis(
     );
   }
 }
+
+r_obj* rray_axes_complement(
+  const int* v_axes,
+  r_ssize axes_size,
+  int dimensionality
+) {
+  r_obj* out = KEEP(r_alloc_integer(dimensionality - axes_size));
+  int* v_out = r_int_begin(out);
+
+  r_ssize j = 0;
+  r_ssize k = 0;
+
+  for (int axis = 1; axis <= dimensionality; ++axis) {
+    if (j < axes_size && v_axes[j] == axis) {
+      ++j;
+    } else {
+      v_out[k] = axis;
+      ++k;
+    }
+  }
+
+  FREE(1);
+  return out;
+}

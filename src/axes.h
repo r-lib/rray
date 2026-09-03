@@ -19,4 +19,10 @@ void check_axis(
   struct r_lazy error_call
 );
 
+r_obj* rray_axes_complement(
+  const int* v_axes,
+  r_ssize axes_size,
+  int dimensionality
+);
+
 #endif
