@@ -56,7 +56,7 @@ extern r_obj* ffi_rray_broadcast_names_common(
   r_obj* ffi_dimensions
 );
 extern r_obj* ffi_rray_reduce_names(r_obj* ffi_x, r_obj* ffi_axes);
-extern r_obj* ffi_rray_split_names(r_obj* ffi_x, r_obj* ffi_dimensions);
+extern r_obj* ffi_rray_split_names(r_obj* ffi_x, r_obj* ffi_axes);
 extern r_obj* ffi_rray_dimensions_common(
   r_obj* ffi_xs,
   r_obj* ffi_dimensions,

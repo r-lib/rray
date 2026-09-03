@@ -1,24 +1,26 @@
 #include "split-names.h"
 
+#include "axes.h"
 #include "dimensionality.h"
+#include "dimensions.h"
 #include "iterator.h"
 #include "names.h"
 #include "size.h"
 
 #include "decl/split-names-decl.h"
 
-r_obj* ffi_rray_split_names(r_obj* ffi_x, r_obj* ffi_dimensions) {
-  return rray_split_names(ffi_x, ffi_dimensions);
+r_obj* ffi_rray_split_names(r_obj* ffi_x, r_obj* ffi_axes) {
+  return rray_split_names(ffi_x, ffi_axes);
 }
 
 // Splitting of array names
 //
-// Assumes the inputs are validated arrays and that `dimensions` are the split
-// dimensions of `x`. The caller typically checks all of this already.
+// Assumes the inputs are validated arrays and that `axes` are valid axes of
+// `x`. The caller typically checks all of this already.
 //
 // Mimics `rray_broadcast_names()` ideas, but splitting returns one set of names
 // per output element
-r_obj* rray_split_names(r_obj* x, r_obj* dimensions) {
+r_obj* rray_split_names(r_obj* x, r_obj* axes) {
   r_obj* x_names = rray_names(x, rray_args.x, r_lazy_null);
   if (x_names == r_null) {
     return r_null;
@@ -27,8 +29,26 @@ r_obj* rray_split_names(r_obj* x, r_obj* dimensions) {
 
   r_obj* const* v_x_names = r_list_cbegin(x_names);
 
+  r_obj* x_dimensions = KEEP(rray_dimensions(x, rray_args.x, r_lazy_null));
+  const int* v_x_dimensions = r_int_cbegin(x_dimensions);
+  const int dimensionality = rray_dimensionality_from_dimensions(x_dimensions);
+
+  const int* v_axes = r_int_cbegin(axes);
+  const r_ssize axes_size = r_length(axes);
+
+  r_obj* axes_complement =
+    KEEP(rray_axes_complement(v_axes, axes_size, dimensionality));
+  const int* v_axes_complement = r_int_cbegin(axes_complement);
+  const r_ssize axes_complement_size = r_length(axes_complement);
+
+  r_obj* dimensions = KEEP(rray_set_axes_dimension(
+    v_x_dimensions,
+    dimensionality,
+    v_axes_complement,
+    axes_complement_size,
+    1
+  ));
   const int* v_dimensions = r_int_cbegin(dimensions);
-  const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
 
   // Pre-split axis names into size 1 elements we can reuse across multiple
   // output arrays. Reusing these size 1 names saves quite a bit of time and
@@ -37,7 +57,7 @@ r_obj* rray_split_names(r_obj* x, r_obj* dimensions) {
     rray_split_axes_names(v_x_names, v_dimensions, dimensionality);
   if (axes_names == r_null) {
     // Names existed, but all axis names were `NULL`
-    FREE(1);
+    FREE(4);
     return r_null;
   }
   KEEP(axes_names);
@@ -77,7 +97,7 @@ r_obj* rray_split_names(r_obj* x, r_obj* dimensions) {
     rray_point_iterator_next(&it);
   }
 
-  FREE(3);
+  FREE(6);
   return out;
 }
 

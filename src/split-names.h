@@ -3,6 +3,6 @@
 
 #include "rlang.h"
 
-r_obj* rray_split_names(r_obj* x, r_obj* dimensions);
+r_obj* rray_split_names(r_obj* x, r_obj* axes);
 
 #endif
