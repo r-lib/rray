@@ -15,12 +15,12 @@
 #define RRAY_ITERATOR_NEXT(IT, STEP, RESET)                                    \
   for (int i = 0; i < (IT)->dimensionality; ++i) {                             \
     ++(IT)->v_point[i];                                                        \
-                                                                                \
+                                                                               \
     if ((IT)->v_point[i] < (IT)->v_point_dimensions[i]) {                      \
       STEP                                                                     \
       return;                                                                  \
     }                                                                          \
-                                                                                \
+                                                                               \
     (IT)->v_point[i] = 0;                                                      \
     RESET                                                                      \
   }
