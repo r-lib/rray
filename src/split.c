@@ -3,8 +3,8 @@
 #include "axes.h"
 #include "dimensionality.h"
 #include "dimensions.h"
+#include "iterator.h"
 #include "reduce.h"
-#include "reduction-iterator.h"
 #include "size.h"
 #include "split-names.h"
 #include "utils.h"
@@ -70,17 +70,19 @@ r_obj* rray_split(
   }
 
   struct rray_iterator out_it;
-  rray_reduction_iterator_init(
+  rray_iterator_init(
     &out_it,
     v_x_dimensions,
+    dimensionality,
     v_out_dimensions,
     dimensionality
   );
 
   struct rray_iterator out_elt_it;
-  rray_reduction_iterator_init(
+  rray_iterator_init(
     &out_elt_it,
     v_x_dimensions,
+    dimensionality,
     v_out_elt_dimensions,
     dimensionality
   );
