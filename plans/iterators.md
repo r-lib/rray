@@ -1,8 +1,7 @@
 # Iterator follow ups
 
-Two improvements to the array iterators that we agreed on but did not build. They
-are independent, and the first one makes the second one smaller, so do them in
-order.
+Two improvements to the array iterators. They are independent, and the first one
+makes the second one smaller, so do them in order.
 
 ---
 
@@ -30,18 +29,18 @@ A stride of zero is the whole mechanism. Adding zero on a step is a no-op, and
 the reset term is multiplied by that same zero, so `rray_iterator_next()` needs
 no per axis test.
 
-There are two ways to set one up.
+`rray_iterator_init()` sets one up. It takes the space to walk and the space to
+index, each with its own dimensionality, and covers both existing uses.
 
-- `rray_reduction_iterator_init()` in `src/reduction-iterator.h`. Walks the input,
-  reports into the reduced output. Both spaces have the same dimensionality.
+- Reduction walks the input and reports into the reduced output. Both spaces
+  have the same dimensionality.
 
-- `rray_broadcast_iterator_init()` in `src/broadcast-iterator.h`. Walks the
-  broadcast view, reports back into the original input. The input may have fewer
-  axes, and the missing trailing axes are treated as 1.
+- Broadcast walks the view and reports back into the original input. The input
+  may have fewer axes, and the missing trailing axes are treated as 1.
 
 ---
 
-# Improvement 1: one stride builder for reduction and broadcast
+# Improvement 1: one stride builder for reduction and broadcast (done)
 
 ## Why
 
@@ -134,18 +133,25 @@ static inline void rray_broadcast_iterator_init(
 
 ## Watch out for
 
-The broadcast wrapper flips its arguments. Its signature lists the input space
-first and the walked view second, while the general init takes the walked space
-first. Keep the wrapper signature as it is, since call sites depend on it, and
-just pass the arguments across in the right order.
+Broadcast reads backwards from how you might expect. The space it walks is the
+broadcast view, and the space it indexes is the original input, so in
+`src/broadcast.c` the view goes first and `x` second. Getting these the wrong
+way round still compiles and still runs, it just reads the wrong array.
 
-## Keep the named wrappers
+## The named wrappers were removed
 
-Do not delete `rray_reduction_iterator_init()` and
-`rray_broadcast_iterator_init()` in favour of calling the general init directly.
-They cost one line each and they say what a call site is doing. Reading
-`rray_broadcast_iterator_init` at a call site tells you more than five
-positional arguments do.
+This section originally argued for keeping `rray_reduction_iterator_init()` and
+`rray_broadcast_iterator_init()` as one-line wrappers, on the grounds that the
+names told a reader what a call site was doing.
+
+That was overruled. Once they held no logic they were not worth two files, so
+both wrappers and both headers are gone, and the five call sites call
+`rray_iterator_init()` directly. Everything that walks an array now includes
+`src/iterator.h` and nothing else.
+
+The cost is that a call site is five positional arguments with no name saying
+which kind of walk it is. Broadcast is the one to read carefully, since the
+walked space is the view and the indexed space is the input.
 
 ---
 
@@ -228,13 +234,11 @@ static inline void rray_iterator2_next(struct rray_iterator2* it) {
 ```
 
 Give it a general `rray_iterator2_init()` taking the walked space and both
-location spaces, built the same way as Improvement 1. Then add named wrappers
-for each use, following the existing file layout.
+location spaces, built the same way as Improvement 1.
 
-- `src/split-iterator.h` for `rray_split_iterator_init()`.
-
-- A `rray_broadcast_iterator2_init()` in `src/broadcast-iterator.h` when binary
-  operations land.
+Do not add named wrappers per use. Improvement 1 ended with those removed, so
+`src/iterator2.h` should hold the struct, the init, the accessors, and the step
+function, and callers should use them directly.
 
 ## Then convert `rray_split()`
 

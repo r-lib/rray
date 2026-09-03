@@ -1,9 +1,9 @@
 #include "broadcast.h"
 
-#include "broadcast-iterator.h"
 #include "broadcast-names.h"
 #include "dimensionality.h"
 #include "dimensions.h"
+#include "iterator.h"
 #include "size.h"
 #include "utils.h"
 
@@ -63,12 +63,12 @@ r_obj* rray_broadcast(
   const r_ssize size = rray_size_from_dimensions(v_dimensions, dimensionality);
 
   struct rray_iterator it;
-  rray_broadcast_iterator_init(
+  rray_iterator_init(
     &it,
-    v_x_dimensions,
-    x_dimensionality,
     v_dimensions,
-    dimensionality
+    dimensionality,
+    v_x_dimensions,
+    x_dimensionality
   );
 
   r_obj* out;

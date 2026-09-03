@@ -3,9 +3,9 @@
 #include "axes.h"
 #include "dimensionality.h"
 #include "dimensions.h"
+#include "iterator.h"
 #include "reduce-names.h"
 #include "reduce.h"
-#include "reduction-iterator.h"
 #include "size.h"
 #include "utils.h"
 
@@ -50,9 +50,10 @@ r_obj* rray_sum(
     rray_size_from_dimensions(v_out_dimensions, dimensionality);
 
   struct rray_iterator it;
-  rray_reduction_iterator_init(
+  rray_iterator_init(
     &it,
     v_x_dimensions,
+    dimensionality,
     v_out_dimensions,
     dimensionality
   );

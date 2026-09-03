@@ -1,8 +1,8 @@
 #include "split-names.h"
 
 #include "dimensionality.h"
+#include "iterator.h"
 #include "names.h"
-#include "reduction-iterator.h"
 #include "size.h"
 
 #include "decl/split-names-decl.h"
@@ -59,7 +59,13 @@ r_obj* rray_split_names(r_obj* x, r_obj* dimensions) {
   r_obj* out = KEEP(r_alloc_list(size));
 
   struct rray_iterator it;
-  rray_reduction_iterator_init(&it, v_dimensions, v_dimensions, dimensionality);
+  rray_iterator_init(
+    &it,
+    v_dimensions,
+    dimensionality,
+    v_dimensions,
+    dimensionality
+  );
 
   for (r_ssize i = 0; i < size; ++i) {
     const r_ssize* v_point = rray_iterator_point(&it);
