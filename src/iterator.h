@@ -7,8 +7,8 @@
 // Iterates one step at a time through the `v_point_dimensions` space,
 // where each step is recorded in `v_point`
 //
-// Reports the corresponding 1-D `location` in `v_location_dimensions`
-// space
+// Reports the corresponding 1-D `location` in a second space utilizing
+// the same dimensions, but with some axes collapsed to a dimension of 1
 struct rray_iterator {
   int dimensionality;
 
@@ -18,14 +18,11 @@ struct rray_iterator {
   // Current multi-dimensional position
   r_ssize v_point[RRAY_MAX_DIMENSIONALITY];
 
-  // Dimensions that determine `location`.
-  // Size-1 dimensions contribute no stride.
-  int v_location_dimensions[RRAY_MAX_DIMENSIONALITY];
-
-  // Column-major strides computed from `v_location_dimensions`
+  // Column-major strides into the location space.
+  // A collapsed axis has a stride of 0, so it contributes nothing.
   r_ssize v_location_strides[RRAY_MAX_DIMENSIONALITY];
 
-  // Current 1-D position derived from `v_location_dimensions`
+  // Current 1-D position derived from `v_location_strides`
   r_ssize location;
 };
 
@@ -46,18 +43,13 @@ static inline void rray_iterator_next(struct rray_iterator* it) {
     ++it->v_point[i];
 
     if (it->v_point[i] < it->v_point_dimensions[i]) {
-      if (it->v_location_dimensions[i] != 1) {
-        it->location += it->v_location_strides[i];
-      }
+      it->location += it->v_location_strides[i];
       return;
     }
 
     it->v_point[i] = 0;
 
-    if (it->v_location_dimensions[i] != 1) {
-      it->location -=
-        (it->v_location_dimensions[i] - 1) * it->v_location_strides[i];
-    }
+    it->location -= (it->v_point_dimensions[i] - 1) * it->v_location_strides[i];
   }
 }
 

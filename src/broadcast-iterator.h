@@ -25,17 +25,11 @@ static inline void rray_broadcast_iterator_init(
     it->v_point_dimensions[i] = v_view_dimensions[i];
   }
 
-  for (int i = 0; i < dimensionality; ++i) {
-    it->v_location_dimensions[i] = v_dimensions[i];
-  }
-  for (int i = dimensionality; i < view_dimensionality; ++i) {
-    it->v_location_dimensions[i] = 1;
-  }
-
-  it->v_location_strides[0] = 1;
-  for (int i = 1; i < view_dimensionality; ++i) {
-    it->v_location_strides[i] =
-      it->v_location_strides[i - 1] * it->v_location_dimensions[i - 1];
+  r_ssize stride = 1;
+  for (int i = 0; i < view_dimensionality; ++i) {
+    const int dimension = (i < dimensionality) ? v_dimensions[i] : 1;
+    it->v_location_strides[i] = (dimension == 1) ? 0 : stride;
+    stride *= dimension;
   }
 
   memset(it->v_point, 0, sizeof(r_ssize) * view_dimensionality);
