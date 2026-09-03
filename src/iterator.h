@@ -98,6 +98,7 @@ static inline void rray_iterator_init(
   for (int i = 0; i < point_dimensionality; ++i) {
     it->v_point_dimensions[i] = v_point_dimensions[i];
   }
+  memset(it->v_point, 0, sizeof(r_ssize) * point_dimensionality);
 
   rray_location_strides_init(
     it->v_location_strides,
@@ -107,8 +108,6 @@ static inline void rray_iterator_init(
     location_dimensionality,
     "location"
   );
-
-  memset(it->v_point, 0, sizeof(r_ssize) * point_dimensionality);
   it->location = 0;
 }
 
@@ -128,6 +127,7 @@ static inline void rray_iterator2_init(
   for (int i = 0; i < point_dimensionality; ++i) {
     it->v_point_dimensions[i] = v_point_dimensions[i];
   }
+  memset(it->v_point, 0, sizeof(r_ssize) * point_dimensionality);
 
   rray_location_strides_init(
     it->v_location1_strides,
@@ -137,6 +137,7 @@ static inline void rray_iterator2_init(
     location1_dimensionality,
     "location1"
   );
+  it->location1 = 0;
 
   rray_location_strides_init(
     it->v_location2_strides,
@@ -146,9 +147,6 @@ static inline void rray_iterator2_init(
     location2_dimensionality,
     "location2"
   );
-
-  memset(it->v_point, 0, sizeof(r_ssize) * point_dimensionality);
-  it->location1 = 0;
   it->location2 = 0;
 }
 
