@@ -7,8 +7,8 @@
 // Iterates one step at a time through the `v_point_dimensions` space,
 // where each step is recorded in `v_point`
 //
-// Reports the corresponding 1-D `location` in a second space over the
-// same axes, where any axis can be collapsed to a single index
+// Reports the corresponding 1-D `location` in a second space utilizing
+// the same dimensions, but with some axes collapsed to a dimension of 1
 struct rray_iterator {
   int dimensionality;
 
