@@ -38,9 +38,10 @@ index, each with its own dimensionality, and covers both existing uses.
 - Broadcast walks the view and reports back into the original input. The input
   may have fewer axes, and the missing trailing axes are treated as 1.
 
-`src/iterator2.h` holds `struct rray_iterator2`, which walks one space and
-reports two locations. Both inits share `rray_location_strides_init()`, which
-validates one location space against the walked space and fills its strides.
+`struct rray_iterator2` sits alongside it in the same header. It walks one
+space and reports two locations. Both inits share
+`rray_location_strides_init()`, which validates one location space against the
+walked space and fills its strides.
 
 ---
 
@@ -200,7 +201,7 @@ A general one covers both, and split simply passes complementary strides.
 
 ## What to do
 
-Add `src/iterator2.h` beside `src/iterator.h`.
+Add `struct rray_iterator2` to `src/iterator.h`, next to `struct rray_iterator`.
 
 ```c
 struct rray_iterator2 {
@@ -241,8 +242,12 @@ Give it a general `rray_iterator2_init()` taking the walked space and both
 location spaces, built the same way as Improvement 1.
 
 Do not add named wrappers per use. Improvement 1 ended with those removed, so
-`src/iterator2.h` should hold the struct, the init, the accessors, and the step
-function, and callers should use them directly.
+callers should use the struct, the init, the accessors, and the step function
+directly.
+
+Keep the one and two location versions paired in `src/iterator.h`: the two
+structs together, then both inits, then both location accessors, then both
+point accessors, then both step functions.
 
 ## Then convert `rray_split()`
 
