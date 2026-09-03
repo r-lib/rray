@@ -14,7 +14,7 @@
 // Calls `STEP` and `RESET` hooks,which are what define
 // each iterator.
 #define RRAY_ITERATOR_NEXT(IT, STEP, RESET)                                    \
-  for (int i = 0; i < (IT)->dimensionality; ++i) {                             \
+  for (int i = 0; i < (IT)->point_dimensionality; ++i) {                       \
     ++(IT)->v_point[i];                                                        \
                                                                                \
     if ((IT)->v_point[i] < (IT)->v_point_dimensions[i]) {                      \
@@ -45,15 +45,15 @@ static inline void rray_point_iterator_init(
 ) {
   check_max_dimensionality(point_dimensionality);
 
-  it->dimensionality = point_dimensionality;
+  it->point_dimensionality = point_dimensionality;
 
   for (int i = 0; i < point_dimensionality; ++i) {
     it->v_point_dimensions[i] = v_point_dimensions[i];
   }
-  memset(it->v_point, 0, sizeof(r_ssize) * point_dimensionality);
+  memset(it->v_point, 0, sizeof(int) * point_dimensionality);
 }
 
-static inline const r_ssize* rray_point_iterator_point(
+static inline const int* rray_point_iterator_point(
   const struct rray_point_iterator* it
 ) {
   return it->v_point;
@@ -100,12 +100,12 @@ static inline void rray_iterator_init(
 ) {
   check_max_dimensionality(point_dimensionality);
 
-  it->dimensionality = point_dimensionality;
+  it->point_dimensionality = point_dimensionality;
 
   for (int i = 0; i < point_dimensionality; ++i) {
     it->v_point_dimensions[i] = v_point_dimensions[i];
   }
-  memset(it->v_point, 0, sizeof(r_ssize) * point_dimensionality);
+  memset(it->v_point, 0, sizeof(int) * point_dimensionality);
 
   rray__location_strides_init(
     it->v_location_strides,
@@ -138,18 +138,15 @@ static inline void rray_iterator_next(struct rray_iterator* it) {
 // Same as `rray_iterator`, but reports in two location spaces while
 // only walking the point space once
 struct rray_iterator2 {
-// TODO: group and rename like the others
-  int dimensionality;
-
+  int v_point[RRAY_MAX_DIMENSIONALITY];
   int v_point_dimensions[RRAY_MAX_DIMENSIONALITY];
-
-  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];
-
-  r_ssize v_location1_strides[RRAY_MAX_DIMENSIONALITY];
-  r_ssize v_location2_strides[RRAY_MAX_DIMENSIONALITY];
+  int point_dimensionality;
 
   r_ssize location1;
+  r_ssize v_location1_strides[RRAY_MAX_DIMENSIONALITY];
+
   r_ssize location2;
+  r_ssize v_location2_strides[RRAY_MAX_DIMENSIONALITY];
 };
 
 static inline void rray_iterator2_init(
@@ -163,12 +160,12 @@ static inline void rray_iterator2_init(
 ) {
   check_max_dimensionality(point_dimensionality);
 
-  it->dimensionality = point_dimensionality;
+  it->point_dimensionality = point_dimensionality;
 
   for (int i = 0; i < point_dimensionality; ++i) {
     it->v_point_dimensions[i] = v_point_dimensions[i];
   }
-  memset(it->v_point, 0, sizeof(r_ssize) * point_dimensionality);
+  memset(it->v_point, 0, sizeof(int) * point_dimensionality);
 
   rray__location_strides_init(
     it->v_location1_strides,
