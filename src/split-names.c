@@ -58,14 +58,8 @@ r_obj* rray_split_names(r_obj* x, r_obj* dimensions) {
 
   r_obj* out = KEEP(r_alloc_list(size));
 
-  struct rray_iterator it;
-  rray_iterator_init(
-    &it,
-    v_dimensions,
-    dimensionality,
-    v_dimensions,
-    dimensionality
-  );
+  struct rray_point_iterator it;
+  rray_point_iterator_init(&it, v_dimensions, dimensionality);
 
   for (r_ssize i = 0; i < size; ++i) {
     const r_ssize* v_point = rray_iterator_point(&it);
@@ -80,7 +74,7 @@ r_obj* rray_split_names(r_obj* x, r_obj* dimensions) {
       }
     }
 
-    rray_iterator_next(&it);
+    rray_point_iterator_next(&it);
   }
 
   FREE(3);
