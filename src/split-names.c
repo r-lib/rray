@@ -62,7 +62,7 @@ r_obj* rray_split_names(r_obj* x, r_obj* dimensions) {
   rray_point_iterator_init(&it, v_dimensions, dimensionality);
 
   for (r_ssize i = 0; i < size; ++i) {
-    const r_ssize* v_point = rray_iterator_point(&it);
+    const r_ssize* v_point = rray_point_iterator_point(&it);
 
     r_obj* names = r_alloc_list(dimensionality);
     r_list_poke(out, i, names);

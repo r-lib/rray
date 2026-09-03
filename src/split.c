@@ -136,8 +136,8 @@ r_obj* rray_split(
   }                                                                            \
                                                                                \
   for (r_ssize i = 0; i < x_size; ++i) {                                       \
-    const r_ssize out_loc = rray_iterator_location1(it);                       \
-    const r_ssize out_elt_loc = rray_iterator_location2(it);                   \
+    const r_ssize out_loc = rray_iterator2_location1(it);                      \
+    const r_ssize out_elt_loc = rray_iterator2_location2(it);                  \
                                                                                \
     v_v_out[out_loc][out_elt_loc] = v_x[i];                                    \
                                                                                \
@@ -153,8 +153,8 @@ r_obj* rray_split(
   r_obj* const* v_out = r_list_cbegin(out);                                    \
                                                                                \
   for (r_ssize i = 0; i < x_size; ++i) {                                       \
-    const r_ssize out_loc = rray_iterator_location1(it);                       \
-    const r_ssize out_elt_loc = rray_iterator_location2(it);                   \
+    const r_ssize out_loc = rray_iterator2_location1(it);                      \
+    const r_ssize out_elt_loc = rray_iterator2_location2(it);                  \
                                                                                \
     POKE(v_out[out_loc], out_elt_loc, v_x[i]);                                 \
                                                                                \
