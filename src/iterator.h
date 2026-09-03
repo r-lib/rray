@@ -35,6 +35,29 @@ static inline void rray_iterator_init(
 ) {
   check_max_dimensionality(point_dimensionality);
 
+  if (location_dimensionality > point_dimensionality) {
+    r_stop_internal(
+      "`location_dimensionality` of %d can't be greater than "
+      "`point_dimensionality` of %d.",
+      location_dimensionality,
+      point_dimensionality
+    );
+  }
+
+  for (int i = 0; i < location_dimensionality; ++i) {
+    const int point_dimension = v_point_dimensions[i];
+    const int location_dimension = v_location_dimensions[i];
+
+    if (location_dimension != point_dimension && location_dimension != 1) {
+      r_stop_internal(
+        "Axis %d must have a location dimension of 1 or %d, not %d.",
+        i + 1,
+        point_dimension,
+        location_dimension
+      );
+    }
+  }
+
   it->dimensionality = point_dimensionality;
 
   for (int i = 0; i < point_dimensionality; ++i) {
