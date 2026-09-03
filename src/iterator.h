@@ -214,8 +214,6 @@ static inline void rray_iterator2_next(struct rray_iterator2* it) {
   )
 }
 
-#undef RRAY_ITERATOR_NEXT
-
 // --------------------------------------------------------------------------
 
 static inline void rray__location_strides_init(
@@ -259,5 +257,7 @@ static inline void rray__location_strides_init(
     stride *= dimension;
   }
 }
+
+#undef RRAY_ITERATOR_NEXT
 
 #endif
