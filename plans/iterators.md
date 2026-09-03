@@ -1,8 +1,7 @@
 # Iterator follow ups
 
-Two improvements to the array iterators that we agreed on but did not build. They
-are independent, and the first one makes the second one smaller, so do them in
-order.
+Two improvements to the array iterators. They are independent, and the first one
+makes the second one smaller, so do them in order.
 
 ---
 
@@ -41,7 +40,7 @@ There are two ways to set one up.
 
 ---
 
-# Improvement 1: one stride builder for reduction and broadcast
+# Improvement 1: one stride builder for reduction and broadcast (done)
 
 ## Why
 

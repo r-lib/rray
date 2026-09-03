@@ -26,6 +26,33 @@ struct rray_iterator {
   r_ssize location;
 };
 
+static inline void rray_iterator_init(
+  struct rray_iterator* it,
+  const int* v_point_dimensions,
+  int point_dimensionality,
+  const int* v_location_dimensions,
+  int location_dimensionality
+) {
+  check_max_dimensionality(point_dimensionality);
+
+  it->dimensionality = point_dimensionality;
+
+  for (int i = 0; i < point_dimensionality; ++i) {
+    it->v_point_dimensions[i] = v_point_dimensions[i];
+  }
+
+  r_ssize stride = 1;
+  for (int i = 0; i < point_dimensionality; ++i) {
+    const int dimension =
+      (i < location_dimensionality) ? v_location_dimensions[i] : 1;
+    it->v_location_strides[i] = (dimension == 1) ? 0 : stride;
+    stride *= dimension;
+  }
+
+  memset(it->v_point, 0, sizeof(r_ssize) * point_dimensionality);
+  it->location = 0;
+}
+
 static inline r_ssize rray_iterator_location(const struct rray_iterator* it) {
   return it->location;
 }

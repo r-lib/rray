@@ -17,23 +17,13 @@ static inline void rray_reduction_iterator_init(
   const int* v_out_dimensions,
   int dimensionality
 ) {
-  check_max_dimensionality(dimensionality);
-
-  it->dimensionality = dimensionality;
-
-  for (int i = 0; i < dimensionality; ++i) {
-    it->v_point_dimensions[i] = v_dimensions[i];
-  }
-
-  r_ssize stride = 1;
-  for (int i = 0; i < dimensionality; ++i) {
-    const int dimension = v_out_dimensions[i];
-    it->v_location_strides[i] = (dimension == 1) ? 0 : stride;
-    stride *= dimension;
-  }
-
-  memset(it->v_point, 0, sizeof(r_ssize) * dimensionality);
-  it->location = 0;
+  rray_iterator_init(
+    it,
+    v_dimensions,
+    dimensionality,
+    v_out_dimensions,
+    dimensionality
+  );
 }
 
 #endif

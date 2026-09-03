@@ -17,23 +17,13 @@ static inline void rray_broadcast_iterator_init(
   const int* v_view_dimensions,
   int view_dimensionality
 ) {
-  check_max_dimensionality(view_dimensionality);
-
-  it->dimensionality = view_dimensionality;
-
-  for (int i = 0; i < view_dimensionality; ++i) {
-    it->v_point_dimensions[i] = v_view_dimensions[i];
-  }
-
-  r_ssize stride = 1;
-  for (int i = 0; i < view_dimensionality; ++i) {
-    const int dimension = (i < dimensionality) ? v_dimensions[i] : 1;
-    it->v_location_strides[i] = (dimension == 1) ? 0 : stride;
-    stride *= dimension;
-  }
-
-  memset(it->v_point, 0, sizeof(r_ssize) * view_dimensionality);
-  it->location = 0;
+  rray_iterator_init(
+    it,
+    v_view_dimensions,
+    view_dimensionality,
+    v_dimensions,
+    dimensionality
+  );
 }
 
 #endif
