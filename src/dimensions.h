@@ -25,6 +25,14 @@ r_obj* rray_set_dimensions(
   struct r_lazy error_call
 );
 
+r_obj* rray_set_axes_dimension(
+  const int* v_dimensions,
+  int dimensionality,
+  const int* v_axes,
+  r_ssize axes_size,
+  int dimension
+);
+
 bool rray_dimensions_are_equal(
   const int* v_x_dimensions,
   int x_dimensionality,

@@ -5,7 +5,6 @@
 #include "dimensions.h"
 #include "iterator.h"
 #include "reduce-names.h"
-#include "reduce.h"
 #include "size.h"
 #include "utils.h"
 
@@ -41,9 +40,13 @@ r_obj* rray_sum(
   const int* v_axes = r_int_cbegin(axes);
   const r_ssize axes_size = r_length(axes);
 
-  r_obj* out_dimensions = KEEP(
-    rray_reduce_dimensions(v_x_dimensions, dimensionality, v_axes, axes_size)
-  );
+  r_obj* out_dimensions = KEEP(rray_set_axes_dimension(
+    v_x_dimensions,
+    dimensionality,
+    v_axes,
+    axes_size,
+    1
+  ));
   const int* v_out_dimensions = r_int_cbegin(out_dimensions);
 
   const r_ssize out_size =

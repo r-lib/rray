@@ -4,7 +4,6 @@
 #include "dimensionality.h"
 #include "dimensions.h"
 #include "iterator.h"
-#include "reduce.h"
 #include "size.h"
 #include "split-names.h"
 #include "utils.h"
@@ -35,9 +34,13 @@ r_obj* rray_split(
   const r_ssize axes_size = r_length(axes);
 
   // Splitting 4x3x2 on axis 3 gives 4x3x1 out dimensions
-  r_obj* out_elt_dimensions = KEEP(
-    rray_reduce_dimensions(v_x_dimensions, dimensionality, v_axes, axes_size)
-  );
+  r_obj* out_elt_dimensions = KEEP(rray_set_axes_dimension(
+    v_x_dimensions,
+    dimensionality,
+    v_axes,
+    axes_size,
+    1
+  ));
   const int* v_out_elt_dimensions = r_int_cbegin(out_elt_dimensions);
 
   r_obj* axes_complement =
@@ -46,11 +49,12 @@ r_obj* rray_split(
   const r_ssize axes_complement_size = r_length(axes_complement);
 
   // Splitting 4x3x2 on axis 3 gives 1x1x2 split dimensions
-  r_obj* out_dimensions = KEEP(rray_reduce_dimensions(
+  r_obj* out_dimensions = KEEP(rray_set_axes_dimension(
     v_x_dimensions,
     dimensionality,
     v_axes_complement,
-    axes_complement_size
+    axes_complement_size,
+    1
   ));
   const int* v_out_dimensions = r_int_cbegin(out_dimensions);
 
