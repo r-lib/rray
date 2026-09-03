@@ -18,10 +18,6 @@ struct rray_iterator {
   // Current multi-dimensional position
   r_ssize v_point[RRAY_MAX_DIMENSIONALITY];
 
-  // Dimensions that determine `location`.
-  // Size-1 dimensions contribute no stride.
-  int v_location_dimensions[RRAY_MAX_DIMENSIONALITY];
-
   // Column-major strides computed from `v_location_dimensions`
   r_ssize v_location_strides[RRAY_MAX_DIMENSIONALITY];
 
@@ -46,18 +42,13 @@ static inline void rray_iterator_next(struct rray_iterator* it) {
     ++it->v_point[i];
 
     if (it->v_point[i] < it->v_point_dimensions[i]) {
-      if (it->v_location_dimensions[i] != 1) {
-        it->location += it->v_location_strides[i];
-      }
+      it->location += it->v_location_strides[i];
       return;
     }
 
     it->v_point[i] = 0;
 
-    if (it->v_location_dimensions[i] != 1) {
-      it->location -=
-        (it->v_location_dimensions[i] - 1) * it->v_location_strides[i];
-    }
+    it->location -= (it->v_point_dimensions[i] - 1) * it->v_location_strides[i];
   }
 }
 
