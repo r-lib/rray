@@ -8,9 +8,11 @@
 
 // --------------------------------------------------------------------------
 
-// Shared by every iterator's `_next()`. Walks one step through
-// `v_point_dimensions`, running `STEP` when an axis advances and
-// `RESET` when it wraps back to 0. `i` names the axis in both.
+// Core "next" algorithm used by all iterators
+//
+// Takes one step along the multidimensional point.
+// Calls `STEP` and `RESET` hooks,which are what define
+// each iterator.
 #define RRAY_ITERATOR_NEXT(IT, STEP, RESET)                                    \
   for (int i = 0; i < (IT)->dimensionality; ++i) {                             \
     ++(IT)->v_point[i];                                                        \
@@ -26,16 +28,14 @@
 
 // --------------------------------------------------------------------------
 
-// Walks the `v_point_dimensions` space one step at a time, recording
-// each step in `v_point`. Tracks no location.
+// Simplest iterator
+//
+// Walks the multidimensional point space, providing
+// access to the current multidimensional point
 struct rray_point_iterator {
-  int dimensionality;
-
-  // Dimensions that bound `v_point`
+  int v_point[RRAY_MAX_DIMENSIONALITY];
   int v_point_dimensions[RRAY_MAX_DIMENSIONALITY];
-
-  // Current multi-dimensional position
-  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];
+  int point_dimensionality;
 };
 
 static inline void rray_point_iterator_init(
@@ -65,26 +65,30 @@ static inline void rray_point_iterator_next(struct rray_point_iterator* it) {
 
 // --------------------------------------------------------------------------
 
-// Iterates one step at a time through the `v_point_dimensions` space,
-// where each step is recorded in `v_point`
+// Broadcasting iterator
 //
-// Reports the corresponding 1-D `location` in a second space utilizing
-// the same dimensions, but with some axes collapsed to a dimension of 1
+// Walks the multidimensional point space.
+// Reports a 1D `location` in an alternate subspace.
+//
+// For broadcasting, the dimensions you broadcast to
+// make up the larger point space. This is walked in
+// order. The original dimensions of the array make
+// up the subspace. So as you walk the output's point
+// space you can fetch `location`s back into your original
+// array to pull from.
+//
+// For reducing, it's actually a special form of broadcasting.
+// The original dimensions of the array are the point space.
+// The reduced dimensions are the subspace. So as you walk the
+// original array, you can fetch `location`s into the output to
+// accumulate the reduced result at.
 struct rray_iterator {
-  int dimensionality;
-
-  // Dimensions that bound `v_point`
+  int v_point[RRAY_MAX_DIMENSIONALITY];
   int v_point_dimensions[RRAY_MAX_DIMENSIONALITY];
+  int point_dimensionality;
 
-  // Current multi-dimensional position
-  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];
-
-  // Column-major strides into the location space.
-  // A collapsed axis has a stride of 0, so it contributes nothing.
-  r_ssize v_location_strides[RRAY_MAX_DIMENSIONALITY];
-
-  // Current 1-D position derived from `v_location_strides`
   r_ssize location;
+  r_ssize v_location_strides[RRAY_MAX_DIMENSIONALITY];
 };
 
 static inline void rray_iterator_init(
@@ -134,6 +138,7 @@ static inline void rray_iterator_next(struct rray_iterator* it) {
 // Same as `rray_iterator`, but reports in two location spaces while
 // only walking the point space once
 struct rray_iterator2 {
+// TODO: group and rename like the others
   int dimensionality;
 
   int v_point_dimensions[RRAY_MAX_DIMENSIONALITY];
