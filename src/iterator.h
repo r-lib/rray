@@ -10,9 +10,8 @@
 
 // Core "next" algorithm used by all iterators
 //
-// Takes one step along the multidimensional point.
-// Calls `STEP` and `RESET` hooks,which are what define
-// each iterator.
+// Takes one step along the multidimensional point. Calls `STEP` and `RESET`
+// hooks, which are what define each iterator.
 #define RRAY_ITERATOR_NEXT(IT, STEP, RESET)                                    \
   for (int i = 0; i < (IT)->point_dimensionality; ++i) {                       \
     ++(IT)->v_point[i];                                                        \
@@ -30,8 +29,8 @@
 
 // Simplest iterator
 //
-// Walks the multidimensional point space, providing
-// access to the current multidimensional point
+// Walks the multidimensional point space, providing access to the current
+// multidimensional point
 struct rray_point_iterator {
   int v_point[RRAY_MAX_DIMENSIONALITY];
   int v_point_dimensions[RRAY_MAX_DIMENSIONALITY];
@@ -67,21 +66,18 @@ static inline void rray_point_iterator_next(struct rray_point_iterator* it) {
 
 // Broadcasting iterator
 //
-// Walks the multidimensional point space.
-// Reports a 1D `location` in an alternate subspace.
+// Walks the multidimensional point space. Reports a 1D `location` in an
+// alternate subspace.
 //
-// For broadcasting, the dimensions you broadcast to
-// make up the larger point space. This is walked in
-// order. The original dimensions of the array make
-// up the subspace. So as you walk the output's point
-// space you can fetch `location`s back into your original
-// array to pull from.
+// For broadcasting, the dimensions you broadcast to make up the larger point
+// space. This is walked in order. The original dimensions of the array make up
+// the subspace. So as you walk the output's point space you can fetch
+// `location`s back into your original array to pull from.
 //
-// For reducing, it's actually a special form of broadcasting.
-// The original dimensions of the array are the point space.
-// The reduced dimensions are the subspace. So as you walk the
-// original array, you can fetch `location`s into the output to
-// accumulate the reduced result at.
+// For reducing, it's actually a special form of broadcasting. The original
+// dimensions of the array are the point space. The reduced dimensions are the
+// subspace. So as you walk the original array, you can fetch `location`s into
+// the output to accumulate the reduced result at.
 struct rray_iterator {
   int v_point[RRAY_MAX_DIMENSIONALITY];
   int v_point_dimensions[RRAY_MAX_DIMENSIONALITY];
@@ -135,8 +131,8 @@ static inline void rray_iterator_next(struct rray_iterator* it) {
 
 // --------------------------------------------------------------------------
 
-// Same as `rray_iterator`, but reports in two location spaces while
-// only walking the point space once
+// Same as `rray_iterator`, but reports in two location spaces while only
+// walking the point space once
 struct rray_iterator2 {
   int v_point[RRAY_MAX_DIMENSIONALITY];
   int v_point_dimensions[RRAY_MAX_DIMENSIONALITY];
