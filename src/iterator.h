@@ -26,6 +26,8 @@ struct rray_iterator {
   r_ssize location;
 };
 
+// Same as `rray_iterator`, but reports in two location spaces while
+// only walking the point space once
 struct rray_iterator2 {
   int dimensionality;
 
