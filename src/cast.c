@@ -145,7 +145,13 @@ r_obj* rray_cast(
     v_out[i] = ONE(v_x[i], i, x_arg, error_call);                              \
   }                                                                            \
                                                                                \
-  poke_dimensions_and_names(out, x);                                           \
+  r_attrib_poke_dim(out, r_dim(x));                                            \
+                                                                               \
+  r_obj* names = r_dim_names(x);                                               \
+                                                                               \
+  if (names != r_null) {                                                       \
+    r_attrib_poke_dim_names(out, names);                                       \
+  }                                                                            \
                                                                                \
   FREE(1);                                                                     \
   return out;
@@ -155,15 +161,14 @@ static r_obj* rray_cast_lgl_to_int(
   struct rray_arg* x_arg,
   struct r_lazy error_call
 ) {
-  const r_ssize size = r_length(x);
-
-  r_obj* out = KEEP(r_alloc_integer(size));
-  r_memcpy(r_int_begin(out), r_lgl_cbegin(x), sizeof(int) * size);
-
-  poke_dimensions_and_names(out, x);
-
-  FREE(1);
-  return out;
+  RRAY_CAST(
+    int,
+    r_lgl_cbegin,
+    R_TYPE_integer,
+    int,
+    r_int_begin,
+    rray_cast_lgl_to_int_one
+  );
 }
 
 static r_obj* rray_cast_lgl_to_dbl(
@@ -287,6 +292,15 @@ static r_obj* rray_cast_dbl_to_cpl(
 }
 
 #undef RRAY_CAST
+
+static inline int rray_cast_lgl_to_int_one(
+  int x,
+  r_ssize i,
+  struct rray_arg* x_arg,
+  struct r_lazy error_call
+) {
+  return x;
+}
 
 static inline double rray_cast_lgl_to_dbl_one(
   int x,
@@ -412,16 +426,6 @@ static inline r_complex rray_cast_dbl_to_cpl_one(
   }
 
   return (r_complex){.r = x, .i = 0};
-}
-
-static void poke_dimensions_and_names(r_obj* out, r_obj* x) {
-  r_attrib_poke_dim(out, r_dim(x));
-
-  r_obj* names = r_dim_names(x);
-
-  if (names != r_null) {
-    r_attrib_poke_dim_names(out, names);
-  }
 }
 
 static r_no_return void stop_incompatible_cast(
