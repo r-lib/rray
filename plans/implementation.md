@@ -377,8 +377,19 @@ convert an object into a type, because an invalid one already arrives as
 A **ptype** is the empty vector standing for a type, so `double()` for
 `RRAY_TYPE_double`. There is one of each in rlang's `r_globals`, already built
 at load and marked shared, so anything returning a ptype hands one of those back
-rather than allocating. `rray_ptype_from_type()` is the lookup. A ptype is a
-bare vector, not an array: it is a type token, not data, so it carries no `dim`.
+rather than allocating. A ptype is a bare vector, not an array: it is a type
+token, not data, so it carries no `dim`.
+
+`rray_ptype(x, arg, error_call)` takes an object to its ptype. It is the whole
+of validating an input and reducing it to a type, so the scalar case is just
+another arm of its switch:
+
+```c
+case RRAY_TYPE_list:
+  return r_globals.empty_list;
+case RRAY_TYPE_scalar:
+  stop_scalar_input(x, arg, error_call);
+```
 
 The internal type rules exist because three kinds of function need them:
 

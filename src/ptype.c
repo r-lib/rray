@@ -6,6 +6,31 @@
 
 #include "decl/ptype-decl.h"
 
+r_obj* rray_ptype(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
+  check_unclassed(x, arg, error_call);
+
+  switch (rray_typeof(x)) {
+  case RRAY_TYPE_logical:
+    return r_globals.empty_lgl;
+  case RRAY_TYPE_integer:
+    return r_globals.empty_int;
+  case RRAY_TYPE_double:
+    return r_globals.empty_dbl;
+  case RRAY_TYPE_complex:
+    return r_globals.empty_cpl;
+  case RRAY_TYPE_character:
+    return r_globals.empty_chr;
+  case RRAY_TYPE_raw:
+    return r_globals.empty_raw;
+  case RRAY_TYPE_list:
+    return r_globals.empty_list;
+  case RRAY_TYPE_scalar:
+    stop_scalar_input(x, arg, error_call);
+  }
+
+  r_stop_unreachable();
+}
+
 r_obj* ffi_rray_ptype2(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame) {
   struct r_lazy error_call = {.x = rray_syms.call, .env = ffi_frame};
 
@@ -91,29 +116,6 @@ r_obj* rray_ptype2(
   case RRAY_TYPE2_raw_scalar:
   case RRAY_TYPE2_list_scalar:
   case RRAY_TYPE2_scalar_scalar:
-    break;
-  }
-
-  r_stop_unreachable();
-}
-
-r_obj* rray_ptype_from_type(enum rray_type type) {
-  switch (type) {
-  case RRAY_TYPE_logical:
-    return r_globals.empty_lgl;
-  case RRAY_TYPE_integer:
-    return r_globals.empty_int;
-  case RRAY_TYPE_double:
-    return r_globals.empty_dbl;
-  case RRAY_TYPE_complex:
-    return r_globals.empty_cpl;
-  case RRAY_TYPE_character:
-    return r_globals.empty_chr;
-  case RRAY_TYPE_raw:
-    return r_globals.empty_raw;
-  case RRAY_TYPE_list:
-    return r_globals.empty_list;
-  case RRAY_TYPE_scalar:
     break;
   }
 
