@@ -20,18 +20,29 @@ test_that("can cast down the numeric tower", {
 test_that("missing values are preserved", {
   expect_identical(rray_cast(NA, integer()), array(NA_integer_, 1L))
   expect_identical(rray_cast(NA, double()), array(NA_real_, 1L))
-  expect_identical(rray_cast(NA, complex()), array(NA_complex_, 1L))
   expect_identical(rray_cast(NA_integer_, logical()), array(NA, 1L))
-  expect_identical(rray_cast(NA_integer_, complex()), array(NA_complex_, 1L))
-  expect_identical(rray_cast(NA_real_, complex()), array(NA_complex_, 1L))
   expect_identical(rray_cast(NA_real_, logical()), array(NA, 1L))
   expect_identical(rray_cast(NA_real_, integer()), array(NA_integer_, 1L))
 })
 
 test_that("`NaN` matches base R", {
-  expect_identical(rray_cast(NaN, complex()), array(complex(real = NaN), 1L))
   expect_identical(rray_cast(NaN, integer()), array(NA_integer_, 1L))
   expect_identical(rray_cast(NaN, logical()), array(NA, 1L))
+})
+
+test_that("casting to complex matches base R, imaginary part and all", {
+  expect_identical(rray_cast(NA, complex()), array(as.complex(NA), 1L))
+  expect_identical(
+    rray_cast(NA_integer_, complex()),
+    array(as.complex(NA_integer_), 1L)
+  )
+  expect_identical(
+    rray_cast(NA_real_, complex()),
+    array(as.complex(NA_real_), 1L)
+  )
+  expect_identical(rray_cast(NaN, complex()), array(as.complex(NaN), 1L))
+
+  expect_identical(Im(rray_cast(NA_real_, complex())), array(0, 1L))
 })
 
 test_that("the integer boundaries cast", {

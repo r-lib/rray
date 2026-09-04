@@ -520,6 +520,18 @@ try(rray_cast(c(0, 2), logical()))  # 2 is not a logical value
 Complex is one way. Anything can cast into it, nothing casts out of it, matching
 vctrs.
 
+Casting into complex zeroes the imaginary part, so a missing value lands in the
+real part alone and never becomes `NA_complex_`:
+
+```r
+Im(rray_cast(NA_real_, complex()))  # 0, not NA
+```
+
+That is what R itself does. `ComplexFromReal()` in `src/main/coerce.c` guards
+the `NA_complex_` branch behind `NA_TO_COMPLEX_NA`, which is never defined, so
+every build takes the `z.r = x; z.i = 0;` path. vctrs agrees for integer and
+double but returns a full `NA_complex_` for logical, so do not copy it here.
+
 ### The common type rules
 
 - Numeric tower: `lgl` to `int` to `dbl` to `cpl`.

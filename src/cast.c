@@ -320,11 +320,8 @@ static inline r_complex rray_cast_lgl_to_cpl_one(
   struct rray_arg* x_arg,
   struct r_lazy error_call
 ) {
-  if (x == r_globals.na_lgl) {
-    return r_globals.na_cpl;
-  }
-
-  return (r_complex){.r = (double) x, .i = 0};
+  const double out = (x == r_globals.na_lgl) ? r_globals.na_dbl : (double) x;
+  return (r_complex){.r = out, .i = 0};
 }
 
 static inline int rray_cast_int_to_lgl_one(
@@ -363,11 +360,8 @@ static inline r_complex rray_cast_int_to_cpl_one(
   struct rray_arg* x_arg,
   struct r_lazy error_call
 ) {
-  if (x == r_globals.na_int) {
-    return r_globals.na_cpl;
-  }
-
-  return (r_complex){.r = (double) x, .i = 0};
+  const double out = (x == r_globals.na_int) ? r_globals.na_dbl : (double) x;
+  return (r_complex){.r = out, .i = 0};
 }
 
 static inline int rray_cast_dbl_to_lgl_one(
@@ -420,10 +414,6 @@ static inline r_complex rray_cast_dbl_to_cpl_one(
   struct rray_arg* x_arg,
   struct r_lazy error_call
 ) {
-  if (R_IsNA(x)) {
-    return r_globals.na_cpl;
-  }
-
   return (r_complex){.r = x, .i = 0};
 }
 
