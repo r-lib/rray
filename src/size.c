@@ -7,9 +7,9 @@ r_obj* ffi_rray_size(r_obj* ffi_x, r_obj* ffi_frame) {
   return r_dbl((double) rray_size(ffi_x, rray_args.x, error_call));
 }
 
-r_ssize rray_size(r_obj* x, struct rray_arg* p_arg, struct r_lazy error_call) {
-  check_unclassed(x, p_arg, error_call);
-  x = arg_as_array(x, p_arg, error_call);
+r_ssize rray_size(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
+  check_unclassed(x, arg, error_call);
+  x = arg_as_array(x, arg, error_call);
   return r_length(x);
 }
 

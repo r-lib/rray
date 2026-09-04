@@ -1,5 +1,5 @@
 static r_ssize fill_arg_buffer(
-  struct rray_arg* p_arg,
+  struct rray_arg* arg,
   char* buf,
   r_ssize cur_size,
   r_ssize tot_size

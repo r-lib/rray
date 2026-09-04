@@ -9,10 +9,10 @@ r_obj* ffi_rray_dimensionality(r_obj* ffi_x, r_obj* ffi_frame) {
 
 int rray_dimensionality(
   r_obj* x,
-  struct rray_arg* p_arg,
+  struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  r_obj* dimensions = rray_dimensions(x, p_arg, error_call);
+  r_obj* dimensions = rray_dimensions(x, arg, error_call);
   return rray_dimensionality_from_dimensions(dimensions);
 }
 

@@ -34,27 +34,19 @@ static inline r_obj* vec_as_array(r_obj* x) {
   return out;
 }
 
-void check_unclassed(
-  r_obj* x,
-  struct rray_arg* p_arg,
-  struct r_lazy error_call
-) {
+void check_unclassed(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
   if (r_is_object(x)) {
     r_abort_lazy_call(
       error_call,
       "%s must be a bare array, not %s.",
-      rray_arg_format_input(p_arg),
+      rray_arg_format_input(arg),
       r_obj_type_friendly(x)
     );
   }
 }
 
-r_obj* arg_as_array(
-  r_obj* x,
-  struct rray_arg* p_arg,
-  struct r_lazy error_call
-) {
-  check_array(x, p_arg, error_call);
+r_obj* arg_as_array(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
+  check_array(x, arg, error_call);
 
   if (r_dim(x) == r_null) {
     return vec_as_array(x);
@@ -65,16 +57,16 @@ r_obj* arg_as_array(
 
 enum rray_type arg_as_type(
   r_obj* x,
-  struct rray_arg* p_arg,
+  struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  check_array(x, p_arg, error_call);
+  check_array(x, arg, error_call);
   return rray_typeof(x);
 }
 
 static void check_array(
   r_obj* x,
-  struct rray_arg* p_arg,
+  struct rray_arg* arg,
   struct r_lazy error_call
 ) {
   switch (r_typeof(x)) {
@@ -90,15 +82,15 @@ static void check_array(
     r_abort_lazy_call(
       error_call,
       "%s must be an array, not %s.",
-      rray_arg_format_input(p_arg),
+      rray_arg_format_input(arg),
       r_obj_type_friendly(x)
     );
   }
 }
 
-int arg_as_int(r_obj* x, struct rray_arg* p_arg, struct r_lazy error_call) {
+int arg_as_int(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
   if (r_typeof(x) != R_TYPE_integer) {
-    x = KEEP(vec_cast(x, r_globals.empty_int, p_arg, NULL));
+    x = KEEP(vec_cast(x, r_globals.empty_int, arg, NULL));
   } else {
     KEEP(x);
   }
@@ -107,7 +99,7 @@ int arg_as_int(r_obj* x, struct rray_arg* p_arg, struct r_lazy error_call) {
     r_abort_lazy_call(
       error_call,
       "%s can't have attributes.",
-      rray_arg_format(p_arg)
+      rray_arg_format(arg)
     );
   }
 
@@ -115,7 +107,7 @@ int arg_as_int(r_obj* x, struct rray_arg* p_arg, struct r_lazy error_call) {
     r_abort_lazy_call(
       error_call,
       "%s must be a single integer, not length %" R_PRIdXLEN_T ".",
-      rray_arg_format(p_arg),
+      rray_arg_format(arg),
       r_length(x)
     );
   }
@@ -147,11 +139,11 @@ bool r_has_name_at(r_obj* names, r_ssize i) {
 r_obj* vec_cast(
   r_obj* x,
   r_obj* to,
-  struct rray_arg* p_x_arg,
-  struct rray_arg* p_to_arg
+  struct rray_arg* x_arg,
+  struct rray_arg* to_arg
 ) {
-  r_obj* x_arg_chr = KEEP(rray_arg(p_x_arg));
-  r_obj* to_arg_chr = KEEP(rray_arg(p_to_arg));
+  r_obj* x_arg_chr = KEEP(rray_arg(x_arg));
+  r_obj* to_arg_chr = KEEP(rray_arg(to_arg));
 
   r_obj* mask = KEEP(r_alloc_environment(4, r_envs.global));
 

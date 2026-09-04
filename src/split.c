@@ -18,13 +18,13 @@ r_obj* ffi_rray_split(r_obj* ffi_x, r_obj* ffi_axes, r_obj* ffi_frame) {
 r_obj* rray_split(
   r_obj* x,
   r_obj* axes,
-  struct rray_arg* p_arg,
+  struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  check_unclassed(x, p_arg, error_call);
-  x = KEEP(arg_as_array(x, p_arg, error_call));
+  check_unclassed(x, arg, error_call);
+  x = KEEP(arg_as_array(x, arg, error_call));
 
-  r_obj* x_dimensions = KEEP(rray_dimensions(x, p_arg, error_call));
+  r_obj* x_dimensions = KEEP(rray_dimensions(x, arg, error_call));
   const int* v_x_dimensions = r_int_cbegin(x_dimensions);
 
   const int dimensionality = rray_dimensionality_from_dimensions(x_dimensions);

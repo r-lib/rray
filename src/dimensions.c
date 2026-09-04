@@ -14,11 +14,11 @@ r_obj* ffi_rray_dimensions(r_obj* ffi_x, r_obj* ffi_frame) {
 
 r_obj* rray_dimensions(
   r_obj* x,
-  struct rray_arg* p_arg,
+  struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  check_unclassed(x, p_arg, error_call);
-  x = KEEP(arg_as_array(x, p_arg, error_call));
+  check_unclassed(x, arg, error_call);
+  x = KEEP(arg_as_array(x, arg, error_call));
   r_obj* out = r_dim(x);
   FREE(1);
   return out;
@@ -27,10 +27,10 @@ r_obj* rray_dimensions(
 int rray_dimension(
   r_obj* x,
   int axis,
-  struct rray_arg* p_arg,
+  struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  r_obj* dimensions = rray_dimensions(x, p_arg, error_call);
+  r_obj* dimensions = rray_dimensions(x, arg, error_call);
   return r_int_get(dimensions, axis - 1);
 }
 
@@ -65,15 +65,15 @@ r_obj* ffi_rray_set_dimensions(
 r_obj* rray_set_dimensions(
   r_obj* x,
   r_obj* dimensions,
-  struct rray_arg* p_arg,
+  struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  check_unclassed(x, p_arg, error_call);
-  x = KEEP(arg_as_array(x, p_arg, error_call));
+  check_unclassed(x, arg, error_call);
+  x = KEEP(arg_as_array(x, arg, error_call));
   dimensions =
     KEEP(arg_as_dimensions(dimensions, rray_args.dimensions, error_call));
 
-  const r_ssize x_size = rray_size(x, p_arg, error_call);
+  const r_ssize x_size = rray_size(x, arg, error_call);
 
   const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
   const int* v_dimensions = r_int_cbegin(dimensions);
@@ -150,12 +150,12 @@ r_obj* rray_dimensions_common(
   r_obj* xs_names = KEEP(r_names(xs));
 
   r_ssize x_i = 0;
-  struct rray_arg* p_x_arg = new_subscript_arg(NULL, xs_names, n, &x_i);
-  KEEP(p_x_arg->shelter);
+  struct rray_arg* x_arg = new_subscript_arg(NULL, xs_names, n, &x_i);
+  KEEP(x_arg->shelter);
 
   r_ssize out_i = 0;
-  struct rray_arg* p_out_arg = new_subscript_arg(NULL, xs_names, n, &out_i);
-  KEEP(p_out_arg->shelter);
+  struct rray_arg* out_arg = new_subscript_arg(NULL, xs_names, n, &out_i);
+  KEEP(out_arg->shelter);
 
   int out_dimensionality = 1;
 
@@ -175,7 +175,7 @@ r_obj* rray_dimensions_common(
   for (; x_i < n; ++x_i) {
     r_obj* x = v_xs[x_i];
 
-    r_obj* x_dimensions = KEEP(rray_dimensions(x, p_x_arg, error_call));
+    r_obj* x_dimensions = KEEP(rray_dimensions(x, x_arg, error_call));
     const int* v_x_dimensions = r_int_cbegin(x_dimensions);
     const int x_dimensionality =
       rray_dimensionality_from_dimensions(x_dimensions);
@@ -191,8 +191,8 @@ r_obj* rray_dimensions_common(
       v_x_dimensions,
       x_dimensionality,
       x_i,
-      p_out_arg,
-      p_x_arg,
+      out_arg,
+      x_arg,
       error_call
     );
 
@@ -215,8 +215,8 @@ static inline void rray_dimensions2(
   const int* v_x_dimensions,
   int x_dimensionality,
   r_ssize x_i,
-  struct rray_arg* p_out_arg,
-  struct rray_arg* p_x_arg,
+  struct rray_arg* out_arg,
+  struct rray_arg* x_arg,
   struct r_lazy error_call
 ) {
   const int out_dimensionality = *p_out_dimensionality;
@@ -249,9 +249,9 @@ static inline void rray_dimensions2(
         "Can't find common dimensions at axis %d. "
         "%s has dimension %d and %s has dimension %d.",
         i + 1,
-        rray_arg_format(p_out_arg),
+        rray_arg_format(out_arg),
         out_dimension,
-        rray_arg_format(p_x_arg),
+        rray_arg_format(x_arg),
         x_dimension
       );
     }
@@ -260,11 +260,11 @@ static inline void rray_dimensions2(
 
 r_obj* arg_as_dimensions(
   r_obj* dimensions,
-  struct rray_arg* p_arg,
+  struct rray_arg* arg,
   struct r_lazy error_call
 ) {
   if (r_typeof(dimensions) != R_TYPE_integer) {
-    dimensions = vec_cast(dimensions, r_globals.empty_int, p_arg, NULL);
+    dimensions = vec_cast(dimensions, r_globals.empty_int, arg, NULL);
   }
   KEEP(dimensions);
 
@@ -272,7 +272,7 @@ r_obj* arg_as_dimensions(
     r_abort_lazy_call(
       error_call,
       "%s can't have attributes.",
-      rray_arg_format(p_arg)
+      rray_arg_format(arg)
     );
   }
 
@@ -282,7 +282,7 @@ r_obj* arg_as_dimensions(
     r_abort_lazy_call(
       error_call,
       "%s must have at least one element.",
-      rray_arg_format(p_arg)
+      rray_arg_format(arg)
     );
   }
 
@@ -295,7 +295,7 @@ r_obj* arg_as_dimensions(
       r_abort_lazy_call(
         error_call,
         "%s must not contain missing values.",
-        rray_arg_format(p_arg)
+        rray_arg_format(arg)
       );
     }
 
@@ -303,7 +303,7 @@ r_obj* arg_as_dimensions(
       r_abort_lazy_call(
         error_call,
         "%s must not contain negative values.",
-        rray_arg_format(p_arg)
+        rray_arg_format(arg)
       );
     }
   }
