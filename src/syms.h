@@ -5,6 +5,7 @@
 
 struct rray_syms {
   r_obj* to;
+  r_obj* arg;
   r_obj* x_arg;
   r_obj* y_arg;
   r_obj* to_arg;

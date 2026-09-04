@@ -1,3 +1,70 @@
+# errors on a scalar
+
+    Code
+      rray_ptype(sum)
+    Condition
+      Error:
+      ! `sum` must be an array, not a primitive function.
+
+---
+
+    Code
+      rray_ptype(x)
+    Condition
+      Error:
+      ! `x` must be an array, not `NULL`.
+
+# errors on a classed object
+
+    Code
+      rray_ptype(x)
+    Condition
+      Error:
+      ! `x` must be a bare array, not a <foo> object.
+
+# `arg` defaults to the caller's expression
+
+    Code
+      f(sum)
+    Condition
+      Error in `f()`:
+      ! `myinput` must be an array, not a primitive function.
+
+# `arg` can be overridden or emptied
+
+    Code
+      rray_ptype(sum, arg = "vals")
+    Condition
+      Error:
+      ! `vals` must be an array, not a primitive function.
+
+---
+
+    Code
+      rray_ptype(sum, arg = "")
+    Condition
+      Error:
+      ! Input must be an array, not a primitive function.
+
+# `call` blames the caller
+
+    Code
+      f(sum)
+    Condition
+      Error in `f()`:
+      ! `x` must be an array, not a primitive function.
+
+# dots must be empty
+
+    Code
+      rray_ptype(1L, 2L)
+    Condition
+      Error in `rray_ptype()`:
+      ! `...` must be empty.
+      x Problematic argument:
+      * ..1 = 2L
+      i Did you forget to name an argument?
+
 # the common type of every pair of native types
 
     Code

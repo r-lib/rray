@@ -1,3 +1,58 @@
+# ------------------------------------------------------------------------------
+# rray_ptype()
+
+test_that("every native type maps to its own empty vector", {
+  for (ptype in native_ptypes) {
+    expect_identical(rray_ptype(ptype), ptype)
+  }
+})
+
+test_that("the ptype comes from the type, never the data or the dimensions", {
+  expect_identical(rray_ptype(array(1:6, c(2L, 3L))), integer())
+  expect_identical(rray_ptype(c(a = 1.5, b = 2.5)), double())
+  expect_identical(rray_ptype(array(character(), c(0L, 2L))), character())
+})
+
+test_that("ptypes are shared, so R copies before modifying them", {
+  x <- rray_ptype(1L)
+  attr(x, "foo") <- 1L
+  expect_identical(rray_ptype(1L), integer())
+})
+
+test_that("errors on a scalar", {
+  expect_snapshot(rray_ptype(sum), error = TRUE)
+
+  x <- NULL
+  expect_snapshot(rray_ptype(x), error = TRUE)
+})
+
+test_that("errors on a classed object", {
+  x <- structure(1, class = "foo")
+  expect_snapshot(rray_ptype(x), error = TRUE)
+})
+
+test_that("`arg` defaults to the caller's expression", {
+  f <- function(myinput) rray_ptype(myinput)
+  expect_snapshot(f(sum), error = TRUE)
+})
+
+test_that("`arg` can be overridden or emptied", {
+  expect_snapshot(rray_ptype(sum, arg = "vals"), error = TRUE)
+  expect_snapshot(rray_ptype(sum, arg = ""), error = TRUE)
+})
+
+test_that("`call` blames the caller", {
+  f <- function(x) rray_ptype(x)
+  expect_snapshot(f(sum), error = TRUE)
+})
+
+test_that("dots must be empty", {
+  expect_snapshot(rray_ptype(1L, 2L), error = TRUE)
+})
+
+# ------------------------------------------------------------------------------
+# rray_ptype2()
+
 test_that("the common type of every pair of native types", {
   expect_snapshot(native_ptype_matrix(rray_ptype2, c("x", "y")))
 })
@@ -12,12 +67,6 @@ test_that("a ptype is a bare empty vector, never an array", {
   out <- rray_ptype2(array(1L, c(2L, 3L)), array(1, c(2L, 3L)))
   expect_identical(out, double())
   expect_null(dim(out))
-})
-
-test_that("ptypes are shared, so R copies before modifying them", {
-  x <- rray_ptype2(integer(), integer())
-  attr(x, "foo") <- 1L
-  expect_identical(rray_ptype2(integer(), integer()), integer())
 })
 
 test_that("errors on types that don't combine", {

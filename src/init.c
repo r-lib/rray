@@ -74,6 +74,7 @@ extern r_obj* ffi_rray_sum(
   r_obj* ffi_na_rm,
   r_obj* ffi_frame
 );
+extern r_obj* ffi_rray_ptype(r_obj* ffi_x, r_obj* ffi_frame);
 extern r_obj* ffi_rray_ptype2(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame);
 extern r_obj* ffi_rray_ptype_common(
   r_obj* ffi_xs,
@@ -120,6 +121,7 @@ static const R_CallMethodDef CallEntries[] = {
   {"ffi_rray_set_dimensions", (DL_FUNC) &ffi_rray_set_dimensions, 3},
   {"ffi_rray_split", (DL_FUNC) &ffi_rray_split, 3},
   {"ffi_rray_sum", (DL_FUNC) &ffi_rray_sum, 4},
+  {"ffi_rray_ptype", (DL_FUNC) &ffi_rray_ptype, 2},
   {"ffi_rray_ptype2", (DL_FUNC) &ffi_rray_ptype2, 3},
   {"ffi_rray_ptype_common", (DL_FUNC) &ffi_rray_ptype_common, 3},
   {"ffi_rray_cast", (DL_FUNC) &ffi_rray_cast, 3},

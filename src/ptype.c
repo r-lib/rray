@@ -6,6 +6,15 @@
 
 #include "decl/ptype-decl.h"
 
+r_obj* ffi_rray_ptype(r_obj* ffi_x, r_obj* ffi_frame) {
+  struct r_lazy error_call = {.x = rray_syms.call, .env = ffi_frame};
+
+  struct r_lazy arg_lazy = {.x = rray_syms.arg, .env = ffi_frame};
+  struct rray_arg arg = new_lazy_arg(&arg_lazy);
+
+  return rray_ptype(ffi_x, &arg, error_call);
+}
+
 r_obj* rray_ptype(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
   check_unclassed(x, arg, error_call);
 

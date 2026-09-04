@@ -11,3 +11,4 @@
 ^\.vscode$
 \.clangd$
 ^\.github$
+^\.claude$

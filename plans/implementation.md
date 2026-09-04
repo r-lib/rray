@@ -448,6 +448,7 @@ error is actually raised, so a default of `caller_arg(x)` costs nothing when
 nothing goes wrong. The error call is read out of the frame the same way.
 
 ```r
+rray_ptype(x, ..., arg = caller_arg(x), call = caller_env())
 rray_ptype2(
   x,
   y,
