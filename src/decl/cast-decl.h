@@ -1,10 +1,29 @@
-static r_obj* rray_cast_lgl_to_int(r_obj* x);
-static r_obj* rray_cast_lgl_to_dbl(r_obj* x);
-static r_obj* rray_cast_lgl_to_cpl(r_obj* x);
-static r_obj* rray_cast_int_to_dbl(r_obj* x);
-static r_obj* rray_cast_int_to_cpl(r_obj* x);
-static r_obj* rray_cast_dbl_to_cpl(r_obj* x);
+static r_obj* rray_cast_lgl_to_int(
+  r_obj* x,
+  struct rray_arg* p_x_arg,
+  struct r_lazy error_call
+);
+static r_obj* rray_cast_lgl_to_dbl(
+  r_obj* x,
+  struct rray_arg* p_x_arg,
+  struct r_lazy error_call
+);
+static r_obj* rray_cast_lgl_to_cpl(
+  r_obj* x,
+  struct rray_arg* p_x_arg,
+  struct r_lazy error_call
+);
 static r_obj* rray_cast_int_to_lgl(
+  r_obj* x,
+  struct rray_arg* p_x_arg,
+  struct r_lazy error_call
+);
+static r_obj* rray_cast_int_to_dbl(
+  r_obj* x,
+  struct rray_arg* p_x_arg,
+  struct r_lazy error_call
+);
+static r_obj* rray_cast_int_to_cpl(
   r_obj* x,
   struct rray_arg* p_x_arg,
   struct r_lazy error_call
@@ -19,13 +38,37 @@ static r_obj* rray_cast_dbl_to_int(
   struct rray_arg* p_x_arg,
   struct r_lazy error_call
 );
+static r_obj* rray_cast_dbl_to_cpl(
+  r_obj* x,
+  struct rray_arg* p_x_arg,
+  struct r_lazy error_call
+);
 
-static inline double rray_cast_lgl_to_dbl_one(int x);
-static inline r_complex rray_cast_lgl_to_cpl_one(int x);
-static inline double rray_cast_int_to_dbl_one(int x);
-static inline r_complex rray_cast_int_to_cpl_one(int x);
-static inline r_complex rray_cast_dbl_to_cpl_one(double x);
+static inline double rray_cast_lgl_to_dbl_one(
+  int x,
+  r_ssize i,
+  struct rray_arg* p_x_arg,
+  struct r_lazy error_call
+);
+static inline r_complex rray_cast_lgl_to_cpl_one(
+  int x,
+  r_ssize i,
+  struct rray_arg* p_x_arg,
+  struct r_lazy error_call
+);
 static inline int rray_cast_int_to_lgl_one(
+  int x,
+  r_ssize i,
+  struct rray_arg* p_x_arg,
+  struct r_lazy error_call
+);
+static inline double rray_cast_int_to_dbl_one(
+  int x,
+  r_ssize i,
+  struct rray_arg* p_x_arg,
+  struct r_lazy error_call
+);
+static inline r_complex rray_cast_int_to_cpl_one(
   int x,
   r_ssize i,
   struct rray_arg* p_x_arg,
@@ -43,6 +86,14 @@ static inline int rray_cast_dbl_to_int_one(
   struct rray_arg* p_x_arg,
   struct r_lazy error_call
 );
+static inline r_complex rray_cast_dbl_to_cpl_one(
+  double x,
+  r_ssize i,
+  struct rray_arg* p_x_arg,
+  struct r_lazy error_call
+);
+
+static void poke_dimensions_and_names(r_obj* out, r_obj* x);
 
 static r_no_return void stop_incompatible_cast(
   enum rray_type x,

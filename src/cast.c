@@ -35,24 +35,22 @@ r_obj* rray_cast(
 
   const enum rray_type type = rray_typeof(x);
 
-  if (type == to_type) {
-    FREE(1);
-    return x;
-  }
-
   r_obj* out;
 
   switch (type) {
   case RRAY_TYPE_logical:
     switch (to_type) {
+    case RRAY_TYPE_logical:
+      out = x;
+      break;
     case RRAY_TYPE_integer:
-      out = rray_cast_lgl_to_int(x);
+      out = rray_cast_lgl_to_int(x, p_x_arg, error_call);
       break;
     case RRAY_TYPE_double:
-      out = rray_cast_lgl_to_dbl(x);
+      out = rray_cast_lgl_to_dbl(x, p_x_arg, error_call);
       break;
     case RRAY_TYPE_complex:
-      out = rray_cast_lgl_to_cpl(x);
+      out = rray_cast_lgl_to_cpl(x, p_x_arg, error_call);
       break;
     default:
       stop_incompatible_cast(type, to_type, p_x_arg, error_call);
@@ -63,11 +61,14 @@ r_obj* rray_cast(
     case RRAY_TYPE_logical:
       out = rray_cast_int_to_lgl(x, p_x_arg, error_call);
       break;
+    case RRAY_TYPE_integer:
+      out = x;
+      break;
     case RRAY_TYPE_double:
-      out = rray_cast_int_to_dbl(x);
+      out = rray_cast_int_to_dbl(x, p_x_arg, error_call);
       break;
     case RRAY_TYPE_complex:
-      out = rray_cast_int_to_cpl(x);
+      out = rray_cast_int_to_cpl(x, p_x_arg, error_call);
       break;
     default:
       stop_incompatible_cast(type, to_type, p_x_arg, error_call);
@@ -81,31 +82,55 @@ r_obj* rray_cast(
     case RRAY_TYPE_integer:
       out = rray_cast_dbl_to_int(x, p_x_arg, error_call);
       break;
+    case RRAY_TYPE_double:
+      out = x;
+      break;
     case RRAY_TYPE_complex:
-      out = rray_cast_dbl_to_cpl(x);
+      out = rray_cast_dbl_to_cpl(x, p_x_arg, error_call);
       break;
     default:
       stop_incompatible_cast(type, to_type, p_x_arg, error_call);
     }
     break;
   case RRAY_TYPE_complex:
+    switch (to_type) {
+    case RRAY_TYPE_complex:
+      out = x;
+      break;
+    default:
+      stop_incompatible_cast(type, to_type, p_x_arg, error_call);
+    }
+    break;
   case RRAY_TYPE_character:
+    switch (to_type) {
+    case RRAY_TYPE_character:
+      out = x;
+      break;
+    default:
+      stop_incompatible_cast(type, to_type, p_x_arg, error_call);
+    }
+    break;
   case RRAY_TYPE_raw:
+    switch (to_type) {
+    case RRAY_TYPE_raw:
+      out = x;
+      break;
+    default:
+      stop_incompatible_cast(type, to_type, p_x_arg, error_call);
+    }
+    break;
   case RRAY_TYPE_list:
-    stop_incompatible_cast(type, to_type, p_x_arg, error_call);
+    switch (to_type) {
+    case RRAY_TYPE_list:
+      out = x;
+      break;
+    default:
+      stop_incompatible_cast(type, to_type, p_x_arg, error_call);
+    }
+    break;
   }
 
-  KEEP(out);
-
-  r_attrib_poke_dim(out, r_dim(x));
-
-  r_obj* names = r_dim_names(x);
-
-  if (names != r_null) {
-    r_attrib_poke_dim_names(out, names);
-  }
-
-  FREE(2);
+  FREE(1);
   return out;
 }
 
@@ -117,42 +142,35 @@ r_obj* rray_cast(
   TO_CTYPE* v_out = TO_BEGIN(out);                                             \
                                                                                \
   for (r_ssize i = 0; i < size; ++i) {                                         \
-    v_out[i] = ONE(v_x[i]);                                                    \
-  }                                                                            \
-                                                                               \
-  FREE(1);                                                                     \
-  return out;
-
-#define RRAY_CAST_LOSSY(                                                       \
-  FROM_CTYPE,                                                                  \
-  FROM_CBEGIN,                                                                 \
-  TO_RTYPE,                                                                    \
-  TO_CTYPE,                                                                    \
-  TO_BEGIN,                                                                    \
-  ONE                                                                          \
-)                                                                              \
-  const r_ssize size = r_length(x);                                            \
-  const FROM_CTYPE* v_x = FROM_CBEGIN(x);                                      \
-                                                                               \
-  r_obj* out = KEEP(r_alloc_vector(TO_RTYPE, size));                           \
-  TO_CTYPE* v_out = TO_BEGIN(out);                                             \
-                                                                               \
-  for (r_ssize i = 0; i < size; ++i) {                                         \
     v_out[i] = ONE(v_x[i], i, p_x_arg, error_call);                            \
   }                                                                            \
                                                                                \
+  poke_dimensions_and_names(out, x);                                           \
+                                                                               \
   FREE(1);                                                                     \
   return out;
 
-static r_obj* rray_cast_lgl_to_int(r_obj* x) {
+static r_obj* rray_cast_lgl_to_int(
+  r_obj* x,
+  struct rray_arg* p_x_arg,
+  struct r_lazy error_call
+) {
   const r_ssize size = r_length(x);
+
   r_obj* out = KEEP(r_alloc_integer(size));
   r_memcpy(r_int_begin(out), r_lgl_cbegin(x), sizeof(int) * size);
+
+  poke_dimensions_and_names(out, x);
+
   FREE(1);
   return out;
 }
 
-static r_obj* rray_cast_lgl_to_dbl(r_obj* x) {
+static r_obj* rray_cast_lgl_to_dbl(
+  r_obj* x,
+  struct rray_arg* p_x_arg,
+  struct r_lazy error_call
+) {
   RRAY_CAST(
     int,
     r_lgl_cbegin,
@@ -163,7 +181,11 @@ static r_obj* rray_cast_lgl_to_dbl(r_obj* x) {
   );
 }
 
-static r_obj* rray_cast_lgl_to_cpl(r_obj* x) {
+static r_obj* rray_cast_lgl_to_cpl(
+  r_obj* x,
+  struct rray_arg* p_x_arg,
+  struct r_lazy error_call
+) {
   RRAY_CAST(
     int,
     r_lgl_cbegin,
@@ -174,7 +196,26 @@ static r_obj* rray_cast_lgl_to_cpl(r_obj* x) {
   );
 }
 
-static r_obj* rray_cast_int_to_dbl(r_obj* x) {
+static r_obj* rray_cast_int_to_lgl(
+  r_obj* x,
+  struct rray_arg* p_x_arg,
+  struct r_lazy error_call
+) {
+  RRAY_CAST(
+    int,
+    r_int_cbegin,
+    R_TYPE_logical,
+    int,
+    r_lgl_begin,
+    rray_cast_int_to_lgl_one
+  );
+}
+
+static r_obj* rray_cast_int_to_dbl(
+  r_obj* x,
+  struct rray_arg* p_x_arg,
+  struct r_lazy error_call
+) {
   RRAY_CAST(
     int,
     r_int_cbegin,
@@ -185,7 +226,11 @@ static r_obj* rray_cast_int_to_dbl(r_obj* x) {
   );
 }
 
-static r_obj* rray_cast_int_to_cpl(r_obj* x) {
+static r_obj* rray_cast_int_to_cpl(
+  r_obj* x,
+  struct rray_arg* p_x_arg,
+  struct r_lazy error_call
+) {
   RRAY_CAST(
     int,
     r_int_cbegin,
@@ -196,38 +241,12 @@ static r_obj* rray_cast_int_to_cpl(r_obj* x) {
   );
 }
 
-static r_obj* rray_cast_dbl_to_cpl(r_obj* x) {
-  RRAY_CAST(
-    double,
-    r_dbl_cbegin,
-    R_TYPE_complex,
-    r_complex,
-    r_cpl_begin,
-    rray_cast_dbl_to_cpl_one
-  );
-}
-
-static r_obj* rray_cast_int_to_lgl(
-  r_obj* x,
-  struct rray_arg* p_x_arg,
-  struct r_lazy error_call
-) {
-  RRAY_CAST_LOSSY(
-    int,
-    r_int_cbegin,
-    R_TYPE_logical,
-    int,
-    r_lgl_begin,
-    rray_cast_int_to_lgl_one
-  );
-}
-
 static r_obj* rray_cast_dbl_to_lgl(
   r_obj* x,
   struct rray_arg* p_x_arg,
   struct r_lazy error_call
 ) {
-  RRAY_CAST_LOSSY(
+  RRAY_CAST(
     double,
     r_dbl_cbegin,
     R_TYPE_logical,
@@ -242,7 +261,7 @@ static r_obj* rray_cast_dbl_to_int(
   struct rray_arg* p_x_arg,
   struct r_lazy error_call
 ) {
-  RRAY_CAST_LOSSY(
+  RRAY_CAST(
     double,
     r_dbl_cbegin,
     R_TYPE_integer,
@@ -252,10 +271,29 @@ static r_obj* rray_cast_dbl_to_int(
   );
 }
 
+static r_obj* rray_cast_dbl_to_cpl(
+  r_obj* x,
+  struct rray_arg* p_x_arg,
+  struct r_lazy error_call
+) {
+  RRAY_CAST(
+    double,
+    r_dbl_cbegin,
+    R_TYPE_complex,
+    r_complex,
+    r_cpl_begin,
+    rray_cast_dbl_to_cpl_one
+  );
+}
+
 #undef RRAY_CAST
-#undef RRAY_CAST_LOSSY
 
-static inline double rray_cast_lgl_to_dbl_one(int x) {
+static inline double rray_cast_lgl_to_dbl_one(
+  int x,
+  r_ssize i,
+  struct rray_arg* p_x_arg,
+  struct r_lazy error_call
+) {
   if (x == r_globals.na_lgl) {
     return r_globals.na_dbl;
   }
@@ -263,36 +301,17 @@ static inline double rray_cast_lgl_to_dbl_one(int x) {
   return (double) x;
 }
 
-static inline r_complex rray_cast_lgl_to_cpl_one(int x) {
+static inline r_complex rray_cast_lgl_to_cpl_one(
+  int x,
+  r_ssize i,
+  struct rray_arg* p_x_arg,
+  struct r_lazy error_call
+) {
   if (x == r_globals.na_lgl) {
     return r_globals.na_cpl;
   }
 
   return (r_complex){.r = (double) x, .i = 0};
-}
-
-static inline double rray_cast_int_to_dbl_one(int x) {
-  if (x == r_globals.na_int) {
-    return r_globals.na_dbl;
-  }
-
-  return (double) x;
-}
-
-static inline r_complex rray_cast_int_to_cpl_one(int x) {
-  if (x == r_globals.na_int) {
-    return r_globals.na_cpl;
-  }
-
-  return (r_complex){.r = (double) x, .i = 0};
-}
-
-static inline r_complex rray_cast_dbl_to_cpl_one(double x) {
-  if (R_IsNA(x)) {
-    return r_globals.na_cpl;
-  }
-
-  return (r_complex){.r = x, .i = 0};
 }
 
 static inline int rray_cast_int_to_lgl_one(
@@ -310,6 +329,32 @@ static inline int rray_cast_int_to_lgl_one(
   }
 
   stop_lossy_cast(RRAY_TYPE_integer, RRAY_TYPE_logical, i, p_x_arg, error_call);
+}
+
+static inline double rray_cast_int_to_dbl_one(
+  int x,
+  r_ssize i,
+  struct rray_arg* p_x_arg,
+  struct r_lazy error_call
+) {
+  if (x == r_globals.na_int) {
+    return r_globals.na_dbl;
+  }
+
+  return (double) x;
+}
+
+static inline r_complex rray_cast_int_to_cpl_one(
+  int x,
+  r_ssize i,
+  struct rray_arg* p_x_arg,
+  struct r_lazy error_call
+) {
+  if (x == r_globals.na_int) {
+    return r_globals.na_cpl;
+  }
+
+  return (r_complex){.r = (double) x, .i = 0};
 }
 
 static inline int rray_cast_dbl_to_lgl_one(
@@ -366,6 +411,29 @@ static inline int rray_cast_dbl_to_int_one(
   }
 
   return out;
+}
+
+static inline r_complex rray_cast_dbl_to_cpl_one(
+  double x,
+  r_ssize i,
+  struct rray_arg* p_x_arg,
+  struct r_lazy error_call
+) {
+  if (R_IsNA(x)) {
+    return r_globals.na_cpl;
+  }
+
+  return (r_complex){.r = x, .i = 0};
+}
+
+static void poke_dimensions_and_names(r_obj* out, r_obj* x) {
+  r_attrib_poke_dim(out, r_dim(x));
+
+  r_obj* names = r_dim_names(x);
+
+  if (names != r_null) {
+    r_attrib_poke_dim_names(out, names);
+  }
 }
 
 static r_no_return void stop_incompatible_cast(
