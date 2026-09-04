@@ -349,12 +349,30 @@ There are no `<-` replacement forms.
 
 There is no user facing type system.
 
-A **type** is an `enum rray_type`, our own enum holding exactly the seven native
-types and nothing else. Restricting it this way means every `switch` over a type
-can be exhaustive with no `default`, so the compiler catches a missing case.
-`rray_typeof()` reads one off an object, `rray_type_to_r_type()` converts back
-for `r_alloc_vector()`, and `rray_type_as_c_string()` names one in an error
-message. `arg_as_type()` is the validating entry point.
+A **type** is an `enum rray_type`, our own enum holding the seven native types
+plus `RRAY_TYPE_scalar`. Restricting it this way means every `switch` over a
+type can be exhaustive with no `default`, so the compiler catches a missing
+case. `rray_typeof()` reads one off an object, `rray_type_to_r_type()` converts
+back for `r_alloc_vector()`, and `rray_type_as_c_string()` names one in an error
+message.
+
+`RRAY_TYPE_scalar` is the fall through for anything that is not a native type,
+following vctrs' `VCTRS_TYPE_scalar`. It means `rray_typeof()` is total and
+never errors, so a function reads its inputs first and rejects them where it
+would have to act on them:
+
+```c
+const enum rray_type x_type = rray_typeof(x);
+
+if (x_type == RRAY_TYPE_scalar) {
+  stop_scalar_input(x, x_arg, error_call);
+}
+```
+
+`stop_scalar_input()` raises the "must be an array" error, and takes the object
+so it can name the offending type. There is no separate validating step to
+convert an object into a type, because an invalid one already arrives as
+`RRAY_TYPE_scalar`.
 
 A **ptype** is the empty vector standing for a type, so `double()` for
 `RRAY_TYPE_double`. There is one of each in rlang's `r_globals`, already built

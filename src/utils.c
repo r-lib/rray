@@ -13,7 +13,7 @@
 //
 // Since we are only modifying attributes,
 // we use a lightweight wrapper
-static inline r_obj* vec_as_array(r_obj* x) {
+r_obj* vec_as_array(r_obj* x) {
   r_obj* out = KEEP(r_wrap(x));
 
   const r_ssize size = r_length(x);
@@ -46,7 +46,9 @@ void check_unclassed(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
 }
 
 r_obj* arg_as_array(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
-  check_array(x, arg, error_call);
+  if (rray_typeof(x) == RRAY_TYPE_scalar) {
+    stop_scalar_input(x, arg, error_call);
+  }
 
   if (r_dim(x) == r_null) {
     return vec_as_array(x);
@@ -55,37 +57,17 @@ r_obj* arg_as_array(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
   return x;
 }
 
-enum rray_type arg_as_type(
+r_no_return void stop_scalar_input(
   r_obj* x,
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  check_array(x, arg, error_call);
-  return rray_typeof(x);
-}
-
-static void check_array(
-  r_obj* x,
-  struct rray_arg* arg,
-  struct r_lazy error_call
-) {
-  switch (r_typeof(x)) {
-  case R_TYPE_logical:
-  case R_TYPE_integer:
-  case R_TYPE_double:
-  case R_TYPE_complex:
-  case R_TYPE_character:
-  case R_TYPE_raw:
-  case R_TYPE_list:
-    return;
-  default:
-    r_abort_lazy_call(
-      error_call,
-      "%s must be an array, not %s.",
-      rray_arg_format_input(arg),
-      r_obj_type_friendly(x)
-    );
-  }
+  r_abort_lazy_call(
+    error_call,
+    "%s must be an array, not %s.",
+    rray_arg_format_input(arg),
+    r_obj_type_friendly(x)
+  );
 }
 
 int arg_as_int(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {

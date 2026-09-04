@@ -18,6 +18,8 @@ enum rray_type2 rray_typeof2(enum rray_type x, enum rray_type y) {
       return RRAY_TYPE2_logical_raw;
     case RRAY_TYPE_list:
       return RRAY_TYPE2_logical_list;
+    case RRAY_TYPE_scalar:
+      return RRAY_TYPE2_logical_scalar;
     }
     break;
   case RRAY_TYPE_integer:
@@ -36,6 +38,8 @@ enum rray_type2 rray_typeof2(enum rray_type x, enum rray_type y) {
       return RRAY_TYPE2_integer_raw;
     case RRAY_TYPE_list:
       return RRAY_TYPE2_integer_list;
+    case RRAY_TYPE_scalar:
+      return RRAY_TYPE2_integer_scalar;
     }
     break;
   case RRAY_TYPE_double:
@@ -54,6 +58,8 @@ enum rray_type2 rray_typeof2(enum rray_type x, enum rray_type y) {
       return RRAY_TYPE2_double_raw;
     case RRAY_TYPE_list:
       return RRAY_TYPE2_double_list;
+    case RRAY_TYPE_scalar:
+      return RRAY_TYPE2_double_scalar;
     }
     break;
   case RRAY_TYPE_complex:
@@ -72,6 +78,8 @@ enum rray_type2 rray_typeof2(enum rray_type x, enum rray_type y) {
       return RRAY_TYPE2_complex_raw;
     case RRAY_TYPE_list:
       return RRAY_TYPE2_complex_list;
+    case RRAY_TYPE_scalar:
+      return RRAY_TYPE2_complex_scalar;
     }
     break;
   case RRAY_TYPE_character:
@@ -90,6 +98,8 @@ enum rray_type2 rray_typeof2(enum rray_type x, enum rray_type y) {
       return RRAY_TYPE2_character_raw;
     case RRAY_TYPE_list:
       return RRAY_TYPE2_character_list;
+    case RRAY_TYPE_scalar:
+      return RRAY_TYPE2_character_scalar;
     }
     break;
   case RRAY_TYPE_raw:
@@ -108,6 +118,8 @@ enum rray_type2 rray_typeof2(enum rray_type x, enum rray_type y) {
       return RRAY_TYPE2_raw_raw;
     case RRAY_TYPE_list:
       return RRAY_TYPE2_raw_list;
+    case RRAY_TYPE_scalar:
+      return RRAY_TYPE2_raw_scalar;
     }
     break;
   case RRAY_TYPE_list:
@@ -126,6 +138,28 @@ enum rray_type2 rray_typeof2(enum rray_type x, enum rray_type y) {
       return RRAY_TYPE2_raw_list;
     case RRAY_TYPE_list:
       return RRAY_TYPE2_list_list;
+    case RRAY_TYPE_scalar:
+      return RRAY_TYPE2_list_scalar;
+    }
+    break;
+  case RRAY_TYPE_scalar:
+    switch (y) {
+    case RRAY_TYPE_logical:
+      return RRAY_TYPE2_logical_scalar;
+    case RRAY_TYPE_integer:
+      return RRAY_TYPE2_integer_scalar;
+    case RRAY_TYPE_double:
+      return RRAY_TYPE2_double_scalar;
+    case RRAY_TYPE_complex:
+      return RRAY_TYPE2_complex_scalar;
+    case RRAY_TYPE_character:
+      return RRAY_TYPE2_character_scalar;
+    case RRAY_TYPE_raw:
+      return RRAY_TYPE2_raw_scalar;
+    case RRAY_TYPE_list:
+      return RRAY_TYPE2_list_scalar;
+    case RRAY_TYPE_scalar:
+      return RRAY_TYPE2_scalar_scalar;
     }
     break;
   }

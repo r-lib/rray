@@ -20,7 +20,7 @@ enum rray_type rray_typeof(r_obj* x) {
   case R_TYPE_list:
     return RRAY_TYPE_list;
   default:
-    r_stop_unreachable();
+    return RRAY_TYPE_scalar;
   }
 }
 
@@ -40,6 +40,8 @@ enum r_type rray_type_to_r_type(enum rray_type type) {
     return R_TYPE_raw;
   case RRAY_TYPE_list:
     return R_TYPE_list;
+  case RRAY_TYPE_scalar:
+    break;
   }
 
   r_stop_unreachable();

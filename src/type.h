@@ -12,7 +12,8 @@ enum rray_type {
   RRAY_TYPE_complex,
   RRAY_TYPE_character,
   RRAY_TYPE_raw,
-  RRAY_TYPE_list
+  RRAY_TYPE_list,
+  RRAY_TYPE_scalar
 };
 
 enum rray_type rray_typeof(r_obj* x);

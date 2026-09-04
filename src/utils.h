@@ -8,13 +8,15 @@
 
 void check_unclassed(r_obj* x, struct rray_arg* arg, struct r_lazy error_call);
 
-r_obj* arg_as_array(r_obj* x, struct rray_arg* arg, struct r_lazy error_call);
-
-enum rray_type arg_as_type(
+r_no_return void stop_scalar_input(
   r_obj* x,
   struct rray_arg* arg,
   struct r_lazy error_call
 );
+
+r_obj* vec_as_array(r_obj* x);
+
+r_obj* arg_as_array(r_obj* x, struct rray_arg* arg, struct r_lazy error_call);
 
 int arg_as_int(r_obj* x, struct rray_arg* arg, struct r_lazy error_call);
 

@@ -28,16 +28,26 @@ r_obj* rray_cast(
   struct r_lazy error_call
 ) {
   check_unclassed(x, x_arg, error_call);
-  x = KEEP(arg_as_array(x, x_arg, error_call));
-
   check_unclassed(to, to_arg, error_call);
-  const enum rray_type to_type = arg_as_type(to, to_arg, error_call);
 
-  const enum rray_type type = rray_typeof(x);
+  const enum rray_type x_type = rray_typeof(x);
+  const enum rray_type to_type = rray_typeof(to);
+
+  if (x_type == RRAY_TYPE_scalar) {
+    stop_scalar_input(x, x_arg, error_call);
+  }
+  if (to_type == RRAY_TYPE_scalar) {
+    stop_scalar_input(to, to_arg, error_call);
+  }
+
+  if (r_dim(x) == r_null) {
+    x = vec_as_array(x);
+  }
+  KEEP(x);
 
   r_obj* out;
 
-  switch (type) {
+  switch (x_type) {
   case RRAY_TYPE_logical:
     switch (to_type) {
     case RRAY_TYPE_logical:
@@ -53,7 +63,7 @@ r_obj* rray_cast(
       out = rray_cast_lgl_to_cpl(x, x_arg, error_call);
       break;
     default:
-      stop_incompatible_cast(type, to_type, x_arg, error_call);
+      stop_incompatible_cast(x_type, to_type, x_arg, error_call);
     }
     break;
   case RRAY_TYPE_integer:
@@ -71,7 +81,7 @@ r_obj* rray_cast(
       out = rray_cast_int_to_cpl(x, x_arg, error_call);
       break;
     default:
-      stop_incompatible_cast(type, to_type, x_arg, error_call);
+      stop_incompatible_cast(x_type, to_type, x_arg, error_call);
     }
     break;
   case RRAY_TYPE_double:
@@ -89,7 +99,7 @@ r_obj* rray_cast(
       out = rray_cast_dbl_to_cpl(x, x_arg, error_call);
       break;
     default:
-      stop_incompatible_cast(type, to_type, x_arg, error_call);
+      stop_incompatible_cast(x_type, to_type, x_arg, error_call);
     }
     break;
   case RRAY_TYPE_complex:
@@ -98,7 +108,7 @@ r_obj* rray_cast(
       out = x;
       break;
     default:
-      stop_incompatible_cast(type, to_type, x_arg, error_call);
+      stop_incompatible_cast(x_type, to_type, x_arg, error_call);
     }
     break;
   case RRAY_TYPE_character:
@@ -107,7 +117,7 @@ r_obj* rray_cast(
       out = x;
       break;
     default:
-      stop_incompatible_cast(type, to_type, x_arg, error_call);
+      stop_incompatible_cast(x_type, to_type, x_arg, error_call);
     }
     break;
   case RRAY_TYPE_raw:
@@ -116,7 +126,7 @@ r_obj* rray_cast(
       out = x;
       break;
     default:
-      stop_incompatible_cast(type, to_type, x_arg, error_call);
+      stop_incompatible_cast(x_type, to_type, x_arg, error_call);
     }
     break;
   case RRAY_TYPE_list:
@@ -125,9 +135,11 @@ r_obj* rray_cast(
       out = x;
       break;
     default:
-      stop_incompatible_cast(type, to_type, x_arg, error_call);
+      stop_incompatible_cast(x_type, to_type, x_arg, error_call);
     }
     break;
+  case RRAY_TYPE_scalar:
+    r_stop_unreachable();
   }
 
   FREE(1);

@@ -32,7 +32,14 @@ r_obj* rray_ptype_common(
 ) {
   if (ptype != r_null) {
     check_unclassed(ptype, ptype_arg, error_call);
-    return rray_ptype_from_type(arg_as_type(ptype, ptype_arg, error_call));
+
+    const enum rray_type type = rray_typeof(ptype);
+
+    if (type == RRAY_TYPE_scalar) {
+      stop_scalar_input(ptype, ptype_arg, error_call);
+    }
+
+    return rray_ptype_from_type(type);
   }
 
   const r_ssize n = r_length(xs);
@@ -53,7 +60,14 @@ r_obj* rray_ptype_common(
   KEEP(out_arg->shelter);
 
   check_unclassed(v_xs[0], x_arg, error_call);
-  r_obj* out = rray_ptype_from_type(arg_as_type(v_xs[0], x_arg, error_call));
+
+  const enum rray_type type = rray_typeof(v_xs[0]);
+
+  if (type == RRAY_TYPE_scalar) {
+    stop_scalar_input(v_xs[0], x_arg, error_call);
+  }
+
+  r_obj* out = rray_ptype_from_type(type);
 
   for (x_i = 1; x_i < n; ++x_i) {
     r_obj* common = rray_ptype2(out, v_xs[x_i], out_arg, x_arg, error_call);

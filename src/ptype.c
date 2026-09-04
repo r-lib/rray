@@ -28,8 +28,15 @@ r_obj* rray_ptype2(
   check_unclassed(x, x_arg, error_call);
   check_unclassed(y, y_arg, error_call);
 
-  const enum rray_type x_type = arg_as_type(x, x_arg, error_call);
-  const enum rray_type y_type = arg_as_type(y, y_arg, error_call);
+  const enum rray_type x_type = rray_typeof(x);
+  const enum rray_type y_type = rray_typeof(y);
+
+  if (x_type == RRAY_TYPE_scalar) {
+    stop_scalar_input(x, x_arg, error_call);
+  }
+  if (y_type == RRAY_TYPE_scalar) {
+    stop_scalar_input(y, y_arg, error_call);
+  }
 
   switch (rray_typeof2(x_type, y_type)) {
   case RRAY_TYPE2_logical_logical:
@@ -75,6 +82,16 @@ r_obj* rray_ptype2(
   case RRAY_TYPE2_character_list:
   case RRAY_TYPE2_raw_list:
     stop_incompatible_ptype(x_type, y_type, x_arg, y_arg, error_call);
+
+  case RRAY_TYPE2_logical_scalar:
+  case RRAY_TYPE2_integer_scalar:
+  case RRAY_TYPE2_double_scalar:
+  case RRAY_TYPE2_complex_scalar:
+  case RRAY_TYPE2_character_scalar:
+  case RRAY_TYPE2_raw_scalar:
+  case RRAY_TYPE2_list_scalar:
+  case RRAY_TYPE2_scalar_scalar:
+    break;
   }
 
   r_stop_unreachable();
@@ -96,6 +113,8 @@ r_obj* rray_ptype_from_type(enum rray_type type) {
     return r_globals.empty_raw;
   case RRAY_TYPE_list:
     return r_globals.empty_list;
+  case RRAY_TYPE_scalar:
+    break;
   }
 
   r_stop_unreachable();
