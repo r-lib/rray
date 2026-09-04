@@ -8,7 +8,7 @@ r_obj* ffi_rray_ptype_common(
   r_obj* ffi_ptype,
   r_obj* ffi_frame
 ) {
-  struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
+  struct r_lazy error_call = {.x = rray_syms.dot_call, .env = ffi_frame};
 
   struct r_lazy arg_lazy = {.x = rray_syms.dot_arg, .env = ffi_frame};
   struct rray_arg arg = new_lazy_arg(&arg_lazy);

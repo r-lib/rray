@@ -18,7 +18,7 @@
     Code
       rray_ptype2(character(), integer())
     Condition
-      Error in `rray_ptype2()`:
+      Error:
       ! Can't combine `character()` <character> and `integer()` <integer>.
 
 ---
@@ -26,7 +26,7 @@
     Code
       rray_ptype2(raw(), integer())
     Condition
-      Error in `rray_ptype2()`:
+      Error:
       ! Can't combine `raw()` <raw> and `integer()` <integer>.
 
 ---
@@ -34,7 +34,7 @@
     Code
       rray_ptype2(list(), double())
     Condition
-      Error in `rray_ptype2()`:
+      Error:
       ! Can't combine `list()` <list> and `double()` <double>.
 
 ---
@@ -42,7 +42,7 @@
     Code
       rray_ptype2(character(), list())
     Condition
-      Error in `rray_ptype2()`:
+      Error:
       ! Can't combine `character()` <character> and `list()` <list>.
 
 # `x_arg` and `y_arg` default to the caller's expression
@@ -50,7 +50,7 @@
     Code
       rray_ptype2(1L, "a")
     Condition
-      Error in `rray_ptype2()`:
+      Error:
       ! Can't combine `1L` <integer> and `"a"` <character>.
 
 ---
@@ -58,7 +58,7 @@
     Code
       f(1L, "a")
     Condition
-      Error in `rray_ptype2()`:
+      Error in `f()`:
       ! Can't combine `lhs` <integer> and `rhs` <character>.
 
 # `x_arg` and `y_arg` can be overridden
@@ -66,7 +66,7 @@
     Code
       rray_ptype2(1L, "a", x_arg = "lhs", y_arg = "rhs")
     Condition
-      Error in `rray_ptype2()`:
+      Error:
       ! Can't combine `lhs` <integer> and `rhs` <character>.
 
 # an empty arg is left out of the message
@@ -74,8 +74,24 @@
     Code
       rray_ptype2(1L, "a", x_arg = "", y_arg = "")
     Condition
-      Error in `rray_ptype2()`:
+      Error:
       ! Can't combine <integer> and <character>.
+
+# `call` blames the caller, and can be overridden
+
+    Code
+      f(1L, "a")
+    Condition
+      Error in `f()`:
+      ! Can't combine `a` <integer> and `b` <character>.
+
+---
+
+    Code
+      outer()
+    Condition
+      Error in `outer()`:
+      ! Can't combine `a` <integer> and `b` <character>.
 
 # `...` must be empty
 
@@ -93,7 +109,7 @@
     Code
       rray_ptype2(NULL, integer())
     Condition
-      Error in `rray_ptype2()`:
+      Error:
       ! `NULL` must be an array, not `NULL`.
 
 ---
@@ -101,7 +117,7 @@
     Code
       rray_ptype2(integer(), sum)
     Condition
-      Error in `rray_ptype2()`:
+      Error:
       ! `sum` must be an array, not a primitive function.
 
 # errors on classed input
@@ -109,7 +125,7 @@
     Code
       rray_ptype2(x, integer())
     Condition
-      Error in `rray_ptype2()`:
+      Error:
       ! `x` must be a bare array, not a <foo> object.
 
 ---
@@ -117,6 +133,6 @@
     Code
       rray_ptype2(integer(), x)
     Condition
-      Error in `rray_ptype2()`:
+      Error:
       ! `x` must be a bare array, not a <foo> object.
 

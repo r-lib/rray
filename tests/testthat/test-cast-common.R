@@ -52,6 +52,11 @@ test_that("`.to_arg` renames `.to` in the error", {
   )
 })
 
+test_that("`.call` blames the caller", {
+  f <- function(...) rray_cast_common(..., .to = integer())
+  expect_snapshot(f(1L, 2.5), error = TRUE)
+})
+
 test_that("errors on a bad `.to`", {
   expect_snapshot(rray_cast_common(1, .to = sum), error = TRUE)
   expect_snapshot(

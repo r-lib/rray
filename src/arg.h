@@ -29,6 +29,8 @@ struct rray_syms {
   r_obj* dot_arg;
   r_obj* dot_to_arg;
   r_obj* dot_ptype_arg;
+  r_obj* call;
+  r_obj* dot_call;
 };
 
 extern struct rray_syms rray_syms;

@@ -3,7 +3,8 @@ rray_ptype2 <- function(
   y,
   ...,
   x_arg = caller_arg(x),
-  y_arg = caller_arg(y)
+  y_arg = caller_arg(y),
+  call = caller_env()
 ) {
   check_dots_empty0(...)
   .Call(ffi_rray_ptype2, x, y, environment())

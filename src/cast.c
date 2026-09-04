@@ -8,7 +8,7 @@
 #include "decl/cast-decl.h"
 
 r_obj* ffi_rray_cast(r_obj* ffi_x, r_obj* ffi_to, r_obj* ffi_frame) {
-  struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
+  struct r_lazy error_call = {.x = rray_syms.call, .env = ffi_frame};
 
   struct r_lazy x_arg_lazy = {.x = rray_syms.x_arg, .env = ffi_frame};
   struct rray_arg x_arg = new_lazy_arg(&x_arg_lazy);

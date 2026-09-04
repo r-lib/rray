@@ -121,6 +121,11 @@ test_that("`to_arg` is empty by default, so `to` is reported as `Input`", {
   expect_snapshot(rray_cast(1, sum, to_arg = "myto"), error = TRUE)
 })
 
+test_that("`call` blames the caller", {
+  f <- function(x) rray_cast(x, integer())
+  expect_snapshot(f(1.5), error = TRUE)
+})
+
 test_that("`...` must be empty", {
   expect_snapshot(rray_cast(1, integer(), 5), error = TRUE)
 })

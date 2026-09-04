@@ -2,7 +2,8 @@ rray_ptype_common <- function(
   ...,
   .ptype = NULL,
   .arg = "",
-  .ptype_arg = ".ptype"
+  .ptype_arg = ".ptype",
+  .call = caller_env()
 ) {
   .Call(ffi_rray_ptype_common, list2(...), .ptype, environment())
 }

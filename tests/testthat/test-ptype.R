@@ -44,6 +44,15 @@ test_that("an empty arg is left out of the message", {
   expect_snapshot(rray_ptype2(1L, "a", x_arg = "", y_arg = ""), error = TRUE)
 })
 
+test_that("`call` blames the caller, and can be overridden", {
+  f <- function(a, b) rray_ptype2(a, b)
+  expect_snapshot(f(1L, "a"), error = TRUE)
+
+  g <- function(a, b) rray_ptype2(a, b, call = caller_env())
+  outer <- function() g(1L, "a")
+  expect_snapshot(outer(), error = TRUE)
+})
+
 test_that("`...` must be empty", {
   expect_snapshot(rray_ptype2(1L, 2L, 5), error = TRUE)
 })

@@ -229,4 +229,6 @@ void rray_init_args(r_obj* ns) {
   rray_syms.dot_arg = r_sym(".arg");
   rray_syms.dot_to_arg = r_sym(".to_arg");
   rray_syms.dot_ptype_arg = r_sym(".ptype_arg");
+  rray_syms.call = r_sym("call");
+  rray_syms.dot_call = r_sym(".call");
 }

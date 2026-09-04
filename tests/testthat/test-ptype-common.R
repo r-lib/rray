@@ -47,6 +47,11 @@ test_that("`.arg` names `...` as a whole", {
   )
 })
 
+test_that("`.call` blames the caller", {
+  f <- function(...) rray_ptype_common(...)
+  expect_snapshot(f(1L, "a"), error = TRUE)
+})
+
 test_that("errors on a bad `.ptype`", {
   expect_snapshot(rray_ptype_common(1L, .ptype = sum), error = TRUE)
   expect_snapshot(

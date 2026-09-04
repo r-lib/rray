@@ -410,20 +410,53 @@ r_obj* rray_cast_common(
 type of `xs` is computed. That is the same shape as `.dimensions` in
 `rray_dimensions_common()`: when it is supplied, `...` is never looked at.
 
-### Argument tags
+### Argument tags and the error call
 
 Every one of these takes a tag per input, and the R wrappers expose them so a
-caller can make an error blame its own argument. The FFI builds each one with
-`new_lazy_arg()`, reading the tag out of the frame only once an error is
-actually raised, so a default of `caller_arg(x)` costs nothing when nothing goes
-wrong.
+caller can make an error blame its own argument and its own call. The FFI builds
+each one with `new_lazy_arg()`, reading the tag out of the frame only once an
+error is actually raised, so a default of `caller_arg(x)` costs nothing when
+nothing goes wrong. The error call is read out of the frame the same way.
 
 ```r
-rray_ptype2(x, y, ..., x_arg = caller_arg(x), y_arg = caller_arg(y))
-rray_ptype_common(..., .ptype = NULL, .arg = "", .ptype_arg = ".ptype")
-rray_cast(x, to, ..., x_arg = caller_arg(x), to_arg = "")
-rray_cast_common(..., .to = NULL, .arg = "", .to_arg = ".to")
+rray_ptype2(
+  x,
+  y,
+  ...,
+  x_arg = caller_arg(x),
+  y_arg = caller_arg(y),
+  call = caller_env()
+)
+rray_ptype_common(
+  ...,
+  .ptype = NULL,
+  .arg = "",
+  .ptype_arg = ".ptype",
+  .call = caller_env()
+)
+rray_cast(x, to, ..., x_arg = caller_arg(x), to_arg = "", call = caller_env())
+rray_cast_common(
+  ...,
+  .to = NULL,
+  .arg = "",
+  .to_arg = ".to",
+  .call = caller_env()
+)
 ```
+
+`call = caller_env()` means the wrapper is blamed rather than the rray4
+function, which is the point of taking it:
+
+```r
+f <- function(a, b) rray_ptype2(a, b)
+f(1L, "a")
+#> Error in `f()`:
+#> ! Can't combine `a` <integer> and `b` <character>.
+```
+
+Called straight from the top level there is no wrapper to blame, so the message
+has no `Error in` at all. That is rlang's behaviour for the global environment,
+and it is what vctrs does too.
 
 The defaults follow vctrs. An input the caller names gets `caller_arg()`, so the
 error quotes what they actually wrote. A prototype does not, because `to` is a
@@ -1254,13 +1287,13 @@ family, and `rray_tile()`.
 ## `x_arg` and `call` on the exported functions
 
 vctrs gives its functions these so another package's wrapper can make an error
-blame its own argument. The type functions already take them, so
-`rray_ptype2(x, y, x_arg = "lhs")` works. Follow the pattern in `src/ptype.c`
-when spreading them further, and 2.4 for the defaults.
+blame its own argument and its own call. The type functions already take both,
+so `rray_ptype2(x, y, x_arg = "lhs", call = my_call)` works. Follow the pattern
+in `src/ptype.c` when spreading them further, and 2.4 for the defaults.
 
-The exported functions still do not take them, and neither family takes a
-`call`. Adding an argument to every exported function, and documenting it, is
-its own pull request. Do it when a real caller wants it, not before.
+The exported functions still do not take them. Adding an argument to every
+exported function, and documenting it, is its own pull request. Do it when a
+real caller wants it, not before.
 
 ## Unary elementwise math
 
