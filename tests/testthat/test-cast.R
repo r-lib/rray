@@ -135,6 +135,12 @@ test_that("errors on non-array input", {
   expect_snapshot(rray_cast(1L, NULL), error = TRUE)
 })
 
+test_that("`x` is checked before `to`", {
+  x <- NULL
+  to <- NULL
+  expect_snapshot(rray_cast(x, to), error = TRUE)
+})
+
 test_that("errors on classed input", {
   x <- structure(1, class = "foo")
   expect_snapshot(rray_cast(x, integer()), error = TRUE)

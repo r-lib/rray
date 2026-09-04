@@ -27,11 +27,11 @@ r_obj* rray_cast(
   struct rray_arg* p_to_arg,
   struct r_lazy error_call
 ) {
-  check_unclassed(to, p_to_arg, error_call);
-  const enum rray_type to_type = arg_as_type(to, p_to_arg, error_call);
-
   check_unclassed(x, p_x_arg, error_call);
   x = KEEP(arg_as_array(x, p_x_arg, error_call));
+
+  check_unclassed(to, p_to_arg, error_call);
+  const enum rray_type to_type = arg_as_type(to, p_to_arg, error_call);
 
   const enum rray_type type = rray_typeof(x);
 

@@ -192,6 +192,14 @@
       Error:
       ! Input must be an array, not `NULL`.
 
+# `x` is checked before `to`
+
+    Code
+      rray_cast(x, to)
+    Condition
+      Error:
+      ! `x` must be an array, not `NULL`.
+
 # errors on classed input
 
     Code
