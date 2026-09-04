@@ -5,11 +5,11 @@
 r_obj* arg_as_axes(
   r_obj* axes,
   int dimensionality,
-  struct rray_arg* arg,
+  struct rray_arg* p_arg,
   struct r_lazy error_call
 ) {
   if (r_typeof(axes) != R_TYPE_integer) {
-    axes = vec_cast(axes, r_globals.empty_int, arg, NULL);
+    axes = vec_cast(axes, r_globals.empty_int, p_arg, NULL);
   }
   KEEP(axes);
 
@@ -17,7 +17,7 @@ r_obj* arg_as_axes(
     r_abort_lazy_call(
       error_call,
       "%s can't have attributes.",
-      rray_arg_format(arg)
+      rray_arg_format(p_arg)
     );
   }
 
@@ -32,7 +32,7 @@ r_obj* arg_as_axes(
       r_abort_lazy_call(
         error_call,
         "%s must not contain missing values.",
-        rray_arg_format(arg)
+        rray_arg_format(p_arg)
       );
     }
 
@@ -40,7 +40,7 @@ r_obj* arg_as_axes(
       r_abort_lazy_call(
         error_call,
         "%s must contain values greater than or equal to 1, not %d.",
-        rray_arg_format(arg),
+        rray_arg_format(p_arg),
         axis
       );
     }
@@ -50,7 +50,7 @@ r_obj* arg_as_axes(
         error_call,
         "%s must contain values less than or equal to the "
         "dimensionality of %d, not %d.",
-        rray_arg_format(arg),
+        rray_arg_format(p_arg),
         dimensionality,
         axis
       );
@@ -60,7 +60,7 @@ r_obj* arg_as_axes(
       r_abort_lazy_call(
         error_call,
         "%s must be in strictly increasing order.",
-        rray_arg_format(arg)
+        rray_arg_format(p_arg)
       );
     }
   }
@@ -72,14 +72,14 @@ r_obj* arg_as_axes(
 void check_axis(
   int axis,
   int dimensionality,
-  struct rray_arg* arg,
+  struct rray_arg* p_arg,
   struct r_lazy error_call
 ) {
   if (axis == r_globals.na_int) {
     r_abort_lazy_call(
       error_call,
       "%s must not be missing.",
-      rray_arg_format(arg)
+      rray_arg_format(p_arg)
     );
   }
 
@@ -87,7 +87,7 @@ void check_axis(
     r_abort_lazy_call(
       error_call,
       "%s must be greater than or equal to 1, not %d.",
-      rray_arg_format(arg),
+      rray_arg_format(p_arg),
       axis
     );
   }
@@ -97,7 +97,7 @@ void check_axis(
       error_call,
       "%s must be less than or equal to the dimensionality of %d, "
       "not %d.",
-      rray_arg_format(arg),
+      rray_arg_format(p_arg),
       dimensionality,
       axis
     );

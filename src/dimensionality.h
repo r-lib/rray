@@ -9,7 +9,7 @@
 
 int rray_dimensionality(
   r_obj* x,
-  struct rray_arg* arg,
+  struct rray_arg* p_arg,
   struct r_lazy error_call
 );
 int rray_dimensionality_from_dimensions(r_obj* dimensions);

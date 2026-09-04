@@ -9,8 +9,8 @@
 
 #define RRAY_ARG_BUFFER_SIZE 100
 
-r_obj* rray_arg(struct rray_arg* arg) {
-  if (arg == NULL) {
+r_obj* rray_arg(struct rray_arg* p_arg) {
+  if (p_arg == NULL) {
     return r_chrs.empty_string;
   }
 
@@ -20,7 +20,7 @@ r_obj* rray_arg(struct rray_arg* arg) {
     r_obj* shelter = KEEP(r_alloc_raw(size));
     char* buf = (char*) r_raw_begin(shelter);
 
-    if (fill_arg_buffer(arg, buf, 0, size) >= 0) {
+    if (fill_arg_buffer(p_arg, buf, 0, size) >= 0) {
       r_obj* out = r_chr(buf);
       FREE(1);
       return out;
@@ -31,29 +31,29 @@ r_obj* rray_arg(struct rray_arg* arg) {
   }
 }
 
-const char* rray_arg_format(struct rray_arg* arg) {
-  r_obj* chr = KEEP(rray_arg(arg));
+const char* rray_arg_format(struct rray_arg* p_arg) {
+  r_obj* chr = KEEP(rray_arg(p_arg));
   const char* out = r_format_error_arg(chr);
   FREE(1);
   return out;
 }
 
-const char* rray_arg_format_input(struct rray_arg* arg) {
-  if (rray_arg_is_empty(arg)) {
+const char* rray_arg_format_input(struct rray_arg* p_arg) {
+  if (rray_arg_is_empty(p_arg)) {
     return "Input";
   }
 
-  return rray_arg_format(arg);
+  return rray_arg_format(p_arg);
 }
 
 static r_ssize fill_arg_buffer(
-  struct rray_arg* arg,
+  struct rray_arg* p_arg,
   char* buf,
   r_ssize cur_size,
   r_ssize tot_size
 ) {
-  if (arg->parent != NULL) {
-    cur_size = fill_arg_buffer(arg->parent, buf, cur_size, tot_size);
+  if (p_arg->p_parent != NULL) {
+    cur_size = fill_arg_buffer(p_arg->p_parent, buf, cur_size, tot_size);
 
     if (cur_size < 0) {
       return cur_size;
@@ -61,7 +61,7 @@ static r_ssize fill_arg_buffer(
   }
 
   const r_ssize written =
-    arg->fill(arg->data, buf + cur_size, tot_size - cur_size);
+    p_arg->fill(p_arg->data, buf + cur_size, tot_size - cur_size);
 
   if (written < 0) {
     return written;
@@ -83,9 +83,9 @@ static r_ssize str_arg_fill(const char* data, char* buf, r_ssize remaining) {
   return len;
 }
 
-struct rray_arg new_wrapper_arg(struct rray_arg* parent, const char* arg) {
+struct rray_arg new_wrapper_arg(struct rray_arg* p_parent, const char* arg) {
   struct rray_arg out =
-    {.parent = parent, .fill = &wrapper_arg_fill, .data = (void*) arg};
+    {.p_parent = p_parent, .fill = &wrapper_arg_fill, .data = (void*) arg};
   return out;
 }
 
@@ -125,7 +125,7 @@ struct subscript_arg_data {
 };
 
 struct rray_arg* new_subscript_arg(
-  struct rray_arg* parent,
+  struct rray_arg* p_parent,
   r_obj* names,
   r_ssize n,
   r_ssize* p_i
@@ -138,7 +138,7 @@ struct rray_arg* new_subscript_arg(
 
   p_data->self = (struct rray_arg){
     .shelter = shelter,
-    .parent = parent,
+    .p_parent = p_parent,
     .fill = &subscript_arg_fill,
     .data = p_data
   };
@@ -167,7 +167,7 @@ static r_ssize subscript_arg_fill(void* data, char* buf, r_ssize remaining) {
 
   const size_t space = (size_t) remaining;
   const bool named = r_has_name_at(names, i);
-  const bool child = !rray_arg_is_empty(p_data->self.parent);
+  const bool child = !rray_arg_is_empty(p_data->self.p_parent);
 
   int len;
 
@@ -192,13 +192,13 @@ static r_ssize subscript_arg_fill(void* data, char* buf, r_ssize remaining) {
   return len;
 }
 
-bool rray_arg_is_empty(struct rray_arg* arg) {
-  if (arg == NULL) {
+bool rray_arg_is_empty(struct rray_arg* p_arg) {
+  if (p_arg == NULL) {
     return true;
   }
 
   char buf[1];
-  return arg->fill(arg->data, buf, 1) == 0;
+  return p_arg->fill(p_arg->data, buf, 1) == 0;
 }
 
 struct rray_args rray_args;

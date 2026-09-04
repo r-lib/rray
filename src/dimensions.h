@@ -7,21 +7,21 @@
 
 r_obj* rray_dimensions(
   r_obj* x,
-  struct rray_arg* arg,
+  struct rray_arg* p_arg,
   struct r_lazy error_call
 );
 
 int rray_dimension(
   r_obj* x,
   int axis,
-  struct rray_arg* arg,
+  struct rray_arg* p_arg,
   struct r_lazy error_call
 );
 
 r_obj* rray_set_dimensions(
   r_obj* x,
   r_obj* dimensions,
-  struct rray_arg* arg,
+  struct rray_arg* p_arg,
   struct r_lazy error_call
 );
 
@@ -48,7 +48,7 @@ r_obj* rray_dimensions_common(
 
 r_obj* arg_as_dimensions(
   r_obj* dimensions,
-  struct rray_arg* arg,
+  struct rray_arg* p_arg,
   struct r_lazy error_call
 );
 

@@ -14,11 +14,11 @@ r_obj* ffi_rray_dimensions(r_obj* ffi_x, r_obj* ffi_frame) {
 
 r_obj* rray_dimensions(
   r_obj* x,
-  struct rray_arg* arg,
+  struct rray_arg* p_arg,
   struct r_lazy error_call
 ) {
-  check_unclassed(x, arg, error_call);
-  x = KEEP(arg_as_array(x, arg, error_call));
+  check_unclassed(x, p_arg, error_call);
+  x = KEEP(arg_as_array(x, p_arg, error_call));
   r_obj* out = r_dim(x);
   FREE(1);
   return out;
@@ -27,10 +27,10 @@ r_obj* rray_dimensions(
 int rray_dimension(
   r_obj* x,
   int axis,
-  struct rray_arg* arg,
+  struct rray_arg* p_arg,
   struct r_lazy error_call
 ) {
-  r_obj* dimensions = rray_dimensions(x, arg, error_call);
+  r_obj* dimensions = rray_dimensions(x, p_arg, error_call);
   return r_int_get(dimensions, axis - 1);
 }
 
@@ -65,15 +65,15 @@ r_obj* ffi_rray_set_dimensions(
 r_obj* rray_set_dimensions(
   r_obj* x,
   r_obj* dimensions,
-  struct rray_arg* arg,
+  struct rray_arg* p_arg,
   struct r_lazy error_call
 ) {
-  check_unclassed(x, arg, error_call);
-  x = KEEP(arg_as_array(x, arg, error_call));
+  check_unclassed(x, p_arg, error_call);
+  x = KEEP(arg_as_array(x, p_arg, error_call));
   dimensions =
     KEEP(arg_as_dimensions(dimensions, rray_args.dimensions, error_call));
 
-  const r_ssize x_size = rray_size(x, arg, error_call);
+  const r_ssize x_size = rray_size(x, p_arg, error_call);
 
   const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
   const int* v_dimensions = r_int_cbegin(dimensions);
@@ -260,11 +260,11 @@ static inline void rray_dimensions2(
 
 r_obj* arg_as_dimensions(
   r_obj* dimensions,
-  struct rray_arg* arg,
+  struct rray_arg* p_arg,
   struct r_lazy error_call
 ) {
   if (r_typeof(dimensions) != R_TYPE_integer) {
-    dimensions = vec_cast(dimensions, r_globals.empty_int, arg, NULL);
+    dimensions = vec_cast(dimensions, r_globals.empty_int, p_arg, NULL);
   }
   KEEP(dimensions);
 
@@ -272,7 +272,7 @@ r_obj* arg_as_dimensions(
     r_abort_lazy_call(
       error_call,
       "%s can't have attributes.",
-      rray_arg_format(arg)
+      rray_arg_format(p_arg)
     );
   }
 
@@ -282,7 +282,7 @@ r_obj* arg_as_dimensions(
     r_abort_lazy_call(
       error_call,
       "%s must have at least one element.",
-      rray_arg_format(arg)
+      rray_arg_format(p_arg)
     );
   }
 
@@ -295,7 +295,7 @@ r_obj* arg_as_dimensions(
       r_abort_lazy_call(
         error_call,
         "%s must not contain missing values.",
-        rray_arg_format(arg)
+        rray_arg_format(p_arg)
       );
     }
 
@@ -303,7 +303,7 @@ r_obj* arg_as_dimensions(
       r_abort_lazy_call(
         error_call,
         "%s must not contain negative values.",
-        rray_arg_format(arg)
+        rray_arg_format(p_arg)
       );
     }
   }

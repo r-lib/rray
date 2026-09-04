@@ -23,15 +23,15 @@ r_obj* ffi_rray_cast(r_obj* ffi_x, r_obj* ffi_to, r_obj* ffi_frame) {
 r_obj* rray_cast(
   r_obj* x,
   r_obj* to,
-  struct rray_arg* x_arg,
-  struct rray_arg* to_arg,
+  struct rray_arg* p_x_arg,
+  struct rray_arg* p_to_arg,
   struct r_lazy error_call
 ) {
-  check_unclassed(to, to_arg, error_call);
-  const enum rray_type to_type = arg_as_type(to, to_arg, error_call);
+  check_unclassed(to, p_to_arg, error_call);
+  const enum rray_type to_type = arg_as_type(to, p_to_arg, error_call);
 
-  check_unclassed(x, x_arg, error_call);
-  x = KEEP(arg_as_array(x, x_arg, error_call));
+  check_unclassed(x, p_x_arg, error_call);
+  x = KEEP(arg_as_array(x, p_x_arg, error_call));
 
   const enum rray_type type = rray_typeof(x);
 
@@ -55,13 +55,13 @@ r_obj* rray_cast(
       out = rray_cast_lgl_to_cpl(x);
       break;
     default:
-      stop_incompatible_cast(type, to_type, x_arg, error_call);
+      stop_incompatible_cast(type, to_type, p_x_arg, error_call);
     }
     break;
   case RRAY_TYPE_integer:
     switch (to_type) {
     case RRAY_TYPE_logical:
-      out = rray_cast_int_to_lgl(x, x_arg, error_call);
+      out = rray_cast_int_to_lgl(x, p_x_arg, error_call);
       break;
     case RRAY_TYPE_double:
       out = rray_cast_int_to_dbl(x);
@@ -70,29 +70,29 @@ r_obj* rray_cast(
       out = rray_cast_int_to_cpl(x);
       break;
     default:
-      stop_incompatible_cast(type, to_type, x_arg, error_call);
+      stop_incompatible_cast(type, to_type, p_x_arg, error_call);
     }
     break;
   case RRAY_TYPE_double:
     switch (to_type) {
     case RRAY_TYPE_logical:
-      out = rray_cast_dbl_to_lgl(x, x_arg, error_call);
+      out = rray_cast_dbl_to_lgl(x, p_x_arg, error_call);
       break;
     case RRAY_TYPE_integer:
-      out = rray_cast_dbl_to_int(x, x_arg, error_call);
+      out = rray_cast_dbl_to_int(x, p_x_arg, error_call);
       break;
     case RRAY_TYPE_complex:
       out = rray_cast_dbl_to_cpl(x);
       break;
     default:
-      stop_incompatible_cast(type, to_type, x_arg, error_call);
+      stop_incompatible_cast(type, to_type, p_x_arg, error_call);
     }
     break;
   case RRAY_TYPE_complex:
   case RRAY_TYPE_character:
   case RRAY_TYPE_raw:
   case RRAY_TYPE_list:
-    stop_incompatible_cast(type, to_type, x_arg, error_call);
+    stop_incompatible_cast(type, to_type, p_x_arg, error_call);
   }
 
   KEEP(out);
@@ -138,7 +138,7 @@ r_obj* rray_cast(
   TO_CTYPE* v_out = TO_BEGIN(out);                                             \
                                                                                \
   for (r_ssize i = 0; i < size; ++i) {                                         \
-    v_out[i] = ONE(v_x[i], i, x_arg, error_call);                              \
+    v_out[i] = ONE(v_x[i], i, p_x_arg, error_call);                            \
   }                                                                            \
                                                                                \
   FREE(1);                                                                     \
@@ -209,7 +209,7 @@ static r_obj* rray_cast_dbl_to_cpl(r_obj* x) {
 
 static r_obj* rray_cast_int_to_lgl(
   r_obj* x,
-  struct rray_arg* x_arg,
+  struct rray_arg* p_x_arg,
   struct r_lazy error_call
 ) {
   RRAY_CAST_LOSSY(
@@ -224,7 +224,7 @@ static r_obj* rray_cast_int_to_lgl(
 
 static r_obj* rray_cast_dbl_to_lgl(
   r_obj* x,
-  struct rray_arg* x_arg,
+  struct rray_arg* p_x_arg,
   struct r_lazy error_call
 ) {
   RRAY_CAST_LOSSY(
@@ -239,7 +239,7 @@ static r_obj* rray_cast_dbl_to_lgl(
 
 static r_obj* rray_cast_dbl_to_int(
   r_obj* x,
-  struct rray_arg* x_arg,
+  struct rray_arg* p_x_arg,
   struct r_lazy error_call
 ) {
   RRAY_CAST_LOSSY(
@@ -298,7 +298,7 @@ static inline r_complex rray_cast_dbl_to_cpl_one(double x) {
 static inline int rray_cast_int_to_lgl_one(
   int x,
   r_ssize i,
-  struct rray_arg* x_arg,
+  struct rray_arg* p_x_arg,
   struct r_lazy error_call
 ) {
   if (x == r_globals.na_int) {
@@ -309,13 +309,13 @@ static inline int rray_cast_int_to_lgl_one(
     return x;
   }
 
-  stop_lossy_cast(RRAY_TYPE_integer, RRAY_TYPE_logical, i, x_arg, error_call);
+  stop_lossy_cast(RRAY_TYPE_integer, RRAY_TYPE_logical, i, p_x_arg, error_call);
 }
 
 static inline int rray_cast_dbl_to_lgl_one(
   double x,
   r_ssize i,
-  struct rray_arg* x_arg,
+  struct rray_arg* p_x_arg,
   struct r_lazy error_call
 ) {
   if (ISNAN(x)) {
@@ -330,13 +330,13 @@ static inline int rray_cast_dbl_to_lgl_one(
     return 1;
   }
 
-  stop_lossy_cast(RRAY_TYPE_double, RRAY_TYPE_logical, i, x_arg, error_call);
+  stop_lossy_cast(RRAY_TYPE_double, RRAY_TYPE_logical, i, p_x_arg, error_call);
 }
 
 static inline int rray_cast_dbl_to_int_one(
   double x,
   r_ssize i,
-  struct rray_arg* x_arg,
+  struct rray_arg* p_x_arg,
   struct r_lazy error_call
 ) {
   if (ISNAN(x)) {
@@ -344,13 +344,25 @@ static inline int rray_cast_dbl_to_int_one(
   }
 
   if (x <= INT_MIN || x > INT_MAX) {
-    stop_lossy_cast(RRAY_TYPE_double, RRAY_TYPE_integer, i, x_arg, error_call);
+    stop_lossy_cast(
+      RRAY_TYPE_double,
+      RRAY_TYPE_integer,
+      i,
+      p_x_arg,
+      error_call
+    );
   }
 
   const int out = (int) x;
 
   if ((double) out != x) {
-    stop_lossy_cast(RRAY_TYPE_double, RRAY_TYPE_integer, i, x_arg, error_call);
+    stop_lossy_cast(
+      RRAY_TYPE_double,
+      RRAY_TYPE_integer,
+      i,
+      p_x_arg,
+      error_call
+    );
   }
 
   return out;
@@ -359,13 +371,13 @@ static inline int rray_cast_dbl_to_int_one(
 static r_no_return void stop_incompatible_cast(
   enum rray_type x,
   enum rray_type to,
-  struct rray_arg* x_arg,
+  struct rray_arg* p_x_arg,
   struct r_lazy error_call
 ) {
   r_abort_lazy_call(
     error_call,
     "Can't convert from %s to <%s>.",
-    rray_arg_type_format(x_arg, x),
+    rray_arg_type_format(p_x_arg, x),
     rray_type_as_c_string(to)
   );
 }
@@ -374,14 +386,14 @@ static r_no_return void stop_lossy_cast(
   enum rray_type x,
   enum rray_type to,
   r_ssize i,
-  struct rray_arg* x_arg,
+  struct rray_arg* p_x_arg,
   struct r_lazy error_call
 ) {
   r_abort_lazy_call(
     error_call,
     "Can't convert from %s to <%s> due to loss of precision at "
     "location %" R_PRI_SSIZE ".",
-    rray_arg_type_format(x_arg, x),
+    rray_arg_type_format(p_x_arg, x),
     rray_type_as_c_string(to),
     i + 1
   );

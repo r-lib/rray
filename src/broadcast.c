@@ -21,16 +21,16 @@ r_obj* ffi_rray_broadcast(
 r_obj* rray_broadcast(
   r_obj* x,
   r_obj* dimensions,
-  struct rray_arg* arg,
+  struct rray_arg* p_arg,
   struct r_lazy error_call
 ) {
-  check_unclassed(x, arg, error_call);
-  x = KEEP(arg_as_array(x, arg, error_call));
+  check_unclassed(x, p_arg, error_call);
+  x = KEEP(arg_as_array(x, p_arg, error_call));
 
   dimensions =
     KEEP(arg_as_dimensions(dimensions, rray_args.dimensions, error_call));
 
-  r_obj* x_dimensions = KEEP(rray_dimensions(x, arg, error_call));
+  r_obj* x_dimensions = KEEP(rray_dimensions(x, p_arg, error_call));
 
   const int* v_x_dimensions = r_int_cbegin(x_dimensions);
   const int* v_dimensions = r_int_cbegin(dimensions);
@@ -56,7 +56,7 @@ r_obj* rray_broadcast(
     x_dimensionality,
     v_dimensions,
     dimensionality,
-    arg,
+    p_arg,
     error_call
   );
 
@@ -240,7 +240,7 @@ void check_broadcastable(
   int x_dimensionality,
   const int* v_dimensions,
   int dimensionality,
-  struct rray_arg* arg,
+  struct rray_arg* p_arg,
   struct r_lazy error_call
 ) {
   if (x_dimensionality > dimensionality) {
@@ -248,7 +248,7 @@ void check_broadcastable(
       error_call,
       "Can't broadcast %s from dimensionality %d to %d. "
       "Can't decrease dimensionality.",
-      rray_arg_format(arg),
+      rray_arg_format(p_arg),
       x_dimensionality,
       dimensionality
     );
@@ -266,7 +266,7 @@ void check_broadcastable(
       error_call,
       "Can't broadcast axis %d of %s from dimension %d to %d.",
       i + 1,
-      rray_arg_format(arg),
+      rray_arg_format(p_arg),
       x_dimension,
       dimension
     );

@@ -9,8 +9,8 @@
 r_obj* rray_ptype2(
   r_obj* x,
   r_obj* y,
-  struct rray_arg* x_arg,
-  struct rray_arg* y_arg,
+  struct rray_arg* p_x_arg,
+  struct rray_arg* p_y_arg,
   struct r_lazy error_call
 );
 

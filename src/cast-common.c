@@ -19,11 +19,11 @@ r_obj* ffi_rray_cast_common(r_obj* ffi_xs, r_obj* ffi_to, r_obj* ffi_frame) {
 r_obj* rray_cast_common(
   r_obj* xs,
   r_obj* to,
-  struct rray_arg* arg,
-  struct rray_arg* to_arg,
+  struct rray_arg* p_arg,
+  struct rray_arg* p_to_arg,
   struct r_lazy error_call
 ) {
-  to = KEEP(rray_ptype_common(xs, to, arg, to_arg, error_call));
+  to = KEEP(rray_ptype_common(xs, to, p_arg, p_to_arg, error_call));
 
   const r_ssize n = r_length(xs);
   r_obj* const* v_xs = r_list_cbegin(xs);
@@ -33,11 +33,11 @@ r_obj* rray_cast_common(
   r_attrib_poke_names(out, xs_names);
 
   r_ssize i = 0;
-  struct rray_arg* p_x_arg = new_subscript_arg(arg, xs_names, n, &i);
+  struct rray_arg* p_x_arg = new_subscript_arg(p_arg, xs_names, n, &i);
   KEEP(p_x_arg->shelter);
 
   for (; i < n; ++i) {
-    r_list_poke(out, i, rray_cast(v_xs[i], to, p_x_arg, to_arg, error_call));
+    r_list_poke(out, i, rray_cast(v_xs[i], to, p_x_arg, p_to_arg, error_call));
   }
 
   FREE(4);

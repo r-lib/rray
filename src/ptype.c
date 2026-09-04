@@ -21,15 +21,15 @@ r_obj* ffi_rray_ptype2(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame) {
 r_obj* rray_ptype2(
   r_obj* x,
   r_obj* y,
-  struct rray_arg* x_arg,
-  struct rray_arg* y_arg,
+  struct rray_arg* p_x_arg,
+  struct rray_arg* p_y_arg,
   struct r_lazy error_call
 ) {
-  check_unclassed(x, x_arg, error_call);
-  check_unclassed(y, y_arg, error_call);
+  check_unclassed(x, p_x_arg, error_call);
+  check_unclassed(y, p_y_arg, error_call);
 
-  const enum rray_type x_type = arg_as_type(x, x_arg, error_call);
-  const enum rray_type y_type = arg_as_type(y, y_arg, error_call);
+  const enum rray_type x_type = arg_as_type(x, p_x_arg, error_call);
+  const enum rray_type y_type = arg_as_type(y, p_y_arg, error_call);
 
   switch (rray_typeof2(x_type, y_type)) {
   case RRAY_TYPE2_logical_logical:
@@ -74,7 +74,7 @@ r_obj* rray_ptype2(
   case RRAY_TYPE2_character_raw:
   case RRAY_TYPE2_character_list:
   case RRAY_TYPE2_raw_list:
-    stop_incompatible_ptype(x_type, y_type, x_arg, y_arg, error_call);
+    stop_incompatible_ptype(x_type, y_type, p_x_arg, p_y_arg, error_call);
   }
 
   r_stop_unreachable();
@@ -104,14 +104,14 @@ r_obj* rray_ptype_from_type(enum rray_type type) {
 static r_no_return void stop_incompatible_ptype(
   enum rray_type x,
   enum rray_type y,
-  struct rray_arg* x_arg,
-  struct rray_arg* y_arg,
+  struct rray_arg* p_x_arg,
+  struct rray_arg* p_y_arg,
   struct r_lazy error_call
 ) {
   r_abort_lazy_call(
     error_call,
     "Can't combine %s and %s.",
-    rray_arg_type_format(x_arg, x),
-    rray_arg_type_format(y_arg, y)
+    rray_arg_type_format(p_x_arg, x),
+    rray_arg_type_format(p_y_arg, y)
   );
 }

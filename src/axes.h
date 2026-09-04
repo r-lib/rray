@@ -8,14 +8,14 @@
 r_obj* arg_as_axes(
   r_obj* axes,
   int dimensionality,
-  struct rray_arg* arg,
+  struct rray_arg* p_arg,
   struct r_lazy error_call
 );
 
 void check_axis(
   int axis,
   int dimensionality,
-  struct rray_arg* arg,
+  struct rray_arg* p_arg,
   struct r_lazy error_call
 );
 
