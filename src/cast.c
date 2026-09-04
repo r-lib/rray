@@ -45,105 +45,92 @@ r_obj* rray_cast(
   }
   KEEP(x);
 
-  r_obj* out;
+  r_obj* out = rray_cast_dispatch(x, x_type, to_type, x_arg, error_call);
 
+  FREE(1);
+  return out;
+}
+
+static r_obj* rray_cast_dispatch(
+  r_obj* x,
+  enum rray_type x_type,
+  enum rray_type to_type,
+  struct rray_arg* x_arg,
+  struct r_lazy error_call
+) {
   switch (x_type) {
   case RRAY_TYPE_logical:
     switch (to_type) {
     case RRAY_TYPE_logical:
-      out = x;
-      break;
+      return x;
     case RRAY_TYPE_integer:
-      out = rray_cast_lgl_to_int(x, x_arg, error_call);
-      break;
+      return rray_cast_lgl_to_int(x, x_arg, error_call);
     case RRAY_TYPE_double:
-      out = rray_cast_lgl_to_dbl(x, x_arg, error_call);
-      break;
+      return rray_cast_lgl_to_dbl(x, x_arg, error_call);
     case RRAY_TYPE_complex:
-      out = rray_cast_lgl_to_cpl(x, x_arg, error_call);
-      break;
+      return rray_cast_lgl_to_cpl(x, x_arg, error_call);
     default:
       stop_incompatible_cast(x_type, to_type, x_arg, error_call);
     }
-    break;
   case RRAY_TYPE_integer:
     switch (to_type) {
     case RRAY_TYPE_logical:
-      out = rray_cast_int_to_lgl(x, x_arg, error_call);
-      break;
+      return rray_cast_int_to_lgl(x, x_arg, error_call);
     case RRAY_TYPE_integer:
-      out = x;
-      break;
+      return x;
     case RRAY_TYPE_double:
-      out = rray_cast_int_to_dbl(x, x_arg, error_call);
-      break;
+      return rray_cast_int_to_dbl(x, x_arg, error_call);
     case RRAY_TYPE_complex:
-      out = rray_cast_int_to_cpl(x, x_arg, error_call);
-      break;
+      return rray_cast_int_to_cpl(x, x_arg, error_call);
     default:
       stop_incompatible_cast(x_type, to_type, x_arg, error_call);
     }
-    break;
   case RRAY_TYPE_double:
     switch (to_type) {
     case RRAY_TYPE_logical:
-      out = rray_cast_dbl_to_lgl(x, x_arg, error_call);
-      break;
+      return rray_cast_dbl_to_lgl(x, x_arg, error_call);
     case RRAY_TYPE_integer:
-      out = rray_cast_dbl_to_int(x, x_arg, error_call);
-      break;
+      return rray_cast_dbl_to_int(x, x_arg, error_call);
     case RRAY_TYPE_double:
-      out = x;
-      break;
+      return x;
     case RRAY_TYPE_complex:
-      out = rray_cast_dbl_to_cpl(x, x_arg, error_call);
-      break;
+      return rray_cast_dbl_to_cpl(x, x_arg, error_call);
     default:
       stop_incompatible_cast(x_type, to_type, x_arg, error_call);
     }
-    break;
   case RRAY_TYPE_complex:
     switch (to_type) {
     case RRAY_TYPE_complex:
-      out = x;
-      break;
+      return x;
     default:
       stop_incompatible_cast(x_type, to_type, x_arg, error_call);
     }
-    break;
   case RRAY_TYPE_character:
     switch (to_type) {
     case RRAY_TYPE_character:
-      out = x;
-      break;
+      return x;
     default:
       stop_incompatible_cast(x_type, to_type, x_arg, error_call);
     }
-    break;
   case RRAY_TYPE_raw:
     switch (to_type) {
     case RRAY_TYPE_raw:
-      out = x;
-      break;
+      return x;
     default:
       stop_incompatible_cast(x_type, to_type, x_arg, error_call);
     }
-    break;
   case RRAY_TYPE_list:
     switch (to_type) {
     case RRAY_TYPE_list:
-      out = x;
-      break;
+      return x;
     default:
       stop_incompatible_cast(x_type, to_type, x_arg, error_call);
     }
-    break;
   case RRAY_TYPE_scalar:
     r_stop_unreachable();
   }
 
-  FREE(1);
-  return out;
+  r_stop_unreachable();
 }
 
 #define RRAY_CAST(FROM_CTYPE, FROM_CBEGIN, TO_RTYPE, TO_CTYPE, TO_BEGIN, ONE)  \
