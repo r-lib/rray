@@ -202,7 +202,6 @@ bool rray_arg_is_empty(struct rray_arg* arg) {
 }
 
 struct rray_args rray_args;
-struct rray_syms rray_syms;
 
 #define INIT_ARG(ARG)                                                          \
   static struct rray_arg ARG;                                                  \
@@ -222,13 +221,4 @@ void rray_init_args(r_obj* ns) {
   INIT_ARG(axes);
   INIT_ARG(dimensions);
   INIT_ARG2(dot_dimensions, ".dimensions");
-
-  rray_syms.x_arg = r_sym("x_arg");
-  rray_syms.y_arg = r_sym("y_arg");
-  rray_syms.to_arg = r_sym("to_arg");
-  rray_syms.dot_arg = r_sym(".arg");
-  rray_syms.dot_to_arg = r_sym(".to_arg");
-  rray_syms.dot_ptype_arg = r_sym(".ptype_arg");
-  rray_syms.call = r_sym("call");
-  rray_syms.dot_call = r_sym(".call");
 }

@@ -1,6 +1,7 @@
 #include "ptype-common.h"
 
 #include "ptype.h"
+#include "syms.h"
 #include "utils.h"
 
 r_obj* ffi_rray_ptype_common(

@@ -2,6 +2,7 @@
 
 #include <limits.h>
 
+#include "syms.h"
 #include "type.h"
 #include "utils.h"
 

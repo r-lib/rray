@@ -2,6 +2,7 @@
 
 #include "cast.h"
 #include "ptype-common.h"
+#include "syms.h"
 
 r_obj* ffi_rray_cast_common(r_obj* ffi_xs, r_obj* ffi_to, r_obj* ffi_frame) {
   struct r_lazy error_call = {.x = rray_syms.dot_call, .env = ffi_frame};

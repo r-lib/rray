@@ -1,5 +1,6 @@
 #include "ptype.h"
 
+#include "syms.h"
 #include "typeof2.h"
 #include "utils.h"
 

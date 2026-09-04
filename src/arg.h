@@ -22,19 +22,6 @@ struct rray_args {
 
 extern struct rray_args rray_args;
 
-struct rray_syms {
-  r_obj* x_arg;
-  r_obj* y_arg;
-  r_obj* to_arg;
-  r_obj* dot_arg;
-  r_obj* dot_to_arg;
-  r_obj* dot_ptype_arg;
-  r_obj* call;
-  r_obj* dot_call;
-};
-
-extern struct rray_syms rray_syms;
-
 r_obj* rray_arg(struct rray_arg* arg);
 
 const char* rray_arg_format(struct rray_arg* arg);
