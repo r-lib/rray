@@ -1,4 +1,4 @@
-static r_obj* rray_cast_dispatch(
+static r_obj* rray_cast_switch(
   r_obj* x,
   enum rray_type x_type,
   enum rray_type to_type,

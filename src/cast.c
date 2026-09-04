@@ -45,13 +45,13 @@ r_obj* rray_cast(
   }
   KEEP(x);
 
-  r_obj* out = rray_cast_dispatch(x, x_type, to_type, x_arg, error_call);
+  r_obj* out = rray_cast_switch(x, x_type, to_type, x_arg, error_call);
 
   FREE(1);
   return out;
 }
 
-static r_obj* rray_cast_dispatch(
+static r_obj* rray_cast_switch(
   r_obj* x,
   enum rray_type x_type,
   enum rray_type to_type,
