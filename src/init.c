@@ -142,14 +142,12 @@ void R_init_rray4(DllInfo* dll) {
 
 extern void rray_init_args(r_obj* ns);
 extern void rray_init_syms(r_obj* ns);
-extern void rray_init_ptypes(r_obj* ns);
 extern void rray_init_utils(r_obj* ns);
 
 r_obj* ffi_rray4_init_library(r_obj* ffi_ns) {
   r_init_library(ffi_ns);
   rray_init_syms(ffi_ns);
   rray_init_args(ffi_ns);
-  rray_init_ptypes(ffi_ns);
   rray_init_utils(ffi_ns);
   return r_null;
 }

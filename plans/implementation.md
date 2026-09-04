@@ -357,10 +357,10 @@ for `r_alloc_vector()`, and `rray_type_as_c_string()` names one in an error
 message. `arg_as_type()` is the validating entry point.
 
 A **ptype** is the empty vector standing for a type, so `double()` for
-`RRAY_TYPE_double`. There is one of each in `rray_ptypes`, built once at load
-and preserved, so anything returning a ptype hands back a shared object rather
-than allocating. A ptype is a bare vector, not an array: it is a type token, not
-data, so it carries no `dim`.
+`RRAY_TYPE_double`. There is one of each in rlang's `r_globals`, already built
+at load and marked shared, so anything returning a ptype hands one of those back
+rather than allocating. `rray_ptype_from_type()` is the lookup. A ptype is a
+bare vector, not an array: it is a type token, not data, so it carries no `dim`.
 
 The internal type rules exist because three kinds of function need them:
 
