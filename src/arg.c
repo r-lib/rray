@@ -159,7 +159,7 @@ static r_ssize subscript_arg_fill(void* data, char* buf, r_ssize remaining) {
 
   const size_t space = (size_t) remaining;
   const bool named = r_has_name_at(names, i);
-  const bool child = !is_empty_arg(p_data->self.parent);
+  const bool child = !rray_arg_is_empty(p_data->self.parent);
 
   int len;
 
@@ -184,7 +184,7 @@ static r_ssize subscript_arg_fill(void* data, char* buf, r_ssize remaining) {
   return len;
 }
 
-static bool is_empty_arg(struct rray_arg* arg) {
+static bool rray_arg_is_empty(struct rray_arg* arg) {
   if (arg == NULL) {
     return true;
   }
@@ -216,4 +216,5 @@ void rray_init_args(r_obj* ns) {
   INIT_ARG(dimensions);
   INIT_ARG2(dot_dimensions, ".dimensions");
   INIT_ARG2(dot_to, ".to");
+  INIT_ARG2(dot_ptype, ".ptype");
 }

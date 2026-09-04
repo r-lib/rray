@@ -51,6 +51,11 @@ test_that("casting to the same type only normalizes the input", {
   expect_identical(rray_cast(list(1, 2), list()), array(list(1, 2), 2L))
 })
 
+test_that("`to` only supplies a type, never dimensions", {
+  out <- rray_cast(array(1:6, c(2L, 3L)), array(1, c(4L, 5L)))
+  expect_identical(rray_dimensions(out), c(2L, 3L))
+})
+
 test_that("a bare vector becomes a one dimensional array", {
   expect_identical(
     rray_cast(c(a = 1L, b = 2L), double()),
@@ -74,22 +79,6 @@ test_that("zero size arrays cast", {
     rray_cast(array(integer(), c(0L, 0L)), complex()),
     array(complex(), c(0L, 0L))
   )
-})
-
-test_that("`rray_cast_common()` casts every input", {
-  expect_identical(
-    rray_cast_common(1L, TRUE, .to = double()),
-    list(array(1, 1L), array(1, 1L))
-  )
-})
-
-test_that("`rray_cast_common()` keeps the names of `...`", {
-  out <- rray_cast_common(x = 1L, y = 2L, .to = double())
-  expect_named(out, c("x", "y"))
-})
-
-test_that("`rray_cast_common()` works with no inputs", {
-  expect_identical(rray_cast_common(.to = double()), list())
 })
 
 test_that("errors on a lossy cast, reporting the location", {
@@ -116,13 +105,6 @@ test_that("complex is a one way trip", {
   expect_snapshot(rray_cast(1i, logical()), error = TRUE)
 })
 
-test_that("the error names the failing element of `...`", {
-  expect_snapshot(
-    rray_cast_common(1L, 2.5, .to = integer()),
-    error = TRUE
-  )
-})
-
 test_that("errors on non-array input", {
   expect_snapshot(rray_cast(NULL, integer()), error = TRUE)
   expect_snapshot(rray_cast(1L, NULL), error = TRUE)
@@ -132,5 +114,4 @@ test_that("errors on classed input", {
   x <- structure(1, class = "foo")
   expect_snapshot(rray_cast(x, integer()), error = TRUE)
   expect_snapshot(rray_cast(1, x), error = TRUE)
-  expect_snapshot(rray_cast_common(1, .to = x), error = TRUE)
 })

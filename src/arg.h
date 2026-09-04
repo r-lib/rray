@@ -21,6 +21,7 @@ struct rray_args {
   struct rray_arg* dimensions;
   struct rray_arg* dot_dimensions;
   struct rray_arg* dot_to;
+  struct rray_arg* dot_ptype;
 };
 
 extern struct rray_args rray_args;

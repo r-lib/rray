@@ -13,4 +13,4 @@ static r_ssize lazy_arg_fill(void* data, char* buf, r_ssize remaining);
 
 static r_ssize subscript_arg_fill(void* data, char* buf, r_ssize remaining);
 
-static bool is_empty_arg(struct rray_arg* arg);
+static bool rray_arg_is_empty(struct rray_arg* arg);

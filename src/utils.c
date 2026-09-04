@@ -54,13 +54,13 @@ r_obj* arg_as_array(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
   return x;
 }
 
-enum r_type arg_as_ptype(
+enum rray_type arg_as_type(
   r_obj* x,
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
   check_array(x, arg, error_call);
-  return r_typeof(x);
+  return rray_typeof(x);
 }
 
 static void check_array(

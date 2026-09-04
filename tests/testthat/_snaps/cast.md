@@ -109,14 +109,6 @@
       Error in `rray_cast()`:
       ! Can't convert `x` from <complex> to <logical>.
 
-# the error names the failing element of `...`
-
-    Code
-      rray_cast_common(1L, 2.5, .to = integer())
-    Condition
-      Error in `rray_cast_common()`:
-      ! Can't convert `..2` from <double> to <integer> due to loss of precision at location 1.
-
 # errors on non-array input
 
     Code
@@ -148,12 +140,4 @@
     Condition
       Error in `rray_cast()`:
       ! `to` must be a bare array, not a <foo> object.
-
----
-
-    Code
-      rray_cast_common(1, .to = x)
-    Condition
-      Error in `rray_cast_common()`:
-      ! `.to` must be a bare array, not a <foo> object.
 

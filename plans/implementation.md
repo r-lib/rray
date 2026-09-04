@@ -347,8 +347,20 @@ There are no `<-` replacement forms.
 
 ## 2.4 Types
 
-There is no user facing type system. A **type** here is just an `enum r_type`,
-because without classes there is nothing else for it to carry.
+There is no user facing type system.
+
+A **type** is an `enum rray_type`, our own enum holding exactly the seven native
+types and nothing else. Restricting it this way means every `switch` over a type
+can be exhaustive with no `default`, so the compiler catches a missing case.
+`rray_typeof()` reads one off an object, `rray_type_to_r_type()` converts back
+for `r_alloc_vector()`, and `rray_type_as_c_string()` names one in an error
+message. `arg_as_type()` is the validating entry point.
+
+A **ptype** is the empty vector standing for a type, so `double()` for
+`RRAY_TYPE_double`. There is one of each in `rray_ptypes`, built once at load
+and preserved, so anything returning a ptype hands back a shared object rather
+than allocating. A ptype is a bare vector, not an array: it is a type token, not
+data, so it carries no `dim`.
 
 The internal type rules exist because three kinds of function need them:
 
@@ -359,26 +371,46 @@ The internal type rules exist because three kinds of function need them:
 
 - `rray_sum()` needs a promotion that depends on the operator.
 
-The C interface is small:
+The C interface is small, and takes and returns `r_obj*` ptypes the way vctrs
+does:
 
 ```c
-enum r_type rray_ptype2(
-  enum r_type x,
-  enum r_type y,
+r_obj* rray_ptype2(
+  r_obj* x,
+  r_obj* y,
   struct rray_arg* x_arg,
   struct rray_arg* y_arg,
   struct r_lazy error_call
 );
-enum r_type rray_ptype_common(r_obj* xs, struct r_lazy error_call);
+r_obj* rray_ptype_common(
+  r_obj* xs,
+  r_obj* ptype,
+  struct rray_arg* ptype_arg,
+  struct r_lazy error_call
+);
 
 r_obj* rray_cast(
   r_obj* x,
-  enum r_type to,
-  struct rray_arg* arg,
+  r_obj* to,
+  struct rray_arg* x_arg,
+  struct rray_arg* to_arg,
   struct r_lazy error_call
 );
-r_obj* rray_cast_common(r_obj* xs, enum r_type to, struct r_lazy error_call);
+r_obj* rray_cast_common(r_obj* xs, r_obj* to, struct r_lazy error_call);
 ```
+
+`ptype` and `to` may be `NULL` on the `_common` pair, in which case the common
+type of `xs` is computed. That is the same shape as `.dimensions` in
+`rray_dimensions_common()`: when it is supplied, `...` is never looked at.
+
+`rray_ptype2()` dispatches through `rray_typeof2()`, which maps a pair of types
+onto a symmetric `enum rray_type2` with one entry per unordered pair. Both
+switches are written out in full, following vctrs' `vec_typeof2()` and
+`vec_ptype2_switch_native()`. Do not collapse either into a rank function or any
+other arithmetic shortcut.
+
+Files: `src/type.c` for `enum rray_type`, `src/typeof2.c` for the pair enum,
+then `src/ptype.c`, `src/ptype-common.c`, `src/cast.c` and `src/cast-common.c`.
 
 `rray_cast()` changes type only. It never touches dimensions or names.
 Broadcasting is always a separate step. Lossy casts are an error, and the error

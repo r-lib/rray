@@ -7,11 +7,10 @@
 
 r_obj* rray_cast(
   r_obj* x,
-  enum r_type to,
-  struct rray_arg* arg,
+  r_obj* to,
+  struct rray_arg* x_arg,
+  struct rray_arg* to_arg,
   struct r_lazy error_call
 );
-
-r_obj* rray_cast_common(r_obj* xs, enum r_type to, struct r_lazy error_call);
 
 #endif

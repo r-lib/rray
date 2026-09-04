@@ -4,12 +4,13 @@
 #include "rlang.h"
 
 #include "arg.h"
+#include "type.h"
 
 void check_unclassed(r_obj* x, struct rray_arg* arg, struct r_lazy error_call);
 
 r_obj* arg_as_array(r_obj* x, struct rray_arg* arg, struct r_lazy error_call);
 
-enum r_type arg_as_ptype(
+enum rray_type arg_as_type(
   r_obj* x,
   struct rray_arg* arg,
   struct r_lazy error_call
