@@ -19,7 +19,7 @@
       rray_cast(c(1, 2.5), integer())
     Condition
       Error in `rray_cast()`:
-      ! Can't convert `x` from <double> to <integer> due to loss of precision at location 2.
+      ! Can't convert from `c(1, 2.5)` <double> to <integer> due to loss of precision at location 2.
 
 ---
 
@@ -27,7 +27,7 @@
       rray_cast(c(0, 1, 2), logical())
     Condition
       Error in `rray_cast()`:
-      ! Can't convert `x` from <double> to <logical> due to loss of precision at location 3.
+      ! Can't convert from `c(0, 1, 2)` <double> to <logical> due to loss of precision at location 3.
 
 ---
 
@@ -35,7 +35,7 @@
       rray_cast(c(1L, 5L), logical())
     Condition
       Error in `rray_cast()`:
-      ! Can't convert `x` from <integer> to <logical> due to loss of precision at location 2.
+      ! Can't convert from `c(1L, 5L)` <integer> to <logical> due to loss of precision at location 2.
 
 # errors when a double is out of integer range
 
@@ -43,7 +43,7 @@
       rray_cast(2^31, integer())
     Condition
       Error in `rray_cast()`:
-      ! Can't convert `x` from <double> to <integer> due to loss of precision at location 1.
+      ! Can't convert from `2^31` <double> to <integer> due to loss of precision at location 1.
 
 ---
 
@@ -51,7 +51,7 @@
       rray_cast(-2^31, integer())
     Condition
       Error in `rray_cast()`:
-      ! Can't convert `x` from <double> to <integer> due to loss of precision at location 1.
+      ! Can't convert from `-2^31` <double> to <integer> due to loss of precision at location 1.
 
 # errors on types that don't convert
 
@@ -59,7 +59,7 @@
       rray_cast(letters, integer())
     Condition
       Error in `rray_cast()`:
-      ! Can't convert `x` from <character> to <integer>.
+      ! Can't convert from `letters` <character> to <integer>.
 
 ---
 
@@ -67,7 +67,7 @@
       rray_cast(as.raw(1), integer())
     Condition
       Error in `rray_cast()`:
-      ! Can't convert `x` from <raw> to <integer>.
+      ! Can't convert from `as.raw(1)` <raw> to <integer>.
 
 ---
 
@@ -75,7 +75,7 @@
       rray_cast(list(1), double())
     Condition
       Error in `rray_cast()`:
-      ! Can't convert `x` from <list> to <double>.
+      ! Can't convert from `list(1)` <list> to <double>.
 
 ---
 
@@ -83,7 +83,7 @@
       rray_cast(1L, character())
     Condition
       Error in `rray_cast()`:
-      ! Can't convert `x` from <integer> to <character>.
+      ! Can't convert from `1L` <integer> to <character>.
 
 # complex is a one way trip
 
@@ -91,7 +91,7 @@
       rray_cast(0+1i, double())
     Condition
       Error in `rray_cast()`:
-      ! Can't convert `x` from <complex> to <double>.
+      ! Can't convert from `0 + (0+1i)` <complex> to <double>.
 
 ---
 
@@ -99,7 +99,7 @@
       rray_cast(0+1i, integer())
     Condition
       Error in `rray_cast()`:
-      ! Can't convert `x` from <complex> to <integer>.
+      ! Can't convert from `0 + (0+1i)` <complex> to <integer>.
 
 ---
 
@@ -107,7 +107,66 @@
       rray_cast(0+1i, logical())
     Condition
       Error in `rray_cast()`:
-      ! Can't convert `x` from <complex> to <logical>.
+      ! Can't convert from `0 + (0+1i)` <complex> to <logical>.
+
+# `x_arg` defaults to the caller's expression
+
+    Code
+      f(1.5)
+    Condition
+      Error in `rray_cast()`:
+      ! Can't convert from `myinput` <double> to <integer> due to loss of precision at location 1.
+
+# `x_arg` can be overridden or emptied
+
+    Code
+      rray_cast(1.5, integer(), x_arg = "vals")
+    Condition
+      Error in `rray_cast()`:
+      ! Can't convert from `vals` <double> to <integer> due to loss of precision at location 1.
+
+---
+
+    Code
+      rray_cast(1.5, integer(), x_arg = "")
+    Condition
+      Error in `rray_cast()`:
+      ! Can't convert from <double> to <integer> due to loss of precision at location 1.
+
+---
+
+    Code
+      rray_cast("a", integer(), x_arg = "")
+    Condition
+      Error in `rray_cast()`:
+      ! Can't convert from <character> to <integer>.
+
+# `to_arg` is empty by default, so `to` is reported as `Input`
+
+    Code
+      rray_cast(1, sum)
+    Condition
+      Error in `rray_cast()`:
+      ! Input must be an array, not a primitive function.
+
+---
+
+    Code
+      rray_cast(1, sum, to_arg = "myto")
+    Condition
+      Error in `rray_cast()`:
+      ! `myto` must be an array, not a primitive function.
+
+# `...` must be empty
+
+    Code
+      rray_cast(1, integer(), 5)
+    Condition
+      Error in `rray_cast()`:
+      ! `...` must be empty.
+      x Problematic argument:
+      * ..1 = 5
+      i Did you forget to name an argument?
 
 # errors on non-array input
 
@@ -115,7 +174,7 @@
       rray_cast(NULL, integer())
     Condition
       Error in `rray_cast()`:
-      ! `x` must be an array, not `NULL`.
+      ! `NULL` must be an array, not `NULL`.
 
 ---
 
@@ -123,7 +182,7 @@
       rray_cast(1L, NULL)
     Condition
       Error in `rray_cast()`:
-      ! `to` must be an array, not `NULL`.
+      ! Input must be an array, not `NULL`.
 
 # errors on classed input
 
@@ -139,5 +198,5 @@
       rray_cast(1, x)
     Condition
       Error in `rray_cast()`:
-      ! `to` must be a bare array, not a <foo> object.
+      ! Input must be a bare array, not a <foo> object.
 

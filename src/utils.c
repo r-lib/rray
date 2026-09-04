@@ -38,7 +38,7 @@ void check_unclassed(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
     r_abort_lazy_call(
       error_call,
       "%s must be a bare array, not %s.",
-      rray_arg_format(arg),
+      rray_arg_format_input(arg),
       r_obj_type_friendly(x)
     );
   }
@@ -81,7 +81,7 @@ static void check_array(
     r_abort_lazy_call(
       error_call,
       "%s must be an array, not %s.",
-      rray_arg_format(arg),
+      rray_arg_format_input(arg),
       r_obj_type_friendly(x)
     );
   }

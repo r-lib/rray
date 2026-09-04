@@ -9,7 +9,14 @@
 
 r_obj* ffi_rray_cast(r_obj* ffi_x, r_obj* ffi_to, r_obj* ffi_frame) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  return rray_cast(ffi_x, ffi_to, rray_args.x, rray_args.to, error_call);
+
+  struct r_lazy x_arg_lazy = {.x = rray_syms.x_arg, .env = ffi_frame};
+  struct rray_arg x_arg = new_lazy_arg(&x_arg_lazy);
+
+  struct r_lazy to_arg_lazy = {.x = rray_syms.to_arg, .env = ffi_frame};
+  struct rray_arg to_arg = new_lazy_arg(&to_arg_lazy);
+
+  return rray_cast(ffi_x, ffi_to, &x_arg, &to_arg, error_call);
 }
 
 r_obj* rray_cast(
@@ -356,9 +363,8 @@ static r_no_return void stop_incompatible_cast(
 ) {
   r_abort_lazy_call(
     error_call,
-    "Can't convert %s from <%s> to <%s>.",
-    rray_arg_format(x_arg),
-    rray_type_as_c_string(x),
+    "Can't convert from %s to <%s>.",
+    rray_arg_type_format(x_arg, x),
     rray_type_as_c_string(to)
   );
 }
@@ -372,10 +378,9 @@ static r_no_return void stop_lossy_cast(
 ) {
   r_abort_lazy_call(
     error_call,
-    "Can't convert %s from <%s> to <%s> due to loss of precision at "
+    "Can't convert from %s to <%s> due to loss of precision at "
     "location %" R_PRI_SSIZE ".",
-    rray_arg_format(x_arg),
-    rray_type_as_c_string(x),
+    rray_arg_type_format(x_arg, x),
     rray_type_as_c_string(to),
     i + 1
   );

@@ -385,6 +385,7 @@ r_obj* rray_ptype2(
 r_obj* rray_ptype_common(
   r_obj* xs,
   r_obj* ptype,
+  struct rray_arg* arg,
   struct rray_arg* ptype_arg,
   struct r_lazy error_call
 );
@@ -396,12 +397,54 @@ r_obj* rray_cast(
   struct rray_arg* to_arg,
   struct r_lazy error_call
 );
-r_obj* rray_cast_common(r_obj* xs, r_obj* to, struct r_lazy error_call);
+r_obj* rray_cast_common(
+  r_obj* xs,
+  r_obj* to,
+  struct rray_arg* arg,
+  struct rray_arg* to_arg,
+  struct r_lazy error_call
+);
 ```
 
 `ptype` and `to` may be `NULL` on the `_common` pair, in which case the common
 type of `xs` is computed. That is the same shape as `.dimensions` in
 `rray_dimensions_common()`: when it is supplied, `...` is never looked at.
+
+### Argument tags
+
+Every one of these takes a tag per input, and the R wrappers expose them so a
+caller can make an error blame its own argument. The FFI builds each one with
+`new_lazy_arg()`, reading the tag out of the frame only once an error is
+actually raised, so a default of `caller_arg(x)` costs nothing when nothing goes
+wrong.
+
+```r
+rray_ptype2(x, y, ..., x_arg = caller_arg(x), y_arg = caller_arg(y))
+rray_ptype_common(..., .ptype = NULL, .arg = "", .ptype_arg = ".ptype")
+rray_cast(x, to, ..., x_arg = caller_arg(x), to_arg = "")
+rray_cast_common(..., .to = NULL, .arg = "", .to_arg = ".to")
+```
+
+The defaults follow vctrs. An input the caller names gets `caller_arg()`, so the
+error quotes what they actually wrote. A prototype does not, because `to` is a
+positional argument holding an anonymous type and naming it says nothing. `.arg`
+is the tag for `...` as a whole, so `.arg = "foo"` turns `..2` into `foo[[2]]`.
+
+`.to_arg` and `.ptype_arg` are the exception, and name their argument by
+default. Those are arguments the caller typed, so a bad one is worth pointing
+at. vctrs has no equivalent and hardcodes `.ptype` even inside
+`vec_cast_common()`, where the argument is really called `.to`.
+
+An empty tag drops out of the message rather than printing empty backticks:
+
+```r
+rray_ptype2(1L, "a", x_arg = "", y_arg = "")
+#> Error: Can't combine <integer> and <character>.
+```
+
+`rray_arg_type_format()` writes the `` `x` <integer> `` half of those messages
+and handles the empty case. `rray_arg_format_input()` does the same for a
+message that opens with the tag, falling back to the word "Input".
 
 `rray_ptype2()` dispatches through `rray_typeof2()`, which maps a pair of types
 onto a symmetric `enum rray_type2` with one entry per unordered pair. Both
@@ -1211,13 +1254,13 @@ family, and `rray_tile()`.
 ## `x_arg` and `call` on the exported functions
 
 vctrs gives its functions these so another package's wrapper can make an error
-blame its own argument. `new_lazy_arg()` is ported and ready for exactly that,
-which is why it sits in `src/arg.c` with no caller. It reads a promise out of a
-frame only if an error is actually raised, so `rray_broadcast(x, dimensions,
-x_arg = "values")` costs nothing when nothing goes wrong.
+blame its own argument. The type functions already take them, so
+`rray_ptype2(x, y, x_arg = "lhs")` works. Follow the pattern in `src/ptype.c`
+when spreading them further, and 2.4 for the defaults.
 
-Adding an argument to every exported function, and documenting it, is its own
-pull request. Do it when a real caller wants it, not before.
+The exported functions still do not take them, and neither family takes a
+`call`. Adding an argument to every exported function, and documenting it, is
+its own pull request. Do it when a real caller wants it, not before.
 
 ## Unary elementwise math
 

@@ -39,10 +39,29 @@ test_that("errors on classed input", {
   expect_snapshot(rray_ptype_common(1L, x), error = TRUE)
 })
 
+test_that("`.arg` names `...` as a whole", {
+  expect_snapshot(rray_ptype_common(1L, "a", .arg = "foo"), error = TRUE)
+  expect_snapshot(
+    rray_ptype_common(x = 1L, y = "a", .arg = "foo"),
+    error = TRUE
+  )
+})
+
 test_that("errors on a bad `.ptype`", {
   expect_snapshot(rray_ptype_common(1L, .ptype = sum), error = TRUE)
   expect_snapshot(
     rray_ptype_common(1L, .ptype = structure(1, class = "foo")),
+    error = TRUE
+  )
+})
+
+test_that("`.ptype_arg` renames `.ptype` in the error", {
+  expect_snapshot(
+    rray_ptype_common(1L, .ptype = sum, .ptype_arg = "pt"),
+    error = TRUE
+  )
+  expect_snapshot(
+    rray_ptype_common(1L, .ptype = sum, .ptype_arg = ""),
     error = TRUE
   )
 })

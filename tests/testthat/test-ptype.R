@@ -27,6 +27,27 @@ test_that("errors on types that don't combine", {
   expect_snapshot(rray_ptype2(character(), list()), error = TRUE)
 })
 
+test_that("`x_arg` and `y_arg` default to the caller's expression", {
+  expect_snapshot(rray_ptype2(1L, "a"), error = TRUE)
+  f <- function(lhs, rhs) rray_ptype2(lhs, rhs)
+  expect_snapshot(f(1L, "a"), error = TRUE)
+})
+
+test_that("`x_arg` and `y_arg` can be overridden", {
+  expect_snapshot(
+    rray_ptype2(1L, "a", x_arg = "lhs", y_arg = "rhs"),
+    error = TRUE
+  )
+})
+
+test_that("an empty arg is left out of the message", {
+  expect_snapshot(rray_ptype2(1L, "a", x_arg = "", y_arg = ""), error = TRUE)
+})
+
+test_that("`...` must be empty", {
+  expect_snapshot(rray_ptype2(1L, 2L, 5), error = TRUE)
+})
+
 test_that("errors on non-array input", {
   expect_snapshot(rray_ptype2(NULL, integer()), error = TRUE)
   expect_snapshot(rray_ptype2(integer(), sum), error = TRUE)

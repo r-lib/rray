@@ -37,6 +37,21 @@ test_that("the error names the failing element of `...`", {
   expect_snapshot(rray_cast_common(1L, 2.5, .to = integer()), error = TRUE)
 })
 
+test_that("`.arg` names `...` as a whole", {
+  expect_snapshot(rray_cast_common(1L, "a", .arg = "foo"), error = TRUE)
+  expect_snapshot(
+    rray_cast_common(1L, 2.5, .to = integer(), .arg = "foo"),
+    error = TRUE
+  )
+})
+
+test_that("`.to_arg` renames `.to` in the error", {
+  expect_snapshot(
+    rray_cast_common(1, .to = sum, .to_arg = "target"),
+    error = TRUE
+  )
+})
+
 test_that("errors on a bad `.to`", {
   expect_snapshot(rray_cast_common(1, .to = sum), error = TRUE)
   expect_snapshot(

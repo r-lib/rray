@@ -3,6 +3,14 @@
 
 #include "rlang.h"
 
-r_obj* rray_cast_common(r_obj* xs, r_obj* to, struct r_lazy error_call);
+#include "arg.h"
+
+r_obj* rray_cast_common(
+  r_obj* xs,
+  r_obj* to,
+  struct rray_arg* arg,
+  struct rray_arg* to_arg,
+  struct r_lazy error_call
+);
 
 #endif

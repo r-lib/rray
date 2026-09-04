@@ -1,5 +1,8 @@
 #include "type.h"
 
+#include <stdio.h>
+#include <string.h>
+
 enum rray_type rray_typeof(r_obj* x) {
   switch (r_typeof(x)) {
   case R_TYPE_logical:
@@ -44,4 +47,22 @@ enum r_type rray_type_to_r_type(enum rray_type type) {
 
 const char* rray_type_as_c_string(enum rray_type type) {
   return r_type_as_c_string(rray_type_to_r_type(type));
+}
+
+const char* rray_arg_type_format(struct rray_arg* arg, enum rray_type type) {
+  const char* type_str = rray_type_as_c_string(type);
+
+  if (rray_arg_is_empty(arg)) {
+    const size_t size = strlen(type_str) + 3;
+    char* out = R_alloc(size, sizeof(char));
+    snprintf(out, size, "<%s>", type_str);
+    return out;
+  }
+
+  const char* arg_str = rray_arg_format(arg);
+
+  const size_t size = strlen(arg_str) + strlen(type_str) + 4;
+  char* out = R_alloc(size, sizeof(char));
+  snprintf(out, size, "%s <%s>", arg_str, type_str);
+  return out;
 }

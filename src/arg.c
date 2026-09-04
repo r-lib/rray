@@ -38,6 +38,14 @@ const char* rray_arg_format(struct rray_arg* arg) {
   return out;
 }
 
+const char* rray_arg_format_input(struct rray_arg* arg) {
+  if (rray_arg_is_empty(arg)) {
+    return "Input";
+  }
+
+  return rray_arg_format(arg);
+}
+
 static r_ssize fill_arg_buffer(
   struct rray_arg* arg,
   char* buf,
@@ -184,7 +192,7 @@ static r_ssize subscript_arg_fill(void* data, char* buf, r_ssize remaining) {
   return len;
 }
 
-static bool rray_arg_is_empty(struct rray_arg* arg) {
+bool rray_arg_is_empty(struct rray_arg* arg) {
   if (arg == NULL) {
     return true;
   }
@@ -194,6 +202,7 @@ static bool rray_arg_is_empty(struct rray_arg* arg) {
 }
 
 struct rray_args rray_args;
+struct rray_syms rray_syms;
 
 #define INIT_ARG(ARG)                                                          \
   static struct rray_arg ARG;                                                  \
@@ -208,13 +217,16 @@ struct rray_args rray_args;
 void rray_init_args(r_obj* ns) {
   INIT_ARG2(empty, "");
   INIT_ARG(x);
-  INIT_ARG(y);
-  INIT_ARG(to);
   INIT_ARG(names);
   INIT_ARG(axis);
   INIT_ARG(axes);
   INIT_ARG(dimensions);
   INIT_ARG2(dot_dimensions, ".dimensions");
-  INIT_ARG2(dot_to, ".to");
-  INIT_ARG2(dot_ptype, ".ptype");
+
+  rray_syms.x_arg = r_sym("x_arg");
+  rray_syms.y_arg = r_sym("y_arg");
+  rray_syms.to_arg = r_sym("to_arg");
+  rray_syms.dot_arg = r_sym(".arg");
+  rray_syms.dot_to_arg = r_sym(".to_arg");
+  rray_syms.dot_ptype_arg = r_sym(".ptype_arg");
 }

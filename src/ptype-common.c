@@ -9,12 +9,23 @@ r_obj* ffi_rray_ptype_common(
   r_obj* ffi_frame
 ) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  return rray_ptype_common(ffi_xs, ffi_ptype, rray_args.dot_ptype, error_call);
+
+  struct r_lazy arg_lazy = {.x = rray_syms.dot_arg, .env = ffi_frame};
+  struct rray_arg arg = new_lazy_arg(&arg_lazy);
+
+  struct r_lazy ptype_arg_lazy = {
+    .x = rray_syms.dot_ptype_arg,
+    .env = ffi_frame
+  };
+  struct rray_arg ptype_arg = new_lazy_arg(&ptype_arg_lazy);
+
+  return rray_ptype_common(ffi_xs, ffi_ptype, &arg, &ptype_arg, error_call);
 }
 
 r_obj* rray_ptype_common(
   r_obj* xs,
   r_obj* ptype,
+  struct rray_arg* arg,
   struct rray_arg* ptype_arg,
   struct r_lazy error_call
 ) {
@@ -33,11 +44,11 @@ r_obj* rray_ptype_common(
   r_obj* xs_names = KEEP(r_names(xs));
 
   r_ssize x_i = 0;
-  struct rray_arg* p_x_arg = new_subscript_arg(NULL, xs_names, n, &x_i);
+  struct rray_arg* p_x_arg = new_subscript_arg(arg, xs_names, n, &x_i);
   KEEP(p_x_arg->shelter);
 
   r_ssize out_i = 0;
-  struct rray_arg* p_out_arg = new_subscript_arg(NULL, xs_names, n, &out_i);
+  struct rray_arg* p_out_arg = new_subscript_arg(arg, xs_names, n, &out_i);
   KEEP(p_out_arg->shelter);
 
   check_unclassed(v_xs[0], p_x_arg, error_call);

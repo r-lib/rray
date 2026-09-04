@@ -46,6 +46,22 @@
       Error in `rray_ptype_common()`:
       ! `..2` must be a bare array, not a <foo> object.
 
+# `.arg` names `...` as a whole
+
+    Code
+      rray_ptype_common(1L, "a", .arg = "foo")
+    Condition
+      Error in `rray_ptype_common()`:
+      ! Can't combine `foo[[1]]` <integer> and `foo[[2]]` <character>.
+
+---
+
+    Code
+      rray_ptype_common(x = 1L, y = "a", .arg = "foo")
+    Condition
+      Error in `rray_ptype_common()`:
+      ! Can't combine `foo$x` <integer> and `foo$y` <character>.
+
 # errors on a bad `.ptype`
 
     Code
@@ -61,4 +77,20 @@
     Condition
       Error in `rray_ptype_common()`:
       ! `.ptype` must be a bare array, not a <foo> object.
+
+# `.ptype_arg` renames `.ptype` in the error
+
+    Code
+      rray_ptype_common(1L, .ptype = sum, .ptype_arg = "pt")
+    Condition
+      Error in `rray_ptype_common()`:
+      ! `pt` must be an array, not a primitive function.
+
+---
+
+    Code
+      rray_ptype_common(1L, .ptype = sum, .ptype_arg = "")
+    Condition
+      Error in `rray_ptype_common()`:
+      ! Input must be an array, not a primitive function.
 

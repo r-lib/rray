@@ -105,6 +105,26 @@ test_that("complex is a one way trip", {
   expect_snapshot(rray_cast(1i, logical()), error = TRUE)
 })
 
+test_that("`x_arg` defaults to the caller's expression", {
+  f <- function(myinput) rray_cast(myinput, integer())
+  expect_snapshot(f(1.5), error = TRUE)
+})
+
+test_that("`x_arg` can be overridden or emptied", {
+  expect_snapshot(rray_cast(1.5, integer(), x_arg = "vals"), error = TRUE)
+  expect_snapshot(rray_cast(1.5, integer(), x_arg = ""), error = TRUE)
+  expect_snapshot(rray_cast("a", integer(), x_arg = ""), error = TRUE)
+})
+
+test_that("`to_arg` is empty by default, so `to` is reported as `Input`", {
+  expect_snapshot(rray_cast(1, sum), error = TRUE)
+  expect_snapshot(rray_cast(1, sum, to_arg = "myto"), error = TRUE)
+})
+
+test_that("`...` must be empty", {
+  expect_snapshot(rray_cast(1, integer(), 5), error = TRUE)
+})
+
 test_that("errors on non-array input", {
   expect_snapshot(rray_cast(NULL, integer()), error = TRUE)
   expect_snapshot(rray_cast(1L, NULL), error = TRUE)

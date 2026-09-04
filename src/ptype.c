@@ -7,7 +7,14 @@
 
 r_obj* ffi_rray_ptype2(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  return rray_ptype2(ffi_x, ffi_y, rray_args.x, rray_args.y, error_call);
+
+  struct r_lazy x_arg_lazy = {.x = rray_syms.x_arg, .env = ffi_frame};
+  struct rray_arg x_arg = new_lazy_arg(&x_arg_lazy);
+
+  struct r_lazy y_arg_lazy = {.x = rray_syms.y_arg, .env = ffi_frame};
+  struct rray_arg y_arg = new_lazy_arg(&y_arg_lazy);
+
+  return rray_ptype2(ffi_x, ffi_y, &x_arg, &y_arg, error_call);
 }
 
 r_obj* rray_ptype2(
@@ -102,11 +109,9 @@ static r_no_return void stop_incompatible_ptype(
 ) {
   r_abort_lazy_call(
     error_call,
-    "Can't combine %s <%s> and %s <%s>.",
-    rray_arg_format(x_arg),
-    rray_type_as_c_string(x),
-    rray_arg_format(y_arg),
-    rray_type_as_c_string(y)
+    "Can't combine %s and %s.",
+    rray_arg_type_format(x_arg, x),
+    rray_arg_type_format(y_arg, y)
   );
 }
 

@@ -13,22 +13,33 @@ struct rray_arg {
 struct rray_args {
   struct rray_arg* empty;
   struct rray_arg* x;
-  struct rray_arg* y;
-  struct rray_arg* to;
   struct rray_arg* names;
   struct rray_arg* axis;
   struct rray_arg* axes;
   struct rray_arg* dimensions;
   struct rray_arg* dot_dimensions;
-  struct rray_arg* dot_to;
-  struct rray_arg* dot_ptype;
 };
 
 extern struct rray_args rray_args;
 
+struct rray_syms {
+  r_obj* x_arg;
+  r_obj* y_arg;
+  r_obj* to_arg;
+  r_obj* dot_arg;
+  r_obj* dot_to_arg;
+  r_obj* dot_ptype_arg;
+};
+
+extern struct rray_syms rray_syms;
+
 r_obj* rray_arg(struct rray_arg* arg);
 
 const char* rray_arg_format(struct rray_arg* arg);
+
+const char* rray_arg_format_input(struct rray_arg* arg);
+
+bool rray_arg_is_empty(struct rray_arg* arg);
 
 struct rray_arg new_wrapper_arg(struct rray_arg* parent, const char* arg);
 
