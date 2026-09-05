@@ -2,6 +2,13 @@ test_that("works with one input", {
   expect_identical(rray_ptype_common(1L), integer())
 })
 
+test_that("one and two inputs of the same type agree", {
+  for (ptype in native_ptypes) {
+    expect_identical(rray_ptype_common(ptype), ptype)
+    expect_identical(rray_ptype_common(ptype, ptype), ptype)
+  }
+})
+
 test_that("climbs to the widest type", {
   expect_identical(rray_ptype_common(TRUE, 1L, 2.5), double())
   expect_identical(rray_ptype_common(2.5, 1L, TRUE), double())
