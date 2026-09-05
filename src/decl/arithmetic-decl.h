@@ -1,5 +1,5 @@
-static r_obj* rray_arithmetic(
-  enum rray_binary_op op,
+static r_obj* rray_binary_arithmetic(
+  enum rray_binary_arithmetic_op op,
   r_obj* x,
   r_obj* y,
   struct rray_arg* x_arg,

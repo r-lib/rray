@@ -2,26 +2,26 @@
 
 #include <limits.h>
 
+#include "arithmetic-ptype.h"
 #include "broadcast-names.h"
 #include "cast.h"
 #include "dimensionality.h"
 #include "dimensions.h"
 #include "iterator.h"
-#include "op.h"
-#include "ptype.h"
 #include "size.h"
 
 #include "decl/arithmetic-decl.h"
 
-static r_obj* rray_arithmetic(
-  enum rray_binary_op op,
+static r_obj* rray_binary_arithmetic(
+  enum rray_binary_arithmetic_op op,
   r_obj* x,
   r_obj* y,
   struct rray_arg* x_arg,
   struct rray_arg* y_arg,
   struct r_lazy error_call
 ) {
-  r_obj* ptype = rray_binary_ptype(op, x, y, x_arg, y_arg, error_call);
+  r_obj* ptype =
+    rray_binary_arithmetic_ptype(op, x, y, x_arg, y_arg, error_call);
 
   x = KEEP(rray_cast(x, ptype, x_arg, rray_args.empty, error_call));
   y = KEEP(rray_cast(y, ptype, y_arg, rray_args.empty, error_call));
@@ -65,15 +65,15 @@ static r_obj* rray_arithmetic(
   r_obj* out;
 
   switch (op) {
-  case RRAY_BINARY_OP_add:
+  case RRAY_BINARY_ARITHMETIC_OP_add:
     out = rray_add_switch(x, y, size, &it, error_call);
     break;
-  case RRAY_BINARY_OP_subtract:
-  case RRAY_BINARY_OP_multiply:
-  case RRAY_BINARY_OP_divide:
-  case RRAY_BINARY_OP_power:
-  case RRAY_BINARY_OP_modulo:
-  case RRAY_BINARY_OP_integer_divide:
+  case RRAY_BINARY_ARITHMETIC_OP_subtract:
+  case RRAY_BINARY_ARITHMETIC_OP_multiply:
+  case RRAY_BINARY_ARITHMETIC_OP_divide:
+  case RRAY_BINARY_ARITHMETIC_OP_power:
+  case RRAY_BINARY_ARITHMETIC_OP_modulo:
+  case RRAY_BINARY_ARITHMETIC_OP_integer_divide:
     r_stop_unreachable();
   }
 
@@ -127,7 +127,14 @@ r_obj* rray_add(
   struct rray_arg* y_arg,
   struct r_lazy error_call
 ) {
-  return rray_arithmetic(RRAY_BINARY_OP_add, x, y, x_arg, y_arg, error_call);
+  return rray_binary_arithmetic(
+    RRAY_BINARY_ARITHMETIC_OP_add,
+    x,
+    y,
+    x_arg,
+    y_arg,
+    error_call
+  );
 }
 
 static r_obj* rray_add_switch(
