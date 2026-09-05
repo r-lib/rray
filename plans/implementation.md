@@ -743,6 +743,13 @@ Mechanics:
 - Tests for `R/{name}.R` go in `tests/testthat/test-{name}.R`, helpers in
   `tests/testthat/helper-{name}.R`.
 
+- The arithmetic family is the exception. Every operator gets its own
+  `tests/testthat/test-arithmetic-{op}.R`, so `rray_add()` is in
+  `test-arithmetic-add.R` even though the code is in `R/arithmetic.R`. Snapshot
+  names are file wide, so one file per operator lets every one of them say
+  "errors on integer overflow" without colliding. No `# ----` header, since each
+  file covers one function.
+
 - Never put code outside a `test_that()` block.
 
 - No section header comments.
@@ -784,6 +791,9 @@ All the same shape as `rray_add()`. Every row of the table in
 `rray_binary_arithmetic()` is the shell, and stays private to
 `src/arithmetic.c`. The header exposes one `rray_{name}()` per operator, so a
 caller asks for the operation it wants rather than naming an enum.
+
+Tests go one file per operator, as Part 3 explains. Copy
+`tests/testthat/test-arithmetic-add.R` and work through the same cases.
 
 ## PR 8: Reduction promotion and `rray_sum()`
 
