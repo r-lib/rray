@@ -14,22 +14,6 @@
       Error in `rray_add()`:
       ! Can't find common dimensions at axis 1. `x` has dimension 3 and `y` has dimension 0.
 
-# errors on incompatible types
-
-    Code
-      rray_add(1L, "a")
-    Condition
-      Error in `rray_add()`:
-      ! Can't combine `x` <integer> and `y` <character>.
-
----
-
-    Code
-      rray_add(as.raw(1), 1L)
-    Condition
-      Error in `rray_add()`:
-      ! Can't combine `x` <raw> and `y` <integer>.
-
 # errors on types `+` doesn't support
 
     Code
@@ -53,6 +37,30 @@
     Condition
       Error in `rray_add()`:
       ! Can't apply `+` to `x` <list> and `y` <list>.
+
+---
+
+    Code
+      rray_add(1L, "a")
+    Condition
+      Error in `rray_add()`:
+      ! Can't apply `+` to `x` <integer> and `y` <character>.
+
+---
+
+    Code
+      rray_add(as.raw(1), 1L)
+    Condition
+      Error in `rray_add()`:
+      ! Can't apply `+` to `x` <raw> and `y` <integer>.
+
+# a type error beats a dimension error
+
+    Code
+      rray_add(x, y)
+    Condition
+      Error in `rray_add()`:
+      ! Can't apply `+` to `x` <character> and `y` <character>.
 
 # errors on integer overflow
 

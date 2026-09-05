@@ -2,6 +2,7 @@
 
 #include <limits.h>
 
+#include "cast-one.h"
 #include "syms.h"
 #include "type.h"
 #include "utils.h"
@@ -132,6 +133,37 @@ r_obj* rray_cast(
   TO_CTYPE* v_out = TO_BEGIN(out);                                             \
                                                                                \
   for (r_ssize i = 0; i < size; ++i) {                                         \
+    v_out[i] = ONE(v_x[i]);                                                    \
+  }                                                                            \
+                                                                               \
+  r_attrib_poke_dim(out, r_dim(x));                                            \
+                                                                               \
+  r_obj* names = r_dim_names(x);                                               \
+                                                                               \
+  if (names != r_null) {                                                       \
+    r_attrib_poke_dim_names(out, names);                                       \
+  }                                                                            \
+                                                                               \
+  FREE(2);                                                                     \
+  return out;
+
+#define RRAY_CAST_LOSSY(                                                       \
+  FROM_CTYPE,                                                                  \
+  FROM_CBEGIN,                                                                 \
+  TO_RTYPE,                                                                    \
+  TO_CTYPE,                                                                    \
+  TO_BEGIN,                                                                    \
+  ONE                                                                          \
+)                                                                              \
+  x = KEEP(vec_as_array(x));                                                   \
+                                                                               \
+  const r_ssize size = r_length(x);                                            \
+  const FROM_CTYPE* v_x = FROM_CBEGIN(x);                                      \
+                                                                               \
+  r_obj* out = KEEP(r_alloc_vector(TO_RTYPE, size));                           \
+  TO_CTYPE* v_out = TO_BEGIN(out);                                             \
+                                                                               \
+  for (r_ssize i = 0; i < size; ++i) {                                         \
     v_out[i] = ONE(v_x[i], i, x_arg, error_call);                              \
   }                                                                            \
                                                                                \
@@ -196,7 +228,7 @@ static r_obj* rray_cast_int_to_lgl(
   struct rray_arg* x_arg,
   struct r_lazy error_call
 ) {
-  RRAY_CAST(
+  RRAY_CAST_LOSSY(
     int,
     r_int_cbegin,
     R_TYPE_logical,
@@ -241,7 +273,7 @@ static r_obj* rray_cast_dbl_to_lgl(
   struct rray_arg* x_arg,
   struct r_lazy error_call
 ) {
-  RRAY_CAST(
+  RRAY_CAST_LOSSY(
     double,
     r_dbl_cbegin,
     R_TYPE_logical,
@@ -256,7 +288,7 @@ static r_obj* rray_cast_dbl_to_int(
   struct rray_arg* x_arg,
   struct r_lazy error_call
 ) {
-  RRAY_CAST(
+  RRAY_CAST_LOSSY(
     double,
     r_dbl_cbegin,
     R_TYPE_integer,
@@ -282,38 +314,7 @@ static r_obj* rray_cast_dbl_to_cpl(
 }
 
 #undef RRAY_CAST
-
-static inline int rray_cast_lgl_to_int_one(
-  int x,
-  r_ssize i,
-  struct rray_arg* x_arg,
-  struct r_lazy error_call
-) {
-  return x;
-}
-
-static inline double rray_cast_lgl_to_dbl_one(
-  int x,
-  r_ssize i,
-  struct rray_arg* x_arg,
-  struct r_lazy error_call
-) {
-  if (x == r_globals.na_lgl) {
-    return r_globals.na_dbl;
-  }
-
-  return (double) x;
-}
-
-static inline r_complex rray_cast_lgl_to_cpl_one(
-  int x,
-  r_ssize i,
-  struct rray_arg* x_arg,
-  struct r_lazy error_call
-) {
-  const double out = (x == r_globals.na_lgl) ? r_globals.na_dbl : (double) x;
-  return (r_complex){.r = out, .i = 0};
-}
+#undef RRAY_CAST_LOSSY
 
 static inline int rray_cast_int_to_lgl_one(
   int x,
@@ -330,29 +331,6 @@ static inline int rray_cast_int_to_lgl_one(
   }
 
   stop_lossy_cast(RRAY_TYPE_integer, RRAY_TYPE_logical, i, x_arg, error_call);
-}
-
-static inline double rray_cast_int_to_dbl_one(
-  int x,
-  r_ssize i,
-  struct rray_arg* x_arg,
-  struct r_lazy error_call
-) {
-  if (x == r_globals.na_int) {
-    return r_globals.na_dbl;
-  }
-
-  return (double) x;
-}
-
-static inline r_complex rray_cast_int_to_cpl_one(
-  int x,
-  r_ssize i,
-  struct rray_arg* x_arg,
-  struct r_lazy error_call
-) {
-  const double out = (x == r_globals.na_int) ? r_globals.na_dbl : (double) x;
-  return (r_complex){.r = out, .i = 0};
 }
 
 static inline int rray_cast_dbl_to_lgl_one(
@@ -397,15 +375,6 @@ static inline int rray_cast_dbl_to_int_one(
   }
 
   return out;
-}
-
-static inline r_complex rray_cast_dbl_to_cpl_one(
-  double x,
-  r_ssize i,
-  struct rray_arg* x_arg,
-  struct r_lazy error_call
-) {
-  return (r_complex){.r = x, .i = 0};
 }
 
 static r_no_return void stop_incompatible_cast(

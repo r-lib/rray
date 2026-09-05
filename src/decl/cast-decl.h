@@ -44,37 +44,7 @@ static r_obj* rray_cast_dbl_to_cpl(
   struct r_lazy error_call
 );
 
-static inline int rray_cast_lgl_to_int_one(
-  int x,
-  r_ssize i,
-  struct rray_arg* x_arg,
-  struct r_lazy error_call
-);
-static inline double rray_cast_lgl_to_dbl_one(
-  int x,
-  r_ssize i,
-  struct rray_arg* x_arg,
-  struct r_lazy error_call
-);
-static inline r_complex rray_cast_lgl_to_cpl_one(
-  int x,
-  r_ssize i,
-  struct rray_arg* x_arg,
-  struct r_lazy error_call
-);
 static inline int rray_cast_int_to_lgl_one(
-  int x,
-  r_ssize i,
-  struct rray_arg* x_arg,
-  struct r_lazy error_call
-);
-static inline double rray_cast_int_to_dbl_one(
-  int x,
-  r_ssize i,
-  struct rray_arg* x_arg,
-  struct r_lazy error_call
-);
-static inline r_complex rray_cast_int_to_cpl_one(
   int x,
   r_ssize i,
   struct rray_arg* x_arg,
@@ -87,12 +57,6 @@ static inline int rray_cast_dbl_to_lgl_one(
   struct r_lazy error_call
 );
 static inline int rray_cast_dbl_to_int_one(
-  double x,
-  r_ssize i,
-  struct rray_arg* x_arg,
-  struct r_lazy error_call
-);
-static inline r_complex rray_cast_dbl_to_cpl_one(
   double x,
   r_ssize i,
   struct rray_arg* x_arg,

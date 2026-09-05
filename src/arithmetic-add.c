@@ -1,0 +1,467 @@
+#include "arithmetic-add.h"
+
+#include <limits.h>
+
+#include "arithmetic.h"
+#include "cast-one.h"
+#include "type.h"
+#include "typeof2.h"
+
+#include "decl/arithmetic-add-decl.h"
+
+r_obj* ffi_rray_add(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame) {
+  struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
+  return rray_add(ffi_x, ffi_y, rray_args.x, rray_args.y, error_call);
+}
+
+r_obj* rray_add(
+  r_obj* x,
+  r_obj* y,
+  struct rray_arg* x_arg,
+  struct rray_arg* y_arg,
+  struct r_lazy error_call
+) {
+  return rray_binary_arithmetic(
+    x,
+    y,
+    rray_add_switch,
+    x_arg,
+    y_arg,
+    error_call
+  );
+}
+
+static rray_binary_arithmetic_core_fn rray_add_switch(
+  r_obj* x,
+  r_obj* y,
+  struct rray_arg* x_arg,
+  struct rray_arg* y_arg,
+  struct r_lazy error_call
+) {
+  enum rray_side side;
+
+  switch (rray_typeof2(rray_typeof(x), rray_typeof(y), &side)) {
+  case RRAY_TYPE2_logical_logical:
+    return rray_add_lgl_lgl;
+  case RRAY_TYPE2_logical_integer:
+    return (side == RRAY_SIDE_right) ? rray_add_lgl_int : rray_add_int_lgl;
+  case RRAY_TYPE2_logical_double:
+    return (side == RRAY_SIDE_right) ? rray_add_lgl_dbl : rray_add_dbl_lgl;
+  case RRAY_TYPE2_logical_complex:
+    return (side == RRAY_SIDE_right) ? rray_add_lgl_cpl : rray_add_cpl_lgl;
+  case RRAY_TYPE2_integer_integer:
+    return rray_add_int_int;
+  case RRAY_TYPE2_integer_double:
+    return (side == RRAY_SIDE_right) ? rray_add_int_dbl : rray_add_dbl_int;
+  case RRAY_TYPE2_integer_complex:
+    return (side == RRAY_SIDE_right) ? rray_add_int_cpl : rray_add_cpl_int;
+  case RRAY_TYPE2_double_double:
+    return rray_add_dbl_dbl;
+  case RRAY_TYPE2_double_complex:
+    return (side == RRAY_SIDE_right) ? rray_add_dbl_cpl : rray_add_cpl_dbl;
+  case RRAY_TYPE2_complex_complex:
+    return rray_add_cpl_cpl;
+
+  case RRAY_TYPE2_logical_character:
+  case RRAY_TYPE2_logical_raw:
+  case RRAY_TYPE2_logical_list:
+  case RRAY_TYPE2_integer_character:
+  case RRAY_TYPE2_integer_raw:
+  case RRAY_TYPE2_integer_list:
+  case RRAY_TYPE2_double_character:
+  case RRAY_TYPE2_double_raw:
+  case RRAY_TYPE2_double_list:
+  case RRAY_TYPE2_complex_character:
+  case RRAY_TYPE2_complex_raw:
+  case RRAY_TYPE2_complex_list:
+  case RRAY_TYPE2_character_character:
+  case RRAY_TYPE2_character_raw:
+  case RRAY_TYPE2_character_list:
+  case RRAY_TYPE2_raw_raw:
+  case RRAY_TYPE2_raw_list:
+  case RRAY_TYPE2_list_list:
+    stop_unsupported_arithmetic("+", x, y, x_arg, y_arg, error_call);
+
+  case RRAY_TYPE2_logical_scalar:
+  case RRAY_TYPE2_integer_scalar:
+  case RRAY_TYPE2_double_scalar:
+  case RRAY_TYPE2_complex_scalar:
+  case RRAY_TYPE2_character_scalar:
+  case RRAY_TYPE2_raw_scalar:
+  case RRAY_TYPE2_list_scalar:
+  case RRAY_TYPE2_scalar_scalar:
+    r_stop_unreachable();
+  }
+
+  r_stop_unreachable();
+}
+
+static r_obj* rray_add_lgl_lgl(
+  r_obj* x,
+  r_obj* y,
+  r_ssize size,
+  struct rray_iterator2* it,
+  struct r_lazy error_call
+) {
+  RRAY_ARITHMETIC(
+    int,
+    r_lgl_cbegin,
+    rray_cast_lgl_to_int_one,
+    int,
+    r_lgl_cbegin,
+    rray_cast_lgl_to_int_one,
+    R_TYPE_integer,
+    int,
+    r_int_begin,
+    rray_add_int_one
+  );
+}
+
+static r_obj* rray_add_lgl_int(
+  r_obj* x,
+  r_obj* y,
+  r_ssize size,
+  struct rray_iterator2* it,
+  struct r_lazy error_call
+) {
+  RRAY_ARITHMETIC(
+    int,
+    r_lgl_cbegin,
+    rray_cast_lgl_to_int_one,
+    int,
+    r_int_cbegin,
+    rray_cast_int_to_int_one,
+    R_TYPE_integer,
+    int,
+    r_int_begin,
+    rray_add_int_one
+  );
+}
+
+static r_obj* rray_add_int_lgl(
+  r_obj* x,
+  r_obj* y,
+  r_ssize size,
+  struct rray_iterator2* it,
+  struct r_lazy error_call
+) {
+  RRAY_ARITHMETIC(
+    int,
+    r_int_cbegin,
+    rray_cast_int_to_int_one,
+    int,
+    r_lgl_cbegin,
+    rray_cast_lgl_to_int_one,
+    R_TYPE_integer,
+    int,
+    r_int_begin,
+    rray_add_int_one
+  );
+}
+
+static r_obj* rray_add_lgl_dbl(
+  r_obj* x,
+  r_obj* y,
+  r_ssize size,
+  struct rray_iterator2* it,
+  struct r_lazy error_call
+) {
+  RRAY_ARITHMETIC(
+    int,
+    r_lgl_cbegin,
+    rray_cast_lgl_to_dbl_one,
+    double,
+    r_dbl_cbegin,
+    rray_cast_dbl_to_dbl_one,
+    R_TYPE_double,
+    double,
+    r_dbl_begin,
+    rray_add_dbl_one
+  );
+}
+
+static r_obj* rray_add_dbl_lgl(
+  r_obj* x,
+  r_obj* y,
+  r_ssize size,
+  struct rray_iterator2* it,
+  struct r_lazy error_call
+) {
+  RRAY_ARITHMETIC(
+    double,
+    r_dbl_cbegin,
+    rray_cast_dbl_to_dbl_one,
+    int,
+    r_lgl_cbegin,
+    rray_cast_lgl_to_dbl_one,
+    R_TYPE_double,
+    double,
+    r_dbl_begin,
+    rray_add_dbl_one
+  );
+}
+
+static r_obj* rray_add_lgl_cpl(
+  r_obj* x,
+  r_obj* y,
+  r_ssize size,
+  struct rray_iterator2* it,
+  struct r_lazy error_call
+) {
+  RRAY_ARITHMETIC(
+    int,
+    r_lgl_cbegin,
+    rray_cast_lgl_to_cpl_one,
+    r_complex,
+    r_cpl_cbegin,
+    rray_cast_cpl_to_cpl_one,
+    R_TYPE_complex,
+    r_complex,
+    r_cpl_begin,
+    rray_add_cpl_one
+  );
+}
+
+static r_obj* rray_add_cpl_lgl(
+  r_obj* x,
+  r_obj* y,
+  r_ssize size,
+  struct rray_iterator2* it,
+  struct r_lazy error_call
+) {
+  RRAY_ARITHMETIC(
+    r_complex,
+    r_cpl_cbegin,
+    rray_cast_cpl_to_cpl_one,
+    int,
+    r_lgl_cbegin,
+    rray_cast_lgl_to_cpl_one,
+    R_TYPE_complex,
+    r_complex,
+    r_cpl_begin,
+    rray_add_cpl_one
+  );
+}
+
+static r_obj* rray_add_int_int(
+  r_obj* x,
+  r_obj* y,
+  r_ssize size,
+  struct rray_iterator2* it,
+  struct r_lazy error_call
+) {
+  RRAY_ARITHMETIC(
+    int,
+    r_int_cbegin,
+    rray_cast_int_to_int_one,
+    int,
+    r_int_cbegin,
+    rray_cast_int_to_int_one,
+    R_TYPE_integer,
+    int,
+    r_int_begin,
+    rray_add_int_one
+  );
+}
+
+static r_obj* rray_add_int_dbl(
+  r_obj* x,
+  r_obj* y,
+  r_ssize size,
+  struct rray_iterator2* it,
+  struct r_lazy error_call
+) {
+  RRAY_ARITHMETIC(
+    int,
+    r_int_cbegin,
+    rray_cast_int_to_dbl_one,
+    double,
+    r_dbl_cbegin,
+    rray_cast_dbl_to_dbl_one,
+    R_TYPE_double,
+    double,
+    r_dbl_begin,
+    rray_add_dbl_one
+  );
+}
+
+static r_obj* rray_add_dbl_int(
+  r_obj* x,
+  r_obj* y,
+  r_ssize size,
+  struct rray_iterator2* it,
+  struct r_lazy error_call
+) {
+  RRAY_ARITHMETIC(
+    double,
+    r_dbl_cbegin,
+    rray_cast_dbl_to_dbl_one,
+    int,
+    r_int_cbegin,
+    rray_cast_int_to_dbl_one,
+    R_TYPE_double,
+    double,
+    r_dbl_begin,
+    rray_add_dbl_one
+  );
+}
+
+static r_obj* rray_add_int_cpl(
+  r_obj* x,
+  r_obj* y,
+  r_ssize size,
+  struct rray_iterator2* it,
+  struct r_lazy error_call
+) {
+  RRAY_ARITHMETIC(
+    int,
+    r_int_cbegin,
+    rray_cast_int_to_cpl_one,
+    r_complex,
+    r_cpl_cbegin,
+    rray_cast_cpl_to_cpl_one,
+    R_TYPE_complex,
+    r_complex,
+    r_cpl_begin,
+    rray_add_cpl_one
+  );
+}
+
+static r_obj* rray_add_cpl_int(
+  r_obj* x,
+  r_obj* y,
+  r_ssize size,
+  struct rray_iterator2* it,
+  struct r_lazy error_call
+) {
+  RRAY_ARITHMETIC(
+    r_complex,
+    r_cpl_cbegin,
+    rray_cast_cpl_to_cpl_one,
+    int,
+    r_int_cbegin,
+    rray_cast_int_to_cpl_one,
+    R_TYPE_complex,
+    r_complex,
+    r_cpl_begin,
+    rray_add_cpl_one
+  );
+}
+
+static r_obj* rray_add_dbl_dbl(
+  r_obj* x,
+  r_obj* y,
+  r_ssize size,
+  struct rray_iterator2* it,
+  struct r_lazy error_call
+) {
+  RRAY_ARITHMETIC(
+    double,
+    r_dbl_cbegin,
+    rray_cast_dbl_to_dbl_one,
+    double,
+    r_dbl_cbegin,
+    rray_cast_dbl_to_dbl_one,
+    R_TYPE_double,
+    double,
+    r_dbl_begin,
+    rray_add_dbl_one
+  );
+}
+
+static r_obj* rray_add_dbl_cpl(
+  r_obj* x,
+  r_obj* y,
+  r_ssize size,
+  struct rray_iterator2* it,
+  struct r_lazy error_call
+) {
+  RRAY_ARITHMETIC(
+    double,
+    r_dbl_cbegin,
+    rray_cast_dbl_to_cpl_one,
+    r_complex,
+    r_cpl_cbegin,
+    rray_cast_cpl_to_cpl_one,
+    R_TYPE_complex,
+    r_complex,
+    r_cpl_begin,
+    rray_add_cpl_one
+  );
+}
+
+static r_obj* rray_add_cpl_dbl(
+  r_obj* x,
+  r_obj* y,
+  r_ssize size,
+  struct rray_iterator2* it,
+  struct r_lazy error_call
+) {
+  RRAY_ARITHMETIC(
+    r_complex,
+    r_cpl_cbegin,
+    rray_cast_cpl_to_cpl_one,
+    double,
+    r_dbl_cbegin,
+    rray_cast_dbl_to_cpl_one,
+    R_TYPE_complex,
+    r_complex,
+    r_cpl_begin,
+    rray_add_cpl_one
+  );
+}
+
+static r_obj* rray_add_cpl_cpl(
+  r_obj* x,
+  r_obj* y,
+  r_ssize size,
+  struct rray_iterator2* it,
+  struct r_lazy error_call
+) {
+  RRAY_ARITHMETIC(
+    r_complex,
+    r_cpl_cbegin,
+    rray_cast_cpl_to_cpl_one,
+    r_complex,
+    r_cpl_cbegin,
+    rray_cast_cpl_to_cpl_one,
+    R_TYPE_complex,
+    r_complex,
+    r_cpl_begin,
+    rray_add_cpl_one
+  );
+}
+
+#undef RRAY_ARITHMETIC
+
+static inline int rray_add_int_one(int x, int y, struct r_lazy error_call) {
+  if (x == r_globals.na_int || y == r_globals.na_int) {
+    return r_globals.na_int;
+  }
+
+  if ((y > 0 && x > INT_MAX - y) || (y < 0 && x < -INT_MAX - y)) {
+    stop_int_overflow(error_call);
+  }
+
+  return x + y;
+}
+
+static inline double rray_add_dbl_one(
+  double x,
+  double y,
+  struct r_lazy error_call
+) {
+  return x + y;
+}
+
+static inline r_complex rray_add_cpl_one(
+  r_complex x,
+  r_complex y,
+  struct r_lazy error_call
+) {
+  return (r_complex){.r = x.r + y.r, .i = x.i + y.i};
+}
+
+static r_no_return void stop_int_overflow(struct r_lazy error_call) {
+  r_abort_lazy_call(error_call, "Integer overflow.");
+}

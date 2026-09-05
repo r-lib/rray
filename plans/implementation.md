@@ -568,8 +568,10 @@ every build takes the `z.r = x; z.i = 0;` path. vctrs agrees for integer and
 double but returns a full `NA_complex_` for logical, so do not copy it here.
 
 Files: `src/type.c` for `enum rray_type`, `src/typeof2.c` for the pair enum and
-`enum rray_side`, then `src/ptype.c`, `src/ptype-common.c`, `src/cast.c`,
-`src/cast-common.c` and `src/arithmetic-ptype.c`.
+`enum rray_side`, then `src/ptype.c`, `src/ptype-common.c`, `src/cast.c` and
+`src/cast-common.c`. `src/cast-one.h` holds the scalar casts as `static inline`
+functions, so `src/cast.c` and the arithmetic cores share one definition of
+each.
 
 ### The common type rules
 
@@ -595,55 +597,49 @@ type for this. We do not, at least until `rray_bind()` wants
 Some operators need a type the common type rules cannot give, because
 `lgl + lgl` is `int` and `int / int` is `dbl`.
 
-Each family gets its own operator enum and its own type function.
+There is no promotion function and no operator enum. Each operator writes the
+tables below out as a `switch` over `enum rray_type2`, one arm per unordered
+pair, and each arm names the core that handles that pair. The core is
+specialised on all three types at once: what `x` holds, what `y` holds, and what
+comes out. So `rray_add_int_dbl()` reads integers from `x`, doubles from `y`,
+and writes doubles.
+
+That means nothing is ever cast up front. `rray_add(x, 1)` on an integer array
+used to allocate a whole double copy of `x` before adding anything, because a
+bare `1` is a double. Now the conversion happens per element inside the loop and
+only the output is allocated.
+
+Because the pair enum is symmetric, `RRAY_TYPE2_integer_double` cannot say which
+input was which. The `enum rray_side` out parameter of `rray_typeof2()` does, so
+the arm picks between two cores:
 
 ```c
-r_obj* rray_binary_arithmetic_ptype(
-  enum rray_binary_arithmetic_op op,
-  r_obj* x,
-  r_obj* y,
-  struct rray_arg* x_arg,
-  struct rray_arg* y_arg,
-  struct r_lazy error_call
-);
-r_obj* rray_reduction_ptype(
-  enum rray_reduction_op op,
-  r_obj* x,
-  struct rray_arg* x_arg,
-  struct r_lazy error_call
-);
+case RRAY_TYPE2_integer_double:
+  return (side == RRAY_SIDE_right) ? rray_add_int_dbl : rray_add_dbl_int;
 ```
 
-Separate enums rather than one shared vocabulary, so each function can only be
-handed an operator its family actually has.
+Four supported types in either position is 16 cores per operator. That is a lot
+of function definitions, but each body is a single `RRAY_ARITHMETIC` call and
+the only real logic is the scalar operation, of which there are three per
+operator, one per output type.
 
-Each family keeps its enum, its table, and the error it raises together in one
-file. `src/arithmetic-ptype.c` is the binary arithmetic one, and it is where
-`enum rray_binary_arithmetic_op` lives.
-
-They take arrays and return a ptype, like the rest of the type API. They also
-raise the error when an operator has no answer for a type, which is why they
-take the tags and the error call:
+The switch picks the core rather than running it, and the shell calls it before
+any dimension work. So a type error always beats a dimension error:
 
 ```r
-rray_add("a", "b")
+rray_add(array("a", c(2, 2)), array("b", c(3, 3)))
 #> Error in `rray_add()`:
 #> ! Can't apply `+` to `x` <character> and `y` <character>.
 ```
 
-`rray_binary_arithmetic_ptype()` calls `rray_ptype2()` itself, so the caller
-makes one call and then casts both inputs to what comes back.
-
-Each returns **one ptype**, used both to cast the inputs and to allocate the
-output. That works because we always promote before computing, so the input type
-and the output type are the same.
+The per element conversions live in `src/cast-one.h` as `static inline`
+functions, shared with `src/cast.c` so the two can't drift. That matters most
+for complex, where the rule that a missing value lands in the real part alone is
+easy to get wrong twice.
 
 The tables below cover four types. `chr`, `raw` and `list` are an error for
 every operator, so the arithmetic and reduction families are the one place where
 the per type cores do not cover all seven native types.
-
-For binary operators, read the tables as "apply `rray_ptype2()` first, then
-promote".
 
 Binary elementwise:
 
@@ -671,16 +667,15 @@ immediately.
 tables, because picking the largest of some values cannot change their type. The
 maximum of two logicals is a logical.
 
-They still go through `rray_binary_arithmetic_ptype()` and
-`rray_reduction_ptype()`, which for them return the type unchanged and error on
-`cpl`, since complex numbers have no ordering. So the type function is doing
-validation rather than promotion.
+Their switches still list every pair, but the arms for `cpl` error, since
+complex numbers have no ordering, and every other arm picks a core whose output
+type equals its input type.
 
 ### Operators with a fixed output type
 
 An operator whose output type is fixed regardless of its input does not use the
-promotion tables. It finds the common type of its inputs with `rray_ptype2()`,
-casts, computes, and allocates the output at its own fixed type.
+promotion tables. Its pair switch still names a core per pair, but every core
+allocates the output at the one fixed type.
 
 - Comparison (`rray_equal()` and friends) returns a logical array.
 
@@ -768,9 +763,8 @@ Mechanics:
 What exists today: the argument tags, the argument checking helpers, the names
 API, the coalesce rule as the `rray_broadcast_names()` family, the dimension and
 shape helpers, the type rules as the `rray_ptype2()` and `rray_cast()` families,
-the binary promotion table as `rray_binary_arithmetic_ptype()`, and
-`rray_broadcast()`, `rray_broadcast_common()`, `rray_split()`, `rray_sum()` and
-`rray_add()`. The array functions all follow the shell and core pattern in
+and `rray_broadcast()`, `rray_broadcast_common()`, `rray_split()`, `rray_sum()`
+and `rray_add()`. The array functions all follow the shell and core pattern in
 Part 1, and no templates are left in `src/`.
 
 Work through the rest in order, since each assumes the ones before it have
@@ -782,31 +776,50 @@ dependencies noted there.
 `rray_subtract()`, `rray_multiply()`, `rray_divide()`, `rray_power()`,
 `rray_modulo()`, `rray_integer_divide()`.
 
-All the same shape as `rray_add()`. Every row of the table in
-`src/arithmetic-ptype.c` already exists, so each operator is an
-`ffi_rray_{name}()` wrapper, an `rray_{name}()` that hands its operator to
-`rray_binary_arithmetic()`, one arm in that switch, and an
-`rray_{name}_switch()` over the type plus its cores.
+All the same shape as `rray_add()`. Each operator is a self contained
+`src/arithmetic-{op}.c` holding `ffi_rray_{name}()`, `rray_{name}()`, a static
+`rray_{name}_switch()` over `enum rray_type2`, its 16 cores, and its three
+scalar operations. Copy `src/arithmetic-add.c` and change the switch arms, the
+`RRAY_ARITHMETIC` arguments, and the scalar operations.
 
-`rray_binary_arithmetic()` is the shell, and stays private to
-`src/arithmetic.c`. The header exposes one `rray_{name}()` per operator, so a
-caller asks for the operation it wants rather than naming an enum.
+`src/arithmetic.c` is the shared shell. It takes the switch as a function
+pointer, so it never learns that operators exist and no operator file has to
+know about any other:
+
+```c
+r_obj* rray_add(x, y, x_arg, y_arg, error_call) {
+  return rray_binary_arithmetic(x, y, rray_add_switch, x_arg, y_arg, error_call);
+}
+```
+
+The `RRAY_ARITHMETIC` macro is in `src/arithmetic.h` so every operator file
+shares it. Each one `#undef`s it after its cores.
+
+`/` and `^` promote to double, so their `int` cores write doubles and there is
+no `rray_divide_int_one()`. `%%` and `%/%` error on `cpl`, so those three arms
+call `stop_unsupported_arithmetic()` rather than naming a core.
 
 Tests go one file per operator, as Part 3 explains. Copy
-`tests/testthat/test-arithmetic-add.R` and work through the same cases.
+`tests/testthat/test-arithmetic-add.R` and work through the same cases,
+including all 16 type combinations in both positions.
 
-## PR 8: Reduction promotion and `rray_sum()`
-
-`rray_reduction_ptype()` and its table. Retrofit `rray_sum()` to use it, which
-gives it the `lgl` to `int` promotion.
+## PR 8: `rray_sum()` overflow comment
 
 Fix the comment in `src/sum.c` claiming a logical array can never overflow an
 integer sum. That is false once long arrays are supported.
 
-Once the promotion casts `lgl` to `int` up front, both `lgl` cores and their two
-scalar operations have no caller left and go away.
+There is no reduction promotion function to write. That was the plan while the
+binary family had one, but the binary family now writes its table into a switch
+instead. A reduction takes one array, so its switch is a plain `enum rray_type`
+one, and `src/sum.c` already has it: `rray_sum_lgl()` accumulates into an
+integer, which is the `lgl` to `int` promotion, done in the core rather than by
+a cast up front.
 
-Files: `src/ptype.c`, `R/sum.R`, `src/sum.c`.
+Decide when writing `rray_prod()` and `rray_mean()` whether the reduction table
+in 2.4 wants a shared home. Their cores promote the same way `rray_sum()` does,
+so it may stay documentation only.
+
+Files: `src/sum.c`.
 
 ---
 
@@ -993,8 +1006,9 @@ Files: `R/flip.R`, `src/flip.c`, `src/flip.h`.
 
 Names: coalesce. Type: promoted.
 
-All binary, all sharing the loop and the pipeline from 2.4: promote, cast both,
-find common dimensions, loop with an `rray_iterator2`.
+All binary, all sharing the loop and the pipeline from 2.4: pick a core from the
+type pair, find common dimensions, loop with an `rray_iterator2` converting as
+you go.
 
 | function | op |
 |---|---|
@@ -1012,7 +1026,8 @@ for it would add nothing.
 Match R's own semantics for missing values, `NaN`, and division by zero. Check
 `/Users/davis/files/r/r-svn` when a case is unclear rather than guessing.
 
-Files: `R/arithmetic.R`, `src/arithmetic.c`, `src/arithmetic.h`.
+Files: one `R/arithmetic-{op}.R` and `src/arithmetic-{op}.c` pair per operator,
+over the shared `src/arithmetic.c` and `src/arithmetic.h`.
 
 ## 5.3 Other elementwise numeric
 
@@ -1167,7 +1182,7 @@ Names: reduce.
 
 | function | op | type rule |
 |---|---|---|
-| `rray_sum(x, axes, ..., na_rm = FALSE)` | `sum` | promoted, exists, retrofit in PR 8 |
+| `rray_sum(x, axes, ..., na_rm = FALSE)` | `sum` | promoted, exists |
 | `rray_prod(x, axes, ..., na_rm = FALSE)` | `prod` | promoted, int to dbl |
 | `rray_mean(x, axes, ..., na_rm = FALSE)` | `mean` | promoted, lgl and int to dbl |
 | `rray_max(x, axes, ..., na_rm = FALSE)` | `max` | preserved, errors on cpl |
@@ -1404,9 +1419,10 @@ real caller wants it, not before.
 There is no unary elementwise family today. `-x` works on a bare array already,
 and `abs()`, `sqrt()` and friends are out of scope.
 
-If one is ever wanted, it follows the shape of the other two families: an
-`enum rray_unary_arithmetic_op` and an `rray_unary_arithmetic_ptype()`, in their
-own file beside `src/arithmetic-ptype.c`.
+If one is ever wanted, it follows the shape of the binary family: a
+`src/arithmetic-{op}.c` per operator with a switch over `enum rray_type`, which
+is the single input version of what the binary operators do with
+`enum rray_type2`.
 
 ## A null type
 

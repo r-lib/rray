@@ -44,23 +44,47 @@ test_that("plain vectors are normalized to 1D arrays", {
   expect_identical(as.vector(out), 2:4)
 })
 
-test_that("logical and integer promote to integer", {
+test_that("logical and integer combinations give an integer array", {
   expect_identical(rray_add(TRUE, TRUE), array(2L, 1L))
   expect_identical(rray_add(TRUE, 1L), array(2L, 1L))
+  expect_identical(rray_add(1L, TRUE), array(2L, 1L))
   expect_identical(rray_add(1L, 1L), array(2L, 1L))
 })
 
-test_that("double wins over logical and integer", {
+test_that("double wins over logical and integer, in either position", {
   expect_identical(rray_add(TRUE, 1.5), array(2.5, 1L))
+  expect_identical(rray_add(1.5, TRUE), array(2.5, 1L))
   expect_identical(rray_add(1L, 1.5), array(2.5, 1L))
+  expect_identical(rray_add(1.5, 1L), array(2.5, 1L))
   expect_identical(rray_add(1.5, 1.5), array(3, 1L))
 })
 
-test_that("complex wins over everything else", {
+test_that("complex wins over everything else, in either position", {
   expect_identical(rray_add(TRUE, 1i), array(1 + 1i, 1L))
+  expect_identical(rray_add(1i, TRUE), array(1 + 1i, 1L))
   expect_identical(rray_add(1L, 1i), array(1 + 1i, 1L))
+  expect_identical(rray_add(1i, 1L), array(1 + 1i, 1L))
   expect_identical(rray_add(1.5, 1i), array(1.5 + 1i, 1L))
+  expect_identical(rray_add(1i, 1.5), array(1.5 + 1i, 1L))
   expect_identical(rray_add(1 + 2i, 3 + 4i), array(4 + 6i, 1L))
+})
+
+test_that("mixed type missing values match base R", {
+  expect_identical(as.vector(rray_add(NA, 1L)), NA + 1L)
+  expect_identical(as.vector(rray_add(NA, 1.5)), NA + 1.5)
+  expect_identical(as.vector(rray_add(1.5, NA)), 1.5 + NA)
+  expect_identical(as.vector(rray_add(NA_integer_, 1.5)), NA_integer_ + 1.5)
+  expect_identical(as.vector(rray_add(1.5, NA_integer_)), 1.5 + NA_integer_)
+})
+
+test_that("casting into complex zeroes the imaginary part", {
+  out <- as.vector(rray_add(NA, 1i))
+  expect_identical(Re(out), NA_real_)
+  expect_identical(Im(out), 1)
+
+  out <- as.vector(rray_add(NA_integer_, 1i))
+  expect_identical(Re(out), NA_real_)
+  expect_identical(Im(out), 1)
 })
 
 test_that("integer missing values propagate", {
@@ -155,15 +179,18 @@ test_that("errors on incompatible dimensions", {
   expect_snapshot(rray_add(x, array(integer(), c(0L, 2L))), error = TRUE)
 })
 
-test_that("errors on incompatible types", {
-  expect_snapshot(rray_add(1L, "a"), error = TRUE)
-  expect_snapshot(rray_add(as.raw(1), 1L), error = TRUE)
-})
-
 test_that("errors on types `+` doesn't support", {
   expect_snapshot(rray_add("a", "b"), error = TRUE)
   expect_snapshot(rray_add(as.raw(1), as.raw(1)), error = TRUE)
   expect_snapshot(rray_add(list(1), list(2)), error = TRUE)
+  expect_snapshot(rray_add(1L, "a"), error = TRUE)
+  expect_snapshot(rray_add(as.raw(1), 1L), error = TRUE)
+})
+
+test_that("a type error beats a dimension error", {
+  x <- array("a", c(2L, 2L))
+  y <- array("b", c(3L, 3L))
+  expect_snapshot(rray_add(x, y), error = TRUE)
 })
 
 test_that("errors on integer overflow", {
