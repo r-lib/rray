@@ -31,7 +31,7 @@ x <- array(1:6, c(3L, 2L))
 
 rray_add(x, 1L)
 
-# Broadcasting means the columns of `x` can each get their own value
+# Adding 10 to column 1 and 20 to column 2 via broadcasting
 rray_add(x, array(c(10L, 20L), c(1L, 2L)))
 
 # Names are kept for any axis that isn't broadcast
