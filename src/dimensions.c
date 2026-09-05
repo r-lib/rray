@@ -293,12 +293,16 @@ static inline int rray_dimension2(
   struct rray_arg* right_arg,
   struct r_lazy error_call
 ) {
-  if (left == right || right == 1) {
+  if (left == right) {
     return left;
   }
 
   if (left == 1) {
     return right;
+  }
+
+  if (right == 1) {
+    return left;
   }
 
   stop_incompatible_dimensions(
