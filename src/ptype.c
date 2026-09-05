@@ -68,13 +68,6 @@ r_obj* rray_ptype2(
   const enum rray_type x_type = rray_typeof(x);
   const enum rray_type y_type = rray_typeof(y);
 
-  if (x_type == RRAY_TYPE_scalar) {
-    stop_scalar_input(x, x_arg, error_call);
-  }
-  if (y_type == RRAY_TYPE_scalar) {
-    stop_scalar_input(y, y_arg, error_call);
-  }
-
   switch (rray_typeof2(x_type, y_type, side)) {
   case RRAY_TYPE2_logical_logical:
     return r_globals.empty_lgl;
@@ -128,7 +121,7 @@ r_obj* rray_ptype2(
   case RRAY_TYPE2_raw_scalar:
   case RRAY_TYPE2_list_scalar:
   case RRAY_TYPE2_scalar_scalar:
-    break;
+    stop_scalar_input2(x, y, x_type, x_arg, y_arg, error_call);
   }
 
   r_stop_unreachable();
@@ -147,4 +140,19 @@ static r_no_return void stop_incompatible_ptype(
     rray_arg_type_format(x_arg, x),
     rray_arg_type_format(y_arg, y)
   );
+}
+
+static r_no_return void stop_scalar_input2(
+  r_obj* x,
+  r_obj* y,
+  enum rray_type x_type,
+  struct rray_arg* x_arg,
+  struct rray_arg* y_arg,
+  struct r_lazy error_call
+) {
+  if (x_type == RRAY_TYPE_scalar) {
+    stop_scalar_input(x, x_arg, error_call);
+  } else {
+    stop_scalar_input(y, y_arg, error_call);
+  }
 }
