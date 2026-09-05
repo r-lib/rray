@@ -842,6 +842,11 @@ the same, and the hand written formula gives `NaN+NaNi` where base R gives
 only calls `__muldc3` when both halves come out `NaN`. Only `+` and `-` are
 componentwise, which is also what base R does.
 
+Convert with `rray_cpl_to_c99()` in `src/arithmetic.h`. Not `CMPLX()`, which is
+C11 and, on macOS, is defined only for clang. C99 guarantees a complex type has
+the same representation as a two element array of its real type, real part
+first, so the conversion is a copy the compiler removes entirely.
+
 Tests go one file per operator, as Part 3 explains. Copy
 `tests/testthat/test-arithmetic-multiply.R` and work through the same cases,
 including all 16 type combinations in both positions.
