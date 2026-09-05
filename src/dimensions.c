@@ -183,7 +183,7 @@ r_obj* rray_dimensions_common(
 
     // Update `v_out_dimensions` and `out_dimensionality` in place
     // with common dimensions
-    rray_dimensions2(
+    rray_dimensions_merge(
       v_out_dimensions,
       v_out_args,
       &out_dimensionality,
@@ -207,7 +207,7 @@ r_obj* rray_dimensions_common(
   return out;
 }
 
-static inline void rray_dimensions2(
+static inline void rray_dimensions_merge(
   int* v_out_dimensions,
   r_ssize* v_out_args,
   int* p_out_dimensionality,
@@ -232,30 +232,100 @@ static inline void rray_dimensions2(
       (i < out_dimensionality) ? v_out_dimensions[i] : 1;
     const int x_dimension = (i < x_dimensionality) ? v_x_dimensions[i] : 1;
 
-    if (out_dimension == x_dimension) {
-      // Nothing to do
-      // v_out_dimensions[i] = out_dimension;
-    } else if (out_dimension == 1) {
-      v_out_dimensions[i] = x_dimension;
-      v_out_args[i] = x_i;
-    } else if (x_dimension == 1) {
-      // Nothing to do
-      // v_out_dimensions[i] = out_dimension;
-    } else {
-      *p_out_i = v_out_args[i];
+    *p_out_i = v_out_args[i];
 
-      r_abort_lazy_call(
-        error_call,
-        "Can't find common dimensions at axis %d. "
-        "%s has dimension %d and %s has dimension %d.",
-        i + 1,
-        rray_arg_format(out_arg),
-        out_dimension,
-        rray_arg_format(x_arg),
-        x_dimension
-      );
+    const int dimension = rray_dimension2(
+      out_dimension,
+      x_dimension,
+      i + 1,
+      out_arg,
+      x_arg,
+      error_call
+    );
+
+    if (dimension != out_dimension) {
+      v_out_dimensions[i] = dimension;
+      v_out_args[i] = x_i;
     }
   }
+}
+
+r_obj* rray_dimensions2(
+  const int* v_x_dimensions,
+  int x_dimensionality,
+  const int* v_y_dimensions,
+  int y_dimensionality,
+  struct rray_arg* x_arg,
+  struct rray_arg* y_arg,
+  struct r_lazy error_call
+) {
+  const int dimensionality =
+    (x_dimensionality > y_dimensionality) ? x_dimensionality : y_dimensionality;
+
+  check_max_dimensionality(dimensionality);
+
+  r_obj* out = KEEP(r_alloc_integer(dimensionality));
+  int* v_out = r_int_begin(out);
+
+  for (int i = 0; i < dimensionality; ++i) {
+    const int x_dimension = (i < x_dimensionality) ? v_x_dimensions[i] : 1;
+    const int y_dimension = (i < y_dimensionality) ? v_y_dimensions[i] : 1;
+
+    v_out[i] = rray_dimension2(
+      x_dimension,
+      y_dimension,
+      i + 1,
+      x_arg,
+      y_arg,
+      error_call
+    );
+  }
+
+  FREE(1);
+  return out;
+}
+
+static inline int rray_dimension2(
+  int x,
+  int y,
+  int axis,
+  struct rray_arg* x_arg,
+  struct rray_arg* y_arg,
+  struct r_lazy error_call
+) {
+  if (x == y) {
+    return x;
+  }
+
+  if (x == 1) {
+    return y;
+  }
+
+  if (y == 1) {
+    return x;
+  }
+
+  stop_incompatible_dimensions(x, y, axis, x_arg, y_arg, error_call);
+}
+
+static r_no_return void stop_incompatible_dimensions(
+  int x,
+  int y,
+  int axis,
+  struct rray_arg* x_arg,
+  struct rray_arg* y_arg,
+  struct r_lazy error_call
+) {
+  r_abort_lazy_call(
+    error_call,
+    "Can't find common dimensions at axis %d. "
+    "%s has dimension %d and %s has dimension %d.",
+    axis,
+    rray_arg_format(x_arg),
+    x,
+    rray_arg_format(y_arg),
+    y
+  );
 }
 
 r_obj* arg_as_dimensions(

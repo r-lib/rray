@@ -29,6 +29,10 @@ reference:
   - rray_broadcast_common
   - rray_split
 
+- title: Arithmetic
+  contents:
+  - rray_add
+
 - title: Reducers
   contents:
   - rray_sum

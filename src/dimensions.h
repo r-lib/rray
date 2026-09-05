@@ -46,6 +46,16 @@ r_obj* rray_dimensions_common(
   struct r_lazy error_call
 );
 
+r_obj* rray_dimensions2(
+  const int* v_x_dimensions,
+  int x_dimensionality,
+  const int* v_y_dimensions,
+  int y_dimensionality,
+  struct rray_arg* x_arg,
+  struct rray_arg* y_arg,
+  struct r_lazy error_call
+);
+
 r_obj* arg_as_dimensions(
   r_obj* dimensions,
   struct rray_arg* arg,
