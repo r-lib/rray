@@ -2,6 +2,7 @@
 #define RRAY_UTILS_H
 
 #include <complex.h>
+#include <string.h>
 
 #include "rlang.h"
 
@@ -17,7 +18,7 @@
 // specific path like the C11 `CMPLX()` macro, unavailable on macOS under gcc.
 static inline double _Complex rray_cpl_to_c99(r_complex x) {
   double _Complex out;
-  r_memcpy(&out, &x, sizeof(out));
+  memcpy(&out, &x, sizeof(out));
   return out;
 }
 
