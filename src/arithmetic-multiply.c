@@ -1,6 +1,5 @@
 #include "arithmetic-multiply.h"
 
-#include <complex.h>
 #include <limits.h>
 
 #include "arithmetic.h"
@@ -479,6 +478,5 @@ static inline r_complex rray_multiply_cpl_one(
   r_complex y,
   struct r_lazy error_call
 ) {
-  const double _Complex out = rray_cpl_to_c99(x) * rray_cpl_to_c99(y);
-  return (r_complex){.r = creal(out), .i = cimag(out)};
+  return rray_c99_to_cpl(rray_cpl_to_c99(x) * rray_cpl_to_c99(y));
 }
