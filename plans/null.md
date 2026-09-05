@@ -364,8 +364,8 @@ case RRAY_TYPE2_null_null:
 `RRAY_TYPE2_null_integer` joins the integer group, and so on for double,
 complex, character, raw and list.
 
-`RRAY_TYPE2_null_scalar` joins the group that calls `stop_scalar_input2()`. No
-change is needed inside that helper. It blames `x` when `x` is the scalar and
+`RRAY_TYPE2_null_scalar` joins the group of scalar cases at the bottom of the
+switch. Nothing in that branch changes. It blames `x` when `x` is the scalar and
 `y` otherwise, which is right whichever way round the null and the scalar are.
 
 ## 6f. `src/ptype-common.c`
