@@ -18,8 +18,6 @@ enum rray_type {
 
 enum rray_type rray_typeof(r_obj* x);
 
-enum r_type rray_type_to_r_type(enum rray_type type);
-
 const char* rray_type_as_c_string(enum rray_type type);
 
 const char* rray_arg_type_format(struct rray_arg* arg, enum rray_type type);
