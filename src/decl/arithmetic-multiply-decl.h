@@ -1,4 +1,4 @@
-static rray_binary_arithmetic_fn rray_add_switch(
+static rray_binary_arithmetic_fn rray_multiply_switch(
   r_obj* x,
   r_obj* y,
   struct rray_arg* x_arg,
@@ -6,112 +6,112 @@ static rray_binary_arithmetic_fn rray_add_switch(
   struct r_lazy error_call
 );
 
-static r_obj* rray_add_lgl_lgl(
+static r_obj* rray_multiply_lgl_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
   struct r_lazy error_call
 );
-static r_obj* rray_add_lgl_int(
+static r_obj* rray_multiply_lgl_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
   struct r_lazy error_call
 );
-static r_obj* rray_add_int_lgl(
+static r_obj* rray_multiply_int_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
   struct r_lazy error_call
 );
-static r_obj* rray_add_lgl_dbl(
+static r_obj* rray_multiply_lgl_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
   struct r_lazy error_call
 );
-static r_obj* rray_add_dbl_lgl(
+static r_obj* rray_multiply_dbl_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
   struct r_lazy error_call
 );
-static r_obj* rray_add_lgl_cpl(
+static r_obj* rray_multiply_lgl_cpl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
   struct r_lazy error_call
 );
-static r_obj* rray_add_cpl_lgl(
+static r_obj* rray_multiply_cpl_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
   struct r_lazy error_call
 );
-static r_obj* rray_add_int_int(
+static r_obj* rray_multiply_int_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
   struct r_lazy error_call
 );
-static r_obj* rray_add_int_dbl(
+static r_obj* rray_multiply_int_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
   struct r_lazy error_call
 );
-static r_obj* rray_add_dbl_int(
+static r_obj* rray_multiply_dbl_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
   struct r_lazy error_call
 );
-static r_obj* rray_add_int_cpl(
+static r_obj* rray_multiply_int_cpl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
   struct r_lazy error_call
 );
-static r_obj* rray_add_cpl_int(
+static r_obj* rray_multiply_cpl_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
   struct r_lazy error_call
 );
-static r_obj* rray_add_dbl_dbl(
+static r_obj* rray_multiply_dbl_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
   struct r_lazy error_call
 );
-static r_obj* rray_add_dbl_cpl(
+static r_obj* rray_multiply_dbl_cpl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
   struct r_lazy error_call
 );
-static r_obj* rray_add_cpl_dbl(
+static r_obj* rray_multiply_cpl_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
   struct r_lazy error_call
 );
-static r_obj* rray_add_cpl_cpl(
+static r_obj* rray_multiply_cpl_cpl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -119,13 +119,13 @@ static r_obj* rray_add_cpl_cpl(
   struct r_lazy error_call
 );
 
-static inline int rray_add_int_one(int x, int y, struct r_lazy error_call);
-static inline double rray_add_dbl_one(
+static inline int rray_multiply_int_one(int x, int y, struct r_lazy error_call);
+static inline double rray_multiply_dbl_one(
   double x,
   double y,
   struct r_lazy error_call
 );
-static inline r_complex rray_add_cpl_one(
+static inline r_complex rray_multiply_cpl_one(
   r_complex x,
   r_complex y,
   struct r_lazy error_call

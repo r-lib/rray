@@ -769,11 +769,15 @@ Mechanics:
 - Tests for `R/{name}.R` go in `tests/testthat/test-{name}.R`, helpers in
   `tests/testthat/helper-{name}.R`.
 
-- The arithmetic family splits one operator per file all the way down, so
-  `rray_add()` is `R/arithmetic-add.R`, `src/arithmetic-add.c` and
-  `test-arithmetic-add.R`. Snapshot names are file wide, so this lets every
-  operator say "errors on integer overflow" without colliding. No `# ----`
-  header, since each file covers one function.
+- The arithmetic family splits one operator per file in `src/` and in the tests,
+  so `rray_add()` is `src/arithmetic-add.c` and `test-arithmetic-add.R`.
+  Snapshot names are file wide, so this lets every operator say "errors on
+  integer overflow" without colliding. No `# ----` header, since each file
+  covers one function.
+
+- The R side does not split. Every operator's binding lives in `R/arithmetic.R`,
+  and they share one documentation page, because the page has one thing to say
+  and repeating it per operator would be seven copies of it.
 
 - Never put code outside a `test_that()` block.
 
@@ -794,9 +798,9 @@ What exists today: the argument tags, the argument checking helpers, the names
 API, the coalesce rule as the `rray_broadcast_names()` family, the dimension and
 shape helpers, the type rules as the `rray_ptype2()` and `rray_cast()` families,
 the scalar casts as `static inline` functions in `src/cast.h`, and
-`rray_broadcast()`, `rray_broadcast_common()`, `rray_split()`, `rray_sum()` and
-`rray_add()`. The array functions all follow the shell and core pattern in
-Part 1, and no templates are left in `src/`.
+`rray_broadcast()`, `rray_broadcast_common()`, `rray_split()`, `rray_sum()`,
+`rray_add()` and `rray_multiply()`. The array functions all follow the shell and
+core pattern in Part 1, and no templates are left in `src/`.
 
 Work through the rest in order, since each assumes the ones before it have
 landed. After that, work through Part 5 in any order that respects the
@@ -804,8 +808,8 @@ dependencies noted there.
 
 ## PR 7: The rest of the binary arithmetic
 
-`rray_subtract()`, `rray_multiply()`, `rray_divide()`, `rray_power()`,
-`rray_modulo()`, `rray_integer_divide()`.
+`rray_subtract()`, `rray_divide()`, `rray_power()`, `rray_modulo()`,
+`rray_integer_divide()`. `rray_multiply()` has landed.
 
 All the same shape as `rray_add()`. Each operator is a self contained
 `src/arithmetic-{op}.c` holding `ffi_rray_{name}()`, `rray_{name}()`, a static
@@ -824,14 +828,22 @@ r_obj* rray_add(x, y, x_arg, y_arg, error_call) {
 ```
 
 The `RRAY_ARITHMETIC` macro is in `src/arithmetic.h` so every operator file
-shares it. Don't undefine it, the operator files don't own it.
+shares it. Don't undefine it, the operator files don't own it. So is
+`stop_int_overflow()`, since `+`, `-` and `*` all raise the same error.
 
 `/` and `^` promote to double, so their `int` cores write doubles and there is
 no `rray_divide_int_one()`. `%%` and `%/%` error on `cpl`, so those three arms
 call `stop_unsupported_arithmetic()` rather than naming a core.
 
+Write the `cpl` scalar operation for `*`, `/` and `^` with C99 `double
+_Complex`, as `rray_multiply_cpl_one()` does, rather than by hand. Base R does
+the same, and the hand written formula gives `NaN+NaNi` where base R gives
+`Inf+Infi`. It costs nothing: the compiler emits the plain formula inline and
+only calls `__muldc3` when both halves come out `NaN`. Only `+` and `-` are
+componentwise, which is also what base R does.
+
 Tests go one file per operator, as Part 3 explains. Copy
-`tests/testthat/test-arithmetic-add.R` and work through the same cases,
+`tests/testthat/test-arithmetic-multiply.R` and work through the same cases,
 including all 16 type combinations in both positions.
 
 ## PR 8: `rray_sum()` overflow comment
@@ -1051,8 +1063,9 @@ for it would add nothing.
 Match R's own semantics for missing values, `NaN`, and division by zero. Check
 `/Users/davis/files/r/r-svn` when a case is unclear rather than guessing.
 
-Files: one `R/arithmetic-{op}.R` and `src/arithmetic-{op}.c` pair per operator,
-over the shared `src/arithmetic.c` and `src/arithmetic.h`.
+Files: one `src/arithmetic-{op}.c` per operator, over the shared
+`src/arithmetic.c` and `src/arithmetic.h`. All the R bindings share
+`R/arithmetic.R` and one documentation page.
 
 ## 5.3 Other elementwise numeric
 
