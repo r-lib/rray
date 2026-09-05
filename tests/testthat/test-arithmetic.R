@@ -101,7 +101,7 @@ test_that("names are kept for axes that aren't broadcast", {
   x <- array(1:6, c(3L, 2L), dimnames = list(c("a", "b", "c"), NULL))
   y <- array(1:2, c(1L, 2L), dimnames = list("z", c("c1", "c2")))
   expect_identical(
-    dimnames(rray_add(x, y)),
+    rray_names(rray_add(x, y)),
     list(c("a", "b", "c"), c("c1", "c2"))
   )
 })
@@ -109,24 +109,24 @@ test_that("names are kept for axes that aren't broadcast", {
 test_that("`x` wins over `y` on an axis they both name", {
   x <- array(1:3, 3L, dimnames = list(c("a", "b", "c")))
   y <- array(1:3, 3L, dimnames = list(c("x", "y", "z")))
-  expect_identical(dimnames(rray_add(x, y)), list(c("a", "b", "c")))
+  expect_identical(rray_names(rray_add(x, y)), list(c("a", "b", "c")))
 })
 
 test_that("names are dropped for a broadcast axis", {
   x <- array(1L, c(1L, 2L), dimnames = list("z", NULL))
   y <- array(1:6, c(3L, 2L))
-  expect_null(dimnames(rray_add(x, y)))
+  expect_null(rray_names(rray_add(x, y)))
 })
 
 test_that("names travel to a new axis of a larger input", {
   x <- array(1:3, 3L, dimnames = list(c("a", "b", "c")))
   y <- array(1:6, c(3L, 2L))
-  expect_identical(dimnames(rray_add(x, y)), list(c("a", "b", "c"), NULL))
+  expect_identical(rray_names(rray_add(x, y)), list(c("a", "b", "c"), NULL))
 })
 
 test_that("unnamed inputs give an unnamed output", {
   x <- array(1:6, c(3L, 2L))
-  expect_null(dimnames(rray_add(x, x)))
+  expect_null(rray_names(rray_add(x, x)))
 })
 
 test_that("a zero dimension broadcasts against a dimension of 1", {
