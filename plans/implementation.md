@@ -831,6 +831,16 @@ The `RRAY_ARITHMETIC` macro is in `src/arithmetic.h` so every operator file
 shares it. Don't undefine it, the operator files don't own it. So is
 `stop_int_overflow()`, since `+`, `-` and `*` all raise the same error.
 
+Check integer overflow against the double product, as `rray_multiply_int_one()`
+does, rather than the way base R does it. Base R computes `int z = x * y`
+first, which is undefined behaviour on overflow and which UBSAN flags, and only
+then tests `(double) x * (double) y == z`. Over 4 million elements the double
+check runs at 0.79ns an element, base R's at 0.82ns, and
+`__builtin_mul_overflow()` at 0.78ns, so standard C costs nothing worth a
+compiler builtin here. In place it disappears: `rray_multiply()` on integers is
+2.10ns an element against 2.28ns on doubles, which skip the check entirely but
+move twice the memory.
+
 `/` and `^` promote to double, so their `int` cores write doubles and there is
 no `rray_divide_int_one()`. `%%` and `%/%` error on `cpl`, so those three arms
 call `stop_unsupported_arithmetic()` rather than naming a core.
