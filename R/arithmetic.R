@@ -3,6 +3,8 @@
 #' @description
 #' - `rray_add()` adds two arrays elementwise.
 #'
+#' - `rray_subtract()` subtracts two arrays elementwise.
+#'
 #' - `rray_multiply()` multiplies two arrays elementwise.
 #'
 #' @details
@@ -15,6 +17,8 @@
 #' Certain inputs are upcast, changing the return type:
 #'
 #' - `rray_add()`: logicals are cast to integer.
+#'
+#' - `rray_subtract()`: logicals are cast to integer.
 #'
 #' - `rray_multiply()`: logicals are cast to integer.
 #'
@@ -30,6 +34,7 @@
 #' x <- array(1:6, c(3L, 2L))
 #'
 #' rray_add(x, 1L)
+#' rray_subtract(x, 1L)
 #' rray_multiply(x, 2L)
 #'
 #' # Adding 10 to column 1 and 20 to column 2 via broadcasting
@@ -53,6 +58,12 @@ NULL
 #' @export
 rray_add <- function(x, y) {
   .Call(ffi_rray_add, x, y, environment())
+}
+
+#' @rdname arithmetic
+#' @export
+rray_subtract <- function(x, y) {
+  .Call(ffi_rray_subtract, x, y, environment())
 }
 
 #' @rdname arithmetic

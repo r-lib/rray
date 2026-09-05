@@ -3,10 +3,13 @@
 \name{arithmetic}
 \alias{arithmetic}
 \alias{rray_add}
+\alias{rray_subtract}
 \alias{rray_multiply}
 \title{Array arithmetic}
 \usage{
 rray_add(x, y)
+
+rray_subtract(x, y)
 
 rray_multiply(x, y)
 }
@@ -21,6 +24,7 @@ An array with the common dimensions of \code{x} and \code{y}.
 \description{
 \itemize{
 \item \code{rray_add()} adds two arrays elementwise.
+\item \code{rray_subtract()} subtracts two arrays elementwise.
 \item \code{rray_multiply()} multiplies two arrays elementwise.
 }
 }
@@ -35,6 +39,7 @@ If the result of an integer operation would overflow, an error is thrown.
 Certain inputs are upcast, changing the return type:
 \itemize{
 \item \code{rray_add()}: logicals are cast to integer.
+\item \code{rray_subtract()}: logicals are cast to integer.
 \item \code{rray_multiply()}: logicals are cast to integer.
 }
 }
@@ -43,6 +48,7 @@ Certain inputs are upcast, changing the return type:
 x <- array(1:6, c(3L, 2L))
 
 rray_add(x, 1L)
+rray_subtract(x, 1L)
 rray_multiply(x, 2L)
 
 # Adding 10 to column 1 and 20 to column 2 via broadcasting
