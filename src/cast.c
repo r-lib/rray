@@ -33,42 +33,31 @@ r_obj* rray_cast(
   const enum rray_type x_type = rray_typeof(x);
   const enum rray_type to_type = rray_typeof(to);
 
-  if (x_type == RRAY_TYPE_scalar) {
-    stop_scalar_input(x, x_arg, error_call);
-  }
-  if (to_type == RRAY_TYPE_scalar) {
-    stop_scalar_input(to, to_arg, error_call);
-  }
-
-  if (r_dim(x) == r_null) {
-    x = vec_as_array(x);
-  }
-  KEEP(x);
-
-  r_obj* out = rray_cast_switch(x, x_type, to_type, x_arg, error_call);
-
-  FREE(1);
-  return out;
+  return rray_cast_switch(x, to, x_type, to_type, x_arg, to_arg, error_call);
 }
 
 static r_obj* rray_cast_switch(
   r_obj* x,
+  r_obj* to,
   enum rray_type x_type,
   enum rray_type to_type,
   struct rray_arg* x_arg,
+  struct rray_arg* to_arg,
   struct r_lazy error_call
 ) {
   switch (x_type) {
   case RRAY_TYPE_logical:
     switch (to_type) {
     case RRAY_TYPE_logical:
-      return x;
+      return vec_as_array(x);
     case RRAY_TYPE_integer:
       return rray_cast_lgl_to_int(x, x_arg, error_call);
     case RRAY_TYPE_double:
       return rray_cast_lgl_to_dbl(x, x_arg, error_call);
     case RRAY_TYPE_complex:
       return rray_cast_lgl_to_cpl(x, x_arg, error_call);
+    case RRAY_TYPE_scalar:
+      stop_scalar_input(to, to_arg, error_call);
     default:
       stop_incompatible_cast(x_type, to_type, x_arg, error_call);
     }
@@ -77,11 +66,13 @@ static r_obj* rray_cast_switch(
     case RRAY_TYPE_logical:
       return rray_cast_int_to_lgl(x, x_arg, error_call);
     case RRAY_TYPE_integer:
-      return x;
+      return vec_as_array(x);
     case RRAY_TYPE_double:
       return rray_cast_int_to_dbl(x, x_arg, error_call);
     case RRAY_TYPE_complex:
       return rray_cast_int_to_cpl(x, x_arg, error_call);
+    case RRAY_TYPE_scalar:
+      stop_scalar_input(to, to_arg, error_call);
     default:
       stop_incompatible_cast(x_type, to_type, x_arg, error_call);
     }
@@ -92,48 +83,60 @@ static r_obj* rray_cast_switch(
     case RRAY_TYPE_integer:
       return rray_cast_dbl_to_int(x, x_arg, error_call);
     case RRAY_TYPE_double:
-      return x;
+      return vec_as_array(x);
     case RRAY_TYPE_complex:
       return rray_cast_dbl_to_cpl(x, x_arg, error_call);
+    case RRAY_TYPE_scalar:
+      stop_scalar_input(to, to_arg, error_call);
     default:
       stop_incompatible_cast(x_type, to_type, x_arg, error_call);
     }
   case RRAY_TYPE_complex:
     switch (to_type) {
     case RRAY_TYPE_complex:
-      return x;
+      return vec_as_array(x);
+    case RRAY_TYPE_scalar:
+      stop_scalar_input(to, to_arg, error_call);
     default:
       stop_incompatible_cast(x_type, to_type, x_arg, error_call);
     }
   case RRAY_TYPE_character:
     switch (to_type) {
     case RRAY_TYPE_character:
-      return x;
+      return vec_as_array(x);
+    case RRAY_TYPE_scalar:
+      stop_scalar_input(to, to_arg, error_call);
     default:
       stop_incompatible_cast(x_type, to_type, x_arg, error_call);
     }
   case RRAY_TYPE_raw:
     switch (to_type) {
     case RRAY_TYPE_raw:
-      return x;
+      return vec_as_array(x);
+    case RRAY_TYPE_scalar:
+      stop_scalar_input(to, to_arg, error_call);
     default:
       stop_incompatible_cast(x_type, to_type, x_arg, error_call);
     }
   case RRAY_TYPE_list:
     switch (to_type) {
     case RRAY_TYPE_list:
-      return x;
+      return vec_as_array(x);
+    case RRAY_TYPE_scalar:
+      stop_scalar_input(to, to_arg, error_call);
     default:
       stop_incompatible_cast(x_type, to_type, x_arg, error_call);
     }
   case RRAY_TYPE_scalar:
-    r_stop_unreachable();
+    stop_scalar_input(x, x_arg, error_call);
   }
 
   r_stop_unreachable();
 }
 
 #define RRAY_CAST(FROM_CTYPE, FROM_CBEGIN, TO_RTYPE, TO_CTYPE, TO_BEGIN, ONE)  \
+  x = KEEP(vec_as_array(x));                                                   \
+                                                                               \
   const r_ssize size = r_length(x);                                            \
   const FROM_CTYPE* v_x = FROM_CBEGIN(x);                                      \
                                                                                \
@@ -152,7 +155,7 @@ static r_obj* rray_cast_switch(
     r_attrib_poke_dim_names(out, names);                                       \
   }                                                                            \
                                                                                \
-  FREE(1);                                                                     \
+  FREE(2);                                                                     \
   return out;
 
 static r_obj* rray_cast_lgl_to_int(

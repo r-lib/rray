@@ -14,6 +14,10 @@
 // Since we are only modifying attributes,
 // we use a lightweight wrapper
 r_obj* vec_as_array(r_obj* x) {
+  if (r_dim(x) != r_null) {
+    return x;
+  }
+
   r_obj* out = KEEP(r_wrap(x));
 
   const r_ssize size = r_length(x);
@@ -50,11 +54,7 @@ r_obj* arg_as_array(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
     stop_scalar_input(x, arg, error_call);
   }
 
-  if (r_dim(x) == r_null) {
-    return vec_as_array(x);
-  }
-
-  return x;
+  return vec_as_array(x);
 }
 
 r_no_return void stop_scalar_input(
