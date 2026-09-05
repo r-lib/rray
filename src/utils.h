@@ -21,6 +21,12 @@ static inline double _Complex rray_cpl_to_c99(r_complex x) {
   return out;
 }
 
+static inline r_complex rray_c99_to_cpl(double _Complex x) {
+  r_complex out;
+  memcpy(&out, &x, sizeof(out));
+  return out;
+}
+
 void check_unclassed(r_obj* x, struct rray_arg* arg, struct r_lazy error_call);
 
 r_no_return void stop_scalar_input(
