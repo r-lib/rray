@@ -46,7 +46,7 @@ That last error is the reason this document exists.
 r_obj* out = rray_ptype(v_xs[0], x_arg, error_call);
 
 for (x_i = 1; x_i < n; ++x_i) {
-  out = rray_ptype2(out, v_xs[x_i], out_arg, x_arg, &side, error_call);
+  out = rray_ptype2(out, v_xs[x_i], &side, out_arg, x_arg, error_call);
 }
 ```
 
@@ -387,7 +387,7 @@ KEEP_HERE(out, &out_pi);
 
 for (x_i = 0; x_i < n; ++x_i) {
   enum rray_side side;
-  out = rray_ptype2(out, v_xs[x_i], out_arg, x_arg, &side, error_call);
+  out = rray_ptype2(out, v_xs[x_i], &side, out_arg, x_arg, error_call);
   KEEP_AT(out, out_pi);
 
   if (side == RRAY_SIDE_right) {

@@ -51,15 +51,15 @@ r_obj* ffi_rray_ptype2(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame) {
 
   enum rray_side side;
 
-  return rray_ptype2(ffi_x, ffi_y, &x_arg, &y_arg, &side, error_call);
+  return rray_ptype2(ffi_x, ffi_y, &side, &x_arg, &y_arg, error_call);
 }
 
 r_obj* rray_ptype2(
   r_obj* x,
   r_obj* y,
+  enum rray_side* side,
   struct rray_arg* x_arg,
   struct rray_arg* y_arg,
-  enum rray_side* side,
   struct r_lazy error_call
 ) {
   check_unclassed(x, x_arg, error_call);
