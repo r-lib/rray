@@ -416,7 +416,7 @@ type on purpose. vctrs has the same limitation with `.ptype`.
 
 ## 6g. `src/cast.c`
 
-`rray_cast_switch()` is a switch on `x_type` wrapping a switch on `to_type`.
+`rray_cast()` is a switch on `x_type` wrapping a switch on `to_type`.
 
 Add a new outer case for null. Every real target gives back `NULL`, and a scalar
 target still errors:

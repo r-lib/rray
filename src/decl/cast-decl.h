@@ -1,13 +1,3 @@
-static r_obj* rray_cast_switch(
-  r_obj* x,
-  r_obj* to,
-  enum rray_type x_type,
-  enum rray_type to_type,
-  struct rray_arg* x_arg,
-  struct rray_arg* to_arg,
-  struct r_lazy error_call
-);
-
 static r_obj* rray_cast_lgl_to_int(
   r_obj* x,
   struct rray_arg* x_arg,

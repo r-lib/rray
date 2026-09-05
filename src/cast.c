@@ -33,18 +33,6 @@ r_obj* rray_cast(
   const enum rray_type x_type = rray_typeof(x);
   const enum rray_type to_type = rray_typeof(to);
 
-  return rray_cast_switch(x, to, x_type, to_type, x_arg, to_arg, error_call);
-}
-
-static r_obj* rray_cast_switch(
-  r_obj* x,
-  r_obj* to,
-  enum rray_type x_type,
-  enum rray_type to_type,
-  struct rray_arg* x_arg,
-  struct rray_arg* to_arg,
-  struct r_lazy error_call
-) {
   switch (x_type) {
   case RRAY_TYPE_logical:
     switch (to_type) {
