@@ -32,15 +32,11 @@ If the result of an integer operation would overflow, an error is thrown.
 }
 \section{Casting}{
 
-\code{x} and \code{y} are cast to a common type, then upcast to the output type:
+Certain inputs are upcast, changing the return type:
 \itemize{
-\item \code{rray_add()}: logical and integer to integer, double to double, complex
-to complex.
-\item \code{rray_multiply()}: logical and integer to integer, double to double,
-complex to complex.
+\item \code{rray_add()}: logicals are cast to integer.
+\item \code{rray_multiply()}: logicals are cast to integer.
 }
-
-Character, raw, and list arrays are an error.
 }
 
 \examples{

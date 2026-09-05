@@ -12,15 +12,11 @@
 #' If the result of an integer operation would overflow, an error is thrown.
 #'
 #' @section Casting:
-#' `x` and `y` are cast to a common type, then upcast to the output type:
+#' Certain inputs are upcast, changing the return type:
 #'
-#' - `rray_add()`: logical and integer to integer, double to double, complex
-#'   to complex.
+#' - `rray_add()`: logicals are cast to integer.
 #'
-#' - `rray_multiply()`: logical and integer to integer, double to double,
-#'   complex to complex.
-#'
-#' Character, raw, and list arrays are an error.
+#' - `rray_multiply()`: logicals are cast to integer.
 #'
 #' @param x An array.
 #'
