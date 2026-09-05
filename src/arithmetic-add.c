@@ -6,6 +6,7 @@
 #include "cast.h"
 #include "type.h"
 #include "typeof2.h"
+#include "utils.h"
 
 #include "decl/arithmetic-add-decl.h"
 
@@ -38,9 +39,12 @@ static rray_binary_arithmetic_fn rray_add_switch(
   struct rray_arg* y_arg,
   struct r_lazy error_call
 ) {
+  const enum rray_type x_type = rray_typeof(x);
+  const enum rray_type y_type = rray_typeof(y);
+
   enum rray_side side;
 
-  switch (rray_typeof2(rray_typeof(x), rray_typeof(y), &side)) {
+  switch (rray_typeof2(x_type, y_type, &side)) {
   case RRAY_TYPE2_logical_logical:
     return rray_add_lgl_lgl;
   case RRAY_TYPE2_logical_integer:
@@ -90,7 +94,11 @@ static rray_binary_arithmetic_fn rray_add_switch(
   case RRAY_TYPE2_raw_scalar:
   case RRAY_TYPE2_list_scalar:
   case RRAY_TYPE2_scalar_scalar:
-    r_stop_unreachable();
+    if (x_type == RRAY_TYPE_scalar) {
+      stop_scalar_input(x, x_arg, error_call);
+    } else {
+      stop_scalar_input(y, y_arg, error_call);
+    }
   }
 
   r_stop_unreachable();
