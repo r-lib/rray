@@ -9,13 +9,12 @@
 #include "arg.h"
 #include "type.h"
 
-// Lets `*`, `/` and `^` match base R, which multiplies through the C99 type
-// and so recovers infinities that the hand written formula turns into `NaN`.
-// The copy folds away entirely, leaving the plain formula inline and a call to
-// `__muldc3` only when both halves come out `NaN`. C99 guarantees a complex
-// type has the same representation as a two element array of its real type,
-// real part first, which holds on macOS, Windows and Linux without a compiler
-// specific path like the C11 `CMPLX()` macro, unavailable on macOS under gcc.
+// Operations such as `*`, `/`, and `^` are either more efficient or more
+// correct (around infinities) if they go through the C99 `_Complex`. The C99
+// standard guarantees that `_Complex` has the same representation as a two
+// element array of its real type, so we can `memcpy()` it over. Analysis of
+// the assembly shows that this copy disappears entirely, so it's not a
+// performance hit.
 static inline double _Complex rray_cpl_to_c99(r_complex x) {
   double _Complex out;
   memcpy(&out, &x, sizeof(out));
