@@ -43,10 +43,10 @@ r_no_return void stop_unsupported_arithmetic(
 #define RRAY_ARITHMETIC(                                                       \
   X_CTYPE,                                                                     \
   X_CONST_DEREF,                                                               \
-  X_AS_OUT,                                                                    \
+  X_CAST,                                                                      \
   Y_CTYPE,                                                                     \
   Y_CONST_DEREF,                                                               \
-  Y_AS_OUT,                                                                    \
+  Y_CAST,                                                                      \
   OUT_RTYPE,                                                                   \
   OUT_CTYPE,                                                                   \
   OUT_DEREF,                                                                   \
@@ -60,8 +60,8 @@ r_no_return void stop_unsupported_arithmetic(
                                                                                \
   for (r_ssize i = 0; i < size; ++i) {                                         \
     v_out[i] = ONE(                                                            \
-      X_AS_OUT(v_x[rray_iterator2_location1(it)]),                             \
-      Y_AS_OUT(v_y[rray_iterator2_location2(it)]),                             \
+      X_CAST(v_x[rray_iterator2_location1(it)]),                               \
+      Y_CAST(v_y[rray_iterator2_location2(it)]),                               \
       error_call                                                               \
     );                                                                         \
     rray_iterator2_next(it);                                                   \
