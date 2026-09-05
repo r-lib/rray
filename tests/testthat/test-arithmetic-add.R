@@ -44,6 +44,10 @@ test_that("plain vectors are normalized to 1D arrays", {
   expect_identical(as.vector(out), 2:4)
 })
 
+test_that("the output type of every pair of native types", {
+  expect_snapshot(native_ptype_matrix(rray_add, c("x", "y")))
+})
+
 test_that("logical and integer combinations give an integer array", {
   expect_identical(rray_add(TRUE, TRUE), array(2L, 1L))
   expect_identical(rray_add(TRUE, 1L), array(2L, 1L))

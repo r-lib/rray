@@ -1,3 +1,18 @@
+# the output type of every pair of native types
+
+    Code
+      native_ptype_matrix(rray_add, c("x", "y"))
+    Output
+            y
+      x      lgl       int       dbl       cpl       chr raw list
+        lgl  "integer" "integer" "double"  "complex" NA  NA  NA  
+        int  "integer" "integer" "double"  "complex" NA  NA  NA  
+        dbl  "double"  "double"  "double"  "complex" NA  NA  NA  
+        cpl  "complex" "complex" "complex" "complex" NA  NA  NA  
+        chr  NA        NA        NA        NA        NA  NA  NA  
+        raw  NA        NA        NA        NA        NA  NA  NA  
+        list NA        NA        NA        NA        NA  NA  NA  
+
 # errors on incompatible dimensions
 
     Code
