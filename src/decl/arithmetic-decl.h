@@ -7,6 +7,8 @@ static r_obj* rray_arithmetic(
   struct r_lazy error_call
 );
 
+static r_no_return void stop_int_overflow(struct r_lazy error_call);
+
 static r_obj* rray_add_switch(
   r_obj* x,
   r_obj* y,
@@ -48,5 +50,3 @@ static inline r_complex rray_add_cpl_one(
   r_complex y,
   struct r_lazy error_call
 );
-
-static r_no_return void stop_int_overflow(struct r_lazy error_call);

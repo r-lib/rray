@@ -13,21 +13,6 @@
 
 #include "decl/arithmetic-decl.h"
 
-r_obj* ffi_rray_add(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame) {
-  struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  return rray_add(ffi_x, ffi_y, rray_args.x, rray_args.y, error_call);
-}
-
-r_obj* rray_add(
-  r_obj* x,
-  r_obj* y,
-  struct rray_arg* x_arg,
-  struct rray_arg* y_arg,
-  struct r_lazy error_call
-) {
-  return rray_arithmetic(RRAY_BINARY_OP_add, x, y, x_arg, y_arg, error_call);
-}
-
 static r_obj* rray_arithmetic(
   enum rray_binary_op op,
   r_obj* x,
@@ -105,25 +90,6 @@ static r_obj* rray_arithmetic(
   return out;
 }
 
-static r_obj* rray_add_switch(
-  r_obj* x,
-  r_obj* y,
-  r_ssize size,
-  struct rray_iterator2* it,
-  struct r_lazy error_call
-) {
-  switch (r_typeof(x)) {
-  case R_TYPE_integer:
-    return rray_add_int(x, y, size, it, error_call);
-  case R_TYPE_double:
-    return rray_add_dbl(x, y, size, it, error_call);
-  case R_TYPE_complex:
-    return rray_add_cpl(x, y, size, it, error_call);
-  default:
-    r_stop_unreachable();
-  }
-}
-
 #define RRAY_ARITHMETIC(RTYPE, CTYPE, CONST_DEREF, DEREF, ONE)                 \
   r_obj* out = KEEP(r_alloc_vector(RTYPE, size));                              \
   CTYPE* v_out = DEREF(out);                                                   \
@@ -142,6 +108,46 @@ static r_obj* rray_add_switch(
                                                                                \
   FREE(1);                                                                     \
   return out;
+
+static r_no_return void stop_int_overflow(struct r_lazy error_call) {
+  r_abort_lazy_call(error_call, "Integer overflow.");
+}
+
+// --------------------------------------------------------------------------
+
+r_obj* ffi_rray_add(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame) {
+  struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
+  return rray_add(ffi_x, ffi_y, rray_args.x, rray_args.y, error_call);
+}
+
+r_obj* rray_add(
+  r_obj* x,
+  r_obj* y,
+  struct rray_arg* x_arg,
+  struct rray_arg* y_arg,
+  struct r_lazy error_call
+) {
+  return rray_arithmetic(RRAY_BINARY_OP_add, x, y, x_arg, y_arg, error_call);
+}
+
+static r_obj* rray_add_switch(
+  r_obj* x,
+  r_obj* y,
+  r_ssize size,
+  struct rray_iterator2* it,
+  struct r_lazy error_call
+) {
+  switch (r_typeof(x)) {
+  case R_TYPE_integer:
+    return rray_add_int(x, y, size, it, error_call);
+  case R_TYPE_double:
+    return rray_add_dbl(x, y, size, it, error_call);
+  case R_TYPE_complex:
+    return rray_add_cpl(x, y, size, it, error_call);
+  default:
+    r_stop_unreachable();
+  }
+}
 
 static r_obj* rray_add_int(
   r_obj* x,
@@ -191,8 +197,6 @@ static r_obj* rray_add_cpl(
   );
 }
 
-#undef RRAY_ARITHMETIC
-
 static inline int rray_add_int_one(int x, int y, struct r_lazy error_call) {
   if (x == r_globals.na_int || y == r_globals.na_int) {
     return r_globals.na_int;
@@ -221,6 +225,4 @@ static inline r_complex rray_add_cpl_one(
   return (r_complex){.r = x.r + y.r, .i = x.i + y.i};
 }
 
-static r_no_return void stop_int_overflow(struct r_lazy error_call) {
-  r_abort_lazy_call(error_call, "Integer overflow.");
-}
+#undef RRAY_ARITHMETIC
