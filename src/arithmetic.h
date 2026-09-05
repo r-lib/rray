@@ -1,8 +1,6 @@
 #ifndef RRAY_ARITHMETIC_H
 #define RRAY_ARITHMETIC_H
 
-#include <complex.h>
-
 #include "rlang.h"
 
 #include "arg.h"
@@ -43,12 +41,6 @@ r_no_return void stop_unsupported_arithmetic(
 );
 
 r_no_return void stop_int_overflow(struct r_lazy error_call);
-
-static inline double _Complex rray_cpl_to_c99(r_complex x) {
-  double _Complex out;
-  r_memcpy(&out, &x, sizeof(out));
-  return out;
-}
 
 #define RRAY_ARITHMETIC(                                                       \
   X_CTYPE,                                                                     \
