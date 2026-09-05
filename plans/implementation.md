@@ -350,29 +350,18 @@ There are no `<-` replacement forms.
 There is no user facing type system.
 
 A **type** is an `enum rray_type`, our own enum holding the seven native types
-plus `RRAY_TYPE_scalar`. Restricting it this way means every `switch` over a
-type can be exhaustive with no `default`, so the compiler catches a missing
-case. `rray_typeof()` reads one off an object, `rray_type_to_r_type()` converts
-back for `r_alloc_vector()`, and `rray_type_as_c_string()` names one in an error
-message.
+plus `RRAY_TYPE_scalar`. Restricting it this way means a `switch` over a type
+can be exhaustive with no `default`, so the compiler catches a missing case.
+`rray_typeof()` reads one off an object and `rray_type_as_c_string()` names one
+in an error message. Both live in `src/type.c` and both are written out arm by
+arm, rather than translating to an `enum r_type` and borrowing rlang's answer,
+so `RRAY_TYPE_scalar` gets a real answer like every other type.
 
 `RRAY_TYPE_scalar` is the fall through for anything that is not a native type,
 following vctrs' `VCTRS_TYPE_scalar`. It means `rray_typeof()` is total and
-never errors, so a function reads its inputs first and rejects them where it
-would have to act on them:
-
-```c
-const enum rray_type x_type = rray_typeof(x);
-
-if (x_type == RRAY_TYPE_scalar) {
-  stop_scalar_input(x, x_arg, error_call);
-}
-```
-
-`stop_scalar_input()` raises the "must be an array" error, and takes the object
-so it can name the offending type. There is no separate validating step to
-convert an object into a type, because an invalid one already arrives as
-`RRAY_TYPE_scalar`.
+never errors, so there is no separate validating step. An invalid input already
+arrives as a type, and rejecting it is one more arm of a switch that was being
+written anyway.
 
 A **ptype** is the empty vector standing for a type, so `double()` for
 `RRAY_TYPE_double`. There is one of each in rlang's `r_globals`, already built
@@ -391,6 +380,11 @@ case RRAY_TYPE_scalar:
   stop_scalar_input(x, arg, error_call);
 ```
 
+`stop_scalar_input()` raises the "must be an array" error, and takes the object
+so it can name the offending type. `rray_ptype2()` and `rray_cast()` reject
+scalars the same way, from the bottom of their own switches, so neither opens
+with a run of `if` checks before it gets to work.
+
 The internal type rules exist because three kinds of function need them:
 
 - `rray_bind()` needs a common type across many inputs.
@@ -407,6 +401,7 @@ does:
 r_obj* rray_ptype2(
   r_obj* x,
   r_obj* y,
+  enum rray_side* side,
   struct rray_arg* x_arg,
   struct rray_arg* y_arg,
   struct r_lazy error_call
@@ -438,6 +433,11 @@ r_obj* rray_cast_common(
 `ptype` and `to` may be `NULL` on the `_common` pair, in which case the common
 type of `xs` is computed. That is the same shape as `.dimensions` in
 `rray_dimensions_common()`: when it is supplied, `...` is never looked at.
+
+Working out a common type has to start somewhere, and `NULL` is not a type here,
+so it starts at the first input. That means `rray_ptype_common()` needs at least
+one input or a `ptype`, and errors on neither. `plans/null.md` writes up what it
+would take to lift that.
 
 ### Argument tags and the error call
 
@@ -515,12 +515,33 @@ switches are written out in full, following vctrs' `vec_typeof2()` and
 `vec_ptype2_switch_native()`. Do not collapse either into a rank function or any
 other arithmetic shortcut.
 
-Files: `src/type.c` for `enum rray_type`, `src/typeof2.c` for the pair enum,
-then `src/ptype.c`, `src/ptype-common.c`, `src/cast.c` and `src/cast-common.c`.
+Because the pair is symmetric, `RRAY_TYPE2_logical_integer` cannot say which of
+the two inputs the common type came from. `rray_typeof2()` reports that
+separately through an `enum rray_side` out parameter, set to `RRAY_SIDE_left`,
+`RRAY_SIDE_right` or `RRAY_SIDE_both` on every arm. It is vctrs' `int* left`
+under a clearer name.
+
+`rray_ptype_common()` is why it exists. It combines `xs` left to right, and has
+to keep a tag pointing at whichever input set the running type so that its error
+names the right one:
+
+```r
+rray_ptype_common(1L, 2.5, "a")
+#> Error: Can't combine `..2` <double> and `..3` <character>.
+```
+
+It moves that tag when the side comes back `RRAY_SIDE_right`, and leaves it
+where it is otherwise.
 
 `rray_cast()` changes type only. It never touches dimensions or names.
 Broadcasting is always a separate step. Lossy casts are an error, and the error
 says what was lost and where.
+
+It does not use the pair enum, because a cast has a direction and the pair does
+not. It is a switch on `x`'s type wrapping a switch on the target type, with the
+pairs that do not convert falling to a `default` arm. Those are the only
+switches over an `enum rray_type` that are not written out in full, and they are
+that way because most of the table is an error.
 
 Casting up the tower always works. Casting down works only when nothing is lost:
 
@@ -544,6 +565,10 @@ the `NA_complex_` branch behind `NA_TO_COMPLEX_NA`, which is never defined, so
 every build takes the `z.r = x; z.i = 0;` path. vctrs agrees for integer and
 double but returns a full `NA_complex_` for logical, so do not copy it here.
 
+Files: `src/type.c` for `enum rray_type`, `src/typeof2.c` for the pair enum and
+`enum rray_side`, then `src/ptype.c`, `src/ptype-common.c`, `src/cast.c` and
+`src/cast-common.c`.
+
 ### The common type rules
 
 - Numeric tower: `lgl` to `int` to `dbl` to `cpl`.
@@ -555,7 +580,8 @@ an error.
 
 A user facing function that needs a type override takes a `.ptype` argument,
 matching `.dimensions` elsewhere. It takes a prototype object, so
-`.ptype = double()` means "a double array", and we read its `r_typeof()`.
+`.ptype = double()` means "a double array", and we reduce it with
+`rray_ptype()`.
 
 Note that `NA` is logical, so it sits at the bottom of the numeric tower and
 `rray_add(x, NA)` works with no special handling. vctrs needs an unspecified
@@ -570,12 +596,15 @@ Some operators need a type the common type rules cannot give, because
 Each family gets its own operator enum and its own type function.
 
 ```c
-enum r_type rray_binary_ptype(
+enum rray_type rray_binary_ptype(
   enum rray_binary_op op,
-  enum r_type x,
-  enum r_type y
+  enum rray_type x,
+  enum rray_type y
 );
-enum r_type rray_reduction_ptype(enum rray_reduction_op op, enum r_type x);
+enum rray_type rray_reduction_ptype(
+  enum rray_reduction_op op,
+  enum rray_type x
+);
 ```
 
 Separate enums rather than one shared vocabulary, so each function can only be
@@ -1345,6 +1374,14 @@ and `abs()`, `sqrt()` and friends are out of scope.
 If one is ever wanted, it follows the shape of the other two families: an
 `enum rray_unary_op` and an `rray_unary_ptype()` beside `rray_binary_ptype()`
 and `rray_reduction_ptype()`.
+
+## A null type
+
+`NULL` is a scalar here, so it is an error everywhere. vctrs makes it a real
+type that combines with anything, which is how `vec_ptype_common()` answers an
+empty call instead of erroring.
+
+See `plans/null.md`.
 
 ## An unspecified type
 
