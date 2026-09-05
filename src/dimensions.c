@@ -150,12 +150,12 @@ r_obj* rray_dimensions_common(
   r_obj* xs_names = KEEP(r_names(xs));
 
   r_ssize x_i = 0;
-  struct rray_arg* p_x_arg = new_subscript_arg(NULL, xs_names, n, &x_i);
-  KEEP(p_x_arg->shelter);
+  struct rray_arg* x_arg = new_subscript_arg(NULL, xs_names, n, &x_i);
+  KEEP(x_arg->shelter);
 
   r_ssize out_i = 0;
-  struct rray_arg* p_out_arg = new_subscript_arg(NULL, xs_names, n, &out_i);
-  KEEP(p_out_arg->shelter);
+  struct rray_arg* out_arg = new_subscript_arg(NULL, xs_names, n, &out_i);
+  KEEP(out_arg->shelter);
 
   int out_dimensionality = 1;
 
@@ -175,7 +175,7 @@ r_obj* rray_dimensions_common(
   for (; x_i < n; ++x_i) {
     r_obj* x = v_xs[x_i];
 
-    r_obj* x_dimensions = KEEP(rray_dimensions(x, p_x_arg, error_call));
+    r_obj* x_dimensions = KEEP(rray_dimensions(x, x_arg, error_call));
     const int* v_x_dimensions = r_int_cbegin(x_dimensions);
     const int x_dimensionality =
       rray_dimensionality_from_dimensions(x_dimensions);
@@ -191,8 +191,8 @@ r_obj* rray_dimensions_common(
       v_x_dimensions,
       x_dimensionality,
       x_i,
-      p_out_arg,
-      p_x_arg,
+      out_arg,
+      x_arg,
       error_call
     );
 
@@ -215,8 +215,8 @@ static inline void rray_dimensions2(
   const int* v_x_dimensions,
   int x_dimensionality,
   r_ssize x_i,
-  struct rray_arg* p_out_arg,
-  struct rray_arg* p_x_arg,
+  struct rray_arg* out_arg,
+  struct rray_arg* x_arg,
   struct r_lazy error_call
 ) {
   const int out_dimensionality = *p_out_dimensionality;
@@ -249,9 +249,9 @@ static inline void rray_dimensions2(
         "Can't find common dimensions at axis %d. "
         "%s has dimension %d and %s has dimension %d.",
         i + 1,
-        rray_arg_format(p_out_arg),
+        rray_arg_format(out_arg),
         out_dimension,
-        rray_arg_format(p_x_arg),
+        rray_arg_format(x_arg),
         x_dimension
       );
     }

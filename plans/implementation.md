@@ -347,8 +347,43 @@ There are no `<-` replacement forms.
 
 ## 2.4 Types
 
-There is no user facing type system. A **type** here is just an `enum r_type`,
-because without classes there is nothing else for it to carry.
+There is no user facing type system.
+
+A **type** is an `enum rray_type`, our own enum holding the seven native types
+plus `RRAY_TYPE_scalar`. Restricting it this way means a `switch` over a type
+can be exhaustive with no `default`, so the compiler catches a missing case.
+`rray_typeof()` reads one off an object and `rray_type_as_c_string()` names one
+in an error message. Both live in `src/type.c` and both are written out arm by
+arm, rather than translating to an `enum r_type` and borrowing rlang's answer,
+so `RRAY_TYPE_scalar` gets a real answer like every other type.
+
+`RRAY_TYPE_scalar` is the fall through for anything that is not a native type,
+following vctrs' `VCTRS_TYPE_scalar`. It means `rray_typeof()` is total and
+never errors, so there is no separate validating step. An invalid input already
+arrives as a type, and rejecting it is one more arm of a switch that was being
+written anyway.
+
+A **ptype** is the empty vector standing for a type, so `double()` for
+`RRAY_TYPE_double`. There is one of each in rlang's `r_globals`, already built
+at load and marked shared, so anything returning a ptype hands one of those back
+rather than allocating. A ptype is a bare vector, not an array: it is a type
+token, not data, so it carries no `dim`.
+
+`rray_ptype(x, arg, error_call)` takes an object to its ptype. It is the whole
+of validating an input and reducing it to a type, so the scalar case is just
+another arm of its switch:
+
+```c
+case RRAY_TYPE_list:
+  return r_globals.empty_list;
+case RRAY_TYPE_scalar:
+  stop_scalar_input(x, arg, error_call);
+```
+
+`stop_scalar_input()` raises the "must be an array" error, and takes the object
+so it can name the offending type. `rray_ptype2()` and `rray_cast()` reject
+scalars the same way, from the bottom of their own switches, so neither opens
+with a run of `if` checks before it gets to work.
 
 The internal type rules exist because three kinds of function need them:
 
@@ -359,18 +394,180 @@ The internal type rules exist because three kinds of function need them:
 
 - `rray_sum()` needs a promotion that depends on the operator.
 
-The C interface is small:
+The C interface is small, and takes and returns `r_obj*` ptypes the way vctrs
+does:
 
 ```c
-enum r_type rray_type2(enum r_type x, enum r_type y);
-enum r_type rray_type_common(r_obj* xs, struct r_lazy error_call);
-r_obj*      rray_cast(r_obj* x, enum r_type to, struct r_lazy error_call);
-r_obj*      rray_cast_common(r_obj* xs, enum r_type to, struct r_lazy error_call);
+r_obj* rray_ptype2(
+  r_obj* x,
+  r_obj* y,
+  enum rray_side* side,
+  struct rray_arg* x_arg,
+  struct rray_arg* y_arg,
+  struct r_lazy error_call
+);
+r_obj* rray_ptype_common(
+  r_obj* xs,
+  r_obj* ptype,
+  struct rray_arg* arg,
+  struct rray_arg* ptype_arg,
+  struct r_lazy error_call
+);
+
+r_obj* rray_cast(
+  r_obj* x,
+  r_obj* to,
+  struct rray_arg* x_arg,
+  struct rray_arg* to_arg,
+  struct r_lazy error_call
+);
+r_obj* rray_cast_common(
+  r_obj* xs,
+  r_obj* to,
+  struct rray_arg* arg,
+  struct rray_arg* to_arg,
+  struct r_lazy error_call
+);
 ```
+
+`ptype` and `to` may be `NULL` on the `_common` pair, in which case the common
+type of `xs` is computed. That is the same shape as `.dimensions` in
+`rray_dimensions_common()`: when it is supplied, `...` is never looked at.
+
+Working out a common type has to start somewhere, and `NULL` is not a type here,
+so it starts at the first input. That means `rray_ptype_common()` needs at least
+one input or a `ptype`, and errors on neither. `plans/null.md` writes up what it
+would take to lift that.
+
+### Argument tags and the error call
+
+Every one of these takes a tag per input, and the R wrappers expose them so a
+caller can make an error blame its own argument and its own call. The FFI builds
+each one with `new_lazy_arg()`, reading the tag out of the frame only once an
+error is actually raised, so a default of `caller_arg(x)` costs nothing when
+nothing goes wrong. The error call is read out of the frame the same way.
+
+```r
+rray_ptype(x, ..., arg = caller_arg(x), call = caller_env())
+rray_ptype2(
+  x,
+  y,
+  ...,
+  x_arg = caller_arg(x),
+  y_arg = caller_arg(y),
+  call = caller_env()
+)
+rray_ptype_common(
+  ...,
+  .ptype = NULL,
+  .arg = "",
+  .ptype_arg = ".ptype",
+  .call = caller_env()
+)
+rray_cast(x, to, ..., x_arg = caller_arg(x), to_arg = "", call = caller_env())
+rray_cast_common(
+  ...,
+  .to = NULL,
+  .arg = "",
+  .to_arg = ".to",
+  .call = caller_env()
+)
+```
+
+`call = caller_env()` means the wrapper is blamed rather than the rray4
+function, which is the point of taking it:
+
+```r
+f <- function(a, b) rray_ptype2(a, b)
+f(1L, "a")
+#> Error in `f()`:
+#> ! Can't combine `a` <integer> and `b` <character>.
+```
+
+Called straight from the top level there is no wrapper to blame, so the message
+has no `Error in` at all. That is rlang's behaviour for the global environment,
+and it is what vctrs does too.
+
+The defaults follow vctrs. An input the caller names gets `caller_arg()`, so the
+error quotes what they actually wrote. A prototype does not, because `to` is a
+positional argument holding an anonymous type and naming it says nothing. `.arg`
+is the tag for `...` as a whole, so `.arg = "foo"` turns `..2` into `foo[[2]]`.
+
+`.to_arg` and `.ptype_arg` are the exception, and name their argument by
+default. Those are arguments the caller typed, so a bad one is worth pointing
+at. vctrs has no equivalent and hardcodes `.ptype` even inside
+`vec_cast_common()`, where the argument is really called `.to`.
+
+An empty tag drops out of the message rather than printing empty backticks:
+
+```r
+rray_ptype2(1L, "a", x_arg = "", y_arg = "")
+#> Error: Can't combine <integer> and <character>.
+```
+
+`rray_arg_type_format()` writes the `` `x` <integer> `` half of those messages
+and handles the empty case. `rray_arg_format_input()` does the same for a
+message that opens with the tag, falling back to the word "Input".
+
+`rray_ptype2()` dispatches through `rray_typeof2()`, which maps a pair of types
+onto a symmetric `enum rray_type2` with one entry per unordered pair. Both
+switches are written out in full, following vctrs' `vec_typeof2()` and
+`vec_ptype2_switch_native()`. Do not collapse either into a rank function or any
+other arithmetic shortcut.
+
+Because the pair is symmetric, `RRAY_TYPE2_logical_integer` cannot say which of
+the two inputs the common type came from. `rray_typeof2()` reports that
+separately through an `enum rray_side` out parameter, set to `RRAY_SIDE_left`,
+`RRAY_SIDE_right` or `RRAY_SIDE_both` on every arm. It is vctrs' `int* left`
+under a clearer name.
+
+`rray_ptype_common()` is why it exists. It combines `xs` left to right, and has
+to keep a tag pointing at whichever input set the running type so that its error
+names the right one:
+
+```r
+rray_ptype_common(1L, 2.5, "a")
+#> Error: Can't combine `..2` <double> and `..3` <character>.
+```
+
+It moves that tag when the side comes back `RRAY_SIDE_right`, and leaves it
+where it is otherwise.
 
 `rray_cast()` changes type only. It never touches dimensions or names.
 Broadcasting is always a separate step. Lossy casts are an error, and the error
-says what was lost.
+says what was lost and where.
+
+It does not use the pair enum, because a cast has a direction and the pair does
+not. It is a switch on `x`'s type wrapping a switch on the target type, with the
+pairs that do not convert falling to a `default` arm. Those are the only
+switches over an `enum rray_type` that are not written out in full, and they are
+that way because most of the table is an error.
+
+Casting up the tower always works. Casting down works only when nothing is lost:
+
+```r
+rray_cast(c(0, 1), logical())       # fine
+try(rray_cast(c(0, 2), logical()))  # 2 is not a logical value
+```
+
+Complex is one way. Anything can cast into it, nothing casts out of it, matching
+vctrs.
+
+Casting into complex zeroes the imaginary part, so a missing value lands in the
+real part alone and never becomes `NA_complex_`:
+
+```r
+Im(rray_cast(NA_real_, complex()))  # 0, not NA
+```
+
+That is what R itself does. `ComplexFromReal()` in `src/main/coerce.c` guards
+the `NA_complex_` branch behind `NA_TO_COMPLEX_NA`, which is never defined, so
+every build takes the `z.r = x; z.i = 0;` path. vctrs agrees for integer and
+double but returns a full `NA_complex_` for logical, so do not copy it here.
+
+Files: `src/type.c` for `enum rray_type`, `src/typeof2.c` for the pair enum and
+`enum rray_side`, then `src/ptype.c`, `src/ptype-common.c`, `src/cast.c` and
+`src/cast-common.c`.
 
 ### The common type rules
 
@@ -378,12 +575,13 @@ says what was lost.
 
 - `chr`, `list` and `raw` each stand alone. They combine only with themselves.
 
-There is no fallback and no coercion across families. `rray_type2(chr, int)` is
+There is no fallback and no coercion across families. `rray_ptype2(chr, int)` is
 an error.
 
 A user facing function that needs a type override takes a `.ptype` argument,
 matching `.dimensions` elsewhere. It takes a prototype object, so
-`.ptype = double()` means "a double array", and we read its `r_typeof()`.
+`.ptype = double()` means "a double array", and we reduce it with
+`rray_ptype()`.
 
 Note that `NA` is logical, so it sits at the bottom of the numeric tower and
 `rray_add(x, NA)` works with no special handling. vctrs needs an unspecified
@@ -398,8 +596,15 @@ Some operators need a type the common type rules cannot give, because
 Each family gets its own operator enum and its own type function.
 
 ```c
-enum r_type rray_binary_type(enum rray_binary_op op, enum r_type x, enum r_type y);
-enum r_type rray_reduction_type(enum rray_reduction_op op, enum r_type x);
+enum rray_type rray_binary_ptype(
+  enum rray_binary_op op,
+  enum rray_type x,
+  enum rray_type y
+);
+enum rray_type rray_reduction_ptype(
+  enum rray_reduction_op op,
+  enum rray_type x
+);
 ```
 
 Separate enums rather than one shared vocabulary, so each function can only be
@@ -413,7 +618,7 @@ The tables below cover four types. `chr`, `raw` and `list` are an error for
 every operator, so the arithmetic and reduction families are the one place where
 the per type cores do not cover all seven native types.
 
-For binary operators, read the tables as "apply `rray_type2()` first, then
+For binary operators, read the tables as "apply `rray_ptype2()` first, then
 promote".
 
 Binary elementwise:
@@ -442,14 +647,15 @@ immediately.
 tables, because picking the largest of some values cannot change their type. The
 maximum of two logicals is a logical.
 
-They still go through `rray_binary_type()` and `rray_reduction_type()`, which for
-them return the type unchanged and error on `cpl`, since complex numbers have no
-ordering. So the type function is doing validation rather than promotion.
+They still go through `rray_binary_ptype()` and `rray_reduction_ptype()`, which
+for them return the type unchanged and error on `cpl`, since complex numbers
+have no ordering. So the type function is doing validation rather than
+promotion.
 
 ### Operators with a fixed output type
 
 An operator whose output type is fixed regardless of its input does not use the
-promotion tables. It finds the common type of its inputs with `rray_type2()`,
+promotion tables. It finds the common type of its inputs with `rray_ptype2()`,
 casts, computes, and allocates the output at its own fixed type.
 
 - Comparison (`rray_equal()` and friends) returns a logical array.
@@ -529,48 +735,36 @@ Mechanics:
 
 What exists today: the argument tags, the argument checking helpers, the names
 API, the coalesce rule as the `rray_broadcast_names()` family, the dimension and
-shape helpers, and `rray_broadcast()`, `rray_broadcast_common()`,
-`rray_split()` and `rray_sum()`. The array functions all follow the shell and
-core pattern in Part 1, and no templates are left in `src/`.
+shape helpers, the type rules as the `rray_ptype2()` and `rray_cast()` families,
+and `rray_broadcast()`, `rray_broadcast_common()`, `rray_split()` and
+`rray_sum()`. The array functions all follow the shell and core pattern in
+Part 1, and no templates are left in `src/`.
 
 Work through the rest in order, since each assumes the ones before it have
 landed. After that, work through Part 5 in any order that respects the
 dependencies noted there.
 
-## PR 7: Native types
+## PR 7: Binary promotion and `rray_add()`
 
-The internal type interface from 2.4. All C, no exports, with unexported R
-wrappers so it can be tested directly.
-
-- `rray_type2()` and `rray_type_common()`. The numeric tower, with `chr`, `list`
-  and `raw` standing alone.
-
-- `rray_cast()` and `rray_cast_common()`. Type only, dimensions and names
-  untouched, lossy casts error and say what was lost.
-
-Files: `src/type.c`, `src/type.h`, `src/cast.c`, `src/cast.h`.
-
-## PR 8: Binary promotion and `rray_add()`
-
-`enum rray_binary_op`, `rray_binary_type()` and its table, then one function
+`enum rray_binary_op`, `rray_binary_ptype()` and its table, then one function
 using it end to end.
 
 The C loop uses two broadcast iterators stepped side by side. Names come from
 `rray_broadcast_names2()`.
 
-Files: `src/op.h` for the enums, `src/type.c` for the table, `R/arithmetic.R`,
+Files: `src/op.h` for the enums, `src/ptype.c` for the table, `R/arithmetic.R`,
 `src/arithmetic.c`, `src/arithmetic.h`.
 
-## PR 9: The rest of the binary arithmetic
+## PR 8: The rest of the binary arithmetic
 
 `rray_subtract()`, `rray_multiply()`, `rray_divide()`, `rray_power()`,
 `rray_modulo()`, `rray_integer_divide()`.
 
 All the same shape as `rray_add()`. Share the core.
 
-## PR 10: Reduction promotion and `rray_sum()`
+## PR 9: Reduction promotion and `rray_sum()`
 
-`rray_reduction_type()` and its table. Retrofit `rray_sum()` to use it, which
+`rray_reduction_ptype()` and its table. Retrofit `rray_sum()` to use it, which
 gives it the `lgl` to `int` promotion.
 
 Fix the comment in `src/sum.c` claiming a logical array can never overflow an
@@ -579,7 +773,7 @@ integer sum. That is false once long arrays are supported.
 Once the promotion casts `lgl` to `int` up front, both `lgl` cores and their two
 scalar operations have no caller left and go away.
 
-Files: `src/type.c`, `R/sum.R`, `src/sum.c`.
+Files: `src/ptype.c`, `R/sum.R`, `src/sum.c`.
 
 ---
 
@@ -597,7 +791,7 @@ dropped.
   it, rather than being given a say in the result.
 
 - *Common.* Every input has a say. They are cast to a common type with
-  `rray_type2()`.
+  `rray_ptype2()`.
 
 - *Promoted.* The common type, then pushed through the operator's promotion
   table.
@@ -940,7 +1134,7 @@ Names: reduce.
 
 | function | op | type rule |
 |---|---|---|
-| `rray_sum(x, axes, ..., na_rm = FALSE)` | `sum` | promoted, exists, retrofit in PR 10 |
+| `rray_sum(x, axes, ..., na_rm = FALSE)` | `sum` | promoted, exists, retrofit in PR 9 |
 | `rray_prod(x, axes, ..., na_rm = FALSE)` | `prod` | promoted, int to dbl |
 | `rray_mean(x, axes, ..., na_rm = FALSE)` | `mean` | promoted, lgl and int to dbl |
 | `rray_max(x, axes, ..., na_rm = FALSE)` | `max` | preserved, errors on cpl |
@@ -1072,7 +1266,7 @@ names, which needs its own rule worked out in the design review.
 axis every input's dimension differs from the output's, so it is skipped for
 every input and bind pokes the concatenation in afterwards.
 
-Type: common. This is the main consumer of `rray_type_common()`, so it takes a
+Type: common. This is the main consumer of `rray_ptype_common()`, so it takes a
 `.ptype` argument for an override, matching `.dimensions` elsewhere.
 
 Signatures: `rray_bind(..., .axis, .ptype = NULL)`, `rray_rbind(..., .ptype =
@@ -1164,13 +1358,13 @@ family, and `rray_tile()`.
 ## `x_arg` and `call` on the exported functions
 
 vctrs gives its functions these so another package's wrapper can make an error
-blame its own argument. `new_lazy_arg()` is ported and ready for exactly that,
-which is why it sits in `src/arg.c` with no caller. It reads a promise out of a
-frame only if an error is actually raised, so `rray_broadcast(x, dimensions,
-x_arg = "values")` costs nothing when nothing goes wrong.
+blame its own argument and its own call. The type functions already take both,
+so `rray_ptype2(x, y, x_arg = "lhs", call = my_call)` works. Follow the pattern
+in `src/ptype.c` when spreading them further, and 2.4 for the defaults.
 
-Adding an argument to every exported function, and documenting it, is its own
-pull request. Do it when a real caller wants it, not before.
+The exported functions still do not take them. Adding an argument to every
+exported function, and documenting it, is its own pull request. Do it when a
+real caller wants it, not before.
 
 ## Unary elementwise math
 
@@ -1178,14 +1372,22 @@ There is no unary elementwise family today. `-x` works on a bare array already,
 and `abs()`, `sqrt()` and friends are out of scope.
 
 If one is ever wanted, it follows the shape of the other two families: an
-`enum rray_unary_op` and an `rray_unary_type()` beside `rray_binary_type()` and
-`rray_reduction_type()`.
+`enum rray_unary_op` and an `rray_unary_ptype()` beside `rray_binary_ptype()`
+and `rray_reduction_ptype()`.
+
+## A null type
+
+`NULL` is a scalar here, so it is an error everywhere. vctrs makes it a real
+type that combines with anything, which is how `vec_ptype_common()` answers an
+empty call instead of erroring.
+
+See `plans/null.md`.
 
 ## An unspecified type
 
 `NA` is logical, so it sits at the bottom of the numeric tower and needs no
 special handling for arithmetic. But `rray_bind(chr_array, NA)` fails, because
-`rray_type2(chr, lgl)` is an error.
+`rray_ptype2(chr, lgl)` is an error.
 
 vctrs solves this with an unspecified type, and it has been painful. See whether
 `rray_bind()` can live without it first.

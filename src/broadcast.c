@@ -220,15 +220,11 @@ r_obj* rray_broadcast_common(
   r_attrib_poke_names(out, xs_names);
 
   r_ssize i = 0;
-  struct rray_arg* p_x_arg = new_subscript_arg(NULL, xs_names, n, &i);
-  KEEP(p_x_arg->shelter);
+  struct rray_arg* x_arg = new_subscript_arg(NULL, xs_names, n, &i);
+  KEEP(x_arg->shelter);
 
   for (; i < n; ++i) {
-    r_list_poke(
-      out,
-      i,
-      rray_broadcast(v_xs[i], dimensions, p_x_arg, error_call)
-    );
+    r_list_poke(out, i, rray_broadcast(v_xs[i], dimensions, x_arg, error_call));
   }
 
   FREE(4);

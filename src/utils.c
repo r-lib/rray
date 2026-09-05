@@ -1,5 +1,6 @@
 #include "utils.h"
 
+#include "syms.h"
 #include "wrapper.h"
 
 #include "decl/utils-decl.h"
@@ -12,7 +13,11 @@
 //
 // Since we are only modifying attributes,
 // we use a lightweight wrapper
-static inline r_obj* vec_as_array(r_obj* x) {
+r_obj* vec_as_array(r_obj* x) {
+  if (r_dim(x) != r_null) {
+    return x;
+  }
+
   r_obj* out = KEEP(r_wrap(x));
 
   const r_ssize size = r_length(x);
@@ -38,36 +43,31 @@ void check_unclassed(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
     r_abort_lazy_call(
       error_call,
       "%s must be a bare array, not %s.",
-      rray_arg_format(arg),
+      rray_arg_format_input(arg),
       r_obj_type_friendly(x)
     );
   }
 }
 
 r_obj* arg_as_array(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
-  switch (r_typeof(x)) {
-  case R_TYPE_logical:
-  case R_TYPE_integer:
-  case R_TYPE_double:
-  case R_TYPE_complex:
-  case R_TYPE_character:
-  case R_TYPE_raw:
-  case R_TYPE_list:
-    break;
-  default:
-    r_abort_lazy_call(
-      error_call,
-      "%s must be an array, not %s.",
-      rray_arg_format(arg),
-      r_obj_type_friendly(x)
-    );
+  if (rray_typeof(x) == RRAY_TYPE_scalar) {
+    stop_scalar_input(x, arg, error_call);
   }
 
-  if (r_dim(x) == r_null) {
-    return vec_as_array(x);
-  }
+  return vec_as_array(x);
+}
 
-  return x;
+r_no_return void stop_scalar_input(
+  r_obj* x,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+) {
+  r_abort_lazy_call(
+    error_call,
+    "%s must be an array, not %s.",
+    rray_arg_format_input(arg),
+    r_obj_type_friendly(x)
+  );
 }
 
 int arg_as_int(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
@@ -130,9 +130,9 @@ r_obj* vec_cast(
   r_obj* mask = KEEP(r_alloc_environment(4, r_envs.global));
 
   r_env_bind(mask, r_syms.x, x);
-  r_env_bind(mask, to_sym, to);
-  r_env_bind(mask, x_arg_sym, x_arg_chr);
-  r_env_bind(mask, to_arg_sym, to_arg_chr);
+  r_env_bind(mask, rray_syms.to, to);
+  r_env_bind(mask, rray_syms.x_arg, x_arg_chr);
+  r_env_bind(mask, rray_syms.to_arg, to_arg_chr);
 
   r_obj* out = r_eval(vec_cast_call, mask);
 
@@ -140,17 +140,9 @@ r_obj* vec_cast(
   return out;
 }
 
-r_obj* to_sym = NULL;
-r_obj* to_arg_sym = NULL;
-r_obj* x_arg_sym = NULL;
-
 r_obj* vec_cast_call = NULL;
 
 void rray_init_utils(r_obj* ns) {
-  to_sym = r_sym("to");
-  to_arg_sym = r_sym("to_arg");
-  x_arg_sym = r_sym("x_arg");
-
   vec_cast_call =
     r_parse("vctrs::vec_cast(x, to, x_arg = x_arg, to_arg = to_arg)");
   r_preserve(vec_cast_call);
