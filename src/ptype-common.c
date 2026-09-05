@@ -51,17 +51,20 @@ r_obj* rray_ptype_common(
   struct rray_arg* out_arg = new_subscript_arg(arg, xs_names, n, &out_i);
   KEEP(out_arg->shelter);
 
+  r_keep_loc out_pi;
   r_obj* out = rray_ptype(v_xs[0], x_arg, error_call);
+  KEEP_HERE(out, &out_pi);
 
   for (x_i = 1; x_i < n; ++x_i) {
     r_obj* common = rray_ptype2(out, v_xs[x_i], out_arg, x_arg, error_call);
 
     if (common != out) {
       out = common;
+      KEEP_AT(out, out_pi);
       out_i = x_i;
     }
   }
 
-  FREE(3);
+  FREE(4);
   return out;
 }
