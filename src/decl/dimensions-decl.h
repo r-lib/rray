@@ -12,19 +12,19 @@ static inline void rray_dimensions_merge(
 );
 
 static inline int rray_dimension2(
-  int left,
-  int right,
+  int x,
+  int y,
   int axis,
-  struct rray_arg* left_arg,
-  struct rray_arg* right_arg,
+  struct rray_arg* x_arg,
+  struct rray_arg* y_arg,
   struct r_lazy error_call
 );
 
 static r_no_return void stop_incompatible_dimensions(
-  int left,
-  int right,
+  int x,
+  int y,
   int axis,
-  struct rray_arg* left_arg,
-  struct rray_arg* right_arg,
+  struct rray_arg* x_arg,
+  struct rray_arg* y_arg,
   struct r_lazy error_call
 );

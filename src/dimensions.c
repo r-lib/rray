@@ -286,41 +286,34 @@ r_obj* rray_dimensions2(
 }
 
 static inline int rray_dimension2(
-  int left,
-  int right,
+  int x,
+  int y,
   int axis,
-  struct rray_arg* left_arg,
-  struct rray_arg* right_arg,
+  struct rray_arg* x_arg,
+  struct rray_arg* y_arg,
   struct r_lazy error_call
 ) {
-  if (left == right) {
-    return left;
+  if (x == y) {
+    return x;
   }
 
-  if (left == 1) {
-    return right;
+  if (x == 1) {
+    return y;
   }
 
-  if (right == 1) {
-    return left;
+  if (y == 1) {
+    return x;
   }
 
-  stop_incompatible_dimensions(
-    left,
-    right,
-    axis,
-    left_arg,
-    right_arg,
-    error_call
-  );
+  stop_incompatible_dimensions(x, y, axis, x_arg, y_arg, error_call);
 }
 
 static r_no_return void stop_incompatible_dimensions(
-  int left,
-  int right,
+  int x,
+  int y,
   int axis,
-  struct rray_arg* left_arg,
-  struct rray_arg* right_arg,
+  struct rray_arg* x_arg,
+  struct rray_arg* y_arg,
   struct r_lazy error_call
 ) {
   r_abort_lazy_call(
@@ -328,10 +321,10 @@ static r_no_return void stop_incompatible_dimensions(
     "Can't find common dimensions at axis %d. "
     "%s has dimension %d and %s has dimension %d.",
     axis,
-    rray_arg_format(left_arg),
-    left,
-    rray_arg_format(right_arg),
-    right
+    rray_arg_format(x_arg),
+    x,
+    rray_arg_format(y_arg),
+    y
   );
 }
 
