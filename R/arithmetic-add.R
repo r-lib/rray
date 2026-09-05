@@ -28,9 +28,15 @@
 #' # Adding 10 to column 1 and 20 to column 2 via broadcasting
 #' rray_add(x, array(c(10L, 20L), c(1L, 2L)))
 #'
-#' # Names are kept for any axis that isn't broadcast
-#' y <- array(1:3, c(3L, 1L), dimnames = list(c("a", "b", "c")))
-#' rray_add(x, y)
+#' # Names are collected from both inputs, one axis at a time
+#' rows <- array(1:3, c(3L, 1L), dimnames = list(c("r1", "r2", "r3")))
+#' cols <- array(c(10L, 20L), c(1L, 2L), dimnames = list(NULL, c("c1", "c2")))
+#' rray_add(rows, cols)
+#'
+#' # A broadcast axis loses its names, because they no longer describe the
+#' # result. `only` names a single row, but the result has three.
+#' cols <- array(c(10L, 20L), c(1L, 2L), dimnames = list("only", c("c1", "c2")))
+#' rray_add(x, cols)
 rray_add <- function(x, y) {
   .Call(ffi_rray_add, x, y, environment())
 }
