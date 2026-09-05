@@ -31,7 +31,7 @@ reference:
 
 - title: Arithmetic
   contents:
-  - rray_add
+  - arithmetic
 
 - title: Reducers
   contents:

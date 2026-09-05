@@ -1,4 +1,4 @@
-#include "arithmetic-add.h"
+#include "arithmetic-multiply.h"
 
 #include <limits.h>
 
@@ -8,14 +8,14 @@
 #include "typeof2.h"
 #include "utils.h"
 
-#include "decl/arithmetic-add-decl.h"
+#include "decl/arithmetic-multiply-decl.h"
 
-r_obj* ffi_rray_add(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame) {
+r_obj* ffi_rray_multiply(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  return rray_add(ffi_x, ffi_y, rray_args.x, rray_args.y, error_call);
+  return rray_multiply(ffi_x, ffi_y, rray_args.x, rray_args.y, error_call);
 }
 
-r_obj* rray_add(
+r_obj* rray_multiply(
   r_obj* x,
   r_obj* y,
   struct rray_arg* x_arg,
@@ -25,14 +25,14 @@ r_obj* rray_add(
   return rray_binary_arithmetic(
     x,
     y,
-    rray_add_switch,
+    rray_multiply_switch,
     x_arg,
     y_arg,
     error_call
   );
 }
 
-static rray_binary_arithmetic_fn rray_add_switch(
+static rray_binary_arithmetic_fn rray_multiply_switch(
   r_obj* x,
   r_obj* y,
   struct rray_arg* x_arg,
@@ -46,25 +46,31 @@ static rray_binary_arithmetic_fn rray_add_switch(
 
   switch (rray_typeof2(x_type, y_type, &side)) {
   case RRAY_TYPE2_logical_logical:
-    return rray_add_lgl_lgl;
+    return rray_multiply_lgl_lgl;
   case RRAY_TYPE2_logical_integer:
-    return (side == RRAY_SIDE_right) ? rray_add_lgl_int : rray_add_int_lgl;
+    return (side == RRAY_SIDE_right) ? rray_multiply_lgl_int
+                                     : rray_multiply_int_lgl;
   case RRAY_TYPE2_logical_double:
-    return (side == RRAY_SIDE_right) ? rray_add_lgl_dbl : rray_add_dbl_lgl;
+    return (side == RRAY_SIDE_right) ? rray_multiply_lgl_dbl
+                                     : rray_multiply_dbl_lgl;
   case RRAY_TYPE2_logical_complex:
-    return (side == RRAY_SIDE_right) ? rray_add_lgl_cpl : rray_add_cpl_lgl;
+    return (side == RRAY_SIDE_right) ? rray_multiply_lgl_cpl
+                                     : rray_multiply_cpl_lgl;
   case RRAY_TYPE2_integer_integer:
-    return rray_add_int_int;
+    return rray_multiply_int_int;
   case RRAY_TYPE2_integer_double:
-    return (side == RRAY_SIDE_right) ? rray_add_int_dbl : rray_add_dbl_int;
+    return (side == RRAY_SIDE_right) ? rray_multiply_int_dbl
+                                     : rray_multiply_dbl_int;
   case RRAY_TYPE2_integer_complex:
-    return (side == RRAY_SIDE_right) ? rray_add_int_cpl : rray_add_cpl_int;
+    return (side == RRAY_SIDE_right) ? rray_multiply_int_cpl
+                                     : rray_multiply_cpl_int;
   case RRAY_TYPE2_double_double:
-    return rray_add_dbl_dbl;
+    return rray_multiply_dbl_dbl;
   case RRAY_TYPE2_double_complex:
-    return (side == RRAY_SIDE_right) ? rray_add_dbl_cpl : rray_add_cpl_dbl;
+    return (side == RRAY_SIDE_right) ? rray_multiply_dbl_cpl
+                                     : rray_multiply_cpl_dbl;
   case RRAY_TYPE2_complex_complex:
-    return rray_add_cpl_cpl;
+    return rray_multiply_cpl_cpl;
 
   case RRAY_TYPE2_logical_character:
   case RRAY_TYPE2_logical_raw:
@@ -84,7 +90,7 @@ static rray_binary_arithmetic_fn rray_add_switch(
   case RRAY_TYPE2_raw_raw:
   case RRAY_TYPE2_raw_list:
   case RRAY_TYPE2_list_list:
-    stop_unsupported_arithmetic("+", x, y, x_arg, y_arg, error_call);
+    stop_unsupported_arithmetic("*", x, y, x_arg, y_arg, error_call);
 
   case RRAY_TYPE2_logical_scalar:
   case RRAY_TYPE2_integer_scalar:
@@ -104,7 +110,7 @@ static rray_binary_arithmetic_fn rray_add_switch(
   r_stop_unreachable();
 }
 
-static r_obj* rray_add_lgl_lgl(
+static r_obj* rray_multiply_lgl_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -121,11 +127,11 @@ static r_obj* rray_add_lgl_lgl(
     R_TYPE_integer,
     int,
     r_int_begin,
-    rray_add_int_one
+    rray_multiply_int_one
   );
 }
 
-static r_obj* rray_add_lgl_int(
+static r_obj* rray_multiply_lgl_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -142,11 +148,11 @@ static r_obj* rray_add_lgl_int(
     R_TYPE_integer,
     int,
     r_int_begin,
-    rray_add_int_one
+    rray_multiply_int_one
   );
 }
 
-static r_obj* rray_add_int_lgl(
+static r_obj* rray_multiply_int_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -163,11 +169,11 @@ static r_obj* rray_add_int_lgl(
     R_TYPE_integer,
     int,
     r_int_begin,
-    rray_add_int_one
+    rray_multiply_int_one
   );
 }
 
-static r_obj* rray_add_lgl_dbl(
+static r_obj* rray_multiply_lgl_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -184,11 +190,11 @@ static r_obj* rray_add_lgl_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_add_dbl_one
+    rray_multiply_dbl_one
   );
 }
 
-static r_obj* rray_add_dbl_lgl(
+static r_obj* rray_multiply_dbl_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -205,11 +211,11 @@ static r_obj* rray_add_dbl_lgl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_add_dbl_one
+    rray_multiply_dbl_one
   );
 }
 
-static r_obj* rray_add_lgl_cpl(
+static r_obj* rray_multiply_lgl_cpl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -226,11 +232,11 @@ static r_obj* rray_add_lgl_cpl(
     R_TYPE_complex,
     r_complex,
     r_cpl_begin,
-    rray_add_cpl_one
+    rray_multiply_cpl_one
   );
 }
 
-static r_obj* rray_add_cpl_lgl(
+static r_obj* rray_multiply_cpl_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -247,11 +253,11 @@ static r_obj* rray_add_cpl_lgl(
     R_TYPE_complex,
     r_complex,
     r_cpl_begin,
-    rray_add_cpl_one
+    rray_multiply_cpl_one
   );
 }
 
-static r_obj* rray_add_int_int(
+static r_obj* rray_multiply_int_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -268,11 +274,11 @@ static r_obj* rray_add_int_int(
     R_TYPE_integer,
     int,
     r_int_begin,
-    rray_add_int_one
+    rray_multiply_int_one
   );
 }
 
-static r_obj* rray_add_int_dbl(
+static r_obj* rray_multiply_int_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -289,11 +295,11 @@ static r_obj* rray_add_int_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_add_dbl_one
+    rray_multiply_dbl_one
   );
 }
 
-static r_obj* rray_add_dbl_int(
+static r_obj* rray_multiply_dbl_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -310,11 +316,11 @@ static r_obj* rray_add_dbl_int(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_add_dbl_one
+    rray_multiply_dbl_one
   );
 }
 
-static r_obj* rray_add_int_cpl(
+static r_obj* rray_multiply_int_cpl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -331,11 +337,11 @@ static r_obj* rray_add_int_cpl(
     R_TYPE_complex,
     r_complex,
     r_cpl_begin,
-    rray_add_cpl_one
+    rray_multiply_cpl_one
   );
 }
 
-static r_obj* rray_add_cpl_int(
+static r_obj* rray_multiply_cpl_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -352,11 +358,11 @@ static r_obj* rray_add_cpl_int(
     R_TYPE_complex,
     r_complex,
     r_cpl_begin,
-    rray_add_cpl_one
+    rray_multiply_cpl_one
   );
 }
 
-static r_obj* rray_add_dbl_dbl(
+static r_obj* rray_multiply_dbl_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -373,11 +379,11 @@ static r_obj* rray_add_dbl_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_add_dbl_one
+    rray_multiply_dbl_one
   );
 }
 
-static r_obj* rray_add_dbl_cpl(
+static r_obj* rray_multiply_dbl_cpl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -394,11 +400,11 @@ static r_obj* rray_add_dbl_cpl(
     R_TYPE_complex,
     r_complex,
     r_cpl_begin,
-    rray_add_cpl_one
+    rray_multiply_cpl_one
   );
 }
 
-static r_obj* rray_add_cpl_dbl(
+static r_obj* rray_multiply_cpl_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -415,11 +421,11 @@ static r_obj* rray_add_cpl_dbl(
     R_TYPE_complex,
     r_complex,
     r_cpl_begin,
-    rray_add_cpl_one
+    rray_multiply_cpl_one
   );
 }
 
-static r_obj* rray_add_cpl_cpl(
+static r_obj* rray_multiply_cpl_cpl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -436,34 +442,41 @@ static r_obj* rray_add_cpl_cpl(
     R_TYPE_complex,
     r_complex,
     r_cpl_begin,
-    rray_add_cpl_one
+    rray_multiply_cpl_one
   );
 }
 
-static inline int rray_add_int_one(int x, int y, struct r_lazy error_call) {
+static inline int rray_multiply_int_one(
+  int x,
+  int y,
+  struct r_lazy error_call
+) {
   if (x == r_globals.na_int || y == r_globals.na_int) {
     return r_globals.na_int;
   }
 
-  if ((y > 0 && x > INT_MAX - y) || (y < 0 && x < -INT_MAX - y)) {
+  // Benchmarked and this is just as fast as R's `GOODIPROD()`
+  const double out = (double) x * (double) y;
+
+  if (out > INT_MAX || out < -INT_MAX) {
     stop_int_overflow(error_call);
   }
 
-  return x + y;
+  return (int) out;
 }
 
-static inline double rray_add_dbl_one(
+static inline double rray_multiply_dbl_one(
   double x,
   double y,
   struct r_lazy error_call
 ) {
-  return x + y;
+  return x * y;
 }
 
-static inline r_complex rray_add_cpl_one(
+static inline r_complex rray_multiply_cpl_one(
   r_complex x,
   r_complex y,
   struct r_lazy error_call
 ) {
-  return (r_complex){.r = x.r + y.r, .i = x.i + y.i};
+  return rray_c99_to_cpl(rray_cpl_to_c99(x) * rray_cpl_to_c99(y));
 }
