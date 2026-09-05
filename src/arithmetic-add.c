@@ -440,8 +440,6 @@ static r_obj* rray_add_cpl_cpl(
   );
 }
 
-#undef RRAY_ARITHMETIC
-
 static inline int rray_add_int_one(int x, int y, struct r_lazy error_call) {
   if (x == r_globals.na_int || y == r_globals.na_int) {
     return r_globals.na_int;

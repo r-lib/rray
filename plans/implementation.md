@@ -73,7 +73,8 @@ Undefine both once the cores are written.
 
 The arithmetic family needs only one macro, since it has no `chr` or `list`
 cores, but several files share it. So `RRAY_ARITHMETIC` lives in
-`src/arithmetic.h` and each operator file undefines it after its own cores.
+`src/arithmetic.h` and nothing undefines it. Only undefine a macro the file
+defined itself.
 
 Write each core's parameter list out in full. Do not hide it behind a macro.
 
@@ -823,7 +824,7 @@ r_obj* rray_add(x, y, x_arg, y_arg, error_call) {
 ```
 
 The `RRAY_ARITHMETIC` macro is in `src/arithmetic.h` so every operator file
-shares it. Each one `#undef`s it after its cores.
+shares it. Don't undefine it, the operator files don't own it.
 
 `/` and `^` promote to double, so their `int` cores write doubles and there is
 no `rray_divide_int_one()`. `%%` and `%/%` error on `cpl`, so those three arms
