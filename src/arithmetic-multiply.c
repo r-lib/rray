@@ -456,6 +456,7 @@ static inline int rray_multiply_int_one(
     return r_globals.na_int;
   }
 
+  // Benchmarked and this is just as fast as R's `GOODIPROD()`
   const double out = (double) x * (double) y;
 
   if (out > INT_MAX || out < -INT_MAX) {
