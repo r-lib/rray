@@ -1,4 +1,4 @@
-static inline void rray_dimensions2(
+static inline void rray_dimensions_merge(
   int* v_out_dimensions,
   r_ssize* v_out_args,
   int* p_out_dimensionality,

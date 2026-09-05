@@ -238,7 +238,9 @@ Rules, per axis:
 - Anything else is an error, with a message naming the axis, both dimensions and
   both inputs. Which input owns the existing dimension is tracked per axis,
   since the input that set axis 1 can differ from the one that set axis 2. That
-  is why vctrs' single `arg-counter.c` counter does not fit here.
+  is why vctrs' single `arg-counter.c` counter does not fit here. Only
+  `rray_dimensions_common()` needs that tracking. `rray_dimensions2()` is the
+  two input form, and with two inputs a conflict always names `x` and `y`.
 
 - Missing trailing axes are treated as a dimension of 1, so dimensionality can
   grow.
@@ -596,21 +598,39 @@ Some operators need a type the common type rules cannot give, because
 Each family gets its own operator enum and its own type function.
 
 ```c
-enum rray_type rray_binary_ptype(
+r_obj* rray_binary_ptype(
   enum rray_binary_op op,
-  enum rray_type x,
-  enum rray_type y
+  r_obj* x,
+  r_obj* y,
+  struct rray_arg* x_arg,
+  struct rray_arg* y_arg,
+  struct r_lazy error_call
 );
-enum rray_type rray_reduction_ptype(
+r_obj* rray_reduction_ptype(
   enum rray_reduction_op op,
-  enum rray_type x
+  r_obj* x,
+  struct rray_arg* x_arg,
+  struct r_lazy error_call
 );
 ```
 
 Separate enums rather than one shared vocabulary, so each function can only be
 handed an operator its family actually has.
 
-Each returns **one type**, used both to cast the inputs and to allocate the
+They take arrays and return a ptype, like the rest of the type API. They also
+raise the error when an operator has no answer for a type, which is why they
+take the tags and the error call:
+
+```r
+rray_add("a", "b")
+#> Error in `rray_add()`:
+#> ! Can't apply `+` to `x` <character> and `y` <character>.
+```
+
+`rray_binary_ptype()` calls `rray_ptype2()` itself, so the caller makes one call
+and then casts both inputs to what comes back.
+
+Each returns **one ptype**, used both to cast the inputs and to allocate the
 output. That works because we always promote before computing, so the input type
 and the output type are the same.
 
@@ -684,8 +704,9 @@ Two initialisers today:
 
 Accessors are `rray_iterator_location()` and `rray_iterator_point()`.
 
-Functions with two array inputs use two plain iterators stepped side by side.
-There is no binary iterator type.
+Functions with two array inputs use `struct rray_iterator2`, which walks the
+point space once and reports a location in each input's space. `rray_add()` is
+the example.
 
 Invent a new iterator only when a function genuinely cannot be expressed with
 these. Say so explicitly in the pull request when you do.
@@ -736,33 +757,25 @@ Mechanics:
 What exists today: the argument tags, the argument checking helpers, the names
 API, the coalesce rule as the `rray_broadcast_names()` family, the dimension and
 shape helpers, the type rules as the `rray_ptype2()` and `rray_cast()` families,
-and `rray_broadcast()`, `rray_broadcast_common()`, `rray_split()` and
-`rray_sum()`. The array functions all follow the shell and core pattern in
-Part 1, and no templates are left in `src/`.
+the binary promotion table as `rray_binary_ptype()`, and `rray_broadcast()`,
+`rray_broadcast_common()`, `rray_split()`, `rray_sum()` and `rray_add()`. The
+array functions all follow the shell and core pattern in Part 1, and no
+templates are left in `src/`.
 
 Work through the rest in order, since each assumes the ones before it have
 landed. After that, work through Part 5 in any order that respects the
 dependencies noted there.
 
-## PR 7: Binary promotion and `rray_add()`
-
-`enum rray_binary_op`, `rray_binary_ptype()` and its table, then one function
-using it end to end.
-
-The C loop uses two broadcast iterators stepped side by side. Names come from
-`rray_broadcast_names2()`.
-
-Files: `src/op.h` for the enums, `src/ptype.c` for the table, `R/arithmetic.R`,
-`src/arithmetic.c`, `src/arithmetic.h`.
-
-## PR 8: The rest of the binary arithmetic
+## PR 7: The rest of the binary arithmetic
 
 `rray_subtract()`, `rray_multiply()`, `rray_divide()`, `rray_power()`,
 `rray_modulo()`, `rray_integer_divide()`.
 
-All the same shape as `rray_add()`. Share the core.
+All the same shape as `rray_add()`. Every row of `rray_binary_ptype()`'s table
+already exists, so this is an `ffi_rray_{name}()` wrapper, one arm in
+`rray_arithmetic()`'s switch, and a dispatcher plus cores per operator.
 
-## PR 9: Reduction promotion and `rray_sum()`
+## PR 8: Reduction promotion and `rray_sum()`
 
 `rray_reduction_ptype()` and its table. Retrofit `rray_sum()` to use it, which
 gives it the `lgl` to `int` promotion.
@@ -960,8 +973,8 @@ Files: `R/flip.R`, `src/flip.c`, `src/flip.h`.
 
 Names: coalesce. Type: promoted.
 
-All binary, all sharing one core and the pipeline from 2.4: promote, cast both,
-find common dimensions, loop with two broadcast iterators.
+All binary, all sharing the loop and the pipeline from 2.4: promote, cast both,
+find common dimensions, loop with an `rray_iterator2`.
 
 | function | op |
 |---|---|
@@ -1134,7 +1147,7 @@ Names: reduce.
 
 | function | op | type rule |
 |---|---|---|
-| `rray_sum(x, axes, ..., na_rm = FALSE)` | `sum` | promoted, exists, retrofit in PR 9 |
+| `rray_sum(x, axes, ..., na_rm = FALSE)` | `sum` | promoted, exists, retrofit in PR 8 |
 | `rray_prod(x, axes, ..., na_rm = FALSE)` | `prod` | promoted, int to dbl |
 | `rray_mean(x, axes, ..., na_rm = FALSE)` | `mean` | promoted, lgl and int to dbl |
 | `rray_max(x, axes, ..., na_rm = FALSE)` | `max` | preserved, errors on cpl |
