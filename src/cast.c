@@ -1,8 +1,5 @@
 #include "cast.h"
 
-#include <limits.h>
-
-#include "cast-one.h"
 #include "syms.h"
 #include "type.h"
 #include "utils.h"
@@ -316,67 +313,6 @@ static r_obj* rray_cast_dbl_to_cpl(
 #undef RRAY_CAST
 #undef RRAY_CAST_LOSSY
 
-static inline int rray_cast_int_to_lgl_one(
-  int x,
-  r_ssize i,
-  struct rray_arg* x_arg,
-  struct r_lazy error_call
-) {
-  if (x == r_globals.na_int) {
-    return r_globals.na_lgl;
-  }
-
-  if (x == 0 || x == 1) {
-    return x;
-  }
-
-  stop_lossy_cast(RRAY_TYPE_integer, RRAY_TYPE_logical, i, x_arg, error_call);
-}
-
-static inline int rray_cast_dbl_to_lgl_one(
-  double x,
-  r_ssize i,
-  struct rray_arg* x_arg,
-  struct r_lazy error_call
-) {
-  if (ISNAN(x)) {
-    return r_globals.na_lgl;
-  }
-
-  if (x == 0) {
-    return 0;
-  }
-
-  if (x == 1) {
-    return 1;
-  }
-
-  stop_lossy_cast(RRAY_TYPE_double, RRAY_TYPE_logical, i, x_arg, error_call);
-}
-
-static inline int rray_cast_dbl_to_int_one(
-  double x,
-  r_ssize i,
-  struct rray_arg* x_arg,
-  struct r_lazy error_call
-) {
-  if (ISNAN(x)) {
-    return r_globals.na_int;
-  }
-
-  if (x <= INT_MIN || x > INT_MAX) {
-    stop_lossy_cast(RRAY_TYPE_double, RRAY_TYPE_integer, i, x_arg, error_call);
-  }
-
-  const int out = (int) x;
-
-  if ((double) out != x) {
-    stop_lossy_cast(RRAY_TYPE_double, RRAY_TYPE_integer, i, x_arg, error_call);
-  }
-
-  return out;
-}
-
 static r_no_return void stop_incompatible_cast(
   enum rray_type x,
   enum rray_type to,
@@ -391,7 +327,7 @@ static r_no_return void stop_incompatible_cast(
   );
 }
 
-static r_no_return void stop_lossy_cast(
+r_no_return void stop_lossy_cast(
   enum rray_type x,
   enum rray_type to,
   r_ssize i,

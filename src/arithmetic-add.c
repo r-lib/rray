@@ -3,7 +3,7 @@
 #include <limits.h>
 
 #include "arithmetic.h"
-#include "cast-one.h"
+#include "cast.h"
 #include "type.h"
 #include "typeof2.h"
 

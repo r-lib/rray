@@ -569,9 +569,9 @@ double but returns a full `NA_complex_` for logical, so do not copy it here.
 
 Files: `src/type.c` for `enum rray_type`, `src/typeof2.c` for the pair enum and
 `enum rray_side`, then `src/ptype.c`, `src/ptype-common.c`, `src/cast.c` and
-`src/cast-common.c`. `src/cast-one.h` holds the scalar casts as `static inline`
-functions, so `src/cast.c` and the arithmetic cores share one definition of
-each.
+`src/cast-common.c`. `src/cast.h` holds the scalar casts as `static inline`
+functions under a `Lossless` and a `Lossy` section, so `src/cast.c` and the
+arithmetic cores share one definition of each.
 
 ### The common type rules
 
@@ -632,10 +632,10 @@ rray_add(array("a", c(2, 2)), array("b", c(3, 3)))
 #> ! Can't apply `+` to `x` <character> and `y` <character>.
 ```
 
-The per element conversions live in `src/cast-one.h` as `static inline`
-functions, shared with `src/cast.c` so the two can't drift. That matters most
-for complex, where the rule that a missing value lands in the real part alone is
-easy to get wrong twice.
+The per element conversions live in `src/cast.h` as `static inline` functions,
+shared with `src/cast.c` so the two can't drift. That matters most for complex,
+where the rule that a missing value lands in the real part alone is easy to get
+wrong twice.
 
 The tables below cover four types. `chr`, `raw` and `list` are an error for
 every operator, so the arithmetic and reduction families are the one place where

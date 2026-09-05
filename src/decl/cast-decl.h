@@ -44,35 +44,9 @@ static r_obj* rray_cast_dbl_to_cpl(
   struct r_lazy error_call
 );
 
-static inline int rray_cast_int_to_lgl_one(
-  int x,
-  r_ssize i,
-  struct rray_arg* x_arg,
-  struct r_lazy error_call
-);
-static inline int rray_cast_dbl_to_lgl_one(
-  double x,
-  r_ssize i,
-  struct rray_arg* x_arg,
-  struct r_lazy error_call
-);
-static inline int rray_cast_dbl_to_int_one(
-  double x,
-  r_ssize i,
-  struct rray_arg* x_arg,
-  struct r_lazy error_call
-);
-
 static r_no_return void stop_incompatible_cast(
   enum rray_type x,
   enum rray_type to,
-  struct rray_arg* x_arg,
-  struct r_lazy error_call
-);
-static r_no_return void stop_lossy_cast(
-  enum rray_type x,
-  enum rray_type to,
-  r_ssize i,
   struct rray_arg* x_arg,
   struct r_lazy error_call
 );
