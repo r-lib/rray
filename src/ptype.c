@@ -49,7 +49,9 @@ r_obj* ffi_rray_ptype2(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame) {
   struct r_lazy y_arg_lazy = {.x = rray_syms.y_arg, .env = ffi_frame};
   struct rray_arg y_arg = new_lazy_arg(&y_arg_lazy);
 
-  return rray_ptype2(ffi_x, ffi_y, &x_arg, &y_arg, error_call);
+  enum rray_side side;
+
+  return rray_ptype2(ffi_x, ffi_y, &x_arg, &y_arg, &side, error_call);
 }
 
 r_obj* rray_ptype2(
@@ -57,6 +59,7 @@ r_obj* rray_ptype2(
   r_obj* y,
   struct rray_arg* x_arg,
   struct rray_arg* y_arg,
+  enum rray_side* side,
   struct r_lazy error_call
 ) {
   check_unclassed(x, x_arg, error_call);
@@ -72,7 +75,7 @@ r_obj* rray_ptype2(
     stop_scalar_input(y, y_arg, error_call);
   }
 
-  switch (rray_typeof2(x_type, y_type)) {
+  switch (rray_typeof2(x_type, y_type, side)) {
   case RRAY_TYPE2_logical_logical:
     return r_globals.empty_lgl;
 

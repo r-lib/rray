@@ -51,6 +51,16 @@ enum rray_type2 {
   RRAY_TYPE2_scalar_scalar
 };
 
-enum rray_type2 rray_typeof2(enum rray_type x, enum rray_type y);
+enum rray_side {
+  RRAY_SIDE_left,
+  RRAY_SIDE_right,
+  RRAY_SIDE_both
+};
+
+enum rray_type2 rray_typeof2(
+  enum rray_type x,
+  enum rray_type y,
+  enum rray_side* side
+);
 
 #endif

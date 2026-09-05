@@ -56,11 +56,11 @@ r_obj* rray_ptype_common(
   KEEP_HERE(out, &out_pi);
 
   for (x_i = 1; x_i < n; ++x_i) {
-    r_obj* common = rray_ptype2(out, v_xs[x_i], out_arg, x_arg, error_call);
+    enum rray_side side;
+    out = rray_ptype2(out, v_xs[x_i], out_arg, x_arg, &side, error_call);
+    KEEP_AT(out, out_pi);
 
-    if (common != out) {
-      out = common;
-      KEEP_AT(out, out_pi);
+    if (side == RRAY_SIDE_right) {
       out_i = x_i;
     }
   }
