@@ -4,10 +4,8 @@
 #include "rlang.h"
 
 #include "arg.h"
-#include "op.h"
 
-r_obj* rray_arithmetic(
-  enum rray_binary_op op,
+r_obj* rray_add(
   r_obj* x,
   r_obj* y,
   struct rray_arg* x_arg,

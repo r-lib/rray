@@ -772,8 +772,13 @@ dependencies noted there.
 `rray_modulo()`, `rray_integer_divide()`.
 
 All the same shape as `rray_add()`. Every row of `rray_binary_ptype()`'s table
-already exists, so this is an `ffi_rray_{name}()` wrapper, one arm in
-`rray_arithmetic()`'s switch, and a dispatcher plus cores per operator.
+already exists, so each operator is an `ffi_rray_{name}()` wrapper, an
+`rray_{name}()` that hands its operator to `rray_arithmetic()`, one arm in that
+switch, and an `rray_{name}_switch()` over the type plus its cores.
+
+`rray_arithmetic()` is the shell, and stays private to `src/arithmetic.c`. The
+header exposes one `rray_{name}()` per operator, so a caller asks for the
+operation it wants rather than naming an enum.
 
 ## PR 8: Reduction promotion and `rray_sum()`
 

@@ -1,4 +1,13 @@
-static r_obj* rray_add(
+static r_obj* rray_arithmetic(
+  enum rray_binary_op op,
+  r_obj* x,
+  r_obj* y,
+  struct rray_arg* x_arg,
+  struct rray_arg* y_arg,
+  struct r_lazy error_call
+);
+
+static r_obj* rray_add_switch(
   r_obj* x,
   r_obj* y,
   r_ssize size,

@@ -7,6 +7,7 @@
 #include "dimensionality.h"
 #include "dimensions.h"
 #include "iterator.h"
+#include "op.h"
 #include "ptype.h"
 #include "size.h"
 
@@ -14,17 +15,20 @@
 
 r_obj* ffi_rray_add(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  return rray_arithmetic(
-    RRAY_BINARY_OP_add,
-    ffi_x,
-    ffi_y,
-    rray_args.x,
-    rray_args.y,
-    error_call
-  );
+  return rray_add(ffi_x, ffi_y, rray_args.x, rray_args.y, error_call);
 }
 
-r_obj* rray_arithmetic(
+r_obj* rray_add(
+  r_obj* x,
+  r_obj* y,
+  struct rray_arg* x_arg,
+  struct rray_arg* y_arg,
+  struct r_lazy error_call
+) {
+  return rray_arithmetic(RRAY_BINARY_OP_add, x, y, x_arg, y_arg, error_call);
+}
+
+static r_obj* rray_arithmetic(
   enum rray_binary_op op,
   r_obj* x,
   r_obj* y,
@@ -77,7 +81,7 @@ r_obj* rray_arithmetic(
 
   switch (op) {
   case RRAY_BINARY_OP_add:
-    out = rray_add(x, y, size, &it, error_call);
+    out = rray_add_switch(x, y, size, &it, error_call);
     break;
   case RRAY_BINARY_OP_subtract:
   case RRAY_BINARY_OP_multiply:
@@ -101,7 +105,7 @@ r_obj* rray_arithmetic(
   return out;
 }
 
-static r_obj* rray_add(
+static r_obj* rray_add_switch(
   r_obj* x,
   r_obj* y,
   r_ssize size,
