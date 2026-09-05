@@ -6,7 +6,7 @@
 #include "arg.h"
 #include "iterator.h"
 
-typedef r_obj* (*rray_binary_arithmetic_core_fn)(
+typedef r_obj* (*rray_binary_arithmetic_fn)(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -14,7 +14,7 @@ typedef r_obj* (*rray_binary_arithmetic_core_fn)(
   struct r_lazy error_call
 );
 
-typedef rray_binary_arithmetic_core_fn (*rray_binary_arithmetic_switch_fn)(
+typedef rray_binary_arithmetic_fn (*rray_binary_arithmetic_switch_fn)(
   r_obj* x,
   r_obj* y,
   struct rray_arg* x_arg,

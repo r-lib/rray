@@ -21,7 +21,7 @@ r_obj* rray_binary_arithmetic(
   x = KEEP(arg_as_array(x, x_arg, error_call));
   y = KEEP(arg_as_array(y, y_arg, error_call));
 
-  const rray_binary_arithmetic_core_fn fn_core =
+  const rray_binary_arithmetic_fn fn =
     fn_switch(x, y, x_arg, y_arg, error_call);
 
   r_obj* x_dimensions = r_dim(x);
@@ -60,7 +60,7 @@ r_obj* rray_binary_arithmetic(
     y_dimensionality
   );
 
-  r_obj* out = KEEP(fn_core(x, y, size, &it, error_call));
+  r_obj* out = KEEP(fn(x, y, size, &it, error_call));
   r_attrib_poke_dim(out, dimensions);
 
   r_obj* out_names = KEEP(rray_broadcast_names2(x, y, dimensions));

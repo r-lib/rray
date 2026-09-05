@@ -31,7 +31,7 @@ r_obj* rray_add(
   );
 }
 
-static rray_binary_arithmetic_core_fn rray_add_switch(
+static rray_binary_arithmetic_fn rray_add_switch(
   r_obj* x,
   r_obj* y,
   struct rray_arg* x_arg,
