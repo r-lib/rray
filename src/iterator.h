@@ -201,7 +201,7 @@ static inline r_ssize rray_iterator2_location2(
   return it->location2;
 }
 
-static inline void rray_iterator2_next(struct rray_iterator2* it) {
+static inline void rray_iterator2_next_point(struct rray_iterator2* it) {
   RRAY_ITERATOR_NEXT(
     it,
     {
@@ -221,7 +221,7 @@ static inline bool rray_iterator2_finished(const struct rray_iterator2* it) {
   return it->done;
 }
 
-static inline void rray_iterator2_next_run(struct rray_iterator2* it) {
+static inline void rray_iterator2_next(struct rray_iterator2* it) {
   for (int i = 1; i < it->point_dimensionality; ++i) {
     ++it->v_point[i];
 
@@ -253,7 +253,7 @@ struct rray_iterator2_run {
   r_ssize remaining;
 };
 
-static inline struct rray_iterator2_run rray_iterator2_begin_run(
+static inline struct rray_iterator2_run rray_iterator2_run(
   const struct rray_iterator2* it
 ) {
   return (struct rray_iterator2_run) {

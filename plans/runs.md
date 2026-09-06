@@ -9,9 +9,9 @@ to see whether it's worth doing for every arithmetic operator and for
 
 # Part 1: The problem
 
-Every per type arithmetic loop steps `rray_iterator2_next()` once per output
-element, even when no broadcasting is happening and the mapping is the
-identity. `rray_iterator2_next()` is an odometer: it walks up to
+Every per type arithmetic loop steps `rray_iterator2_next_point()` once per
+output element, even when no broadcasting is happening and the mapping is the
+identity. `rray_iterator2_next_point()` is an odometer: it walks up to
 `point_dimensionality` axes on every call, carrying into the next axis when
 the current one wraps. Axis 0 rarely carries, so this is amortized O(1), but
 it still costs a loop, a bounds check and a branch on every single element,
@@ -35,7 +35,12 @@ per-element tax paid by the iterator itself.
 # Part 2: The iterator changes
 
 Added to `struct rray_iterator2` in `src/iterator.h`, alongside the existing
-`rray_iterator2_next()`. Nothing existing was changed, this is additive.
+per-element odometer stepper. That stepper used to be called
+`rray_iterator2_next()`; it's now `rray_iterator2_next_point()`, freeing up
+`rray_iterator2_next()` for the run carry function below, which reads better
+under that name than under `next_run()`. `split.c`, the only other caller of
+the per-element stepper, was updated to match. Everything else here is
+additive.
 
 ## `done`
 
@@ -80,10 +85,10 @@ static inline bool rray_iterator2_finished(const struct rray_iterator2* it) {
 }
 ```
 
-## `rray_iterator2_next_run()`
+## `rray_iterator2_next()`
 
 ```c
-static inline void rray_iterator2_next_run(struct rray_iterator2* it) {
+static inline void rray_iterator2_next(struct rray_iterator2* it) {
   for (int i = 1; i < it->point_dimensionality; ++i) {
     ++it->v_point[i];
 
@@ -110,8 +115,8 @@ instead of via the macro, and now run once per run instead of once per
 element. Axis 0 itself needs no bookkeeping here: `it->v_point[0]`,
 `it->location1` and `it->location2` are never touched during a run (that's
 all delegated to the run cursor below), so they're still sitting at their
-axis 0 start values by the time `next_run()` runs. When every axis 1+ has
-also wrapped, there's nothing left to carry into, and `done` is set.
+axis 0 start values by the time this runs. When every axis 1+ has also
+wrapped, there's nothing left to carry into, and `done` is set.
 
 ## `struct rray_iterator2_run`
 
@@ -126,7 +131,7 @@ struct rray_iterator2_run {
   r_ssize remaining;
 };
 
-static inline struct rray_iterator2_run rray_iterator2_begin_run(
+static inline struct rray_iterator2_run rray_iterator2_run(
   const struct rray_iterator2* it
 ) {
   return (struct rray_iterator2_run){
@@ -163,12 +168,16 @@ static inline void rray_iterator2_run_next(struct rray_iterator2_run* run) {
 }
 ```
 
-`begin_run()` copies the axis 0 state out of `it` by value, once per run.
-From there the loop body only ever touches this small local, never `it`
-directly, which is what lets the compiler keep `location1`/`location2` in
-registers for the length of the run rather than reloading them from `it` on
-every element. Part 4 has the numbers showing why that distinction matters.
-`it` isn't touched again until `next_run()` carries into axis 1+.
+`rray_iterator2_run(it)` copies the axis 0 state out of `it` by value, once
+per run. It's a function sharing a name with `struct rray_iterator2_run`,
+which is fine in C: struct tags and ordinary identifiers live in separate
+namespaces, so `struct rray_iterator2_run` and `rray_iterator2_run()` don't
+collide. From there the loop body only ever touches this small local, never
+`it` directly, which is what lets the compiler keep `location1`/`location2`
+in registers for the length of the run rather than reloading them from `it`
+on every element. Part 4 has the numbers showing why that distinction
+matters. `it` isn't touched again until `rray_iterator2_next(it)` carries
+into axis 1+.
 
 ---
 
@@ -199,7 +208,7 @@ any of the `rray_add_*` bodies unchanged.
 
   r_ssize i = 0;
   while (!rray_iterator2_finished(it)) {
-    struct rray_iterator2_run run = rray_iterator2_begin_run(it);
+    struct rray_iterator2_run run = rray_iterator2_run(it);
 
     while (!rray_iterator2_run_finished(&run)) {
       v_out[i] = ONE(
@@ -211,7 +220,7 @@ any of the `rray_add_*` bodies unchanged.
       ++i;
     }
 
-    rray_iterator2_next_run(it);
+    rray_iterator2_next(it);
   }
 
   FREE(1);
@@ -309,7 +318,7 @@ it everywhere. Left for a follow up if the approach is adopted:
 
 - A run collapsing across axes: today a run only ever spans axis 0. Two full
   size arrays being added with matching multi-dimensional shape still pays one
-  `next_run()` carry per axis 1+ combination, e.g. once per column in a
-  matrix. Detecting when every axis is stride-contiguous and collapsing the
-  whole thing to a single run would help the true identity case further, at
-  the cost of more machinery in the iterator.
+  `rray_iterator2_next(it)` carry per axis 1+ combination, e.g. once per
+  column in a matrix. Detecting when every axis is stride-contiguous and
+  collapsing the whole thing to a single run would help the true identity
+  case further, at the cost of more machinery in the iterator.

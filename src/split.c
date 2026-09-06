@@ -145,7 +145,7 @@ r_obj* rray_split(
                                                                                \
     v_v_out[out_loc][out_elt_loc] = v_x[i];                                    \
                                                                                \
-    rray_iterator2_next(it);                                                   \
+    rray_iterator2_next_point(it);                                             \
   }                                                                            \
                                                                                \
   FREE(1);
@@ -162,7 +162,7 @@ r_obj* rray_split(
                                                                                \
     POKE(v_out[out_loc], out_elt_loc, v_x[i]);                                 \
                                                                                \
-    rray_iterator2_next(it);                                                   \
+    rray_iterator2_next_point(it);                                             \
   }
 
 static void rray_split_lgl(r_obj* x, r_obj* out, struct rray_iterator2* it) {

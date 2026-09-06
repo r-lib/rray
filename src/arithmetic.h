@@ -66,7 +66,7 @@ r_no_return void stop_int_overflow(struct r_lazy error_call);
       Y_CAST(v_y[rray_iterator2_location2(it)]),                               \
       error_call                                                               \
     );                                                                         \
-    rray_iterator2_next(it);                                                   \
+    rray_iterator2_next_point(it);                                             \
   }                                                                            \
                                                                                \
   FREE(1);                                                                     \
@@ -92,7 +92,7 @@ r_no_return void stop_int_overflow(struct r_lazy error_call);
                                                                                \
   r_ssize i = 0;                                                               \
   while (!rray_iterator2_finished(it)) {                                       \
-    struct rray_iterator2_run run = rray_iterator2_begin_run(it);              \
+    struct rray_iterator2_run run = rray_iterator2_run(it);                    \
                                                                                \
     while (!rray_iterator2_run_finished(&run)) {                               \
       v_out[i] = ONE(                                                          \
@@ -103,7 +103,7 @@ r_no_return void stop_int_overflow(struct r_lazy error_call);
       rray_iterator2_run_next(&run);                                           \
       ++i;                                                                     \
     }                                                                          \
-    rray_iterator2_next_run(it);                                               \
+    rray_iterator2_next(it);                                                   \
   }                                                                            \
                                                                                \
   FREE(1);                                                                     \
