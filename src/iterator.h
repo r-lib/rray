@@ -212,6 +212,53 @@ static inline void rray_iterator2_next(struct rray_iterator2* it) {
   )
 }
 
+static inline r_ssize rray_iterator2_run(const struct rray_iterator2* it) {
+  return it->v_point_dimensions[0] - it->v_point[0];
+}
+
+static inline r_ssize rray_iterator2_stride1(const struct rray_iterator2* it) {
+  return it->v_location1_strides[0];
+}
+
+static inline r_ssize rray_iterator2_stride2(const struct rray_iterator2* it) {
+  return it->v_location2_strides[0];
+}
+
+static inline void rray_iterator2_advance(
+  struct rray_iterator2* it,
+  r_ssize n
+) {
+  it->location1 += n * it->v_location1_strides[0];
+  it->location2 += n * it->v_location2_strides[0];
+  it->v_point[0] += (int) n;
+
+  if (it->v_point[0] < it->v_point_dimensions[0]) {
+    return;
+  }
+
+  it->v_point[0] = 0;
+  it->location1 -=
+    (r_ssize) it->v_point_dimensions[0] * it->v_location1_strides[0];
+  it->location2 -=
+    (r_ssize) it->v_point_dimensions[0] * it->v_location2_strides[0];
+
+  for (int i = 1; i < it->point_dimensionality; ++i) {
+    ++it->v_point[i];
+
+    if (it->v_point[i] < it->v_point_dimensions[i]) {
+      it->location1 += it->v_location1_strides[i];
+      it->location2 += it->v_location2_strides[i];
+      return;
+    }
+
+    it->v_point[i] = 0;
+    it->location1 -=
+      (it->v_point_dimensions[i] - 1) * it->v_location1_strides[i];
+    it->location2 -=
+      (it->v_point_dimensions[i] - 1) * it->v_location2_strides[i];
+  }
+}
+
 // --------------------------------------------------------------------------
 
 static inline void rray__location_strides_init(

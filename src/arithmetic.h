@@ -72,4 +72,45 @@ r_no_return void stop_int_overflow(struct r_lazy error_call);
   FREE(1);                                                                     \
   return out;
 
+#define RRAY_ARITHMETIC_RUNS(                                                  \
+  X_CTYPE,                                                                     \
+  X_CONST_DEREF,                                                               \
+  X_CAST,                                                                      \
+  Y_CTYPE,                                                                     \
+  Y_CONST_DEREF,                                                               \
+  Y_CAST,                                                                      \
+  OUT_RTYPE,                                                                   \
+  OUT_CTYPE,                                                                   \
+  OUT_DEREF,                                                                   \
+  ONE                                                                          \
+)                                                                              \
+  r_obj* out = KEEP(r_alloc_vector(OUT_RTYPE, size));                          \
+  OUT_CTYPE* v_out = OUT_DEREF(out);                                           \
+                                                                               \
+  const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
+  const Y_CTYPE* v_y = Y_CONST_DEREF(y);                                       \
+                                                                               \
+  r_ssize i = 0;                                                               \
+  while (i < size) {                                                           \
+    const r_ssize run = rray_iterator2_run(it);                                \
+    const r_ssize loc1 = rray_iterator2_location1(it);                         \
+    const r_ssize loc2 = rray_iterator2_location2(it);                         \
+    const r_ssize stride1 = rray_iterator2_stride1(it);                        \
+    const r_ssize stride2 = rray_iterator2_stride2(it);                        \
+                                                                               \
+    for (r_ssize k = 0; k < run; ++k) {                                        \
+      v_out[i + k] = ONE(                                                      \
+        X_CAST(v_x[loc1 + k * stride1]),                                       \
+        Y_CAST(v_y[loc2 + k * stride2]),                                       \
+        error_call                                                             \
+      );                                                                       \
+    }                                                                          \
+                                                                               \
+    rray_iterator2_advance(it, run);                                           \
+    i += run;                                                                  \
+  }                                                                            \
+                                                                               \
+  FREE(1);                                                                     \
+  return out;
+
 #endif
