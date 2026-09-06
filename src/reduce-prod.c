@@ -243,8 +243,12 @@ static inline double rray_prod_dbl_one_na_rm(double out, double x) {
   return out * x;
 }
 
+// Plain formula, not the `_Complex` operator, so `Inf * NA` matches `prod()`
 static inline r_complex rray_prod_cpl_one(r_complex out, r_complex x) {
-  return rray_c99_to_cpl(rray_cpl_to_c99(out) * rray_cpl_to_c99(x));
+  return (r_complex){
+    .r = out.r * x.r - out.i * x.i,
+    .i = out.r * x.i + out.i * x.r,
+  };
 }
 
 static inline r_complex rray_prod_cpl_one_na_rm(r_complex out, r_complex x) {

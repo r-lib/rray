@@ -150,8 +150,11 @@ test_that("complex prod works", {
   expect_identical(as.vector(rray_prod(x, 2L)), c(-7 + 16i, -11 + 52i))
 })
 
-test_that("complex NA propagates", {
+test_that("complex NA propagates regardless of order", {
   x <- c(1 + 2i, NA_complex_)
+  expect_identical(as.vector(rray_prod(x, 1L)), NA_complex_)
+
+  x <- c(NA_complex_, 1 + 2i)
   expect_identical(as.vector(rray_prod(x, 1L)), NA_complex_)
 })
 
@@ -160,10 +163,26 @@ test_that("complex NaN in one component spreads to both components", {
   out <- as.vector(rray_prod(x, 1L))
   expect_identical(Re(out), NaN)
   expect_identical(Im(out), NaN)
+
+  x <- c(1 + 1i, complex(real = 1, imaginary = NaN))
+  out <- as.vector(rray_prod(x, 1L))
+  expect_identical(Re(out), NaN)
+  expect_identical(Im(out), NaN)
 })
 
-test_that("complex Inf combined with NA does not simplify to NA", {
+test_that("complex zero times Inf gives NaN, matching base R", {
+  x <- c(0 + 0i, Inf + 0i)
+  expect_identical(as.vector(rray_prod(x, 1L)), prod(x))
+})
+
+test_that("complex Inf combined with NA matches base R's prod()", {
   x <- c(Inf + 0i, NA_complex_)
+  expect_identical(as.vector(rray_prod(x, 1L)), prod(x))
+  expect_identical(as.vector(rray_prod(x, 1L)), NA_complex_)
+})
+
+test_that("complex infinities are not recovered, unlike rray_multiply()", {
+  x <- c(complex(real = Inf, imaginary = Inf), 1 + 0i)
   out <- as.vector(rray_prod(x, 1L))
   expect_identical(Re(out), NaN)
   expect_identical(Im(out), NaN)
@@ -200,6 +219,10 @@ test_that("na_rm removes an entire complex NA element", {
   x <- c(complex(real = 1, imaginary = NaN), 1 + 1i)
   out <- as.vector(rray_prod(x, 1L, na_rm = TRUE))
   expect_identical(out, 1 + 1i)
+
+  x <- c(1 + 1i, complex(real = 1, imaginary = NaN), 2 + 2i)
+  out <- as.vector(rray_prod(x, 1L, na_rm = TRUE))
+  expect_identical(out, prod(x, na.rm = TRUE))
 })
 
 test_that("na_rm with all NA returns identity", {

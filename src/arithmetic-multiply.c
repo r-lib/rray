@@ -473,6 +473,8 @@ static inline double rray_multiply_dbl_one(
   return x * y;
 }
 
+// The `_Complex` operator recovers true infinities, unlike
+// `rray_prod_cpl_one()`
 static inline r_complex rray_multiply_cpl_one(
   r_complex x,
   r_complex y,
