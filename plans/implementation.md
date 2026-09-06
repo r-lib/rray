@@ -799,9 +799,9 @@ API, the coalesce rule as the `rray_broadcast_names()` family, the dimension and
 shape helpers, the type rules as the `rray_ptype2()` and `rray_cast()` families,
 the scalar casts as `static inline` functions in `src/cast.h`, and
 `rray_broadcast()`, `rray_broadcast_common()`, `rray_split()`, `rray_sum()`,
-`rray_add()`, `rray_multiply()` and `rray_subtract()`. The array functions all
-follow the shell and core pattern in Part 1, and no templates are left in
-`src/`.
+`rray_add()`, `rray_multiply()`, `rray_subtract()` and `rray_divide()`. The
+array functions all follow the shell and core pattern in Part 1, and no
+templates are left in `src/`.
 
 Work through the rest in order, since each assumes the ones before it have
 landed. After that, work through Part 5 in any order that respects the
@@ -809,8 +809,8 @@ dependencies noted there.
 
 ## PR 7: The rest of the binary arithmetic
 
-`rray_divide()`, `rray_power()`, `rray_modulo()`, `rray_integer_divide()`.
-`rray_multiply()` and `rray_subtract()` have landed.
+`rray_power()`, `rray_modulo()`, `rray_integer_divide()`. `rray_multiply()`,
+`rray_subtract()` and `rray_divide()` have landed.
 
 All the same shape as `rray_add()`. Each operator is a self contained
 `src/arithmetic-{op}.c` holding `ffi_rray_{name}()`, `rray_{name}()`, a static

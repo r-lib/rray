@@ -7,6 +7,8 @@
 #'
 #' - `rray_multiply()` multiplies two arrays elementwise.
 #'
+#' - `rray_divide()` divides two arrays elementwise.
+#'
 #' @details
 #' The arrays are broadcast to common dimensions first, so they do not have to
 #' be the same shape.
@@ -22,6 +24,9 @@
 #'
 #' - `rray_multiply()`: logicals are cast to integer.
 #'
+#' - `rray_divide()`: logicals and integers are cast to double, since
+#'   division always returns a double, just like it does in base R.
+#'
 #' @param x An array.
 #'
 #' @param y An array.
@@ -36,6 +41,7 @@
 #' rray_add(x, 1L)
 #' rray_subtract(x, 1L)
 #' rray_multiply(x, 2L)
+#' rray_divide(x, 2L)
 #'
 #' # Adding 10 to column 1 and 20 to column 2 via broadcasting
 #' rray_add(x, array(c(10L, 20L), c(1L, 2L)))
@@ -70,4 +76,10 @@ rray_subtract <- function(x, y) {
 #' @export
 rray_multiply <- function(x, y) {
   .Call(ffi_rray_multiply, x, y, environment())
+}
+
+#' @rdname arithmetic
+#' @export
+rray_divide <- function(x, y) {
+  .Call(ffi_rray_divide, x, y, environment())
 }
