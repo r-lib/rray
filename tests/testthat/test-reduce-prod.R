@@ -162,6 +162,13 @@ test_that("complex NaN in one component spreads to both components", {
   expect_identical(Im(out), NaN)
 })
 
+test_that("complex Inf combined with NA does not simplify to NA", {
+  x <- c(Inf + 0i, NA_complex_)
+  out <- as.vector(rray_prod(x, 1L))
+  expect_identical(Re(out), NaN)
+  expect_identical(Im(out), NaN)
+})
+
 test_that("na_rm removes integer NA", {
   x <- array(c(1L, NA_integer_, 3L, 4L), c(2L, 2L))
   out <- rray_prod(x, 1L, na_rm = TRUE)
