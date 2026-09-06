@@ -65,6 +65,12 @@ lives in `src/arithmetic.c` and each operator gets its own
 `src/arithmetic-{op}.c`. They switch on the type pair rather than on one type,
 and the switch returns the core instead of calling it. 2.4 covers why.
 
+The reducers that take `(x, axes, ..., na_rm = FALSE)` share the same shape of
+shell for the same reason. `rray_reduce()` and the `RRAY_REDUCE` macro live in
+`src/reduce.c`/`src/reduce.h`, and each reducer gets its own
+`src/reduce-{name}.c`, switching on `rray_typeof(x)` and returning the core.
+`rray_sum()` is the first of these, in `src/reduce-sum.c`.
+
 Each core's whole body is a call into a macro, following `SLICE` in vctrs'
 `src/slice.c`. There are usually two. `RRAY_{NAME}_ATOMIC` covers `lgl`, `int`,
 `dbl`, `cpl` and `raw`, which write straight to a data pointer.
@@ -78,22 +84,21 @@ defined itself.
 
 Write each core's parameter list out in full. Do not hide it behind a macro.
 
-A flag that swaps the scalar operation, like `na_rm`, is resolved in the
-`switch` rather than inside the core:
+A flag that swaps the scalar operation, like `na_rm`, is folded into the same
+switch that dispatches on type, returning the core instead of calling it:
 
 ```c
-case R_TYPE_double:
-  if (na_rm) {
-    out = rray_sum_dbl_na_rm(x, out_size, &it);
-  } else {
-    out = rray_sum_dbl(x, out_size, &it);
-  }
-  break;
+case RRAY_TYPE_double:
+  return na_rm ? rray_sum_dbl_na_rm : rray_sum_dbl;
 ```
 
 So there is one core per type per variant, the flag stays off the core's
-parameter list, and the loop is written once. The other reductions want the same
-shape when they land.
+parameter list, and the loop is written once. `rray_prod()`, `rray_mean()`,
+`rray_max()`, and `rray_min()` want the same shape when they land, sharing
+`rray_reduce()`'s shell. `rray_all()`, `rray_any()`, `rray_max_pos()`, and
+`rray_min_pos()` do not take `na_rm`, and the position functions take a single
+`axis` rather than `axes`, so whether they fit this shell at all is still an
+open question for whoever picks them up.
 
 A `.c` file reads top down: the main entry point first, its helpers below, in
 the order they are used. For `src/broadcast.c` that is `ffi_rray_broadcast()`,
@@ -1185,8 +1190,21 @@ rray_max_pos(x, 1)     # position of the max along the rows
 rray_max_pos(x, 2)     # along the columns
 ```
 
-Files: `R/prod.R`, `R/mean.R`, `R/extremum-reduce.R`, `R/logical-reduce.R`,
-`R/max-pos.R`, each with its C pair. `rray_sum()` already exists.
+`rray_sum()` already exists, documented under the shared `reduce` topic in
+`R/reduce.R`, with its C in `src/reduce-sum.c` on top of the `rray_reduce()`
+shell in `src/reduce.c`/`src/reduce.h` (see 2.1).
+
+`rray_prod()`, `rray_mean()`, `rray_max()`, and `rray_min()` share `rray_sum()`'s
+`(x, axes, ..., na_rm = FALSE)` shape, so they add `@rdname reduce` entries to
+`R/reduce.R` and their own `src/reduce-{name}.c` beside it.
+
+`rray_all()` and `rray_any()` take no `na_rm`, and `rray_max_pos()` and
+`rray_min_pos()` take `axis` rather than `axes` and return positions rather
+than reduced values. None of the four match `rray_reduce()`'s shape, so each
+needs its own file and topic: `R/logical-reduce.R` for the first two,
+`R/max-pos.R` for the last two, each with its own C pair. Whether any part of
+`rray_reduce()` can be shared with them is a design question for whoever picks
+them up.
 
 ## 5.6 Indexing
 
