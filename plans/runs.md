@@ -42,14 +42,16 @@ under that name than under `next_run()`. `split.c`, the only other caller of
 the per-element stepper, was updated to match. Everything else here is
 additive.
 
-## `done`
+## `size` and `index`
 
 ```c
 struct rray_iterator2 {
   int v_point[RRAY_MAX_DIMENSIONALITY];
   int v_point_dimensions[RRAY_MAX_DIMENSIONALITY];
   int point_dimensionality;
-  bool done;
+
+  r_ssize size;
+  r_ssize index;
 
   r_ssize location1;
   r_ssize v_location1_strides[RRAY_MAX_DIMENSIONALITY];
@@ -59,36 +61,39 @@ struct rray_iterator2 {
 };
 ```
 
-Set in `rray_iterator2_init()`: `false`, unless any axis has dimension `0`,
-in which case the array is empty and there's nothing to iterate at all.
+`rray_iterator2_init()` gained a `size` parameter, the total element count the
+caller already had to compute to allocate its output. `it->size` is set from
+that once, and `it->index` starts at `0` and tracks how many elements have
+been produced so far, updated a run at a time rather than an element at a
+time. Callers that don't iterate by run at all (`split.c`, via
+`rray_iterator2_next_point()`) still have to supply a `size`, but never read
+`index` back, so it just sits there unused for them.
 
-```c
-it->done = false;
-for (int i = 0; i < point_dimensionality; ++i) {
-  it->v_point_dimensions[i] = v_point_dimensions[i];
-  if (v_point_dimensions[i] == 0) {
-    it->done = true;
-  }
-}
-```
-
-Without this check, an empty axis 0 combined with a huge axis 1 (e.g.
-`dim = c(0, 5000000)`) would still walk axis 1 five million times, each one
-immediately producing a zero length run. The check makes that O(1) instead of
-O(axis 1's dimension); confirmed in Part 5.
+Whether the array is empty falls out of this for free: if any axis has
+dimension `0`, `size` is `0` too (it's a product over every axis dimension),
+so `index` (`0`) equals `size` (`0`) from the start, before either has to walk
+anything. No separate check needed the way the earlier `done` flag needed
+one.
 
 ## `rray_iterator2_finished()`
 
 ```c
 static inline bool rray_iterator2_finished(const struct rray_iterator2* it) {
-  return it->done;
+  return it->index == it->size;
 }
 ```
+
+Confirmed against a pathological empty array in Part 5: `dim = c(0, 5000000)`
+broadcast against a scalar. `size` is `0`, so this is `true` immediately,
+without walking axis 1 five million times to discover it the way carrying all
+the way through the point space would have.
 
 ## `rray_iterator2_next()`
 
 ```c
 static inline void rray_iterator2_next(struct rray_iterator2* it) {
+  it->index += it->v_point_dimensions[0];
+
   for (int i = 1; i < it->point_dimensionality; ++i) {
     ++it->v_point[i];
 
@@ -104,19 +109,24 @@ static inline void rray_iterator2_next(struct rray_iterator2* it) {
     it->location2 -=
       (it->v_point_dimensions[i] - 1) * it->v_location2_strides[i];
   }
-
-  it->done = true;
 }
 ```
 
-Carries into axis 1 and up, once a run is over. Same logic
-`RRAY_ITERATOR_NEXT`'s `RESET` branch already had, just written out directly
-instead of via the macro, and now run once per run instead of once per
-element. Axis 0 itself needs no bookkeeping here: `it->v_point[0]`,
+Advances `index` by a full run's worth up front — every run is exactly
+`v_point_dimensions[0]` elements, since axis 0's dimension never changes
+between runs — then carries into axis 1 and up the same way it always did.
+Axis 0 itself still needs no bookkeeping here: `it->v_point[0]`,
 `it->location1` and `it->location2` are never touched during a run (that's
 all delegated to the run cursor below), so they're still sitting at their
-axis 0 start values by the time this runs. When every axis 1+ has also
-wrapped, there's nothing left to carry into, and `done` is set.
+axis 0 start values by the time this runs.
+
+There's no `done` flag to set at the end anymore. Once the last run's
+`index` update lands, `index` already equals `size`, so
+`rray_iterator2_finished()` reports it correctly without this function doing
+anything extra for that case — the carry loop just falls through and returns
+having done nothing, which is fine, since nothing reads `v_point`,
+`location1` or `location2` again after the caller sees `finished()` return
+`true`.
 
 ## `struct rray_iterator2_run`
 
@@ -128,7 +138,8 @@ struct rray_iterator2_run {
   r_ssize location2;
   r_ssize stride2;
 
-  r_ssize remaining;
+  r_ssize index;
+  r_ssize end;
 };
 
 static inline struct rray_iterator2_run rray_iterator2_run(
@@ -139,14 +150,21 @@ static inline struct rray_iterator2_run rray_iterator2_run(
     .stride1 = it->v_location1_strides[0],
     .location2 = it->location2,
     .stride2 = it->v_location2_strides[0],
-    .remaining = it->v_point_dimensions[0],
+    .index = it->index,
+    .end = it->index + it->v_point_dimensions[0],
   };
 }
 
 static inline bool rray_iterator2_run_finished(
   const struct rray_iterator2_run* run
 ) {
-  return run->remaining == 0;
+  return run->index == run->end;
+}
+
+static inline r_ssize rray_iterator2_run_index(
+  const struct rray_iterator2_run* run
+) {
+  return run->index;
 }
 
 static inline r_ssize rray_iterator2_run_location1(
@@ -164,20 +182,27 @@ static inline r_ssize rray_iterator2_run_location2(
 static inline void rray_iterator2_run_next(struct rray_iterator2_run* run) {
   run->location1 += run->stride1;
   run->location2 += run->stride2;
-  --run->remaining;
+  ++run->index;
 }
 ```
 
 `rray_iterator2_run(it)` copies the axis 0 state out of `it` by value, once
-per run. It's a function sharing a name with `struct rray_iterator2_run`,
-which is fine in C: struct tags and ordinary identifiers live in separate
-namespaces, so `struct rray_iterator2_run` and `rray_iterator2_run()` don't
-collide. From there the loop body only ever touches this small local, never
-`it` directly, which is what lets the compiler keep `location1`/`location2`
-in registers for the length of the run rather than reloading them from `it`
-on every element. Part 4 has the numbers showing why that distinction
-matters. `it` isn't touched again until `rray_iterator2_next(it)` carries
-into axis 1+.
+per run, including the flat output `index` this run starts at and the `end`
+it stops before. It's a function sharing a name with `struct
+rray_iterator2_run`, which is fine in C: struct tags and ordinary identifiers
+live in separate namespaces, so `struct rray_iterator2_run` and
+`rray_iterator2_run()` don't collide. From there the loop body only ever
+touches this small local, never `it` directly, which is what lets the
+compiler keep `location1`/`location2`/`index` in registers for the length of
+the run rather than reloading them from `it` on every element. Part 4 has the
+numbers showing why that distinction matters. `it` isn't touched again until
+`rray_iterator2_next(it)` carries into axis 1+.
+
+`rray_iterator2_run_index()` is what lets the macro (Part 3) drop the
+`r_ssize i = 0; ...; ++i;` bookkeeping it used to do by hand — the flat output
+position is now something the iterator reports, the same way `location1` and
+`location2` already were, instead of something the caller had to track
+alongside it.
 
 ---
 
@@ -206,18 +231,16 @@ any of the `rray_add_*` bodies unchanged.
   const X_CTYPE* v_x = X_CONST_DEREF(x);
   const Y_CTYPE* v_y = Y_CONST_DEREF(y);
 
-  r_ssize i = 0;
   while (!rray_iterator2_finished(it)) {
     struct rray_iterator2_run run = rray_iterator2_run(it);
 
     while (!rray_iterator2_run_finished(&run)) {
-      v_out[i] = ONE(
+      v_out[rray_iterator2_run_index(&run)] = ONE(
         X_CAST(v_x[rray_iterator2_run_location1(&run)]),
         Y_CAST(v_y[rray_iterator2_run_location2(&run)]),
         error_call
       );
       rray_iterator2_run_next(&run);
-      ++i;
     }
 
     rray_iterator2_next(it);
@@ -227,10 +250,11 @@ any of the `rray_add_*` bodies unchanged.
   return out;
 ```
 
-No run length, stride or `loc + k * stride` indexing left at the call site.
-The nested `while` mirrors what a caller of `rray_iterator2` actually wants to
-say: while there's more to do, while this run isn't finished, handle one
-element and move on, then start the next run.
+No run length, stride, output index or `loc + k * stride` indexing left at the
+call site — the macro doesn't track anything itself anymore, it just asks the
+iterator for what it needs. The nested `while` mirrors what a caller of
+`rray_iterator2` actually wants to say: while there's more to do, while this
+run isn't finished, handle one element and move on, then start the next run.
 
 Only `src/arithmetic-add.c` was switched from `RRAY_ARITHMETIC` to
 `RRAY_ARITHMETIC_RUNS`, all 16 type combination bodies. `subtract`,
@@ -291,11 +315,18 @@ loop for cases the test suite doesn't obviously stress: broadcasting on a
 middle axis of a 3D array, broadcasting on two axes at once, and a fully
 scalar broadcast where every axis has dimension 1. All matched, every time.
 
-The `done` short circuit in `rray_iterator2_init()` (Part 2) was checked
-against a pathological empty array: `dim = c(0, 5000000)` broadcast against a
-scalar. Without the check this would walk axis 1 five million times for zero
-elements of real work. With it, `rray_add()` on that input runs in about 1
-microsecond.
+The empty array short circuit (Part 2, now via `size`/`index` rather than a
+`done` flag) was checked against a pathological case: `dim = c(0, 5000000)`
+broadcast against a scalar. Without it this would walk axis 1 five million
+times for zero elements of real work. With it, `rray_add()` on that input
+runs in under a microsecond, both before and after `done` was replaced.
+
+Replacing `done` with `size`/`index`, and having the macro read the output
+position from `rray_iterator2_run_index()` instead of tracking its own `i`,
+is perf neutral: rerunning the same benchmark afterward gave 3.4–3.5ms,
+3.9–4.3ms and 3.2–3.3ms for the three cases, matching the run cursor numbers
+in Part 4. Full test suite, the hand checks, and the empty array check above
+all still pass.
 
 ---
 

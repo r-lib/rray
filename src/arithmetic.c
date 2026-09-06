@@ -57,7 +57,8 @@ r_obj* rray_binary_arithmetic(
     v_x_dimensions,
     x_dimensionality,
     v_y_dimensions,
-    y_dimensionality
+    y_dimensionality,
+    size
   );
 
   r_obj* out = KEEP(fn(x, y, size, &it, error_call));

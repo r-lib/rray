@@ -81,7 +81,8 @@ r_obj* rray_split(
     v_out_dimensions,
     dimensionality,
     v_out_elt_dimensions,
-    dimensionality
+    dimensionality,
+    rray_size_from_dimensions(v_x_dimensions, dimensionality)
   );
 
   switch (type) {

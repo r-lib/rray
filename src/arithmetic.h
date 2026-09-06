@@ -90,18 +90,16 @@ r_no_return void stop_int_overflow(struct r_lazy error_call);
   const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
   const Y_CTYPE* v_y = Y_CONST_DEREF(y);                                       \
                                                                                \
-  r_ssize i = 0;                                                               \
   while (!rray_iterator2_finished(it)) {                                       \
     struct rray_iterator2_run run = rray_iterator2_run(it);                    \
                                                                                \
     while (!rray_iterator2_run_finished(&run)) {                               \
-      v_out[i] = ONE(                                                          \
+      v_out[rray_iterator2_run_index(&run)] = ONE(                             \
         X_CAST(v_x[rray_iterator2_run_location1(&run)]),                       \
         Y_CAST(v_y[rray_iterator2_run_location2(&run)]),                       \
         error_call                                                             \
       );                                                                       \
       rray_iterator2_run_next(&run);                                           \
-      ++i;                                                                     \
     }                                                                          \
     rray_iterator2_next(it);                                                   \
   }                                                                            \
