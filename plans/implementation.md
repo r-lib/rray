@@ -662,7 +662,6 @@ Binary elementwise:
 |---|---|---|---|---|
 | `+` `-` `*` | int | int | dbl | cpl |
 | `/` `^` | dbl | dbl | dbl | cpl |
-| `%%` `%/%` | int | int | dbl | error |
 
 Reduction:
 
@@ -799,78 +798,18 @@ API, the coalesce rule as the `rray_broadcast_names()` family, the dimension and
 shape helpers, the type rules as the `rray_ptype2()` and `rray_cast()` families,
 the scalar casts as `static inline` functions in `src/cast.h`, and
 `rray_broadcast()`, `rray_broadcast_common()`, `rray_split()`, `rray_sum()`,
-`rray_add()`, `rray_multiply()`, `rray_subtract()` and `rray_divide()`. The
-array functions all follow the shell and core pattern in Part 1, and no
-templates are left in `src/`.
+`rray_add()`, `rray_multiply()`, `rray_subtract()`, `rray_divide()` and
+`rray_exponentiate()`. The array functions all follow the shell and core
+pattern in Part 1, and no templates are left in `src/`.
+
+`rray_modulo()` and `rray_integer_divide()` (`%%` and `%/%`) are deferred. See
+`plans/mod-and-idiv.md`.
 
 Work through the rest in order, since each assumes the ones before it have
 landed. After that, work through Part 5 in any order that respects the
 dependencies noted there.
 
-## PR 7: The rest of the binary arithmetic
-
-`rray_modulo()`, `rray_integer_divide()`. `rray_multiply()`, `rray_subtract()`,
-`rray_divide()` and `rray_exponentiate()` (named `rray_power()` earlier in this
-plan) have landed.
-
-`rray_exponentiate()` doesn't support complex input. Its `cpl` arms call
-`stop_unsupported_arithmetic()` like `%%` and `%/%` do, rather than adding a
-`cpl` core, so the `cpl` guidance below doesn't apply to it. Its `dbl` core
-calls `R_pow()` from `Rmath.h` directly, which is R's own `^` implementation
-and so matches it exactly, including the edge cases around zero, non-finite
-inputs and NA propagation that plain `pow()` gets wrong.
-
-All the same shape as `rray_add()`. Each operator is a self contained
-`src/arithmetic-{op}.c` holding `ffi_rray_{name}()`, `rray_{name}()`, a static
-`rray_{name}_switch()` over `enum rray_type2`, its 16 cores, and its three
-scalar operations. Copy `src/arithmetic-add.c` and change the switch arms, the
-`RRAY_ARITHMETIC` arguments, and the scalar operations.
-
-`src/arithmetic.c` is the shared shell. It takes the switch as a function
-pointer, so it never learns that operators exist and no operator file has to
-know about any other:
-
-```c
-r_obj* rray_add(x, y, x_arg, y_arg, error_call) {
-  return rray_binary_arithmetic(x, y, rray_add_switch, x_arg, y_arg, error_call);
-}
-```
-
-The `RRAY_ARITHMETIC` macro is in `src/arithmetic.h` so every operator file
-shares it. Don't undefine it, the operator files don't own it. So is
-`stop_int_overflow()`, since `+`, `-` and `*` all raise the same error.
-
-Check integer overflow against the double product, as `rray_multiply_int_one()`
-does, rather than the way base R does it. Base R computes `int z = x * y`
-first, which is undefined behaviour on overflow and which UBSAN flags, and only
-then tests `(double) x * (double) y == z`. Over 4 million elements the double
-check runs at 0.79ns an element, base R's at 0.82ns, and
-`__builtin_mul_overflow()` at 0.78ns, so standard C costs nothing worth a
-compiler builtin here. In place it disappears: `rray_multiply()` on integers is
-2.10ns an element against 2.28ns on doubles, which skip the check entirely but
-move twice the memory.
-
-`/` and `^` promote to double, so their `int` cores write doubles and there is
-no `rray_divide_int_one()`. `%%` and `%/%` error on `cpl`, so those three arms
-call `stop_unsupported_arithmetic()` rather than naming a core.
-
-Write the `cpl` scalar operation for `*` and `/` with C99 `double _Complex`, as
-`rray_multiply_cpl_one()` does, rather than by hand. Base R does
-the same, and the hand written formula gives `NaN+NaNi` where base R gives
-`Inf+Infi`. It costs nothing: the compiler emits the plain formula inline and
-only calls `__muldc3` when both halves come out `NaN`. Only `+` and `-` are
-componentwise, which is also what base R does.
-
-Convert with `rray_cpl_to_c99()` in `src/arithmetic.h`. Not `CMPLX()`, which is
-C11 and, on macOS, is defined only for clang. C99 guarantees a complex type has
-the same representation as a two element array of its real type, real part
-first, so the conversion is a copy the compiler removes entirely.
-
-Tests go one file per operator, as Part 3 explains. Copy
-`tests/testthat/test-arithmetic-multiply.R` and work through the same cases,
-including all 16 type combinations in both positions.
-
-## PR 8: `rray_sum()` overflow comment
+## PR 7: `rray_sum()` overflow comment
 
 Fix the comment in `src/sum.c` claiming a logical array can never overflow an
 integer sum. That is false once long arrays are supported.
@@ -1078,8 +1017,6 @@ you go.
 | `rray_multiply(x, y)` | `*` |
 | `rray_divide(x, y)` | `/` |
 | `rray_exponentiate(x, y)` | `^` |
-| `rray_modulo(x, y)` | `%%` |
-| `rray_integer_divide(x, y)` | `%/%` |
 
 There is no unary negation. `-x` already works on a bare array, so a function
 for it would add nothing.
