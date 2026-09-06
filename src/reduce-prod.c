@@ -243,7 +243,8 @@ static inline double rray_prod_dbl_one_na_rm(double out, double x) {
   return out * x;
 }
 
-// Plain formula, not the `_Complex` operator, so `Inf * NA` matches `prod()`
+// Plain formula, not the `_Complex` operator, so `Inf * NA` matches `prod()`.
+// Different from `rray_multiply_cpl_one()`, which instead matches R's `*`.
 static inline r_complex rray_prod_cpl_one(r_complex out, r_complex x) {
   return (r_complex){
     .r = out.r * x.r - out.i * x.i,
