@@ -10,10 +10,11 @@
 
 // Core "next" algorithm used by all iterators
 //
-// Takes one step along the multidimensional point. Calls `STEP` and `RESET`
-// hooks, which are what define each iterator.
-#define RRAY_ITERATOR_NEXT(IT, STEP, RESET)                                    \
-  for (int i = 0; i < (IT)->point_dimensionality; ++i) {                       \
+// Takes one step along the multidimensional point, starting from axis
+// `START`. Calls `STEP` and `RESET` hooks, which are what define each
+// iterator.
+#define RRAY_ITERATOR_NEXT(IT, START, STEP, RESET)                             \
+  for (int i = START; i < (IT)->point_dimensionality; ++i) {                   \
     ++(IT)->v_point[i];                                                        \
                                                                                \
     if ((IT)->v_point[i] < (IT)->v_point_dimensions[i]) {                      \
@@ -29,18 +30,24 @@
 
 // Simplest iterator
 //
-// Walks the multidimensional point space, providing access to the current
-// multidimensional point
+// Walks the multidimensional point space, run by run. Each run covers axis 0
+// for a fixed combination of axis 1+, reported through `struct
+// rray_point_iterator_run`, which owns its own copy of the point so the
+// compiler can keep it in registers rather than reloading through `it`
 struct rray_point_iterator {
   int v_point[RRAY_MAX_DIMENSIONALITY];
   int v_point_dimensions[RRAY_MAX_DIMENSIONALITY];
   int point_dimensionality;
+
+  r_ssize size;
+  r_ssize index;
 };
 
 static inline void rray_point_iterator_init(
   struct rray_point_iterator* it,
   const int* v_point_dimensions,
-  int point_dimensionality
+  int point_dimensionality,
+  r_ssize size
 ) {
   check_max_dimensionality(point_dimensionality);
 
@@ -50,28 +57,76 @@ static inline void rray_point_iterator_init(
     it->v_point_dimensions[i] = v_point_dimensions[i];
   }
   memset(it->v_point, 0, sizeof(int) * point_dimensionality);
+
+  it->size = size;
+  it->index = 0;
 }
 
-static inline const int* rray_point_iterator_point(
+static inline bool rray_point_iterator_finished(
   const struct rray_point_iterator* it
 ) {
-  return it->v_point;
+  return it->index == it->size;
 }
 
 static inline void rray_point_iterator_next(struct rray_point_iterator* it) {
-  RRAY_ITERATOR_NEXT(it, {}, {})
+  it->index += it->v_point_dimensions[0];
+  it->v_point[0] = 0;
+
+  RRAY_ITERATOR_NEXT(it, 1, {}, {})
+}
+
+struct rray_point_iterator_run {
+  int v_point[RRAY_MAX_DIMENSIONALITY];
+
+  r_ssize index;
+  r_ssize end;
+};
+
+static inline struct rray_point_iterator_run rray_point_iterator_run(
+  const struct rray_point_iterator* it
+) {
+  struct rray_point_iterator_run run;
+  memcpy(run.v_point, it->v_point, sizeof(int) * it->point_dimensionality);
+  run.index = it->index;
+  run.end = it->index + it->v_point_dimensions[0];
+  return run;
+}
+
+static inline bool rray_point_iterator_run_finished(
+  const struct rray_point_iterator_run* run
+) {
+  return run->index == run->end;
+}
+
+static inline const int* rray_point_iterator_run_point(
+  const struct rray_point_iterator_run* run
+) {
+  return run->v_point;
+}
+
+static inline r_ssize rray_point_iterator_run_index(
+  const struct rray_point_iterator_run* run
+) {
+  return run->index;
+}
+
+static inline void rray_point_iterator_run_next(
+  struct rray_point_iterator_run* run
+) {
+  ++run->v_point[0];
+  ++run->index;
 }
 
 // --------------------------------------------------------------------------
 
 // Broadcasting iterator
 //
-// Walks the multidimensional point space. Reports a 1D `location` in an
-// alternate subspace.
+// Walks the multidimensional point space, run by run. Reports a 1D
+// `location` in an alternate subspace.
 //
 // For broadcasting, the dimensions you broadcast to make up the larger point
-// space. This is walked in order. The original dimensions of the array make up
-// the subspace. So as you walk the output's point space you can fetch
+// space. This is walked in order. The original dimensions of the array make
+// up the subspace. So as you walk the output's point space you can fetch
 // `location`s back into your original array to pull from.
 //
 // For reducing, it's actually a special form of broadcasting. The original
@@ -83,6 +138,9 @@ struct rray_iterator {
   int v_point_dimensions[RRAY_MAX_DIMENSIONALITY];
   int point_dimensionality;
 
+  r_ssize size;
+  r_ssize index;
+
   r_ssize location;
   r_ssize v_location_strides[RRAY_MAX_DIMENSIONALITY];
 };
@@ -92,7 +150,8 @@ static inline void rray_iterator_init(
   const int* v_point_dimensions,
   int point_dimensionality,
   const int* v_location_dimensions,
-  int location_dimensionality
+  int location_dimensionality,
+  r_ssize size
 ) {
   check_max_dimensionality(point_dimensionality);
 
@@ -102,6 +161,9 @@ static inline void rray_iterator_init(
     it->v_point_dimensions[i] = v_point_dimensions[i];
   }
   memset(it->v_point, 0, sizeof(int) * point_dimensionality);
+
+  it->size = size;
+  it->index = 0;
 
   rray__location_strides_init(
     it->v_location_strides,
@@ -114,19 +176,64 @@ static inline void rray_iterator_init(
   it->location = 0;
 }
 
-static inline r_ssize rray_iterator_location(const struct rray_iterator* it) {
-  return it->location;
+static inline bool rray_iterator_finished(const struct rray_iterator* it) {
+  return it->index == it->size;
 }
 
 static inline void rray_iterator_next(struct rray_iterator* it) {
+  it->index += it->v_point_dimensions[0];
+
   RRAY_ITERATOR_NEXT(
     it,
+    1,
     { it->location += it->v_location_strides[i]; },
     {
       it->location -=
         (it->v_point_dimensions[i] - 1) * it->v_location_strides[i];
     }
   )
+}
+
+struct rray_iterator_run {
+  r_ssize location;
+  r_ssize stride;
+
+  r_ssize index;
+  r_ssize end;
+};
+
+static inline struct rray_iterator_run rray_iterator_run(
+  const struct rray_iterator* it
+) {
+  return (struct rray_iterator_run) {
+    .location = it->location,
+    .stride = it->v_location_strides[0],
+    .index = it->index,
+    .end = it->index + it->v_point_dimensions[0],
+  };
+}
+
+static inline bool rray_iterator_run_finished(
+  const struct rray_iterator_run* run
+) {
+  return run->index == run->end;
+}
+
+static inline r_ssize rray_iterator_run_location(
+  const struct rray_iterator_run* run
+) {
+  return run->location;
+}
+
+static inline r_ssize rray_iterator_run_index(
+  const struct rray_iterator_run* run
+) {
+  return run->index;
+}
+
+static inline void rray_iterator_run_next(struct rray_iterator_run* run) {
+  run->location += run->stride;
+  ++run->index;
 }
 
 // --------------------------------------------------------------------------
@@ -206,6 +313,7 @@ static inline r_ssize rray_iterator2_location2(
 static inline void rray_iterator2_next_point(struct rray_iterator2* it) {
   RRAY_ITERATOR_NEXT(
     it,
+    0,
     {
       it->location1 += it->v_location1_strides[i];
       it->location2 += it->v_location2_strides[i];
@@ -226,21 +334,20 @@ static inline bool rray_iterator2_finished(const struct rray_iterator2* it) {
 static inline void rray_iterator2_next(struct rray_iterator2* it) {
   it->index += it->v_point_dimensions[0];
 
-  for (int i = 1; i < it->point_dimensionality; ++i) {
-    ++it->v_point[i];
-
-    if (it->v_point[i] < it->v_point_dimensions[i]) {
+  RRAY_ITERATOR_NEXT(
+    it,
+    1,
+    {
       it->location1 += it->v_location1_strides[i];
       it->location2 += it->v_location2_strides[i];
-      return;
+    },
+    {
+      it->location1 -=
+        (it->v_point_dimensions[i] - 1) * it->v_location1_strides[i];
+      it->location2 -=
+        (it->v_point_dimensions[i] - 1) * it->v_location2_strides[i];
     }
-
-    it->v_point[i] = 0;
-    it->location1 -=
-      (it->v_point_dimensions[i] - 1) * it->v_location1_strides[i];
-    it->location2 -=
-      (it->v_point_dimensions[i] - 1) * it->v_location2_strides[i];
-  }
+  )
 }
 
 // --------------------------------------------------------------------------

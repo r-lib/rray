@@ -1361,34 +1361,6 @@ Deferred rather than dropped:
 Not now. Revisit once the foundations are in place and there is a working
 version to measure against.
 
-## Iterator runs
-
-Every per type loop today steps the iterator once per element, even when no
-broadcasting is happening and the mapping is the identity.
-
-Instead of a bespoke fast path in each function, the iterator could report a
-**run length**: the next N output elements map to N consecutive input locations,
-or to the same location N times. Every loop then shares one shape:
-
-```c
-while (i < size) {
-  const r_ssize n = rray_iterator_run(&it);
-  // copy or fill n elements
-  i += n;
-}
-```
-
-That covers "no broadcasting at all" and "broadcasting along a later axis" with
-one mechanism, and it is one thing to test rather than a fast path per function.
-
-It is more machinery in `iterator.h`, which is why it waits. Do it as its own
-pull request, with benchmarks against the version that came before it.
-
-Functions most likely to benefit: `rray_broadcast()`, the elementwise arithmetic
-family, and `rray_tile()`. For a sense of the gap, `rray_add(int_array, 1)` over
-5 million elements takes about 12ms against base R's 6ms for `x + 1`, and both
-allocate the same 38MB. The difference is the per element iterator step.
-
 ## `x_arg` and `call` on the exported functions
 
 vctrs gives its functions these so another package's wrapper can make an error

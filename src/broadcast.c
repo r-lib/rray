@@ -68,7 +68,8 @@ r_obj* rray_broadcast(
     v_dimensions,
     dimensionality,
     v_x_dimensions,
-    x_dimensionality
+    x_dimensionality,
+    size
   );
 
   r_obj* out;
@@ -117,8 +118,15 @@ r_obj* rray_broadcast(
   const CTYPE* v_x = CONST_DEREF(x);                                           \
   CTYPE* v_out = DEREF(out);                                                   \
                                                                                \
-  for (r_ssize i = 0; i < size; ++i) {                                         \
-    v_out[i] = v_x[rray_iterator_location(it)];                                \
+  while (!rray_iterator_finished(it)) {                                        \
+    struct rray_iterator_run run = rray_iterator_run(it);                      \
+                                                                               \
+    while (!rray_iterator_run_finished(&run)) {                                \
+      v_out[rray_iterator_run_index(&run)] =                                   \
+        v_x[rray_iterator_run_location(&run)];                                 \
+      rray_iterator_run_next(&run);                                            \
+    }                                                                          \
+                                                                               \
     rray_iterator_next(it);                                                    \
   }                                                                            \
                                                                                \
@@ -129,8 +137,18 @@ r_obj* rray_broadcast(
   r_obj* out = KEEP(r_alloc_vector(RTYPE, size));                              \
   r_obj* const* v_x = CONST_DEREF(x);                                          \
                                                                                \
-  for (r_ssize i = 0; i < size; ++i) {                                         \
-    POKE(out, i, v_x[rray_iterator_location(it)]);                             \
+  while (!rray_iterator_finished(it)) {                                        \
+    struct rray_iterator_run run = rray_iterator_run(it);                      \
+                                                                               \
+    while (!rray_iterator_run_finished(&run)) {                                \
+      POKE(                                                                    \
+        out,                                                                   \
+        rray_iterator_run_index(&run),                                         \
+        v_x[rray_iterator_run_location(&run)]                                  \
+      );                                                                       \
+      rray_iterator_run_next(&run);                                            \
+    }                                                                          \
+                                                                               \
     rray_iterator_next(it);                                                    \
   }                                                                            \
                                                                                \

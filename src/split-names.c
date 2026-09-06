@@ -79,19 +79,26 @@ r_obj* rray_split_names(r_obj* x, r_obj* axes) {
   r_obj* out = KEEP(r_alloc_list(size));
 
   struct rray_point_iterator it;
-  rray_point_iterator_init(&it, v_dimensions, dimensionality);
+  rray_point_iterator_init(&it, v_dimensions, dimensionality, size);
 
-  for (r_ssize i = 0; i < size; ++i) {
-    const int* v_point = rray_point_iterator_point(&it);
+  while (!rray_point_iterator_finished(&it)) {
+    struct rray_point_iterator_run run = rray_point_iterator_run(&it);
 
-    r_obj* names = r_alloc_list(dimensionality);
-    r_list_poke(out, i, names);
+    while (!rray_point_iterator_run_finished(&run)) {
+      const int* v_point = rray_point_iterator_run_point(&run);
+      const r_ssize i = rray_point_iterator_run_index(&run);
 
-    for (int j = 0; j < dimensionality; ++j) {
-      r_obj* const* v_axis_names = v_v_axis_names[j];
-      if (v_axis_names != NULL) {
-        r_list_poke(names, j, v_axis_names[v_point[j]]);
+      r_obj* names = r_alloc_list(dimensionality);
+      r_list_poke(out, i, names);
+
+      for (int j = 0; j < dimensionality; ++j) {
+        r_obj* const* v_axis_names = v_v_axis_names[j];
+        if (v_axis_names != NULL) {
+          r_list_poke(names, j, v_axis_names[v_point[j]]);
+        }
       }
+
+      rray_point_iterator_run_next(&run);
     }
 
     rray_point_iterator_next(&it);

@@ -39,6 +39,8 @@ r_obj* rray_reduce(
 
   const r_ssize out_size =
     rray_size_from_dimensions(v_out_dimensions, dimensionality);
+  const r_ssize x_size =
+    rray_size_from_dimensions(v_x_dimensions, dimensionality);
 
   struct rray_iterator it;
   rray_iterator_init(
@@ -46,7 +48,8 @@ r_obj* rray_reduce(
     v_x_dimensions,
     dimensionality,
     v_out_dimensions,
-    dimensionality
+    dimensionality,
+    x_size
   );
 
   const rray_reduce_fn fn = fn_switch(x, na_rm, arg, error_call);
