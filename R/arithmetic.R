@@ -9,6 +9,9 @@
 #'
 #' - `rray_divide()` divides two arrays elementwise.
 #'
+#' - `rray_exponentiate()` raises the elements of one array to the power of
+#'   the elements of another.
+#'
 #' @details
 #' The arrays are broadcast to common dimensions first, so they do not have to
 #' be the same shape.
@@ -26,6 +29,8 @@
 #'
 #' - `rray_divide()`: logicals and integers are cast to double.
 #'
+#' - `rray_exponentiate()`: logicals and integers are cast to double.
+#'
 #' @param x An array.
 #'
 #' @param y An array.
@@ -41,6 +46,7 @@
 #' rray_subtract(x, 1L)
 #' rray_multiply(x, 2L)
 #' rray_divide(x, 2L)
+#' rray_exponentiate(x, 2L)
 #'
 #' # Adding 10 to column 1 and 20 to column 2 via broadcasting
 #' rray_add(x, array(c(10L, 20L), c(1L, 2L)))
@@ -81,4 +87,10 @@ rray_multiply <- function(x, y) {
 #' @export
 rray_divide <- function(x, y) {
   .Call(ffi_rray_divide, x, y, environment())
+}
+
+#' @rdname arithmetic
+#' @export
+rray_exponentiate <- function(x, y) {
+  .Call(ffi_rray_exponentiate, x, y, environment())
 }

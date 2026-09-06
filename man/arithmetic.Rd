@@ -6,6 +6,7 @@
 \alias{rray_subtract}
 \alias{rray_multiply}
 \alias{rray_divide}
+\alias{rray_exponentiate}
 \title{Array arithmetic}
 \usage{
 rray_add(x, y)
@@ -15,6 +16,8 @@ rray_subtract(x, y)
 rray_multiply(x, y)
 
 rray_divide(x, y)
+
+rray_exponentiate(x, y)
 }
 \arguments{
 \item{x}{An array.}
@@ -30,6 +33,8 @@ An array with the common dimensions of \code{x} and \code{y}.
 \item \code{rray_subtract()} subtracts two arrays elementwise.
 \item \code{rray_multiply()} multiplies two arrays elementwise.
 \item \code{rray_divide()} divides two arrays elementwise.
+\item \code{rray_exponentiate()} raises the elements of one array to the power of
+the elements of another.
 }
 }
 \details{
@@ -46,6 +51,7 @@ Certain inputs are upcast, changing the return type:
 \item \code{rray_subtract()}: logicals are cast to integer.
 \item \code{rray_multiply()}: logicals are cast to integer.
 \item \code{rray_divide()}: logicals and integers are cast to double.
+\item \code{rray_exponentiate()}: logicals and integers are cast to double.
 }
 }
 
@@ -56,6 +62,7 @@ rray_add(x, 1L)
 rray_subtract(x, 1L)
 rray_multiply(x, 2L)
 rray_divide(x, 2L)
+rray_exponentiate(x, 2L)
 
 # Adding 10 to column 1 and 20 to column 2 via broadcasting
 rray_add(x, array(c(10L, 20L), c(1L, 2L)))

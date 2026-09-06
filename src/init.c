@@ -90,6 +90,11 @@ extern r_obj* ffi_rray_cast_common(
 
 extern r_obj* ffi_rray_add(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame);
 extern r_obj* ffi_rray_divide(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame);
+extern r_obj* ffi_rray_exponentiate(
+  r_obj* ffi_x,
+  r_obj* ffi_y,
+  r_obj* ffi_frame
+);
 extern r_obj* ffi_rray_multiply(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame);
 extern r_obj* ffi_rray_subtract(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame);
 
@@ -133,6 +138,7 @@ static const R_CallMethodDef CallEntries[] = {
   {"ffi_rray_cast_common", (DL_FUNC) &ffi_rray_cast_common, 3},
   {"ffi_rray_add", (DL_FUNC) &ffi_rray_add, 3},
   {"ffi_rray_divide", (DL_FUNC) &ffi_rray_divide, 3},
+  {"ffi_rray_exponentiate", (DL_FUNC) &ffi_rray_exponentiate, 3},
   {"ffi_rray_multiply", (DL_FUNC) &ffi_rray_multiply, 3},
   {"ffi_rray_subtract", (DL_FUNC) &ffi_rray_subtract, 3},
   {"ffi_test_wrap", (DL_FUNC) &ffi_test_wrap, 1},
