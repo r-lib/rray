@@ -65,11 +65,11 @@ r_obj* rray_broadcast(
   struct rray_iterator it;
   rray_iterator_init(
     &it,
+    size,
     v_dimensions,
     dimensionality,
     v_x_dimensions,
-    x_dimensionality,
-    size
+    x_dimensionality
   );
 
   r_obj* out;

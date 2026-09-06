@@ -45,9 +45,9 @@ struct rray_point_iterator {
 
 static inline void rray_point_iterator_init(
   struct rray_point_iterator* it,
+  r_ssize size,
   const int* v_point_dimensions,
-  int point_dimensionality,
-  r_ssize size
+  int point_dimensionality
 ) {
   check_max_dimensionality(point_dimensionality);
 
@@ -147,11 +147,11 @@ struct rray_iterator {
 
 static inline void rray_iterator_init(
   struct rray_iterator* it,
+  r_ssize size,
   const int* v_point_dimensions,
   int point_dimensionality,
   const int* v_location_dimensions,
-  int location_dimensionality,
-  r_ssize size
+  int location_dimensionality
 ) {
   check_max_dimensionality(point_dimensionality);
 
@@ -256,13 +256,13 @@ struct rray_iterator2 {
 
 static inline void rray_iterator2_init(
   struct rray_iterator2* it,
+  r_ssize size,
   const int* v_point_dimensions,
   int point_dimensionality,
   const int* v_location1_dimensions,
   int location1_dimensionality,
   const int* v_location2_dimensions,
-  int location2_dimensionality,
-  r_ssize size
+  int location2_dimensionality
 ) {
   check_max_dimensionality(point_dimensionality);
 

@@ -76,13 +76,13 @@ r_obj* rray_split(
   struct rray_iterator2 it;
   rray_iterator2_init(
     &it,
+    rray_size_from_dimensions(v_x_dimensions, dimensionality),
     v_x_dimensions,
     dimensionality,
     v_out_dimensions,
     dimensionality,
     v_out_elt_dimensions,
-    dimensionality,
-    rray_size_from_dimensions(v_x_dimensions, dimensionality)
+    dimensionality
   );
 
   switch (type) {

@@ -52,13 +52,13 @@ r_obj* rray_binary_arithmetic(
   struct rray_iterator2 it;
   rray_iterator2_init(
     &it,
+    size,
     v_dimensions,
     dimensionality,
     v_x_dimensions,
     x_dimensionality,
     v_y_dimensions,
-    y_dimensionality,
-    size
+    y_dimensionality
   );
 
   r_obj* out = KEEP(fn(x, y, size, &it, error_call));

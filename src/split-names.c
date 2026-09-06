@@ -79,7 +79,7 @@ r_obj* rray_split_names(r_obj* x, r_obj* axes) {
   r_obj* out = KEEP(r_alloc_list(size));
 
   struct rray_point_iterator it;
-  rray_point_iterator_init(&it, v_dimensions, dimensionality, size);
+  rray_point_iterator_init(&it, size, v_dimensions, dimensionality);
 
   while (!rray_point_iterator_finished(&it)) {
     struct rray_point_iterator_run run = rray_point_iterator_run(&it);

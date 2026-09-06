@@ -45,11 +45,11 @@ r_obj* rray_reduce(
   struct rray_iterator it;
   rray_iterator_init(
     &it,
+    x_size,
     v_x_dimensions,
     dimensionality,
     v_out_dimensions,
-    dimensionality,
-    x_size
+    dimensionality
   );
 
   const rray_reduce_fn fn = fn_switch(x, na_rm, arg, error_call);
