@@ -244,7 +244,7 @@ That is a bad error message reaching users from ten call sites:
 
 - `src/split.c`
 
-- `src/sum.c`
+- `src/reduce.c`
 
 So `arg_as_array()` must reject null explicitly:
 
