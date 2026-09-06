@@ -35,13 +35,20 @@ r_no_return void stop_unsupported_reduce(
   struct r_lazy error_call
 );
 
-#define RRAY_REDUCE(X_CONST_DEREF, OUT_RTYPE, OUT_CTYPE, OUT_DEREF, ONE)       \
+#define RRAY_REDUCE(                                                           \
+  X_CTYPE,                                                                     \
+  X_CONST_DEREF,                                                               \
+  OUT_RTYPE,                                                                   \
+  OUT_CTYPE,                                                                   \
+  OUT_DEREF,                                                                   \
+  ONE                                                                          \
+)                                                                              \
   r_obj* out = KEEP(r_alloc_vector(OUT_RTYPE, out_size));                      \
   OUT_CTYPE* v_out = OUT_DEREF(out);                                           \
   r_memset(v_out, 0, sizeof(OUT_CTYPE) * out_size);                            \
                                                                                \
   const r_ssize x_size = r_length(x);                                          \
-  const OUT_CTYPE* v_x = X_CONST_DEREF(x);                                     \
+  const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
                                                                                \
   for (r_ssize i = 0; i < x_size; ++i) {                                       \
     const r_ssize loc = rray_iterator_location(it);                            \

@@ -62,7 +62,14 @@ static r_obj* rray_sum_lgl(
   r_ssize out_size,
   struct rray_iterator* it
 ) {
-  RRAY_REDUCE(r_lgl_cbegin, R_TYPE_integer, int, r_int_begin, rray_sum_lgl_one);
+  RRAY_REDUCE(
+    int,
+    r_lgl_cbegin,
+    R_TYPE_integer,
+    int,
+    r_int_begin,
+    rray_sum_lgl_one
+  );
 }
 
 static r_obj* rray_sum_lgl_na_rm(
@@ -71,6 +78,7 @@ static r_obj* rray_sum_lgl_na_rm(
   struct rray_iterator* it
 ) {
   RRAY_REDUCE(
+    int,
     r_lgl_cbegin,
     R_TYPE_integer,
     int,
@@ -84,7 +92,14 @@ static r_obj* rray_sum_int(
   r_ssize out_size,
   struct rray_iterator* it
 ) {
-  RRAY_REDUCE(r_int_cbegin, R_TYPE_integer, int, r_int_begin, rray_sum_int_one);
+  RRAY_REDUCE(
+    int,
+    r_int_cbegin,
+    R_TYPE_integer,
+    int,
+    r_int_begin,
+    rray_sum_int_one
+  );
 }
 
 static r_obj* rray_sum_int_na_rm(
@@ -93,6 +108,7 @@ static r_obj* rray_sum_int_na_rm(
   struct rray_iterator* it
 ) {
   RRAY_REDUCE(
+    int,
     r_int_cbegin,
     R_TYPE_integer,
     int,
@@ -107,6 +123,7 @@ static r_obj* rray_sum_dbl(
   struct rray_iterator* it
 ) {
   RRAY_REDUCE(
+    double,
     r_dbl_cbegin,
     R_TYPE_double,
     double,
@@ -121,6 +138,7 @@ static r_obj* rray_sum_dbl_na_rm(
   struct rray_iterator* it
 ) {
   RRAY_REDUCE(
+    double,
     r_dbl_cbegin,
     R_TYPE_double,
     double,
@@ -135,6 +153,7 @@ static r_obj* rray_sum_cpl(
   struct rray_iterator* it
 ) {
   RRAY_REDUCE(
+    r_complex,
     r_cpl_cbegin,
     R_TYPE_complex,
     r_complex,
@@ -149,6 +168,7 @@ static r_obj* rray_sum_cpl_na_rm(
   struct rray_iterator* it
 ) {
   RRAY_REDUCE(
+    r_complex,
     r_cpl_cbegin,
     R_TYPE_complex,
     r_complex,
