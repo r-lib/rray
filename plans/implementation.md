@@ -809,8 +809,16 @@ dependencies noted there.
 
 ## PR 7: The rest of the binary arithmetic
 
-`rray_power()`, `rray_modulo()`, `rray_integer_divide()`. `rray_multiply()`,
-`rray_subtract()` and `rray_divide()` have landed.
+`rray_modulo()`, `rray_integer_divide()`. `rray_multiply()`, `rray_subtract()`,
+`rray_divide()` and `rray_exponentiate()` (named `rray_power()` earlier in this
+plan) have landed.
+
+`rray_exponentiate()` doesn't support complex input. Its `cpl` arms call
+`stop_unsupported_arithmetic()` like `%%` and `%/%` do, rather than adding a
+`cpl` core, so the `cpl` guidance below doesn't apply to it. Its `dbl` core
+calls `R_pow()` from `Rmath.h` directly, which is R's own `^` implementation
+and so matches it exactly, including the edge cases around zero, non-finite
+inputs and NA propagation that plain `pow()` gets wrong.
 
 All the same shape as `rray_add()`. Each operator is a self contained
 `src/arithmetic-{op}.c` holding `ffi_rray_{name}()`, `rray_{name}()`, a static
@@ -846,8 +854,8 @@ move twice the memory.
 no `rray_divide_int_one()`. `%%` and `%/%` error on `cpl`, so those three arms
 call `stop_unsupported_arithmetic()` rather than naming a core.
 
-Write the `cpl` scalar operation for `*`, `/` and `^` with C99 `double
-_Complex`, as `rray_multiply_cpl_one()` does, rather than by hand. Base R does
+Write the `cpl` scalar operation for `*` and `/` with C99 `double _Complex`, as
+`rray_multiply_cpl_one()` does, rather than by hand. Base R does
 the same, and the hand written formula gives `NaN+NaNi` where base R gives
 `Inf+Infi`. It costs nothing: the compiler emits the plain formula inline and
 only calls `__muldc3` when both halves come out `NaN`. Only `+` and `-` are
@@ -1069,7 +1077,7 @@ you go.
 | `rray_subtract(x, y)` | `-` |
 | `rray_multiply(x, y)` | `*` |
 | `rray_divide(x, y)` | `/` |
-| `rray_power(x, y)` | `^` |
+| `rray_exponentiate(x, y)` | `^` |
 | `rray_modulo(x, y)` | `%%` |
 | `rray_integer_divide(x, y)` | `%/%` |
 
