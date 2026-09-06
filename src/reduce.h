@@ -41,11 +41,15 @@ r_no_return void stop_unsupported_reduce(
   OUT_RTYPE,                                                                   \
   OUT_CTYPE,                                                                   \
   OUT_DEREF,                                                                   \
+  OUT_INIT,                                                                    \
   ONE                                                                          \
 )                                                                              \
   r_obj* out = KEEP(r_alloc_vector(OUT_RTYPE, out_size));                      \
   OUT_CTYPE* v_out = OUT_DEREF(out);                                           \
-  r_memset(v_out, 0, sizeof(OUT_CTYPE) * out_size);                            \
+                                                                               \
+  for (r_ssize i = 0; i < out_size; ++i) {                                     \
+    v_out[i] = OUT_INIT;                                                       \
+  }                                                                            \
                                                                                \
   const r_ssize x_size = r_length(x);                                          \
   const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \

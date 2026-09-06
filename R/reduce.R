@@ -3,11 +3,18 @@
 #' @description
 #' - `rray_sum()` computes the sum along the specified `axes`.
 #'
+#' - `rray_prod()` computes the product along the specified `axes`.
+#'
 #' @details
 #' The dimensionality of `x` is retained in the result, with the reduced axes
 #' collapsed to size 1.
 #'
 #' If summing an integer array would overflow, an error is thrown.
+#'
+#' @section Casting:
+#' Certain inputs are upcast, changing the return type:
+#'
+#' - `rray_prod()`: logicals and integers are cast to double.
 #'
 #' @param x An array.
 #'
@@ -34,6 +41,9 @@
 #'
 #' # Sum along both axes
 #' rray_sum(x, c(1L, 2L))
+#'
+#' # Product along rows
+#' rray_prod(x, 1L)
 NULL
 
 #' @rdname reduce
@@ -41,4 +51,11 @@ NULL
 rray_sum <- function(x, axes, ..., na_rm = FALSE) {
   check_dots_empty0(...)
   .Call(ffi_rray_sum, x, axes, na_rm, environment())
+}
+
+#' @rdname reduce
+#' @export
+rray_prod <- function(x, axes, ..., na_rm = FALSE) {
+  check_dots_empty0(...)
+  .Call(ffi_rray_prod, x, axes, na_rm, environment())
 }
