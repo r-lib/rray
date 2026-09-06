@@ -60,36 +60,6 @@ r_no_return void stop_int_overflow(struct r_lazy error_call);
   const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
   const Y_CTYPE* v_y = Y_CONST_DEREF(y);                                       \
                                                                                \
-  for (r_ssize i = 0; i < size; ++i) {                                         \
-    v_out[i] = ONE(                                                            \
-      X_CAST(v_x[rray_iterator2_location1(it)]),                               \
-      Y_CAST(v_y[rray_iterator2_location2(it)]),                               \
-      error_call                                                               \
-    );                                                                         \
-    rray_iterator2_next_point(it);                                             \
-  }                                                                            \
-                                                                               \
-  FREE(1);                                                                     \
-  return out;
-
-#define RRAY_ARITHMETIC_RUNS(                                                  \
-  X_CTYPE,                                                                     \
-  X_CONST_DEREF,                                                               \
-  X_CAST,                                                                      \
-  Y_CTYPE,                                                                     \
-  Y_CONST_DEREF,                                                               \
-  Y_CAST,                                                                      \
-  OUT_RTYPE,                                                                   \
-  OUT_CTYPE,                                                                   \
-  OUT_DEREF,                                                                   \
-  ONE                                                                          \
-)                                                                              \
-  r_obj* out = KEEP(r_alloc_vector(OUT_RTYPE, size));                          \
-  OUT_CTYPE* v_out = OUT_DEREF(out);                                           \
-                                                                               \
-  const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
-  const Y_CTYPE* v_y = Y_CONST_DEREF(y);                                       \
-                                                                               \
   while (!rray_iterator2_finished(it)) {                                       \
     struct rray_iterator2_run run = rray_iterator2_run(it);                    \
                                                                                \

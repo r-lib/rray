@@ -111,7 +111,7 @@ static r_obj* rray_add_lgl_lgl(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC_RUNS(
+  RRAY_ARITHMETIC(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_int_one,
@@ -132,7 +132,7 @@ static r_obj* rray_add_lgl_int(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC_RUNS(
+  RRAY_ARITHMETIC(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_int_one,
@@ -153,7 +153,7 @@ static r_obj* rray_add_int_lgl(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC_RUNS(
+  RRAY_ARITHMETIC(
     int,
     r_int_cbegin,
     rray_cast_int_to_int_one,
@@ -174,7 +174,7 @@ static r_obj* rray_add_lgl_dbl(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC_RUNS(
+  RRAY_ARITHMETIC(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_dbl_one,
@@ -195,7 +195,7 @@ static r_obj* rray_add_dbl_lgl(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC_RUNS(
+  RRAY_ARITHMETIC(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
@@ -216,7 +216,7 @@ static r_obj* rray_add_lgl_cpl(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC_RUNS(
+  RRAY_ARITHMETIC(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_cpl_one,
@@ -237,7 +237,7 @@ static r_obj* rray_add_cpl_lgl(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC_RUNS(
+  RRAY_ARITHMETIC(
     r_complex,
     r_cpl_cbegin,
     rray_cast_cpl_to_cpl_one,
@@ -258,7 +258,7 @@ static r_obj* rray_add_int_int(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC_RUNS(
+  RRAY_ARITHMETIC(
     int,
     r_int_cbegin,
     rray_cast_int_to_int_one,
@@ -279,7 +279,7 @@ static r_obj* rray_add_int_dbl(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC_RUNS(
+  RRAY_ARITHMETIC(
     int,
     r_int_cbegin,
     rray_cast_int_to_dbl_one,
@@ -300,7 +300,7 @@ static r_obj* rray_add_dbl_int(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC_RUNS(
+  RRAY_ARITHMETIC(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
@@ -321,7 +321,7 @@ static r_obj* rray_add_int_cpl(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC_RUNS(
+  RRAY_ARITHMETIC(
     int,
     r_int_cbegin,
     rray_cast_int_to_cpl_one,
@@ -342,7 +342,7 @@ static r_obj* rray_add_cpl_int(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC_RUNS(
+  RRAY_ARITHMETIC(
     r_complex,
     r_cpl_cbegin,
     rray_cast_cpl_to_cpl_one,
@@ -363,7 +363,7 @@ static r_obj* rray_add_dbl_dbl(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC_RUNS(
+  RRAY_ARITHMETIC(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
@@ -384,7 +384,7 @@ static r_obj* rray_add_dbl_cpl(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC_RUNS(
+  RRAY_ARITHMETIC(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_cpl_one,
@@ -405,7 +405,7 @@ static r_obj* rray_add_cpl_dbl(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC_RUNS(
+  RRAY_ARITHMETIC(
     r_complex,
     r_cpl_cbegin,
     rray_cast_cpl_to_cpl_one,
@@ -426,7 +426,7 @@ static r_obj* rray_add_cpl_cpl(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC_RUNS(
+  RRAY_ARITHMETIC(
     r_complex,
     r_cpl_cbegin,
     rray_cast_cpl_to_cpl_one,
