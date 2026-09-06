@@ -10,11 +10,11 @@
 
 // Core "next" algorithm used by all iterators
 //
-// Takes one step along the multidimensional point, starting from axis
-// `START`. Calls `STEP` and `RESET` hooks, which are what define each
-// iterator.
-#define RRAY_ITERATOR_NEXT(IT, START, STEP, RESET)                             \
-  for (int i = START; i < (IT)->point_dimensionality; ++i) {                   \
+// Carries a run into axis 1 and up. Axis 0 is always handled by a run cursor
+// before this runs, so this always starts at axis 1. Calls `STEP` and `RESET`
+// hooks, which are what define each iterator.
+#define RRAY_ITERATOR_NEXT(IT, STEP, RESET)                                    \
+  for (int i = 1; i < (IT)->point_dimensionality; ++i) {                       \
     ++(IT)->v_point[i];                                                        \
                                                                                \
     if ((IT)->v_point[i] < (IT)->v_point_dimensions[i]) {                      \
@@ -72,7 +72,7 @@ static inline void rray_point_iterator_next(struct rray_point_iterator* it) {
   it->index += it->v_point_dimensions[0];
   it->v_point[0] = 0;
 
-  RRAY_ITERATOR_NEXT(it, 1, {}, {})
+  RRAY_ITERATOR_NEXT(it, {}, {})
 }
 
 struct rray_point_iterator_run {
@@ -185,7 +185,6 @@ static inline void rray_iterator_next(struct rray_iterator* it) {
 
   RRAY_ITERATOR_NEXT(
     it,
-    1,
     { it->location += it->v_location_strides[i]; },
     {
       it->location -=
@@ -298,35 +297,6 @@ static inline void rray_iterator2_init(
   it->location2 = 0;
 }
 
-static inline r_ssize rray_iterator2_location1(
-  const struct rray_iterator2* it
-) {
-  return it->location1;
-}
-
-static inline r_ssize rray_iterator2_location2(
-  const struct rray_iterator2* it
-) {
-  return it->location2;
-}
-
-static inline void rray_iterator2_next_point(struct rray_iterator2* it) {
-  RRAY_ITERATOR_NEXT(
-    it,
-    0,
-    {
-      it->location1 += it->v_location1_strides[i];
-      it->location2 += it->v_location2_strides[i];
-    },
-    {
-      it->location1 -=
-        (it->v_point_dimensions[i] - 1) * it->v_location1_strides[i];
-      it->location2 -=
-        (it->v_point_dimensions[i] - 1) * it->v_location2_strides[i];
-    }
-  )
-}
-
 static inline bool rray_iterator2_finished(const struct rray_iterator2* it) {
   return it->index == it->size;
 }
@@ -336,7 +306,6 @@ static inline void rray_iterator2_next(struct rray_iterator2* it) {
 
   RRAY_ITERATOR_NEXT(
     it,
-    1,
     {
       it->location1 += it->v_location1_strides[i];
       it->location2 += it->v_location2_strides[i];

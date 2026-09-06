@@ -127,7 +127,6 @@ r_obj* rray_split(
 }
 
 #define RRAY_SPLIT_ATOMIC(CTYPE, CONST_DEREF, DEREF)                           \
-  const r_ssize x_size = r_length(x);                                          \
   const r_ssize out_size = r_length(out);                                      \
                                                                                \
   const CTYPE* v_x = CONST_DEREF(x);                                           \
@@ -140,30 +139,42 @@ r_obj* rray_split(
     v_v_out[i] = DEREF(v_out[i]);                                              \
   }                                                                            \
                                                                                \
-  for (r_ssize i = 0; i < x_size; ++i) {                                       \
-    const r_ssize out_loc = rray_iterator2_location1(it);                      \
-    const r_ssize out_elt_loc = rray_iterator2_location2(it);                  \
+  while (!rray_iterator2_finished(it)) {                                       \
+    struct rray_iterator2_run run = rray_iterator2_run(it);                    \
                                                                                \
-    v_v_out[out_loc][out_elt_loc] = v_x[i];                                    \
+    while (!rray_iterator2_run_finished(&run)) {                               \
+      const r_ssize out_loc = rray_iterator2_run_location1(&run);              \
+      const r_ssize out_elt_loc = rray_iterator2_run_location2(&run);          \
+      const r_ssize i = rray_iterator2_run_index(&run);                        \
                                                                                \
-    rray_iterator2_next_point(it);                                             \
+      v_v_out[out_loc][out_elt_loc] = v_x[i];                                  \
+                                                                               \
+      rray_iterator2_run_next(&run);                                           \
+    }                                                                          \
+                                                                               \
+    rray_iterator2_next(it);                                                   \
   }                                                                            \
                                                                                \
   FREE(1);
 
 #define RRAY_SPLIT_BARRIER(CONST_DEREF, POKE)                                  \
-  const r_ssize x_size = r_length(x);                                          \
-                                                                               \
   r_obj* const* v_x = CONST_DEREF(x);                                          \
   r_obj* const* v_out = r_list_cbegin(out);                                    \
                                                                                \
-  for (r_ssize i = 0; i < x_size; ++i) {                                       \
-    const r_ssize out_loc = rray_iterator2_location1(it);                      \
-    const r_ssize out_elt_loc = rray_iterator2_location2(it);                  \
+  while (!rray_iterator2_finished(it)) {                                       \
+    struct rray_iterator2_run run = rray_iterator2_run(it);                    \
                                                                                \
-    POKE(v_out[out_loc], out_elt_loc, v_x[i]);                                 \
+    while (!rray_iterator2_run_finished(&run)) {                               \
+      const r_ssize out_loc = rray_iterator2_run_location1(&run);              \
+      const r_ssize out_elt_loc = rray_iterator2_run_location2(&run);          \
+      const r_ssize i = rray_iterator2_run_index(&run);                        \
                                                                                \
-    rray_iterator2_next_point(it);                                             \
+      POKE(v_out[out_loc], out_elt_loc, v_x[i]);                               \
+                                                                               \
+      rray_iterator2_run_next(&run);                                           \
+    }                                                                          \
+                                                                               \
+    rray_iterator2_next(it);                                                   \
   }
 
 static void rray_split_lgl(r_obj* x, r_obj* out, struct rray_iterator2* it) {
