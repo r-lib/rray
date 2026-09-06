@@ -11,8 +11,10 @@
 #'
 #' If summing an integer array would overflow, an error is thrown.
 #'
-#' `rray_prod()` always returns a double, even for logical or integer input,
-#' because integer products overflow almost immediately.
+#' @section Casting:
+#' Certain inputs are upcast, changing the return type:
+#'
+#' - `rray_prod()`: logicals and integers are cast to double.
 #'
 #' @param x An array.
 #'

@@ -35,10 +35,15 @@ The dimensionality of \code{x} is retained in the result, with the reduced axes
 collapsed to size 1.
 
 If summing an integer array would overflow, an error is thrown.
-
-\code{rray_prod()} always returns a double, even for logical or integer input,
-because integer products overflow almost immediately.
 }
+\section{Casting}{
+
+Certain inputs are upcast, changing the return type:
+\itemize{
+\item \code{rray_prod()}: logicals and integers are cast to double.
+}
+}
+
 \examples{
 x <- array(1:10, c(5L, 2L))
 
