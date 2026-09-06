@@ -3,9 +3,12 @@
 \name{reduce}
 \alias{reduce}
 \alias{rray_sum}
+\alias{rray_prod}
 \title{Reduce an array along axes}
 \usage{
 rray_sum(x, axes, ..., na_rm = FALSE)
+
+rray_prod(x, axes, ..., na_rm = FALSE)
 }
 \arguments{
 \item{x}{An array.}
@@ -24,6 +27,7 @@ An array with the same dimensionality as \code{x}, but with the dimensions along
 \description{
 \itemize{
 \item \code{rray_sum()} computes the sum along the specified \code{axes}.
+\item \code{rray_prod()} computes the product along the specified \code{axes}.
 }
 }
 \details{
@@ -31,6 +35,9 @@ The dimensionality of \code{x} is retained in the result, with the reduced axes
 collapsed to size 1.
 
 If summing an integer array would overflow, an error is thrown.
+
+\code{rray_prod()} always returns a double, even for logical or integer input,
+because integer products overflow almost immediately.
 }
 \examples{
 x <- array(1:10, c(5L, 2L))
@@ -43,4 +50,7 @@ rray_sum(x, 2L)
 
 # Sum along both axes
 rray_sum(x, c(1L, 2L))
+
+# Product along rows
+rray_prod(x, 1L)
 }

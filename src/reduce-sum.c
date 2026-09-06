@@ -68,6 +68,7 @@ static r_obj* rray_sum_lgl(
     R_TYPE_integer,
     int,
     r_int_begin,
+    0,
     rray_sum_lgl_one
   );
 }
@@ -83,6 +84,7 @@ static r_obj* rray_sum_lgl_na_rm(
     R_TYPE_integer,
     int,
     r_int_begin,
+    0,
     rray_sum_lgl_one_na_rm
   );
 }
@@ -98,6 +100,7 @@ static r_obj* rray_sum_int(
     R_TYPE_integer,
     int,
     r_int_begin,
+    0,
     rray_sum_int_one
   );
 }
@@ -113,6 +116,7 @@ static r_obj* rray_sum_int_na_rm(
     R_TYPE_integer,
     int,
     r_int_begin,
+    0,
     rray_sum_int_one_na_rm
   );
 }
@@ -128,6 +132,7 @@ static r_obj* rray_sum_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
+    0.0,
     rray_sum_dbl_one
   );
 }
@@ -143,6 +148,7 @@ static r_obj* rray_sum_dbl_na_rm(
     R_TYPE_double,
     double,
     r_dbl_begin,
+    0.0,
     rray_sum_dbl_one_na_rm
   );
 }
@@ -158,6 +164,7 @@ static r_obj* rray_sum_cpl(
     R_TYPE_complex,
     r_complex,
     r_cpl_begin,
+    ((r_complex){.r = 0, .i = 0}),
     rray_sum_cpl_one
   );
 }
@@ -173,6 +180,7 @@ static r_obj* rray_sum_cpl_na_rm(
     R_TYPE_complex,
     r_complex,
     r_cpl_begin,
+    ((r_complex){.r = 0, .i = 0}),
     rray_sum_cpl_one_na_rm
   );
 }
