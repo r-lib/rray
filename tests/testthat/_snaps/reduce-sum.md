@@ -100,7 +100,7 @@
       rray_sum(x, 1L)
     Condition
       Error in `rray_sum()`:
-      ! `x` must be a logical, integer, double, or complex array, not a character matrix.
+      ! Can't compute the sum of `x` <character>.
 
 ---
 
@@ -108,7 +108,7 @@
       rray_sum(x, 1L)
     Condition
       Error in `rray_sum()`:
-      ! `x` must be a logical, integer, double, or complex array, not a raw matrix.
+      ! Can't compute the sum of `x` <raw>.
 
 ---
 
@@ -116,7 +116,7 @@
       rray_sum(x, 1L)
     Condition
       Error in `rray_sum()`:
-      ! `x` must be a logical, integer, double, or complex array, not a list matrix.
+      ! Can't compute the sum of `x` <list>.
 
 # errors on classed input
 

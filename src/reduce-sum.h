@@ -1,5 +1,5 @@
-#ifndef RRAY_SUM_H
-#define RRAY_SUM_H
+#ifndef RRAY_REDUCE_SUM_H
+#define RRAY_REDUCE_SUM_H
 
 #include "rlang.h"
 

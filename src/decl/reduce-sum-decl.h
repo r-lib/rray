@@ -1,3 +1,10 @@
+static rray_reduce_fn rray_sum_switch(
+  r_obj* x,
+  bool na_rm,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+);
+
 static r_obj* rray_sum_lgl(
   r_obj* x,
   r_ssize out_size,
