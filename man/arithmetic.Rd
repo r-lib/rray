@@ -45,8 +45,7 @@ Certain inputs are upcast, changing the return type:
 \item \code{rray_add()}: logicals are cast to integer.
 \item \code{rray_subtract()}: logicals are cast to integer.
 \item \code{rray_multiply()}: logicals are cast to integer.
-\item \code{rray_divide()}: logicals and integers are cast to double, since
-division always returns a double, just like it does in base R.
+\item \code{rray_divide()}: logicals and integers are cast to double.
 }
 }
 

@@ -24,8 +24,7 @@
 #'
 #' - `rray_multiply()`: logicals are cast to integer.
 #'
-#' - `rray_divide()`: logicals and integers are cast to double, since
-#'   division always returns a double, just like it does in base R.
+#' - `rray_divide()`: logicals and integers are cast to double.
 #'
 #' @param x An array.
 #'
