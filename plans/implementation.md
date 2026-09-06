@@ -838,26 +838,6 @@ dropped.
 
 ## 5.1 Shape
 
-### `rray_set_dimensions()`
-
-Reinterpret the same elements under new dimensions. Size cannot change.
-
-```r
-x <- matrix(1:6, ncol = 1)
-rray_set_dimensions(x, c(2, 3))
-rray_set_dimensions(x, c(3, 2, 1))
-try(rray_set_dimensions(x, c(6, 2)))
-```
-
-Names: dropped. Type: preserved.
-
-Signature: `rray_set_dimensions(x, dimensions)`. It only changes attributes, so
-it uses `r_wrap()` rather than allocating.
-
-There is no `rray_reshape()`. It would be a second name for this.
-
-Files: already exist as `R/dimensions.R` and `src/dimensions.c`.
-
 ### `rray_flatten()`
 
 Collapse to one dimension.
