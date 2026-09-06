@@ -235,8 +235,7 @@ static inline int rray_sum_lgl_one(int out, int x) {
     return r_globals.na_int;
   }
 
-  // Since long vectors aren't supported in arrays,
-  // we can't ever integer overflow in a logical array
+  check_sum_int_overflow(out, x);
 
   return out + x;
 }
@@ -245,6 +244,8 @@ static inline int rray_sum_lgl_one_na_rm(int out, int x) {
   if (x == r_globals.na_lgl) {
     return out;
   }
+
+  check_sum_int_overflow(out, x);
 
   return out + x;
 }

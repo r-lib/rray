@@ -805,21 +805,8 @@ pattern in Part 1, and no templates are left in `src/`.
 `rray_modulo()` and `rray_integer_divide()` (`%%` and `%/%`) are deferred. See
 `plans/mod-and-idiv.md`.
 
-Work through the rest in order, since each assumes the ones before it have
-landed. After that, work through Part 5 in any order that respects the
-dependencies noted there.
-
-## PR 7: `rray_sum()` overflow comment
-
-Fix the comment in `src/sum.c` claiming a logical array can never overflow an
-integer sum. That is false once long arrays are supported.
-
-That is the whole pull request. Reductions need no promotion function, because
-2.4's reduction table is written into each one's `enum rray_type` switch, and
-`src/sum.c` already does it: `rray_sum_lgl()` accumulates into an integer, which
-is the `lgl` to `int` promotion.
-
-Files: `src/sum.c`.
+Every pull request that was tracked here has landed. Work through Part 5 next,
+in any order that respects the dependencies noted there.
 
 ---
 
