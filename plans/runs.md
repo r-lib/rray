@@ -37,42 +37,53 @@ per-element tax paid by the iterator itself.
 Added to `struct rray_iterator2` in `src/iterator.h`, alongside the existing
 `rray_iterator2_next()`. Nothing existing was changed, this is additive.
 
-## `rray_iterator2_run()`
+## `done`
 
 ```c
-static inline r_ssize rray_iterator2_run(const struct rray_iterator2* it) {
-  return it->v_point_dimensions[0] - it->v_point[0];
+struct rray_iterator2 {
+  int v_point[RRAY_MAX_DIMENSIONALITY];
+  int v_point_dimensions[RRAY_MAX_DIMENSIONALITY];
+  int point_dimensionality;
+  bool done;
+
+  r_ssize location1;
+  r_ssize v_location1_strides[RRAY_MAX_DIMENSIONALITY];
+
+  r_ssize location2;
+  r_ssize v_location2_strides[RRAY_MAX_DIMENSIONALITY];
+};
+```
+
+Set in `rray_iterator2_init()`: `false`, unless any axis has dimension `0`,
+in which case the array is empty and there's nothing to iterate at all.
+
+```c
+it->done = false;
+for (int i = 0; i < point_dimensionality; ++i) {
+  it->v_point_dimensions[i] = v_point_dimensions[i];
+  if (v_point_dimensions[i] == 0) {
+    it->done = true;
+  }
 }
 ```
 
-The number of output elements remaining before axis 0 wraps and carries into
-axis 1. Axis 0 is walked fastest, so this is exactly the length of the next
-contiguous stretch of output where `location1` and `location2` each advance by
-a fixed stride per step.
+Without this check, an empty axis 0 combined with a huge axis 1 (e.g.
+`dim = c(0, 5000000)`) would still walk axis 1 five million times, each one
+immediately producing a zero length run. The check makes that O(1) instead of
+O(axis 1's dimension); confirmed in Part 5.
 
-## `rray_iterator2_stride1()` / `rray_iterator2_stride2()`
+## `rray_iterator2_finished()`
 
 ```c
-static inline r_ssize rray_iterator2_stride1(const struct rray_iterator2* it) {
-  return it->v_location1_strides[0];
+static inline bool rray_iterator2_finished(const struct rray_iterator2* it) {
+  return it->done;
 }
 ```
 
-(same shape for `stride2`, reading `v_location2_strides[0]`)
-
-The per step stride for each input along axis 0. This is `0` when that input
-is broadcasting on axis 0 (dimension 1 there), otherwise the input's own axis
-0 stride. Exposing it lets a loop body compute `location + k * stride` for
-`k` in `0..run` without calling into the iterator at all.
-
-## `rray_iterator2_advance()`
+## `rray_iterator2_next_run()`
 
 ```c
-static inline void rray_iterator2_advance(struct rray_iterator2* it) {
-  it->location1 -= (r_ssize) it->v_point[0] * it->v_location1_strides[0];
-  it->location2 -= (r_ssize) it->v_point[0] * it->v_location2_strides[0];
-  it->v_point[0] = 0;
-
+static inline void rray_iterator2_next_run(struct rray_iterator2* it) {
   for (int i = 1; i < it->point_dimensionality; ++i) {
     ++it->v_point[i];
 
@@ -88,19 +99,76 @@ static inline void rray_iterator2_advance(struct rray_iterator2* it) {
     it->location2 -=
       (it->v_point_dimensions[i] - 1) * it->v_location2_strides[i];
   }
+
+  it->done = true;
 }
 ```
 
-Takes no run length. Every caller always consumes a full
-`rray_iterator2_run()` before advancing, so axis 0 always wraps back to its
-start, there's no partial advance to account for. That means there's nothing
-to add for axis 0 in the first place: `location1`/`location2` just need the
-axis 0 contribution removed (`v_point[0] * stride`) to land back at the value
-they held when `v_point[0]` was `0`, and `v_point[0]` resets to `0` directly.
+Carries into axis 1 and up, once a run is over. Same logic
+`RRAY_ITERATOR_NEXT`'s `RESET` branch already had, just written out directly
+instead of via the macro, and now run once per run instead of once per
+element. Axis 0 itself needs no bookkeeping here: `it->v_point[0]`,
+`it->location1` and `it->location2` are never touched during a run (that's
+all delegated to the run cursor below), so they're still sitting at their
+axis 0 start values by the time `next_run()` runs. When every axis 1+ has
+also wrapped, there's nothing left to carry into, and `done` is set.
 
-The carry loop for axis 1+ is unchanged from `RRAY_ITERATOR_NEXT`'s `RESET`
-branch, just written out directly instead of via the macro, since it now only
-needs to run once per run instead of once per element.
+## `struct rray_iterator2_run`
+
+```c
+struct rray_iterator2_run {
+  r_ssize location1;
+  r_ssize stride1;
+
+  r_ssize location2;
+  r_ssize stride2;
+
+  r_ssize remaining;
+};
+
+static inline struct rray_iterator2_run rray_iterator2_begin_run(
+  const struct rray_iterator2* it
+) {
+  return (struct rray_iterator2_run){
+    .location1 = it->location1,
+    .stride1 = it->v_location1_strides[0],
+    .location2 = it->location2,
+    .stride2 = it->v_location2_strides[0],
+    .remaining = it->v_point_dimensions[0],
+  };
+}
+
+static inline bool rray_iterator2_run_finished(
+  const struct rray_iterator2_run* run
+) {
+  return run->remaining == 0;
+}
+
+static inline r_ssize rray_iterator2_run_location1(
+  const struct rray_iterator2_run* run
+) {
+  return run->location1;
+}
+
+static inline r_ssize rray_iterator2_run_location2(
+  const struct rray_iterator2_run* run
+) {
+  return run->location2;
+}
+
+static inline void rray_iterator2_run_next(struct rray_iterator2_run* run) {
+  run->location1 += run->stride1;
+  run->location2 += run->stride2;
+  --run->remaining;
+}
+```
+
+`begin_run()` copies the axis 0 state out of `it` by value, once per run.
+From there the loop body only ever touches this small local, never `it`
+directly, which is what lets the compiler keep `location1`/`location2` in
+registers for the length of the run rather than reloading them from `it` on
+every element. Part 4 has the numbers showing why that distinction matters.
+`it` isn't touched again until `next_run()` carries into axis 1+.
 
 ---
 
@@ -130,32 +198,30 @@ any of the `rray_add_*` bodies unchanged.
   const Y_CTYPE* v_y = Y_CONST_DEREF(y);
 
   r_ssize i = 0;
-  while (i < size) {
-    const r_ssize run = rray_iterator2_run(it);
-    const r_ssize loc1 = rray_iterator2_location1(it);
-    const r_ssize loc2 = rray_iterator2_location2(it);
-    const r_ssize stride1 = rray_iterator2_stride1(it);
-    const r_ssize stride2 = rray_iterator2_stride2(it);
+  while (!rray_iterator2_finished(it)) {
+    struct rray_iterator2_run run = rray_iterator2_begin_run(it);
 
-    for (r_ssize k = 0; k < run; ++k) {
-      v_out[i + k] = ONE(
-        X_CAST(v_x[loc1 + k * stride1]),
-        Y_CAST(v_y[loc2 + k * stride2]),
+    while (!rray_iterator2_run_finished(&run)) {
+      v_out[i] = ONE(
+        X_CAST(v_x[rray_iterator2_run_location1(&run)]),
+        Y_CAST(v_y[rray_iterator2_run_location2(&run)]),
         error_call
       );
+      rray_iterator2_run_next(&run);
+      ++i;
     }
 
-    rray_iterator2_advance(it);
-    i += run;
+    rray_iterator2_next_run(it);
   }
 
   FREE(1);
   return out;
 ```
 
-The inner `for (k in 0..run)` loop is now a plain strided loop with no
-odometer branching, cheap for the compiler to unroll or vectorize. The outer
-`while` loop only pays the carry logic once per run, not once per element.
+No run length, stride or `loc + k * stride` indexing left at the call site.
+The nested `while` mirrors what a caller of `rray_iterator2` actually wants to
+say: while there's more to do, while this run isn't finished, handle one
+element and move on, then start the next run.
 
 Only `src/arithmetic-add.c` was switched from `RRAY_ARITHMETIC` to
 `RRAY_ARITHMETIC_RUNS`, all 16 type combination bodies. `subtract`,
@@ -164,34 +230,67 @@ original macro.
 
 ---
 
-# Part 4: Results
+# Part 4: Two designs tried, and why the second one lost to a third
 
-Same benchmark as Part 1, rerun after the switch:
+The first working version exposed `rray_iterator2_run()`, `stride1()`,
+`stride2()` and `advance()` directly on `it`, and the macro pulled them into
+local variables itself before a `for (k in 0..run)` loop indexing
+`loc + k * stride`. Fast, but every detail of how a run works — its length,
+its strides, the index arithmetic — leaked into the call site.
 
-| case | base R | `rray_add()` before | `rray_add()` after | speedup vs before |
+Rewriting the macro to the nested `while` shape in Part 3, but calling
+`rray_iterator2_finished_run(it)` / `rray_iterator2_next_location(it)` right
+on `it` with no separate cursor, reads a lot better. It also measurably
+regressed: `location1`/`location2` live in `it`, so the compiler reloaded them
+from memory on every element instead of keeping them in registers for the
+run. `struct rray_iterator2_run` — a small value copied out once per run —
+gets the clean call site back without paying for it, since the cursor is a
+local the compiler can register allocate exactly like the exposed locals
+could in the first version.
+
+Benchmark, 5 million elements, same three cases as Part 1:
+
+| case | base R | explicit locals | straight through `it` | run cursor |
 |---|---|---|---|---|
-| identity | 6.34ms | 10.84ms | 3.15ms | 3.4x |
-| size-1 broadcast | 5.99ms | 11.24ms | 3.97ms | 2.8x |
-| general broadcast | 5.96ms | 10.76ms | 2.79ms | 3.9x |
+| identity | 5.89–6.64ms | 3.15–3.45ms | 3.99ms | **2.96ms** |
+| size-1 broadcast | 5.99–6.31ms | 3.97–4.09ms | 7.36ms | **4.19–4.42ms** |
+| general broadcast | 5.96–6.45ms | 2.79ms | 4.26–4.38ms | **3.2–3.33ms** |
 
-`rray_add()` goes from ~1.8x slower than base R to 1.5x–2.1x *faster* than
-base R, across all three cases.
-
-Correctness: the full test suite passes unchanged (1161 tests). Also checked
-by hand against a naive triple nested loop for cases the test suite doesn't
-obviously stress: broadcasting on a middle axis of a 3D array, broadcasting on
-two axes at once, and a fully scalar broadcast where every axis has
-dimension 1. All matched.
-
-Simplifying `rray_iterator2_advance()` to drop the partial advance case (Part
-2) is perf neutral: rerunning the same benchmark afterward gave 3.45ms,
-4.09ms and 2.79ms for the three cases, the same times within the noise of a
-microbenchmark this short. Full test suite and the hand checks above both
-still pass.
+The run cursor matches or beats the explicit-locals version in every case.
+Calling straight through to `it` cost 30–85% more, worst on size-1 broadcast,
+where it landed back around base R's own time and erased the whole win.
 
 ---
 
-# Part 5: What's not done here
+# Part 5: Results
+
+`rray_add()` with the run cursor design, against base R, final numbers from
+Part 4's table:
+
+| case | base R | `rray_add()` before this POC | `rray_add()` now |
+|---|---|---|---|
+| identity | ~6ms | 10.84ms | ~3ms |
+| size-1 broadcast | ~6ms | 11.24ms | ~4.3ms |
+| general broadcast | ~6ms | 10.76ms | ~3.3ms |
+
+`rray_add()` goes from ~1.8x slower than base R to roughly 1.4x–2x *faster*
+than base R, across all three cases.
+
+Correctness: the full test suite passes unchanged (1161 tests) against every
+iteration of this design. Also checked by hand against a naive triple nested
+loop for cases the test suite doesn't obviously stress: broadcasting on a
+middle axis of a 3D array, broadcasting on two axes at once, and a fully
+scalar broadcast where every axis has dimension 1. All matched, every time.
+
+The `done` short circuit in `rray_iterator2_init()` (Part 2) was checked
+against a pathological empty array: `dim = c(0, 5000000)` broadcast against a
+scalar. Without the check this would walk axis 1 five million times for zero
+elements of real work. With it, `rray_add()` on that input runs in about 1
+microsecond.
+
+---
+
+# Part 6: What's not done here
 
 This is scoped as a proof of concept for `rray_add()` only, per Part 7's
 instruction to benchmark the idea as its own pull request before committing to
@@ -201,8 +300,8 @@ it everywhere. Left for a follow up if the approach is adopted:
   `exponentiate`. The macro already has the right shape for all of them, no
   further design work needed there.
 
-- The same run and advance idea for the plain `rray_iterator` (one location,
-  not two), which `rray_broadcast()` and `rray_tile()` use.
+- The same run cursor idea for the plain `rray_iterator` (one location, not
+  two), which `rray_broadcast()` and `rray_tile()` use.
 
 - Decide whether `RRAY_ARITHMETIC` (the non-runs version) should be deleted
   once nothing uses it, or kept as the simple reference implementation the
@@ -210,7 +309,7 @@ it everywhere. Left for a follow up if the approach is adopted:
 
 - A run collapsing across axes: today a run only ever spans axis 0. Two full
   size arrays being added with matching multi-dimensional shape still pays one
-  `advance()` carry per axis 1+ combination, e.g. once per column in a matrix.
-  Detecting when every axis is stride-contiguous and collapsing the whole
-  thing to a single run would help the true identity case further, at the
-  cost of more machinery in the iterator.
+  `next_run()` carry per axis 1+ combination, e.g. once per column in a
+  matrix. Detecting when every axis is stride-contiguous and collapsing the
+  whole thing to a single run would help the true identity case further, at
+  the cost of more machinery in the iterator.

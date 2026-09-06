@@ -91,23 +91,19 @@ r_no_return void stop_int_overflow(struct r_lazy error_call);
   const Y_CTYPE* v_y = Y_CONST_DEREF(y);                                       \
                                                                                \
   r_ssize i = 0;                                                               \
-  while (i < size) {                                                           \
-    const r_ssize run = rray_iterator2_run(it);                                \
-    const r_ssize loc1 = rray_iterator2_location1(it);                         \
-    const r_ssize loc2 = rray_iterator2_location2(it);                         \
-    const r_ssize stride1 = rray_iterator2_stride1(it);                        \
-    const r_ssize stride2 = rray_iterator2_stride2(it);                        \
+  while (!rray_iterator2_finished(it)) {                                       \
+    struct rray_iterator2_run run = rray_iterator2_begin_run(it);              \
                                                                                \
-    for (r_ssize k = 0; k < run; ++k) {                                        \
-      v_out[i + k] = ONE(                                                      \
-        X_CAST(v_x[loc1 + k * stride1]),                                       \
-        Y_CAST(v_y[loc2 + k * stride2]),                                       \
+    while (!rray_iterator2_run_finished(&run)) {                               \
+      v_out[i] = ONE(                                                          \
+        X_CAST(v_x[rray_iterator2_run_location1(&run)]),                       \
+        Y_CAST(v_y[rray_iterator2_run_location2(&run)]),                       \
         error_call                                                             \
       );                                                                       \
+      rray_iterator2_run_next(&run);                                           \
+      ++i;                                                                     \
     }                                                                          \
-                                                                               \
-    rray_iterator2_advance(it);                                                \
-    i += run;                                                                  \
+    rray_iterator2_next_run(it);                                               \
   }                                                                            \
                                                                                \
   FREE(1);                                                                     \

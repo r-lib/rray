@@ -137,6 +137,7 @@ struct rray_iterator2 {
   int v_point[RRAY_MAX_DIMENSIONALITY];
   int v_point_dimensions[RRAY_MAX_DIMENSIONALITY];
   int point_dimensionality;
+  bool done;
 
   r_ssize location1;
   r_ssize v_location1_strides[RRAY_MAX_DIMENSIONALITY];
@@ -158,8 +159,12 @@ static inline void rray_iterator2_init(
 
   it->point_dimensionality = point_dimensionality;
 
+  it->done = false;
   for (int i = 0; i < point_dimensionality; ++i) {
     it->v_point_dimensions[i] = v_point_dimensions[i];
+    if (v_point_dimensions[i] == 0) {
+      it->done = true;
+    }
   }
   memset(it->v_point, 0, sizeof(int) * point_dimensionality);
 
@@ -212,23 +217,11 @@ static inline void rray_iterator2_next(struct rray_iterator2* it) {
   )
 }
 
-static inline r_ssize rray_iterator2_run(const struct rray_iterator2* it) {
-  return it->v_point_dimensions[0] - it->v_point[0];
+static inline bool rray_iterator2_finished(const struct rray_iterator2* it) {
+  return it->done;
 }
 
-static inline r_ssize rray_iterator2_stride1(const struct rray_iterator2* it) {
-  return it->v_location1_strides[0];
-}
-
-static inline r_ssize rray_iterator2_stride2(const struct rray_iterator2* it) {
-  return it->v_location2_strides[0];
-}
-
-static inline void rray_iterator2_advance(struct rray_iterator2* it) {
-  it->location1 -= (r_ssize) it->v_point[0] * it->v_location1_strides[0];
-  it->location2 -= (r_ssize) it->v_point[0] * it->v_location2_strides[0];
-  it->v_point[0] = 0;
-
+static inline void rray_iterator2_next_run(struct rray_iterator2* it) {
   for (int i = 1; i < it->point_dimensionality; ++i) {
     ++it->v_point[i];
 
@@ -244,6 +237,56 @@ static inline void rray_iterator2_advance(struct rray_iterator2* it) {
     it->location2 -=
       (it->v_point_dimensions[i] - 1) * it->v_location2_strides[i];
   }
+
+  it->done = true;
+}
+
+// --------------------------------------------------------------------------
+
+struct rray_iterator2_run {
+  r_ssize location1;
+  r_ssize stride1;
+
+  r_ssize location2;
+  r_ssize stride2;
+
+  r_ssize remaining;
+};
+
+static inline struct rray_iterator2_run rray_iterator2_begin_run(
+  const struct rray_iterator2* it
+) {
+  return (struct rray_iterator2_run) {
+    .location1 = it->location1,
+    .stride1 = it->v_location1_strides[0],
+    .location2 = it->location2,
+    .stride2 = it->v_location2_strides[0],
+    .remaining = it->v_point_dimensions[0],
+  };
+}
+
+static inline bool rray_iterator2_run_finished(
+  const struct rray_iterator2_run* run
+) {
+  return run->remaining == 0;
+}
+
+static inline r_ssize rray_iterator2_run_location1(
+  const struct rray_iterator2_run* run
+) {
+  return run->location1;
+}
+
+static inline r_ssize rray_iterator2_run_location2(
+  const struct rray_iterator2_run* run
+) {
+  return run->location2;
+}
+
+static inline void rray_iterator2_run_next(struct rray_iterator2_run* run) {
+  run->location1 += run->stride1;
+  run->location2 += run->stride2;
+  --run->remaining;
 }
 
 // --------------------------------------------------------------------------
