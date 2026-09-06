@@ -18,8 +18,6 @@
 #'
 #' If the result of an integer operation would overflow, an error is thrown.
 #'
-#' `rray_exponentiate()` doesn't support complex input.
-#'
 #' @section Casting:
 #' Certain inputs are upcast, changing the return type:
 #'

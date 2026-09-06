@@ -42,8 +42,6 @@ The arrays are broadcast to common dimensions first, so they do not have to
 be the same shape.
 
 If the result of an integer operation would overflow, an error is thrown.
-
-\code{rray_exponentiate()} doesn't support complex input.
 }
 \section{Casting}{
 
