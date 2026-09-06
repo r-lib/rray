@@ -68,23 +68,10 @@ is broadcasting on axis 0 (dimension 1 there), otherwise the input's own axis
 ## `rray_iterator2_advance()`
 
 ```c
-static inline void rray_iterator2_advance(
-  struct rray_iterator2* it,
-  r_ssize n
-) {
-  it->location1 += n * it->v_location1_strides[0];
-  it->location2 += n * it->v_location2_strides[0];
-  it->v_point[0] += (int) n;
-
-  if (it->v_point[0] < it->v_point_dimensions[0]) {
-    return;
-  }
-
+static inline void rray_iterator2_advance(struct rray_iterator2* it) {
+  it->location1 -= (r_ssize) it->v_point[0] * it->v_location1_strides[0];
+  it->location2 -= (r_ssize) it->v_point[0] * it->v_location2_strides[0];
   it->v_point[0] = 0;
-  it->location1 -=
-    (r_ssize) it->v_point_dimensions[0] * it->v_location1_strides[0];
-  it->location2 -=
-    (r_ssize) it->v_point_dimensions[0] * it->v_location2_strides[0];
 
   for (int i = 1; i < it->point_dimensionality; ++i) {
     ++it->v_point[i];
@@ -104,13 +91,12 @@ static inline void rray_iterator2_advance(
 }
 ```
 
-Moves the iterator forward by `n` steps along axis 0 in one call, rather than
-`n` individual calls to `rray_iterator2_next()`. When `n` fills axis 0 exactly
-(the normal case, since callers always advance by a full `run`), the naive
-`location += n * stride` is corrected back to what `next()` would have landed
-on: it subtracts `v_point_dimensions[0] * stride`, then falls through to the
-same carry loop `next()` already uses for axis 1 and up. For a partial advance
-(`n` less than the run) it returns early, no carry needed.
+Takes no run length. Every caller always consumes a full
+`rray_iterator2_run()` before advancing, so axis 0 always wraps back to its
+start, there's no partial advance to account for. That means there's nothing
+to add for axis 0 in the first place: `location1`/`location2` just need the
+axis 0 contribution removed (`v_point[0] * stride`) to land back at the value
+they held when `v_point[0]` was `0`, and `v_point[0]` resets to `0` directly.
 
 The carry loop for axis 1+ is unchanged from `RRAY_ITERATOR_NEXT`'s `RESET`
 branch, just written out directly instead of via the macro, since it now only
@@ -159,7 +145,7 @@ any of the `rray_add_*` bodies unchanged.
       );
     }
 
-    rray_iterator2_advance(it, run);
+    rray_iterator2_advance(it);
     i += run;
   }
 
@@ -196,6 +182,12 @@ by hand against a naive triple nested loop for cases the test suite doesn't
 obviously stress: broadcasting on a middle axis of a 3D array, broadcasting on
 two axes at once, and a fully scalar broadcast where every axis has
 dimension 1. All matched.
+
+Simplifying `rray_iterator2_advance()` to drop the partial advance case (Part
+2) is perf neutral: rerunning the same benchmark afterward gave 3.45ms,
+4.09ms and 2.79ms for the three cases, the same times within the noise of a
+microbenchmark this short. Full test suite and the hand checks above both
+still pass.
 
 ---
 

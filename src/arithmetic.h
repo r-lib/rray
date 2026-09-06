@@ -106,7 +106,7 @@ r_no_return void stop_int_overflow(struct r_lazy error_call);
       );                                                                       \
     }                                                                          \
                                                                                \
-    rray_iterator2_advance(it, run);                                           \
+    rray_iterator2_advance(it);                                                \
     i += run;                                                                  \
   }                                                                            \
                                                                                \
