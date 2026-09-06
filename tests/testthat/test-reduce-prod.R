@@ -59,12 +59,10 @@ test_that("dimension names are dropped when all named axes are reduced", {
 })
 
 test_that("output type is double, except complex", {
+  expect_identical(storage.mode(rray_prod(array(TRUE), 1L)), "double")
   expect_identical(storage.mode(rray_prod(array(1L), 1L)), "double")
   expect_identical(storage.mode(rray_prod(array(1), 1L)), "double")
   expect_identical(storage.mode(rray_prod(array(1i), 1L)), "complex")
-
-  # Logical -> double
-  expect_identical(storage.mode(rray_prod(array(TRUE), 1L)), "double")
 })
 
 test_that("logical values multiply like 0s and 1s", {
