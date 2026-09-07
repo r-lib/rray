@@ -14,7 +14,6 @@
 // hooks, which are what define each iterator.
 #define RRAY_ITERATOR_NEXT(IT, STEP, RESET)                                    \
   (IT)->index += (IT)->v_point_dimensions[0];                                  \
-  (IT)->v_point[0] = 0;                                                        \
                                                                                \
   for (int i = 1; i < (IT)->point_dimensionality; ++i) {                       \
     ++(IT)->v_point[i];                                                        \
