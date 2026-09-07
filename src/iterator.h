@@ -10,8 +10,7 @@
 
 // Core "next" algorithm used by all iterators
 //
-// Carries a run into axis 1 and up. Axis 0 is always handled by a run cursor
-// before this runs, so this always starts at axis 1. Calls `STEP` and `RESET`
+// Takes one step along the multidimensional point. Calls `STEP` and `RESET`
 // hooks, which are what define each iterator.
 #define RRAY_ITERATOR_NEXT(IT, STEP, RESET)                                    \
   (IT)->index += (IT)->v_point_dimensions[0];                                  \
