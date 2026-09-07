@@ -30,10 +30,8 @@
 
 // Simplest iterator
 //
-// Walks the multidimensional point space, run by run. Each run covers axis 0
-// for a fixed combination of axis 1+, reported through `struct
-// rray_point_iterator_run`, which owns its own copy of the point so the
-// compiler can keep it in registers rather than reloading through `it`
+// Walks the multidimensional point space, providing access to the current
+// multidimensional point
 struct rray_point_iterator {
   int v_point[RRAY_MAX_DIMENSIONALITY];
   int v_point_dimensions[RRAY_MAX_DIMENSIONALITY];
@@ -121,8 +119,8 @@ static inline void rray_point_iterator_run_next(
 
 // Broadcasting iterator
 //
-// Walks the multidimensional point space, run by run. Reports a 1D
-// `location` in an alternate subspace.
+// Walks the multidimensional point space. Reports a 1D `location` in an
+// alternate subspace.
 //
 // For broadcasting, the dimensions you broadcast to make up the larger point
 // space. This is walked in order. The original dimensions of the array make
