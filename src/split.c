@@ -145,9 +145,9 @@ r_obj* rray_split(
     struct rray_iterator2_run run = rray_iterator2_run(it);                    \
                                                                                \
     while (!rray_iterator2_run_finished(&run)) {                               \
+      const r_ssize i = rray_iterator2_run_index(&run);                        \
       const r_ssize out_loc = rray_iterator2_run_location1(&run);              \
       const r_ssize out_elt_loc = rray_iterator2_run_location2(&run);          \
-      const r_ssize i = rray_iterator2_run_index(&run);                        \
                                                                                \
       v_v_out[out_loc][out_elt_loc] = v_x[i];                                  \
                                                                                \
@@ -167,9 +167,9 @@ r_obj* rray_split(
     struct rray_iterator2_run run = rray_iterator2_run(it);                    \
                                                                                \
     while (!rray_iterator2_run_finished(&run)) {                               \
+      const r_ssize i = rray_iterator2_run_index(&run);                        \
       const r_ssize out_loc = rray_iterator2_run_location1(&run);              \
       const r_ssize out_elt_loc = rray_iterator2_run_location2(&run);          \
-      const r_ssize i = rray_iterator2_run_index(&run);                        \
                                                                                \
       POKE(v_out[out_loc], out_elt_loc, v_x[i]);                               \
                                                                                \
