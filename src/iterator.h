@@ -14,6 +14,8 @@
 // before this runs, so this always starts at axis 1. Calls `STEP` and `RESET`
 // hooks, which are what define each iterator.
 #define RRAY_ITERATOR_NEXT(IT, STEP, RESET)                                    \
+  (IT)->index += (IT)->v_point_dimensions[0];                                  \
+  (IT)->v_point[0] = 0;                                                        \
   for (int i = 1; i < (IT)->point_dimensionality; ++i) {                       \
     ++(IT)->v_point[i];                                                        \
                                                                                \
@@ -67,9 +69,6 @@ static inline bool rray_point_iterator_finished(
 }
 
 static inline void rray_point_iterator_next(struct rray_point_iterator* it) {
-  it->index += it->v_point_dimensions[0];
-  it->v_point[0] = 0;
-
   RRAY_ITERATOR_NEXT(it, {}, {})
 }
 
@@ -179,8 +178,6 @@ static inline bool rray_iterator_finished(const struct rray_iterator* it) {
 }
 
 static inline void rray_iterator_next(struct rray_iterator* it) {
-  it->index += it->v_point_dimensions[0];
-
   RRAY_ITERATOR_NEXT(
     it,
     { it->location += it->v_location_strides[i]; },
@@ -300,8 +297,6 @@ static inline bool rray_iterator2_finished(const struct rray_iterator2* it) {
 }
 
 static inline void rray_iterator2_next(struct rray_iterator2* it) {
-  it->index += it->v_point_dimensions[0];
-
   RRAY_ITERATOR_NEXT(
     it,
     {
