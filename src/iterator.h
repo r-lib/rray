@@ -74,19 +74,19 @@ static inline void rray_point_iterator_next(struct rray_point_iterator* it) {
 }
 
 struct rray_point_iterator_run {
-  int v_point[RRAY_MAX_DIMENSIONALITY];
-
   r_ssize index;
   r_ssize end;
+
+  int v_point[RRAY_MAX_DIMENSIONALITY];
 };
 
 static inline struct rray_point_iterator_run rray_point_iterator_run(
   const struct rray_point_iterator* it
 ) {
   struct rray_point_iterator_run run;
-  memcpy(run.v_point, it->v_point, sizeof(int) * it->point_dimensionality);
   run.index = it->index;
   run.end = it->index + it->v_point_dimensions[0];
+  memcpy(run.v_point, it->v_point, sizeof(int) * it->point_dimensionality);
   return run;
 }
 
@@ -192,21 +192,21 @@ static inline void rray_iterator_next(struct rray_iterator* it) {
 }
 
 struct rray_iterator_run {
-  r_ssize location;
-  r_ssize stride;
-
   r_ssize index;
   r_ssize end;
+
+  r_ssize location;
+  r_ssize stride;
 };
 
 static inline struct rray_iterator_run rray_iterator_run(
   const struct rray_iterator* it
 ) {
   return (struct rray_iterator_run) {
-    .location = it->location,
-    .stride = it->v_location_strides[0],
     .index = it->index,
     .end = it->index + it->v_point_dimensions[0],
+    .location = it->location,
+    .stride = it->v_location_strides[0],
   };
 }
 
@@ -320,26 +320,26 @@ static inline void rray_iterator2_next(struct rray_iterator2* it) {
 // --------------------------------------------------------------------------
 
 struct rray_iterator2_run {
+  r_ssize index;
+  r_ssize end;
+
   r_ssize location1;
   r_ssize stride1;
 
   r_ssize location2;
   r_ssize stride2;
-
-  r_ssize index;
-  r_ssize end;
 };
 
 static inline struct rray_iterator2_run rray_iterator2_run(
   const struct rray_iterator2* it
 ) {
   return (struct rray_iterator2_run) {
+    .index = it->index,
+    .end = it->index + it->v_point_dimensions[0],
     .location1 = it->location1,
     .stride1 = it->v_location1_strides[0],
     .location2 = it->location2,
     .stride2 = it->v_location2_strides[0],
-    .index = it->index,
-    .end = it->index + it->v_point_dimensions[0],
   };
 }
 
