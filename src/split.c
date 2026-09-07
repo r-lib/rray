@@ -58,6 +58,8 @@ r_obj* rray_split(
   ));
   const int* v_out_dimensions = r_int_cbegin(out_dimensions);
 
+  const r_ssize x_size =
+    rray_size_from_dimensions(v_x_dimensions, dimensionality);
   const r_ssize out_elt_size =
     rray_size_from_dimensions(v_out_elt_dimensions, dimensionality);
   const r_ssize out_size =
@@ -76,7 +78,7 @@ r_obj* rray_split(
   struct rray_iterator2 it;
   rray_iterator2_init(
     &it,
-    rray_size_from_dimensions(v_x_dimensions, dimensionality),
+    x_size,
     v_x_dimensions,
     dimensionality,
     v_out_dimensions,
