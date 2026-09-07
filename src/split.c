@@ -141,21 +141,9 @@ r_obj* rray_split(
     v_v_out[i] = DEREF(v_out[i]);                                              \
   }                                                                            \
                                                                                \
-  while (!rray_iterator2_finished(it)) {                                       \
-    struct rray_iterator2_run run = rray_iterator2_run(it);                    \
-                                                                               \
-    while (!rray_iterator2_run_finished(&run)) {                               \
-      const r_ssize i = rray_iterator2_run_index(&run);                        \
-      const r_ssize out_loc = rray_iterator2_run_location1(&run);              \
-      const r_ssize out_elt_loc = rray_iterator2_run_location2(&run);          \
-                                                                               \
-      v_v_out[out_loc][out_elt_loc] = v_x[i];                                  \
-                                                                               \
-      rray_iterator2_run_next(&run);                                           \
-    }                                                                          \
-                                                                               \
-    rray_iterator2_next(it);                                                   \
-  }                                                                            \
+  RRAY_ITERATOR2_FOR_EACH(it, i, out_loc, out_elt_loc, {                       \
+    v_v_out[out_loc][out_elt_loc] = v_x[i];                                    \
+  });                                                                          \
                                                                                \
   FREE(1);
 
@@ -163,21 +151,9 @@ r_obj* rray_split(
   r_obj* const* v_x = CONST_DEREF(x);                                          \
   r_obj* const* v_out = r_list_cbegin(out);                                    \
                                                                                \
-  while (!rray_iterator2_finished(it)) {                                       \
-    struct rray_iterator2_run run = rray_iterator2_run(it);                    \
-                                                                               \
-    while (!rray_iterator2_run_finished(&run)) {                               \
-      const r_ssize i = rray_iterator2_run_index(&run);                        \
-      const r_ssize out_loc = rray_iterator2_run_location1(&run);              \
-      const r_ssize out_elt_loc = rray_iterator2_run_location2(&run);          \
-                                                                               \
-      POKE(v_out[out_loc], out_elt_loc, v_x[i]);                               \
-                                                                               \
-      rray_iterator2_run_next(&run);                                           \
-    }                                                                          \
-                                                                               \
-    rray_iterator2_next(it);                                                   \
-  }
+  RRAY_ITERATOR2_FOR_EACH(it, i, out_loc, out_elt_loc, {                       \
+    POKE(v_out[out_loc], out_elt_loc, v_x[i]);                                 \
+  });
 
 static void rray_split_lgl(r_obj* x, r_obj* out, struct rray_iterator2* it) {
   RRAY_SPLIT_ATOMIC(int, r_lgl_cbegin, r_lgl_begin);

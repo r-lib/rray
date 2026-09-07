@@ -53,18 +53,9 @@ r_no_return void stop_unsupported_reduce(
                                                                                \
   const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
                                                                                \
-  while (!rray_iterator_finished(it)) {                                        \
-    struct rray_iterator_run run = rray_iterator_run(it);                      \
-                                                                               \
-    while (!rray_iterator_run_finished(&run)) {                                \
-      const r_ssize i = rray_iterator_run_index(&run);                         \
-      const r_ssize loc = rray_iterator_run_location(&run);                    \
-      v_out[loc] = ONE(v_out[loc], v_x[i]);                                    \
-      rray_iterator_run_next(&run);                                            \
-    }                                                                          \
-                                                                               \
-    rray_iterator_next(it);                                                    \
-  }                                                                            \
+  RRAY_ITERATOR_FOR_EACH(it, i, loc, {                                         \
+    v_out[loc] = ONE(v_out[loc], v_x[i]);                                      \
+  });                                                                          \
                                                                                \
   FREE(1);                                                                     \
   return out;

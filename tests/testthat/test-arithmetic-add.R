@@ -125,6 +125,17 @@ test_that("missing values win over integer overflow", {
   )
 })
 
+test_that("broadcasting carries through alternating singleton axes", {
+  x <- array(1:6, c(2L, 1L, 3L, 1L))
+  y <- array(as.double(11:18), c(1L, 4L, 1L, 2L))
+
+  expected_x <- x[, rep(1L, 4L), , rep(1L, 2L), drop = FALSE]
+  expected_y <- y[rep(1L, 2L), , rep(1L, 3L), , drop = FALSE]
+
+  expect_identical(rray_add(x, y), expected_x + expected_y)
+  expect_identical(rray_add(y, x), expected_y + expected_x)
+})
+
 test_that("names are kept for axes that aren't broadcast", {
   x <- array(1:6, c(3L, 2L), dimnames = list(c("a", "b", "c"), NULL))
   y <- array(1:2, c(1L, 2L), dimnames = list("z", c("c1", "c2")))

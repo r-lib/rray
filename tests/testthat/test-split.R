@@ -31,6 +31,21 @@ test_that("can split along multiple axes", {
   expect_equal(dim(out[[1]]), c(1L, 1L, 1L))
 })
 
+test_that("splitting carries through singleton axes for atomic and list arrays", {
+  for (input in list(1:12, letters[1:12], as.list(1:12))) {
+    x <- array(input, c(2L, 1L, 3L, 2L))
+    expect_identical(
+      rray_split(x, c(1L, 4L)),
+      list(
+        x[1L, , , 1L, drop = FALSE],
+        x[2L, , , 1L, drop = FALSE],
+        x[1L, , , 2L, drop = FALSE],
+        x[2L, , , 2L, drop = FALSE]
+      )
+    )
+  }
+})
+
 test_that("splitting with integer(0) axes returns list(x)", {
   x <- array(1:6, c(2, 3))
   out <- rray_split(x, integer())

@@ -230,6 +230,24 @@ test_that("errors on dimensionality upper bound", {
   })
 })
 
+test_that("broadcasting carries through singleton axes for each storage type", {
+  inputs <- list(
+    c(TRUE, FALSE),
+    1:4,
+    as.double(1:4),
+    1:4 + 1i,
+    as.raw(1:4),
+    letters[1:4],
+    as.list(1:4)
+  )
+
+  for (input in inputs) {
+    x <- array(input, c(1L, 2L, 1L, 2L))
+    expected <- x[rep(1L, 2L), , rep(1L, 3L), , drop = FALSE]
+    expect_identical(rray_broadcast(x, c(2L, 2L, 3L, 2L)), expected)
+  }
+})
+
 # ------------------------------------------------------------------------------
 # rray_broadcast_common()
 

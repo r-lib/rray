@@ -118,17 +118,7 @@ r_obj* rray_broadcast(
   const CTYPE* v_x = CONST_DEREF(x);                                           \
   CTYPE* v_out = DEREF(out);                                                   \
                                                                                \
-  while (!rray_iterator_finished(it)) {                                        \
-    struct rray_iterator_run run = rray_iterator_run(it);                      \
-                                                                               \
-    while (!rray_iterator_run_finished(&run)) {                                \
-      v_out[rray_iterator_run_index(&run)] =                                   \
-        v_x[rray_iterator_run_location(&run)];                                 \
-      rray_iterator_run_next(&run);                                            \
-    }                                                                          \
-                                                                               \
-    rray_iterator_next(it);                                                    \
-  }                                                                            \
+  RRAY_ITERATOR_FOR_EACH(it, i, loc, { v_out[i] = v_x[loc]; });                \
                                                                                \
   FREE(1);                                                                     \
   return out;
@@ -137,20 +127,7 @@ r_obj* rray_broadcast(
   r_obj* out = KEEP(r_alloc_vector(RTYPE, size));                              \
   r_obj* const* v_x = CONST_DEREF(x);                                          \
                                                                                \
-  while (!rray_iterator_finished(it)) {                                        \
-    struct rray_iterator_run run = rray_iterator_run(it);                      \
-                                                                               \
-    while (!rray_iterator_run_finished(&run)) {                                \
-      POKE(                                                                    \
-        out,                                                                   \
-        rray_iterator_run_index(&run),                                         \
-        v_x[rray_iterator_run_location(&run)]                                  \
-      );                                                                       \
-      rray_iterator_run_next(&run);                                            \
-    }                                                                          \
-                                                                               \
-    rray_iterator_next(it);                                                    \
-  }                                                                            \
+  RRAY_ITERATOR_FOR_EACH(it, i, loc, { POKE(out, i, v_x[loc]); });             \
                                                                                \
   FREE(1);                                                                     \
   return out;
