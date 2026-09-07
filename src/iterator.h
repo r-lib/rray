@@ -33,12 +33,12 @@
 // Walks the multidimensional point space, providing access to the current
 // multidimensional point
 struct rray_point_iterator {
+  r_ssize index;
+  r_ssize size;
+
   int v_point[RRAY_MAX_DIMENSIONALITY];
   int v_point_dimensions[RRAY_MAX_DIMENSIONALITY];
   int point_dimensionality;
-
-  r_ssize size;
-  r_ssize index;
 };
 
 static inline void rray_point_iterator_init(
@@ -49,15 +49,15 @@ static inline void rray_point_iterator_init(
 ) {
   check_max_dimensionality(point_dimensionality);
 
+  it->index = 0;
+  it->size = size;
+
   it->point_dimensionality = point_dimensionality;
 
   for (int i = 0; i < point_dimensionality; ++i) {
     it->v_point_dimensions[i] = v_point_dimensions[i];
   }
   memset(it->v_point, 0, sizeof(int) * point_dimensionality);
-
-  it->size = size;
-  it->index = 0;
 }
 
 static inline bool rray_point_iterator_finished(
@@ -132,12 +132,12 @@ static inline void rray_point_iterator_run_next(
 // subspace. So as you walk the original array, you can fetch `location`s into
 // the output to accumulate the reduced result at.
 struct rray_iterator {
+  r_ssize index;
+  r_ssize size;
+
   int v_point[RRAY_MAX_DIMENSIONALITY];
   int v_point_dimensions[RRAY_MAX_DIMENSIONALITY];
   int point_dimensionality;
-
-  r_ssize size;
-  r_ssize index;
 
   r_ssize location;
   r_ssize v_location_strides[RRAY_MAX_DIMENSIONALITY];
@@ -153,15 +153,15 @@ static inline void rray_iterator_init(
 ) {
   check_max_dimensionality(point_dimensionality);
 
+  it->index = 0;
+  it->size = size;
+
   it->point_dimensionality = point_dimensionality;
 
   for (int i = 0; i < point_dimensionality; ++i) {
     it->v_point_dimensions[i] = v_point_dimensions[i];
   }
   memset(it->v_point, 0, sizeof(int) * point_dimensionality);
-
-  it->size = size;
-  it->index = 0;
 
   rray__location_strides_init(
     it->v_location_strides,
@@ -238,12 +238,12 @@ static inline void rray_iterator_run_next(struct rray_iterator_run* run) {
 // Same as `rray_iterator`, but reports in two location spaces while only
 // walking the point space once
 struct rray_iterator2 {
+  r_ssize index;
+  r_ssize size;
+
   int v_point[RRAY_MAX_DIMENSIONALITY];
   int v_point_dimensions[RRAY_MAX_DIMENSIONALITY];
   int point_dimensionality;
-
-  r_ssize size;
-  r_ssize index;
 
   r_ssize location1;
   r_ssize v_location1_strides[RRAY_MAX_DIMENSIONALITY];
@@ -264,15 +264,15 @@ static inline void rray_iterator2_init(
 ) {
   check_max_dimensionality(point_dimensionality);
 
+  it->index = 0;
+  it->size = size;
+
   it->point_dimensionality = point_dimensionality;
 
   for (int i = 0; i < point_dimensionality; ++i) {
     it->v_point_dimensions[i] = v_point_dimensions[i];
   }
   memset(it->v_point, 0, sizeof(int) * point_dimensionality);
-
-  it->size = size;
-  it->index = 0;
 
   rray__location_strides_init(
     it->v_location1_strides,
