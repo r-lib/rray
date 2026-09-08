@@ -16,6 +16,12 @@ static inline bool rray__iterator_axes_coalescible(
 
 static inline int rray__iterator_axes_coalesce(
   int* v_dimensions,
+  r_ssize* v_strides,
+  int dimensionality
+);
+
+static inline int rray__iterator_axes_coalesce2(
+  int* v_dimensions,
   r_ssize* v_strides1,
   r_ssize* v_strides2,
   int dimensionality
