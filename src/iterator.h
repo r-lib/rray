@@ -42,15 +42,14 @@ static inline void rray_point_iterator_init(
 
 #define RRAY_POINT_ITERATOR_FOR_EACH(IT, INDEX, POINT, ...)                    \
   do {                                                                         \
-    int point[RRAY_MAX_DIMENSIONALITY];                                        \
-    const int* POINT = point;                                                  \
+    int* POINT = (IT)->v_point;                                                \
     while ((IT)->index != (IT)->size) {                                        \
       const r_ssize end = (IT)->index + (IT)->v_point_dimensions[0];           \
-      memcpy(point, (IT)->v_point, sizeof(int) * (IT)->point_dimensionality);  \
       for (r_ssize INDEX = (IT)->index; INDEX != end; ++INDEX) {               \
         __VA_ARGS__                                                            \
-        ++point[0];                                                            \
+        ++POINT[0];                                                            \
       }                                                                        \
+      POINT[0] = 0;                                                            \
       (IT)->index += (IT)->v_point_dimensions[0];                              \
                                                                                \
       for (int axis = 1; axis < (IT)->point_dimensionality; ++axis) {          \
