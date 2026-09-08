@@ -40,33 +40,33 @@ static inline void rray_point_iterator_init(
   memset(it->v_point, 0, sizeof(int) * point_dimensionality);
 }
 
-#define RRAY_POINT_ITERATOR_FOR_EACH(IT, INDEX, POINT, ...)                    \
+#define RRAY_POINT_ITERATOR_FOR_EACH(IT, INDEX, V_POINT, ...)                  \
   do {                                                                         \
     struct rray_point_iterator* const iterator = (IT);                         \
     r_ssize INDEX = iterator->index;                                           \
     const r_ssize size = iterator->size;                                       \
     const int point_dimensionality = iterator->point_dimensionality;           \
     const int* v_point_dimensions = iterator->v_point_dimensions;              \
-    int* POINT = iterator->v_point;                                            \
+    int* V_POINT = iterator->v_point;                                          \
                                                                                \
     const r_ssize rows = v_point_dimensions[0];                                \
                                                                                \
     while (INDEX != size) {                                                    \
       for (r_ssize row = 0; row < rows; ++row) {                               \
         __VA_ARGS__                                                            \
-        ++POINT[0];                                                            \
+        ++V_POINT[0];                                                          \
         ++INDEX;                                                               \
       }                                                                        \
-      POINT[0] = 0;                                                            \
+      V_POINT[0] = 0;                                                          \
                                                                                \
       for (int axis = 1; axis < point_dimensionality; ++axis) {                \
-        ++POINT[axis];                                                         \
+        ++V_POINT[axis];                                                       \
                                                                                \
-        if (POINT[axis] < v_point_dimensions[axis]) {                          \
+        if (V_POINT[axis] < v_point_dimensions[axis]) {                        \
           break;                                                               \
         }                                                                      \
                                                                                \
-        POINT[axis] = 0;                                                       \
+        V_POINT[axis] = 0;                                                     \
       }                                                                        \
     }                                                                          \
   } while (0)
