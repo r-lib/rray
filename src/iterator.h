@@ -154,6 +154,8 @@ static inline void rray_iterator_init(
       }                                                                        \
       LOCATION -= row_reset;                                                   \
                                                                                \
+      /* We've iterated over the rows of this batch. */                        \
+      /* Advance to the start of the next batch of rows. */                    \
       for (int axis = 1; axis < point_dimensionality; ++axis) {                \
         ++v_point[axis];                                                       \
                                                                                \
