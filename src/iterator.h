@@ -358,21 +358,21 @@ static inline int rray__iterator_axes_coalesce(
 ) {
   int out_axis = 0;
 
-  for (int in_axis = 1; in_axis < dimensionality; ++in_axis) {
+  for (int axis = 1; axis < dimensionality; ++axis) {
     const int left_dimension = v_dimensions[out_axis];
-    const int right_dimension = v_dimensions[in_axis];
+    const int right_dimension = v_dimensions[axis];
     const r_ssize merged_dimension = (r_ssize) left_dimension * right_dimension;
 
     const bool coalescible = rray__iterator_axes_coalescible(
       left_dimension,
       v_strides[out_axis],
       right_dimension,
-      v_strides[in_axis]
+      v_strides[axis]
     );
 
     if (merged_dimension <= INT_MAX && coalescible) {
       if (left_dimension == 1) {
-        v_strides[out_axis] = v_strides[in_axis];
+        v_strides[out_axis] = v_strides[axis];
       }
 
       v_dimensions[out_axis] = (int) merged_dimension;
@@ -381,7 +381,7 @@ static inline int rray__iterator_axes_coalesce(
 
     ++out_axis;
     v_dimensions[out_axis] = right_dimension;
-    v_strides[out_axis] = v_strides[in_axis];
+    v_strides[out_axis] = v_strides[axis];
   }
 
   return out_axis + 1;
@@ -395,28 +395,28 @@ static inline int rray__iterator_axes_coalesce2(
 ) {
   int out_axis = 0;
 
-  for (int in_axis = 1; in_axis < dimensionality; ++in_axis) {
+  for (int axis = 1; axis < dimensionality; ++axis) {
     const int left_dimension = v_dimensions[out_axis];
-    const int right_dimension = v_dimensions[in_axis];
+    const int right_dimension = v_dimensions[axis];
     const r_ssize merged_dimension = (r_ssize) left_dimension * right_dimension;
 
     const bool coalescible1 = rray__iterator_axes_coalescible(
       left_dimension,
       v_strides1[out_axis],
       right_dimension,
-      v_strides1[in_axis]
+      v_strides1[axis]
     );
     const bool coalescible2 = rray__iterator_axes_coalescible(
       left_dimension,
       v_strides2[out_axis],
       right_dimension,
-      v_strides2[in_axis]
+      v_strides2[axis]
     );
 
     if (merged_dimension <= INT_MAX && coalescible1 && coalescible2) {
       if (left_dimension == 1) {
-        v_strides1[out_axis] = v_strides1[in_axis];
-        v_strides2[out_axis] = v_strides2[in_axis];
+        v_strides1[out_axis] = v_strides1[axis];
+        v_strides2[out_axis] = v_strides2[axis];
       }
 
       v_dimensions[out_axis] = (int) merged_dimension;
@@ -425,8 +425,8 @@ static inline int rray__iterator_axes_coalesce2(
 
     ++out_axis;
     v_dimensions[out_axis] = right_dimension;
-    v_strides1[out_axis] = v_strides1[in_axis];
-    v_strides2[out_axis] = v_strides2[in_axis];
+    v_strides1[out_axis] = v_strides1[axis];
+    v_strides2[out_axis] = v_strides2[axis];
   }
 
   return out_axis + 1;
