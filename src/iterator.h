@@ -165,11 +165,11 @@ static inline void rray_iterator_next(struct rray_iterator* it) {
 #define RRAY_ITERATOR_FOR_EACH(IT, INDEX, LOCATION, ...)                       \
   do {                                                                         \
     while ((IT)->index != (IT)->size) {                                        \
-      const r_ssize rray_end_ = (IT)->index + (IT)->v_point_dimensions[0];     \
-      const r_ssize rray_stride_ = (IT)->v_location_strides[0];                \
+      const r_ssize end = (IT)->index + (IT)->v_point_dimensions[0];           \
+      const r_ssize stride = (IT)->v_location_strides[0];                      \
       for (r_ssize INDEX = (IT)->index, LOCATION = (IT)->location;             \
-           INDEX != rray_end_;                                                 \
-           ++INDEX, LOCATION += rray_stride_) {                                \
+           INDEX != end;                                                       \
+           ++INDEX, LOCATION += stride) {                                      \
         __VA_ARGS__                                                            \
       }                                                                        \
       rray_iterator_next((IT));                                                \
