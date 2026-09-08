@@ -151,10 +151,6 @@ static inline void rray_iterator_init(
   it->location = 0;
 }
 
-static inline bool rray_iterator_finished(const struct rray_iterator* it) {
-  return it->index == it->size;
-}
-
 static inline void rray_iterator_next(struct rray_iterator* it) {
   RRAY_ITERATOR_NEXT(
     it,
@@ -168,7 +164,7 @@ static inline void rray_iterator_next(struct rray_iterator* it) {
 
 #define RRAY_ITERATOR_FOR_EACH(IT, INDEX, LOCATION, ...)                       \
   do {                                                                         \
-    while (!rray_iterator_finished((IT))) {                                    \
+    while ((IT)->index != (IT)->size) {                                        \
       const r_ssize rray_end_ = (IT)->index + (IT)->v_point_dimensions[0];     \
       const r_ssize rray_stride_ = (IT)->v_location_strides[0];                \
       for (r_ssize INDEX = (IT)->index, LOCATION = (IT)->location;             \
