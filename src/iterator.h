@@ -42,13 +42,12 @@ static inline void rray_point_iterator_init(
 
 #define RRAY_POINT_ITERATOR_FOR_EACH(IT, INDEX, POINT, ...)                    \
   do {                                                                         \
-    const struct rray_point_iterator* iterator = (IT);                         \
+    struct rray_point_iterator* const iterator = (IT);                         \
     r_ssize INDEX = iterator->index;                                           \
     const r_ssize size = iterator->size;                                       \
     const int point_dimensionality = iterator->point_dimensionality;           \
     const int* v_point_dimensions = iterator->v_point_dimensions;              \
-    int POINT[RRAY_MAX_DIMENSIONALITY];                                        \
-    memcpy(POINT, iterator->v_point, sizeof(int) * point_dimensionality);      \
+    int* POINT = iterator->v_point;                                            \
                                                                                \
     const r_ssize rows = v_point_dimensions[0];                                \
                                                                                \
@@ -133,15 +132,14 @@ static inline void rray_iterator_init(
 
 #define RRAY_ITERATOR_FOR_EACH(IT, INDEX, LOCATION, ...)                       \
   do {                                                                         \
-    const struct rray_iterator* iterator = (IT);                               \
+    struct rray_iterator* const iterator = (IT);                               \
     r_ssize INDEX = iterator->index;                                           \
     r_ssize LOCATION = iterator->location;                                     \
     const r_ssize size = iterator->size;                                       \
     const int point_dimensionality = iterator->point_dimensionality;           \
     const int* v_point_dimensions = iterator->v_point_dimensions;              \
     const r_ssize* v_location_strides = iterator->v_location_strides;          \
-    int v_point[RRAY_MAX_DIMENSIONALITY];                                      \
-    memcpy(v_point, iterator->v_point, sizeof(int) * point_dimensionality);    \
+    int* v_point = iterator->v_point;                                          \
                                                                                \
     const r_ssize rows = v_point_dimensions[0];                                \
     const r_ssize stride = v_location_strides[0];                              \
@@ -236,7 +234,7 @@ static inline void rray_iterator2_init(
 
 #define RRAY_ITERATOR2_FOR_EACH(IT, INDEX, LOCATION1, LOCATION2, ...)          \
   do {                                                                         \
-    const struct rray_iterator2* iterator = (IT);                              \
+    struct rray_iterator2* const iterator = (IT);                              \
     r_ssize INDEX = iterator->index;                                           \
     r_ssize LOCATION1 = iterator->location1;                                   \
     r_ssize LOCATION2 = iterator->location2;                                   \
@@ -245,8 +243,7 @@ static inline void rray_iterator2_init(
     const int* v_point_dimensions = iterator->v_point_dimensions;              \
     const r_ssize* v_location1_strides = iterator->v_location1_strides;        \
     const r_ssize* v_location2_strides = iterator->v_location2_strides;        \
-    int v_point[RRAY_MAX_DIMENSIONALITY];                                      \
-    memcpy(v_point, iterator->v_point, sizeof(int) * point_dimensionality);    \
+    int* v_point = iterator->v_point;                                          \
                                                                                \
     const r_ssize rows = v_point_dimensions[0];                                \
     const r_ssize stride1 = v_location1_strides[0];                            \
