@@ -67,7 +67,7 @@ static inline bool rray_point_iterator_finished(
   return it->index == it->size;
 }
 
-static inline void rray_point_iterator_next(struct rray_point_iterator* it) {
+static inline void rray_point_iterator_next(struct rray_point_iterator* it){
   RRAY_ITERATOR_NEXT(it, {}, {})
 }
 
@@ -151,17 +151,6 @@ static inline void rray_iterator_init(
   it->location = 0;
 }
 
-static inline void rray_iterator_next(struct rray_iterator* it) {
-  RRAY_ITERATOR_NEXT(
-    it,
-    { it->location += it->v_location_strides[i]; },
-    {
-      it->location -=
-        (it->v_point_dimensions[i] - 1) * it->v_location_strides[i];
-    }
-  )
-}
-
 #define RRAY_ITERATOR_FOR_EACH(IT, INDEX, LOCATION, ...)                       \
   do {                                                                         \
     while ((IT)->index != (IT)->size) {                                        \
@@ -172,7 +161,21 @@ static inline void rray_iterator_next(struct rray_iterator* it) {
            ++INDEX, LOCATION += stride) {                                      \
         __VA_ARGS__                                                            \
       }                                                                        \
-      rray_iterator_next((IT));                                                \
+      (IT)->index += (IT)->v_point_dimensions[0];                              \
+                                                                               \
+      for (int axis = 1; axis < (IT)->point_dimensionality; ++axis) {          \
+        ++(IT)->v_point[axis];                                                 \
+                                                                               \
+        if ((IT)->v_point[axis] < (IT)->v_point_dimensions[axis]) {            \
+          (IT)->location += (IT)->v_location_strides[axis];                    \
+          break;                                                               \
+        }                                                                      \
+                                                                               \
+        (IT)->v_point[axis] = 0;                                               \
+                                                                               \
+        (IT)->location -= ((IT)->v_point_dimensions[axis] - 1) *               \
+          (IT)->v_location_strides[axis];                                      \
+      }                                                                        \
     }                                                                          \
   } while (0)
 
@@ -242,7 +245,7 @@ static inline bool rray_iterator2_finished(const struct rray_iterator2* it) {
   return it->index == it->size;
 }
 
-static inline void rray_iterator2_next(struct rray_iterator2* it) {
+static inline void rray_iterator2_next(struct rray_iterator2* it){
   RRAY_ITERATOR_NEXT(
     it,
     {
