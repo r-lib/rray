@@ -142,16 +142,16 @@ static inline void rray_iterator_init(
     const r_ssize* v_location_strides = iterator->v_location_strides;          \
                                                                                \
     const r_ssize rows = v_point_dimensions[0];                                \
-    const r_ssize stride = v_location_strides[0];                              \
-    const r_ssize row_rewind = rows * stride;                                  \
+    const r_ssize row_stride = v_location_strides[0];                          \
+    const r_ssize row_reset = rows * row_stride;                               \
                                                                                \
     while (INDEX != size) {                                                    \
       for (r_ssize row = 0; row < rows; ++row) {                               \
         __VA_ARGS__                                                            \
-        LOCATION += stride;                                                    \
+        LOCATION += row_stride;                                                \
         ++INDEX;                                                               \
       }                                                                        \
-      LOCATION -= row_rewind;                                                  \
+      LOCATION -= row_reset;                                                   \
                                                                                \
       for (int axis = 1; axis < point_dimensionality; ++axis) {                \
         ++v_point[axis];                                                       \
@@ -244,20 +244,20 @@ static inline void rray_iterator2_init(
     const r_ssize* v_location2_strides = iterator->v_location2_strides;        \
                                                                                \
     const r_ssize rows = v_point_dimensions[0];                                \
-    const r_ssize stride1 = v_location1_strides[0];                            \
-    const r_ssize stride2 = v_location2_strides[0];                            \
-    const r_ssize row_rewind1 = rows * stride1;                                \
-    const r_ssize row_rewind2 = rows * stride2;                                \
+    const r_ssize row_stride1 = v_location1_strides[0];                        \
+    const r_ssize row_stride2 = v_location2_strides[0];                        \
+    const r_ssize row_reset1 = rows * row_stride1;                             \
+    const r_ssize row_reset2 = rows * row_stride2;                             \
                                                                                \
     while (INDEX != size) {                                                    \
       for (r_ssize row = 0; row < rows; ++row) {                               \
         __VA_ARGS__                                                            \
-        LOCATION1 += stride1;                                                  \
-        LOCATION2 += stride2;                                                  \
+        LOCATION1 += row_stride1;                                              \
+        LOCATION2 += row_stride2;                                              \
         ++INDEX;                                                               \
       }                                                                        \
-      LOCATION1 -= row_rewind1;                                                \
-      LOCATION2 -= row_rewind2;                                                \
+      LOCATION1 -= row_reset1;                                                 \
+      LOCATION2 -= row_reset2;                                                 \
                                                                                \
       for (int axis = 1; axis < point_dimensionality; ++axis) {                \
         ++v_point[axis];                                                       \
