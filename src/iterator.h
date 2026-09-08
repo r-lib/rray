@@ -132,6 +132,9 @@ static inline void rray_iterator_init(
 
 #define RRAY_ITERATOR_FOR_EACH(IT, INDEX, LOCATION, ...)                       \
   do {                                                                         \
+    /* Unpacking the iterator fields is critical for performance. It gives */  \
+    /* the compiler guarantees about loop counters and fixed inputs that */    \
+    /* unlock vectorization optimizations. */                                  \
     struct rray_iterator* const iterator = (IT);                               \
     r_ssize INDEX = iterator->index;                                           \
     const r_ssize size = iterator->size;                                       \
