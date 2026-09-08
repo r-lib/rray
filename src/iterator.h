@@ -146,6 +146,7 @@ static inline void rray_iterator_init(
     const r_ssize row_reset = rows * row_stride;                               \
                                                                                \
     while (INDEX != size) {                                                    \
+      /* Apply expression for each row */                                      \
       for (r_ssize row = 0; row < rows; ++row) {                               \
         __VA_ARGS__                                                            \
         LOCATION += row_stride;                                                \
