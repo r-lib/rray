@@ -45,9 +45,9 @@ static inline void rray_point_iterator_init(
     struct rray_point_iterator* const iterator = (IT);                         \
     r_ssize INDEX = iterator->index;                                           \
     const r_ssize size = iterator->size;                                       \
-    const int point_dimensionality = iterator->point_dimensionality;           \
-    const int* v_point_dimensions = iterator->v_point_dimensions;              \
     int* V_POINT = iterator->v_point;                                          \
+    const int* v_point_dimensions = iterator->v_point_dimensions;              \
+    const int point_dimensionality = iterator->point_dimensionality;           \
                                                                                \
     const r_ssize rows = v_point_dimensions[0];                                \
                                                                                \
