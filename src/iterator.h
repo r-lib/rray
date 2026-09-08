@@ -156,10 +156,10 @@ static inline void rray_iterator_init(
     while ((IT)->index != (IT)->size) {                                        \
       const r_ssize end = (IT)->index + (IT)->v_point_dimensions[0];           \
       const r_ssize stride = (IT)->v_location_strides[0];                      \
-      for (r_ssize INDEX = (IT)->index, LOCATION = (IT)->location;             \
-           INDEX != end;                                                       \
-           ++INDEX, LOCATION += stride) {                                      \
+      r_ssize LOCATION = (IT)->location;                                       \
+      for (r_ssize INDEX = (IT)->index; INDEX != end; ++INDEX) {               \
         __VA_ARGS__                                                            \
+        LOCATION += stride;                                                    \
       }                                                                        \
       (IT)->index += (IT)->v_point_dimensions[0];                              \
                                                                                \
