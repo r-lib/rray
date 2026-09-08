@@ -8,27 +8,6 @@
 
 // --------------------------------------------------------------------------
 
-// Core "next" algorithm used by all iterators
-//
-// Takes one step along the multidimensional point. Calls `STEP` and `RESET`
-// hooks, which are what define each iterator.
-#define RRAY_ITERATOR_NEXT(IT, STEP, RESET)                                    \
-  (IT)->index += (IT)->v_point_dimensions[0];                                  \
-                                                                               \
-  for (int i = 1; i < (IT)->point_dimensionality; ++i) {                       \
-    ++(IT)->v_point[i];                                                        \
-                                                                               \
-    if ((IT)->v_point[i] < (IT)->v_point_dimensions[i]) {                      \
-      STEP return;                                                             \
-    }                                                                          \
-                                                                               \
-    (IT)->v_point[i] = 0;                                                      \
-                                                                               \
-    RESET                                                                      \
-  }
-
-// --------------------------------------------------------------------------
-
 // Simplest iterator
 //
 // Walks the multidimensional point space, providing access to the current
@@ -61,34 +40,28 @@ static inline void rray_point_iterator_init(
   memset(it->v_point, 0, sizeof(int) * point_dimensionality);
 }
 
-static inline bool rray_point_iterator_finished(
-  const struct rray_point_iterator* it
-) {
-  return it->index == it->size;
-}
-
-static inline void rray_point_iterator_next(struct rray_point_iterator* it){
-  RRAY_ITERATOR_NEXT(it, {}, {})
-}
-
 #define RRAY_POINT_ITERATOR_FOR_EACH(IT, INDEX, POINT, ...)                    \
   do {                                                                         \
-    struct rray_point_iterator* rray_it_ = (IT);                               \
-    int rray_point_[RRAY_MAX_DIMENSIONALITY];                                  \
-    const int* POINT = rray_point_;                                            \
-    while (!rray_point_iterator_finished(rray_it_)) {                          \
-      const r_ssize rray_end_ =                                                \
-        rray_it_->index + rray_it_->v_point_dimensions[0];                     \
-      memcpy(                                                                  \
-        rray_point_,                                                           \
-        rray_it_->v_point,                                                     \
-        sizeof(int) * rray_it_->point_dimensionality                           \
-      );                                                                       \
-      for (r_ssize INDEX = rray_it_->index; INDEX != rray_end_;                \
-           ++INDEX, ++rray_point_[0]) {                                        \
+    int point[RRAY_MAX_DIMENSIONALITY];                                        \
+    const int* POINT = point;                                                  \
+    while ((IT)->index != (IT)->size) {                                        \
+      const r_ssize end = (IT)->index + (IT)->v_point_dimensions[0];           \
+      memcpy(point, (IT)->v_point, sizeof(int) * (IT)->point_dimensionality);  \
+      for (r_ssize INDEX = (IT)->index; INDEX != end; ++INDEX) {               \
         __VA_ARGS__                                                            \
+        ++point[0];                                                            \
       }                                                                        \
-      rray_point_iterator_next(rray_it_);                                      \
+      (IT)->index += (IT)->v_point_dimensions[0];                              \
+                                                                               \
+      for (int axis = 1; axis < (IT)->point_dimensionality; ++axis) {          \
+        ++(IT)->v_point[axis];                                                 \
+                                                                               \
+        if ((IT)->v_point[axis] < (IT)->v_point_dimensions[axis]) {            \
+          break;                                                               \
+        }                                                                      \
+                                                                               \
+        (IT)->v_point[axis] = 0;                                               \
+      }                                                                        \
     }                                                                          \
   } while (0)
 
@@ -320,7 +293,5 @@ static inline void rray__location_strides_init(
     stride *= dimension;
   }
 }
-
-#undef RRAY_ITERATOR_NEXT
 
 #endif
