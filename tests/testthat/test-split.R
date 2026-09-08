@@ -46,6 +46,39 @@ test_that("splitting carries through singleton axes for atomic and list arrays",
   }
 })
 
+test_that("coalesces split axes", {
+  expected_split <- function(x, axes) {
+    dimensions <- dim(x)
+    points <- arrayInd(seq_len(prod(dimensions[axes])), dimensions[axes])
+
+    lapply(seq_len(nrow(points)), function(i) {
+      indices <- lapply(seq_along(dimensions), function(axis) {
+        split_axis <- match(axis, axes)
+
+        if (is.na(split_axis)) {
+          seq_len(dimensions[[axis]])
+        } else {
+          points[i, split_axis]
+        }
+      })
+
+      do.call(`[`, c(list(x), indices, list(drop = FALSE)))
+    })
+  }
+
+  axes <- list(1L, 2L, 3L, 4L, c(1L, 3L), c(2L, 4L))
+
+  x <- array(1:24, c(1L, 3L, 2L, 4L))
+  for (axis in axes) {
+    expect_identical(rray_split(x, axis), expected_split(x, axis))
+  }
+
+  dimnames(x) <- list("a", letters[1:3], LETTERS[1:2], paste0("x", 1:4))
+  for (axis in axes) {
+    expect_identical(rray_split(x, axis), expected_split(x, axis))
+  }
+})
+
 test_that("splitting with integer(0) axes returns list(x)", {
   x <- array(1:6, c(2, 3))
   out <- rray_split(x, integer())

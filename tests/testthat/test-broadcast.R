@@ -35,6 +35,41 @@ test_that("broadcasts with zero-length dimensions", {
   expect_identical(rray_size(out), 0)
 })
 
+test_that("coalesces broadcast axes", {
+  x <- array(1:4, c(1L, 1L, 4L))
+  expected <- x[, rep(1L, 3L), , drop = FALSE]
+  expect_identical(rray_broadcast(x, c(1L, 3L, 4L)), expected)
+
+  expected <- array(rep(expected, 2L), c(1L, 3L, 4L, 2L))
+  expect_identical(rray_broadcast(x, c(1L, 3L, 4L, 2L)), expected)
+
+  dimensions <- c(1L, 2L, 1L, 3L)
+  expect_identical(
+    rray_broadcast(7L, dimensions),
+    array(rep(7L, 6L), dimensions)
+  )
+})
+
+test_that("coalesces zero-size broadcast axes", {
+  dimensions <- c(1L, 0L, 3L)
+  expect_identical(
+    rray_broadcast(array(integer(), c(1L, 0L, 1L)), dimensions),
+    array(integer(), dimensions)
+  )
+
+  dimensions <- c(1L, 3L, 0L)
+  expect_identical(
+    rray_broadcast(array(integer(), c(1L, 1L, 0L)), dimensions),
+    array(integer(), dimensions)
+  )
+
+  dimensions <- c(50000L, 50000L, 0L)
+  expect_identical(
+    rray_broadcast(1L, dimensions),
+    array(integer(), dimensions)
+  )
+})
+
 test_that("can broadcast 0 to 0 but not 0 to N", {
   x <- array(integer(), c(0L, 2L))
   expect_identical(

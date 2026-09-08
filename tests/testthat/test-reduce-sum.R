@@ -43,6 +43,29 @@ test_that("can reduce axis 3", {
   expect_identical(as.vector(out), c(40L, 44L, 48L, 52L, 56L, 60L))
 })
 
+test_that("coalesces reduction axes", {
+  x <- array(1:24, c(1L, 3L, 2L, 4L))
+  expected <- function(axes) {
+    dimensions <- dim(x)
+    dimensions[axes] <- 1L
+    kept_axes <- setdiff(seq_along(dimensions), axes)
+
+    values <- if (length(kept_axes)) {
+      apply(x, kept_axes, sum)
+    } else {
+      sum(x)
+    }
+
+    array(values, dimensions)
+  }
+
+  axes <- list(1L, 2L, 3L, 4L, c(1L, 3L), c(2L, 4L), 1:4)
+
+  for (axis in axes) {
+    expect_identical(rray_sum(x, axis), expected(axis))
+  }
+})
+
 test_that("dimension names are kept for non-reduced axes", {
   x <- array(1:10, c(5L, 2L), dimnames = list(letters[1:5], c("c1", "c2")))
   expect_identical(dimnames(rray_sum(x, 1L)), list(NULL, c("c1", "c2")))
