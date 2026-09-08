@@ -42,15 +42,17 @@ static inline void rray_point_iterator_init(
 
 #define RRAY_POINT_ITERATOR_FOR_EACH(IT, INDEX, POINT, ...)                    \
   do {                                                                         \
+    r_ssize INDEX = (IT)->index;                                               \
+    const r_ssize rows = (IT)->v_point_dimensions[0];                          \
     int* POINT = (IT)->v_point;                                                \
     while ((IT)->index != (IT)->size) {                                        \
-      const r_ssize end = (IT)->index + (IT)->v_point_dimensions[0];           \
-      for (r_ssize INDEX = (IT)->index; INDEX != end; ++INDEX) {               \
+      for (r_ssize row = 0; row < rows; ++row) {                               \
         __VA_ARGS__                                                            \
         ++POINT[0];                                                            \
+        ++INDEX;                                                               \
       }                                                                        \
       POINT[0] = 0;                                                            \
-      (IT)->index += (IT)->v_point_dimensions[0];                              \
+      (IT)->index += rows;                                                     \
                                                                                \
       for (int axis = 1; axis < (IT)->point_dimensionality; ++axis) {          \
         ++(IT)->v_point[axis];                                                 \
@@ -125,15 +127,17 @@ static inline void rray_iterator_init(
 
 #define RRAY_ITERATOR_FOR_EACH(IT, INDEX, LOCATION, ...)                       \
   do {                                                                         \
+    r_ssize INDEX = (IT)->index;                                               \
+    const r_ssize rows = (IT)->v_point_dimensions[0];                          \
     while ((IT)->index != (IT)->size) {                                        \
-      const r_ssize end = (IT)->index + (IT)->v_point_dimensions[0];           \
       const r_ssize stride = (IT)->v_location_strides[0];                      \
       r_ssize LOCATION = (IT)->location;                                       \
-      for (r_ssize INDEX = (IT)->index; INDEX != end; ++INDEX) {               \
+      for (r_ssize row = 0; row < rows; ++row) {                               \
         __VA_ARGS__                                                            \
         LOCATION += stride;                                                    \
+        ++INDEX;                                                               \
       }                                                                        \
-      (IT)->index += (IT)->v_point_dimensions[0];                              \
+      (IT)->index += rows;                                                     \
                                                                                \
       for (int axis = 1; axis < (IT)->point_dimensionality; ++axis) {          \
         ++(IT)->v_point[axis];                                                 \
@@ -217,18 +221,20 @@ static inline void rray_iterator2_init(
 
 #define RRAY_ITERATOR2_FOR_EACH(IT, INDEX, LOCATION1, LOCATION2, ...)          \
   do {                                                                         \
+    r_ssize INDEX = (IT)->index;                                               \
+    const r_ssize rows = (IT)->v_point_dimensions[0];                          \
     while ((IT)->index != (IT)->size) {                                        \
-      const r_ssize end = (IT)->index + (IT)->v_point_dimensions[0];           \
       const r_ssize stride1 = (IT)->v_location1_strides[0];                    \
       const r_ssize stride2 = (IT)->v_location2_strides[0];                    \
       r_ssize LOCATION1 = (IT)->location1;                                     \
       r_ssize LOCATION2 = (IT)->location2;                                     \
-      for (r_ssize INDEX = (IT)->index; INDEX != end; ++INDEX) {               \
+      for (r_ssize row = 0; row < rows; ++row) {                               \
         __VA_ARGS__                                                            \
         LOCATION1 += stride1;                                                  \
         LOCATION2 += stride2;                                                  \
+        ++INDEX;                                                               \
       }                                                                        \
-      (IT)->index += (IT)->v_point_dimensions[0];                              \
+      (IT)->index += rows;                                                     \
                                                                                \
       for (int axis = 1; axis < (IT)->point_dimensionality; ++axis) {          \
         ++(IT)->v_point[axis];                                                 \
