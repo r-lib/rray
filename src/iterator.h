@@ -230,8 +230,6 @@ static inline void rray_iterator2_init(
   it->location2 = 0;
 }
 
-// --------------------------------------------------------------------------
-
 #define RRAY_ITERATOR2_FOR_EACH(IT, INDEX, LOCATION1, LOCATION2, ...)          \
   do {                                                                         \
     struct rray_iterator2* const iterator = (IT);                              \
