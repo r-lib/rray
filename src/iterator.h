@@ -130,6 +130,16 @@ static inline void rray_iterator_init(
   it->location = 0;
 }
 
+// For-loop-style iteration, giving access to the flat index and mapped
+// location.
+//
+// The loop structure is more complicated than strictly necessary for
+// performance reasons. We process a run along the first axis while holding all
+// other axes fixed, so the inner loop only advances the index and location by
+// fixed increments. Point adjustment happens between runs. This makes the
+// inner loop easier for the compiler to optimize and vectorize. In our
+// benchmarks, batching rows improved performance by up to 3-4× and helped our
+// operations outperform base R in many cases, even with broadcasting support.
 #define RRAY_ITERATOR_FOR_EACH(IT, INDEX, LOCATION, ...)                       \
   do {                                                                         \
     /* Unpacking the iterator fields is critical for performance. It gives */  \
