@@ -361,17 +361,19 @@ static inline int rray__iterator_axes_coalesce(
   for (int axis = 1; axis < dimensionality; ++axis) {
     const r_ssize left_dimension = v_dimensions[out_axis];
     const r_ssize right_dimension = v_dimensions[axis];
+    const r_ssize left_stride = v_strides[out_axis];
+    const r_ssize right_stride = v_strides[axis];
 
     const bool coalescible = rray__iterator_axes_coalescible(
       left_dimension,
-      v_strides[out_axis],
+      left_stride,
       right_dimension,
-      v_strides[axis]
+      right_stride
     );
 
     if (coalescible) {
       if (left_dimension == 1) {
-        v_strides[out_axis] = v_strides[axis];
+        v_strides[out_axis] = right_stride;
       }
 
       v_dimensions[out_axis] = left_dimension * right_dimension;
@@ -380,7 +382,7 @@ static inline int rray__iterator_axes_coalesce(
 
     ++out_axis;
     v_dimensions[out_axis] = right_dimension;
-    v_strides[out_axis] = v_strides[axis];
+    v_strides[out_axis] = right_stride;
   }
 
   return out_axis + 1;
@@ -397,24 +399,28 @@ static inline int rray__iterator_axes_coalesce2(
   for (int axis = 1; axis < dimensionality; ++axis) {
     const r_ssize left_dimension = v_dimensions[out_axis];
     const r_ssize right_dimension = v_dimensions[axis];
+    const r_ssize left_stride1 = v_strides1[out_axis];
+    const r_ssize right_stride1 = v_strides1[axis];
+    const r_ssize left_stride2 = v_strides2[out_axis];
+    const r_ssize right_stride2 = v_strides2[axis];
 
     const bool coalescible1 = rray__iterator_axes_coalescible(
       left_dimension,
-      v_strides1[out_axis],
+      left_stride1,
       right_dimension,
-      v_strides1[axis]
+      right_stride1
     );
     const bool coalescible2 = rray__iterator_axes_coalescible(
       left_dimension,
-      v_strides2[out_axis],
+      left_stride2,
       right_dimension,
-      v_strides2[axis]
+      right_stride2
     );
 
     if (coalescible1 && coalescible2) {
       if (left_dimension == 1) {
-        v_strides1[out_axis] = v_strides1[axis];
-        v_strides2[out_axis] = v_strides2[axis];
+        v_strides1[out_axis] = right_stride1;
+        v_strides2[out_axis] = right_stride2;
       }
 
       v_dimensions[out_axis] = left_dimension * right_dimension;
@@ -423,8 +429,8 @@ static inline int rray__iterator_axes_coalesce2(
 
     ++out_axis;
     v_dimensions[out_axis] = right_dimension;
-    v_strides1[out_axis] = v_strides1[axis];
-    v_strides2[out_axis] = v_strides2[axis];
+    v_strides1[out_axis] = right_stride1;
+    v_strides2[out_axis] = right_stride2;
   }
 
   return out_axis + 1;
