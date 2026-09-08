@@ -85,8 +85,8 @@ struct rray_iterator {
   r_ssize index;
   r_ssize size;
 
-  int v_point[RRAY_MAX_DIMENSIONALITY];
-  int v_point_dimensions[RRAY_MAX_DIMENSIONALITY];
+  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];
+  r_ssize v_point_dimensions[RRAY_MAX_DIMENSIONALITY];
   int point_dimensionality;
 
   r_ssize location;
@@ -109,7 +109,7 @@ static inline void rray_iterator_init(
   for (int i = 0; i < point_dimensionality; ++i) {
     it->v_point_dimensions[i] = v_point_dimensions[i];
   }
-  memset(it->v_point, 0, sizeof(int) * point_dimensionality);
+  memset(it->v_point, 0, sizeof(r_ssize) * point_dimensionality);
 
   rray__location_strides_init(
     it->v_location_strides,
@@ -146,8 +146,8 @@ static inline void rray_iterator_init(
     struct rray_iterator* const iterator = (IT);                               \
     r_ssize INDEX = iterator->index;                                           \
     const r_ssize size = iterator->size;                                       \
-    int* v_point = iterator->v_point;                                          \
-    const int* v_point_dimensions = iterator->v_point_dimensions;              \
+    r_ssize* v_point = iterator->v_point;                                      \
+    const r_ssize* v_point_dimensions = iterator->v_point_dimensions;          \
     const int point_dimensionality = iterator->point_dimensionality;           \
     r_ssize LOCATION = iterator->location;                                     \
     const r_ssize* v_location_strides = iterator->v_location_strides;          \
@@ -190,8 +190,8 @@ struct rray_iterator2 {
   r_ssize index;
   r_ssize size;
 
-  int v_point[RRAY_MAX_DIMENSIONALITY];
-  int v_point_dimensions[RRAY_MAX_DIMENSIONALITY];
+  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];
+  r_ssize v_point_dimensions[RRAY_MAX_DIMENSIONALITY];
   int point_dimensionality;
 
   r_ssize location1;
@@ -219,7 +219,7 @@ static inline void rray_iterator2_init(
   for (int i = 0; i < point_dimensionality; ++i) {
     it->v_point_dimensions[i] = v_point_dimensions[i];
   }
-  memset(it->v_point, 0, sizeof(int) * point_dimensionality);
+  memset(it->v_point, 0, sizeof(r_ssize) * point_dimensionality);
 
   rray__location_strides_init(
     it->v_location1_strides,
@@ -254,8 +254,8 @@ static inline void rray_iterator2_init(
     struct rray_iterator2* const iterator = (IT);                              \
     r_ssize INDEX = iterator->index;                                           \
     const r_ssize size = iterator->size;                                       \
-    int* v_point = iterator->v_point;                                          \
-    const int* v_point_dimensions = iterator->v_point_dimensions;              \
+    r_ssize* v_point = iterator->v_point;                                      \
+    const r_ssize* v_point_dimensions = iterator->v_point_dimensions;          \
     const int point_dimensionality = iterator->point_dimensionality;           \
     r_ssize LOCATION1 = iterator->location1;                                   \
     const r_ssize* v_location1_strides = iterator->v_location1_strides;        \
@@ -342,9 +342,9 @@ static inline void rray__location_strides_init(
 }
 
 static inline bool rray__iterator_axes_coalescible(
-  int left_dimension,
+  r_ssize left_dimension,
   r_ssize left_stride,
-  int right_dimension,
+  r_ssize right_dimension,
   r_ssize right_stride
 ) {
   return left_dimension == 1 || right_dimension == 1 ||
@@ -352,16 +352,15 @@ static inline bool rray__iterator_axes_coalescible(
 }
 
 static inline int rray__iterator_axes_coalesce(
-  int* v_dimensions,
+  r_ssize* v_dimensions,
   r_ssize* v_strides,
   int dimensionality
 ) {
   int out_axis = 0;
 
   for (int axis = 1; axis < dimensionality; ++axis) {
-    const int left_dimension = v_dimensions[out_axis];
-    const int right_dimension = v_dimensions[axis];
-    const r_ssize merged_dimension = (r_ssize) left_dimension * right_dimension;
+    const r_ssize left_dimension = v_dimensions[out_axis];
+    const r_ssize right_dimension = v_dimensions[axis];
 
     const bool coalescible = rray__iterator_axes_coalescible(
       left_dimension,
@@ -370,12 +369,12 @@ static inline int rray__iterator_axes_coalesce(
       v_strides[axis]
     );
 
-    if (merged_dimension <= INT_MAX && coalescible) {
+    if (coalescible) {
       if (left_dimension == 1) {
         v_strides[out_axis] = v_strides[axis];
       }
 
-      v_dimensions[out_axis] = (int) merged_dimension;
+      v_dimensions[out_axis] = left_dimension * right_dimension;
       continue;
     }
 
@@ -388,7 +387,7 @@ static inline int rray__iterator_axes_coalesce(
 }
 
 static inline int rray__iterator_axes_coalesce2(
-  int* v_dimensions,
+  r_ssize* v_dimensions,
   r_ssize* v_strides1,
   r_ssize* v_strides2,
   int dimensionality
@@ -396,9 +395,8 @@ static inline int rray__iterator_axes_coalesce2(
   int out_axis = 0;
 
   for (int axis = 1; axis < dimensionality; ++axis) {
-    const int left_dimension = v_dimensions[out_axis];
-    const int right_dimension = v_dimensions[axis];
-    const r_ssize merged_dimension = (r_ssize) left_dimension * right_dimension;
+    const r_ssize left_dimension = v_dimensions[out_axis];
+    const r_ssize right_dimension = v_dimensions[axis];
 
     const bool coalescible1 = rray__iterator_axes_coalescible(
       left_dimension,
@@ -413,13 +411,13 @@ static inline int rray__iterator_axes_coalesce2(
       v_strides2[axis]
     );
 
-    if (merged_dimension <= INT_MAX && coalescible1 && coalescible2) {
+    if (coalescible1 && coalescible2) {
       if (left_dimension == 1) {
         v_strides1[out_axis] = v_strides1[axis];
         v_strides2[out_axis] = v_strides2[axis];
       }
 
-      v_dimensions[out_axis] = (int) merged_dimension;
+      v_dimensions[out_axis] = left_dimension * right_dimension;
       continue;
     }
 
