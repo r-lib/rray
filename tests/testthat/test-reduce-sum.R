@@ -266,6 +266,11 @@ test_that("the identity of an empty reduction has the output type", {
   expect_identical(as.vector(rray_sum(zero_size(complex()), 1L)), 0 + 0i)
 })
 
+test_that("summing preserves accumulation order across runs", {
+  x <- array(c(1e16, 1, -1e16, 1), c(2L, 2L))
+  expect_identical(rray_sum(x, c(1L, 2L)), array(1, c(1L, 1L)))
+})
+
 test_that("errors on axes out of range", {
   x <- array(1:4, c(2L, 2L))
   expect_snapshot(rray_sum(x, 3L), error = TRUE)

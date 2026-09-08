@@ -129,6 +129,23 @@ test_that("rray_split_names() works with zero-size axes", {
   expect_identical(rray_split_names(x, 1L), list())
 })
 
+test_that("rray_split_names() carries across singleton axes", {
+  x <- array(
+    1:4,
+    c(2L, 1L, 2L),
+    dimnames = list(c("a", "b"), "middle", c("c", "d"))
+  )
+  expect_identical(
+    rray_split_names(x, c(1L, 3L)),
+    list(
+      list("a", "middle", "c"),
+      list("b", "middle", "c"),
+      list("a", "middle", "d"),
+      list("b", "middle", "d")
+    )
+  )
+})
+
 test_that("rray_split_names() agrees with rray_split()", {
   x <- array(
     1:24,

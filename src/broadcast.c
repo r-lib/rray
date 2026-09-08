@@ -65,6 +65,7 @@ r_obj* rray_broadcast(
   struct rray_iterator it;
   rray_iterator_init(
     &it,
+    size,
     v_dimensions,
     dimensionality,
     v_x_dimensions,
@@ -117,10 +118,7 @@ r_obj* rray_broadcast(
   const CTYPE* v_x = CONST_DEREF(x);                                           \
   CTYPE* v_out = DEREF(out);                                                   \
                                                                                \
-  for (r_ssize i = 0; i < size; ++i) {                                         \
-    v_out[i] = v_x[rray_iterator_location(it)];                                \
-    rray_iterator_next(it);                                                    \
-  }                                                                            \
+  RRAY_ITERATOR_FOR_EACH(it, i, loc, { v_out[i] = v_x[loc]; });                \
                                                                                \
   FREE(1);                                                                     \
   return out;
@@ -129,10 +127,7 @@ r_obj* rray_broadcast(
   r_obj* out = KEEP(r_alloc_vector(RTYPE, size));                              \
   r_obj* const* v_x = CONST_DEREF(x);                                          \
                                                                                \
-  for (r_ssize i = 0; i < size; ++i) {                                         \
-    POKE(out, i, v_x[rray_iterator_location(it)]);                             \
-    rray_iterator_next(it);                                                    \
-  }                                                                            \
+  RRAY_ITERATOR_FOR_EACH(it, i, loc, { POKE(out, i, v_x[loc]); });             \
                                                                                \
   FREE(1);                                                                     \
   return out;

@@ -79,11 +79,9 @@ r_obj* rray_split_names(r_obj* x, r_obj* axes) {
   r_obj* out = KEEP(r_alloc_list(size));
 
   struct rray_point_iterator it;
-  rray_point_iterator_init(&it, v_dimensions, dimensionality);
+  rray_point_iterator_init(&it, size, v_dimensions, dimensionality);
 
-  for (r_ssize i = 0; i < size; ++i) {
-    const int* v_point = rray_point_iterator_point(&it);
-
+  RRAY_POINT_ITERATOR_FOR_EACH(&it, i, v_point, {
     r_obj* names = r_alloc_list(dimensionality);
     r_list_poke(out, i, names);
 
@@ -93,9 +91,7 @@ r_obj* rray_split_names(r_obj* x, r_obj* axes) {
         r_list_poke(names, j, v_axis_names[v_point[j]]);
       }
     }
-
-    rray_point_iterator_next(&it);
-  }
+  });
 
   FREE(6);
   return out;

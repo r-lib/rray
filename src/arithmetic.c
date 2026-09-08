@@ -52,6 +52,7 @@ r_obj* rray_binary_arithmetic(
   struct rray_iterator2 it;
   rray_iterator2_init(
     &it,
+    size,
     v_dimensions,
     dimensionality,
     v_x_dimensions,

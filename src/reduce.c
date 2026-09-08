@@ -37,12 +37,15 @@ r_obj* rray_reduce(
   ));
   const int* v_out_dimensions = r_int_cbegin(out_dimensions);
 
+  const r_ssize x_size =
+    rray_size_from_dimensions(v_x_dimensions, dimensionality);
   const r_ssize out_size =
     rray_size_from_dimensions(v_out_dimensions, dimensionality);
 
   struct rray_iterator it;
   rray_iterator_init(
     &it,
+    x_size,
     v_x_dimensions,
     dimensionality,
     v_out_dimensions,
