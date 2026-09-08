@@ -241,44 +241,39 @@ static inline void rray_iterator2_init(
   it->location2 = 0;
 }
 
-static inline bool rray_iterator2_finished(const struct rray_iterator2* it) {
-  return it->index == it->size;
-}
-
-static inline void rray_iterator2_next(struct rray_iterator2* it){
-  RRAY_ITERATOR_NEXT(
-    it,
-    {
-      it->location1 += it->v_location1_strides[i];
-      it->location2 += it->v_location2_strides[i];
-    },
-    {
-      it->location1 -=
-        (it->v_point_dimensions[i] - 1) * it->v_location1_strides[i];
-      it->location2 -=
-        (it->v_point_dimensions[i] - 1) * it->v_location2_strides[i];
-    }
-  )
-}
-
 // --------------------------------------------------------------------------
 
 #define RRAY_ITERATOR2_FOR_EACH(IT, INDEX, LOCATION1, LOCATION2, ...)          \
   do {                                                                         \
-    struct rray_iterator2* rray_it_ = (IT);                                    \
-    while (!rray_iterator2_finished(rray_it_)) {                               \
-      const r_ssize rray_end_ =                                                \
-        rray_it_->index + rray_it_->v_point_dimensions[0];                     \
-      const r_ssize rray_stride1_ = rray_it_->v_location1_strides[0];          \
-      const r_ssize rray_stride2_ = rray_it_->v_location2_strides[0];          \
-      for (r_ssize INDEX = rray_it_->index,                                    \
-                   LOCATION1 = rray_it_->location1,                            \
-                   LOCATION2 = rray_it_->location2;                            \
-           INDEX != rray_end_;                                                 \
-           ++INDEX, LOCATION1 += rray_stride1_, LOCATION2 += rray_stride2_) {  \
+    while ((IT)->index != (IT)->size) {                                        \
+      const r_ssize end = (IT)->index + (IT)->v_point_dimensions[0];           \
+      const r_ssize stride1 = (IT)->v_location1_strides[0];                    \
+      const r_ssize stride2 = (IT)->v_location2_strides[0];                    \
+      r_ssize LOCATION1 = (IT)->location1;                                     \
+      r_ssize LOCATION2 = (IT)->location2;                                     \
+      for (r_ssize INDEX = (IT)->index; INDEX != end; ++INDEX) {               \
         __VA_ARGS__                                                            \
+        LOCATION1 += stride1;                                                  \
+        LOCATION2 += stride2;                                                  \
       }                                                                        \
-      rray_iterator2_next(rray_it_);                                           \
+      (IT)->index += (IT)->v_point_dimensions[0];                              \
+                                                                               \
+      for (int axis = 1; axis < (IT)->point_dimensionality; ++axis) {          \
+        ++(IT)->v_point[axis];                                                 \
+                                                                               \
+        if ((IT)->v_point[axis] < (IT)->v_point_dimensions[axis]) {            \
+          (IT)->location1 += (IT)->v_location1_strides[axis];                  \
+          (IT)->location2 += (IT)->v_location2_strides[axis];                  \
+          break;                                                               \
+        }                                                                      \
+                                                                               \
+        (IT)->v_point[axis] = 0;                                               \
+                                                                               \
+        (IT)->location1 -= ((IT)->v_point_dimensions[axis] - 1) *              \
+          (IT)->v_location1_strides[axis];                                     \
+        (IT)->location2 -= ((IT)->v_point_dimensions[axis] - 1) *              \
+          (IT)->v_location2_strides[axis];                                     \
+      }                                                                        \
     }                                                                          \
   } while (0)
 
