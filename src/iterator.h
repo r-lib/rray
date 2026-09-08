@@ -49,17 +49,11 @@ static inline void rray_point_iterator_init(
     const int* v_point_dimensions = iterator->v_point_dimensions;              \
     const int point_dimensionality = iterator->point_dimensionality;           \
                                                                                \
-    const r_ssize rows = v_point_dimensions[0];                                \
-                                                                               \
     while (INDEX != size) {                                                    \
-      for (r_ssize row = 0; row < rows; ++row) {                               \
-        __VA_ARGS__                                                            \
-        ++V_POINT[0];                                                          \
-        ++INDEX;                                                               \
-      }                                                                        \
-      V_POINT[0] = 0;                                                          \
+      __VA_ARGS__                                                              \
+      ++INDEX;                                                                 \
                                                                                \
-      for (int axis = 1; axis < point_dimensionality; ++axis) {                \
+      for (int axis = 0; axis < point_dimensionality; ++axis) {                \
         ++V_POINT[axis];                                                       \
                                                                                \
         if (V_POINT[axis] < v_point_dimensions[axis]) {                        \
