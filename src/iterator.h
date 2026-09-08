@@ -107,7 +107,7 @@ static inline void rray_iterator_init(
   it->size = size;
 
   for (int i = 0; i < point_dimensionality; ++i) {
-    it->v_point_dimensions[i] = v_point_dimensions[i];
+    it->v_point_dimensions[i] = (r_ssize) v_point_dimensions[i];
   }
   memset(it->v_point, 0, sizeof(r_ssize) * point_dimensionality);
 
@@ -217,7 +217,7 @@ static inline void rray_iterator2_init(
   it->size = size;
 
   for (int i = 0; i < point_dimensionality; ++i) {
-    it->v_point_dimensions[i] = v_point_dimensions[i];
+    it->v_point_dimensions[i] = (r_ssize) v_point_dimensions[i];
   }
   memset(it->v_point, 0, sizeof(r_ssize) * point_dimensionality);
 
