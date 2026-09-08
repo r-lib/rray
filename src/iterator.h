@@ -42,26 +42,32 @@ static inline void rray_point_iterator_init(
 
 #define RRAY_POINT_ITERATOR_FOR_EACH(IT, INDEX, POINT, ...)                    \
   do {                                                                         \
-    r_ssize INDEX = (IT)->index;                                               \
-    const r_ssize rows = (IT)->v_point_dimensions[0];                          \
-    int* POINT = (IT)->v_point;                                                \
-    while ((IT)->index != (IT)->size) {                                        \
+    const struct rray_point_iterator* iterator = (IT);                         \
+    r_ssize INDEX = iterator->index;                                           \
+    const r_ssize size = iterator->size;                                       \
+    const int point_dimensionality = iterator->point_dimensionality;           \
+    const int* v_point_dimensions = iterator->v_point_dimensions;              \
+    int POINT[RRAY_MAX_DIMENSIONALITY];                                        \
+    memcpy(POINT, iterator->v_point, sizeof(int) * point_dimensionality);      \
+                                                                               \
+    const r_ssize rows = v_point_dimensions[0];                                \
+                                                                               \
+    while (INDEX != size) {                                                    \
       for (r_ssize row = 0; row < rows; ++row) {                               \
         __VA_ARGS__                                                            \
         ++POINT[0];                                                            \
         ++INDEX;                                                               \
       }                                                                        \
       POINT[0] = 0;                                                            \
-      (IT)->index += rows;                                                     \
                                                                                \
-      for (int axis = 1; axis < (IT)->point_dimensionality; ++axis) {          \
-        ++(IT)->v_point[axis];                                                 \
+      for (int axis = 1; axis < point_dimensionality; ++axis) {                \
+        ++POINT[axis];                                                         \
                                                                                \
-        if ((IT)->v_point[axis] < (IT)->v_point_dimensions[axis]) {            \
+        if (POINT[axis] < v_point_dimensions[axis]) {                          \
           break;                                                               \
         }                                                                      \
                                                                                \
-        (IT)->v_point[axis] = 0;                                               \
+        POINT[axis] = 0;                                                       \
       }                                                                        \
     }                                                                          \
   } while (0)
@@ -127,30 +133,39 @@ static inline void rray_iterator_init(
 
 #define RRAY_ITERATOR_FOR_EACH(IT, INDEX, LOCATION, ...)                       \
   do {                                                                         \
-    r_ssize INDEX = (IT)->index;                                               \
-    const r_ssize rows = (IT)->v_point_dimensions[0];                          \
-    while ((IT)->index != (IT)->size) {                                        \
-      const r_ssize stride = (IT)->v_location_strides[0];                      \
-      r_ssize LOCATION = (IT)->location;                                       \
+    const struct rray_iterator* iterator = (IT);                               \
+    r_ssize INDEX = iterator->index;                                           \
+    r_ssize LOCATION = iterator->location;                                     \
+    const r_ssize size = iterator->size;                                       \
+    const int point_dimensionality = iterator->point_dimensionality;           \
+    const int* v_point_dimensions = iterator->v_point_dimensions;              \
+    const r_ssize* v_location_strides = iterator->v_location_strides;          \
+    int v_point[RRAY_MAX_DIMENSIONALITY];                                      \
+    memcpy(v_point, iterator->v_point, sizeof(int) * point_dimensionality);    \
+                                                                               \
+    const r_ssize rows = v_point_dimensions[0];                                \
+    const r_ssize stride = v_location_strides[0];                              \
+    const r_ssize row_rewind = rows * stride;                                  \
+                                                                               \
+    while (INDEX != size) {                                                    \
       for (r_ssize row = 0; row < rows; ++row) {                               \
         __VA_ARGS__                                                            \
         LOCATION += stride;                                                    \
         ++INDEX;                                                               \
       }                                                                        \
-      (IT)->index += rows;                                                     \
+      LOCATION -= row_rewind;                                                  \
                                                                                \
-      for (int axis = 1; axis < (IT)->point_dimensionality; ++axis) {          \
-        ++(IT)->v_point[axis];                                                 \
+      for (int axis = 1; axis < point_dimensionality; ++axis) {                \
+        ++v_point[axis];                                                       \
                                                                                \
-        if ((IT)->v_point[axis] < (IT)->v_point_dimensions[axis]) {            \
-          (IT)->location += (IT)->v_location_strides[axis];                    \
+        if (v_point[axis] < v_point_dimensions[axis]) {                        \
+          LOCATION += v_location_strides[axis];                                \
           break;                                                               \
         }                                                                      \
                                                                                \
-        (IT)->v_point[axis] = 0;                                               \
+        v_point[axis] = 0;                                                     \
                                                                                \
-        (IT)->location -= ((IT)->v_point_dimensions[axis] - 1) *               \
-          (IT)->v_location_strides[axis];                                      \
+        LOCATION -= (v_point_dimensions[axis] - 1) * v_location_strides[axis]; \
       }                                                                        \
     }                                                                          \
   } while (0)
@@ -221,36 +236,49 @@ static inline void rray_iterator2_init(
 
 #define RRAY_ITERATOR2_FOR_EACH(IT, INDEX, LOCATION1, LOCATION2, ...)          \
   do {                                                                         \
-    r_ssize INDEX = (IT)->index;                                               \
-    const r_ssize rows = (IT)->v_point_dimensions[0];                          \
-    while ((IT)->index != (IT)->size) {                                        \
-      const r_ssize stride1 = (IT)->v_location1_strides[0];                    \
-      const r_ssize stride2 = (IT)->v_location2_strides[0];                    \
-      r_ssize LOCATION1 = (IT)->location1;                                     \
-      r_ssize LOCATION2 = (IT)->location2;                                     \
+    const struct rray_iterator2* iterator = (IT);                              \
+    r_ssize INDEX = iterator->index;                                           \
+    r_ssize LOCATION1 = iterator->location1;                                   \
+    r_ssize LOCATION2 = iterator->location2;                                   \
+    const r_ssize size = iterator->size;                                       \
+    const int point_dimensionality = iterator->point_dimensionality;           \
+    const int* v_point_dimensions = iterator->v_point_dimensions;              \
+    const r_ssize* v_location1_strides = iterator->v_location1_strides;        \
+    const r_ssize* v_location2_strides = iterator->v_location2_strides;        \
+    int v_point[RRAY_MAX_DIMENSIONALITY];                                      \
+    memcpy(v_point, iterator->v_point, sizeof(int) * point_dimensionality);    \
+                                                                               \
+    const r_ssize rows = v_point_dimensions[0];                                \
+    const r_ssize stride1 = v_location1_strides[0];                            \
+    const r_ssize stride2 = v_location2_strides[0];                            \
+    const r_ssize row_rewind1 = rows * stride1;                                \
+    const r_ssize row_rewind2 = rows * stride2;                                \
+                                                                               \
+    while (INDEX != size) {                                                    \
       for (r_ssize row = 0; row < rows; ++row) {                               \
         __VA_ARGS__                                                            \
         LOCATION1 += stride1;                                                  \
         LOCATION2 += stride2;                                                  \
         ++INDEX;                                                               \
       }                                                                        \
-      (IT)->index += rows;                                                     \
+      LOCATION1 -= row_rewind1;                                                \
+      LOCATION2 -= row_rewind2;                                                \
                                                                                \
-      for (int axis = 1; axis < (IT)->point_dimensionality; ++axis) {          \
-        ++(IT)->v_point[axis];                                                 \
+      for (int axis = 1; axis < point_dimensionality; ++axis) {                \
+        ++v_point[axis];                                                       \
                                                                                \
-        if ((IT)->v_point[axis] < (IT)->v_point_dimensions[axis]) {            \
-          (IT)->location1 += (IT)->v_location1_strides[axis];                  \
-          (IT)->location2 += (IT)->v_location2_strides[axis];                  \
+        if (v_point[axis] < v_point_dimensions[axis]) {                        \
+          LOCATION1 += v_location1_strides[axis];                              \
+          LOCATION2 += v_location2_strides[axis];                              \
           break;                                                               \
         }                                                                      \
                                                                                \
-        (IT)->v_point[axis] = 0;                                               \
+        v_point[axis] = 0;                                                     \
                                                                                \
-        (IT)->location1 -= ((IT)->v_point_dimensions[axis] - 1) *              \
-          (IT)->v_location1_strides[axis];                                     \
-        (IT)->location2 -= ((IT)->v_point_dimensions[axis] - 1) *              \
-          (IT)->v_location2_strides[axis];                                     \
+        LOCATION1 -=                                                           \
+          (v_point_dimensions[axis] - 1) * v_location1_strides[axis];          \
+        LOCATION2 -=                                                           \
+          (v_point_dimensions[axis] - 1) * v_location2_strides[axis];          \
       }                                                                        \
     }                                                                          \
   } while (0)
