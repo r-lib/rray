@@ -31,6 +31,15 @@ static rray_extremum_fn rray_extremum_switch(
   struct r_lazy error_call
 );
 
+static r_no_return void stop_unsupported_extremum(
+  const char* op,
+  r_obj* x,
+  r_obj* y,
+  struct rray_arg* x_arg,
+  struct rray_arg* y_arg,
+  struct r_lazy error_call
+);
+
 static r_obj* rray_pmax_lgl_lgl(
   r_obj* x,
   r_obj* y,

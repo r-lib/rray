@@ -77,9 +77,10 @@ Each core's whole body is a call into a macro, following `SLICE` in vctrs'
 `RRAY_{NAME}_BARRIER` covers `chr` and `list`, which write through the barrier.
 Undefine both once the cores are written.
 
-The binary families share `RRAY_BINARY`, which lives in `src/binary.h`. It
-takes the scalar operation and its extra data as its last two arguments. This
-lets arithmetic pass `error_call` while extrema pass `na_rm`.
+The arithmetic family needs only one macro, since it has no `chr` or `list`
+cores, but several files share it. So `RRAY_ARITHMETIC` lives in
+`src/arithmetic.h` and nothing undefines it. Only undefine a macro the file
+defined itself.
 
 Write each core's parameter list out in full. Do not hide it behind a macro.
 
@@ -638,7 +639,7 @@ case RRAY_TYPE2_integer_double:
 ```
 
 Four supported types in either position is 16 cores per operator. That is a lot
-of function definitions, but each body is a single `RRAY_BINARY` call and
+of function definitions, but each body is a single `RRAY_ARITHMETIC` call and
 the only real logic is the scalar operation, of which there are three per
 operator, one per output type.
 

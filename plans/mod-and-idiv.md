@@ -20,7 +20,7 @@ Promotion table, matching the shape of 2.4 in `plans/implementation.md`:
 So the switch has the same 16 arm shape as `rray_add_switch()`, except the four
 `cpl` arms (`logical_complex`, `integer_complex`, `double_complex`,
 `complex_complex`) join the `chr`/`raw`/`list` arms calling
-`stop_unsupported_binary()`, the way `rray_exponentiate_switch()` already
+`stop_unsupported_arithmetic()`, the way `rray_exponentiate_switch()` already
 does it. That means two scalar operations per operator, `_int_one` and
 `_dbl_one`, not three — there is no `_cpl_one`.
 
