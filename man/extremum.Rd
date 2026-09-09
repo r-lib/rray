@@ -33,16 +33,6 @@ An array with the common dimensions and common type of \code{x} and \code{y}.
 The arrays are broadcast to common dimensions first, so they do not have to
 be the same shape.
 }
-\section{Casting}{
-
-The result has the common type of \code{x} and \code{y}. Logical inputs stay logical,
-integer inputs stay integer, and double inputs stay double. When the inputs
-have different numeric types, logical is cast to integer and double wins over
-logical and integer.
-
-Complex, character, raw, and list inputs are not supported.
-}
-
 \examples{
 x <- array(1:6, c(3L, 2L))
 

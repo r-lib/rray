@@ -9,14 +9,6 @@
 #' The arrays are broadcast to common dimensions first, so they do not have to
 #' be the same shape.
 #'
-#' @section Casting:
-#' The result has the common type of `x` and `y`. Logical inputs stay logical,
-#' integer inputs stay integer, and double inputs stay double. When the inputs
-#' have different numeric types, logical is cast to integer and double wins over
-#' logical and integer.
-#'
-#' Complex, character, raw, and list inputs are not supported.
-#'
 #' @param x An array.
 #'
 #' @param y An array.
