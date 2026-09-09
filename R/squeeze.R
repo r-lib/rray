@@ -3,7 +3,7 @@
 #' `rray_squeeze()` drops axes with a dimension of 1.
 #'
 #' @details
-#' Only dimensions and dimension names change. Squeezed axes lose their names.
+#' Squeezed axes lose their names.
 #' Surviving axes keep their names and carry them to their new positions.
 #'
 #' @param x An array.
