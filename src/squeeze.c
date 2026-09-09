@@ -27,9 +27,11 @@ r_obj* rray_squeeze(
   const int* v_axes = r_int_cbegin(axes);
   const r_ssize axes_size = r_length(axes);
 
-  const int retained_dimensionality = dimensionality - (int) axes_size;
-  const int out_dimensionality =
-    retained_dimensionality == 0 ? 1 : retained_dimensionality;
+  if (axes_size == dimensionality) {
+    r_abort_lazy_call(error_call, "`axes` can't squeeze every axis.");
+  }
+
+  const int out_dimensionality = dimensionality - (int) axes_size;
 
   r_obj* out_dimensions = KEEP(r_alloc_integer(out_dimensionality));
   int* v_out_dimensions = r_int_begin(out_dimensions);
@@ -74,10 +76,6 @@ r_obj* rray_squeeze(
     }
 
     ++out_i;
-  }
-
-  if (retained_dimensionality == 0) {
-    v_out_dimensions[0] = 1;
   }
 
   r_obj* out = KEEP(r_wrap(x));

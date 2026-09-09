@@ -10,11 +10,10 @@ rray_squeeze(x, axes)
 \item{x}{An array.}
 
 \item{axes}{An integer vector of axes to squeeze. Each selected axis must
-have a dimension of 1.}
+have a dimension of 1. At least one axis must remain.}
 }
 \value{
-An array with the selected \code{axes} removed. If every axis is removed, the
-result is a one-dimensional array with a dimension of 1.
+An array with the selected \code{axes} removed.
 }
 \description{
 \code{rray_squeeze()} drops axes with a dimension of 1.

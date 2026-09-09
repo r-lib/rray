@@ -11,6 +11,19 @@
       Error in `rray_squeeze()`:
       ! Can't squeeze axis 1 of `x` because it has dimension 0, not 1.
 
+# errors when every axis is squeezed
+
+    Code
+      rray_squeeze(array(1L, c(1L, 1L, 1L)), c(1L, 2L, 3L))
+    Condition
+      Error in `rray_squeeze()`:
+      ! `axes` can't squeeze every axis.
+    Code
+      rray_squeeze(array(1L, 1L), 1L)
+    Condition
+      Error in `rray_squeeze()`:
+      ! `axes` can't squeeze every axis.
+
 # errors on invalid axes
 
     Code

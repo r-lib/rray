@@ -6,15 +6,16 @@ test_that("squeezes selected axes", {
 })
 
 test_that("squeezing no axes returns the input unchanged", {
-  x <- array(1:6, c(2L, 3L))
+  x <- array(
+    1:6,
+    c(2L, 3L),
+    dimnames = list(c("a", "b"), c("x", "y", "z"))
+  )
   expect_identical(rray_squeeze(x, integer()), x)
 
-  expect_identical(rray_squeeze(1:3, integer()), array(1:3, 3L))
-})
-
-test_that("squeezing every axis returns a one-dimensional array", {
-  x <- array(1L, c(1L, 1L, 1L))
-  expect_identical(rray_squeeze(x, c(1L, 2L, 3L)), array(1L, 1L))
+  x <- c(a = 1L, b = 2L, c = 3L)
+  expected <- array(1:3, 3L, dimnames = list(c("a", "b", "c")))
+  expect_identical(rray_squeeze(x, integer()), expected)
 })
 
 test_that("works with every native type", {
@@ -76,16 +77,13 @@ test_that("squeezed axes drop their names", {
   expect_identical(rray_squeeze(x, 1L), expected)
 
   x <- array(1L, c(1L, 1L), dimnames = list("drop1", "drop2"))
-  expect_identical(rray_squeeze(x, c(1L, 2L)), array(1L, 1L))
-
-  x <- array(1L, 1L, dimnames = list("drop"))
-  expect_identical(rray_squeeze(x, 1L), array(1L, 1L))
+  expect_identical(
+    rray_squeeze(x, 1L),
+    array(1L, 1L, dimnames = list("drop2"))
+  )
 
   x <- array(1:2, c(1L, 2L), dimnames = list("drop", NULL))
   expect_identical(rray_squeeze(x, 1L), array(1:2, 2L))
-
-  x <- c(drop = 1L)
-  expect_identical(rray_squeeze(x, 1L), array(1L, 1L))
 })
 
 test_that("does not modify the input", {
@@ -105,6 +103,13 @@ test_that("errors when a selected axis does not have dimension 1", {
   expect_snapshot(error = TRUE, {
     rray_squeeze(array(1:2, c(2L, 1L)), 1L)
     rray_squeeze(array(integer(), c(0L, 1L)), 1L)
+  })
+})
+
+test_that("errors when every axis is squeezed", {
+  expect_snapshot(error = TRUE, {
+    rray_squeeze(array(1L, c(1L, 1L, 1L)), c(1L, 2L, 3L))
+    rray_squeeze(array(1L, 1L), 1L)
   })
 })
 
