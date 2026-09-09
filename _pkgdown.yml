@@ -33,6 +33,7 @@ reference:
 - title: Arithmetic
   contents:
   - arithmetic
+  - extremum
 
 - title: Reducers
   contents:

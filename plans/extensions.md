@@ -190,7 +190,7 @@ tables in the main plan become generics.
 
 | family | hook | dispatch | ops |
 |---|---|---|---|
-| binary elementwise | `rray_binary_ptype2(op, x, y)` | double | `+ - * / ^ %% %/%`, `maximum`, `minimum` |
+| binary elementwise | `rray_binary_ptype2(op, x, y)` | double | `+ - * / ^ %% %/%`, `pmax`, `pmin` |
 | reduction | `rray_reduction_ptype(op, x)` | single | `sum`, `prod`, `mean`, `max`, `min` |
 
 One generic per family, matching the internal `rray_binary_type()` and
