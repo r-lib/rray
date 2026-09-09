@@ -136,6 +136,40 @@ test_that("broadcasting carries through alternating singleton axes", {
   expect_identical(rray_add(y, x), expected_y + expected_x)
 })
 
+test_that("coalesces compatible iterator axes", {
+  x <- array(1:12, c(1L, 3L, 4L))
+  y <- array(12:1, c(1L, 3L, 4L))
+  expect_identical(rray_add(x, y), x + y)
+
+  x <- array(1:4, c(1L, 1L, 4L))
+  y <- array(10:12, c(1L, 3L, 1L))
+  expected_x <- x[, rep(1L, 3L), , drop = FALSE]
+  expected_y <- y[,, rep(1L, 4L), drop = FALSE]
+  expect_identical(rray_add(x, y), expected_x + expected_y)
+
+  x <- array(1:8, c(2L, 1L, 4L))
+  y <- array(11:22, c(1L, 3L, 4L))
+  expected_x <- x[, rep(1L, 3L), , drop = FALSE]
+  expected_y <- y[rep(1L, 2L), , , drop = FALSE]
+  expect_identical(rray_add(x, y), expected_x + expected_y)
+
+  x <- array(1:6, c(1L, 1L, 1L, 6L))
+  y <- array(11:16, c(1L, 1L, 1L, 6L))
+  expect_identical(rray_add(x, y), x + y)
+})
+
+test_that("coalesces the maximum number of axes", {
+  dimensions <- c(rep(1L, 62L), 2L, 3L)
+  x <- array(1:6, dimensions)
+  expect_identical(rray_add(x, 1L), array(2:7, dimensions))
+
+  dimensions <- rep(1L, 64L)
+  expect_identical(
+    rray_add(array(1L, dimensions), 1L),
+    array(2L, dimensions)
+  )
+})
+
 test_that("names are kept for axes that aren't broadcast", {
   x <- array(1:6, c(3L, 2L), dimnames = list(c("a", "b", "c"), NULL))
   y <- array(1:2, c(1L, 2L), dimnames = list("z", c("c1", "c2")))

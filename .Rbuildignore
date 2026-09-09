@@ -12,3 +12,4 @@
 \.clangd$
 ^\.github$
 ^\.claude$
+^bench$
