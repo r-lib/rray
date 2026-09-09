@@ -2,6 +2,7 @@
 
 #include "axes.h"
 #include "dimensionality.h"
+#include "dimensions.h"
 #include "utils.h"
 #include "wrapper.h"
 
@@ -19,7 +20,7 @@ r_obj* rray_squeeze(
   check_unclassed(x, arg, error_call);
   x = KEEP(arg_as_array(x, arg, error_call));
 
-  r_obj* x_dimensions = r_dim(x);
+  r_obj* x_dimensions = KEEP(rray_dimensions(x, arg, error_call));
   const int* v_x_dimensions = r_int_cbegin(x_dimensions);
   const int dimensionality = rray_dimensionality_from_dimensions(x_dimensions);
 
@@ -85,6 +86,6 @@ r_obj* rray_squeeze(
     r_attrib_poke_dim_names(out, out_names);
   }
 
-  FREE(5);
+  FREE(6);
   return out;
 }
