@@ -61,6 +61,7 @@ r_obj* rray_squeeze(
       continue;
     }
 
+    // Shift all unsqueezed axes left
     v_out_dimensions[out_i] = v_x_dimensions[i];
 
     if (v_x_names != NULL && v_x_names[i] != r_null) {
