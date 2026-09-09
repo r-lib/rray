@@ -379,7 +379,6 @@ static inline void rray__location_strides_init(
 //
 // For iterator2, note that both sets of location strides must be coalescible,
 // as coalescing changes the output dimensionality, so it's all or nothing.
-
 static inline int rray__iterator_axes_coalesce(
   r_ssize* v_dimensions,
   r_ssize* v_strides,
