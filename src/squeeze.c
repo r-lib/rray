@@ -45,6 +45,7 @@ r_obj* rray_squeeze(
   int out_i = 0;
 
   for (int i = 0; i < dimensionality; ++i) {
+    // Check if we are squeezing this axis
     if (axes_i < axes_size && v_axes[axes_i] - 1 == i) {
       if (v_x_dimensions[i] != 1) {
         r_abort_lazy_call(
