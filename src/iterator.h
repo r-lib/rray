@@ -379,7 +379,6 @@ static inline int rray__iterator_axes_coalesce(
       if (left_dimension == 1) {
         v_strides[out_axis] = right_stride;
       }
-
       v_dimensions[out_axis] = left_dimension * right_dimension;
       continue;
     }
