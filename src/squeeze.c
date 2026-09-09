@@ -81,7 +81,6 @@ r_obj* rray_squeeze(
   }
 
   r_obj* out = KEEP(r_wrap(x));
-  r_attrib_poke_dim_names(out, r_null);
   r_attrib_poke_dim(out, out_dimensions);
 
   if (out_names != r_null) {
