@@ -3,6 +3,7 @@
 #include <Rmath.h>
 
 #include "arithmetic.h"
+#include "binary.h"
 #include "cast.h"
 #include "type.h"
 #include "typeof2.h"
@@ -83,7 +84,7 @@ static rray_binary_arithmetic_fn rray_exponentiate_switch(
   case RRAY_TYPE2_raw_raw:
   case RRAY_TYPE2_raw_list:
   case RRAY_TYPE2_list_list:
-    stop_unsupported_arithmetic("^", x, y, x_arg, y_arg, error_call);
+    stop_unsupported_binary("^", x, y, x_arg, y_arg, error_call);
 
   case RRAY_TYPE2_logical_scalar:
   case RRAY_TYPE2_integer_scalar:
@@ -110,7 +111,7 @@ static r_obj* rray_exponentiate_lgl_lgl(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_dbl_one,
@@ -120,7 +121,8 @@ static r_obj* rray_exponentiate_lgl_lgl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_exponentiate_dbl_one
+    rray_exponentiate_dbl_one,
+    error_call
   );
 }
 
@@ -131,7 +133,7 @@ static r_obj* rray_exponentiate_lgl_int(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_dbl_one,
@@ -141,7 +143,8 @@ static r_obj* rray_exponentiate_lgl_int(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_exponentiate_dbl_one
+    rray_exponentiate_dbl_one,
+    error_call
   );
 }
 
@@ -152,7 +155,7 @@ static r_obj* rray_exponentiate_int_lgl(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     int,
     r_int_cbegin,
     rray_cast_int_to_dbl_one,
@@ -162,7 +165,8 @@ static r_obj* rray_exponentiate_int_lgl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_exponentiate_dbl_one
+    rray_exponentiate_dbl_one,
+    error_call
   );
 }
 
@@ -173,7 +177,7 @@ static r_obj* rray_exponentiate_lgl_dbl(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_dbl_one,
@@ -183,7 +187,8 @@ static r_obj* rray_exponentiate_lgl_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_exponentiate_dbl_one
+    rray_exponentiate_dbl_one,
+    error_call
   );
 }
 
@@ -194,7 +199,7 @@ static r_obj* rray_exponentiate_dbl_lgl(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
@@ -204,7 +209,8 @@ static r_obj* rray_exponentiate_dbl_lgl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_exponentiate_dbl_one
+    rray_exponentiate_dbl_one,
+    error_call
   );
 }
 
@@ -215,7 +221,7 @@ static r_obj* rray_exponentiate_int_int(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     int,
     r_int_cbegin,
     rray_cast_int_to_dbl_one,
@@ -225,7 +231,8 @@ static r_obj* rray_exponentiate_int_int(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_exponentiate_dbl_one
+    rray_exponentiate_dbl_one,
+    error_call
   );
 }
 
@@ -236,7 +243,7 @@ static r_obj* rray_exponentiate_int_dbl(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     int,
     r_int_cbegin,
     rray_cast_int_to_dbl_one,
@@ -246,7 +253,8 @@ static r_obj* rray_exponentiate_int_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_exponentiate_dbl_one
+    rray_exponentiate_dbl_one,
+    error_call
   );
 }
 
@@ -257,7 +265,7 @@ static r_obj* rray_exponentiate_dbl_int(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
@@ -267,7 +275,8 @@ static r_obj* rray_exponentiate_dbl_int(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_exponentiate_dbl_one
+    rray_exponentiate_dbl_one,
+    error_call
   );
 }
 
@@ -278,7 +287,7 @@ static r_obj* rray_exponentiate_dbl_dbl(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
@@ -288,7 +297,8 @@ static r_obj* rray_exponentiate_dbl_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_exponentiate_dbl_one
+    rray_exponentiate_dbl_one,
+    error_call
   );
 }
 

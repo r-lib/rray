@@ -1,6 +1,6 @@
 #include "extremum.h"
 
-#include "arithmetic.h"
+#include "binary.h"
 #include "broadcast-names.h"
 #include "cast.h"
 #include "dimensionality.h"
@@ -241,7 +241,7 @@ static rray_extremum_fn rray_extremum_switch(
   case RRAY_TYPE2_raw_raw:
   case RRAY_TYPE2_raw_list:
   case RRAY_TYPE2_list_list:
-    stop_unsupported_arithmetic(
+    stop_unsupported_binary(
       op == RRAY_EXTREMUM_max ? "pmax" : "pmin",
       x,
       y,
@@ -268,31 +268,6 @@ static rray_extremum_fn rray_extremum_switch(
   r_stop_unreachable();
 }
 
-#define RRAY_EXTREMUM(                                                         \
-  X_CTYPE,                                                                     \
-  X_CONST_DEREF,                                                               \
-  X_CAST,                                                                      \
-  Y_CTYPE,                                                                     \
-  Y_CONST_DEREF,                                                               \
-  Y_CAST,                                                                      \
-  OUT_RTYPE,                                                                   \
-  OUT_CTYPE,                                                                   \
-  OUT_DEREF,                                                                   \
-  ONE                                                                          \
-)                                                                              \
-  r_obj* out = KEEP(r_alloc_vector(OUT_RTYPE, size));                          \
-  OUT_CTYPE* v_out = OUT_DEREF(out);                                           \
-                                                                               \
-  const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
-  const Y_CTYPE* v_y = Y_CONST_DEREF(y);                                       \
-                                                                               \
-  RRAY_ITERATOR2_FOR_EACH(it, i, x_loc, y_loc, {                               \
-    v_out[i] = ONE(X_CAST(v_x[x_loc]), Y_CAST(v_y[y_loc]), na_rm);             \
-  });                                                                          \
-                                                                               \
-  FREE(1);                                                                     \
-  return out;
-
 static r_obj* rray_pmax_lgl_lgl(
   r_obj* x,
   r_obj* y,
@@ -301,7 +276,7 @@ static r_obj* rray_pmax_lgl_lgl(
   bool na_rm,
   struct r_lazy error_call
 ) {
-  RRAY_EXTREMUM(
+  RRAY_BINARY(
     int,
     r_lgl_cbegin,
     rray_cast_int_to_int_one,
@@ -311,7 +286,8 @@ static r_obj* rray_pmax_lgl_lgl(
     R_TYPE_logical,
     int,
     r_lgl_begin,
-    rray_pmax_int_one
+    rray_pmax_int_one,
+    na_rm
   );
 }
 
@@ -323,7 +299,7 @@ static r_obj* rray_pmax_lgl_int(
   bool na_rm,
   struct r_lazy error_call
 ) {
-  RRAY_EXTREMUM(
+  RRAY_BINARY(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_int_one,
@@ -333,7 +309,8 @@ static r_obj* rray_pmax_lgl_int(
     R_TYPE_integer,
     int,
     r_int_begin,
-    rray_pmax_int_one
+    rray_pmax_int_one,
+    na_rm
   );
 }
 
@@ -345,7 +322,7 @@ static r_obj* rray_pmax_int_lgl(
   bool na_rm,
   struct r_lazy error_call
 ) {
-  RRAY_EXTREMUM(
+  RRAY_BINARY(
     int,
     r_int_cbegin,
     rray_cast_int_to_int_one,
@@ -355,7 +332,8 @@ static r_obj* rray_pmax_int_lgl(
     R_TYPE_integer,
     int,
     r_int_begin,
-    rray_pmax_int_one
+    rray_pmax_int_one,
+    na_rm
   );
 }
 
@@ -367,7 +345,7 @@ static r_obj* rray_pmax_lgl_dbl(
   bool na_rm,
   struct r_lazy error_call
 ) {
-  RRAY_EXTREMUM(
+  RRAY_BINARY(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_dbl_one,
@@ -377,7 +355,8 @@ static r_obj* rray_pmax_lgl_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_pmax_dbl_one
+    rray_pmax_dbl_one,
+    na_rm
   );
 }
 
@@ -389,7 +368,7 @@ static r_obj* rray_pmax_dbl_lgl(
   bool na_rm,
   struct r_lazy error_call
 ) {
-  RRAY_EXTREMUM(
+  RRAY_BINARY(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
@@ -399,7 +378,8 @@ static r_obj* rray_pmax_dbl_lgl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_pmax_dbl_one
+    rray_pmax_dbl_one,
+    na_rm
   );
 }
 
@@ -411,7 +391,7 @@ static r_obj* rray_pmax_int_int(
   bool na_rm,
   struct r_lazy error_call
 ) {
-  RRAY_EXTREMUM(
+  RRAY_BINARY(
     int,
     r_int_cbegin,
     rray_cast_int_to_int_one,
@@ -421,7 +401,8 @@ static r_obj* rray_pmax_int_int(
     R_TYPE_integer,
     int,
     r_int_begin,
-    rray_pmax_int_one
+    rray_pmax_int_one,
+    na_rm
   );
 }
 
@@ -433,7 +414,7 @@ static r_obj* rray_pmax_int_dbl(
   bool na_rm,
   struct r_lazy error_call
 ) {
-  RRAY_EXTREMUM(
+  RRAY_BINARY(
     int,
     r_int_cbegin,
     rray_cast_int_to_dbl_one,
@@ -443,7 +424,8 @@ static r_obj* rray_pmax_int_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_pmax_dbl_one
+    rray_pmax_dbl_one,
+    na_rm
   );
 }
 
@@ -455,7 +437,7 @@ static r_obj* rray_pmax_dbl_int(
   bool na_rm,
   struct r_lazy error_call
 ) {
-  RRAY_EXTREMUM(
+  RRAY_BINARY(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
@@ -465,7 +447,8 @@ static r_obj* rray_pmax_dbl_int(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_pmax_dbl_one
+    rray_pmax_dbl_one,
+    na_rm
   );
 }
 
@@ -477,7 +460,7 @@ static r_obj* rray_pmax_dbl_dbl(
   bool na_rm,
   struct r_lazy error_call
 ) {
-  RRAY_EXTREMUM(
+  RRAY_BINARY(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
@@ -487,7 +470,8 @@ static r_obj* rray_pmax_dbl_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_pmax_dbl_one
+    rray_pmax_dbl_one,
+    na_rm
   );
 }
 
@@ -499,7 +483,7 @@ static r_obj* rray_pmin_lgl_lgl(
   bool na_rm,
   struct r_lazy error_call
 ) {
-  RRAY_EXTREMUM(
+  RRAY_BINARY(
     int,
     r_lgl_cbegin,
     rray_cast_int_to_int_one,
@@ -509,7 +493,8 @@ static r_obj* rray_pmin_lgl_lgl(
     R_TYPE_logical,
     int,
     r_lgl_begin,
-    rray_pmin_int_one
+    rray_pmin_int_one,
+    na_rm
   );
 }
 
@@ -521,7 +506,7 @@ static r_obj* rray_pmin_lgl_int(
   bool na_rm,
   struct r_lazy error_call
 ) {
-  RRAY_EXTREMUM(
+  RRAY_BINARY(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_int_one,
@@ -531,7 +516,8 @@ static r_obj* rray_pmin_lgl_int(
     R_TYPE_integer,
     int,
     r_int_begin,
-    rray_pmin_int_one
+    rray_pmin_int_one,
+    na_rm
   );
 }
 
@@ -543,7 +529,7 @@ static r_obj* rray_pmin_int_lgl(
   bool na_rm,
   struct r_lazy error_call
 ) {
-  RRAY_EXTREMUM(
+  RRAY_BINARY(
     int,
     r_int_cbegin,
     rray_cast_int_to_int_one,
@@ -553,7 +539,8 @@ static r_obj* rray_pmin_int_lgl(
     R_TYPE_integer,
     int,
     r_int_begin,
-    rray_pmin_int_one
+    rray_pmin_int_one,
+    na_rm
   );
 }
 
@@ -565,7 +552,7 @@ static r_obj* rray_pmin_lgl_dbl(
   bool na_rm,
   struct r_lazy error_call
 ) {
-  RRAY_EXTREMUM(
+  RRAY_BINARY(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_dbl_one,
@@ -575,7 +562,8 @@ static r_obj* rray_pmin_lgl_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_pmin_dbl_one
+    rray_pmin_dbl_one,
+    na_rm
   );
 }
 
@@ -587,7 +575,7 @@ static r_obj* rray_pmin_dbl_lgl(
   bool na_rm,
   struct r_lazy error_call
 ) {
-  RRAY_EXTREMUM(
+  RRAY_BINARY(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
@@ -597,7 +585,8 @@ static r_obj* rray_pmin_dbl_lgl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_pmin_dbl_one
+    rray_pmin_dbl_one,
+    na_rm
   );
 }
 
@@ -609,7 +598,7 @@ static r_obj* rray_pmin_int_int(
   bool na_rm,
   struct r_lazy error_call
 ) {
-  RRAY_EXTREMUM(
+  RRAY_BINARY(
     int,
     r_int_cbegin,
     rray_cast_int_to_int_one,
@@ -619,7 +608,8 @@ static r_obj* rray_pmin_int_int(
     R_TYPE_integer,
     int,
     r_int_begin,
-    rray_pmin_int_one
+    rray_pmin_int_one,
+    na_rm
   );
 }
 
@@ -631,7 +621,7 @@ static r_obj* rray_pmin_int_dbl(
   bool na_rm,
   struct r_lazy error_call
 ) {
-  RRAY_EXTREMUM(
+  RRAY_BINARY(
     int,
     r_int_cbegin,
     rray_cast_int_to_dbl_one,
@@ -641,7 +631,8 @@ static r_obj* rray_pmin_int_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_pmin_dbl_one
+    rray_pmin_dbl_one,
+    na_rm
   );
 }
 
@@ -653,7 +644,7 @@ static r_obj* rray_pmin_dbl_int(
   bool na_rm,
   struct r_lazy error_call
 ) {
-  RRAY_EXTREMUM(
+  RRAY_BINARY(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
@@ -663,7 +654,8 @@ static r_obj* rray_pmin_dbl_int(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_pmin_dbl_one
+    rray_pmin_dbl_one,
+    na_rm
   );
 }
 
@@ -675,7 +667,7 @@ static r_obj* rray_pmin_dbl_dbl(
   bool na_rm,
   struct r_lazy error_call
 ) {
-  RRAY_EXTREMUM(
+  RRAY_BINARY(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
@@ -685,11 +677,10 @@ static r_obj* rray_pmin_dbl_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_pmin_dbl_one
+    rray_pmin_dbl_one,
+    na_rm
   );
 }
-
-#undef RRAY_EXTREMUM
 
 static inline int rray_pmax_int_one(int x, int y, bool na_rm) {
   if (x == r_globals.na_int) {

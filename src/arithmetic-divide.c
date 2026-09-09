@@ -1,6 +1,7 @@
 #include "arithmetic-divide.h"
 
 #include "arithmetic.h"
+#include "binary.h"
 #include "cast.h"
 #include "type.h"
 #include "typeof2.h"
@@ -88,7 +89,7 @@ static rray_binary_arithmetic_fn rray_divide_switch(
   case RRAY_TYPE2_raw_raw:
   case RRAY_TYPE2_raw_list:
   case RRAY_TYPE2_list_list:
-    stop_unsupported_arithmetic("/", x, y, x_arg, y_arg, error_call);
+    stop_unsupported_binary("/", x, y, x_arg, y_arg, error_call);
 
   case RRAY_TYPE2_logical_scalar:
   case RRAY_TYPE2_integer_scalar:
@@ -115,7 +116,7 @@ static r_obj* rray_divide_lgl_lgl(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_dbl_one,
@@ -125,7 +126,8 @@ static r_obj* rray_divide_lgl_lgl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_divide_dbl_one
+    rray_divide_dbl_one,
+    error_call
   );
 }
 
@@ -136,7 +138,7 @@ static r_obj* rray_divide_lgl_int(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_dbl_one,
@@ -146,7 +148,8 @@ static r_obj* rray_divide_lgl_int(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_divide_dbl_one
+    rray_divide_dbl_one,
+    error_call
   );
 }
 
@@ -157,7 +160,7 @@ static r_obj* rray_divide_int_lgl(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     int,
     r_int_cbegin,
     rray_cast_int_to_dbl_one,
@@ -167,7 +170,8 @@ static r_obj* rray_divide_int_lgl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_divide_dbl_one
+    rray_divide_dbl_one,
+    error_call
   );
 }
 
@@ -178,7 +182,7 @@ static r_obj* rray_divide_lgl_dbl(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_dbl_one,
@@ -188,7 +192,8 @@ static r_obj* rray_divide_lgl_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_divide_dbl_one
+    rray_divide_dbl_one,
+    error_call
   );
 }
 
@@ -199,7 +204,7 @@ static r_obj* rray_divide_dbl_lgl(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
@@ -209,7 +214,8 @@ static r_obj* rray_divide_dbl_lgl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_divide_dbl_one
+    rray_divide_dbl_one,
+    error_call
   );
 }
 
@@ -220,7 +226,7 @@ static r_obj* rray_divide_lgl_cpl(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_cpl_one,
@@ -230,7 +236,8 @@ static r_obj* rray_divide_lgl_cpl(
     R_TYPE_complex,
     r_complex,
     r_cpl_begin,
-    rray_divide_cpl_one
+    rray_divide_cpl_one,
+    error_call
   );
 }
 
@@ -241,7 +248,7 @@ static r_obj* rray_divide_cpl_lgl(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     r_complex,
     r_cpl_cbegin,
     rray_cast_cpl_to_cpl_one,
@@ -251,7 +258,8 @@ static r_obj* rray_divide_cpl_lgl(
     R_TYPE_complex,
     r_complex,
     r_cpl_begin,
-    rray_divide_cpl_one
+    rray_divide_cpl_one,
+    error_call
   );
 }
 
@@ -262,7 +270,7 @@ static r_obj* rray_divide_int_int(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     int,
     r_int_cbegin,
     rray_cast_int_to_dbl_one,
@@ -272,7 +280,8 @@ static r_obj* rray_divide_int_int(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_divide_dbl_one
+    rray_divide_dbl_one,
+    error_call
   );
 }
 
@@ -283,7 +292,7 @@ static r_obj* rray_divide_int_dbl(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     int,
     r_int_cbegin,
     rray_cast_int_to_dbl_one,
@@ -293,7 +302,8 @@ static r_obj* rray_divide_int_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_divide_dbl_one
+    rray_divide_dbl_one,
+    error_call
   );
 }
 
@@ -304,7 +314,7 @@ static r_obj* rray_divide_dbl_int(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
@@ -314,7 +324,8 @@ static r_obj* rray_divide_dbl_int(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_divide_dbl_one
+    rray_divide_dbl_one,
+    error_call
   );
 }
 
@@ -325,7 +336,7 @@ static r_obj* rray_divide_int_cpl(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     int,
     r_int_cbegin,
     rray_cast_int_to_cpl_one,
@@ -335,7 +346,8 @@ static r_obj* rray_divide_int_cpl(
     R_TYPE_complex,
     r_complex,
     r_cpl_begin,
-    rray_divide_cpl_one
+    rray_divide_cpl_one,
+    error_call
   );
 }
 
@@ -346,7 +358,7 @@ static r_obj* rray_divide_cpl_int(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     r_complex,
     r_cpl_cbegin,
     rray_cast_cpl_to_cpl_one,
@@ -356,7 +368,8 @@ static r_obj* rray_divide_cpl_int(
     R_TYPE_complex,
     r_complex,
     r_cpl_begin,
-    rray_divide_cpl_one
+    rray_divide_cpl_one,
+    error_call
   );
 }
 
@@ -367,7 +380,7 @@ static r_obj* rray_divide_dbl_dbl(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
@@ -377,7 +390,8 @@ static r_obj* rray_divide_dbl_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_divide_dbl_one
+    rray_divide_dbl_one,
+    error_call
   );
 }
 
@@ -388,7 +402,7 @@ static r_obj* rray_divide_dbl_cpl(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_cpl_one,
@@ -398,7 +412,8 @@ static r_obj* rray_divide_dbl_cpl(
     R_TYPE_complex,
     r_complex,
     r_cpl_begin,
-    rray_divide_cpl_one
+    rray_divide_cpl_one,
+    error_call
   );
 }
 
@@ -409,7 +424,7 @@ static r_obj* rray_divide_cpl_dbl(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     r_complex,
     r_cpl_cbegin,
     rray_cast_cpl_to_cpl_one,
@@ -419,7 +434,8 @@ static r_obj* rray_divide_cpl_dbl(
     R_TYPE_complex,
     r_complex,
     r_cpl_begin,
-    rray_divide_cpl_one
+    rray_divide_cpl_one,
+    error_call
   );
 }
 
@@ -430,7 +446,7 @@ static r_obj* rray_divide_cpl_cpl(
   struct rray_iterator2* it,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     r_complex,
     r_cpl_cbegin,
     rray_cast_cpl_to_cpl_one,
@@ -440,7 +456,8 @@ static r_obj* rray_divide_cpl_cpl(
     R_TYPE_complex,
     r_complex,
     r_cpl_begin,
-    rray_divide_cpl_one
+    rray_divide_cpl_one,
+    error_call
   );
 }
 
