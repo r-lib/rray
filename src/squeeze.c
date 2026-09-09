@@ -27,11 +27,6 @@ r_obj* rray_squeeze(
   const int* v_axes = r_int_cbegin(axes);
   const r_ssize axes_size = r_length(axes);
 
-  if (axes_size == 0) {
-    FREE(2);
-    return x;
-  }
-
   const int retained_dimensionality = dimensionality - (int) axes_size;
   const int out_dimensionality =
     retained_dimensionality == 0 ? 1 : retained_dimensionality;
