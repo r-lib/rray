@@ -389,8 +389,8 @@ static inline int rray__iterator_axes_coalesce(
 
   for (int axis = 1; axis < dimensionality; ++axis) {
     const r_ssize left_dimension = v_dimensions[out_axis];
-    const r_ssize right_dimension = v_dimensions[axis];
     const r_ssize left_stride = v_strides[out_axis];
+    const r_ssize right_dimension = v_dimensions[axis];
     const r_ssize right_stride = v_strides[axis];
 
     const bool coalescible = rray__iterator_axes_coalescible(
@@ -426,10 +426,10 @@ static inline int rray__iterator_axes_coalesce2(
 
   for (int axis = 1; axis < dimensionality; ++axis) {
     const r_ssize left_dimension = v_dimensions[out_axis];
-    const r_ssize right_dimension = v_dimensions[axis];
     const r_ssize left_stride1 = v_strides1[out_axis];
-    const r_ssize right_stride1 = v_strides1[axis];
     const r_ssize left_stride2 = v_strides2[out_axis];
+    const r_ssize right_dimension = v_dimensions[axis];
+    const r_ssize right_stride1 = v_strides1[axis];
     const r_ssize right_stride2 = v_strides2[axis];
 
     const bool coalescible1 = rray__iterator_axes_coalescible(
