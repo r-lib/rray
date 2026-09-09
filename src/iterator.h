@@ -85,6 +85,8 @@ struct rray_iterator {
   r_ssize index;
   r_ssize size;
 
+  // Since coalescing can multiply two axes' dimensions together, we use an
+  // `r_ssize` here even though an individual dimension can't be above an `int`.
   r_ssize v_point[RRAY_MAX_DIMENSIONALITY];
   r_ssize v_point_dimensions[RRAY_MAX_DIMENSIONALITY];
   int point_dimensionality;
@@ -190,6 +192,8 @@ struct rray_iterator2 {
   r_ssize index;
   r_ssize size;
 
+  // Since coalescing can multiply two axes' dimensions together, we use an
+  // `r_ssize` here even though an individual dimension can't be above an `int`.
   r_ssize v_point[RRAY_MAX_DIMENSIONALITY];
   r_ssize v_point_dimensions[RRAY_MAX_DIMENSIONALITY];
   int point_dimensionality;
