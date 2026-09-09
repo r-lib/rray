@@ -405,12 +405,11 @@ static inline int rray__iterator_axes_coalesce(
         v_strides[out_axis] = right_stride;
       }
       v_dimensions[out_axis] = left_dimension * right_dimension;
-      continue;
+    } else {
+      ++out_axis;
+      v_dimensions[out_axis] = right_dimension;
+      v_strides[out_axis] = right_stride;
     }
-
-    ++out_axis;
-    v_dimensions[out_axis] = right_dimension;
-    v_strides[out_axis] = right_stride;
   }
 
   return out_axis + 1;
@@ -451,13 +450,12 @@ static inline int rray__iterator_axes_coalesce2(
         v_strides2[out_axis] = right_stride2;
       }
       v_dimensions[out_axis] = left_dimension * right_dimension;
-      continue;
+    } else {
+      ++out_axis;
+      v_dimensions[out_axis] = right_dimension;
+      v_strides1[out_axis] = right_stride1;
+      v_strides2[out_axis] = right_stride2;
     }
-
-    ++out_axis;
-    v_dimensions[out_axis] = right_dimension;
-    v_strides1[out_axis] = right_stride1;
-    v_strides2[out_axis] = right_stride2;
   }
 
   return out_axis + 1;
