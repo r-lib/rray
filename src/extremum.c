@@ -709,9 +709,6 @@ static r_obj* rray_pmin_dbl_dbl(
 
 static inline int rray_pmax_int_one(int x, int y, bool na_rm) {
   if (x == r_globals.na_int) {
-    if (y == r_globals.na_int) {
-      return y;
-    }
     return na_rm ? y : x;
   }
   if (y == r_globals.na_int) {
@@ -735,9 +732,6 @@ static inline double rray_pmax_dbl_one(double x, double y, bool na_rm) {
 
 static inline int rray_pmin_int_one(int x, int y, bool na_rm) {
   if (x == r_globals.na_int) {
-    if (y == r_globals.na_int) {
-      return y;
-    }
     return na_rm ? y : x;
   }
   if (y == r_globals.na_int) {
