@@ -345,16 +345,6 @@ static inline void rray__location_strides_init(
   }
 }
 
-static inline bool rray__iterator_axes_coalescible(
-  r_ssize left_dimension,
-  r_ssize left_stride,
-  r_ssize right_dimension,
-  r_ssize right_stride
-) {
-  return left_dimension == 1 || right_dimension == 1 ||
-    right_stride == left_dimension * left_stride;
-}
-
 static inline int rray__iterator_axes_coalesce(
   r_ssize* v_dimensions,
   r_ssize* v_strides,
@@ -436,6 +426,16 @@ static inline int rray__iterator_axes_coalesce2(
   }
 
   return out_axis + 1;
+}
+
+static inline bool rray__iterator_axes_coalescible(
+  r_ssize left_dimension,
+  r_ssize left_stride,
+  r_ssize right_dimension,
+  r_ssize right_stride
+) {
+  return left_dimension == 1 || right_dimension == 1 ||
+    right_stride == left_dimension * left_stride;
 }
 
 #endif
