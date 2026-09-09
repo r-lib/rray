@@ -862,27 +862,6 @@ Signature: `rray_flatten(x)`. Attributes only.
 
 Files: `R/flatten.R`, `src/flatten.c`, `src/flatten.h`.
 
-### `rray_squeeze()`
-
-Drop axes whose dimension is 1.
-
-```r
-x <- array(1:10, c(10, 1))
-rray_squeeze(x, 2)                       # (10, 1) -> (10)
-
-y <- array(1:10, c(10, 1, 1))
-rray_squeeze(y, c(2, 3))                 # (10, 1, 1) -> (10)
-rray_squeeze(y, 2)                       # (10, 1, 1) -> (10, 1)
-```
-
-Names: follow the axis. Type: preserved. Surviving axes keep their names and
-carry them to their new position.
-
-Signature: `rray_squeeze(x, axes)`. Axes required, following the reduction
-convention. Attributes only.
-
-Files: `R/squeeze.R`, `src/squeeze.c`, `src/squeeze.h`.
-
 ### `rray_expand()`
 
 Insert an axis of dimension 1.
