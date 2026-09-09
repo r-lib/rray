@@ -425,7 +425,6 @@ static inline int rray__iterator_axes_coalesce2(
         v_strides1[out_axis] = right_stride1;
         v_strides2[out_axis] = right_stride2;
       }
-
       v_dimensions[out_axis] = left_dimension * right_dimension;
       continue;
     }
