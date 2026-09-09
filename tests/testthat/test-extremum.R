@@ -68,12 +68,17 @@ test_that("missing values match base R", {
 test_that("the second double missing value wins when both are missing", {
   x <- c(NA_real_, NaN)
   y <- c(NaN, NA_real_)
-  expected <- c(NaN, NA_real_)
 
-  expect_identical(as.vector(rray_pmax(x, y)), expected)
-  expect_identical(as.vector(rray_pmin(x, y)), expected)
-  expect_identical(as.vector(rray_pmax(x, y, na_rm = TRUE)), expected)
-  expect_identical(as.vector(rray_pmin(x, y, na_rm = TRUE)), expected)
+  expect_identical(as.vector(rray_pmax(x, y)), pmax(x, y))
+  expect_identical(as.vector(rray_pmin(x, y)), pmin(x, y))
+  expect_identical(
+    as.vector(rray_pmax(x, y, na_rm = TRUE)),
+    pmax(x, y, na.rm = TRUE)
+  )
+  expect_identical(
+    as.vector(rray_pmin(x, y, na_rm = TRUE)),
+    pmin(x, y, na.rm = TRUE)
+  )
 })
 
 test_that("logical and integer missing values match base R", {
