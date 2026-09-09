@@ -2,7 +2,7 @@
 % Please edit documentation in R/squeeze.R
 \name{rray_squeeze}
 \alias{rray_squeeze}
-\title{Squeeze axes of an array}
+\title{Squeeze axes}
 \usage{
 rray_squeeze(x, axes)
 }

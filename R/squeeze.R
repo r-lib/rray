@@ -1,4 +1,4 @@
-#' Squeeze axes of an array
+#' Squeeze axes
 #'
 #' `rray_squeeze()` drops axes with a dimension of 1.
 #'
