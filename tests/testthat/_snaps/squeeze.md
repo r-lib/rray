@@ -75,3 +75,4 @@
     Condition
       Error in `rray_squeeze()`:
       ! `x` must be a bare array, not a <foo> object.
+
