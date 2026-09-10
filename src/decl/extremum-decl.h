@@ -2,22 +2,7 @@ static r_obj* rray_extremum(
   r_obj* x,
   r_obj* y,
   bool na_rm,
-  rray_extremum_switch_fn fn_switch,
-  struct rray_arg* x_arg,
-  struct rray_arg* y_arg,
-  struct r_lazy error_call
-);
-
-static rray_extremum_fn rray_pmax_switch(
-  r_obj* x,
-  r_obj* y,
-  struct rray_arg* x_arg,
-  struct rray_arg* y_arg,
-  struct r_lazy error_call
-);
-static rray_extremum_fn rray_pmin_switch(
-  r_obj* x,
-  r_obj* y,
+  enum rray_extremum_op op,
   struct rray_arg* x_arg,
   struct rray_arg* y_arg,
   struct r_lazy error_call

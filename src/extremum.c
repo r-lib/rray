@@ -19,14 +19,6 @@ typedef r_obj* (*rray_extremum_fn)(
   struct r_lazy error_call
 );
 
-typedef rray_extremum_fn (*rray_extremum_switch_fn)(
-  r_obj* x,
-  r_obj* y,
-  struct rray_arg* x_arg,
-  struct rray_arg* y_arg,
-  struct r_lazy error_call
-);
-
 enum rray_extremum_op {
   RRAY_EXTREMUM_max,
   RRAY_EXTREMUM_min
@@ -53,7 +45,15 @@ r_obj* rray_pmax(
   struct rray_arg* y_arg,
   struct r_lazy error_call
 ) {
-  return rray_extremum(x, y, na_rm, rray_pmax_switch, x_arg, y_arg, error_call);
+  return rray_extremum(
+    x,
+    y,
+    na_rm,
+    RRAY_EXTREMUM_max,
+    x_arg,
+    y_arg,
+    error_call
+  );
 }
 
 r_obj* ffi_rray_pmin(
@@ -75,14 +75,22 @@ r_obj* rray_pmin(
   struct rray_arg* y_arg,
   struct r_lazy error_call
 ) {
-  return rray_extremum(x, y, na_rm, rray_pmin_switch, x_arg, y_arg, error_call);
+  return rray_extremum(
+    x,
+    y,
+    na_rm,
+    RRAY_EXTREMUM_min,
+    x_arg,
+    y_arg,
+    error_call
+  );
 }
 
 static r_obj* rray_extremum(
   r_obj* x,
   r_obj* y,
   bool na_rm,
-  rray_extremum_switch_fn fn_switch,
+  enum rray_extremum_op op,
   struct rray_arg* x_arg,
   struct rray_arg* y_arg,
   struct r_lazy error_call
@@ -93,7 +101,8 @@ static r_obj* rray_extremum(
   x = KEEP(arg_as_array(x, x_arg, error_call));
   y = KEEP(arg_as_array(y, y_arg, error_call));
 
-  const rray_extremum_fn fn = fn_switch(x, y, x_arg, y_arg, error_call);
+  const rray_extremum_fn fn =
+    rray_extremum_switch(x, y, op, x_arg, y_arg, error_call);
 
   r_obj* x_dimensions = r_dim(x);
   r_obj* y_dimensions = r_dim(y);
@@ -143,40 +152,6 @@ static r_obj* rray_extremum(
 
   FREE(5);
   return out;
-}
-
-static rray_extremum_fn rray_pmax_switch(
-  r_obj* x,
-  r_obj* y,
-  struct rray_arg* x_arg,
-  struct rray_arg* y_arg,
-  struct r_lazy error_call
-) {
-  return rray_extremum_switch(
-    x,
-    y,
-    RRAY_EXTREMUM_max,
-    x_arg,
-    y_arg,
-    error_call
-  );
-}
-
-static rray_extremum_fn rray_pmin_switch(
-  r_obj* x,
-  r_obj* y,
-  struct rray_arg* x_arg,
-  struct rray_arg* y_arg,
-  struct r_lazy error_call
-) {
-  return rray_extremum_switch(
-    x,
-    y,
-    RRAY_EXTREMUM_min,
-    x_arg,
-    y_arg,
-    error_call
-  );
 }
 
 static rray_extremum_fn rray_extremum_switch(
