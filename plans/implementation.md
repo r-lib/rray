@@ -1072,20 +1072,9 @@ Signature: `rray_full_like(x, value)`, `rray_ones_like(x)`, `rray_zeros_like(x)`
 
 Files: `R/full-like.R`, `src/full-like.c`, `src/full-like.h`.
 
-## 5.4 Comparison and logical
+## 5.4 Logical
 
 Names: coalesce. Type: fixed, logical output.
-
-| function | meaning |
-|---|---|
-| `rray_equal(x, y)` | `==` |
-| `rray_not_equal(x, y)` | `!=` |
-| `rray_greater_than(x, y)` | `>` |
-| `rray_greater_than_or_equal(x, y)` | `>=` |
-| `rray_less_than(x, y)` | `<` |
-| `rray_less_than_or_equal(x, y)` | `<=` |
-
-Files: `R/compare.R`, `src/compare.c`, `src/compare.h`.
 
 Logical operators take logical input and return a logical array.
 

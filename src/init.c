@@ -116,6 +116,24 @@ extern r_obj* ffi_rray_pmin(
   r_obj* ffi_na_rm,
   r_obj* ffi_frame
 );
+extern r_obj* ffi_rray_equal(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame);
+extern r_obj* ffi_rray_not_equal(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame);
+extern r_obj* ffi_rray_greater_than(
+  r_obj* ffi_x,
+  r_obj* ffi_y,
+  r_obj* ffi_frame
+);
+extern r_obj* ffi_rray_greater_than_or_equal(
+  r_obj* ffi_x,
+  r_obj* ffi_y,
+  r_obj* ffi_frame
+);
+extern r_obj* ffi_rray_less_than(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame);
+extern r_obj* ffi_rray_less_than_or_equal(
+  r_obj* ffi_x,
+  r_obj* ffi_y,
+  r_obj* ffi_frame
+);
 
 extern r_obj* ffi_test_wrap(r_obj* ffi_x);
 extern r_obj* ffi_test_wrapper_readonly(r_obj* ffi_x);
@@ -164,6 +182,14 @@ static const R_CallMethodDef CallEntries[] = {
   {"ffi_rray_subtract", (DL_FUNC) &ffi_rray_subtract, 3},
   {"ffi_rray_pmax", (DL_FUNC) &ffi_rray_pmax, 4},
   {"ffi_rray_pmin", (DL_FUNC) &ffi_rray_pmin, 4},
+  {"ffi_rray_equal", (DL_FUNC) &ffi_rray_equal, 3},
+  {"ffi_rray_not_equal", (DL_FUNC) &ffi_rray_not_equal, 3},
+  {"ffi_rray_greater_than", (DL_FUNC) &ffi_rray_greater_than, 3},
+  {"ffi_rray_greater_than_or_equal",
+   (DL_FUNC) &ffi_rray_greater_than_or_equal,
+   3},
+  {"ffi_rray_less_than", (DL_FUNC) &ffi_rray_less_than, 3},
+  {"ffi_rray_less_than_or_equal", (DL_FUNC) &ffi_rray_less_than_or_equal, 3},
   {"ffi_test_wrap", (DL_FUNC) &ffi_test_wrap, 1},
   {"ffi_test_wrapper_readonly", (DL_FUNC) &ffi_test_wrapper_readonly, 1},
   {"ffi_test_wrapper_writable", (DL_FUNC) &ffi_test_wrapper_writable, 1},
