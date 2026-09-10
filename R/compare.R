@@ -17,7 +17,6 @@
 #'
 #' @details
 #' The arrays are broadcast to common dimensions before they are compared.
-#' Missing values, including `NaN`, produce a missing value in the output.
 #'
 #' @param x An array.
 #'

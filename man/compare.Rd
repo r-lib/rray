@@ -44,7 +44,6 @@ to \code{y}.
 }
 \details{
 The arrays are broadcast to common dimensions before they are compared.
-Missing values, including \code{NaN}, produce a missing value in the output.
 }
 \examples{
 x <- array(1:6, c(3L, 2L))
