@@ -751,7 +751,6 @@ static inline int rray_pmax_int_one_propagate_na(int x, int y) {
   const int out = x < y ? y : x;
   const int na = r_globals.na_int;
   const bool has_na = (x == na) | (y == na);
-
   return has_na ? na : out;
 }
 
@@ -778,7 +777,6 @@ static inline int rray_pmax_int_one_remove_na(int x, int y) {
 // - `x = NA_real_`, `y = NA_real_`: returns `y` (`out = x`, `ISNAN(y) = true`).
 static inline double rray_pmax_dbl_one_propagate_na(double x, double y) {
   const double out = x < y ? y : x;
-
   return ISNAN(y) ? y : out;
 }
 
@@ -795,7 +793,6 @@ static inline double rray_pmax_dbl_one_propagate_na(double x, double y) {
 // - `x = NA_real_`, `y = NA_real_`: returns `y` (`out = x`, `ISNAN(x) = true`).
 static inline double rray_pmax_dbl_one_remove_na(double x, double y) {
   const double out = x < y ? y : x;
-
   return ISNAN(x) ? y : out;
 }
 
@@ -817,10 +814,8 @@ static inline int rray_pmin_int_one_propagate_na(int x, int y) {
 static inline int rray_pmin_int_one_remove_na(int x, int y) {
   const int na = r_globals.na_int;
   int out = x > y ? y : x;
-
   out = y == na ? x : out;
   out = x == na ? y : out;
-
   return out;
 }
 
@@ -837,7 +832,6 @@ static inline int rray_pmin_int_one_remove_na(int x, int y) {
 // - `x = NA_real_`, `y = NA_real_`: returns `y` (`out = x`, `ISNAN(y) = true`).
 static inline double rray_pmin_dbl_one_propagate_na(double x, double y) {
   const double out = x > y ? y : x;
-
   return ISNAN(y) ? y : out;
 }
 
@@ -854,6 +848,5 @@ static inline double rray_pmin_dbl_one_propagate_na(double x, double y) {
 // - `x = NA_real_`, `y = NA_real_`: returns `y` (`out = x`, `ISNAN(x) = true`).
 static inline double rray_pmin_dbl_one_remove_na(double x, double y) {
   const double out = x > y ? y : x;
-
   return ISNAN(x) ? y : out;
 }
