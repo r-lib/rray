@@ -49,102 +49,38 @@ test_that("double wins over logical and integer, in either position", {
   expect_identical(rray_pmin(2.5, 1L), array(1, 1L))
 })
 
-test_that("missing values match base R", {
-  x <- c(1, NA_real_, NaN)
-  y <- c(2, 3, 4)
-
-  expect_identical(as.vector(rray_pmax(x, y)), pmax(x, y))
-  expect_identical(as.vector(rray_pmin(x, y)), pmin(x, y))
-  expect_identical(
-    as.vector(rray_pmax(x, y, na_rm = TRUE)),
-    pmax(x, y, na.rm = TRUE)
-  )
-  expect_identical(
-    as.vector(rray_pmin(x, y, na_rm = TRUE)),
-    pmin(x, y, na.rm = TRUE)
-  )
-})
-
-test_that("the second double missing value wins when both are missing", {
-  x <- c(NA_real_, NaN)
-  y <- c(NaN, NA_real_)
-
-  expect_identical(as.vector(rray_pmax(x, y)), pmax(x, y))
-  expect_identical(as.vector(rray_pmin(x, y)), pmin(x, y))
-  expect_identical(
-    as.vector(rray_pmax(x, y, na_rm = TRUE)),
-    pmax(x, y, na.rm = TRUE)
-  )
-  expect_identical(
-    as.vector(rray_pmin(x, y, na_rm = TRUE)),
-    pmin(x, y, na.rm = TRUE)
-  )
-})
-
-test_that("all native missing-value combinations match base R", {
+test_that("native extrema match base R across special values", {
   integer_values <- c(NA_integer_, -1L, 0L, 1L)
   double_values <- c(NA_real_, NaN, -Inf, -1, -0, 0, 1, Inf)
 
-  cases <- list(
-    integer = list(
-      x = rep(integer_values, each = length(integer_values)),
-      y = rep(integer_values, times = length(integer_values))
-    ),
-    double = list(
-      x = rep(double_values, each = length(double_values)),
-      y = rep(double_values, times = length(double_values))
-    ),
-    integer_double = list(
-      x = rep(integer_values, each = length(double_values)),
-      y = rep(double_values, times = length(integer_values))
-    ),
-    double_integer = list(
-      x = rep(double_values, each = length(integer_values)),
-      y = rep(integer_values, times = length(double_values))
+  make_case <- function(x_values, y_values = x_values, cast = identity) {
+    list(
+      x = rep(x_values, each = length(y_values)),
+      y = rep(y_values, times = length(x_values)),
+      cast = cast
     )
+  }
+
+  cases <- list(
+    logical = make_case(c(NA, FALSE, TRUE), cast = as.logical),
+    integer = make_case(integer_values),
+    double = make_case(double_values),
+    integer_double = make_case(integer_values, double_values),
+    double_integer = make_case(double_values, integer_values)
   )
 
   for (case in cases) {
     for (na_rm in c(FALSE, TRUE)) {
       expect_identical(
         as.vector(rray_pmax(case$x, case$y, na_rm = na_rm)),
-        pmax(case$x, case$y, na.rm = na_rm)
+        case$cast(pmax(case$x, case$y, na.rm = na_rm))
       )
       expect_identical(
         as.vector(rray_pmin(case$x, case$y, na_rm = na_rm)),
-        pmin(case$x, case$y, na.rm = na_rm)
+        case$cast(pmin(case$x, case$y, na.rm = na_rm))
       )
     }
   }
-})
-
-test_that("logical and integer missing values match base R", {
-  x <- c(TRUE, NA, FALSE, NA)
-  y <- c(NA, FALSE, NA, NA)
-
-  expect_identical(as.vector(rray_pmax(x, y)), as.logical(pmax(x, y)))
-  expect_identical(as.vector(rray_pmin(x, y)), as.logical(pmin(x, y)))
-  expect_identical(
-    as.vector(rray_pmax(x, y, na_rm = TRUE)),
-    as.logical(pmax(x, y, na.rm = TRUE))
-  )
-  expect_identical(
-    as.vector(rray_pmin(x, y, na_rm = TRUE)),
-    as.logical(pmin(x, y, na.rm = TRUE))
-  )
-
-  x <- c(1L, NA_integer_)
-  y <- c(NA_integer_, 2L)
-  expect_identical(as.vector(rray_pmax(x, y, na_rm = TRUE)), c(1L, 2L))
-  expect_identical(as.vector(rray_pmin(x, y, na_rm = TRUE)), c(1L, 2L))
-})
-
-test_that("infinities and signed zero match base R", {
-  x <- c(Inf, -Inf, -0, 0)
-  y <- c(-Inf, Inf, 0, -0)
-
-  expect_identical(as.vector(rray_pmax(x, y)), pmax(x, y))
-  expect_identical(as.vector(rray_pmin(x, y)), pmin(x, y))
 })
 
 test_that("names are coalesced across inputs", {
