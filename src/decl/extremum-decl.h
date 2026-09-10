@@ -7,10 +7,13 @@ static r_obj* rray_extremum(
   struct rray_arg* y_arg,
   struct r_lazy error_call
 );
-static rray_extremum_fn rray_extremum_switch(
+static r_obj* rray_extremum_switch(
   r_obj* x,
   r_obj* y,
   enum rray_extremum_op op,
+  r_ssize size,
+  struct rray_iterator2* it,
+  bool na_rm,
   struct rray_arg* x_arg,
   struct rray_arg* y_arg,
   struct r_lazy error_call

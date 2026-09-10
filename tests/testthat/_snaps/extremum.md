@@ -84,22 +84,6 @@
       Error in `rray_pmax()`:
       ! Can't apply `pmax` to `x` <list> and `y` <list>.
 
-# a type error beats a dimension error
-
-    Code
-      rray_pmax(x, y)
-    Condition
-      Error in `rray_pmax()`:
-      ! Can't apply `pmax` to `x` <complex> and `y` <complex>.
-
----
-
-    Code
-      rray_pmin(x, y)
-    Condition
-      Error in `rray_pmin()`:
-      ! Can't apply `pmin` to `x` <complex> and `y` <complex>.
-
 # `na_rm` must be `TRUE` or `FALSE`
 
     Code

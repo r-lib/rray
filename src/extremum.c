@@ -10,15 +10,6 @@
 #include "typeof2.h"
 #include "utils.h"
 
-typedef r_obj* (*rray_extremum_fn)(
-  r_obj* x,
-  r_obj* y,
-  r_ssize size,
-  struct rray_iterator2* it,
-  bool na_rm,
-  struct r_lazy error_call
-);
-
 enum rray_extremum_op {
   RRAY_EXTREMUM_max,
   RRAY_EXTREMUM_min
@@ -101,9 +92,6 @@ static r_obj* rray_extremum(
   x = KEEP(arg_as_array(x, x_arg, error_call));
   y = KEEP(arg_as_array(y, y_arg, error_call));
 
-  const rray_extremum_fn fn =
-    rray_extremum_switch(x, y, op, x_arg, y_arg, error_call);
-
   r_obj* x_dimensions = r_dim(x);
   r_obj* y_dimensions = r_dim(y);
 
@@ -141,7 +129,9 @@ static r_obj* rray_extremum(
     y_dimensionality
   );
 
-  r_obj* out = KEEP(fn(x, y, size, &it, na_rm, error_call));
+  r_obj* out = KEEP(
+    rray_extremum_switch(x, y, op, size, &it, na_rm, x_arg, y_arg, error_call)
+  );
   r_attrib_poke_dim(out, dimensions);
 
   r_obj* out_names = KEEP(rray_broadcast_names2(x, y, dimensions));
@@ -154,10 +144,13 @@ static r_obj* rray_extremum(
   return out;
 }
 
-static rray_extremum_fn rray_extremum_switch(
+static r_obj* rray_extremum_switch(
   r_obj* x,
   r_obj* y,
   enum rray_extremum_op op,
+  r_ssize size,
+  struct rray_iterator2* it,
+  bool na_rm,
   struct rray_arg* x_arg,
   struct rray_arg* y_arg,
   struct r_lazy error_call
@@ -171,44 +164,62 @@ static rray_extremum_fn rray_extremum_switch(
   case RRAY_TYPE2_logical_logical:
     switch (op) {
     case RRAY_EXTREMUM_max:
-      return rray_pmax_lgl_lgl;
+      return rray_pmax_lgl_lgl(x, y, size, it, na_rm, error_call);
     case RRAY_EXTREMUM_min:
-      return rray_pmin_lgl_lgl;
+      return rray_pmin_lgl_lgl(x, y, size, it, na_rm, error_call);
     }
   case RRAY_TYPE2_logical_integer:
     switch (op) {
     case RRAY_EXTREMUM_max:
-      return side == RRAY_SIDE_right ? rray_pmax_lgl_int : rray_pmax_int_lgl;
+      if (side == RRAY_SIDE_right) {
+        return rray_pmax_lgl_int(x, y, size, it, na_rm, error_call);
+      }
+      return rray_pmax_int_lgl(x, y, size, it, na_rm, error_call);
     case RRAY_EXTREMUM_min:
-      return side == RRAY_SIDE_right ? rray_pmin_lgl_int : rray_pmin_int_lgl;
+      if (side == RRAY_SIDE_right) {
+        return rray_pmin_lgl_int(x, y, size, it, na_rm, error_call);
+      }
+      return rray_pmin_int_lgl(x, y, size, it, na_rm, error_call);
     }
   case RRAY_TYPE2_logical_double:
     switch (op) {
     case RRAY_EXTREMUM_max:
-      return side == RRAY_SIDE_right ? rray_pmax_lgl_dbl : rray_pmax_dbl_lgl;
+      if (side == RRAY_SIDE_right) {
+        return rray_pmax_lgl_dbl(x, y, size, it, na_rm, error_call);
+      }
+      return rray_pmax_dbl_lgl(x, y, size, it, na_rm, error_call);
     case RRAY_EXTREMUM_min:
-      return side == RRAY_SIDE_right ? rray_pmin_lgl_dbl : rray_pmin_dbl_lgl;
+      if (side == RRAY_SIDE_right) {
+        return rray_pmin_lgl_dbl(x, y, size, it, na_rm, error_call);
+      }
+      return rray_pmin_dbl_lgl(x, y, size, it, na_rm, error_call);
     }
   case RRAY_TYPE2_integer_integer:
     switch (op) {
     case RRAY_EXTREMUM_max:
-      return rray_pmax_int_int;
+      return rray_pmax_int_int(x, y, size, it, na_rm, error_call);
     case RRAY_EXTREMUM_min:
-      return rray_pmin_int_int;
+      return rray_pmin_int_int(x, y, size, it, na_rm, error_call);
     }
   case RRAY_TYPE2_integer_double:
     switch (op) {
     case RRAY_EXTREMUM_max:
-      return side == RRAY_SIDE_right ? rray_pmax_int_dbl : rray_pmax_dbl_int;
+      if (side == RRAY_SIDE_right) {
+        return rray_pmax_int_dbl(x, y, size, it, na_rm, error_call);
+      }
+      return rray_pmax_dbl_int(x, y, size, it, na_rm, error_call);
     case RRAY_EXTREMUM_min:
-      return side == RRAY_SIDE_right ? rray_pmin_int_dbl : rray_pmin_dbl_int;
+      if (side == RRAY_SIDE_right) {
+        return rray_pmin_int_dbl(x, y, size, it, na_rm, error_call);
+      }
+      return rray_pmin_dbl_int(x, y, size, it, na_rm, error_call);
     }
   case RRAY_TYPE2_double_double:
     switch (op) {
     case RRAY_EXTREMUM_max:
-      return rray_pmax_dbl_dbl;
+      return rray_pmax_dbl_dbl(x, y, size, it, na_rm, error_call);
     case RRAY_EXTREMUM_min:
-      return rray_pmin_dbl_dbl;
+      return rray_pmin_dbl_dbl(x, y, size, it, na_rm, error_call);
     }
 
   case RRAY_TYPE2_logical_complex:

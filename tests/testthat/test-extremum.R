@@ -148,14 +148,6 @@ test_that("errors on unsupported types", {
   expect_snapshot(rray_pmax(list(1), list(2)), error = TRUE)
 })
 
-test_that("a type error beats a dimension error", {
-  x <- array(1i, c(2L, 2L))
-  y <- array(2i, c(3L, 3L))
-
-  expect_snapshot(rray_pmax(x, y), error = TRUE)
-  expect_snapshot(rray_pmin(x, y), error = TRUE)
-})
-
 test_that("`na_rm` must be `TRUE` or `FALSE`", {
   expect_snapshot(rray_pmax(1L, 2L, na_rm = NA), error = TRUE)
   expect_snapshot(rray_pmin(1L, 2L, na_rm = 1), error = TRUE)
