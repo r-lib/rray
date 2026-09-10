@@ -682,7 +682,7 @@ immediately.
 
 ### Operators that promote nothing
 
-`maximum`, `minimum`, `max` and `min` are in the tables' families but not in the
+`pmax`, `pmin`, `max` and `min` are in the tables' families but not in the
 tables, because picking the largest of some values cannot change their type. The
 maximum of two logicals is a logical.
 
@@ -980,18 +980,6 @@ Files: one `src/arithmetic-{op}.c` per operator, over the shared
 `R/arithmetic.R` and one documentation page.
 
 ## 5.3 Other elementwise numeric
-
-### `rray_maximum()` and `rray_minimum()`
-
-Elementwise maximum and minimum of two arrays, with broadcasting. Not to be
-confused with `rray_max()` and `rray_min()`, which reduce.
-
-Names: coalesce. Type: common, errors on `cpl`. Ops `maximum` and `minimum`,
-which promote nothing, as 2.4 explains.
-
-Signature: `rray_maximum(x, y, ..., na_rm = FALSE)`.
-
-Files: `R/extremum.R`, `src/extremum.c`, `src/extremum.h`.
 
 ### `rray_clip()`
 

@@ -30,9 +30,10 @@ reference:
   - rray_squeeze
   - rray_split
 
-- title: Arithmetic
+- title: Binary
   contents:
   - arithmetic
+  - extremum
 
 - title: Reducers
   contents:

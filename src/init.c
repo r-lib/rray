@@ -104,6 +104,18 @@ extern r_obj* ffi_rray_exponentiate(
 );
 extern r_obj* ffi_rray_multiply(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame);
 extern r_obj* ffi_rray_subtract(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame);
+extern r_obj* ffi_rray_pmax(
+  r_obj* ffi_x,
+  r_obj* ffi_y,
+  r_obj* ffi_na_rm,
+  r_obj* ffi_frame
+);
+extern r_obj* ffi_rray_pmin(
+  r_obj* ffi_x,
+  r_obj* ffi_y,
+  r_obj* ffi_na_rm,
+  r_obj* ffi_frame
+);
 
 extern r_obj* ffi_test_wrap(r_obj* ffi_x);
 extern r_obj* ffi_test_wrapper_readonly(r_obj* ffi_x);
@@ -150,6 +162,8 @@ static const R_CallMethodDef CallEntries[] = {
   {"ffi_rray_exponentiate", (DL_FUNC) &ffi_rray_exponentiate, 3},
   {"ffi_rray_multiply", (DL_FUNC) &ffi_rray_multiply, 3},
   {"ffi_rray_subtract", (DL_FUNC) &ffi_rray_subtract, 3},
+  {"ffi_rray_pmax", (DL_FUNC) &ffi_rray_pmax, 4},
+  {"ffi_rray_pmin", (DL_FUNC) &ffi_rray_pmin, 4},
   {"ffi_test_wrap", (DL_FUNC) &ffi_test_wrap, 1},
   {"ffi_test_wrapper_readonly", (DL_FUNC) &ffi_test_wrapper_readonly, 1},
   {"ffi_test_wrapper_writable", (DL_FUNC) &ffi_test_wrapper_writable, 1},
