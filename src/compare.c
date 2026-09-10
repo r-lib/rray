@@ -345,8 +345,8 @@ static r_no_return void stop_unsupported_compare(
     const X_CTYPE x_elt = v_x[x_loc];                                          \
     const Y_CTYPE y_elt = v_y[y_loc];                                          \
     const bool missing = X_IS_MISSING(x_elt) | Y_IS_MISSING(y_elt);            \
-    const int value = x_elt OPERATOR y_elt;                                    \
-    v_out[i] = missing ? r_globals.na_lgl : value;                             \
+    const int elt = x_elt OPERATOR y_elt;                                      \
+    v_out[i] = missing ? r_globals.na_lgl : elt;                               \
   })
 
 #define RRAY_COMPARE(                                                          \
