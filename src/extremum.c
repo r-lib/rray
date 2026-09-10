@@ -693,14 +693,14 @@ static inline int rray_pmax_int_one(int x, int y, bool na_rm) {
 }
 
 static inline double rray_pmax_dbl_one(double x, double y, bool na_rm) {
-  if (ISNAN(y) && !na_rm) {
-    return y;
-  }
   if (ISNAN(x)) {
+    if (ISNAN(y)) {
+      return y;
+    }
     return na_rm ? y : x;
   }
   if (ISNAN(y)) {
-    return x;
+    return na_rm ? x : y;
   }
   return x < y ? y : x;
 }
@@ -716,14 +716,14 @@ static inline int rray_pmin_int_one(int x, int y, bool na_rm) {
 }
 
 static inline double rray_pmin_dbl_one(double x, double y, bool na_rm) {
-  if (ISNAN(y) && !na_rm) {
-    return y;
-  }
   if (ISNAN(x)) {
+    if (ISNAN(y)) {
+      return y;
+    }
     return na_rm ? y : x;
   }
   if (ISNAN(y)) {
-    return x;
+    return na_rm ? x : y;
   }
   return x > y ? y : x;
 }
