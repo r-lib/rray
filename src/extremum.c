@@ -304,7 +304,8 @@ static r_no_return void stop_unsupported_extremum(
   OUT_RTYPE,                                                                   \
   OUT_CTYPE,                                                                   \
   OUT_DEREF,                                                                   \
-  ONE                                                                          \
+  ONE_PROPAGATE_NA,                                                            \
+  ONE_REMOVE_NA                                                               \
 )                                                                              \
   r_obj* out = KEEP(r_alloc_vector(OUT_RTYPE, size));                          \
   OUT_CTYPE* v_out = OUT_DEREF(out);                                           \
@@ -312,9 +313,15 @@ static r_no_return void stop_unsupported_extremum(
   const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
   const Y_CTYPE* v_y = Y_CONST_DEREF(y);                                       \
                                                                                \
-  RRAY_ITERATOR2_FOR_EACH(it, i, x_loc, y_loc, {                               \
-    v_out[i] = ONE(X_CAST(v_x[x_loc]), Y_CAST(v_y[y_loc]), na_rm);             \
-  });                                                                          \
+  if (na_rm) {                                                                 \
+    RRAY_ITERATOR2_FOR_EACH(it, i, x_loc, y_loc, {                             \
+      v_out[i] = ONE_REMOVE_NA(X_CAST(v_x[x_loc]), Y_CAST(v_y[y_loc]));        \
+    });                                                                        \
+  } else {                                                                     \
+    RRAY_ITERATOR2_FOR_EACH(it, i, x_loc, y_loc, {                             \
+      v_out[i] = ONE_PROPAGATE_NA(X_CAST(v_x[x_loc]), Y_CAST(v_y[y_loc]));     \
+    });                                                                        \
+  }                                                                            \
                                                                                \
   FREE(1);                                                                     \
   return out;
@@ -337,7 +344,8 @@ static r_obj* rray_pmax_lgl_lgl(
     R_TYPE_logical,
     int,
     r_lgl_begin,
-    rray_pmax_int_one
+    rray_pmax_int_one_propagate_na,
+    rray_pmax_int_one_remove_na
   );
 }
 
@@ -359,7 +367,8 @@ static r_obj* rray_pmax_lgl_int(
     R_TYPE_integer,
     int,
     r_int_begin,
-    rray_pmax_int_one
+    rray_pmax_int_one_propagate_na,
+    rray_pmax_int_one_remove_na
   );
 }
 
@@ -381,7 +390,8 @@ static r_obj* rray_pmax_int_lgl(
     R_TYPE_integer,
     int,
     r_int_begin,
-    rray_pmax_int_one
+    rray_pmax_int_one_propagate_na,
+    rray_pmax_int_one_remove_na
   );
 }
 
@@ -403,7 +413,8 @@ static r_obj* rray_pmax_lgl_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_pmax_dbl_one
+    rray_pmax_dbl_one_propagate_na,
+    rray_pmax_dbl_one_remove_na
   );
 }
 
@@ -425,7 +436,8 @@ static r_obj* rray_pmax_dbl_lgl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_pmax_dbl_one
+    rray_pmax_dbl_one_propagate_na,
+    rray_pmax_dbl_one_remove_na
   );
 }
 
@@ -447,7 +459,8 @@ static r_obj* rray_pmax_int_int(
     R_TYPE_integer,
     int,
     r_int_begin,
-    rray_pmax_int_one
+    rray_pmax_int_one_propagate_na,
+    rray_pmax_int_one_remove_na
   );
 }
 
@@ -469,7 +482,8 @@ static r_obj* rray_pmax_int_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_pmax_dbl_one
+    rray_pmax_dbl_one_propagate_na,
+    rray_pmax_dbl_one_remove_na
   );
 }
 
@@ -491,7 +505,8 @@ static r_obj* rray_pmax_dbl_int(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_pmax_dbl_one
+    rray_pmax_dbl_one_propagate_na,
+    rray_pmax_dbl_one_remove_na
   );
 }
 
@@ -513,7 +528,8 @@ static r_obj* rray_pmax_dbl_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_pmax_dbl_one
+    rray_pmax_dbl_one_propagate_na,
+    rray_pmax_dbl_one_remove_na
   );
 }
 
@@ -535,7 +551,8 @@ static r_obj* rray_pmin_lgl_lgl(
     R_TYPE_logical,
     int,
     r_lgl_begin,
-    rray_pmin_int_one
+    rray_pmin_int_one_propagate_na,
+    rray_pmin_int_one_remove_na
   );
 }
 
@@ -557,7 +574,8 @@ static r_obj* rray_pmin_lgl_int(
     R_TYPE_integer,
     int,
     r_int_begin,
-    rray_pmin_int_one
+    rray_pmin_int_one_propagate_na,
+    rray_pmin_int_one_remove_na
   );
 }
 
@@ -579,7 +597,8 @@ static r_obj* rray_pmin_int_lgl(
     R_TYPE_integer,
     int,
     r_int_begin,
-    rray_pmin_int_one
+    rray_pmin_int_one_propagate_na,
+    rray_pmin_int_one_remove_na
   );
 }
 
@@ -601,7 +620,8 @@ static r_obj* rray_pmin_lgl_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_pmin_dbl_one
+    rray_pmin_dbl_one_propagate_na,
+    rray_pmin_dbl_one_remove_na
   );
 }
 
@@ -623,7 +643,8 @@ static r_obj* rray_pmin_dbl_lgl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_pmin_dbl_one
+    rray_pmin_dbl_one_propagate_na,
+    rray_pmin_dbl_one_remove_na
   );
 }
 
@@ -645,7 +666,8 @@ static r_obj* rray_pmin_int_int(
     R_TYPE_integer,
     int,
     r_int_begin,
-    rray_pmin_int_one
+    rray_pmin_int_one_propagate_na,
+    rray_pmin_int_one_remove_na
   );
 }
 
@@ -667,7 +689,8 @@ static r_obj* rray_pmin_int_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_pmin_dbl_one
+    rray_pmin_dbl_one_propagate_na,
+    rray_pmin_dbl_one_remove_na
   );
 }
 
@@ -689,7 +712,8 @@ static r_obj* rray_pmin_dbl_int(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_pmin_dbl_one
+    rray_pmin_dbl_one_propagate_na,
+    rray_pmin_dbl_one_remove_na
   );
 }
 
@@ -711,54 +735,66 @@ static r_obj* rray_pmin_dbl_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_pmin_dbl_one
+    rray_pmin_dbl_one_propagate_na,
+    rray_pmin_dbl_one_remove_na
   );
 }
 
 #undef RRAY_EXTREMUM
 
-static inline int rray_pmax_int_one(int x, int y, bool na_rm) {
-  if (x == r_globals.na_int) {
-    return na_rm ? y : x;
-  }
-  if (y == r_globals.na_int) {
-    return na_rm ? x : y;
-  }
+static inline int rray_pmax_int_one_propagate_na(int x, int y) {
+  const int out = x < y ? y : x;
+  const int na = r_globals.na_int;
+  const bool has_na = (x == na) | (y == na);
+
+  return has_na ? na : out;
+}
+
+static inline int rray_pmax_int_one_remove_na(int x, int y) {
+  // Since integer `NA` is `INT_MIN`, a regular maximum removes a single `NA`.
   return x < y ? y : x;
 }
 
-static inline double rray_pmax_dbl_one(double x, double y, bool na_rm) {
-  if (ISNAN(x)) {
-    if (ISNAN(y)) {
-      return y;
-    }
-    return na_rm ? y : x;
-  }
-  if (ISNAN(y)) {
-    return na_rm ? x : y;
-  }
-  return x < y ? y : x;
+static inline double rray_pmax_dbl_one_propagate_na(double x, double y) {
+  const double out = x < y ? y : x;
+
+  // A comparison involving `NaN` is false, so `out` already propagates `x`.
+  // Selecting `y` when it is missing also ensures that the second missing
+  // value wins when both inputs are missing.
+  return ISNAN(y) ? y : out;
 }
 
-static inline int rray_pmin_int_one(int x, int y, bool na_rm) {
-  if (x == r_globals.na_int) {
-    return na_rm ? y : x;
-  }
-  if (y == r_globals.na_int) {
-    return na_rm ? x : y;
-  }
+static inline double rray_pmax_dbl_one_remove_na(double x, double y) {
+  const double out = x < y ? y : x;
+
+  // `out` already removes a missing `y`. A missing `x` is the only case that
+  // needs to be overridden. This also returns `y` when both inputs are missing.
+  return ISNAN(x) ? y : out;
+}
+
+static inline int rray_pmin_int_one_propagate_na(int x, int y) {
+  // Since integer `NA` is `INT_MIN`, a regular minimum propagates `NA`.
   return x > y ? y : x;
 }
 
-static inline double rray_pmin_dbl_one(double x, double y, bool na_rm) {
-  if (ISNAN(x)) {
-    if (ISNAN(y)) {
-      return y;
-    }
-    return na_rm ? y : x;
-  }
-  if (ISNAN(y)) {
-    return na_rm ? x : y;
-  }
-  return x > y ? y : x;
+static inline int rray_pmin_int_one_remove_na(int x, int y) {
+  const int na = r_globals.na_int;
+  int out = x > y ? y : x;
+
+  out = y == na ? x : out;
+  out = x == na ? y : out;
+
+  return out;
+}
+
+static inline double rray_pmin_dbl_one_propagate_na(double x, double y) {
+  const double out = x > y ? y : x;
+
+  return ISNAN(y) ? y : out;
+}
+
+static inline double rray_pmin_dbl_one_remove_na(double x, double y) {
+  const double out = x > y ? y : x;
+
+  return ISNAN(x) ? y : out;
 }

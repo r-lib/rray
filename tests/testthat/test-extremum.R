@@ -81,6 +81,43 @@ test_that("the second double missing value wins when both are missing", {
   )
 })
 
+test_that("all native missing-value combinations match base R", {
+  integer_values <- c(NA_integer_, -1L, 0L, 1L)
+  double_values <- c(NA_real_, NaN, -Inf, -1, -0, 0, 1, Inf)
+
+  cases <- list(
+    integer = list(
+      x = rep(integer_values, each = length(integer_values)),
+      y = rep(integer_values, times = length(integer_values))
+    ),
+    double = list(
+      x = rep(double_values, each = length(double_values)),
+      y = rep(double_values, times = length(double_values))
+    ),
+    integer_double = list(
+      x = rep(integer_values, each = length(double_values)),
+      y = rep(double_values, times = length(integer_values))
+    ),
+    double_integer = list(
+      x = rep(double_values, each = length(integer_values)),
+      y = rep(integer_values, times = length(double_values))
+    )
+  )
+
+  for (case in cases) {
+    for (na_rm in c(FALSE, TRUE)) {
+      expect_identical(
+        as.vector(rray_pmax(case$x, case$y, na_rm = na_rm)),
+        pmax(case$x, case$y, na.rm = na_rm)
+      )
+      expect_identical(
+        as.vector(rray_pmin(case$x, case$y, na_rm = na_rm)),
+        pmin(case$x, case$y, na.rm = na_rm)
+      )
+    }
+  }
+})
+
 test_that("logical and integer missing values match base R", {
   x <- c(TRUE, NA, FALSE, NA)
   y <- c(NA, FALSE, NA, NA)
