@@ -742,7 +742,11 @@ static r_obj* rray_pmin_dbl_dbl(
 
 #undef RRAY_EXTREMUM
 
-// Worked cases, using `1` as the nonmissing integer:
+// Each of the "one" functions below is carefully tuned to maximize
+// the chance of the resulting loop being vectorized by the compiler.
+// Anecdotally tested on an M2 Mac, where the assembly was analyzed.
+
+// Bitwise `|` improves efficiency here
 // - `x = 1`, `y = 1`: returns `1` (`out = 1`, `has_na = false`).
 // - `x = 1`, `y = NA`: returns `NA` (`out = 1`, `has_na = true`).
 // - `x = NA`, `y = 1`: returns `NA` (`out = 1`, `has_na = true`).
@@ -754,7 +758,7 @@ static inline int rray_pmax_int_one_propagate_na(int x, int y) {
   return has_na ? na : out;
 }
 
-// Integer `NA` is `INT_MIN`, so a regular maximum removes a single `NA`:
+// Integer `NA` is `INT_MIN`
 // - `x = 1`, `y = 1`: returns `1` (`out = 1`).
 // - `x = 1`, `y = NA`: returns `1` (`out = 1`).
 // - `x = NA`, `y = 1`: returns `1` (`out = 1`).
@@ -763,9 +767,9 @@ static inline int rray_pmax_int_one_remove_na(int x, int y) {
   return x < y ? y : x;
 }
 
-// A comparison involving a missing double is false, so `out` selects `x`.
-// Testing `y` then propagates a single missing value and makes the second
-// missing value win when both inputs are missing:
+// A C comparison involving a `NaN`/`NA_real_` is false, so `out` selects `x`.
+// `ISNAN(y)` propagates missing `y` and also ensures the second missing value
+// wins when both inputs are missing (matching R):
 // - `x = 1`, `y = 1`: returns `1` (`out = 1`, `ISNAN(y) = false`).
 // - `x = 1`, `y = NaN`: returns `NaN` (`out = 1`, `ISNAN(y) = true`).
 // - `x = 1`, `y = NA_real_`: returns `NA_real_` (`out = 1`, `ISNAN(y) = true`).
@@ -780,8 +784,9 @@ static inline double rray_pmax_dbl_one_propagate_na(double x, double y) {
   return ISNAN(y) ? y : out;
 }
 
-// A comparison involving a missing double is false, so `out` selects `x`.
-// Testing `x` then replaces it with `y` exactly when that is required:
+// A C comparison involving a `NaN`/`NA_real_` is false, so `out` selects `x`.
+// `ISNAN(x)` replaces `out` with `y` when `x` is missing but `y` is not and
+// when both inputs are missing (matching R):
 // - `x = 1`, `y = 1`: returns `1` (`out = 1`, `ISNAN(x) = false`).
 // - `x = 1`, `y = NaN`: returns `1` (`out = 1`, `ISNAN(x) = false`).
 // - `x = 1`, `y = NA_real_`: returns `1` (`out = 1`, `ISNAN(x) = false`).
@@ -796,7 +801,7 @@ static inline double rray_pmax_dbl_one_remove_na(double x, double y) {
   return ISNAN(x) ? y : out;
 }
 
-// Integer `NA` is `INT_MIN`, so a regular minimum propagates `NA`:
+// Integer `NA` is `INT_MIN`
 // - `x = 1`, `y = 1`: returns `1` (`out = 1`).
 // - `x = 1`, `y = NA`: returns `NA` (`out = NA`).
 // - `x = NA`, `y = 1`: returns `NA` (`out = NA`).
@@ -807,10 +812,10 @@ static inline int rray_pmin_int_one_propagate_na(int x, int y) {
 
 // A regular minimum selects `NA`, so each missing operand is replaced by the
 // other operand:
-// - `x = 1`, `y = 1`: returns `1` (`out = 1`; neither replacement applies).
-// - `x = 1`, `y = NA`: returns `1` (`out = NA`; replace `y` with `x`).
-// - `x = NA`, `y = 1`: returns `1` (`out = NA`; replace `x` with `y`).
-// - `x = NA`, `y = NA`: returns `NA` (`out = NA`; both replacements are NA).
+// - `x = 1`, `y = 1`: returns `1` (`out = 1`, neither replacement applies).
+// - `x = 1`, `y = NA`: returns `1` (`out = NA`, replace `y` with `x`).
+// - `x = NA`, `y = 1`: returns `1` (`out = NA`, replace `x` with `y`).
+// - `x = NA`, `y = NA`: returns `NA` (`out = NA`, both replacements are `NA`).
 static inline int rray_pmin_int_one_remove_na(int x, int y) {
   const int na = r_globals.na_int;
   int out = x > y ? y : x;
@@ -819,8 +824,7 @@ static inline int rray_pmin_int_one_remove_na(int x, int y) {
   return out;
 }
 
-// As with `pmax`, a comparison involving a missing double is false, so `out`
-// selects `x`. Testing `y` implements propagation and second-missing-wins:
+// Same as `rray_pmax_dbl_one_propagate_na()`
 // - `x = 1`, `y = 1`: returns `1` (`out = 1`, `ISNAN(y) = false`).
 // - `x = 1`, `y = NaN`: returns `NaN` (`out = 1`, `ISNAN(y) = true`).
 // - `x = 1`, `y = NA_real_`: returns `NA_real_` (`out = 1`, `ISNAN(y) = true`).
@@ -835,8 +839,7 @@ static inline double rray_pmin_dbl_one_propagate_na(double x, double y) {
   return ISNAN(y) ? y : out;
 }
 
-// As with `pmax`, a comparison involving a missing double is false, so `out`
-// selects `x`. Testing `x` implements removal and second-missing-wins:
+// Same as `rray_pmax_dbl_one_remove_na()`
 // - `x = 1`, `y = 1`: returns `1` (`out = 1`, `ISNAN(x) = false`).
 // - `x = 1`, `y = NaN`: returns `1` (`out = 1`, `ISNAN(x) = false`).
 // - `x = 1`, `y = NA_real_`: returns `1` (`out = 1`, `ISNAN(x) = false`).
