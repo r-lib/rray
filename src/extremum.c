@@ -169,29 +169,47 @@ static rray_extremum_fn rray_extremum_switch(
 
   switch (rray_typeof2(x_type, y_type, &side)) {
   case RRAY_TYPE2_logical_logical:
-    return op == RRAY_EXTREMUM_max ? rray_pmax_lgl_lgl : rray_pmin_lgl_lgl;
+    switch (op) {
+    case RRAY_EXTREMUM_max:
+      return rray_pmax_lgl_lgl;
+    case RRAY_EXTREMUM_min:
+      return rray_pmin_lgl_lgl;
+    }
   case RRAY_TYPE2_logical_integer:
-    if (side == RRAY_SIDE_right) {
-      return op == RRAY_EXTREMUM_max ? rray_pmax_lgl_int : rray_pmin_lgl_int;
-    } else {
-      return op == RRAY_EXTREMUM_max ? rray_pmax_int_lgl : rray_pmin_int_lgl;
+    switch (op) {
+    case RRAY_EXTREMUM_max:
+      return side == RRAY_SIDE_right ? rray_pmax_lgl_int : rray_pmax_int_lgl;
+    case RRAY_EXTREMUM_min:
+      return side == RRAY_SIDE_right ? rray_pmin_lgl_int : rray_pmin_int_lgl;
     }
   case RRAY_TYPE2_logical_double:
-    if (side == RRAY_SIDE_right) {
-      return op == RRAY_EXTREMUM_max ? rray_pmax_lgl_dbl : rray_pmin_lgl_dbl;
-    } else {
-      return op == RRAY_EXTREMUM_max ? rray_pmax_dbl_lgl : rray_pmin_dbl_lgl;
+    switch (op) {
+    case RRAY_EXTREMUM_max:
+      return side == RRAY_SIDE_right ? rray_pmax_lgl_dbl : rray_pmax_dbl_lgl;
+    case RRAY_EXTREMUM_min:
+      return side == RRAY_SIDE_right ? rray_pmin_lgl_dbl : rray_pmin_dbl_lgl;
     }
   case RRAY_TYPE2_integer_integer:
-    return op == RRAY_EXTREMUM_max ? rray_pmax_int_int : rray_pmin_int_int;
+    switch (op) {
+    case RRAY_EXTREMUM_max:
+      return rray_pmax_int_int;
+    case RRAY_EXTREMUM_min:
+      return rray_pmin_int_int;
+    }
   case RRAY_TYPE2_integer_double:
-    if (side == RRAY_SIDE_right) {
-      return op == RRAY_EXTREMUM_max ? rray_pmax_int_dbl : rray_pmin_int_dbl;
-    } else {
-      return op == RRAY_EXTREMUM_max ? rray_pmax_dbl_int : rray_pmin_dbl_int;
+    switch (op) {
+    case RRAY_EXTREMUM_max:
+      return side == RRAY_SIDE_right ? rray_pmax_int_dbl : rray_pmax_dbl_int;
+    case RRAY_EXTREMUM_min:
+      return side == RRAY_SIDE_right ? rray_pmin_int_dbl : rray_pmin_dbl_int;
     }
   case RRAY_TYPE2_double_double:
-    return op == RRAY_EXTREMUM_max ? rray_pmax_dbl_dbl : rray_pmin_dbl_dbl;
+    switch (op) {
+    case RRAY_EXTREMUM_max:
+      return rray_pmax_dbl_dbl;
+    case RRAY_EXTREMUM_min:
+      return rray_pmin_dbl_dbl;
+    }
 
   case RRAY_TYPE2_logical_complex:
   case RRAY_TYPE2_logical_character:
