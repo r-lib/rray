@@ -173,26 +173,30 @@ static r_obj* rray_extremum_switch(
     case RRAY_EXTREMUM_max:
       if (side == RRAY_SIDE_right) {
         return rray_pmax_lgl_int(x, y, size, it, na_rm, error_call);
+      } else {
+        return rray_pmax_int_lgl(x, y, size, it, na_rm, error_call);
       }
-      return rray_pmax_int_lgl(x, y, size, it, na_rm, error_call);
     case RRAY_EXTREMUM_min:
       if (side == RRAY_SIDE_right) {
         return rray_pmin_lgl_int(x, y, size, it, na_rm, error_call);
+      } else {
+        return rray_pmin_int_lgl(x, y, size, it, na_rm, error_call);
       }
-      return rray_pmin_int_lgl(x, y, size, it, na_rm, error_call);
     }
   case RRAY_TYPE2_logical_double:
     switch (op) {
     case RRAY_EXTREMUM_max:
       if (side == RRAY_SIDE_right) {
         return rray_pmax_lgl_dbl(x, y, size, it, na_rm, error_call);
+      } else {
+        return rray_pmax_dbl_lgl(x, y, size, it, na_rm, error_call);
       }
-      return rray_pmax_dbl_lgl(x, y, size, it, na_rm, error_call);
     case RRAY_EXTREMUM_min:
       if (side == RRAY_SIDE_right) {
         return rray_pmin_lgl_dbl(x, y, size, it, na_rm, error_call);
+      } else {
+        return rray_pmin_dbl_lgl(x, y, size, it, na_rm, error_call);
       }
-      return rray_pmin_dbl_lgl(x, y, size, it, na_rm, error_call);
     }
   case RRAY_TYPE2_integer_integer:
     switch (op) {
@@ -206,13 +210,15 @@ static r_obj* rray_extremum_switch(
     case RRAY_EXTREMUM_max:
       if (side == RRAY_SIDE_right) {
         return rray_pmax_int_dbl(x, y, size, it, na_rm, error_call);
+      } else {
+        return rray_pmax_dbl_int(x, y, size, it, na_rm, error_call);
       }
-      return rray_pmax_dbl_int(x, y, size, it, na_rm, error_call);
     case RRAY_EXTREMUM_min:
       if (side == RRAY_SIDE_right) {
         return rray_pmin_int_dbl(x, y, size, it, na_rm, error_call);
+      } else {
+        return rray_pmin_dbl_int(x, y, size, it, na_rm, error_call);
       }
-      return rray_pmin_dbl_int(x, y, size, it, na_rm, error_call);
     }
   case RRAY_TYPE2_double_double:
     switch (op) {
