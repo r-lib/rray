@@ -96,6 +96,3 @@ static r_obj* rray_compare_dbl_dbl(
   struct rray_iterator2* it,
   enum rray_compare_op op
 );
-
-static inline bool rray_compare_int_is_missing(int x);
-static inline bool rray_compare_dbl_is_missing(double x);

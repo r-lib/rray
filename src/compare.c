@@ -4,6 +4,7 @@
 #include "dimensionality.h"
 #include "dimensions.h"
 #include "iterator.h"
+#include "missing.h"
 #include "size.h"
 #include "type.h"
 #include "typeof2.h"
@@ -396,10 +397,10 @@ static r_obj* rray_compare_lgl_lgl(
   RRAY_COMPARE(
     int,
     r_lgl_cbegin,
-    rray_compare_int_is_missing,
+    rray_int_is_missing,
     int,
     r_lgl_cbegin,
-    rray_compare_int_is_missing
+    rray_int_is_missing
   );
 }
 
@@ -413,10 +414,10 @@ static r_obj* rray_compare_lgl_int(
   RRAY_COMPARE(
     int,
     r_lgl_cbegin,
-    rray_compare_int_is_missing,
+    rray_int_is_missing,
     int,
     r_int_cbegin,
-    rray_compare_int_is_missing
+    rray_int_is_missing
   );
 }
 
@@ -430,10 +431,10 @@ static r_obj* rray_compare_int_lgl(
   RRAY_COMPARE(
     int,
     r_int_cbegin,
-    rray_compare_int_is_missing,
+    rray_int_is_missing,
     int,
     r_lgl_cbegin,
-    rray_compare_int_is_missing
+    rray_int_is_missing
   );
 }
 
@@ -447,10 +448,10 @@ static r_obj* rray_compare_lgl_dbl(
   RRAY_COMPARE(
     int,
     r_lgl_cbegin,
-    rray_compare_int_is_missing,
+    rray_int_is_missing,
     double,
     r_dbl_cbegin,
-    rray_compare_dbl_is_missing
+    rray_dbl_is_missing
   );
 }
 
@@ -464,10 +465,10 @@ static r_obj* rray_compare_dbl_lgl(
   RRAY_COMPARE(
     double,
     r_dbl_cbegin,
-    rray_compare_dbl_is_missing,
+    rray_dbl_is_missing,
     int,
     r_lgl_cbegin,
-    rray_compare_int_is_missing
+    rray_int_is_missing
   );
 }
 
@@ -481,10 +482,10 @@ static r_obj* rray_compare_int_int(
   RRAY_COMPARE(
     int,
     r_int_cbegin,
-    rray_compare_int_is_missing,
+    rray_int_is_missing,
     int,
     r_int_cbegin,
-    rray_compare_int_is_missing
+    rray_int_is_missing
   );
 }
 
@@ -498,10 +499,10 @@ static r_obj* rray_compare_int_dbl(
   RRAY_COMPARE(
     int,
     r_int_cbegin,
-    rray_compare_int_is_missing,
+    rray_int_is_missing,
     double,
     r_dbl_cbegin,
-    rray_compare_dbl_is_missing
+    rray_dbl_is_missing
   );
 }
 
@@ -515,10 +516,10 @@ static r_obj* rray_compare_dbl_int(
   RRAY_COMPARE(
     double,
     r_dbl_cbegin,
-    rray_compare_dbl_is_missing,
+    rray_dbl_is_missing,
     int,
     r_int_cbegin,
-    rray_compare_int_is_missing
+    rray_int_is_missing
   );
 }
 
@@ -532,20 +533,12 @@ static r_obj* rray_compare_dbl_dbl(
   RRAY_COMPARE(
     double,
     r_dbl_cbegin,
-    rray_compare_dbl_is_missing,
+    rray_dbl_is_missing,
     double,
     r_dbl_cbegin,
-    rray_compare_dbl_is_missing
+    rray_dbl_is_missing
   );
 }
 
 #undef RRAY_COMPARE
 #undef RRAY_COMPARE_LOOP
-
-static inline bool rray_compare_int_is_missing(int x) {
-  return x == r_globals.na_int;
-}
-
-static inline bool rray_compare_dbl_is_missing(double x) {
-  return ISNAN(x);
-}
