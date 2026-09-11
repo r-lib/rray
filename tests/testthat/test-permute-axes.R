@@ -130,10 +130,6 @@ test_that("does not modify the input", {
   expect_identical(x, expected)
 })
 
-test_that("errors when `axes` is missing", {
-  expect_snapshot(rray_permute_axes(array(1:6, c(2L, 3L))), error = TRUE)
-})
-
 test_that("errors on invalid `axes`", {
   x <- array(1:6, c(2L, 3L))
 

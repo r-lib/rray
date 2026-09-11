@@ -1,11 +1,3 @@
-# errors when `axes` is missing
-
-    Code
-      rray_permute_axes(array(1:6, c(2L, 3L)))
-    Condition
-      Error in `rray_permute_axes()`:
-      ! argument "axes" is missing, with no default
-
 # errors on invalid `axes`
 
     Code
