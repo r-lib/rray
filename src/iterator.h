@@ -81,6 +81,11 @@ static inline void rray_point_iterator_init(
 // dimensions of the array are the point space. The reduced dimensions are the
 // subspace. So as you walk the original array, you can fetch `location`s into
 // the output to accumulate the reduced result at.
+//
+// For transposing, the permuted dimensions make up the point space and the
+// original array is the subspace, like broadcasting. The difference is that
+// the strides are permuted rather than derived from dimensions, which is what
+// `rray_iterator_init_strides()` is for.
 struct rray_iterator {
   r_ssize index;
   r_ssize size;
