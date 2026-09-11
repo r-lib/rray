@@ -9,8 +9,7 @@ rray_permute_axes(x, axes)
 \arguments{
 \item{x}{An array.}
 
-\item{axes}{An integer vector. Axis \code{i} of the result is taken from axis
-\code{axes[i]} of \code{x}, so it must use each axis of \code{x} exactly once.}
+\item{axes}{An integer vector. It must use each axis of \code{x} exactly once.}
 }
 \value{
 An array with the axes of \code{x} reordered by \code{axes}.

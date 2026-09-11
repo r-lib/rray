@@ -9,8 +9,7 @@
 #'
 #' @param x An array.
 #'
-#' @param axes An integer vector. Axis `i` of the result is taken from axis
-#'   `axes[i]` of `x`, so it must use each axis of `x` exactly once.
+#' @param axes An integer vector. It must use each axis of `x` exactly once.
 #'
 #' @returns
 #' An array with the axes of `x` reordered by `axes`.
