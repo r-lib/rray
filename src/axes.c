@@ -142,7 +142,7 @@ r_obj* arg_as_permutation(
     if (v_seen[axis - 1]) {
       r_abort_lazy_call(
         error_call,
-        "%s must not contain the axis %d more than once.",
+        "%s must not contain axis %d more than once.",
         rray_arg_format(arg),
         axis
       );

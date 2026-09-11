@@ -19,7 +19,7 @@
       rray_permute_axes(x, c(1L, 1L))
     Condition
       Error in `rray_permute_axes()`:
-      ! `axes` must not contain the axis 1 more than once.
+      ! `axes` must not contain axis 1 more than once.
     Code
       rray_permute_axes(x, c(1L, 3L))
     Condition
