@@ -1,10 +1,10 @@
-#include "reduce-prod.h"
+#include "reduce-product.h"
 
 #include "reduce.h"
 #include "type.h"
 #include "utils.h"
 
-#include "decl/reduce-prod-decl.h"
+#include "decl/reduce-product-decl.h"
 
 r_obj* ffi_rray_product_along(
   r_obj* ffi_x,
