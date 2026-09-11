@@ -33,112 +33,112 @@ static r_no_return void stop_unsupported_equality(
   struct r_lazy error_call
 );
 
-static r_obj* rray_equal_lgl_lgl(
+static r_obj* rray_equality_lgl_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
   enum rray_equality_op op
 );
-static r_obj* rray_equal_lgl_int(
+static r_obj* rray_equality_lgl_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
   enum rray_equality_op op
 );
-static r_obj* rray_equal_int_lgl(
+static r_obj* rray_equality_int_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
   enum rray_equality_op op
 );
-static r_obj* rray_equal_lgl_dbl(
+static r_obj* rray_equality_lgl_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
   enum rray_equality_op op
 );
-static r_obj* rray_equal_dbl_lgl(
+static r_obj* rray_equality_dbl_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
   enum rray_equality_op op
 );
-static r_obj* rray_equal_lgl_cpl(
+static r_obj* rray_equality_lgl_cpl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
   enum rray_equality_op op
 );
-static r_obj* rray_equal_cpl_lgl(
+static r_obj* rray_equality_cpl_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
   enum rray_equality_op op
 );
-static r_obj* rray_equal_int_int(
+static r_obj* rray_equality_int_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
   enum rray_equality_op op
 );
-static r_obj* rray_equal_int_dbl(
+static r_obj* rray_equality_int_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
   enum rray_equality_op op
 );
-static r_obj* rray_equal_dbl_int(
+static r_obj* rray_equality_dbl_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
   enum rray_equality_op op
 );
-static r_obj* rray_equal_int_cpl(
+static r_obj* rray_equality_int_cpl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
   enum rray_equality_op op
 );
-static r_obj* rray_equal_cpl_int(
+static r_obj* rray_equality_cpl_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
   enum rray_equality_op op
 );
-static r_obj* rray_equal_dbl_dbl(
+static r_obj* rray_equality_dbl_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
   enum rray_equality_op op
 );
-static r_obj* rray_equal_dbl_cpl(
+static r_obj* rray_equality_dbl_cpl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
   enum rray_equality_op op
 );
-static r_obj* rray_equal_cpl_dbl(
+static r_obj* rray_equality_cpl_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
   enum rray_equality_op op
 );
-static r_obj* rray_equal_cpl_cpl(
+static r_obj* rray_equality_cpl_cpl(
   r_obj* x,
   r_obj* y,
   r_ssize size,

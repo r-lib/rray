@@ -130,25 +130,31 @@ static rray_equality_fn rray_equality_switch(
 
   switch (rray_typeof2(x_type, y_type, &side)) {
   case RRAY_TYPE2_logical_logical:
-    return rray_equal_lgl_lgl;
+    return rray_equality_lgl_lgl;
   case RRAY_TYPE2_logical_integer:
-    return side == RRAY_SIDE_right ? rray_equal_lgl_int : rray_equal_int_lgl;
+    return side == RRAY_SIDE_right ? rray_equality_lgl_int
+                                   : rray_equality_int_lgl;
   case RRAY_TYPE2_logical_double:
-    return side == RRAY_SIDE_right ? rray_equal_lgl_dbl : rray_equal_dbl_lgl;
+    return side == RRAY_SIDE_right ? rray_equality_lgl_dbl
+                                   : rray_equality_dbl_lgl;
   case RRAY_TYPE2_logical_complex:
-    return side == RRAY_SIDE_right ? rray_equal_lgl_cpl : rray_equal_cpl_lgl;
+    return side == RRAY_SIDE_right ? rray_equality_lgl_cpl
+                                   : rray_equality_cpl_lgl;
   case RRAY_TYPE2_integer_integer:
-    return rray_equal_int_int;
+    return rray_equality_int_int;
   case RRAY_TYPE2_integer_double:
-    return side == RRAY_SIDE_right ? rray_equal_int_dbl : rray_equal_dbl_int;
+    return side == RRAY_SIDE_right ? rray_equality_int_dbl
+                                   : rray_equality_dbl_int;
   case RRAY_TYPE2_integer_complex:
-    return side == RRAY_SIDE_right ? rray_equal_int_cpl : rray_equal_cpl_int;
+    return side == RRAY_SIDE_right ? rray_equality_int_cpl
+                                   : rray_equality_cpl_int;
   case RRAY_TYPE2_double_double:
-    return rray_equal_dbl_dbl;
+    return rray_equality_dbl_dbl;
   case RRAY_TYPE2_double_complex:
-    return side == RRAY_SIDE_right ? rray_equal_dbl_cpl : rray_equal_cpl_dbl;
+    return side == RRAY_SIDE_right ? rray_equality_dbl_cpl
+                                   : rray_equality_cpl_dbl;
   case RRAY_TYPE2_complex_complex:
-    return rray_equal_cpl_cpl;
+    return rray_equality_cpl_cpl;
 
   case RRAY_TYPE2_logical_character:
   case RRAY_TYPE2_logical_raw:
@@ -252,7 +258,7 @@ static r_no_return void stop_unsupported_equality(
   FREE(1);                                                                     \
   return out;
 
-static r_obj* rray_equal_lgl_lgl(
+static r_obj* rray_equality_lgl_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -271,7 +277,7 @@ static r_obj* rray_equal_lgl_lgl(
   );
 }
 
-static r_obj* rray_equal_lgl_int(
+static r_obj* rray_equality_lgl_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -290,7 +296,7 @@ static r_obj* rray_equal_lgl_int(
   );
 }
 
-static r_obj* rray_equal_int_lgl(
+static r_obj* rray_equality_int_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -309,7 +315,7 @@ static r_obj* rray_equal_int_lgl(
   );
 }
 
-static r_obj* rray_equal_lgl_dbl(
+static r_obj* rray_equality_lgl_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -328,7 +334,7 @@ static r_obj* rray_equal_lgl_dbl(
   );
 }
 
-static r_obj* rray_equal_dbl_lgl(
+static r_obj* rray_equality_dbl_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -347,7 +353,7 @@ static r_obj* rray_equal_dbl_lgl(
   );
 }
 
-static r_obj* rray_equal_lgl_cpl(
+static r_obj* rray_equality_lgl_cpl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -366,7 +372,7 @@ static r_obj* rray_equal_lgl_cpl(
   );
 }
 
-static r_obj* rray_equal_cpl_lgl(
+static r_obj* rray_equality_cpl_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -385,7 +391,7 @@ static r_obj* rray_equal_cpl_lgl(
   );
 }
 
-static r_obj* rray_equal_int_int(
+static r_obj* rray_equality_int_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -404,7 +410,7 @@ static r_obj* rray_equal_int_int(
   );
 }
 
-static r_obj* rray_equal_int_dbl(
+static r_obj* rray_equality_int_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -423,7 +429,7 @@ static r_obj* rray_equal_int_dbl(
   );
 }
 
-static r_obj* rray_equal_dbl_int(
+static r_obj* rray_equality_dbl_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -442,7 +448,7 @@ static r_obj* rray_equal_dbl_int(
   );
 }
 
-static r_obj* rray_equal_int_cpl(
+static r_obj* rray_equality_int_cpl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -461,7 +467,7 @@ static r_obj* rray_equal_int_cpl(
   );
 }
 
-static r_obj* rray_equal_cpl_int(
+static r_obj* rray_equality_cpl_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -480,7 +486,7 @@ static r_obj* rray_equal_cpl_int(
   );
 }
 
-static r_obj* rray_equal_dbl_dbl(
+static r_obj* rray_equality_dbl_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -499,7 +505,7 @@ static r_obj* rray_equal_dbl_dbl(
   );
 }
 
-static r_obj* rray_equal_dbl_cpl(
+static r_obj* rray_equality_dbl_cpl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -518,7 +524,7 @@ static r_obj* rray_equal_dbl_cpl(
   );
 }
 
-static r_obj* rray_equal_cpl_dbl(
+static r_obj* rray_equality_cpl_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -537,7 +543,7 @@ static r_obj* rray_equal_cpl_dbl(
   );
 }
 
-static r_obj* rray_equal_cpl_cpl(
+static r_obj* rray_equality_cpl_cpl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
