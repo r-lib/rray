@@ -11,8 +11,6 @@
 #include "utils.h"
 
 enum rray_compare_op {
-  RRAY_COMPARE_equal,
-  RRAY_COMPARE_not_equal,
   RRAY_COMPARE_greater_than,
   RRAY_COMPARE_greater_than_or_equal,
   RRAY_COMPARE_less_than,
@@ -20,36 +18,6 @@ enum rray_compare_op {
 };
 
 #include "decl/compare-decl.h"
-
-r_obj* ffi_rray_equal(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame) {
-  struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  return rray_equal(ffi_x, ffi_y, rray_args.x, rray_args.y, error_call);
-}
-
-r_obj* rray_equal(
-  r_obj* x,
-  r_obj* y,
-  struct rray_arg* x_arg,
-  struct rray_arg* y_arg,
-  struct r_lazy error_call
-) {
-  return rray_compare(x, y, RRAY_COMPARE_equal, x_arg, y_arg, error_call);
-}
-
-r_obj* ffi_rray_not_equal(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame) {
-  struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  return rray_not_equal(ffi_x, ffi_y, rray_args.x, rray_args.y, error_call);
-}
-
-r_obj* rray_not_equal(
-  r_obj* x,
-  r_obj* y,
-  struct rray_arg* x_arg,
-  struct rray_arg* y_arg,
-  struct r_lazy error_call
-) {
-  return rray_compare(x, y, RRAY_COMPARE_not_equal, x_arg, y_arg, error_call);
-}
 
 r_obj* ffi_rray_greater_than(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
@@ -300,10 +268,6 @@ static rray_compare_fn rray_compare_switch(
 
 static const char* rray_compare_op_as_c_string(enum rray_compare_op op) {
   switch (op) {
-  case RRAY_COMPARE_equal:
-    return "==";
-  case RRAY_COMPARE_not_equal:
-    return "!=";
   case RRAY_COMPARE_greater_than:
     return ">";
   case RRAY_COMPARE_greater_than_or_equal:
@@ -364,12 +328,6 @@ static r_no_return void stop_unsupported_compare(
   const Y_CTYPE* v_y = Y_CONST_DEREF(y);                                       \
                                                                                \
   switch (op) {                                                                \
-  case RRAY_COMPARE_equal:                                                     \
-    RRAY_COMPARE_LOOP(X_CTYPE, X_IS_MISSING, Y_CTYPE, Y_IS_MISSING, ==);       \
-    break;                                                                     \
-  case RRAY_COMPARE_not_equal:                                                 \
-    RRAY_COMPARE_LOOP(X_CTYPE, X_IS_MISSING, Y_CTYPE, Y_IS_MISSING, !=);       \
-    break;                                                                     \
   case RRAY_COMPARE_greater_than:                                              \
     RRAY_COMPARE_LOOP(X_CTYPE, X_IS_MISSING, Y_CTYPE, Y_IS_MISSING, >);        \
     break;                                                                     \

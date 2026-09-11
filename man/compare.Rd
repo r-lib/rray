@@ -2,18 +2,12 @@
 % Please edit documentation in R/compare.R
 \name{compare}
 \alias{compare}
-\alias{rray_equal}
-\alias{rray_not_equal}
 \alias{rray_greater_than}
 \alias{rray_greater_than_or_equal}
 \alias{rray_less_than}
 \alias{rray_less_than_or_equal}
 \title{Compare arrays}
 \usage{
-rray_equal(x, y)
-
-rray_not_equal(x, y)
-
 rray_greater_than(x, y)
 
 rray_greater_than_or_equal(x, y)
@@ -32,8 +26,6 @@ A logical array with the common dimensions of \code{x} and \code{y}.
 }
 \description{
 \itemize{
-\item \code{rray_equal()} tests whether \code{x} is equal to \code{y}.
-\item \code{rray_not_equal()} tests whether \code{x} is not equal to \code{y}.
 \item \code{rray_greater_than()} tests whether \code{x} is greater than \code{y}.
 \item \code{rray_greater_than_or_equal()} tests whether \code{x} is greater than or equal
 to \code{y}.

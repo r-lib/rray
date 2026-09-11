@@ -1,10 +1,6 @@
 #' Compare arrays
 #'
 #' @description
-#' - `rray_equal()` tests whether `x` is equal to `y`.
-#'
-#' - `rray_not_equal()` tests whether `x` is not equal to `y`.
-#'
 #' - `rray_greater_than()` tests whether `x` is greater than `y`.
 #'
 #' - `rray_greater_than_or_equal()` tests whether `x` is greater than or equal
@@ -32,18 +28,6 @@
 #' rray_greater_than(x, 3L)
 #' rray_less_than_or_equal(x, array(c(2L, 5L), c(1L, 2L)))
 NULL
-
-#' @rdname compare
-#' @export
-rray_equal <- function(x, y) {
-  .Call(ffi_rray_equal, x, y, environment())
-}
-
-#' @rdname compare
-#' @export
-rray_not_equal <- function(x, y) {
-  .Call(ffi_rray_not_equal, x, y, environment())
-}
 
 #' @rdname compare
 #' @export

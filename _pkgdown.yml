@@ -34,6 +34,7 @@ reference:
   contents:
   - arithmetic
   - extremum
+  - equal
   - compare
 
 - title: Reducers
