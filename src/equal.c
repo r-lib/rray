@@ -588,6 +588,7 @@ static inline int rray_not_equal_dbl_one(double x, double y) {
   return missing ? r_globals.na_lgl : elt;
 }
 
+// Purposeful usage of bitwise operators to encourage loop vectorization
 static inline int rray_equal_cpl_one(r_complex x, r_complex y) {
   const bool missing = rray_cpl_is_missing(x) | rray_cpl_is_missing(y);
   const int elt = (x.r == y.r) & (x.i == y.i);
