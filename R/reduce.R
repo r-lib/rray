@@ -1,9 +1,9 @@
 #' Reduce an array along axes
 #'
 #' @description
-#' - `rray_sum()` computes the sum along the specified `axes`.
+#' - `rray_sum_along()` computes the sum along the specified `axes`.
 #'
-#' - `rray_prod()` computes the product along the specified `axes`.
+#' - `rray_product_along()` computes the product along the specified `axes`.
 #'
 #' @details
 #' The dimensionality of `x` is retained in the result, with the reduced axes
@@ -14,7 +14,7 @@
 #' @section Casting:
 #' Certain inputs are upcast, changing the return type:
 #'
-#' - `rray_prod()`: logicals and integers are cast to double.
+#' - `rray_product_along()`: logicals and integers are cast to double.
 #'
 #' @param x An array.
 #'
@@ -34,28 +34,28 @@
 #' x <- array(1:10, c(5L, 2L))
 #'
 #' # Sum along rows
-#' rray_sum(x, 1L)
+#' rray_sum_along(x, 1L)
 #'
 #' # Sum along columns
-#' rray_sum(x, 2L)
+#' rray_sum_along(x, 2L)
 #'
 #' # Sum along both axes
-#' rray_sum(x, c(1L, 2L))
+#' rray_sum_along(x, c(1L, 2L))
 #'
 #' # Product along rows
-#' rray_prod(x, 1L)
+#' rray_product_along(x, 1L)
 NULL
 
 #' @rdname reduce
 #' @export
-rray_sum <- function(x, axes, ..., na_rm = FALSE) {
+rray_sum_along <- function(x, axes, ..., na_rm = FALSE) {
   check_dots_empty0(...)
-  .Call(ffi_rray_sum, x, axes, na_rm, environment())
+  .Call(ffi_rray_sum_along, x, axes, na_rm, environment())
 }
 
 #' @rdname reduce
 #' @export
-rray_prod <- function(x, axes, ..., na_rm = FALSE) {
+rray_product_along <- function(x, axes, ..., na_rm = FALSE) {
   check_dots_empty0(...)
-  .Call(ffi_rray_prod, x, axes, na_rm, environment())
+  .Call(ffi_rray_product_along, x, axes, na_rm, environment())
 }

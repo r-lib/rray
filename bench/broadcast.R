@@ -130,28 +130,28 @@ reductions <- bind_results(
   benchmark_pair(
     "sum",
     "matrix axis 1",
-    \() rray_sum(x, 1L),
+    \() rray_sum_along(x, 1L),
     "base",
     \() array(colSums(x), c(1L, 1000L))
   ),
   benchmark_pair(
     "sum",
     "matrix axis 2",
-    \() rray_sum(x, 2L),
+    \() rray_sum_along(x, 2L),
     "base",
     \() array(rowSums(x), c(1000L, 1L))
   ),
   benchmark_pair(
     "sum",
     "matrix both axes",
-    \() rray_sum(x, c(1L, 2L)),
+    \() rray_sum_along(x, c(1L, 2L)),
     "base",
     \() array(sum(x), c(1L, 1L))
   ),
   benchmark_pair(
     "sum",
     "6d odd axes",
-    \() rray_sum(high_dimensional, c(1L, 3L, 5L)),
+    \() rray_sum_along(high_dimensional, c(1L, 3L, 5L)),
     "base",
     \() {
       array(
@@ -163,7 +163,7 @@ reductions <- bind_results(
   benchmark_pair(
     "sum",
     "6d even axes",
-    \() rray_sum(high_dimensional, c(2L, 4L, 6L)),
+    \() rray_sum_along(high_dimensional, c(2L, 4L, 6L)),
     "base",
     \() {
       array(

@@ -474,7 +474,8 @@ static inline double rray_multiply_dbl_one(
 }
 
 // Matching R with `_Complex` `*`, which "recovers" infinities. This is
-// different from `rray_prod_cpl_one()`, which instead matches `prod()`.
+// different from `rray_product_along_cpl_one()`, which instead matches
+// `prod()`.
 static inline r_complex rray_multiply_cpl_one(
   r_complex x,
   r_complex y,

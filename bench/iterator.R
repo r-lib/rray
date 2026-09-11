@@ -167,13 +167,13 @@ local({
 
   gc()
   print(bench::mark(
-    sum_axis1 = rray_sum(matrix, 1L),
-    sum_axis2 = rray_sum(matrix, 2L),
-    sum_both = rray_sum(matrix, c(1L, 2L)),
-    product_axis1 = rray_prod(matrix, 1L),
-    leading_unit_sum_axis3 = rray_sum(leading_unit, 3L),
-    sum_odd_axes_6d = rray_sum(high_dimensional, c(1L, 3L, 5L)),
-    sum_even_axes_6d = rray_sum(high_dimensional, c(2L, 4L, 6L)),
+    sum_axis1 = rray_sum_along(matrix, 1L),
+    sum_axis2 = rray_sum_along(matrix, 2L),
+    sum_both = rray_sum_along(matrix, c(1L, 2L)),
+    product_axis1 = rray_product_along(matrix, 1L),
+    leading_unit_sum_axis3 = rray_sum_along(leading_unit, 3L),
+    sum_odd_axes_6d = rray_sum_along(high_dimensional, c(1L, 3L, 5L)),
+    sum_even_axes_6d = rray_sum_along(high_dimensional, c(2L, 4L, 6L)),
     iterations = 15L,
     check = FALSE,
     memory = FALSE
