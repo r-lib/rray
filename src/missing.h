@@ -11,4 +11,9 @@ static inline bool rray_dbl_is_missing(double x) {
   return ISNAN(x);
 }
 
+static inline bool rray_cpl_is_missing(r_complex x) {
+  // Purposefully bitwise, can help compiler perform vectorization
+  return ISNAN(x.r) | ISNAN(x.i);
+}
+
 #endif
