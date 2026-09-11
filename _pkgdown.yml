@@ -29,7 +29,7 @@ reference:
   - rray_broadcast_common
   - rray_squeeze
   - rray_split
-  - rray_transpose
+  - rray_permute_axes
 
 - title: Binary
   contents:

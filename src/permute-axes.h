@@ -1,13 +1,13 @@
-#ifndef RRAY_TRANSPOSE_H
-#define RRAY_TRANSPOSE_H
+#ifndef RRAY_PERMUTE_AXES_H
+#define RRAY_PERMUTE_AXES_H
 
 #include "rlang.h"
 
 #include "arg.h"
 
-r_obj* rray_transpose(
+r_obj* rray_permute_axes(
   r_obj* x,
-  r_obj* permutation,
+  r_obj* axes,
   struct rray_arg* arg,
   struct r_lazy error_call
 );

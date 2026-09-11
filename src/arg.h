@@ -17,7 +17,6 @@ struct rray_args {
   struct rray_arg* names;
   struct rray_arg* axis;
   struct rray_arg* axes;
-  struct rray_arg* permutation;
   struct rray_arg* dimensions;
   struct rray_arg* dot_dimensions;
 };

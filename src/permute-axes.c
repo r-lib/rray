@@ -1,4 +1,4 @@
-#include "transpose.h"
+#include "permute-axes.h"
 
 #include "axes.h"
 #include "dimensionality.h"
@@ -8,20 +8,16 @@
 #include "size.h"
 #include "utils.h"
 
-#include "decl/transpose-decl.h"
+#include "decl/permute-axes-decl.h"
 
-r_obj* ffi_rray_transpose(
-  r_obj* ffi_x,
-  r_obj* ffi_permutation,
-  r_obj* ffi_frame
-) {
+r_obj* ffi_rray_permute_axes(r_obj* ffi_x, r_obj* ffi_axes, r_obj* ffi_frame) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  return rray_transpose(ffi_x, ffi_permutation, rray_args.x, error_call);
+  return rray_permute_axes(ffi_x, ffi_axes, rray_args.x, error_call);
 }
 
-r_obj* rray_transpose(
+r_obj* rray_permute_axes(
   r_obj* x,
-  r_obj* permutation,
+  r_obj* axes,
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
@@ -34,24 +30,19 @@ r_obj* rray_transpose(
   const int dimensionality = rray_dimensionality_from_dimensions(x_dimensions);
   check_max_dimensionality(dimensionality);
 
-  permutation =
-    KEEP(rray_transpose_permutation(permutation, dimensionality, error_call));
-  const int* v_permutation = r_int_cbegin(permutation);
+  axes =
+    KEEP(arg_as_permutation(axes, dimensionality, rray_args.axes, error_call));
+  const int* v_axes = r_int_cbegin(axes);
 
   r_obj* dimensions = KEEP(r_alloc_integer(dimensionality));
   int* v_dimensions = r_int_begin(dimensions);
 
   for (int i = 0; i < dimensionality; ++i) {
-    v_dimensions[i] = v_x_dimensions[v_permutation[i] - 1];
+    v_dimensions[i] = v_x_dimensions[v_axes[i] - 1];
   }
 
   r_ssize v_strides[RRAY_MAX_DIMENSIONALITY];
-  rray_transpose_strides(
-    v_strides,
-    v_x_dimensions,
-    v_permutation,
-    dimensionality
-  );
+  rray_permute_axes_strides(v_strides, v_x_dimensions, v_axes, dimensionality);
 
   const r_ssize size =
     rray_size_from_dimensions(v_x_dimensions, dimensionality);
@@ -68,7 +59,7 @@ r_obj* rray_transpose(
   r_obj* out = KEEP(rray_gather(x, size, &it));
   r_attrib_poke_dim(out, dimensions);
 
-  r_obj* names = KEEP(rray_transpose_names(x, v_permutation, dimensionality));
+  r_obj* names = KEEP(rray_permute_axes_names(x, v_axes, dimensionality));
 
   if (names != r_null) {
     r_attrib_poke_dim_names(out, names);
@@ -78,35 +69,10 @@ r_obj* rray_transpose(
   return out;
 }
 
-static r_obj* rray_transpose_permutation(
-  r_obj* permutation,
-  int dimensionality,
-  struct r_lazy error_call
-) {
-  if (permutation != r_null) {
-    return arg_as_permutation(
-      permutation,
-      dimensionality,
-      rray_args.permutation,
-      error_call
-    );
-  }
-
-  r_obj* out = KEEP(r_alloc_integer(dimensionality));
-  int* v_out = r_int_begin(out);
-
-  for (int i = 0; i < dimensionality; ++i) {
-    v_out[i] = dimensionality - i;
-  }
-
-  FREE(1);
-  return out;
-}
-
-static void rray_transpose_strides(
+static void rray_permute_axes_strides(
   r_ssize* v_strides,
   const int* v_x_dimensions,
-  const int* v_permutation,
+  const int* v_axes,
   int dimensionality
 ) {
   r_ssize v_x_strides[RRAY_MAX_DIMENSIONALITY];
@@ -119,13 +85,13 @@ static void rray_transpose_strides(
   }
 
   for (int i = 0; i < dimensionality; ++i) {
-    v_strides[i] = v_x_strides[v_permutation[i] - 1];
+    v_strides[i] = v_x_strides[v_axes[i] - 1];
   }
 }
 
-static r_obj* rray_transpose_names(
+static r_obj* rray_permute_axes_names(
   r_obj* x,
-  const int* v_permutation,
+  const int* v_axes,
   int dimensionality
 ) {
   r_obj* x_names = r_dim_names(x);
@@ -139,7 +105,7 @@ static r_obj* rray_transpose_names(
   r_obj* out = KEEP(r_alloc_list(dimensionality));
 
   for (int i = 0; i < dimensionality; ++i) {
-    r_list_poke(out, i, v_x_names[v_permutation[i] - 1]);
+    r_list_poke(out, i, v_x_names[v_axes[i] - 1]);
   }
 
   FREE(1);
