@@ -565,49 +565,37 @@ static r_obj* rray_equality_cpl_cpl(
 #undef RRAY_EQUALITY
 
 static inline int rray_equal_int_one(int x, int y) {
-  if (rray_int_is_missing(x) || rray_int_is_missing(y)) {
-    return r_globals.na_lgl;
-  }
-
-  return x == y;
+  const bool missing = rray_int_is_missing(x) | rray_int_is_missing(y);
+  const int elt = x == y;
+  return missing ? r_globals.na_lgl : elt;
 }
 
 static inline int rray_not_equal_int_one(int x, int y) {
-  if (rray_int_is_missing(x) || rray_int_is_missing(y)) {
-    return r_globals.na_lgl;
-  }
-
-  return x != y;
+  const bool missing = rray_int_is_missing(x) | rray_int_is_missing(y);
+  const int elt = x != y;
+  return missing ? r_globals.na_lgl : elt;
 }
 
 static inline int rray_equal_dbl_one(double x, double y) {
-  if (rray_dbl_is_missing(x) || rray_dbl_is_missing(y)) {
-    return r_globals.na_lgl;
-  }
-
-  return x == y;
+  const bool missing = rray_dbl_is_missing(x) | rray_dbl_is_missing(y);
+  const int elt = x == y;
+  return missing ? r_globals.na_lgl : elt;
 }
 
 static inline int rray_not_equal_dbl_one(double x, double y) {
-  if (rray_dbl_is_missing(x) || rray_dbl_is_missing(y)) {
-    return r_globals.na_lgl;
-  }
-
-  return x != y;
+  const bool missing = rray_dbl_is_missing(x) | rray_dbl_is_missing(y);
+  const int elt = x != y;
+  return missing ? r_globals.na_lgl : elt;
 }
 
 static inline int rray_equal_cpl_one(r_complex x, r_complex y) {
-  if (rray_cpl_is_missing(x) || rray_cpl_is_missing(y)) {
-    return r_globals.na_lgl;
-  }
-
-  return x.r == y.r && x.i == y.i;
+  const bool missing = rray_cpl_is_missing(x) | rray_cpl_is_missing(y);
+  const int elt = (x.r == y.r) & (x.i == y.i);
+  return missing ? r_globals.na_lgl : elt;
 }
 
 static inline int rray_not_equal_cpl_one(r_complex x, r_complex y) {
-  if (rray_cpl_is_missing(x) || rray_cpl_is_missing(y)) {
-    return r_globals.na_lgl;
-  }
-
-  return x.r != y.r || x.i != y.i;
+  const bool missing = rray_cpl_is_missing(x) | rray_cpl_is_missing(y);
+  const int elt = (x.r != y.r) | (x.i != y.i);
+  return missing ? r_globals.na_lgl : elt;
 }
