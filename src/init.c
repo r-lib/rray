@@ -69,13 +69,13 @@ extern r_obj* ffi_rray_set_dimensions(
 );
 extern r_obj* ffi_rray_split(r_obj* ffi_x, r_obj* ffi_axes, r_obj* ffi_frame);
 extern r_obj* ffi_rray_squeeze(r_obj* ffi_x, r_obj* ffi_axes, r_obj* ffi_frame);
-extern r_obj* ffi_rray_sum(
+extern r_obj* ffi_rray_sum_along(
   r_obj* ffi_x,
   r_obj* ffi_axes,
   r_obj* ffi_na_rm,
   r_obj* ffi_frame
 );
-extern r_obj* ffi_rray_prod(
+extern r_obj* ffi_rray_product_along(
   r_obj* ffi_x,
   r_obj* ffi_axes,
   r_obj* ffi_na_rm,
@@ -168,8 +168,8 @@ static const R_CallMethodDef CallEntries[] = {
   {"ffi_rray_set_dimensions", (DL_FUNC) &ffi_rray_set_dimensions, 3},
   {"ffi_rray_split", (DL_FUNC) &ffi_rray_split, 3},
   {"ffi_rray_squeeze", (DL_FUNC) &ffi_rray_squeeze, 3},
-  {"ffi_rray_sum", (DL_FUNC) &ffi_rray_sum, 4},
-  {"ffi_rray_prod", (DL_FUNC) &ffi_rray_prod, 4},
+  {"ffi_rray_sum_along", (DL_FUNC) &ffi_rray_sum_along, 4},
+  {"ffi_rray_product_along", (DL_FUNC) &ffi_rray_product_along, 4},
   {"ffi_rray_ptype", (DL_FUNC) &ffi_rray_ptype, 2},
   {"ffi_rray_ptype2", (DL_FUNC) &ffi_rray_ptype2, 3},
   {"ffi_rray_ptype_common", (DL_FUNC) &ffi_rray_ptype_common, 3},

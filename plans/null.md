@@ -575,7 +575,7 @@ Deliberately not part of this work:
 - `rray_size()`, `rray_dimensions()`, `rray_dimensionality()` and the
   `rray_names()` family.
 
-- `rray_split()` and `rray_sum()`.
+- `rray_split()` and `rray_sum_along()`.
 
 All of those keep erroring on `NULL`, and the guard in `arg_as_array()` is what
 keeps them that way. If we ever want `rray_size(NULL)` to be `0` like

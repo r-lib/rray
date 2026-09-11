@@ -69,7 +69,7 @@ The reducers that take `(x, axes, ..., na_rm = FALSE)` share the same shape of
 shell for the same reason. `rray_reduce()` and the `RRAY_REDUCE` macro live in
 `src/reduce.c`/`src/reduce.h`, and each reducer gets its own
 `src/reduce-{name}.c`, switching on `rray_typeof(x)` and returning the core.
-`rray_sum()` is the first of these, in `src/reduce-sum.c`.
+`rray_sum_along()` is the first of these, in `src/reduce-sum.c`.
 
 Each core's whole body is a call into a macro, following `SLICE` in vctrs'
 `src/slice.c`. There are usually two. `RRAY_{NAME}_ATOMIC` covers `lgl`, `int`,
@@ -89,11 +89,12 @@ switch that dispatches on type, returning the core instead of calling it:
 
 ```c
 case RRAY_TYPE_double:
-  return na_rm ? rray_sum_dbl_na_rm : rray_sum_dbl;
+  return na_rm ? rray_sum_along_dbl_na_rm : rray_sum_along_dbl;
 ```
 
 So there is one core per type per variant, the flag stays off the core's
-parameter list, and the loop is written once. `rray_prod()`, `rray_mean()`,
+parameter list, and the loop is written once. `rray_product_along()`,
+`rray_mean()`,
 `rray_max()`, and `rray_min()` want the same shape when they land, sharing
 `rray_reduce()`'s shell. `rray_all()`, `rray_any()`, `rray_max_pos()`, and
 `rray_min_pos()` do not take `na_rm`, and the position functions take a single
@@ -229,7 +230,8 @@ silently unclassed or silently corrupted.
 `array(1:5, 5L)`, and any `names` move to `dimnames`. This is what
 `arg_as_array()` does, once `check_unclassed()` has passed.
 
-**Arrays always come back.** `rray_sum(1:5, 1)` returns `array(15L, 1L)`, not
+**Arrays always come back.** `rray_sum_along(1:5, 1)` returns `array(15L, 1L)`,
+not
 `15L`. We lean into this rather than trying to hide it.
 
 Because a vector is normalized on the way in, `rray_dimensions()`,
@@ -412,7 +414,7 @@ The internal type rules exist because three kinds of function need them:
 - `rray_add()` needs a common type across two inputs, plus a promotion that
   depends on the operator.
 
-- `rray_sum()` needs a promotion that depends on the operator.
+- `rray_sum_along()` needs a promotion that depends on the operator.
 
 The C interface is small, and takes and returns `r_obj*` ptypes the way vctrs
 does:
@@ -734,7 +736,7 @@ choice, and the two directions both come up:
 
 - Reducing walks the input and accumulates into the output, so the input
   dimensions are the point space and the reduced axes have a dimension of 1.
-  `rray_sum()`.
+  `rray_sum_along()`.
 
 - Two input functions walk the common dimensions and read back into each input.
   `rray_add()`.
@@ -802,7 +804,8 @@ What exists today: the argument tags, the argument checking helpers, the names
 API, the coalesce rule as the `rray_broadcast_names()` family, the dimension and
 shape helpers, the type rules as the `rray_ptype2()` and `rray_cast()` families,
 the scalar casts as `static inline` functions in `src/cast.h`, and
-`rray_broadcast()`, `rray_broadcast_common()`, `rray_split()`, `rray_sum()`,
+`rray_broadcast()`, `rray_broadcast_common()`, `rray_split()`,
+`rray_sum_along()`,
 `rray_add()`, `rray_multiply()`, `rray_subtract()`, `rray_divide()` and
 `rray_exponentiate()`. The array functions all follow the shell and core
 pattern in Part 1, and no templates are left in `src/`.
@@ -1109,8 +1112,8 @@ Names: reduce.
 
 | function | op | type rule |
 |---|---|---|
-| `rray_sum(x, axes, ..., na_rm = FALSE)` | `sum` | promoted, exists |
-| `rray_prod(x, axes, ..., na_rm = FALSE)` | `prod` | promoted, int to dbl |
+| `rray_sum_along(x, axes, ..., na_rm = FALSE)` | `sum` | promoted, exists |
+| `rray_product_along(x, axes, ..., na_rm = FALSE)` | `prod` | promoted, int to dbl |
 | `rray_mean(x, axes, ..., na_rm = FALSE)` | `mean` | promoted, lgl and int to dbl |
 | `rray_max(x, axes, ..., na_rm = FALSE)` | `max` | preserved, errors on cpl |
 | `rray_min(x, axes, ..., na_rm = FALSE)` | `min` | preserved, errors on cpl |
@@ -1126,11 +1129,12 @@ rray_max_pos(x, 1)     # position of the max along the rows
 rray_max_pos(x, 2)     # along the columns
 ```
 
-`rray_sum()` already exists, documented under the shared `reduce` topic in
+`rray_sum_along()` already exists, documented under the shared `reduce` topic in
 `R/reduce.R`, with its C in `src/reduce-sum.c` on top of the `rray_reduce()`
 shell in `src/reduce.c`/`src/reduce.h` (see 2.1).
 
-`rray_prod()`, `rray_mean()`, `rray_max()`, and `rray_min()` share `rray_sum()`'s
+`rray_product_along()`, `rray_mean()`, `rray_max()`, and `rray_min()` share
+`rray_sum_along()`'s
 `(x, axes, ..., na_rm = FALSE)` shape, so they add `@rdname reduce` entries to
 `R/reduce.R` and their own `src/reduce-{name}.c` beside it.
 

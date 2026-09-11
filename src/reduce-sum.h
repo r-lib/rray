@@ -5,7 +5,7 @@
 
 #include "arg.h"
 
-r_obj* rray_sum(
+r_obj* rray_sum_along(
   r_obj* x,
   r_obj* axes,
   bool na_rm,
