@@ -81,12 +81,6 @@ static inline void rray_point_iterator_init(
 // dimensions of the array are the point space. The reduced dimensions are the
 // subspace. So as you walk the original array, you can fetch `location`s into
 // the output to accumulate the reduced result at.
-//
-// For permuting axes, the permuted dimensions make up the point space. The
-// original dimensions of the array make up the subspace. So as you walk the
-// output's point space you can fetch `location`s back into your original array
-// to pull from, except the strides are permuted rather than derived from the
-// subspace dimensions, which is what `rray_iterator_init_strides()` is for.
 struct rray_iterator {
   r_ssize index;
   r_ssize size;
@@ -101,32 +95,6 @@ struct rray_iterator {
   r_ssize v_location_strides[RRAY_MAX_DIMENSIONALITY];
 };
 
-static inline void rray_iterator_init_strides(
-  struct rray_iterator* it,
-  r_ssize size,
-  const int* v_point_dimensions,
-  int point_dimensionality,
-  const r_ssize* v_location_strides
-) {
-  check_max_dimensionality(point_dimensionality);
-
-  it->index = 0;
-  it->size = size;
-
-  for (int i = 0; i < point_dimensionality; ++i) {
-    it->v_point_dimensions[i] = (r_ssize) v_point_dimensions[i];
-    it->v_location_strides[i] = v_location_strides[i];
-  }
-  memset(it->v_point, 0, sizeof(r_ssize) * point_dimensionality);
-  it->location = 0;
-
-  it->point_dimensionality = rray__iterator_axes_coalesce(
-    it->v_point_dimensions,
-    it->v_location_strides,
-    point_dimensionality
-  );
-}
-
 static inline void rray_iterator_init(
   struct rray_iterator* it,
   r_ssize size,
@@ -137,23 +105,28 @@ static inline void rray_iterator_init(
 ) {
   check_max_dimensionality(point_dimensionality);
 
-  r_ssize v_location_strides[RRAY_MAX_DIMENSIONALITY];
+  it->index = 0;
+  it->size = size;
+
+  for (int i = 0; i < point_dimensionality; ++i) {
+    it->v_point_dimensions[i] = (r_ssize) v_point_dimensions[i];
+  }
+  memset(it->v_point, 0, sizeof(r_ssize) * point_dimensionality);
 
   rray__location_strides_init(
-    v_location_strides,
+    it->v_location_strides,
     v_point_dimensions,
     point_dimensionality,
     v_location_dimensions,
     location_dimensionality,
     "location"
   );
+  it->location = 0;
 
-  rray_iterator_init_strides(
-    it,
-    size,
-    v_point_dimensions,
-    point_dimensionality,
-    v_location_strides
+  it->point_dimensionality = rray__iterator_axes_coalesce(
+    it->v_point_dimensions,
+    it->v_location_strides,
+    point_dimensionality
   );
 }
 
