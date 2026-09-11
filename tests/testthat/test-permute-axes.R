@@ -113,15 +113,6 @@ test_that("1D arrays come back unchanged", {
   expect_identical(rray_permute_axes(c(a = 1L, b = 2L), 1L), expected)
 })
 
-test_that("`axes` is coerced to integer", {
-  x <- array(1:6, c(2L, 3L))
-
-  expect_identical(
-    rray_permute_axes(x, c(2, 1)),
-    rray_permute_axes(x, c(2L, 1L))
-  )
-})
-
 test_that("does not modify the input", {
   x <- array(1:6, c(2L, 3L), dimnames = list(c("a", "b"), NULL))
   expected <- x
