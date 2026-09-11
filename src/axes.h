@@ -13,7 +13,7 @@ r_obj* arg_as_axes(
 );
 
 r_obj* arg_as_permutation(
-  r_obj* permutation,
+  r_obj* axes,
   int dimensionality,
   struct rray_arg* arg,
   struct r_lazy error_call

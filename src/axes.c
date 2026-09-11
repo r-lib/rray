@@ -71,19 +71,19 @@ r_obj* arg_as_axes(
 }
 
 r_obj* arg_as_permutation(
-  r_obj* permutation,
+  r_obj* axes,
   int dimensionality,
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
   check_max_dimensionality(dimensionality);
 
-  if (r_typeof(permutation) != R_TYPE_integer) {
-    permutation = vec_cast(permutation, r_globals.empty_int, arg, NULL);
+  if (r_typeof(axes) != R_TYPE_integer) {
+    axes = vec_cast(axes, r_globals.empty_int, arg, NULL);
   }
-  KEEP(permutation);
+  KEEP(axes);
 
-  if (r_attrib_has_any(permutation)) {
+  if (r_attrib_has_any(axes)) {
     r_abort_lazy_call(
       error_call,
       "%s can't have attributes.",
@@ -91,25 +91,25 @@ r_obj* arg_as_permutation(
     );
   }
 
-  const r_ssize permutation_size = r_length(permutation);
+  const r_ssize axes_size = r_length(axes);
 
-  if (permutation_size != dimensionality) {
+  if (axes_size != dimensionality) {
     r_abort_lazy_call(
       error_call,
       "%s must have length %d to match the dimensionality of the array, "
       "not length %" R_PRIdXLEN_T ".",
       rray_arg_format(arg),
       dimensionality,
-      permutation_size
+      axes_size
     );
   }
 
   bool v_seen[RRAY_MAX_DIMENSIONALITY] = {false};
 
-  const int* v_permutation = r_int_cbegin(permutation);
+  const int* v_axes = r_int_cbegin(axes);
 
   for (int i = 0; i < dimensionality; ++i) {
-    const int axis = v_permutation[i];
+    const int axis = v_axes[i];
 
     if (axis == r_globals.na_int) {
       r_abort_lazy_call(
@@ -152,7 +152,7 @@ r_obj* arg_as_permutation(
   }
 
   FREE(1);
-  return permutation;
+  return axes;
 }
 
 void check_axis(
