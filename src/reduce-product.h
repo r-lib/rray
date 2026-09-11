@@ -1,5 +1,5 @@
-#ifndef RRAY_REDUCE_PROD_H
-#define RRAY_REDUCE_PROD_H
+#ifndef RRAY_REDUCE_PRODUCT_H
+#define RRAY_REDUCE_PRODUCT_H
 
 #include "rlang.h"
 
