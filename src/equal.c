@@ -168,7 +168,7 @@ static rray_equality_fn rray_equality_switch(
   case RRAY_TYPE2_raw_raw:
   case RRAY_TYPE2_raw_list:
   case RRAY_TYPE2_list_list:
-    stop_unsupported_equal(
+    stop_unsupported_equality(
       rray_equal_op_as_c_string(op),
       x,
       y,
@@ -206,7 +206,7 @@ static const char* rray_equal_op_as_c_string(enum rray_equality_op op) {
   r_stop_unreachable();
 }
 
-static r_no_return void stop_unsupported_equal(
+static r_no_return void stop_unsupported_equality(
   const char* op,
   r_obj* x,
   r_obj* y,

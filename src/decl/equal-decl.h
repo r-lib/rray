@@ -24,7 +24,7 @@ static rray_equality_fn rray_equality_switch(
 );
 static const char* rray_equal_op_as_c_string(enum rray_equality_op op);
 
-static r_no_return void stop_unsupported_equal(
+static r_no_return void stop_unsupported_equality(
   const char* op,
   r_obj* x,
   r_obj* y,
