@@ -5,6 +5,7 @@
 #include "dimensions.h"
 #include "iterator.h"
 #include "size.h"
+#include "strides.h"
 #include "utils.h"
 
 #include "decl/permute-axes-decl.h"
@@ -33,15 +34,20 @@ r_obj* rray_permute_axes(
     KEEP(arg_as_permutation(axes, dimensionality, rray_args.axes, error_call));
   const int* v_axes = r_int_cbegin(axes);
 
+  r_obj* x_strides =
+    KEEP(rray_strides_from_dimensions(v_x_dimensions, dimensionality));
+  const r_ssize* v_x_strides = (const r_ssize*) r_raw_cbegin(x_strides);
+
   r_obj* dimensions = KEEP(r_alloc_integer(dimensionality));
   int* v_dimensions = r_int_begin(dimensions);
 
-  for (int i = 0; i < dimensionality; ++i) {
-    v_dimensions[i] = v_x_dimensions[v_axes[i] - 1];
-  }
-
   r_ssize v_strides[RRAY_MAX_DIMENSIONALITY];
-  rray_permute_axes_strides(v_strides, v_x_dimensions, v_axes, dimensionality);
+
+  for (int i = 0; i < dimensionality; ++i) {
+    const int axis = v_axes[i] - 1;
+    v_dimensions[i] = v_x_dimensions[axis];
+    v_strides[i] = v_x_strides[axis];
+  }
 
   const r_ssize size =
     rray_size_from_dimensions(v_x_dimensions, dimensionality);
@@ -92,28 +98,8 @@ r_obj* rray_permute_axes(
     r_attrib_poke_dim_names(out, names);
   }
 
-  FREE(6);
+  FREE(7);
   return out;
-}
-
-static void rray_permute_axes_strides(
-  r_ssize* v_strides,
-  const int* v_x_dimensions,
-  const int* v_axes,
-  int dimensionality
-) {
-  r_ssize v_x_strides[RRAY_MAX_DIMENSIONALITY];
-
-  r_ssize stride = 1;
-
-  for (int i = 0; i < dimensionality; ++i) {
-    v_x_strides[i] = stride;
-    stride *= v_x_dimensions[i];
-  }
-
-  for (int i = 0; i < dimensionality; ++i) {
-    v_strides[i] = v_x_strides[v_axes[i] - 1];
-  }
 }
 
 #define RRAY_PERMUTE_AXES_ATOMIC(RTYPE, CTYPE, CONST_DEREF, DEREF)             \
