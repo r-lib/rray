@@ -95,6 +95,32 @@ struct rray_iterator {
   r_ssize v_location_strides[RRAY_MAX_DIMENSIONALITY];
 };
 
+static inline void rray_iterator_init_strides(
+  struct rray_iterator* it,
+  r_ssize size,
+  const int* v_point_dimensions,
+  int point_dimensionality,
+  const r_ssize* v_location_strides
+) {
+  check_max_dimensionality(point_dimensionality);
+
+  it->index = 0;
+  it->size = size;
+
+  for (int i = 0; i < point_dimensionality; ++i) {
+    it->v_point_dimensions[i] = (r_ssize) v_point_dimensions[i];
+    it->v_location_strides[i] = v_location_strides[i];
+  }
+  memset(it->v_point, 0, sizeof(r_ssize) * point_dimensionality);
+  it->location = 0;
+
+  it->point_dimensionality = rray__iterator_axes_coalesce(
+    it->v_point_dimensions,
+    it->v_location_strides,
+    point_dimensionality
+  );
+}
+
 static inline void rray_iterator_init(
   struct rray_iterator* it,
   r_ssize size,
@@ -105,28 +131,23 @@ static inline void rray_iterator_init(
 ) {
   check_max_dimensionality(point_dimensionality);
 
-  it->index = 0;
-  it->size = size;
-
-  for (int i = 0; i < point_dimensionality; ++i) {
-    it->v_point_dimensions[i] = (r_ssize) v_point_dimensions[i];
-  }
-  memset(it->v_point, 0, sizeof(r_ssize) * point_dimensionality);
+  r_ssize v_location_strides[RRAY_MAX_DIMENSIONALITY];
 
   rray__location_strides_init(
-    it->v_location_strides,
+    v_location_strides,
     v_point_dimensions,
     point_dimensionality,
     v_location_dimensions,
     location_dimensionality,
     "location"
   );
-  it->location = 0;
 
-  it->point_dimensionality = rray__iterator_axes_coalesce(
-    it->v_point_dimensions,
-    it->v_location_strides,
-    point_dimensionality
+  rray_iterator_init_strides(
+    it,
+    size,
+    v_point_dimensions,
+    point_dimensionality,
+    v_location_strides
   );
 }
 
