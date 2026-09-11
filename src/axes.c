@@ -70,7 +70,7 @@ r_obj* arg_as_axes(
   return axes;
 }
 
-r_obj* arg_as_permutation(
+r_obj* arg_as_axes_permutation(
   r_obj* axes,
   int dimensionality,
   struct rray_arg* arg,

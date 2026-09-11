@@ -30,8 +30,9 @@ r_obj* rray_permute_axes(
   const int dimensionality = rray_dimensionality_from_dimensions(x_dimensions);
   check_max_dimensionality(dimensionality);
 
-  axes =
-    KEEP(arg_as_permutation(axes, dimensionality, rray_args.axes, error_call));
+  axes = KEEP(
+    arg_as_axes_permutation(axes, dimensionality, rray_args.axes, error_call)
+  );
   const int* v_axes = r_int_cbegin(axes);
 
   r_obj* x_strides =
