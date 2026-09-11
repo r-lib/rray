@@ -4,7 +4,7 @@
 \alias{equal}
 \alias{rray_equal}
 \alias{rray_not_equal}
-\title{Test arrays for equality}
+\title{Equality}
 \usage{
 rray_equal(x, y)
 

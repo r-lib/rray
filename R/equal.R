@@ -1,4 +1,4 @@
-#' Test arrays for equality
+#' Equality
 #'
 #' @description
 #' - `rray_equal()` tests whether `x` is equal to `y`.
