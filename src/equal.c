@@ -223,7 +223,7 @@ static r_no_return void stop_unsupported_equality(
   );
 }
 
-#define RRAY_EQUAL(                                                            \
+#define RRAY_EQUALITY(                                                         \
   X_CTYPE,                                                                     \
   X_CONST_DEREF,                                                               \
   X_CAST,                                                                      \
@@ -259,7 +259,7 @@ static r_obj* rray_equal_lgl_lgl(
   struct rray_iterator2* it,
   enum rray_equality_op op
 ) {
-  RRAY_EQUAL(
+  RRAY_EQUALITY(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_int_one,
@@ -278,7 +278,7 @@ static r_obj* rray_equal_lgl_int(
   struct rray_iterator2* it,
   enum rray_equality_op op
 ) {
-  RRAY_EQUAL(
+  RRAY_EQUALITY(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_int_one,
@@ -297,7 +297,7 @@ static r_obj* rray_equal_int_lgl(
   struct rray_iterator2* it,
   enum rray_equality_op op
 ) {
-  RRAY_EQUAL(
+  RRAY_EQUALITY(
     int,
     r_int_cbegin,
     rray_cast_int_to_int_one,
@@ -316,7 +316,7 @@ static r_obj* rray_equal_lgl_dbl(
   struct rray_iterator2* it,
   enum rray_equality_op op
 ) {
-  RRAY_EQUAL(
+  RRAY_EQUALITY(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_dbl_one,
@@ -335,7 +335,7 @@ static r_obj* rray_equal_dbl_lgl(
   struct rray_iterator2* it,
   enum rray_equality_op op
 ) {
-  RRAY_EQUAL(
+  RRAY_EQUALITY(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
@@ -354,7 +354,7 @@ static r_obj* rray_equal_lgl_cpl(
   struct rray_iterator2* it,
   enum rray_equality_op op
 ) {
-  RRAY_EQUAL(
+  RRAY_EQUALITY(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_cpl_one,
@@ -373,7 +373,7 @@ static r_obj* rray_equal_cpl_lgl(
   struct rray_iterator2* it,
   enum rray_equality_op op
 ) {
-  RRAY_EQUAL(
+  RRAY_EQUALITY(
     r_complex,
     r_cpl_cbegin,
     rray_cast_cpl_to_cpl_one,
@@ -392,7 +392,7 @@ static r_obj* rray_equal_int_int(
   struct rray_iterator2* it,
   enum rray_equality_op op
 ) {
-  RRAY_EQUAL(
+  RRAY_EQUALITY(
     int,
     r_int_cbegin,
     rray_cast_int_to_int_one,
@@ -411,7 +411,7 @@ static r_obj* rray_equal_int_dbl(
   struct rray_iterator2* it,
   enum rray_equality_op op
 ) {
-  RRAY_EQUAL(
+  RRAY_EQUALITY(
     int,
     r_int_cbegin,
     rray_cast_int_to_dbl_one,
@@ -430,7 +430,7 @@ static r_obj* rray_equal_dbl_int(
   struct rray_iterator2* it,
   enum rray_equality_op op
 ) {
-  RRAY_EQUAL(
+  RRAY_EQUALITY(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
@@ -449,7 +449,7 @@ static r_obj* rray_equal_int_cpl(
   struct rray_iterator2* it,
   enum rray_equality_op op
 ) {
-  RRAY_EQUAL(
+  RRAY_EQUALITY(
     int,
     r_int_cbegin,
     rray_cast_int_to_cpl_one,
@@ -468,7 +468,7 @@ static r_obj* rray_equal_cpl_int(
   struct rray_iterator2* it,
   enum rray_equality_op op
 ) {
-  RRAY_EQUAL(
+  RRAY_EQUALITY(
     r_complex,
     r_cpl_cbegin,
     rray_cast_cpl_to_cpl_one,
@@ -487,7 +487,7 @@ static r_obj* rray_equal_dbl_dbl(
   struct rray_iterator2* it,
   enum rray_equality_op op
 ) {
-  RRAY_EQUAL(
+  RRAY_EQUALITY(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
@@ -506,7 +506,7 @@ static r_obj* rray_equal_dbl_cpl(
   struct rray_iterator2* it,
   enum rray_equality_op op
 ) {
-  RRAY_EQUAL(
+  RRAY_EQUALITY(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_cpl_one,
@@ -525,7 +525,7 @@ static r_obj* rray_equal_cpl_dbl(
   struct rray_iterator2* it,
   enum rray_equality_op op
 ) {
-  RRAY_EQUAL(
+  RRAY_EQUALITY(
     r_complex,
     r_cpl_cbegin,
     rray_cast_cpl_to_cpl_one,
@@ -544,7 +544,7 @@ static r_obj* rray_equal_cpl_cpl(
   struct rray_iterator2* it,
   enum rray_equality_op op
 ) {
-  RRAY_EQUAL(
+  RRAY_EQUALITY(
     r_complex,
     r_cpl_cbegin,
     rray_cast_cpl_to_cpl_one,
@@ -556,7 +556,7 @@ static r_obj* rray_equal_cpl_cpl(
   );
 }
 
-#undef RRAY_EQUAL
+#undef RRAY_EQUALITY
 
 static inline int rray_equal_int_one(int x, int y) {
   if (rray_int_is_missing(x) || rray_int_is_missing(y)) {
