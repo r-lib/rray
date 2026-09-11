@@ -146,14 +146,9 @@ static r_obj* rray_equal_cpl_cpl(
   enum rray_equal_op op
 );
 
-static inline int rray_equal_int_one(int x, int y, enum rray_equal_op op);
-static inline int rray_equal_dbl_one(
-  double x,
-  double y,
-  enum rray_equal_op op
-);
-static inline int rray_equal_cpl_one(
-  r_complex x,
-  r_complex y,
-  enum rray_equal_op op
-);
+static inline int rray_equal_int_one(int x, int y);
+static inline int rray_not_equal_int_one(int x, int y);
+static inline int rray_equal_dbl_one(double x, double y);
+static inline int rray_not_equal_dbl_one(double x, double y);
+static inline int rray_equal_cpl_one(r_complex x, r_complex y);
+static inline int rray_not_equal_cpl_one(r_complex x, r_complex y);

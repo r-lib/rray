@@ -230,7 +230,8 @@ static r_no_return void stop_unsupported_equal(
   Y_CTYPE,                                                                     \
   Y_CONST_DEREF,                                                               \
   Y_CAST,                                                                      \
-  EQUAL_ONE                                                                    \
+  EQUAL_ONE,                                                                   \
+  NOT_EQUAL_ONE                                                                \
 )                                                                              \
   r_obj* out = KEEP(r_alloc_vector(R_TYPE_logical, size));                     \
   int* v_out = r_lgl_begin(out);                                               \
@@ -238,9 +239,15 @@ static r_no_return void stop_unsupported_equal(
   const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
   const Y_CTYPE* v_y = Y_CONST_DEREF(y);                                       \
                                                                                \
-  RRAY_ITERATOR2_FOR_EACH(it, i, x_loc, y_loc, {                               \
-    v_out[i] = EQUAL_ONE(X_CAST(v_x[x_loc]), Y_CAST(v_y[y_loc]), op);          \
-  });                                                                          \
+  if (op == RRAY_EQUAL_equal) {                                                \
+    RRAY_ITERATOR2_FOR_EACH(it, i, x_loc, y_loc, {                             \
+      v_out[i] = EQUAL_ONE(X_CAST(v_x[x_loc]), Y_CAST(v_y[y_loc]));            \
+    });                                                                        \
+  } else {                                                                     \
+    RRAY_ITERATOR2_FOR_EACH(it, i, x_loc, y_loc, {                             \
+      v_out[i] = NOT_EQUAL_ONE(X_CAST(v_x[x_loc]), Y_CAST(v_y[y_loc]));        \
+    });                                                                        \
+  }                                                                            \
                                                                                \
   FREE(1);                                                                     \
   return out;
@@ -259,7 +266,8 @@ static r_obj* rray_equal_lgl_lgl(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_int_one,
-    rray_equal_int_one
+    rray_equal_int_one,
+    rray_not_equal_int_one
   );
 }
 
@@ -277,7 +285,8 @@ static r_obj* rray_equal_lgl_int(
     int,
     r_int_cbegin,
     rray_cast_int_to_int_one,
-    rray_equal_int_one
+    rray_equal_int_one,
+    rray_not_equal_int_one
   );
 }
 
@@ -295,7 +304,8 @@ static r_obj* rray_equal_int_lgl(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_int_one,
-    rray_equal_int_one
+    rray_equal_int_one,
+    rray_not_equal_int_one
   );
 }
 
@@ -313,7 +323,8 @@ static r_obj* rray_equal_lgl_dbl(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
-    rray_equal_dbl_one
+    rray_equal_dbl_one,
+    rray_not_equal_dbl_one
   );
 }
 
@@ -331,7 +342,8 @@ static r_obj* rray_equal_dbl_lgl(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_dbl_one,
-    rray_equal_dbl_one
+    rray_equal_dbl_one,
+    rray_not_equal_dbl_one
   );
 }
 
@@ -349,7 +361,8 @@ static r_obj* rray_equal_lgl_cpl(
     r_complex,
     r_cpl_cbegin,
     rray_cast_cpl_to_cpl_one,
-    rray_equal_cpl_one
+    rray_equal_cpl_one,
+    rray_not_equal_cpl_one
   );
 }
 
@@ -367,7 +380,8 @@ static r_obj* rray_equal_cpl_lgl(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_cpl_one,
-    rray_equal_cpl_one
+    rray_equal_cpl_one,
+    rray_not_equal_cpl_one
   );
 }
 
@@ -385,7 +399,8 @@ static r_obj* rray_equal_int_int(
     int,
     r_int_cbegin,
     rray_cast_int_to_int_one,
-    rray_equal_int_one
+    rray_equal_int_one,
+    rray_not_equal_int_one
   );
 }
 
@@ -403,7 +418,8 @@ static r_obj* rray_equal_int_dbl(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
-    rray_equal_dbl_one
+    rray_equal_dbl_one,
+    rray_not_equal_dbl_one
   );
 }
 
@@ -421,7 +437,8 @@ static r_obj* rray_equal_dbl_int(
     int,
     r_int_cbegin,
     rray_cast_int_to_dbl_one,
-    rray_equal_dbl_one
+    rray_equal_dbl_one,
+    rray_not_equal_dbl_one
   );
 }
 
@@ -439,7 +456,8 @@ static r_obj* rray_equal_int_cpl(
     r_complex,
     r_cpl_cbegin,
     rray_cast_cpl_to_cpl_one,
-    rray_equal_cpl_one
+    rray_equal_cpl_one,
+    rray_not_equal_cpl_one
   );
 }
 
@@ -457,7 +475,8 @@ static r_obj* rray_equal_cpl_int(
     int,
     r_int_cbegin,
     rray_cast_int_to_cpl_one,
-    rray_equal_cpl_one
+    rray_equal_cpl_one,
+    rray_not_equal_cpl_one
   );
 }
 
@@ -475,7 +494,8 @@ static r_obj* rray_equal_dbl_dbl(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
-    rray_equal_dbl_one
+    rray_equal_dbl_one,
+    rray_not_equal_dbl_one
   );
 }
 
@@ -493,7 +513,8 @@ static r_obj* rray_equal_dbl_cpl(
     r_complex,
     r_cpl_cbegin,
     rray_cast_cpl_to_cpl_one,
-    rray_equal_cpl_one
+    rray_equal_cpl_one,
+    rray_not_equal_cpl_one
   );
 }
 
@@ -511,7 +532,8 @@ static r_obj* rray_equal_cpl_dbl(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_cpl_one,
-    rray_equal_cpl_one
+    rray_equal_cpl_one,
+    rray_not_equal_cpl_one
   );
 }
 
@@ -529,45 +551,61 @@ static r_obj* rray_equal_cpl_cpl(
     r_complex,
     r_cpl_cbegin,
     rray_cast_cpl_to_cpl_one,
-    rray_equal_cpl_one
+    rray_equal_cpl_one,
+    rray_not_equal_cpl_one
   );
 }
 
 #undef RRAY_EQUAL
 
-static inline int rray_equal_int_one(int x, int y, enum rray_equal_op op) {
+static inline int rray_equal_int_one(int x, int y) {
   if (rray_int_is_missing(x) || rray_int_is_missing(y)) {
     return r_globals.na_lgl;
   }
 
-  const bool equal = x == y;
-  return op == RRAY_EQUAL_equal ? equal : !equal;
+  return x == y;
 }
 
-static inline int rray_equal_dbl_one(
-  double x,
-  double y,
-  enum rray_equal_op op
-) {
+static inline int rray_not_equal_int_one(int x, int y) {
+  if (rray_int_is_missing(x) || rray_int_is_missing(y)) {
+    return r_globals.na_lgl;
+  }
+
+  return x != y;
+}
+
+static inline int rray_equal_dbl_one(double x, double y) {
   if (rray_dbl_is_missing(x) || rray_dbl_is_missing(y)) {
     return r_globals.na_lgl;
   }
 
-  const bool equal = x == y;
-  return op == RRAY_EQUAL_equal ? equal : !equal;
+  return x == y;
 }
 
-static inline int rray_equal_cpl_one(
-  r_complex x,
-  r_complex y,
-  enum rray_equal_op op
-) {
+static inline int rray_not_equal_dbl_one(double x, double y) {
+  if (rray_dbl_is_missing(x) || rray_dbl_is_missing(y)) {
+    return r_globals.na_lgl;
+  }
+
+  return x != y;
+}
+
+static inline int rray_equal_cpl_one(r_complex x, r_complex y) {
   const bool missing = ISNAN(x.r) || ISNAN(x.i) || ISNAN(y.r) || ISNAN(y.i);
 
   if (missing) {
     return r_globals.na_lgl;
   }
 
-  const bool equal = x.r == y.r && x.i == y.i;
-  return op == RRAY_EQUAL_equal ? equal : !equal;
+  return x.r == y.r && x.i == y.i;
+}
+
+static inline int rray_not_equal_cpl_one(r_complex x, r_complex y) {
+  const bool missing = ISNAN(x.r) || ISNAN(x.i) || ISNAN(y.r) || ISNAN(y.i);
+
+  if (missing) {
+    return r_globals.na_lgl;
+  }
+
+  return x.r != y.r || x.i != y.i;
 }
