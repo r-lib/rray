@@ -11,7 +11,7 @@
 #include "typeof2.h"
 #include "utils.h"
 
-enum rray_equal_op {
+enum rray_equality_op {
   RRAY_EQUAL_equal,
   RRAY_EQUAL_not_equal
 };
@@ -51,7 +51,7 @@ r_obj* rray_not_equal(
 static r_obj* rray_equality(
   r_obj* x,
   r_obj* y,
-  enum rray_equal_op op,
+  enum rray_equality_op op,
   struct rray_arg* x_arg,
   struct rray_arg* y_arg,
   struct r_lazy error_call
@@ -118,7 +118,7 @@ static r_obj* rray_equality(
 static rray_equal_fn rray_equal_switch(
   r_obj* x,
   r_obj* y,
-  enum rray_equal_op op,
+  enum rray_equality_op op,
   struct rray_arg* x_arg,
   struct rray_arg* y_arg,
   struct r_lazy error_call
@@ -195,7 +195,7 @@ static rray_equal_fn rray_equal_switch(
   r_stop_unreachable();
 }
 
-static const char* rray_equal_op_as_c_string(enum rray_equal_op op) {
+static const char* rray_equal_op_as_c_string(enum rray_equality_op op) {
   switch (op) {
   case RRAY_EQUAL_equal:
     return "==";
@@ -257,7 +257,7 @@ static r_obj* rray_equal_lgl_lgl(
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
-  enum rray_equal_op op
+  enum rray_equality_op op
 ) {
   RRAY_EQUAL(
     int,
@@ -276,7 +276,7 @@ static r_obj* rray_equal_lgl_int(
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
-  enum rray_equal_op op
+  enum rray_equality_op op
 ) {
   RRAY_EQUAL(
     int,
@@ -295,7 +295,7 @@ static r_obj* rray_equal_int_lgl(
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
-  enum rray_equal_op op
+  enum rray_equality_op op
 ) {
   RRAY_EQUAL(
     int,
@@ -314,7 +314,7 @@ static r_obj* rray_equal_lgl_dbl(
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
-  enum rray_equal_op op
+  enum rray_equality_op op
 ) {
   RRAY_EQUAL(
     int,
@@ -333,7 +333,7 @@ static r_obj* rray_equal_dbl_lgl(
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
-  enum rray_equal_op op
+  enum rray_equality_op op
 ) {
   RRAY_EQUAL(
     double,
@@ -352,7 +352,7 @@ static r_obj* rray_equal_lgl_cpl(
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
-  enum rray_equal_op op
+  enum rray_equality_op op
 ) {
   RRAY_EQUAL(
     int,
@@ -371,7 +371,7 @@ static r_obj* rray_equal_cpl_lgl(
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
-  enum rray_equal_op op
+  enum rray_equality_op op
 ) {
   RRAY_EQUAL(
     r_complex,
@@ -390,7 +390,7 @@ static r_obj* rray_equal_int_int(
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
-  enum rray_equal_op op
+  enum rray_equality_op op
 ) {
   RRAY_EQUAL(
     int,
@@ -409,7 +409,7 @@ static r_obj* rray_equal_int_dbl(
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
-  enum rray_equal_op op
+  enum rray_equality_op op
 ) {
   RRAY_EQUAL(
     int,
@@ -428,7 +428,7 @@ static r_obj* rray_equal_dbl_int(
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
-  enum rray_equal_op op
+  enum rray_equality_op op
 ) {
   RRAY_EQUAL(
     double,
@@ -447,7 +447,7 @@ static r_obj* rray_equal_int_cpl(
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
-  enum rray_equal_op op
+  enum rray_equality_op op
 ) {
   RRAY_EQUAL(
     int,
@@ -466,7 +466,7 @@ static r_obj* rray_equal_cpl_int(
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
-  enum rray_equal_op op
+  enum rray_equality_op op
 ) {
   RRAY_EQUAL(
     r_complex,
@@ -485,7 +485,7 @@ static r_obj* rray_equal_dbl_dbl(
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
-  enum rray_equal_op op
+  enum rray_equality_op op
 ) {
   RRAY_EQUAL(
     double,
@@ -504,7 +504,7 @@ static r_obj* rray_equal_dbl_cpl(
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
-  enum rray_equal_op op
+  enum rray_equality_op op
 ) {
   RRAY_EQUAL(
     double,
@@ -523,7 +523,7 @@ static r_obj* rray_equal_cpl_dbl(
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
-  enum rray_equal_op op
+  enum rray_equality_op op
 ) {
   RRAY_EQUAL(
     r_complex,
@@ -542,7 +542,7 @@ static r_obj* rray_equal_cpl_cpl(
   r_obj* y,
   r_ssize size,
   struct rray_iterator2* it,
-  enum rray_equal_op op
+  enum rray_equality_op op
 ) {
   RRAY_EQUAL(
     r_complex,
