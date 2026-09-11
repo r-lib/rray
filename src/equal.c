@@ -591,9 +591,7 @@ static inline int rray_not_equal_dbl_one(double x, double y) {
 }
 
 static inline int rray_equal_cpl_one(r_complex x, r_complex y) {
-  const bool missing = ISNAN(x.r) || ISNAN(x.i) || ISNAN(y.r) || ISNAN(y.i);
-
-  if (missing) {
+  if (rray_cpl_is_missing(x) || rray_cpl_is_missing(y)) {
     return r_globals.na_lgl;
   }
 
@@ -601,9 +599,7 @@ static inline int rray_equal_cpl_one(r_complex x, r_complex y) {
 }
 
 static inline int rray_not_equal_cpl_one(r_complex x, r_complex y) {
-  const bool missing = ISNAN(x.r) || ISNAN(x.i) || ISNAN(y.r) || ISNAN(y.i);
-
-  if (missing) {
+  if (rray_cpl_is_missing(x) || rray_cpl_is_missing(y)) {
     return r_globals.na_lgl;
   }
 
