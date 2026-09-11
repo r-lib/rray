@@ -21,8 +21,4 @@ r_obj* rray_not_equal(
   struct r_lazy error_call
 );
 
-static inline bool rray_cpl_is_missing(r_complex x) {
-  return ISNAN(x.r) || ISNAN(x.i);
-}
-
 #endif
