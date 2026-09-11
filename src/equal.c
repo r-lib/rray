@@ -30,7 +30,7 @@ r_obj* rray_equal(
   struct rray_arg* y_arg,
   struct r_lazy error_call
 ) {
-  return rray_equal_compare(x, y, RRAY_EQUAL_equal, x_arg, y_arg, error_call);
+  return rray_equality(x, y, RRAY_EQUAL_equal, x_arg, y_arg, error_call);
 }
 
 r_obj* ffi_rray_not_equal(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame) {
@@ -45,17 +45,10 @@ r_obj* rray_not_equal(
   struct rray_arg* y_arg,
   struct r_lazy error_call
 ) {
-  return rray_equal_compare(
-    x,
-    y,
-    RRAY_EQUAL_not_equal,
-    x_arg,
-    y_arg,
-    error_call
-  );
+  return rray_equality(x, y, RRAY_EQUAL_not_equal, x_arg, y_arg, error_call);
 }
 
-static r_obj* rray_equal_compare(
+static r_obj* rray_equality(
   r_obj* x,
   r_obj* y,
   enum rray_equal_op op,

@@ -6,7 +6,7 @@ typedef r_obj* (*rray_equal_fn)(
   enum rray_equal_op op
 );
 
-static r_obj* rray_equal_compare(
+static r_obj* rray_equality(
   r_obj* x,
   r_obj* y,
   enum rray_equal_op op,
