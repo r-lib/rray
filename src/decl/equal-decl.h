@@ -1,4 +1,4 @@
-typedef r_obj* (*rray_equal_fn)(
+typedef r_obj* (*rray_equality_fn)(
   r_obj* x,
   r_obj* y,
   r_ssize size,
@@ -14,7 +14,7 @@ static r_obj* rray_equality(
   struct rray_arg* y_arg,
   struct r_lazy error_call
 );
-static rray_equal_fn rray_equal_switch(
+static rray_equality_fn rray_equality_switch(
   r_obj* x,
   r_obj* y,
   enum rray_equality_op op,

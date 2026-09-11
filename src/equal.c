@@ -62,8 +62,8 @@ static r_obj* rray_equality(
   x = KEEP(arg_as_array(x, x_arg, error_call));
   y = KEEP(arg_as_array(y, y_arg, error_call));
 
-  const rray_equal_fn fn =
-    rray_equal_switch(x, y, op, x_arg, y_arg, error_call);
+  const rray_equality_fn fn =
+    rray_equality_switch(x, y, op, x_arg, y_arg, error_call);
 
   r_obj* x_dimensions = r_dim(x);
   r_obj* y_dimensions = r_dim(y);
@@ -115,7 +115,7 @@ static r_obj* rray_equality(
   return out;
 }
 
-static rray_equal_fn rray_equal_switch(
+static rray_equality_fn rray_equality_switch(
   r_obj* x,
   r_obj* y,
   enum rray_equality_op op,
