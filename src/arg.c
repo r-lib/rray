@@ -220,6 +220,7 @@ void rray_init_args(r_obj* ns) {
   INIT_ARG(names);
   INIT_ARG(axis);
   INIT_ARG(axes);
+  INIT_ARG(permutation);
   INIT_ARG(dimensions);
   INIT_ARG2(dot_dimensions, ".dimensions");
 }
