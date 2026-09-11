@@ -28,8 +28,8 @@ A logical array with the common dimensions of \code{x} and \code{y}.
 The arrays are broadcast to common dimensions before they are compared.
 }
 \examples{
-x <- array(c(1 + 1i, 2 + 2i), c(2L, 1L))
+x <- array(1:2, c(2L, 1L))
 
-rray_equal(x, 1 + 1i)
-rray_not_equal(x, array(c(1 + 1i, 3 + 3i), c(1L, 2L)))
+rray_equal(x, 1L)
+rray_not_equal(x, array(c(1L, 3L), c(1L, 2L)))
 }
