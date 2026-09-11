@@ -22,7 +22,7 @@ static rray_equality_fn rray_equality_switch(
   struct rray_arg* y_arg,
   struct r_lazy error_call
 );
-static const char* rray_equal_op_as_c_string(enum rray_equality_op op);
+static const char* rray_equality_op_as_c_string(enum rray_equality_op op);
 
 static r_no_return void stop_unsupported_equality(
   const char* op,

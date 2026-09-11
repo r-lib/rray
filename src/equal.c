@@ -175,7 +175,7 @@ static rray_equality_fn rray_equality_switch(
   case RRAY_TYPE2_raw_list:
   case RRAY_TYPE2_list_list:
     stop_unsupported_equality(
-      rray_equal_op_as_c_string(op),
+      rray_equality_op_as_c_string(op),
       x,
       y,
       x_arg,
@@ -201,7 +201,7 @@ static rray_equality_fn rray_equality_switch(
   r_stop_unreachable();
 }
 
-static const char* rray_equal_op_as_c_string(enum rray_equality_op op) {
+static const char* rray_equality_op_as_c_string(enum rray_equality_op op) {
   switch (op) {
   case RRAY_EQUAL_equal:
     return "==";
