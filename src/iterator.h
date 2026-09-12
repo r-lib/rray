@@ -171,6 +171,24 @@ static inline struct rray_strided_iterator rray_broadcast_iterator(
 // operations outperform base R in many cases, even with broadcasting support.
 #define RRAY_STRIDED_ITERATOR_FOR_EACH(IT, INDEX, LOCATION, ...)               \
   do {                                                                         \
+    struct rray_strided_iterator* const iterator = (IT);                       \
+    const r_ssize* v_strides = iterator->v_strides;                            \
+                                                                               \
+    if (v_strides[0] == 0) {                                                   \
+      RRAY__STRIDED_ITERATOR_FOR_EACH(IT, INDEX, LOCATION, 0, __VA_ARGS__);    \
+    } else {                                                                   \
+      RRAY__STRIDED_ITERATOR_FOR_EACH(                                         \
+        IT,                                                                    \
+        INDEX,                                                                 \
+        LOCATION,                                                              \
+        v_strides[0],                                                          \
+        __VA_ARGS__                                                            \
+      );                                                                       \
+    }                                                                          \
+  } while (0)
+
+#define RRAY__STRIDED_ITERATOR_FOR_EACH(IT, INDEX, LOCATION, ROW_STRIDE, ...)  \
+  do {                                                                         \
     /* Unpacking the iterator fields is critical for performance. It gives */  \
     /* the compiler guarantees about loop counters and fixed inputs that */    \
     /* unlock vectorization optimizations. */                                  \
@@ -184,14 +202,13 @@ static inline struct rray_strided_iterator rray_broadcast_iterator(
     const r_ssize* v_strides = iterator->v_strides;                            \
                                                                                \
     const r_ssize rows = v_dimensions[0];                                      \
-    const r_ssize row_stride = v_strides[0];                                   \
-    const r_ssize row_reset = rows * row_stride;                               \
+    const r_ssize row_reset = rows * ROW_STRIDE;                               \
                                                                                \
     while (INDEX != size) {                                                    \
       /* Apply expression for each row */                                      \
       for (r_ssize row = 0; row < rows; ++row) {                               \
         __VA_ARGS__                                                            \
-        LOCATION += row_stride;                                                \
+        LOCATION += ROW_STRIDE;                                                \
         ++INDEX;                                                               \
       }                                                                        \
       LOCATION -= row_reset;                                                   \
@@ -319,6 +336,53 @@ static inline struct rray_strided_iterator2 rray_broadcast_iterator2(
 #define RRAY_STRIDED_ITERATOR2_FOR_EACH(IT, INDEX, LOCATION1, LOCATION2, ...)  \
   do {                                                                         \
     struct rray_strided_iterator2* const iterator = (IT);                      \
+    const r_ssize* v_strides1 = iterator->v_strides1;                          \
+    const r_ssize* v_strides2 = iterator->v_strides2;                          \
+                                                                               \
+    if (v_strides1[0] == 0) {                                                  \
+      RRAY__STRIDED_ITERATOR2_FOR_EACH(                                        \
+        IT,                                                                    \
+        INDEX,                                                                 \
+        LOCATION1,                                                             \
+        LOCATION2,                                                             \
+        0,                                                                     \
+        v_strides2[0],                                                         \
+        __VA_ARGS__                                                            \
+      );                                                                       \
+    } else if (v_strides2[0] == 0) {                                           \
+      RRAY__STRIDED_ITERATOR2_FOR_EACH(                                        \
+        IT,                                                                    \
+        INDEX,                                                                 \
+        LOCATION1,                                                             \
+        LOCATION2,                                                             \
+        v_strides1[0],                                                         \
+        0,                                                                     \
+        __VA_ARGS__                                                            \
+      );                                                                       \
+    } else {                                                                   \
+      RRAY__STRIDED_ITERATOR2_FOR_EACH(                                        \
+        IT,                                                                    \
+        INDEX,                                                                 \
+        LOCATION1,                                                             \
+        LOCATION2,                                                             \
+        v_strides1[0],                                                         \
+        v_strides2[0],                                                         \
+        __VA_ARGS__                                                            \
+      );                                                                       \
+    }                                                                          \
+  } while (0)
+
+#define RRAY__STRIDED_ITERATOR2_FOR_EACH(                                      \
+  IT,                                                                          \
+  INDEX,                                                                       \
+  LOCATION1,                                                                   \
+  LOCATION2,                                                                   \
+  ROW_STRIDE1,                                                                 \
+  ROW_STRIDE2,                                                                 \
+  ...                                                                          \
+)                                                                              \
+  do {                                                                         \
+    struct rray_strided_iterator2* const iterator = (IT);                      \
     r_ssize INDEX = iterator->index;                                           \
     const r_ssize size = iterator->size;                                       \
     r_ssize* v_point = iterator->v_point;                                      \
@@ -330,16 +394,14 @@ static inline struct rray_strided_iterator2 rray_broadcast_iterator2(
     const r_ssize* v_strides2 = iterator->v_strides2;                          \
                                                                                \
     const r_ssize rows = v_dimensions[0];                                      \
-    const r_ssize row_stride1 = v_strides1[0];                                 \
-    const r_ssize row_stride2 = v_strides2[0];                                 \
-    const r_ssize row_reset1 = rows * row_stride1;                             \
-    const r_ssize row_reset2 = rows * row_stride2;                             \
+    const r_ssize row_reset1 = rows * ROW_STRIDE1;                             \
+    const r_ssize row_reset2 = rows * ROW_STRIDE2;                             \
                                                                                \
     while (INDEX != size) {                                                    \
       for (r_ssize row = 0; row < rows; ++row) {                               \
         __VA_ARGS__                                                            \
-        LOCATION1 += row_stride1;                                              \
-        LOCATION2 += row_stride2;                                              \
+        LOCATION1 += ROW_STRIDE1;                                              \
+        LOCATION2 += ROW_STRIDE2;                                              \
         ++INDEX;                                                               \
       }                                                                        \
       LOCATION1 -= row_reset1;                                                 \
