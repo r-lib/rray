@@ -12,6 +12,16 @@
 // Walks the multidimensional point space defined by `v_dimensions`. Reports a
 // 1D `location` in an alternate subspace defined by `v_strides`.
 //
+// For broadcasting, the dimensions you broadcast to make up the larger point
+// space. This is walked in order. The original dimensions of the array make
+// up the subspace. So as you walk the output's point space you can fetch
+// `location`s back into your original array to pull from.
+//
+// For reducing, it's actually a special form of broadcasting. The original
+// dimensions of the array are the point space. The reduced dimensions are the
+// subspace. So as you walk the original array, you can fetch `location`s into
+// the output to accumulate the reduced result at.
+//
 // For permuting axes, the permuted dimensions make up the point space. The
 // original dimensions of the array make up the subspace. So as you walk the
 // output's point space you can fetch `location`s back into your original array
@@ -63,16 +73,6 @@ static inline struct rray_strided_iterator rray_strided_iterator(
 // An axis of `from` with a dimension of 1 gets a stride of 0, so it stands
 // still while the matching axis of `to` walks. Axes past
 // `from_dimensionality` are treated as dimension 1.
-//
-// For broadcasting, the dimensions you broadcast to make up the larger point
-// space. This is walked in order. The original dimensions of the array make
-// up the subspace. So as you walk the output's point space you can fetch
-// `location`s back into your original array to pull from.
-//
-// For reducing, it's actually a special form of broadcasting. The original
-// dimensions of the array are the point space. The reduced dimensions are the
-// subspace. So as you walk the original array, you can fetch `location`s into
-// the output to accumulate the reduced result at.
 static inline struct rray_strided_iterator rray_broadcast_iterator(
   const int* v_from_dimensions,
   int from_dimensionality,
