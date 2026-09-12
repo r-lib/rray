@@ -3,9 +3,9 @@
 #include "broadcast-names.h"
 #include "dimensionality.h"
 #include "dimensions.h"
-#include "iterator.h"
 #include "missing.h"
 #include "size.h"
+#include "strided-iterator.h"
 #include "type.h"
 #include "typeof2.h"
 #include "utils.h"
@@ -162,16 +162,13 @@ static r_obj* rray_compare(
 
   const r_ssize size = rray_size_from_dimensions(v_dimensions, dimensionality);
 
-  struct rray_iterator2 it;
-  rray_iterator2_init(
-    &it,
-    size,
-    v_dimensions,
-    dimensionality,
+  struct rray_strided_iterator2 it = rray_broadcast_iterator2(
     v_x_dimensions,
     x_dimensionality,
     v_y_dimensions,
-    y_dimensionality
+    y_dimensionality,
+    v_dimensions,
+    dimensionality
   );
 
   r_obj* out = KEEP(fn(x, y, size, &it, op));
@@ -305,7 +302,7 @@ static r_no_return void stop_unsupported_compare(
   Y_IS_MISSING,                                                                \
   OPERATOR                                                                     \
 )                                                                              \
-  RRAY_ITERATOR2_FOR_EACH(it, i, x_loc, y_loc, {                               \
+  RRAY_STRIDED_ITERATOR2_FOR_EACH(it, i, x_loc, y_loc, {                       \
     const X_CTYPE x_elt = v_x[x_loc];                                          \
     const Y_CTYPE y_elt = v_y[y_loc];                                          \
     const bool missing = X_IS_MISSING(x_elt) | Y_IS_MISSING(y_elt);            \
@@ -349,7 +346,7 @@ static r_obj* rray_compare_lgl_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_compare_op op
 ) {
   RRAY_COMPARE(
@@ -366,7 +363,7 @@ static r_obj* rray_compare_lgl_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_compare_op op
 ) {
   RRAY_COMPARE(
@@ -383,7 +380,7 @@ static r_obj* rray_compare_int_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_compare_op op
 ) {
   RRAY_COMPARE(
@@ -400,7 +397,7 @@ static r_obj* rray_compare_lgl_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_compare_op op
 ) {
   RRAY_COMPARE(
@@ -417,7 +414,7 @@ static r_obj* rray_compare_dbl_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_compare_op op
 ) {
   RRAY_COMPARE(
@@ -434,7 +431,7 @@ static r_obj* rray_compare_int_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_compare_op op
 ) {
   RRAY_COMPARE(
@@ -451,7 +448,7 @@ static r_obj* rray_compare_int_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_compare_op op
 ) {
   RRAY_COMPARE(
@@ -468,7 +465,7 @@ static r_obj* rray_compare_dbl_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_compare_op op
 ) {
   RRAY_COMPARE(
@@ -485,7 +482,7 @@ static r_obj* rray_compare_dbl_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_compare_op op
 ) {
   RRAY_COMPARE(

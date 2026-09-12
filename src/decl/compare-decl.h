@@ -2,7 +2,7 @@ typedef r_obj* (*rray_compare_fn)(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_compare_op op
 );
 
@@ -37,62 +37,62 @@ static r_obj* rray_compare_lgl_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_compare_op op
 );
 static r_obj* rray_compare_lgl_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_compare_op op
 );
 static r_obj* rray_compare_int_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_compare_op op
 );
 static r_obj* rray_compare_lgl_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_compare_op op
 );
 static r_obj* rray_compare_dbl_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_compare_op op
 );
 static r_obj* rray_compare_int_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_compare_op op
 );
 static r_obj* rray_compare_int_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_compare_op op
 );
 static r_obj* rray_compare_dbl_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_compare_op op
 );
 static r_obj* rray_compare_dbl_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_compare_op op
 );

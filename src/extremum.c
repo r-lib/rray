@@ -4,8 +4,8 @@
 #include "cast.h"
 #include "dimensionality.h"
 #include "dimensions.h"
-#include "iterator.h"
 #include "size.h"
+#include "strided-iterator.h"
 #include "type.h"
 #include "typeof2.h"
 #include "utils.h"
@@ -117,16 +117,13 @@ static r_obj* rray_extremum(
 
   const r_ssize size = rray_size_from_dimensions(v_dimensions, dimensionality);
 
-  struct rray_iterator2 it;
-  rray_iterator2_init(
-    &it,
-    size,
-    v_dimensions,
-    dimensionality,
+  struct rray_strided_iterator2 it = rray_broadcast_iterator2(
     v_x_dimensions,
     x_dimensionality,
     v_y_dimensions,
-    y_dimensionality
+    y_dimensionality,
+    v_dimensions,
+    dimensionality
   );
 
   r_obj* out = KEEP(
@@ -149,7 +146,7 @@ static r_obj* rray_extremum_switch(
   r_obj* y,
   enum rray_extremum_op op,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   bool na_rm,
   struct rray_arg* x_arg,
   struct rray_arg* y_arg,
@@ -314,11 +311,11 @@ static r_no_return void stop_unsupported_extremum(
   const Y_CTYPE* v_y = Y_CONST_DEREF(y);                                       \
                                                                                \
   if (na_rm) {                                                                 \
-    RRAY_ITERATOR2_FOR_EACH(it, i, x_loc, y_loc, {                             \
+    RRAY_STRIDED_ITERATOR2_FOR_EACH(it, i, x_loc, y_loc, {                     \
       v_out[i] = ONE_REMOVE_NA(X_CAST(v_x[x_loc]), Y_CAST(v_y[y_loc]));        \
     });                                                                        \
   } else {                                                                     \
-    RRAY_ITERATOR2_FOR_EACH(it, i, x_loc, y_loc, {                             \
+    RRAY_STRIDED_ITERATOR2_FOR_EACH(it, i, x_loc, y_loc, {                     \
       v_out[i] = ONE_PROPAGATE_NA(X_CAST(v_x[x_loc]), Y_CAST(v_y[y_loc]));     \
     });                                                                        \
   }                                                                            \
@@ -330,7 +327,7 @@ static r_obj* rray_pmax_lgl_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   bool na_rm,
   struct r_lazy error_call
 ) {
@@ -353,7 +350,7 @@ static r_obj* rray_pmax_lgl_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   bool na_rm,
   struct r_lazy error_call
 ) {
@@ -376,7 +373,7 @@ static r_obj* rray_pmax_int_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   bool na_rm,
   struct r_lazy error_call
 ) {
@@ -399,7 +396,7 @@ static r_obj* rray_pmax_lgl_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   bool na_rm,
   struct r_lazy error_call
 ) {
@@ -422,7 +419,7 @@ static r_obj* rray_pmax_dbl_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   bool na_rm,
   struct r_lazy error_call
 ) {
@@ -445,7 +442,7 @@ static r_obj* rray_pmax_int_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   bool na_rm,
   struct r_lazy error_call
 ) {
@@ -468,7 +465,7 @@ static r_obj* rray_pmax_int_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   bool na_rm,
   struct r_lazy error_call
 ) {
@@ -491,7 +488,7 @@ static r_obj* rray_pmax_dbl_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   bool na_rm,
   struct r_lazy error_call
 ) {
@@ -514,7 +511,7 @@ static r_obj* rray_pmax_dbl_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   bool na_rm,
   struct r_lazy error_call
 ) {
@@ -537,7 +534,7 @@ static r_obj* rray_pmin_lgl_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   bool na_rm,
   struct r_lazy error_call
 ) {
@@ -560,7 +557,7 @@ static r_obj* rray_pmin_lgl_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   bool na_rm,
   struct r_lazy error_call
 ) {
@@ -583,7 +580,7 @@ static r_obj* rray_pmin_int_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   bool na_rm,
   struct r_lazy error_call
 ) {
@@ -606,7 +603,7 @@ static r_obj* rray_pmin_lgl_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   bool na_rm,
   struct r_lazy error_call
 ) {
@@ -629,7 +626,7 @@ static r_obj* rray_pmin_dbl_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   bool na_rm,
   struct r_lazy error_call
 ) {
@@ -652,7 +649,7 @@ static r_obj* rray_pmin_int_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   bool na_rm,
   struct r_lazy error_call
 ) {
@@ -675,7 +672,7 @@ static r_obj* rray_pmin_int_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   bool na_rm,
   struct r_lazy error_call
 ) {
@@ -698,7 +695,7 @@ static r_obj* rray_pmin_dbl_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   bool na_rm,
   struct r_lazy error_call
 ) {
@@ -721,7 +718,7 @@ static r_obj* rray_pmin_dbl_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   bool na_rm,
   struct r_lazy error_call
 ) {

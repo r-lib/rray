@@ -4,13 +4,13 @@
 #include "rlang.h"
 
 #include "arg.h"
-#include "iterator.h"
+#include "strided-iterator.h"
 
 typedef r_obj* (*rray_binary_arithmetic_fn)(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   struct r_lazy error_call
 );
 
@@ -60,7 +60,7 @@ r_no_return void stop_int_overflow(struct r_lazy error_call);
   const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
   const Y_CTYPE* v_y = Y_CONST_DEREF(y);                                       \
                                                                                \
-  RRAY_ITERATOR2_FOR_EACH(it, i, x_loc, y_loc, {                               \
+  RRAY_STRIDED_ITERATOR2_FOR_EACH(it, i, x_loc, y_loc, {                       \
     v_out[i] = ONE(X_CAST(v_x[x_loc]), Y_CAST(v_y[y_loc]), error_call);        \
   });                                                                          \
                                                                                \
