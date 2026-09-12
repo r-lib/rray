@@ -207,13 +207,10 @@ static r_no_return void stop_non_logical_reduce(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  const enum rray_type type = rray_typeof(x);
-
   r_abort_lazy_call(
     error_call,
-    "%s must be a logical array, not %s %s array.",
+    "%s must be a logical array, not %s.",
     rray_arg_format_input(arg),
-    type == RRAY_TYPE_integer ? "an" : "a",
-    rray_type_as_c_string(type)
+    r_obj_type_friendly(x)
   );
 }

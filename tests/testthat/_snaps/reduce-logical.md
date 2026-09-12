@@ -36,7 +36,7 @@
       rray_all_along(array(1L, c(2L, 2L)), 1L)
     Condition
       Error in `rray_all_along()`:
-      ! `x` must be a logical array, not an integer array.
+      ! `x` must be a logical array, not an integer matrix.
 
 ---
 
@@ -44,7 +44,7 @@
       rray_all_along(array(1, c(2L, 2L)), 1L)
     Condition
       Error in `rray_all_along()`:
-      ! `x` must be a logical array, not a double array.
+      ! `x` must be a logical array, not a double matrix.
 
 ---
 
@@ -52,7 +52,7 @@
       rray_all_along(array(0+1i, c(2L, 2L)), 1L)
     Condition
       Error in `rray_all_along()`:
-      ! `x` must be a logical array, not a complex array.
+      ! `x` must be a logical array, not a complex matrix.
 
 ---
 
@@ -60,7 +60,7 @@
       rray_all_along(array("a", c(2L, 2L)), 1L)
     Condition
       Error in `rray_all_along()`:
-      ! `x` must be a logical array, not a character array.
+      ! `x` must be a logical array, not a character matrix.
 
 ---
 
@@ -68,7 +68,7 @@
       rray_all_along(array(as.raw(1:4), c(2L, 2L)), 1L)
     Condition
       Error in `rray_all_along()`:
-      ! `x` must be a logical array, not a raw array.
+      ! `x` must be a logical array, not a raw matrix.
 
 ---
 
@@ -76,7 +76,7 @@
       rray_all_along(array(list(1, 2, 3, 4), c(2L, 2L)), 1L)
     Condition
       Error in `rray_all_along()`:
-      ! `x` must be a logical array, not a list array.
+      ! `x` must be a logical array, not a list matrix.
 
 ---
 
@@ -84,7 +84,7 @@
       rray_any_along(array(1L, c(2L, 2L)), 1L)
     Condition
       Error in `rray_any_along()`:
-      ! `x` must be a logical array, not an integer array.
+      ! `x` must be a logical array, not an integer matrix.
 
 # errors on scalar input
 
