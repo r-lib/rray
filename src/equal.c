@@ -4,7 +4,7 @@
 #include "cast.h"
 #include "dimensionality.h"
 #include "dimensions.h"
-#include "iterator.h"
+#include "strided-iterator.h"
 #include "missing.h"
 #include "size.h"
 #include "type.h"
