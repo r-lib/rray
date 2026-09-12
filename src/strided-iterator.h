@@ -58,7 +58,7 @@ static inline struct rray_strided_iterator rray_strided_iterator(
   return it;
 }
 
-// Strided iterator that derives `v_strides` for you
+// Strided iterator specific to broadcasting
 //
 // An axis of `from` with a dimension of 1 gets a stride of 0, so it stands
 // still while the matching axis of `to` walks. Axes past
