@@ -224,15 +224,16 @@ static inline struct rray_strided_iterator rray_broadcast_iterator(
   do {                                                                         \
     struct rray_strided_iterator* const iterator = (IT);                       \
     const r_ssize* v_strides = iterator->v_strides;                            \
+    const r_ssize row_stride = v_strides[0];                                   \
                                                                                \
-    if (v_strides[0] == 0) {                                                   \
+    if (row_stride == 0) {                                                     \
       RRAY__STRIDED_ITERATOR_FOR_EACH(IT, INDEX, LOCATION, 0, __VA_ARGS__);    \
     } else {                                                                   \
       RRAY__STRIDED_ITERATOR_FOR_EACH(                                         \
         IT,                                                                    \
         INDEX,                                                                 \
         LOCATION,                                                              \
-        v_strides[0],                                                          \
+        row_stride,                                                            \
         __VA_ARGS__                                                            \
       );                                                                       \
     }                                                                          \
@@ -389,24 +390,26 @@ static inline struct rray_strided_iterator2 rray_broadcast_iterator2(
     struct rray_strided_iterator2* const iterator = (IT);                      \
     const r_ssize* v_strides1 = iterator->v_strides1;                          \
     const r_ssize* v_strides2 = iterator->v_strides2;                          \
+    const r_ssize row_stride1 = v_strides1[0];                                 \
+    const r_ssize row_stride2 = v_strides2[0];                                 \
                                                                                \
-    if (v_strides1[0] == 0) {                                                  \
+    if (row_stride1 == 0) {                                                    \
       RRAY__STRIDED_ITERATOR2_FOR_EACH(                                        \
         IT,                                                                    \
         INDEX,                                                                 \
         LOCATION1,                                                             \
         LOCATION2,                                                             \
         0,                                                                     \
-        v_strides2[0],                                                         \
+        row_stride2,                                                           \
         __VA_ARGS__                                                            \
       );                                                                       \
-    } else if (v_strides2[0] == 0) {                                           \
+    } else if (row_stride2 == 0) {                                             \
       RRAY__STRIDED_ITERATOR2_FOR_EACH(                                        \
         IT,                                                                    \
         INDEX,                                                                 \
         LOCATION1,                                                             \
         LOCATION2,                                                             \
-        v_strides1[0],                                                         \
+        row_stride1,                                                           \
         0,                                                                     \
         __VA_ARGS__                                                            \
       );                                                                       \
@@ -416,8 +419,8 @@ static inline struct rray_strided_iterator2 rray_broadcast_iterator2(
         INDEX,                                                                 \
         LOCATION1,                                                             \
         LOCATION2,                                                             \
-        v_strides1[0],                                                         \
-        v_strides2[0],                                                         \
+        row_stride1,                                                           \
+        row_stride2,                                                           \
         __VA_ARGS__                                                            \
       );                                                                       \
     }                                                                          \
