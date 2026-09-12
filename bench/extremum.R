@@ -89,7 +89,7 @@ results <- vector("list", nrow(cases))
 for (i in seq_len(nrow(cases))) {
   case <- cases[i, ]
   inputs <- make_inputs(case$type, case$missing, case$traversal)
-  fn <- switch(case$operation, pmax = rray_pmax, pmin = rray_pmin)
+  fn <- switch(case$operation, pmax = rray_max, pmin = rray_min)
 
   measurement <- bench::mark(
     extremum = fn(inputs$x, inputs$y, na_rm = case$na_rm),

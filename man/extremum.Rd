@@ -2,13 +2,13 @@
 % Please edit documentation in R/extremum.R
 \name{extremum}
 \alias{extremum}
-\alias{rray_pmax}
-\alias{rray_pmin}
-\title{Parallel maxima and minima}
+\alias{rray_max}
+\alias{rray_min}
+\title{Elementwise maximum and minimum}
 \usage{
-rray_pmax(x, y, ..., na_rm = FALSE)
+rray_max(x, y, ..., na_rm = FALSE)
 
-rray_pmin(x, y, ..., na_rm = FALSE)
+rray_min(x, y, ..., na_rm = FALSE)
 }
 \arguments{
 \item{x}{An array.}
@@ -25,8 +25,8 @@ An array with the common dimensions and common type of \code{x} and \code{y}.
 }
 \description{
 \itemize{
-\item \code{rray_pmax()} computes the elementwise maximum of two arrays.
-\item \code{rray_pmin()} computes the elementwise minimum of two arrays.
+\item \code{rray_max()} computes the elementwise maximum of two arrays.
+\item \code{rray_min()} computes the elementwise minimum of two arrays.
 }
 }
 \details{
@@ -36,9 +36,9 @@ be the same shape.
 \examples{
 x <- array(1:6, c(3L, 2L))
 
-rray_pmax(x, 4L)
-rray_pmin(x, 4L)
+rray_max(x, 4L)
+rray_min(x, 4L)
 
 # Compare each column with a different value through broadcasting
-rray_pmax(x, array(c(2L, 5L), c(1L, 2L)))
+rray_max(x, array(c(2L, 5L), c(1L, 2L)))
 }
