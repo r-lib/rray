@@ -93,13 +93,11 @@ case RRAY_TYPE_double:
 ```
 
 So there is one core per type per variant, the flag stays off the core's
-parameter list, and the loop is written once. `rray_product_along()`,
-`rray_mean()`,
-`rray_max()`, and `rray_min()` want the same shape when they land, sharing
-`rray_reduce()`'s shell. `rray_all()`, `rray_any()`, `rray_max_pos()`, and
-`rray_min_pos()` do not take `na_rm`, and the position functions take a single
-`axis` rather than `axes`, so whether they fit this shell at all is still an
-open question for whoever picks them up.
+parameter list, and the loop is written once. `rray_mean()`, `rray_max()`, and
+`rray_min()` want the same shape when they land, sharing `rray_reduce()`'s
+shell. `rray_max_pos()` and `rray_min_pos()` take a single `axis` rather than
+`axes` and return positions rather than reduced values, so whether they fit this
+shell at all is still an open question for whoever picks them up.
 
 A `.c` file reads top down: the main entry point first, its helpers below, in
 the order they are used. For `src/broadcast.c` that is `ffi_rray_broadcast()`,
@@ -700,7 +698,8 @@ allocates the output at the one fixed type.
 
 - Comparison (`rray_equal()` and friends) returns a logical array.
 
-- `rray_all()` and `rray_any()` take logical and return a logical array.
+- `rray_all_along()` and `rray_any_along()` take logical and return a logical
+  array.
 
 - `rray_max_pos()` and `rray_min_pos()` return an integer array.
 
@@ -1086,8 +1085,8 @@ Names: reduce.
 | `rray_mean(x, axes, ..., na_rm = FALSE)` | `mean` | promoted, lgl and int to dbl |
 | `rray_max(x, axes, ..., na_rm = FALSE)` | `max` | preserved, errors on cpl |
 | `rray_min(x, axes, ..., na_rm = FALSE)` | `min` | preserved, errors on cpl |
-| `rray_all(x, axes)` | | fixed, logical in, logical out |
-| `rray_any(x, axes)` | | fixed, logical in, logical out |
+| `rray_all_along(x, axes, ..., na_rm = FALSE)` | `all` | fixed, logical in, logical out, exists |
+| `rray_any_along(x, axes, ..., na_rm = FALSE)` | `any` | fixed, logical in, logical out, exists |
 
 `rray_max_pos(x, axis)` and `rray_min_pos(x, axis)` give the position of the
 maximum or minimum along a single axis. Type: fixed, integer output.
@@ -1107,13 +1106,18 @@ shell in `src/reduce.c`/`src/reduce.h` (see 2.1).
 `(x, axes, ..., na_rm = FALSE)` shape, so they add `@rdname reduce` entries to
 `R/reduce.R` and their own `src/reduce-{name}.c` beside it.
 
-`rray_all()` and `rray_any()` take no `na_rm`, and `rray_max_pos()` and
-`rray_min_pos()` take `axis` rather than `axes` and return positions rather
-than reduced values. None of the four match `rray_reduce()`'s shape, so each
-needs its own file and topic: `R/logical-reduce.R` for the first two,
-`R/max-pos.R` for the last two, each with its own C pair. Whether any part of
-`rray_reduce()` can be shared with them is a design question for whoever picks
-them up.
+`rray_all_along()` and `rray_any_along()` share that shape too, so they are
+`@rdname reduce` entries as well. They are the one place two reducers share a C
+pair, `src/reduce-logical.c` and `src/reduce-logical.h`, because each supports
+only logical input and so is small. Their `na_rm = FALSE` behaviour follows
+`all()` and `any()`: a missing value only reaches the result when it could
+change the answer, so `all(c(FALSE, NA))` is `FALSE` and not `NA`.
+
+`rray_max_pos()` and `rray_min_pos()` take `axis` rather than `axes` and return
+positions rather than reduced values, so they do not match `rray_reduce()`'s
+shape. They need their own file and topic, `R/max-pos.R`, with its own C pair.
+Whether any part of `rray_reduce()` can be shared with them is a design question
+for whoever picks them up.
 
 ## 5.6 Indexing
 
