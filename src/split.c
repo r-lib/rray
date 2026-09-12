@@ -3,9 +3,9 @@
 #include "axes.h"
 #include "dimensionality.h"
 #include "dimensions.h"
-#include "iterator.h"
 #include "size.h"
 #include "split-names.h"
+#include "strided-iterator.h"
 #include "utils.h"
 
 #include "decl/split-decl.h"
@@ -58,8 +58,6 @@ r_obj* rray_split(
   ));
   const int* v_out_dimensions = r_int_cbegin(out_dimensions);
 
-  const r_ssize x_size =
-    rray_size_from_dimensions(v_x_dimensions, dimensionality);
   const r_ssize out_elt_size =
     rray_size_from_dimensions(v_out_elt_dimensions, dimensionality);
   const r_ssize out_size =
@@ -75,15 +73,12 @@ r_obj* rray_split(
     r_attrib_poke_dim(out_elt, out_elt_dimensions);
   }
 
-  struct rray_iterator2 it;
-  rray_iterator2_init(
-    &it,
-    x_size,
-    v_x_dimensions,
-    dimensionality,
+  struct rray_strided_iterator2 it = rray_broadcast_iterator2(
     v_out_dimensions,
     dimensionality,
     v_out_elt_dimensions,
+    dimensionality,
+    v_x_dimensions,
     dimensionality
   );
 
@@ -141,7 +136,7 @@ r_obj* rray_split(
     v_v_out[i] = DEREF(v_out[i]);                                              \
   }                                                                            \
                                                                                \
-  RRAY_ITERATOR2_FOR_EACH(it, i, out_loc, out_elt_loc, {                       \
+  RRAY_STRIDED_ITERATOR2_FOR_EACH(it, i, out_loc, out_elt_loc, {               \
     v_v_out[out_loc][out_elt_loc] = v_x[i];                                    \
   });                                                                          \
                                                                                \
@@ -151,35 +146,63 @@ r_obj* rray_split(
   r_obj* const* v_x = CONST_DEREF(x);                                          \
   r_obj* const* v_out = r_list_cbegin(out);                                    \
                                                                                \
-  RRAY_ITERATOR2_FOR_EACH(it, i, out_loc, out_elt_loc, {                       \
+  RRAY_STRIDED_ITERATOR2_FOR_EACH(it, i, out_loc, out_elt_loc, {               \
     POKE(v_out[out_loc], out_elt_loc, v_x[i]);                                 \
   });
 
-static void rray_split_lgl(r_obj* x, r_obj* out, struct rray_iterator2* it) {
+static void rray_split_lgl(
+  r_obj* x,
+  r_obj* out,
+  struct rray_strided_iterator2* it
+) {
   RRAY_SPLIT_ATOMIC(int, r_lgl_cbegin, r_lgl_begin);
 }
 
-static void rray_split_int(r_obj* x, r_obj* out, struct rray_iterator2* it) {
+static void rray_split_int(
+  r_obj* x,
+  r_obj* out,
+  struct rray_strided_iterator2* it
+) {
   RRAY_SPLIT_ATOMIC(int, r_int_cbegin, r_int_begin);
 }
 
-static void rray_split_dbl(r_obj* x, r_obj* out, struct rray_iterator2* it) {
+static void rray_split_dbl(
+  r_obj* x,
+  r_obj* out,
+  struct rray_strided_iterator2* it
+) {
   RRAY_SPLIT_ATOMIC(double, r_dbl_cbegin, r_dbl_begin);
 }
 
-static void rray_split_cpl(r_obj* x, r_obj* out, struct rray_iterator2* it) {
+static void rray_split_cpl(
+  r_obj* x,
+  r_obj* out,
+  struct rray_strided_iterator2* it
+) {
   RRAY_SPLIT_ATOMIC(r_complex, r_cpl_cbegin, r_cpl_begin);
 }
 
-static void rray_split_raw(r_obj* x, r_obj* out, struct rray_iterator2* it) {
+static void rray_split_raw(
+  r_obj* x,
+  r_obj* out,
+  struct rray_strided_iterator2* it
+) {
   RRAY_SPLIT_ATOMIC(Rbyte, r_raw_cbegin, r_raw_begin);
 }
 
-static void rray_split_chr(r_obj* x, r_obj* out, struct rray_iterator2* it) {
+static void rray_split_chr(
+  r_obj* x,
+  r_obj* out,
+  struct rray_strided_iterator2* it
+) {
   RRAY_SPLIT_BARRIER(r_chr_cbegin, r_chr_poke);
 }
 
-static void rray_split_list(r_obj* x, r_obj* out, struct rray_iterator2* it) {
+static void rray_split_list(
+  r_obj* x,
+  r_obj* out,
+  struct rray_strided_iterator2* it
+) {
   RRAY_SPLIT_BARRIER(r_list_cbegin, r_list_poke);
 }
 
