@@ -7,7 +7,7 @@
 
 #include "decl/strided-iterator-decl.h"
 
-// Broadcasting iterator
+// Strided iterator
 //
 // Walks the multidimensional point space. Reports a 1D `location` in an
 // alternate subspace.
