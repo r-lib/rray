@@ -29,14 +29,14 @@ r_obj* rray_permute_axes(
   const int dimensionality = rray_dimensionality_from_dimensions(x_dimensions);
   check_max_dimensionality(dimensionality);
 
+  r_obj* x_strides =
+    KEEP(rray_strides_from_dimensions(v_x_dimensions, dimensionality));
+  const r_ssize* v_x_strides = (const r_ssize*) r_raw_cbegin(x_strides);
+
   axes = KEEP(
     arg_as_axes_permutation(axes, dimensionality, rray_args.axes, error_call)
   );
   const int* v_axes = r_int_cbegin(axes);
-
-  r_obj* x_strides =
-    KEEP(rray_strides_from_dimensions(v_x_dimensions, dimensionality));
-  const r_ssize* v_x_strides = (const r_ssize*) r_raw_cbegin(x_strides);
 
   r_obj* dimensions = KEEP(r_alloc_integer(dimensionality));
   int* v_dimensions = r_int_begin(dimensions);
