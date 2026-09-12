@@ -153,6 +153,8 @@ static inline struct rray_strided_iterator rray_broadcast_iterator(
     }                                                                          \
   } while (0)
 
+// --------------------------------------------------------------------------
+
 // Same as `rray_strided_iterator`, but reports in two location spaces while
 // only walking the point space once
 struct rray_strided_iterator2 {
@@ -300,6 +302,8 @@ static inline struct rray_strided_iterator2 rray_broadcast_iterator2(
       }                                                                        \
     }                                                                          \
   } while (0)
+
+// --------------------------------------------------------------------------
 
 // Coalescing axes is an important optimization used to reduce the number of
 // axes we have to iterate over by "merging" adjacent compatible ones. This can
