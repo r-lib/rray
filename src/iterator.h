@@ -202,13 +202,13 @@ static inline struct rray_strided_iterator rray_broadcast_iterator(
     const r_ssize* v_strides = iterator->v_strides;                            \
                                                                                \
     const r_ssize rows = v_dimensions[0];                                      \
-    const r_ssize row_reset = rows * (ROW_STRIDE);                             \
+    const r_ssize row_reset = rows * ROW_STRIDE;                               \
                                                                                \
     while (INDEX != size) {                                                    \
       /* Apply expression for each row */                                      \
       for (r_ssize row = 0; row < rows; ++row) {                               \
         __VA_ARGS__                                                            \
-        LOCATION += (ROW_STRIDE);                                              \
+        LOCATION += ROW_STRIDE;                                                \
         ++INDEX;                                                               \
       }                                                                        \
       LOCATION -= row_reset;                                                   \
@@ -394,14 +394,14 @@ static inline struct rray_strided_iterator2 rray_broadcast_iterator2(
     const r_ssize* v_strides2 = iterator->v_strides2;                          \
                                                                                \
     const r_ssize rows = v_dimensions[0];                                      \
-    const r_ssize row_reset1 = rows * (ROW_STRIDE1);                           \
-    const r_ssize row_reset2 = rows * (ROW_STRIDE2);                           \
+    const r_ssize row_reset1 = rows * ROW_STRIDE1;                             \
+    const r_ssize row_reset2 = rows * ROW_STRIDE2;                             \
                                                                                \
     while (INDEX != size) {                                                    \
       for (r_ssize row = 0; row < rows; ++row) {                               \
         __VA_ARGS__                                                            \
-        LOCATION1 += (ROW_STRIDE1);                                            \
-        LOCATION2 += (ROW_STRIDE2);                                            \
+        LOCATION1 += ROW_STRIDE1;                                              \
+        LOCATION2 += ROW_STRIDE2;                                              \
         ++INDEX;                                                               \
       }                                                                        \
       LOCATION1 -= row_reset1;                                                 \
