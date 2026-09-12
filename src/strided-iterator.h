@@ -116,7 +116,6 @@ static inline struct rray_strided_iterator rray_strided_iterator(
         }                                                                      \
                                                                                \
         v_point[axis] = 0;                                                     \
-                                                                               \
         LOCATION -= (v_dimensions[axis] - 1) * v_strides[axis];                \
       }                                                                        \
     }                                                                          \
