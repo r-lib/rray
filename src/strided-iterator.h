@@ -9,8 +9,8 @@
 
 // Strided iterator
 //
-// Walks the multidimensional point space. Reports a 1D `location` in an
-// alternate subspace.
+// Walks the multidimensional point space defined by `v_dimensions`. Reports a
+// 1D `location` in an alternate subspace defined by `v_strides`.
 //
 // For broadcasting, the dimensions you broadcast to make up the larger point
 // space. This is walked in order. The original dimensions of the array make
