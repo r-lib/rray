@@ -31,6 +31,29 @@
 // to pull from.
 //
 // --------------------------------------------------------------------------
+// Optimization - First axis runs
+//
+// After coalescing, the iterator walks the entire first axis in one inner run
+// while holding all later axes fixed. It only updates the later point
+// coordinates between runs, rather than checking and carrying them after every
+// element. This gives the compiler a small loop where the index and locations
+// advance by fixed strides, making it much easier to optimize and vectorize.
+//
+// - Identically shaped binary array operations. Adding two [2, 4, 5] arrays
+//   coalesces to dimensions [40], so the entire operation is one first axis run
+//   where both input locations advance contiguously.
+//
+// - Broadcasting over a later axis. Broadcasting a [2, 3] array to [2, 3, 4]
+//   coalesces to dimensions [6, 4] with location strides [1, 0]. The iterator
+//   performs four first axis runs of size 6, copying six contiguous values
+//   before updating the later axis.
+//
+// - Reducing over a later axis. Reducing a [2, 3, 4] array over its third axis
+//   also coalesces to dimensions [6, 4] with output strides [1, 0]. Each first
+//   axis run accumulates one contiguous slice into six output locations before
+//   advancing along the reduced axis.
+//
+// --------------------------------------------------------------------------
 // Optimization - Coalescing
 //
 // Coalescing axes is an important optimization used to reduce the number of
