@@ -82,15 +82,15 @@
 // the remaining stride 1 work.
 //
 // - Scalar broadcasting across an entire array. Adding a scalar to a [2, 4, 5]
-//   array coalesces to one dimension [40] with stride pair [1, 0]. The scalar
-//   location stays fixed while the array and output advance contiguously. The
-//   same path is used by arithmetic, comparison, equality, and extrema
-//   operations.
+//   array coalesces to point dimensions [40], with array strides [1] and scalar
+//   strides [0]. The scalar location stays fixed while the array and output
+//   advance contiguously. The same path is used by arithmetic, comparison,
+//   equality, and extrema operations.
 //
 // - Row broadcasting within a matrix. Adding a [1, 4] row to a [2, 4] array
-//   gives the array strides [1, 2] and row strides [0, 1]. Each inner run has
-//   stride pair [1, 0], so it reuses one row value while the array and output
-//   advance contiguously.
+//   gives the array strides [1, 2] and row strides [0, 1]. Each inner run
+//   therefore reuses one row value while the array and output advance
+//   contiguously.
 //
 // - Higher dimensional row broadcasting. Adding a [1, 3, 4] array to a
 //   [2, 3, 4] array coalesces to dimensions [2, 12], with array strides [1, 2]
@@ -98,8 +98,8 @@
 //   path.
 //
 // - Shared leading dimensions of size 1. Adding [1, 1, 4] to [1, 3, 4]
-//   absorbs the shared first axis and produces dimensions [3, 4], with a stride
-//   pair [0, 1] along the first coalesced axis.
+//   absorbs the shared first axis and produces dimensions [3, 4], with first
+//   input strides [0, 1] and second input strides [1, 3].
 //
 // - Reducing over the first axis. Reducing a [2, 3, 4] array to [1, 3, 4]
 //   produces output strides [0, 1, 3], which coalesce to dimensions [2, 12]
