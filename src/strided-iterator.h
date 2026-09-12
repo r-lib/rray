@@ -39,6 +39,8 @@
 // element. This gives the compiler a small loop where the index and locations
 // advance by fixed strides, making it much easier to optimize and vectorize.
 //
+// Practical examples of when this is useful:
+//
 // - Identically shaped binary array operations. Adding two [2, 4, 5] arrays
 //   coalesces to dimensions [40], so the entire operation is one first axis run
 //   where both input locations advance contiguously.
@@ -58,8 +60,9 @@
 //
 // Coalescing axes is an important optimization used to reduce the number of
 // axes we have to iterate over by "merging" adjacent compatible ones. This can
-// 3-5x performance on its own in some cases. It's easiest to look at some
-// practical applications of how this is useful:
+// improve performance by 3-5x on its own in some cases.
+//
+// Practical examples of when this is useful:
 //
 // - Identically shaped binary array operations. Adding two arrays with
 //   dimensions [2, 4, 5] gives both inputs strides [1, 2, 8]. All adjacent axes
@@ -106,6 +109,8 @@
 // specialized path. This lets the compiler see that the location does not
 // change. For binary operations, it can then hoist the fixed load out of the
 // loop and vectorize the remaining stride 1 work.
+//
+// Practical examples of when this is useful:
 //
 // - Scalar broadcasting across an entire array. Adding a scalar to a [2, 4, 5]
 //   array coalesces to point dimensions [40], with array strides [1] and scalar
