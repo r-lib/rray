@@ -3,6 +3,7 @@
 #include "axes.h"
 #include "dimensionality.h"
 #include "dimensions.h"
+#include "size.h"
 #include "strided-iterator.h"
 #include "strides.h"
 #include "utils.h"
@@ -52,10 +53,10 @@ r_obj* rray_permute_axes(
     v_strides[i] = v_x_strides[axis];
   }
 
+  const r_ssize size = rray_size_from_dimensions(v_dimensions, dimensionality);
+
   struct rray_strided_iterator it =
     rray_strided_iterator(v_dimensions, dimensionality, v_strides);
-
-  const r_ssize size = it.size;
 
   r_obj* out;
 
