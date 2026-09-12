@@ -12,6 +12,9 @@
 // Walks the multidimensional point space defined by `v_dimensions`. Reports a
 // 1D `location` in an alternate subspace defined by `v_strides`.
 //
+// --------------------------------------------------------------------------
+// Examples
+//
 // For broadcasting, the dimensions you broadcast to make up the larger point
 // space. This is walked in order. The original dimensions of the array make
 // up the subspace. So as you walk the output's point space you can fetch
@@ -26,6 +29,113 @@
 // original dimensions of the array make up the subspace. So as you walk the
 // output's point space you can fetch `location`s back into your original array
 // to pull from.
+//
+// --------------------------------------------------------------------------
+// Optimization - First axis runs
+//
+// After coalescing, the iterator walks the entire first axis in one inner run
+// while holding all later axes fixed. It only updates the later point
+// coordinates between runs, rather than checking and carrying them after every
+// element. This gives the compiler a small loop where the index and locations
+// advance by fixed strides, making it much easier to optimize and vectorize.
+//
+// Practical examples of when this is useful:
+//
+// - Identically shaped binary array operations. Adding two [2, 4, 5] arrays
+//   coalesces to dimensions [40], so the entire operation is one first axis run
+//   where both input locations advance contiguously.
+//
+// - Broadcasting over a later axis. Broadcasting a [2, 3] array to [2, 3, 4]
+//   coalesces to dimensions [6, 4] with location strides [1, 0]. The iterator
+//   performs four first axis runs of size 6, copying six contiguous values
+//   before updating the later axis.
+//
+// - Reducing over a later axis. Reducing a [2, 3, 4] array over its third axis
+//   also coalesces to dimensions [6, 4] with output strides [1, 0]. Each first
+//   axis run accumulates one contiguous slice into six output locations before
+//   advancing along the reduced axis.
+//
+// --------------------------------------------------------------------------
+// Optimization - Coalescing
+//
+// Coalescing axes is an important optimization used to reduce the number of
+// axes we have to iterate over by "merging" adjacent compatible ones. This can
+// improve performance by 3-5x on its own in some cases.
+//
+// Practical examples of when this is useful:
+//
+// - Identically shaped binary array operations. Adding two arrays with
+//   dimensions [2, 4, 5] gives both inputs strides [1, 2, 8]. All adjacent axes
+//   coalesce (2 * 1 = 2, 4 * 2 = 8) into one dimension [40] with stride [1],
+//   resulting in one flat vectorizable loop.
+//
+// - Scalar broadcasting across an entire array. Adding a scalar to a [2, 4, 5]
+//   array gives the array strides [1, 2, 8] and the scalar strides [0, 0, 0].
+//   Both coalesce completely, producing a [40] loop with array stride [1] and
+//   scalar stride [0].
+//
+// - Contiguous adjacent axes within a broadcast operation. Broadcasting a
+//   [2, 3] array over point dimensions [2, 3, 4] produces location strides
+//   [1, 2, 0]. The adjacent axes 1 and 2 coalesce (2 * 1 = 2) into size 6,
+//   leaving dimensions [6, 4] and strides [1, 0].
+//
+// - Contiguous regions within a reduction. Reducing a [2, 3, 4] array over its
+//   third axis maps into a [2, 3] result using location strides [1, 2, 0].
+//   Coalescing produces dimensions [6, 4], making it the same as the broadcast
+//   example above.
+//
+// - Point-space dimensions of size 1. Output point dimensions of [1, 3, 4] can
+//   have strides [0, 1, 3]. The dimension 1 first axis is absorbed into the
+//   dimension 3 second axis, adopting stride 1, after which the dimension 4
+//   third axis also coalesces. The result is one dimension [12] with stride
+//   [1]. Note that this isn't broadcasting. This is when both input and output
+//   have an axis that stays dimension 1, which is somewhat rare.
+//
+// For iterator2, note that both sets of location strides must be coalescible,
+// as coalescing changes the output dimensionality, so it's all or nothing.
+//
+// --------------------------------------------------------------------------
+// Optimization - Fixed zero stride paths
+//
+// After coalescing, the first axis is walked by the inner loop. A stride of 0
+// on this axis means that a subspace location stays fixed while the point space
+// moves along it. Broadcasting uses this to reuse an input value. Reducing uses
+// it to accumulate into the same output location. A zero stride on a later axis
+// does not use this path because later axes advance between inner runs.
+//
+// When the inner loop receives the stride as a runtime value, the compiler
+// can't prove that the location is fixed and falls back to a scalar loop. The
+// public iteration macros check for a zero stride and pass a literal 0 to a
+// specialized path. This lets the compiler see that the location does not
+// change. For binary operations, it can then hoist the fixed load out of the
+// loop and vectorize the remaining stride 1 work.
+//
+// Practical examples of when this is useful:
+//
+// - Scalar broadcasting across an entire array. Adding a scalar to a [2, 4, 5]
+//   array coalesces to point dimensions [40], with array strides [1] and scalar
+//   strides [0]. The scalar location stays fixed while the array and output
+//   advance contiguously. The same path is used by arithmetic, comparison,
+//   equality, and extrema operations.
+//
+// - Row broadcasting within a matrix. Adding a [1, 4] row to a [2, 4] array
+//   gives the array strides [1, 2] and row strides [0, 1]. Each inner run
+//   therefore reuses one row value while the array and output advance
+//   contiguously.
+//
+// - Higher dimensional row broadcasting. Adding a [1, 3, 4] array to a
+//   [2, 3, 4] array coalesces to dimensions [2, 12], with array strides [1, 2]
+//   and broadcast strides [0, 1]. Each of the 12 inner runs uses the fixed
+//   path.
+//
+// - Shared leading dimensions of size 1. Adding [1, 1, 4] to [1, 3, 4]
+//   absorbs the shared first axis and produces dimensions [3, 4], with first
+//   input strides [0, 1] and second input strides [1, 3].
+//
+// - Reducing over the first axis. Reducing a [2, 3, 4] array to [1, 3, 4]
+//   produces output strides [0, 1, 3], which coalesce to dimensions [2, 12]
+//   with output strides [0, 1]. Each inner run accumulates into one fixed
+//   output location.
 struct rray_strided_iterator {
   r_ssize index;
   r_ssize size;
@@ -367,40 +477,6 @@ static inline struct rray_strided_iterator2 rray_broadcast_iterator2(
 
 // --------------------------------------------------------------------------
 
-// Coalescing axes is an important optimization used to reduce the number of
-// axes we have to iterate over by "merging" adjacent compatible ones. This can
-// 3-5x performance on its own in some cases. It's easiest to look at some
-// practical applications of how this is useful:
-//
-// - Identically shaped binary array operations. Adding two arrays with
-//   dimensions [2, 4, 5] gives both inputs strides [1, 2, 8]. All adjacent axes
-//   coalesce (2 * 1 = 2, 4 * 2 = 8) into one dimension [40] with stride [1],
-//   resulting in one flat vectorizable loop.
-//
-// - Scalar broadcasting across an entire array. Adding a scalar to a [2, 4, 5]
-//   array gives the array strides [1, 2, 8] and the scalar strides [0, 0, 0].
-//   Both coalesce completely, producing a [40] loop with array stride [1] and
-//   scalar stride [0].
-//
-// - Contiguous adjacent axes within a broadcast operation. Broadcasting a
-//   [2, 3] array over point dimensions [2, 3, 4] produces location strides
-//   [1, 2, 0]. The adjacent axes 1 and 2 coalesce (2 * 1 = 2) into size 6,
-//   leaving dimensions [6, 4] and strides [1, 0].
-//
-// - Contiguous regions within a reduction. Reducing a [2, 3, 4] array over its
-//   third axis maps into a [2, 3] result using location strides [1, 2, 0].
-//   Coalescing produces dimensions [6, 4], making it the same as the broadcast
-//   example above.
-//
-// - Point-space dimensions of size 1. Output point dimensions of [1, 3, 4] can
-//   have strides [0, 1, 3]. The dimension 1 first axis is absorbed into the
-//   dimension 3 second axis, adopting stride 1, after which the dimension 4
-//   third axis also coalesces. The result is one dimension [12] with stride
-//   [1]. Note that this isn't broadcasting. This is when both input and output
-//   have an axis that stays dimension 1, which is somewhat rare.
-//
-// For iterator2, note that both sets of location strides must be coalescible,
-// as coalescing changes the output dimensionality, so it's all or nothing.
 static inline int rray__strided_iterator_axes_coalesce(
   r_ssize* v_dimensions,
   r_ssize* v_strides,
