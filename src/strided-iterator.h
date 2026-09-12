@@ -68,6 +68,38 @@ static inline struct rray_strided_iterator rray_strided_iterator(
   return it;
 }
 
+// Strided iterator specific to broadcasting
+//
+// An axis of `from` with a dimension of 1 gets a stride of 0, so it stands
+// still while the matching axis of `to` walks. Axes past
+// `from_dimensionality` are treated as dimension 1.
+static inline struct rray_strided_iterator rray_broadcast_iterator(
+  const int* v_from_dimensions,
+  int from_dimensionality,
+  const int* v_to_dimensions,
+  int to_dimensionality
+) {
+  check_max_dimensionality(to_dimensionality);
+
+  rray__check_broadcast_dimensions(
+    v_from_dimensions,
+    from_dimensionality,
+    v_to_dimensions,
+    to_dimensionality
+  );
+
+  r_ssize v_strides[RRAY_MAX_DIMENSIONALITY];
+
+  rray__fill_broadcast_strides(
+    v_from_dimensions,
+    from_dimensionality,
+    to_dimensionality,
+    v_strides
+  );
+
+  return rray_strided_iterator(v_to_dimensions, to_dimensionality, v_strides);
+}
+
 // For-loop-style iteration, giving access to the flat index and mapped
 // location.
 //
@@ -195,6 +227,51 @@ static inline bool rray__strided_iterator_axes_coalescible(
 ) {
   return left_dimension == 1 || right_dimension == 1 ||
     right_stride == left_dimension * left_stride;
+}
+
+static inline void rray__check_broadcast_dimensions(
+  const int* v_from_dimensions,
+  int from_dimensionality,
+  const int* v_to_dimensions,
+  int to_dimensionality
+) {
+  if (from_dimensionality > to_dimensionality) {
+    r_stop_internal(
+      "Can't broadcast from dimensionality %d to %d. "
+      "Can't decrease dimensionality.",
+      from_dimensionality,
+      to_dimensionality
+    );
+  }
+
+  for (int i = 0; i < from_dimensionality; ++i) {
+    const int from_dimension = v_from_dimensions[i];
+    const int to_dimension = v_to_dimensions[i];
+
+    if (from_dimension != to_dimension && from_dimension != 1) {
+      r_stop_internal(
+        "Can't broadcast axis %d from dimension %d to %d.",
+        i + 1,
+        from_dimension,
+        to_dimension
+      );
+    }
+  }
+}
+
+static inline void rray__fill_broadcast_strides(
+  const int* v_from_dimensions,
+  int from_dimensionality,
+  int to_dimensionality,
+  r_ssize* v_out
+) {
+  r_ssize stride = 1;
+
+  for (int i = 0; i < to_dimensionality; ++i) {
+    const int dimension = (i < from_dimensionality) ? v_from_dimensions[i] : 1;
+    v_out[i] = (dimension == 1) ? 0 : stride;
+    stride *= dimension;
+  }
 }
 
 #endif
