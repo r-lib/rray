@@ -4,12 +4,12 @@
 #include "rlang.h"
 
 #include "arg.h"
-#include "iterator.h"
+#include "strided-iterator.h"
 
 typedef r_obj* (*rray_reduce_fn)(
   r_obj* x,
   r_ssize out_size,
-  struct rray_iterator* it
+  struct rray_strided_iterator* it
 );
 
 typedef rray_reduce_fn (*rray_reduce_fn_switch)(
@@ -53,7 +53,7 @@ r_no_return void stop_unsupported_reduce(
                                                                                \
   const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
                                                                                \
-  RRAY_ITERATOR_FOR_EACH(it, i, loc, {                                         \
+  RRAY_STRIDED_ITERATOR_FOR_EACH(it, i, loc, {                                 \
     v_out[loc] = ONE(v_out[loc], v_x[i]);                                      \
   });                                                                          \
                                                                                \

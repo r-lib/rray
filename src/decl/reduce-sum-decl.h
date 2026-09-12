@@ -8,42 +8,42 @@ static rray_reduce_fn rray_sum_along_switch(
 static r_obj* rray_sum_along_lgl(
   r_obj* x,
   r_ssize out_size,
-  struct rray_iterator* it
+  struct rray_strided_iterator* it
 );
 static r_obj* rray_sum_along_lgl_na_rm(
   r_obj* x,
   r_ssize out_size,
-  struct rray_iterator* it
+  struct rray_strided_iterator* it
 );
 static r_obj* rray_sum_along_int(
   r_obj* x,
   r_ssize out_size,
-  struct rray_iterator* it
+  struct rray_strided_iterator* it
 );
 static r_obj* rray_sum_along_int_na_rm(
   r_obj* x,
   r_ssize out_size,
-  struct rray_iterator* it
+  struct rray_strided_iterator* it
 );
 static r_obj* rray_sum_along_dbl(
   r_obj* x,
   r_ssize out_size,
-  struct rray_iterator* it
+  struct rray_strided_iterator* it
 );
 static r_obj* rray_sum_along_dbl_na_rm(
   r_obj* x,
   r_ssize out_size,
-  struct rray_iterator* it
+  struct rray_strided_iterator* it
 );
 static r_obj* rray_sum_along_cpl(
   r_obj* x,
   r_ssize out_size,
-  struct rray_iterator* it
+  struct rray_strided_iterator* it
 );
 static r_obj* rray_sum_along_cpl_na_rm(
   r_obj* x,
   r_ssize out_size,
-  struct rray_iterator* it
+  struct rray_strided_iterator* it
 );
 
 static inline int rray_sum_along_lgl_one(int out, int x);
