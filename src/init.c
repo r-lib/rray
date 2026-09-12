@@ -86,6 +86,18 @@ extern r_obj* ffi_rray_product_along(
   r_obj* ffi_na_rm,
   r_obj* ffi_frame
 );
+extern r_obj* ffi_rray_all_along(
+  r_obj* ffi_x,
+  r_obj* ffi_axes,
+  r_obj* ffi_na_rm,
+  r_obj* ffi_frame
+);
+extern r_obj* ffi_rray_any_along(
+  r_obj* ffi_x,
+  r_obj* ffi_axes,
+  r_obj* ffi_na_rm,
+  r_obj* ffi_frame
+);
 extern r_obj* ffi_rray_ptype(r_obj* ffi_x, r_obj* ffi_frame);
 extern r_obj* ffi_rray_ptype2(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame);
 extern r_obj* ffi_rray_ptype_common(
@@ -176,6 +188,8 @@ static const R_CallMethodDef CallEntries[] = {
   {"ffi_rray_permute_axes", (DL_FUNC) &ffi_rray_permute_axes, 3},
   {"ffi_rray_sum_along", (DL_FUNC) &ffi_rray_sum_along, 4},
   {"ffi_rray_product_along", (DL_FUNC) &ffi_rray_product_along, 4},
+  {"ffi_rray_all_along", (DL_FUNC) &ffi_rray_all_along, 4},
+  {"ffi_rray_any_along", (DL_FUNC) &ffi_rray_any_along, 4},
   {"ffi_rray_ptype", (DL_FUNC) &ffi_rray_ptype, 2},
   {"ffi_rray_ptype2", (DL_FUNC) &ffi_rray_ptype2, 3},
   {"ffi_rray_ptype_common", (DL_FUNC) &ffi_rray_ptype_common, 3},
