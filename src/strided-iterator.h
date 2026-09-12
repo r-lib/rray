@@ -67,6 +67,44 @@
 //
 // For iterator2, note that both sets of location strides must be coalescible,
 // as coalescing changes the output dimensionality, so it's all or nothing.
+//
+// --------------------------------------------------------------------------
+// Optimization - Fixed zero stride paths
+//
+// A stride of 0 means that a subspace location stays fixed while the point
+// space moves along that axis. Broadcasting uses this to reuse an input value.
+// Reducing uses it to accumulate into the same output location. When the inner
+// loop receives the stride as a runtime value, the compiler can't prove that
+// the location is fixed and falls back to a scalar loop. The public iteration
+// macros check for a zero stride and pass a literal 0 to a specialized path.
+// This lets the compiler see that the location does not change. For binary
+// operations, it can then hoist the fixed load out of the loop and vectorize
+// the remaining stride 1 work.
+//
+// - Scalar broadcasting across an entire array. Adding a scalar to a [2, 4, 5]
+//   array coalesces to one dimension [40] with stride pair [1, 0]. The scalar
+//   location stays fixed while the array and output advance contiguously. The
+//   same path is used by arithmetic, comparison, equality, and extrema
+//   operations.
+//
+// - Row broadcasting within a matrix. Adding a [1, 4] row to a [2, 4] array
+//   gives the array strides [1, 2] and row strides [0, 1]. Each inner run has
+//   stride pair [1, 0], so it reuses one row value while the array and output
+//   advance contiguously.
+//
+// - Higher dimensional row broadcasting. Adding a [1, 3, 4] array to a
+//   [2, 3, 4] array coalesces to dimensions [2, 12], with array strides [1, 2]
+//   and broadcast strides [0, 1]. Each of the 12 inner runs uses the fixed
+//   path.
+//
+// - Shared leading dimensions of size 1. Adding [1, 1, 4] to [1, 3, 4]
+//   absorbs the shared first axis and produces dimensions [3, 4], with a stride
+//   pair [0, 1] along the first coalesced axis.
+//
+// - Reducing over the first axis. Reducing a [2, 3, 4] array to [1, 3, 4]
+//   produces output strides [0, 1, 3], which coalesce to dimensions [2, 12]
+//   with output strides [0, 1]. Each inner run accumulates into one fixed
+//   output location.
 struct rray_strided_iterator {
   r_ssize index;
   r_ssize size;
