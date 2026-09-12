@@ -68,12 +68,6 @@ static inline struct rray_strided_iterator rray_strided_iterator(
   return it;
 }
 
-static inline r_ssize rray_strided_iterator_size(
-  const struct rray_strided_iterator* it
-) {
-  return it->size;
-}
-
 // For-loop-style iteration, giving access to the flat index and mapped
 // location.
 //

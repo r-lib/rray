@@ -52,29 +52,31 @@ r_obj* rray_permute_axes(
   struct rray_strided_iterator it =
     rray_strided_iterator(v_dimensions, dimensionality, v_strides);
 
+  const r_ssize size = it.size;
+
   r_obj* out;
 
   switch (r_typeof(x)) {
   case R_TYPE_logical:
-    out = rray_permute_axes_lgl(x, &it);
+    out = rray_permute_axes_lgl(x, size, &it);
     break;
   case R_TYPE_integer:
-    out = rray_permute_axes_int(x, &it);
+    out = rray_permute_axes_int(x, size, &it);
     break;
   case R_TYPE_double:
-    out = rray_permute_axes_dbl(x, &it);
+    out = rray_permute_axes_dbl(x, size, &it);
     break;
   case R_TYPE_complex:
-    out = rray_permute_axes_cpl(x, &it);
+    out = rray_permute_axes_cpl(x, size, &it);
     break;
   case R_TYPE_raw:
-    out = rray_permute_axes_raw(x, &it);
+    out = rray_permute_axes_raw(x, size, &it);
     break;
   case R_TYPE_character:
-    out = rray_permute_axes_chr(x, &it);
+    out = rray_permute_axes_chr(x, size, &it);
     break;
   case R_TYPE_list:
-    out = rray_permute_axes_list(x, &it);
+    out = rray_permute_axes_list(x, size, &it);
     break;
   default:
     r_stop_unreachable();
@@ -94,7 +96,7 @@ r_obj* rray_permute_axes(
 }
 
 #define RRAY_PERMUTE_AXES_ATOMIC(RTYPE, CTYPE, CONST_DEREF, DEREF)             \
-  r_obj* out = KEEP(r_alloc_vector(RTYPE, rray_strided_iterator_size(it)));    \
+  r_obj* out = KEEP(r_alloc_vector(RTYPE, size));                              \
   const CTYPE* v_x = CONST_DEREF(x);                                           \
   CTYPE* v_out = DEREF(out);                                                   \
                                                                                \
@@ -104,7 +106,7 @@ r_obj* rray_permute_axes(
   return out;
 
 #define RRAY_PERMUTE_AXES_BARRIER(RTYPE, CONST_DEREF, POKE)                    \
-  r_obj* out = KEEP(r_alloc_vector(RTYPE, rray_strided_iterator_size(it)));    \
+  r_obj* out = KEEP(r_alloc_vector(RTYPE, size));                              \
   r_obj* const* v_x = CONST_DEREF(x);                                          \
                                                                                \
   RRAY_STRIDED_ITERATOR_FOR_EACH(it, i, loc, { POKE(out, i, v_x[loc]); });     \
@@ -114,6 +116,7 @@ r_obj* rray_permute_axes(
 
 static r_obj* rray_permute_axes_lgl(
   r_obj* x,
+  r_ssize size,
   struct rray_strided_iterator* it
 ) {
   RRAY_PERMUTE_AXES_ATOMIC(R_TYPE_logical, int, r_lgl_cbegin, r_lgl_begin);
@@ -121,6 +124,7 @@ static r_obj* rray_permute_axes_lgl(
 
 static r_obj* rray_permute_axes_int(
   r_obj* x,
+  r_ssize size,
   struct rray_strided_iterator* it
 ) {
   RRAY_PERMUTE_AXES_ATOMIC(R_TYPE_integer, int, r_int_cbegin, r_int_begin);
@@ -128,6 +132,7 @@ static r_obj* rray_permute_axes_int(
 
 static r_obj* rray_permute_axes_dbl(
   r_obj* x,
+  r_ssize size,
   struct rray_strided_iterator* it
 ) {
   RRAY_PERMUTE_AXES_ATOMIC(R_TYPE_double, double, r_dbl_cbegin, r_dbl_begin);
@@ -135,6 +140,7 @@ static r_obj* rray_permute_axes_dbl(
 
 static r_obj* rray_permute_axes_cpl(
   r_obj* x,
+  r_ssize size,
   struct rray_strided_iterator* it
 ) {
   RRAY_PERMUTE_AXES_ATOMIC(
@@ -147,6 +153,7 @@ static r_obj* rray_permute_axes_cpl(
 
 static r_obj* rray_permute_axes_raw(
   r_obj* x,
+  r_ssize size,
   struct rray_strided_iterator* it
 ) {
   RRAY_PERMUTE_AXES_ATOMIC(R_TYPE_raw, Rbyte, r_raw_cbegin, r_raw_begin);
@@ -154,6 +161,7 @@ static r_obj* rray_permute_axes_raw(
 
 static r_obj* rray_permute_axes_chr(
   r_obj* x,
+  r_ssize size,
   struct rray_strided_iterator* it
 ) {
   RRAY_PERMUTE_AXES_BARRIER(R_TYPE_character, r_chr_cbegin, r_chr_poke);
@@ -161,6 +169,7 @@ static r_obj* rray_permute_axes_chr(
 
 static r_obj* rray_permute_axes_list(
   r_obj* x,
+  r_ssize size,
   struct rray_strided_iterator* it
 ) {
   RRAY_PERMUTE_AXES_BARRIER(R_TYPE_list, r_list_cbegin, r_list_poke);
