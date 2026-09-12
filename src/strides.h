@@ -3,9 +3,10 @@
 
 #include "rlang.h"
 
-r_obj* rray_strides_from_dimensions(
+void rray_fill_strides_from_dimensions(
   const int* v_dimensions,
-  int dimensionality
+  int dimensionality,
+  r_ssize* v_out
 );
 
 #endif
