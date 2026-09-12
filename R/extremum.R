@@ -1,4 +1,4 @@
-#' Parallel maxima and minima
+#' Elementwise maximum and minimum
 #'
 #' @description
 #' - `rray_max()` computes the elementwise maximum of two arrays.

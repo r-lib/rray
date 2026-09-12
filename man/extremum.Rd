@@ -4,7 +4,7 @@
 \alias{extremum}
 \alias{rray_max}
 \alias{rray_min}
-\title{Parallel maxima and minima}
+\title{Elementwise maximum and minimum}
 \usage{
 rray_max(x, y, ..., na_rm = FALSE)
 
