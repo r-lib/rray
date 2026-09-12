@@ -45,16 +45,6 @@ The dimensionality of \code{x} is retained in the result, with the reduced axes
 collapsed to size 1.
 
 If summing an integer array would overflow, an error is thrown.
-
-\code{rray_all_along()} and \code{rray_any_along()} require a logical \code{x}, and return a
-logical array. A missing value only reaches the result when it could change
-the answer, matching \code{\link[=all]{all()}} and \code{\link[=any]{any()}}:
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{rray_all_along(c(TRUE, NA), 1)    # NA
-rray_all_along(c(FALSE, NA), 1)   # FALSE
-rray_any_along(c(TRUE, NA), 1)    # TRUE
-rray_any_along(c(FALSE, NA), 1)   # NA
-}\if{html}{\out{</div>}}
 }
 \section{Casting}{
 

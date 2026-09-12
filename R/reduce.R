@@ -17,17 +17,6 @@
 #'
 #' If summing an integer array would overflow, an error is thrown.
 #'
-#' `rray_all_along()` and `rray_any_along()` require a logical `x`, and return a
-#' logical array. A missing value only reaches the result when it could change
-#' the answer, matching [all()] and [any()]:
-#'
-#' ```
-#' rray_all_along(c(TRUE, NA), 1)    # NA
-#' rray_all_along(c(FALSE, NA), 1)   # FALSE
-#' rray_any_along(c(TRUE, NA), 1)    # TRUE
-#' rray_any_along(c(FALSE, NA), 1)   # NA
-#' ```
-#'
 #' @section Casting:
 #' Certain inputs are upcast, changing the return type:
 #'
