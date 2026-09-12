@@ -163,43 +163,23 @@ static r_obj* rray_any_along_lgl_na_rm(
 }
 
 static inline int rray_all_along_lgl_one(int out, int x) {
-  if (out == 0 || x == 0) {
-    return 0;
-  }
-
-  if (out == r_globals.na_lgl || x == r_globals.na_lgl) {
-    return r_globals.na_lgl;
-  }
-
-  return 1;
+  const bool any_false = !out || !x;
+  const bool equal = out == x;
+  return !any_false * (equal * out + !equal * r_globals.na_lgl);
 }
 
 static inline int rray_all_along_lgl_one_na_rm(int out, int x) {
-  if (x == 0) {
-    return 0;
-  }
-
-  return out;
+  return out && x;
 }
 
 static inline int rray_any_along_lgl_one(int out, int x) {
-  if (out == 1 || x == 1) {
-    return 1;
-  }
-
-  if (out == r_globals.na_lgl || x == r_globals.na_lgl) {
-    return r_globals.na_lgl;
-  }
-
-  return 0;
+  const bool any_true = (out == 1) || (x == 1);
+  const bool equal = out == x;
+  return any_true + !any_true * (equal * out + !equal * r_globals.na_lgl);
 }
 
 static inline int rray_any_along_lgl_one_na_rm(int out, int x) {
-  if (x == 1) {
-    return 1;
-  }
-
-  return out;
+  return out || (x == 1);
 }
 
 static r_no_return void stop_non_logical_reduce(
