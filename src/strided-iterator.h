@@ -71,15 +71,18 @@
 // --------------------------------------------------------------------------
 // Optimization - Fixed zero stride paths
 //
-// A stride of 0 means that a subspace location stays fixed while the point
-// space moves along that axis. Broadcasting uses this to reuse an input value.
-// Reducing uses it to accumulate into the same output location. When the inner
-// loop receives the stride as a runtime value, the compiler can't prove that
-// the location is fixed and falls back to a scalar loop. The public iteration
-// macros check for a zero stride and pass a literal 0 to a specialized path.
-// This lets the compiler see that the location does not change. For binary
-// operations, it can then hoist the fixed load out of the loop and vectorize
-// the remaining stride 1 work.
+// After coalescing, the first axis is walked by the inner loop. A stride of 0
+// on this axis means that a subspace location stays fixed while the point space
+// moves along it. Broadcasting uses this to reuse an input value. Reducing uses
+// it to accumulate into the same output location. A zero stride on a later axis
+// does not use this path because later axes advance between inner runs.
+//
+// When the inner loop receives the stride as a runtime value, the compiler
+// can't prove that the location is fixed and falls back to a scalar loop. The
+// public iteration macros check for a zero stride and pass a literal 0 to a
+// specialized path. This lets the compiler see that the location does not
+// change. For binary operations, it can then hoist the fixed load out of the
+// loop and vectorize the remaining stride 1 work.
 //
 // - Scalar broadcasting across an entire array. Adding a scalar to a [2, 4, 5]
 //   array coalesces to point dimensions [40], with array strides [1] and scalar
