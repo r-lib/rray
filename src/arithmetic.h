@@ -4,7 +4,7 @@
 #include "rlang.h"
 
 #include "arg.h"
-#include "strided-iterator.h"
+#include "iterator.h"
 
 typedef r_obj* (*rray_binary_arithmetic_fn)(
   r_obj* x,

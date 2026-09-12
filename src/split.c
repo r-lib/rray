@@ -3,9 +3,9 @@
 #include "axes.h"
 #include "dimensionality.h"
 #include "dimensions.h"
+#include "iterator.h"
 #include "size.h"
 #include "split-names.h"
-#include "strided-iterator.h"
 #include "utils.h"
 
 #include "decl/split-decl.h"

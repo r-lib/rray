@@ -3,8 +3,8 @@
 #include "axes.h"
 #include "dimensionality.h"
 #include "dimensions.h"
+#include "iterator.h"
 #include "size.h"
-#include "strided-iterator.h"
 #include "strides.h"
 #include "utils.h"
 
