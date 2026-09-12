@@ -153,6 +153,154 @@ static inline struct rray_strided_iterator rray_broadcast_iterator(
     }                                                                          \
   } while (0)
 
+// Same as `rray_strided_iterator`, but reports in two location spaces while
+// only walking the point space once
+struct rray_strided_iterator2 {
+  r_ssize index;
+  r_ssize size;
+
+  // Since coalescing can multiply two axes' dimensions together, we use an
+  // `r_ssize` here even though an individual dimension can't be above an `int`.
+  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];
+  r_ssize v_dimensions[RRAY_MAX_DIMENSIONALITY];
+  int dimensionality;
+
+  r_ssize location1;
+  r_ssize v_strides1[RRAY_MAX_DIMENSIONALITY];
+
+  r_ssize location2;
+  r_ssize v_strides2[RRAY_MAX_DIMENSIONALITY];
+};
+
+static inline struct rray_strided_iterator2 rray_strided_iterator2(
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_strides1,
+  const r_ssize* v_strides2
+) {
+  check_max_dimensionality(dimensionality);
+
+  struct rray_strided_iterator2 it;
+
+  it.index = 0;
+  it.size = rray_size_from_dimensions(v_dimensions, dimensionality);
+
+  for (int i = 0; i < dimensionality; ++i) {
+    it.v_dimensions[i] = (r_ssize) v_dimensions[i];
+    it.v_strides1[i] = v_strides1[i];
+    it.v_strides2[i] = v_strides2[i];
+  }
+  memset(it.v_point, 0, sizeof(r_ssize) * dimensionality);
+  it.location1 = 0;
+  it.location2 = 0;
+
+  it.dimensionality = rray__strided_iterator_axes_coalesce2(
+    it.v_dimensions,
+    it.v_strides1,
+    it.v_strides2,
+    dimensionality
+  );
+
+  return it;
+}
+
+// Same as `rray_broadcast_iterator()`, but broadcasts two `from` spaces into
+// one shared `to` space
+static inline struct rray_strided_iterator2 rray_broadcast_iterator2(
+  const int* v_from1_dimensions,
+  int from1_dimensionality,
+  const int* v_from2_dimensions,
+  int from2_dimensionality,
+  const int* v_to_dimensions,
+  int to_dimensionality
+) {
+  check_max_dimensionality(to_dimensionality);
+
+  rray__check_broadcast_dimensions(
+    v_from1_dimensions,
+    from1_dimensionality,
+    v_to_dimensions,
+    to_dimensionality
+  );
+
+  rray__check_broadcast_dimensions(
+    v_from2_dimensions,
+    from2_dimensionality,
+    v_to_dimensions,
+    to_dimensionality
+  );
+
+  r_ssize v_strides1[RRAY_MAX_DIMENSIONALITY];
+  r_ssize v_strides2[RRAY_MAX_DIMENSIONALITY];
+
+  rray__fill_broadcast_strides(
+    v_from1_dimensions,
+    from1_dimensionality,
+    to_dimensionality,
+    v_strides1
+  );
+
+  rray__fill_broadcast_strides(
+    v_from2_dimensions,
+    from2_dimensionality,
+    to_dimensionality,
+    v_strides2
+  );
+
+  return rray_strided_iterator2(
+    v_to_dimensions,
+    to_dimensionality,
+    v_strides1,
+    v_strides2
+  );
+}
+
+#define RRAY_STRIDED_ITERATOR2_FOR_EACH(IT, INDEX, LOCATION1, LOCATION2, ...)  \
+  do {                                                                         \
+    struct rray_strided_iterator2* const iterator = (IT);                      \
+    r_ssize INDEX = iterator->index;                                           \
+    const r_ssize size = iterator->size;                                       \
+    r_ssize* v_point = iterator->v_point;                                      \
+    const r_ssize* v_dimensions = iterator->v_dimensions;                      \
+    const int dimensionality = iterator->dimensionality;                       \
+    r_ssize LOCATION1 = iterator->location1;                                   \
+    const r_ssize* v_strides1 = iterator->v_strides1;                          \
+    r_ssize LOCATION2 = iterator->location2;                                   \
+    const r_ssize* v_strides2 = iterator->v_strides2;                          \
+                                                                               \
+    const r_ssize rows = v_dimensions[0];                                      \
+    const r_ssize row_stride1 = v_strides1[0];                                 \
+    const r_ssize row_stride2 = v_strides2[0];                                 \
+    const r_ssize row_reset1 = rows * row_stride1;                             \
+    const r_ssize row_reset2 = rows * row_stride2;                             \
+                                                                               \
+    while (INDEX != size) {                                                    \
+      for (r_ssize row = 0; row < rows; ++row) {                               \
+        __VA_ARGS__                                                            \
+        LOCATION1 += row_stride1;                                              \
+        LOCATION2 += row_stride2;                                              \
+        ++INDEX;                                                               \
+      }                                                                        \
+      LOCATION1 -= row_reset1;                                                 \
+      LOCATION2 -= row_reset2;                                                 \
+                                                                               \
+      for (int axis = 1; axis < dimensionality; ++axis) {                      \
+        ++v_point[axis];                                                       \
+                                                                               \
+        if (v_point[axis] < v_dimensions[axis]) {                              \
+          LOCATION1 += v_strides1[axis];                                       \
+          LOCATION2 += v_strides2[axis];                                       \
+          break;                                                               \
+        }                                                                      \
+                                                                               \
+        v_point[axis] = 0;                                                     \
+                                                                               \
+        LOCATION1 -= (v_dimensions[axis] - 1) * v_strides1[axis];              \
+        LOCATION2 -= (v_dimensions[axis] - 1) * v_strides2[axis];              \
+      }                                                                        \
+    }                                                                          \
+  } while (0)
+
 // Coalescing axes is an important optimization used to reduce the number of
 // axes we have to iterate over by "merging" adjacent compatible ones. This can
 // 3-5x performance on its own in some cases. It's easiest to look at some
@@ -184,6 +332,9 @@ static inline struct rray_strided_iterator rray_broadcast_iterator(
 //   third axis also coalesces. The result is one dimension [12] with stride
 //   [1]. Note that this isn't broadcasting. This is when both input and output
 //   have an axis that stays dimension 1, which is somewhat rare.
+//
+// For iterator2, note that both sets of location strides must be coalescible,
+// as coalescing changes the output dimensionality, so it's all or nothing.
 static inline int rray__strided_iterator_axes_coalesce(
   r_ssize* v_dimensions,
   r_ssize* v_strides,
@@ -213,6 +364,52 @@ static inline int rray__strided_iterator_axes_coalesce(
       ++out_axis;
       v_dimensions[out_axis] = right_dimension;
       v_strides[out_axis] = right_stride;
+    }
+  }
+
+  return out_axis + 1;
+}
+
+static inline int rray__strided_iterator_axes_coalesce2(
+  r_ssize* v_dimensions,
+  r_ssize* v_strides1,
+  r_ssize* v_strides2,
+  int dimensionality
+) {
+  int out_axis = 0;
+
+  for (int axis = 1; axis < dimensionality; ++axis) {
+    const r_ssize left_dimension = v_dimensions[out_axis];
+    const r_ssize left_stride1 = v_strides1[out_axis];
+    const r_ssize left_stride2 = v_strides2[out_axis];
+    const r_ssize right_dimension = v_dimensions[axis];
+    const r_ssize right_stride1 = v_strides1[axis];
+    const r_ssize right_stride2 = v_strides2[axis];
+
+    const bool coalescible1 = rray__strided_iterator_axes_coalescible(
+      left_dimension,
+      left_stride1,
+      right_dimension,
+      right_stride1
+    );
+    const bool coalescible2 = rray__strided_iterator_axes_coalescible(
+      left_dimension,
+      left_stride2,
+      right_dimension,
+      right_stride2
+    );
+
+    if (coalescible1 && coalescible2) {
+      if (left_dimension == 1) {
+        v_strides1[out_axis] = right_stride1;
+        v_strides2[out_axis] = right_stride2;
+      }
+      v_dimensions[out_axis] = left_dimension * right_dimension;
+    } else {
+      ++out_axis;
+      v_dimensions[out_axis] = right_dimension;
+      v_strides1[out_axis] = right_stride1;
+      v_strides2[out_axis] = right_stride2;
     }
   }
 
