@@ -25,8 +25,7 @@
 // For permuting axes, the permuted dimensions make up the point space. The
 // original dimensions of the array make up the subspace. So as you walk the
 // output's point space you can fetch `location`s back into your original array
-// to pull from, except the strides are permuted rather than derived from the
-// subspace dimensions.
+// to pull from.
 struct rray_strided_iterator {
   r_ssize index;
   r_ssize size;
