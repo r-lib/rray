@@ -2,7 +2,7 @@ typedef r_obj* (*rray_equality_fn)(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_equality_op op
 );
 
@@ -37,112 +37,112 @@ static r_obj* rray_equality_lgl_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_equality_op op
 );
 static r_obj* rray_equality_lgl_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_equality_op op
 );
 static r_obj* rray_equality_int_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_equality_op op
 );
 static r_obj* rray_equality_lgl_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_equality_op op
 );
 static r_obj* rray_equality_dbl_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_equality_op op
 );
 static r_obj* rray_equality_lgl_cpl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_equality_op op
 );
 static r_obj* rray_equality_cpl_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_equality_op op
 );
 static r_obj* rray_equality_int_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_equality_op op
 );
 static r_obj* rray_equality_int_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_equality_op op
 );
 static r_obj* rray_equality_dbl_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_equality_op op
 );
 static r_obj* rray_equality_int_cpl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_equality_op op
 );
 static r_obj* rray_equality_cpl_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_equality_op op
 );
 static r_obj* rray_equality_dbl_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_equality_op op
 );
 static r_obj* rray_equality_dbl_cpl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_equality_op op
 );
 static r_obj* rray_equality_cpl_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_equality_op op
 );
 static r_obj* rray_equality_cpl_cpl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_iterator2* it,
+  struct rray_strided_iterator2* it,
   enum rray_equality_op op
 );
 

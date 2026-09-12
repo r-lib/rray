@@ -49,16 +49,13 @@ r_obj* rray_binary_arithmetic(
 
   const r_ssize size = rray_size_from_dimensions(v_dimensions, dimensionality);
 
-  struct rray_iterator2 it;
-  rray_iterator2_init(
-    &it,
-    size,
-    v_dimensions,
-    dimensionality,
+  struct rray_strided_iterator2 it = rray_broadcast_iterator2(
     v_x_dimensions,
     x_dimensionality,
     v_y_dimensions,
-    y_dimensionality
+    y_dimensionality,
+    v_dimensions,
+    dimensionality
   );
 
   r_obj* out = KEEP(fn(x, y, size, &it, error_call));
