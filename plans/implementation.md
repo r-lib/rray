@@ -93,8 +93,8 @@ case RRAY_TYPE_double:
 ```
 
 So there is one core per type per variant, the flag stays off the core's
-parameter list, and the loop is written once. `rray_mean()`, `rray_max()`, and
-`rray_min()` want the same shape when they land, sharing `rray_reduce()`'s
+parameter list, and the loop is written once. `rray_mean()`, `rray_max_along()`, and
+`rray_min_along()` want the same shape when they land, sharing `rray_reduce()`'s
 shell. `rray_max_pos()` and `rray_min_pos()` take a single `axis` rather than
 `axes` and return positions rather than reduced values, so whether they fit this
 shell at all is still an open question for whoever picks them up.
@@ -1083,8 +1083,8 @@ Names: reduce.
 | `rray_sum_along(x, axes, ..., na_rm = FALSE)` | `sum` | promoted, exists |
 | `rray_product_along(x, axes, ..., na_rm = FALSE)` | `prod` | promoted, int to dbl |
 | `rray_mean(x, axes, ..., na_rm = FALSE)` | `mean` | promoted, lgl and int to dbl |
-| `rray_max(x, axes, ..., na_rm = FALSE)` | `max` | preserved, errors on cpl |
-| `rray_min(x, axes, ..., na_rm = FALSE)` | `min` | preserved, errors on cpl |
+| `rray_max_along(x, axes, ..., na_rm = FALSE)` | `max` | preserved, errors on cpl |
+| `rray_min_along(x, axes, ..., na_rm = FALSE)` | `min` | preserved, errors on cpl |
 | `rray_all_along(x, axes, ..., na_rm = FALSE)` | `all` | fixed, logical in, logical out, exists |
 | `rray_any_along(x, axes, ..., na_rm = FALSE)` | `any` | fixed, logical in, logical out, exists |
 
@@ -1101,7 +1101,7 @@ rray_max_pos(x, 2)     # along the columns
 `R/reduce.R`, with its C in `src/reduce-sum.c` on top of the `rray_reduce()`
 shell in `src/reduce.c`/`src/reduce.h` (see 2.1).
 
-`rray_product_along()`, `rray_mean()`, `rray_max()`, and `rray_min()` share
+`rray_product_along()`, `rray_mean()`, `rray_max_along()`, and `rray_min_along()` share
 `rray_sum_along()`'s
 `(x, axes, ..., na_rm = FALSE)` shape, so they add `@rdname reduce` entries to
 `R/reduce.R` and their own `src/reduce-{name}.c` beside it.

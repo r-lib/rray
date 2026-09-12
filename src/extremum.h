@@ -5,7 +5,7 @@
 
 #include "arg.h"
 
-r_obj* rray_pmax(
+r_obj* rray_max(
   r_obj* x,
   r_obj* y,
   bool na_rm,
@@ -14,7 +14,7 @@ r_obj* rray_pmax(
   struct r_lazy error_call
 );
 
-r_obj* rray_pmin(
+r_obj* rray_min(
   r_obj* x,
   r_obj* y,
   bool na_rm,
