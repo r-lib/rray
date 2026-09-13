@@ -1,59 +1,89 @@
-# Replace strided iteration macros with a run cursor
+# Macro-free strided iteration
 
-Not built. This document records a working experiment in this branch and the
-rules needed to turn it into a mergeable feature.
+## Status
 
-The experiment removes `RRAY_STRIDED_ITERATOR_FOR_EACH()` and
-`RRAY_STRIDED_ITERATOR2_FOR_EACH()` from `src/strided-iterator.h`. It replaces
-them with a plan plus cursor API. All existing callers were ported and the test
-suite passes. The current working tree is deliberately left uncommitted so a
-future agent can inspect, revise, or discard it.
+The macro-free strided iteration design is implemented on this branch.
+`RRAY_STRIDED_ITERATOR_FOR_EACH()` and
+`RRAY_STRIDED_ITERATOR2_FOR_EACH()` have been removed, and every caller now
+uses explicit run-based loops.
 
-The central constraint is performance. A natural element-at-a-time iterator
-regresses because it performs row-boundary work for every element. The API must
-therefore expose first-axis runs. Callers own the outer loop and retain a small,
-simple inner loop.
+The implementation has two parts:
 
-## Goal
+- A plan holds the dimensions and strides that stay fixed for one traversal.
+- An iterator holds only the state that changes while walking the plan.
 
-Replace the strided iteration macros with explicit state and functions that
-allow callers to control traversal. Callers should be able to stop early,
-choose their own inner loop, nest iteration, and make the iteration state clear
-at the call site.
+The iterator does not store a pointer to its plan. The few operations that need
+plan data receive the plan as an argument. This keeps the type honest and had
+no measurable performance cost.
 
-The API must retain the existing properties:
+All 1,512 package tests pass.
 
-- coalesce compatible axes before traversing them;
-- process the coalesced first axis as one run;
-- keep point carry work outside the element loop;
-- keep zero first-axis strides visible as fixed paths in caller code;
-- support one and two mapped location spaces;
-- stay within normal benchmark noise for the present macro implementation.
+Type-generation macros still exist in arithmetic and similar code. Those are
+separate from strided iteration. They generate specialized typed workers and
+avoid runtime type dispatch in hot loops.
 
-## The API
+## Result
 
-An iterator is an immutable traversal plan. A cursor is the mutable state for
-one pass over that plan. Separating them is important. A caller commonly
-receives a pointer to a plan, then creates a stack-local cursor. Clang can keep
-the cursor's changing fields in registers much more readily than fields stored
-through the plan pointer.
+The main conclusion is that the plan and iterator should remain separate.
+
+This is not mainly about `const`, whether construction happens in place, or
+whether the full struct fits in cache. The important property is that the
+changing traversal state is a small, local object that Clang can break into
+independent values and keep in registers.
+
+Combining the fixed plan data and changing iterator data into one struct made
+carry-heavy broadcasts 15% to 19% slower. Moving construction into the typed
+worker did not help. Reducing the maximum dimensionality from 64 to 8 made the
+struct much smaller but did not help either.
+
+The current two-stage design keeps the large arrays in the plan and the
+changing run, locations, and point in the iterator.
+
+## Requirements
+
+A macro-free replacement still has to preserve the optimizations that were
+inside the old macros:
+
+- Coalesce compatible axes before traversal.
+- Process the coalesced first axis as one run.
+- Perform point carry work between runs, not for every element.
+- Keep zero first-axis strides visible as separate fixed paths.
+- Keep operation, type, and missing-value dispatch outside inner loops.
+- Support one and two mapped location spaces.
+- Keep mutable traversal state local to the typed worker.
+- Stay within normal benchmark noise for the macro implementation.
+
+The public shape of the loop matters as much as the iterator functions. A
+generic iterator API can still be slow if it hides these facts from the
+compiler.
+
+## Current design
+
+The one-location plan contains fixed traversal data:
 
 ```c
-struct rray_strided_iterator {
+struct rray_strided_iterator_plan {
   r_ssize size;
   r_ssize v_dimensions[RRAY_MAX_DIMENSIONALITY];
   int dimensionality;
   r_ssize v_strides[RRAY_MAX_DIMENSIONALITY];
 };
+```
 
-struct rray_strided_iterator_cursor {
-  const struct rray_strided_iterator* iterator;
-  r_ssize index;
+The one-location iterator contains only changing state:
+
+```c
+struct rray_strided_iterator {
+  r_ssize run_start;
   r_ssize location;
   r_ssize v_point[RRAY_MAX_DIMENSIONALITY];
 };
+```
 
-struct rray_strided_iterator2 {
+The two-location forms follow the same split:
+
+```c
+struct rray_strided_iterator2_plan {
   r_ssize size;
   r_ssize v_dimensions[RRAY_MAX_DIMENSIONALITY];
   int dimensionality;
@@ -61,336 +91,315 @@ struct rray_strided_iterator2 {
   r_ssize v_strides2[RRAY_MAX_DIMENSIONALITY];
 };
 
-struct rray_strided_iterator2_cursor {
-  const struct rray_strided_iterator2* iterator;
-  r_ssize index;
+struct rray_strided_iterator2 {
+  r_ssize run_start;
   r_ssize location1;
   r_ssize location2;
   r_ssize v_point[RRAY_MAX_DIMENSIONALITY];
 };
 ```
 
-Keep the existing constructors and coalescing logic:
+Plan constructors validate dimensions, compute strides, and coalesce axes.
+Iterator constructors only initialize changing state:
 
 ```c
-struct rray_strided_iterator rray_strided_iterator(...);
-struct rray_strided_iterator rray_broadcast_iterator(...);
+struct rray_strided_iterator_plan rray_strided_iterator_plan(...);
+struct rray_strided_iterator_plan rray_broadcast_iterator_plan(...);
+struct rray_strided_iterator rray_strided_iterator(void);
 
-struct rray_strided_iterator2 rray_strided_iterator2(...);
-struct rray_strided_iterator2 rray_broadcast_iterator2(...);
+struct rray_strided_iterator2_plan rray_strided_iterator2_plan(...);
+struct rray_strided_iterator2_plan rray_broadcast_iterator2_plan(...);
+struct rray_strided_iterator2 rray_strided_iterator2(void);
 ```
 
-Add these `static inline` functions for one mapped location:
+Run size and first-axis strides come from the plan. Run start and locations
+come from the iterator. Only `finished()` and `next()` need both:
 
 ```c
-struct rray_strided_iterator_cursor rray_strided_iterator_begin(
-  const struct rray_strided_iterator* iterator
-);
-
 bool rray_strided_iterator_finished(
-  const struct rray_strided_iterator_cursor* cursor
-);
-
-r_ssize rray_strided_iterator_index(
-  const struct rray_strided_iterator_cursor* cursor
-);
-
-r_ssize rray_strided_iterator_location(
-  const struct rray_strided_iterator_cursor* cursor
-);
-
-r_ssize rray_strided_iterator_run_size(
-  const struct rray_strided_iterator_cursor* cursor
-);
-
-r_ssize rray_strided_iterator_run_stride(
-  const struct rray_strided_iterator_cursor* cursor
+  const struct rray_strided_iterator* it,
+  const struct rray_strided_iterator_plan* plan
 );
 
 void rray_strided_iterator_next(
-  struct rray_strided_iterator_cursor* cursor
+  struct rray_strided_iterator* it,
+  const struct rray_strided_iterator_plan* plan
 );
 ```
 
-The two-location form has the same shape:
+The `iterator2` functions have the same shape.
+
+Passing the plan directly to these inline functions is free in the generated
+hot loops. The worker already has the plan available, usually in a register.
+Removing the plan field made the one-location iterator 528 bytes instead of
+536 and the two-location iterator 536 bytes instead of 544. More importantly,
+the iterator now represents only mutable state.
+
+## Run-based traversal
+
+The iterator advances one first-axis run at a time, not one element at a time.
+
+After coalescing, `plan->v_dimensions[0]` is the run size. The caller walks
+that whole run with a small inner loop. `next()` then increments the later
+point coordinates and updates the mapped locations for the next run.
+
+A one-location caller has this shape:
 
 ```c
-struct rray_strided_iterator2_cursor rray_strided_iterator2_begin(
-  const struct rray_strided_iterator2* iterator
-);
+const r_ssize run_size =
+  rray_strided_iterator_plan_run_size(plan);
+const r_ssize run_stride =
+  rray_strided_iterator_plan_run_stride(plan);
 
-bool rray_strided_iterator2_finished(
-  const struct rray_strided_iterator2_cursor* cursor
-);
+for (struct rray_strided_iterator it = rray_strided_iterator();
+     !rray_strided_iterator_finished(&it, plan);
+     rray_strided_iterator_next(&it, plan)) {
+  const r_ssize run_start = rray_strided_iterator_run_start(&it);
+  const r_ssize run_end = run_start + run_size;
+  r_ssize location = rray_strided_iterator_location(&it);
 
-r_ssize rray_strided_iterator2_index(
-  const struct rray_strided_iterator2_cursor* cursor
-);
+  if (run_stride == 0) {
+    const double elt = v_x[location];
 
-r_ssize rray_strided_iterator2_location1(
-  const struct rray_strided_iterator2_cursor* cursor
-);
-
-r_ssize rray_strided_iterator2_location2(
-  const struct rray_strided_iterator2_cursor* cursor
-);
-
-r_ssize rray_strided_iterator2_run_size(
-  const struct rray_strided_iterator2_cursor* cursor
-);
-
-r_ssize rray_strided_iterator2_run_stride1(
-  const struct rray_strided_iterator2_cursor* cursor
-);
-
-r_ssize rray_strided_iterator2_run_stride2(
-  const struct rray_strided_iterator2_cursor* cursor
-);
-
-void rray_strided_iterator2_next(
-  struct rray_strided_iterator2_cursor* cursor
-);
-```
-
-`index()` and each `location()` report the first element of the current run.
-`run_size()` is the coalesced first-axis dimension. `next()` advances through
-the entire current run and positions the cursor at the next one. It does not
-step one element.
-
-This is intentional. An element-wise `next()` would have to test for the end
-of a run and possibly carry into later axes on every element. The existing
-macro avoids exactly that work.
-
-## Cursor behaviour
-
-`begin()` sets `index` and every location to zero, clears `v_point`, and stores
-the plan pointer. `finished()` is true when `index == iterator->size`.
-
-`next()` must do this in order:
-
-1. Add `run_size()` to `cursor->index`.
-2. Return if the new index equals the plan size.
-3. Starting at axis 1, increment the point coordinate.
-4. If the coordinate is still within that axis dimension, add that axis stride
-   to each location and return.
-5. Otherwise reset the coordinate to zero, subtract the completed extent times
-   each stride, and continue to the next axis.
-
-Do not subtract `run_size() * run_stride()` inside `next()`. The cursor stores
-the beginning of the current run. The caller increments a local location in
-its inner loop, so the cursor location has not moved along that run.
-
-The first version of this experiment did subtract that amount. It produced
-wrong results for broadcasts after the first run. The full test suite caught
-the error.
-
-## Required caller shape
-
-For a one-location atomic operation, use this shape:
-
-```c
-struct rray_strided_iterator_cursor cursor =
-  rray_strided_iterator_begin(iterator);
-
-for (
-  ; !rray_strided_iterator_finished(&cursor)
-  ; rray_strided_iterator_next(&cursor)
-) {
-  const r_ssize index = rray_strided_iterator_index(&cursor);
-  const r_ssize end = index + rray_strided_iterator_run_size(&cursor);
-  const r_ssize location = rray_strided_iterator_location(&cursor);
-  const r_ssize stride = rray_strided_iterator_run_stride(&cursor);
-
-  if (stride == 0) {
-    for (r_ssize i = index; i < end; ++i) {
+    for (r_ssize i = run_start; i < run_end; ++i) {
+      v_out[i] = elt;
+    }
+  } else {
+    for (r_ssize i = run_start; i < run_end; ++i) {
       v_out[i] = v_x[location];
-    }
-  } else {
-    for (
-      r_ssize i = index, location_ = location
-      ; i < end
-      ; ++i, location_ += stride
-    ) {
-      v_out[i] = v_x[location_];
+      location += run_stride;
     }
   }
 }
 ```
 
-For two locations, branch before the inner loop on the four stride pairs:
+The iterator location always means the beginning of the current run. The
+caller increments a local copy while processing elements. `next()` must not
+undo those local increments because the iterator location never made them.
 
-```c
-if (stride1 == 0) {
-  if (stride2 == 0) {
-    // Both locations fixed.
-  } else {
-    // Location 1 fixed, location 2 advances.
-  }
-} else if (stride2 == 0) {
-  // Location 1 advances, location 2 fixed.
-} else {
-  // Both locations advance.
-}
-```
+There is no separate terminal adjustment. On the last call, `next()`
+increments `run_start` to `plan->size` and completes the normal point carry.
+The next `finished()` check ends the loop.
 
-The bodies look repetitive. Do not reduce that repetition by moving a
-stride-dependent branch into the inner loop. The exact loop body is part of
-the performance contract.
+An element-at-a-time `next()` would test for a run boundary and possibly carry
+later axes for every element. Earlier work found that batching first-axis runs
+can improve these operations by 3 to 4 times. The run boundary must stay
+outside the element loop.
 
-## `rray_mean_along()` motivates nested reduction traversal
+## Coalescing
 
-The current reduction plan walks `x` in its physical order and maps every
-element to an output location. That is a good fit for `sum()` and `product()`,
-but a mean needs more state. R accumulates means in `LDOUBLE`, uses a scaled
-sum when the first sum overflows, and makes a correction pass for rounding
-error.
+Coalescing merges adjacent compatible axes before traversal. For example,
+dimensions `[2, 4, 5]` with strides `[1, 2, 8]` become one run of size 40.
 
-`RRAY_REDUCE()` cannot express that state because its R output vector is also
-its accumulator. A custom mean could use the current iterator macro with
-`long double` buffers indexed by output location. That works, but it needs a
-sum buffer, a count buffer for `na_rm`, and state for the correction pass.
+This reduces point carry work and often turns a multidimensional traversal into
+one contiguous loop. Earlier benchmarks found gains of 3 to 5 times in shapes
+where several axes can be merged.
 
-A better reduction-specific traversal visits one complete reduced slice for
-each output location. It needs two immutable strided plans:
+For `iterator2`, both stride mappings must allow the same merge. Coalescing
+changes the shared point space, so one location mapping cannot merge an axis
+unless the other can merge it too.
 
-| Plan | Axes | Location |
-|---|---|---|
-| Outer | Retained axes, in their original order | The base location in `x` |
-| Inner | Reduced axes, in their original order | An offset from that base |
+Dimensions of size one need special handling. They can be absorbed while
+adopting the useful neighboring stride. This is important for shared singleton
+axes and higher-dimensional broadcasting.
 
-Both plans use the physical strides of `x`. This is a virtual axis permutation,
-not a copy or a physical permutation of `x`. The outer cursor index is the
-flat output location because collapsed axes have dimension 1.
+## Zero first-axis strides
 
-The cursors still advance by runs. A mean must therefore walk every output
-location in the current outer run before advancing the outer cursor:
+A zero first-axis stride means a mapped location stays fixed for the whole
+inner run. Broadcasting uses this to reuse one input value. Reduction uses it
+to write repeatedly to one output location.
 
-```c
-for (
-  ; !rray_strided_iterator_finished(&outer)
-  ; rray_strided_iterator_next(&outer)
-) {
-  r_ssize out_loc = rray_strided_iterator_index(&outer);
-  const r_ssize out_end =
-    out_loc + rray_strided_iterator_run_size(&outer);
-  r_ssize x_base = rray_strided_iterator_location(&outer);
-  const r_ssize x_stride = rray_strided_iterator_run_stride(&outer);
+The caller must branch on this before entering the inner loop. When Clang sees
+a fixed path with no location increment, it can hoist the repeated load and
+vectorize the other work.
 
-  for (; out_loc < out_end; ++out_loc, x_base += x_stride) {
-    struct rray_strided_iterator_cursor inner =
-      rray_strided_iterator_begin(&iterator.inner);
-  }
-}
-```
+For two locations, callers retain four paths:
 
-For each output location, real mean can use scalar `long double` values for
-the sum and correction, plus an `r_ssize` count when removing missing values.
-It restarts the immutable inner plan for each numerical pass. The usual path
-uses one sum pass and one correction pass. A first sum that is not finite uses
-a scaled sum pass, then a correction pass when that scaled mean is finite.
-Complex mean uses separate real and imaginary accumulators.
+- Both strides are zero.
+- Only the first stride is zero.
+- Only the second stride is zero.
+- Both strides advance.
 
-This removes the need for per-output `long double` state. An empty retained
-axis set represents one output location. An empty reduced axis set represents
-one input value per output location. A zero-size reduced slice produces `NaN`.
-The grouped order may read a later or middle axis with a stride, so benchmark it
-against the existing input-major reduction before using it for other reducers.
+Putting an unknown stride check inside the element loop loses useful facts.
+Trying to hide the four paths behind one general loop is shorter source but
+worse generated code.
 
-## Why zero strides need explicit paths
+Important shapes include scalar broadcasts, row broadcasts, reductions over
+the first axis, alternating singleton axes, and both `rray_split()` location
+layouts.
 
-After coalescing, a zero first-axis stride means one input or output location
-is fixed over the whole inner run. This occurs when broadcasting along the
-contiguous direction and when reducing into a fixed output location.
+## Dispatch must stay outside inner loops
 
-If the stride remains a runtime value in the inner loop, Clang cannot prove
-that the load or store is fixed. On Apple Silicon it can select a scalar path
-instead of vectorizing. A visible `if (stride == 0)` lets each loop body omit
-the location increment and lets fixed loads hoist.
+Operation choices that stay fixed for the whole call must be resolved before
+traversal.
 
-For iterator2, preserve all four paths. The old macro had three dispatch arms,
-but an explicit fourth both-zero path is clearer and keeps both locations fixed
-in source.
+The first macro-free equality port selected equal versus not-equal inside every
+element loop. It was 34% to 35% slower. The first extrema port selected the
+missing-value policy inside every element loop. Its median regression was 36%,
+and some cases were 2.8 to 9.1 times slower.
 
-Relevant shapes include:
+The corrected implementation selects the operation first and then enters a
+specialized loop. Equality returned to about 0.92 times the macro baseline in
+the broad benchmark, where values below 1 are faster.
 
-- scalar to array broadcasting;
-- row broadcasting, such as `[1, n]` into `[m, n]`;
-- higher-dimensional broadcasts that coalesce to `[rows, runs]` with a zero
-  first stride;
-- reductions over the first axis;
-- `rray_split()` layouts where either output-list or output-element location is
-  fixed across a run.
+The same rule applies to:
 
-## Operation dispatch must stay outside every inner loop
+- Arithmetic operation selection.
+- Comparison selection.
+- Missing-value policy.
+- Input and output types.
+- Output representation.
+- Zero-stride paths.
 
-This is the most important lesson from the experiment.
+A callback or function pointer for each element would create the same problem.
+The element operation must remain visible inside the typed worker.
 
-`equal.c` originally chose equal versus not-equal before traversal. `extremum.c`
-originally chose missing-value propagation versus removal before traversal.
-The first port used conditional expressions inside every element loop to avoid
-duplicating the four stride paths. That was wrong.
+## Plan and iterator experiments
 
-The dedicated benchmark results from that version were:
+Several designs were tested against the split plan and iterator implementation.
+The focused cases used arrays with one million elements. Alternating cases used
+six axes and forced frequent point carries.
 
-- equality and inequality: 34 to 35% slower;
-- extrema: median 36% slower across 96 cases;
-- some extrema cases: 2.8 to 9.1 times slower.
+### One combined struct passed through dispatch
 
-The fixed port restores an outer `if` and calls a type-generation macro for
-one selected operation. Its generated inner loops have no `op` or `na_rm`
-check. A final implementation can duplicate source instead if that better
-fits the no-macro goal, but it must preserve this generated control flow.
+The first combined design stored fixed plan data and mutable locations in one
+struct. The caller constructed it and passed a mutable pointer through the
+typed-worker function pointer.
 
-The same rule applies to arithmetic operation dispatch, type conversion,
-missing-value handling, output representation, and any other value that stays
-constant for an operation call.
+Compared with the split design:
 
-## Current migration coverage
+| Case | Combined / split |
+|---|---:|
+| Arithmetic, alternating broadcast | 1.178x |
+| Arithmetic, row broadcast | 1.038x |
+| Arithmetic, scalar broadcast | 1.054x |
+| Direct broadcast, alternating axes | 1.151x |
+| Direct broadcast, row | 0.970x |
+| Equality, row | 0.979x |
 
-The experiment ports these files:
+The carry-heavy cases were the clear regressions.
 
-- `src/arithmetic.h`
-- `src/broadcast.c`
-- `src/compare.c`
-- `src/equal.c`
-- `src/extremum.c`
-- `src/permute-axes.c`
-- `src/reduce.h`
-- `src/split.c`
-- `src/strided-iterator.h`
+In `rray_add_dbl_dbl()`, Clang held the two locations in registers while
+processing a run, then stored them back into the caller-owned struct after
+every point carry. The worker stack frame was only 112 bytes, but the repeated
+stores remained in the hot outer loop.
 
-No `RRAY_STRIDED_ITERATOR_FOR_EACH()` or
-`RRAY_STRIDED_ITERATOR2_FOR_EACH()` call remains. Existing type-generation
-macros remain. They are separate from the strided iteration API.
+### Combined struct built inside the typed worker
 
-## Benchmark record
+The next design passed raw dimension metadata through dispatch and constructed
+the combined struct directly inside each typed worker.
 
-All benchmark comparisons below use the main checkout as baseline. They were
-run as separate R processes on the same host. Allocation and garbage collection
-make individual minima noisy, so compare medians and rerun suspicious cases.
+This removed caller ownership but did not remove the stores:
 
-### Tests
+| Case | Worker-local combined / split |
+|---|---:|
+| Arithmetic, alternating broadcast | 1.193x |
+| Arithmetic, row broadcast | 1.051x |
+| Arithmetic, scalar broadcast | 1.056x |
+| Direct broadcast, alternating axes | 1.186x |
+| Direct broadcast, row | 1.013x |
+| Equality, row | 1.007x |
 
-```r
-devtools::test()
-```
+The worker stack frame grew to 2,096 bytes. Clang still wrote both mutable
+locations into the local stack object after every carry.
 
-Result: 1,512 passing tests.
+Forcing the large initializer to inline increased the frame to 3,168 bytes and
+still did not remove the stores.
 
-### Dedicated stride-zero suite
+This showed that caller ownership was not the full explanation. A local
+address-taken combined object can have the same problem.
 
-Command for each checkout:
+### Copying the combined struct into a worker-local value
 
-```sh
-RRAY_BENCH_ITERATIONS=50 Rscript bench/stride-zero.R
-```
+A temporary experiment copied a caller-built combined struct into a local
+combined struct before traversal.
 
-This covers arithmetic, comparison, equality, extrema, direct broadcast,
-numeric and logical reductions, and both `rray_split()` iterator2 layouts.
+This removed the location stores from the carry loop and brought alternating
+arithmetic back to 0.986 times the split design. That supports the idea that
+register promotion of mutable locations is important.
 
-With the corrected equality and extrema ports, 39 case medians gave:
+It was not a good general solution. The worker copied 2,088 bytes and used a
+2,096-byte stack frame. Scalar arithmetic was 1.065 times the split design,
+row arithmetic was 1.030 times, and alternating direct broadcast was 1.088
+times. It traded carry-loop stores for setup and stack costs.
 
-| Summary | Candidate / baseline |
+### Maximum dimensionality of eight
+
+Reducing `RRAY_MAX_DIMENSIONALITY` from 64 to 8 shrank the worker-local
+combined frame from 2,096 bytes to 416 bytes.
+
+It did not fix the carry-heavy regression. With both designs built for eight
+axes, the combined version was still:
+
+- 1.185 times the split design for alternating arithmetic.
+- 1.157 times the split design for alternating direct broadcast.
+
+Clang still stored both locations after every carry. This showed that total
+struct size was not the main problem. Both frames fit comfortably in cache,
+but the memory dependency remained.
+
+The eight-axis limit also broke the existing dimensionality contract and its
+tests, so it was restored to 64.
+
+### Removing the plan pointer from the iterator
+
+The final cleanup removed the plan pointer from both mutable iterator structs.
+`finished()` and `next()` now take the plan directly.
+
+The arithmetic, equality, and broadcast hot loops were unchanged. Their text
+section sizes were also unchanged. Focused benchmarks stayed within normal run
+noise, including the alternating carry-heavy cases.
+
+This is the current design. It improves the meaning of the types without a
+performance cost.
+
+## What we think Clang is doing
+
+The best explanation is register promotion, sometimes called scalar
+replacement. Clang tries to replace fields of a local struct with independent
+compiler values. Those values can then live in registers.
+
+The old macros explicitly unpacked iterator fields into local values. In the
+old `rray_add_dbl_dbl()`, the worker used a 112-byte stack frame and kept the
+changing locations in registers.
+
+The split function design gives Clang a similar opportunity:
+
+| Design | Worker stack | Location handling |
+|---|---:|---|
+| Old iteration macro | 112 bytes | Registers |
+| Split plan and iterator | 608 bytes | Registers |
+| Combined pointer from caller | 112 bytes | Stored through caller pointer |
+| Combined worker-local struct | 2,096 bytes | Stored to local stack |
+| Combined worker-local, eight axes | 416 bytes | Stored to local stack |
+
+The split worker has a larger frame than the old macro because the mutable
+point array is a real local object. That did not cause a meaningful regression.
+The important locations and run counters still remain in registers.
+
+A `const` plan helps express that plan data does not change, but `const`
+does not promise registers. Constructing an object inside the worker also does
+not promise registers. A small stack frame does not promise registers either.
+
+The common failure in the combined designs was that fixed arrays and changing
+fields remained part of one address-taken aggregate. Clang kept the locations
+coherent with that memory object across carries. Separating the large fixed
+plan from the mutable iterator gave the optimizer a simpler mutable object.
+
+This is an explanation based on the generated assembly and benchmark behavior,
+not a C language guarantee. Compiler versions can make different choices, so
+performance-sensitive changes still need assembly checks.
+
+## Broad benchmark record
+
+The corrected macro-free implementation was compared with the macro baseline
+in two broad suites. Ratios are candidate divided by baseline, so values below
+1 are faster.
+
+The stride-zero suite covered arithmetic, comparison, equality, extrema,
+broadcast, numeric and logical reductions, and both `rray_split()` layouts:
+
+| Summary across 39 cases | Candidate / baseline |
 |---|---:|
 | Minimum | 0.57x |
 | First quartile | 0.88x |
@@ -398,33 +407,13 @@ With the corrected equality and extrema ports, 39 case medians gave:
 | Third quartile | 0.98x |
 | Maximum | 1.05x |
 
-The slowest cases were:
+The slowest repeatable cases were about 4% to 5% slower. Numeric and logical
+reductions were within 0.5% of baseline in that run.
 
-| Case | Candidate / baseline |
-|---|---:|
-| iterator2 split with first location fixed | 1.052x |
-| alternating inner broadcast, right | 1.048x |
-| alternating inner broadcast, left | 1.043x |
-| alternating outer broadcast | 1.022x |
+The exhaustive extrema suite covered 96 combinations of operation, type,
+missing-value policy, missing-value layout, and traversal layout:
 
-The numeric and logical reduction cases were at or within 0.5% of baseline.
-Equality and inequality were about 0.92x baseline after moving dispatch out of
-the hot loop.
-
-### Exhaustive extrema suite
-
-Command for each checkout:
-
-```sh
-RRAY_BENCH_ITERATIONS=20 Rscript bench/extremum.R
-```
-
-This is 96 cases: `pmax` and `pmin`, integer and double, both `na_rm` values,
-three missing-value layouts, and four traversal layouts.
-
-With the corrected port:
-
-| Summary | Candidate / baseline |
+| Summary across 96 cases | Candidate / baseline |
 |---|---:|
 | Minimum | 0.41x |
 | First quartile | 0.96x |
@@ -432,15 +421,23 @@ With the corrected port:
 | Third quartile | 1.06x |
 | Maximum | 3.26x |
 
-The maximum comes from a short noisy case and needs a focused rerun before it
-is treated as a real regression. The 75th percentile is the useful signal from
-this first pass. Any future implementation should rerun the slowest cases at
-50 or 100 iterations with a warm-up and inspect their distributions.
+The maximum came from a short noisy case. The median and upper quartile were
+the useful signals. Suspicious short cases need more iterations, warm-up, and
+paired run-order changes before being treated as regressions.
 
-## Benchmark work still needed
+## Benchmark method
 
-Before merging a final implementation, run the following for both the baseline
-and candidate, saving RDS output for comparison:
+Focused combined-struct comparisons used two 200-iteration runs and the
+geometric mean of the medians. The plan-field cleanup used two 300-iteration
+mixed runs plus isolated 1,000-iteration broadcast runs. Reversing process order
+reversed the small broadcast difference, while the hot-loop assembly stayed
+the same. We therefore treated that result as noise.
+
+R allocation and garbage collection make minima especially noisy. Use medians,
+warm each case, alternate candidate and baseline process order, and rerun any
+difference that changes direction.
+
+Useful benchmark commands are:
 
 ```sh
 RRAY_BENCH_ITERATIONS=50 Rscript bench/stride-zero.R
@@ -453,63 +450,37 @@ Rscript bench/broadcast.R
 
 Pay particular attention to:
 
-- scalar and row broadcasting;
-- alternating singleton axes in six dimensions;
-- matching leading singleton axes that coalesce;
-- short first-axis runs, including `[2, 500000]`;
-- contiguous controls;
-- reductions with fixed output locations;
-- logical reductions with sparse and dense missing values;
-- integer and double extrema with both missing-value policies;
-- both iterator2 split directions;
-- tiny arrays, where cursor setup can dominate;
-- large arrays, where vectorization matters most.
+- Alternating singleton axes with frequent carries.
+- Scalar and row broadcasting.
+- Short first-axis runs.
+- Contiguous controls.
+- Reductions with fixed output locations.
+- Both `iterator2` split directions.
+- Tiny arrays where setup dominates.
+- Large arrays where vectorization dominates.
 
-For any result beyond a small regression, inspect generated assembly or reduce
-the benchmark to a standalone C harness. Check that the selected inner loop
-has no runtime operation branch, no element-level point carry, and no unknown
-zero stride.
+For a regression, inspect the typed worker assembly. Check for location stores
+between runs, element-level carry work, runtime operation branches, and unknown
+zero strides.
 
-## Implementation checklist
+## Rules for future changes
 
-1. Start from the current experimental diff or reimplement the plan and cursor
-   types in `src/strided-iterator.h`.
-2. Keep constructors responsible only for plan construction and axis
-   coalescing.
-3. Make `begin()`, accessors, and `next()` `static inline`.
-4. Keep cursor state local to each caller function.
-5. Port one-location callers with explicit zero and non-zero run paths.
-6. Port two-location callers with four fixed stride paths.
-7. Hoist every operation and missing-value decision outside traversal.
-8. Run `clang-format -i src/*.c src/*.h`.
-9. Do the required protection review. The iterator change itself should not add
-   allocating `r_obj*` uses, but each touched caller still needs review.
-10. Run `devtools::test()` and the benchmark matrix above.
-11. Do not commit experimental implementation files unless the benchmark
-    thresholds are agreed and met.
+Keep these properties unless new measurements prove a better design:
 
-## Decisions still open
+1. Keep plan data and mutable iterator state in separate structs.
+2. Keep the plan out of the iterator and pass it to the inline functions that
+   need it.
+3. Construct the iterator inside the typed worker.
+4. Walk first-axis runs, not individual elements.
+5. Keep point carries outside the element loop.
+6. Read run size and first-axis strides from the plan before traversal.
+7. Keep explicit zero-stride paths.
+8. Keep operation, type, and missing-value dispatch outside inner loops.
+9. Keep element work visible to the compiler instead of using callbacks.
+10. Treat iterator locations as the beginning of the current run.
+11. Do not update the plan during traversal.
+12. Compare both benchmarks and generated assembly after changing this code.
 
-- Whether the API should be named `iterator` plus `cursor`, as here, or use a
-  single public state object. The split is better for optimization and makes
-  restartable plans explicit.
-- Whether callers should use direct fields or accessors. Keep accessors in the
-  first implementation because they document run semantics. Only expose fields
-  if assembly shows a material cost after inlining.
-- Whether to retain code-generation macros such as `RRAY_EQUALITY_IMPL()`.
-  They are not strided iteration macros, but they avoid hand-writing each type
-  combination. Do not use a generic callback or function pointer for element
-  work.
-- Whether the extrema outliers are benchmark noise or a real cursor cost. Rerun
-  those cases before deciding.
-
-## Do not do these things
-
-- Do not implement one element per `next()` as the main API.
-- Do not hide the body behind a callback or function pointer.
-- Do not read an unknown zero stride inside a vectorization-sensitive loop.
-- Do not put `op`, `na_rm`, or type dispatch inside the inner loop.
-- Do not mutate the immutable plan while walking it.
-- Do not make `next()` undo local location increments that happened only in the
-  caller's loop.
-- Do not judge performance from one median or one benchmark family.
+The current two-stage design is not only an organizational choice. It preserves
+the source shape that produced the best and most stable generated code in these
+experiments.
