@@ -253,9 +253,6 @@ static inline void rray_strided_iterator_next(
 ) {
   const struct rray_strided_iterator_plan* plan = it->plan;
   it->run_start += rray_strided_iterator_plan_run_size(plan);
-  if (it->run_start == plan->size) {
-    return;
-  }
   for (int axis = 1; axis < plan->dimensionality; ++axis) {
     ++it->v_point[axis];
     if (it->v_point[axis] < plan->v_dimensions[axis]) {
@@ -418,9 +415,6 @@ static inline void rray_strided_iterator2_next(
 ) {
   const struct rray_strided_iterator2_plan* plan = it->plan;
   it->run_start += rray_strided_iterator2_plan_run_size(plan);
-  if (it->run_start == plan->size) {
-    return;
-  }
   for (int axis = 1; axis < plan->dimensionality; ++axis) {
     ++it->v_point[axis];
     if (it->v_point[axis] < plan->v_dimensions[axis]) {
