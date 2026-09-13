@@ -96,3 +96,23 @@ static r_obj* rray_compare_dbl_dbl(
   const struct rray_strided_iterator2_plan* plan,
   enum rray_compare_op op
 );
+
+static inline int rray_greater_than_int_int_one(int x, int y);
+static inline int rray_greater_than_or_equal_int_int_one(int x, int y);
+static inline int rray_less_than_int_int_one(int x, int y);
+static inline int rray_less_than_or_equal_int_int_one(int x, int y);
+
+static inline int rray_greater_than_int_dbl_one(int x, double y);
+static inline int rray_greater_than_or_equal_int_dbl_one(int x, double y);
+static inline int rray_less_than_int_dbl_one(int x, double y);
+static inline int rray_less_than_or_equal_int_dbl_one(int x, double y);
+
+static inline int rray_greater_than_dbl_int_one(double x, int y);
+static inline int rray_greater_than_or_equal_dbl_int_one(double x, int y);
+static inline int rray_less_than_dbl_int_one(double x, int y);
+static inline int rray_less_than_or_equal_dbl_int_one(double x, int y);
+
+static inline int rray_greater_than_dbl_dbl_one(double x, double y);
+static inline int rray_greater_than_or_equal_dbl_dbl_one(double x, double y);
+static inline int rray_less_than_dbl_dbl_one(double x, double y);
+static inline int rray_less_than_or_equal_dbl_dbl_one(double x, double y);

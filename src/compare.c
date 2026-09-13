@@ -295,13 +295,7 @@ static r_no_return void stop_unsupported_compare(
   );
 }
 
-#define RRAY_COMPARE_LOOP(                                                     \
-  X_CTYPE,                                                                     \
-  X_IS_MISSING,                                                                \
-  Y_CTYPE,                                                                     \
-  Y_IS_MISSING,                                                                \
-  OPERATOR                                                                     \
-)                                                                              \
+#define RRAY_COMPARE_IMPL(X_CTYPE, Y_CTYPE, ONE)                               \
   do {                                                                         \
     for (struct rray_strided_iterator2 it = rray_strided_iterator2(plan);      \
          !rray_strided_iterator2_finished(&it);                                \
@@ -318,16 +312,12 @@ static r_no_return void stop_unsupported_compare(
         if (y_stride == 0) {                                                   \
           const Y_CTYPE y_elt = v_y[y_loc];                                    \
           for (r_ssize i = index; i < end; ++i) {                              \
-            const bool missing = X_IS_MISSING(x_elt) | Y_IS_MISSING(y_elt);    \
-            const int elt = x_elt OPERATOR y_elt;                              \
-            v_out[i] = missing ? r_globals.na_lgl : elt;                       \
+            v_out[i] = ONE(x_elt, y_elt);                                      \
           }                                                                    \
         } else {                                                               \
           for (r_ssize i = index; i < end; ++i) {                              \
             const Y_CTYPE y_elt = v_y[y_loc];                                  \
-            const bool missing = X_IS_MISSING(x_elt) | Y_IS_MISSING(y_elt);    \
-            const int elt = x_elt OPERATOR y_elt;                              \
-            v_out[i] = missing ? r_globals.na_lgl : elt;                       \
+            v_out[i] = ONE(x_elt, y_elt);                                      \
             y_loc += y_stride;                                                 \
           }                                                                    \
         }                                                                      \
@@ -335,18 +325,14 @@ static r_no_return void stop_unsupported_compare(
         const Y_CTYPE y_elt = v_y[y_loc];                                      \
         for (r_ssize i = index; i < end; ++i) {                                \
           const X_CTYPE x_elt = v_x[x_loc];                                    \
-          const bool missing = X_IS_MISSING(x_elt) | Y_IS_MISSING(y_elt);      \
-          const int elt = x_elt OPERATOR y_elt;                                \
-          v_out[i] = missing ? r_globals.na_lgl : elt;                         \
+          v_out[i] = ONE(x_elt, y_elt);                                        \
           x_loc += x_stride;                                                   \
         }                                                                      \
       } else {                                                                 \
         for (r_ssize i = index; i < end; ++i) {                                \
           const X_CTYPE x_elt = v_x[x_loc];                                    \
           const Y_CTYPE y_elt = v_y[y_loc];                                    \
-          const bool missing = X_IS_MISSING(x_elt) | Y_IS_MISSING(y_elt);      \
-          const int elt = x_elt OPERATOR y_elt;                                \
-          v_out[i] = missing ? r_globals.na_lgl : elt;                         \
+          v_out[i] = ONE(x_elt, y_elt);                                        \
           x_loc += x_stride;                                                   \
           y_loc += y_stride;                                                   \
         }                                                                      \
@@ -357,10 +343,12 @@ static r_no_return void stop_unsupported_compare(
 #define RRAY_COMPARE(                                                          \
   X_CTYPE,                                                                     \
   X_CONST_DEREF,                                                               \
-  X_IS_MISSING,                                                                \
   Y_CTYPE,                                                                     \
   Y_CONST_DEREF,                                                               \
-  Y_IS_MISSING                                                                 \
+  GREATER_THAN_ONE,                                                            \
+  GREATER_THAN_OR_EQUAL_ONE,                                                   \
+  LESS_THAN_ONE,                                                               \
+  LESS_THAN_OR_EQUAL_ONE                                                       \
 )                                                                              \
   r_obj* out = KEEP(r_alloc_vector(R_TYPE_logical, size));                     \
   int* v_out = r_lgl_begin(out);                                               \
@@ -370,16 +358,16 @@ static r_no_return void stop_unsupported_compare(
                                                                                \
   switch (op) {                                                                \
   case RRAY_COMPARE_greater_than:                                              \
-    RRAY_COMPARE_LOOP(X_CTYPE, X_IS_MISSING, Y_CTYPE, Y_IS_MISSING, >);        \
+    RRAY_COMPARE_IMPL(X_CTYPE, Y_CTYPE, GREATER_THAN_ONE);                     \
     break;                                                                     \
   case RRAY_COMPARE_greater_than_or_equal:                                     \
-    RRAY_COMPARE_LOOP(X_CTYPE, X_IS_MISSING, Y_CTYPE, Y_IS_MISSING, >=);       \
+    RRAY_COMPARE_IMPL(X_CTYPE, Y_CTYPE, GREATER_THAN_OR_EQUAL_ONE);            \
     break;                                                                     \
   case RRAY_COMPARE_less_than:                                                 \
-    RRAY_COMPARE_LOOP(X_CTYPE, X_IS_MISSING, Y_CTYPE, Y_IS_MISSING, <);        \
+    RRAY_COMPARE_IMPL(X_CTYPE, Y_CTYPE, LESS_THAN_ONE);                        \
     break;                                                                     \
   case RRAY_COMPARE_less_than_or_equal:                                        \
-    RRAY_COMPARE_LOOP(X_CTYPE, X_IS_MISSING, Y_CTYPE, Y_IS_MISSING, <=);       \
+    RRAY_COMPARE_IMPL(X_CTYPE, Y_CTYPE, LESS_THAN_OR_EQUAL_ONE);               \
     break;                                                                     \
   }                                                                            \
                                                                                \
@@ -396,10 +384,12 @@ static r_obj* rray_compare_lgl_lgl(
   RRAY_COMPARE(
     int,
     r_lgl_cbegin,
-    rray_int_is_missing,
     int,
     r_lgl_cbegin,
-    rray_int_is_missing
+    rray_greater_than_int_int_one,
+    rray_greater_than_or_equal_int_int_one,
+    rray_less_than_int_int_one,
+    rray_less_than_or_equal_int_int_one
   );
 }
 
@@ -413,10 +403,12 @@ static r_obj* rray_compare_lgl_int(
   RRAY_COMPARE(
     int,
     r_lgl_cbegin,
-    rray_int_is_missing,
     int,
     r_int_cbegin,
-    rray_int_is_missing
+    rray_greater_than_int_int_one,
+    rray_greater_than_or_equal_int_int_one,
+    rray_less_than_int_int_one,
+    rray_less_than_or_equal_int_int_one
   );
 }
 
@@ -430,10 +422,12 @@ static r_obj* rray_compare_int_lgl(
   RRAY_COMPARE(
     int,
     r_int_cbegin,
-    rray_int_is_missing,
     int,
     r_lgl_cbegin,
-    rray_int_is_missing
+    rray_greater_than_int_int_one,
+    rray_greater_than_or_equal_int_int_one,
+    rray_less_than_int_int_one,
+    rray_less_than_or_equal_int_int_one
   );
 }
 
@@ -447,10 +441,12 @@ static r_obj* rray_compare_lgl_dbl(
   RRAY_COMPARE(
     int,
     r_lgl_cbegin,
-    rray_int_is_missing,
     double,
     r_dbl_cbegin,
-    rray_dbl_is_missing
+    rray_greater_than_int_dbl_one,
+    rray_greater_than_or_equal_int_dbl_one,
+    rray_less_than_int_dbl_one,
+    rray_less_than_or_equal_int_dbl_one
   );
 }
 
@@ -464,10 +460,12 @@ static r_obj* rray_compare_dbl_lgl(
   RRAY_COMPARE(
     double,
     r_dbl_cbegin,
-    rray_dbl_is_missing,
     int,
     r_lgl_cbegin,
-    rray_int_is_missing
+    rray_greater_than_dbl_int_one,
+    rray_greater_than_or_equal_dbl_int_one,
+    rray_less_than_dbl_int_one,
+    rray_less_than_or_equal_dbl_int_one
   );
 }
 
@@ -481,10 +479,12 @@ static r_obj* rray_compare_int_int(
   RRAY_COMPARE(
     int,
     r_int_cbegin,
-    rray_int_is_missing,
     int,
     r_int_cbegin,
-    rray_int_is_missing
+    rray_greater_than_int_int_one,
+    rray_greater_than_or_equal_int_int_one,
+    rray_less_than_int_int_one,
+    rray_less_than_or_equal_int_int_one
   );
 }
 
@@ -498,10 +498,12 @@ static r_obj* rray_compare_int_dbl(
   RRAY_COMPARE(
     int,
     r_int_cbegin,
-    rray_int_is_missing,
     double,
     r_dbl_cbegin,
-    rray_dbl_is_missing
+    rray_greater_than_int_dbl_one,
+    rray_greater_than_or_equal_int_dbl_one,
+    rray_less_than_int_dbl_one,
+    rray_less_than_or_equal_int_dbl_one
   );
 }
 
@@ -515,10 +517,12 @@ static r_obj* rray_compare_dbl_int(
   RRAY_COMPARE(
     double,
     r_dbl_cbegin,
-    rray_dbl_is_missing,
     int,
     r_int_cbegin,
-    rray_int_is_missing
+    rray_greater_than_dbl_int_one,
+    rray_greater_than_or_equal_dbl_int_one,
+    rray_less_than_dbl_int_one,
+    rray_less_than_or_equal_dbl_int_one
   );
 }
 
@@ -532,12 +536,162 @@ static r_obj* rray_compare_dbl_dbl(
   RRAY_COMPARE(
     double,
     r_dbl_cbegin,
-    rray_dbl_is_missing,
     double,
     r_dbl_cbegin,
-    rray_dbl_is_missing
+    rray_greater_than_dbl_dbl_one,
+    rray_greater_than_or_equal_dbl_dbl_one,
+    rray_less_than_dbl_dbl_one,
+    rray_less_than_or_equal_dbl_dbl_one
   );
 }
 
 #undef RRAY_COMPARE
-#undef RRAY_COMPARE_LOOP
+#undef RRAY_COMPARE_IMPL
+
+#define RRAY_COMPARE_ONE(                                                      \
+  NAME,                                                                        \
+  X_CTYPE,                                                                     \
+  X_IS_MISSING,                                                                \
+  Y_CTYPE,                                                                     \
+  Y_IS_MISSING,                                                                \
+  OPERATOR                                                                     \
+)                                                                              \
+  static inline int NAME(X_CTYPE x, Y_CTYPE y) {                               \
+    const bool missing = X_IS_MISSING(x) | Y_IS_MISSING(y);                    \
+    const int elt = x OPERATOR y;                                              \
+    return missing ? r_globals.na_lgl : elt;                                   \
+  }
+
+RRAY_COMPARE_ONE(
+  rray_greater_than_int_int_one,
+  int,
+  rray_int_is_missing,
+  int,
+  rray_int_is_missing,
+  >
+)
+RRAY_COMPARE_ONE(
+  rray_greater_than_or_equal_int_int_one,
+  int,
+  rray_int_is_missing,
+  int,
+  rray_int_is_missing,
+  >=
+)
+RRAY_COMPARE_ONE(
+  rray_less_than_int_int_one,
+  int,
+  rray_int_is_missing,
+  int,
+  rray_int_is_missing,
+  <
+)
+RRAY_COMPARE_ONE(
+  rray_less_than_or_equal_int_int_one,
+  int,
+  rray_int_is_missing,
+  int,
+  rray_int_is_missing,
+  <=
+)
+
+RRAY_COMPARE_ONE(
+  rray_greater_than_int_dbl_one,
+  int,
+  rray_int_is_missing,
+  double,
+  rray_dbl_is_missing,
+  >
+)
+RRAY_COMPARE_ONE(
+  rray_greater_than_or_equal_int_dbl_one,
+  int,
+  rray_int_is_missing,
+  double,
+  rray_dbl_is_missing,
+  >=
+)
+RRAY_COMPARE_ONE(
+  rray_less_than_int_dbl_one,
+  int,
+  rray_int_is_missing,
+  double,
+  rray_dbl_is_missing,
+  <
+)
+RRAY_COMPARE_ONE(
+  rray_less_than_or_equal_int_dbl_one,
+  int,
+  rray_int_is_missing,
+  double,
+  rray_dbl_is_missing,
+  <=
+)
+
+RRAY_COMPARE_ONE(
+  rray_greater_than_dbl_int_one,
+  double,
+  rray_dbl_is_missing,
+  int,
+  rray_int_is_missing,
+  >
+)
+RRAY_COMPARE_ONE(
+  rray_greater_than_or_equal_dbl_int_one,
+  double,
+  rray_dbl_is_missing,
+  int,
+  rray_int_is_missing,
+  >=
+)
+RRAY_COMPARE_ONE(
+  rray_less_than_dbl_int_one,
+  double,
+  rray_dbl_is_missing,
+  int,
+  rray_int_is_missing,
+  <
+)
+RRAY_COMPARE_ONE(
+  rray_less_than_or_equal_dbl_int_one,
+  double,
+  rray_dbl_is_missing,
+  int,
+  rray_int_is_missing,
+  <=
+)
+
+RRAY_COMPARE_ONE(
+  rray_greater_than_dbl_dbl_one,
+  double,
+  rray_dbl_is_missing,
+  double,
+  rray_dbl_is_missing,
+  >
+)
+RRAY_COMPARE_ONE(
+  rray_greater_than_or_equal_dbl_dbl_one,
+  double,
+  rray_dbl_is_missing,
+  double,
+  rray_dbl_is_missing,
+  >=
+)
+RRAY_COMPARE_ONE(
+  rray_less_than_dbl_dbl_one,
+  double,
+  rray_dbl_is_missing,
+  double,
+  rray_dbl_is_missing,
+  <
+)
+RRAY_COMPARE_ONE(
+  rray_less_than_or_equal_dbl_dbl_one,
+  double,
+  rray_dbl_is_missing,
+  double,
+  rray_dbl_is_missing,
+  <=
+)
+
+#undef RRAY_COMPARE_ONE
