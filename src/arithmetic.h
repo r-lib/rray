@@ -59,6 +59,7 @@ r_no_return void stop_int_overflow(struct r_lazy error_call);
                                                                                \
   const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
   const Y_CTYPE* v_y = Y_CONST_DEREF(y);                                       \
+                                                                               \
   const r_ssize run_size = rray_strided_iterator2_plan_run_size(plan);         \
   const r_ssize x_stride = rray_strided_iterator2_plan_run_stride1(plan);      \
   const r_ssize y_stride = rray_strided_iterator2_plan_run_stride2(plan);      \
