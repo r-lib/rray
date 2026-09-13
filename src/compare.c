@@ -297,9 +297,9 @@ static r_no_return void stop_unsupported_compare(
 
 #define RRAY_COMPARE_IMPL(X_CTYPE, Y_CTYPE, ONE)                               \
   do {                                                                         \
-    for (struct rray_strided_iterator2 it = rray_strided_iterator2(plan);      \
-         !rray_strided_iterator2_finished(&it);                                \
-         rray_strided_iterator2_next(&it)) {                                   \
+    for (struct rray_strided_iterator2 it = rray_strided_iterator2();          \
+         !rray_strided_iterator2_finished(&it, plan);                          \
+         rray_strided_iterator2_next(&it, plan)) {                             \
       const r_ssize run_start = rray_strided_iterator2_run_start(&it);         \
       const r_ssize run_end = run_start + run_size;                            \
       r_ssize x_loc = rray_strided_iterator2_location1(&it);                   \

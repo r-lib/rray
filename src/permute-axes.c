@@ -107,9 +107,9 @@ r_obj* rray_permute_axes(
   const r_ssize run_size = rray_strided_iterator_plan_run_size(plan);          \
   const r_ssize run_stride = rray_strided_iterator_plan_run_stride(plan);      \
                                                                                \
-  for (struct rray_strided_iterator it = rray_strided_iterator(plan);          \
-       !rray_strided_iterator_finished(&it);                                   \
-       rray_strided_iterator_next(&it)) {                                      \
+  for (struct rray_strided_iterator it = rray_strided_iterator();              \
+       !rray_strided_iterator_finished(&it, plan);                             \
+       rray_strided_iterator_next(&it, plan)) {                                \
     const r_ssize run_start = rray_strided_iterator_run_start(&it);            \
     const r_ssize run_end = run_start + run_size;                              \
     r_ssize loc = rray_strided_iterator_location(&it);                         \
@@ -137,9 +137,9 @@ r_obj* rray_permute_axes(
   const r_ssize run_size = rray_strided_iterator_plan_run_size(plan);          \
   const r_ssize run_stride = rray_strided_iterator_plan_run_stride(plan);      \
                                                                                \
-  for (struct rray_strided_iterator it = rray_strided_iterator(plan);          \
-       !rray_strided_iterator_finished(&it);                                   \
-       rray_strided_iterator_next(&it)) {                                      \
+  for (struct rray_strided_iterator it = rray_strided_iterator();              \
+       !rray_strided_iterator_finished(&it, plan);                             \
+       rray_strided_iterator_next(&it, plan)) {                                \
     const r_ssize run_start = rray_strided_iterator_run_start(&it);            \
     const r_ssize run_end = run_start + run_size;                              \
     r_ssize loc = rray_strided_iterator_location(&it);                         \
