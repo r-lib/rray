@@ -73,7 +73,7 @@ r_obj* rray_split(
     r_attrib_poke_dim(out_elt, out_elt_dimensions);
   }
 
-  struct rray_strided_iterator2_plan plan = rray_broadcast_iterator2(
+  struct rray_strided_iterator2_plan plan = rray_broadcast_iterator2_plan(
     v_out_dimensions,
     dimensionality,
     v_out_elt_dimensions,

@@ -62,7 +62,7 @@ r_obj* rray_broadcast(
 
   const r_ssize size = rray_size_from_dimensions(v_dimensions, dimensionality);
 
-  struct rray_strided_iterator_plan plan = rray_broadcast_iterator(
+  struct rray_strided_iterator_plan plan = rray_broadcast_iterator_plan(
     v_x_dimensions,
     x_dimensionality,
     v_dimensions,

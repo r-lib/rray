@@ -90,7 +90,7 @@ static r_obj* rray_equality(
 
   const r_ssize size = rray_size_from_dimensions(v_dimensions, dimensionality);
 
-  struct rray_strided_iterator2_plan plan = rray_broadcast_iterator2(
+  struct rray_strided_iterator2_plan plan = rray_broadcast_iterator2_plan(
     v_x_dimensions,
     x_dimensionality,
     v_y_dimensions,

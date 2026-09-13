@@ -179,7 +179,7 @@ static inline struct rray_strided_iterator_plan rray_strided_iterator_plan(
 // An axis of `from` with a dimension of 1 gets a stride of 0, so it stands
 // still while the matching axis of `to` walks. Axes past
 // `from_dimensionality` are treated as dimension 1.
-static inline struct rray_strided_iterator_plan rray_broadcast_iterator(
+static inline struct rray_strided_iterator_plan rray_broadcast_iterator_plan(
   const int* v_from_dimensions,
   int from_dimensionality,
   const int* v_to_dimensions,
@@ -316,7 +316,7 @@ static inline struct rray_strided_iterator2_plan rray_strided_iterator2_plan(
 
 // Same as `rray_broadcast_iterator()`, but broadcasts two `from` spaces into
 // one shared `to` space
-static inline struct rray_strided_iterator2_plan rray_broadcast_iterator2(
+static inline struct rray_strided_iterator2_plan rray_broadcast_iterator2_plan(
   const int* v_from1_dimensions,
   int from1_dimensionality,
   const int* v_from2_dimensions,
