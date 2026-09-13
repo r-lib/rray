@@ -156,21 +156,21 @@ r_obj* rray_split(
           v_v_out[out_loc][out_elt_loc] = v_x[i];                              \
         }                                                                      \
       } else {                                                                 \
-        for (r_ssize i = run_start; i < run_end;                               \
-             ++i, out_elt_loc += out_elt_run_stride) {                         \
+        for (r_ssize i = run_start; i < run_end; ++i) {                        \
           v_v_out[out_loc][out_elt_loc] = v_x[i];                              \
+          out_elt_loc += out_elt_run_stride;                                   \
         }                                                                      \
       }                                                                        \
     } else if (out_elt_run_stride == 0) {                                      \
-      for (r_ssize i = run_start; i < run_end;                                 \
-           ++i, out_loc += out_run_stride) {                                   \
+      for (r_ssize i = run_start; i < run_end; ++i) {                          \
         v_v_out[out_loc][out_elt_loc] = v_x[i];                                \
+        out_loc += out_run_stride;                                             \
       }                                                                        \
     } else {                                                                   \
-      for (r_ssize i = run_start; i < run_end; ++i,                            \
-                   out_loc += out_run_stride,                                  \
-                   out_elt_loc += out_elt_run_stride) {                        \
+      for (r_ssize i = run_start; i < run_end; ++i) {                          \
         v_v_out[out_loc][out_elt_loc] = v_x[i];                                \
+        out_loc += out_run_stride;                                             \
+        out_elt_loc += out_elt_run_stride;                                     \
       }                                                                        \
     }                                                                          \
   }                                                                            \
@@ -201,21 +201,21 @@ r_obj* rray_split(
           POKE(v_out[out_loc], out_elt_loc, v_x[i]);                           \
         }                                                                      \
       } else {                                                                 \
-        for (r_ssize i = run_start; i < run_end;                               \
-             ++i, out_elt_loc += out_elt_run_stride) {                         \
+        for (r_ssize i = run_start; i < run_end; ++i) {                        \
           POKE(v_out[out_loc], out_elt_loc, v_x[i]);                           \
+          out_elt_loc += out_elt_run_stride;                                   \
         }                                                                      \
       }                                                                        \
     } else if (out_elt_run_stride == 0) {                                      \
-      for (r_ssize i = run_start; i < run_end;                                 \
-           ++i, out_loc += out_run_stride) {                                   \
+      for (r_ssize i = run_start; i < run_end; ++i) {                          \
         POKE(v_out[out_loc], out_elt_loc, v_x[i]);                             \
+        out_loc += out_run_stride;                                             \
       }                                                                        \
     } else {                                                                   \
-      for (r_ssize i = run_start; i < run_end; ++i,                            \
-                   out_loc += out_run_stride,                                  \
-                   out_elt_loc += out_elt_run_stride) {                        \
+      for (r_ssize i = run_start; i < run_end; ++i) {                          \
         POKE(v_out[out_loc], out_elt_loc, v_x[i]);                             \
+        out_loc += out_run_stride;                                             \
+        out_elt_loc += out_elt_run_stride;                                     \
       }                                                                        \
     }                                                                          \
   }
