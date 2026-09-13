@@ -12,6 +12,11 @@
 // Walks the multidimensional point space defined by `v_dimensions`. Reports a
 // 1D `location` in an alternate subspace defined by `v_strides`.
 //
+// The iterator uses a two-stage design on purpose. The plan holds dimensions
+// and strides that do not change, while the iterator holds only the positions
+// that change as it walks. Keeping the changing state small lets the compiler
+// keep it in registers instead of repeatedly writing it to memory.
+//
 // --------------------------------------------------------------------------
 // Examples
 //
