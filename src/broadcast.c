@@ -168,7 +168,7 @@ r_obj* rray_broadcast(
 static r_obj* rray_broadcast_lgl(
   r_obj* x,
   r_ssize size,
-  struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan
 ) {
   RRAY_BROADCAST_ATOMIC(R_TYPE_logical, int, r_lgl_cbegin, r_lgl_begin);
 }
@@ -176,7 +176,7 @@ static r_obj* rray_broadcast_lgl(
 static r_obj* rray_broadcast_int(
   r_obj* x,
   r_ssize size,
-  struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan
 ) {
   RRAY_BROADCAST_ATOMIC(R_TYPE_integer, int, r_int_cbegin, r_int_begin);
 }
@@ -184,7 +184,7 @@ static r_obj* rray_broadcast_int(
 static r_obj* rray_broadcast_dbl(
   r_obj* x,
   r_ssize size,
-  struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan
 ) {
   RRAY_BROADCAST_ATOMIC(R_TYPE_double, double, r_dbl_cbegin, r_dbl_begin);
 }
@@ -192,7 +192,7 @@ static r_obj* rray_broadcast_dbl(
 static r_obj* rray_broadcast_cpl(
   r_obj* x,
   r_ssize size,
-  struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan
 ) {
   RRAY_BROADCAST_ATOMIC(R_TYPE_complex, r_complex, r_cpl_cbegin, r_cpl_begin);
 }
@@ -200,7 +200,7 @@ static r_obj* rray_broadcast_cpl(
 static r_obj* rray_broadcast_raw(
   r_obj* x,
   r_ssize size,
-  struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan
 ) {
   RRAY_BROADCAST_ATOMIC(R_TYPE_raw, Rbyte, r_raw_cbegin, r_raw_begin);
 }
@@ -208,7 +208,7 @@ static r_obj* rray_broadcast_raw(
 static r_obj* rray_broadcast_chr(
   r_obj* x,
   r_ssize size,
-  struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan
 ) {
   RRAY_BROADCAST_BARRIER(R_TYPE_character, r_chr_cbegin, r_chr_poke);
 }
@@ -216,7 +216,7 @@ static r_obj* rray_broadcast_chr(
 static r_obj* rray_broadcast_list(
   r_obj* x,
   r_ssize size,
-  struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan
 ) {
   RRAY_BROADCAST_BARRIER(R_TYPE_list, r_list_cbegin, r_list_poke);
 }

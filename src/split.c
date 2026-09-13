@@ -209,7 +209,7 @@ r_obj* rray_split(
 static void rray_split_lgl(
   r_obj* x,
   r_obj* out,
-  struct rray_strided_iterator2_plan* plan
+  const struct rray_strided_iterator2_plan* plan
 ) {
   RRAY_SPLIT_ATOMIC(int, r_lgl_cbegin, r_lgl_begin);
 }
@@ -217,7 +217,7 @@ static void rray_split_lgl(
 static void rray_split_int(
   r_obj* x,
   r_obj* out,
-  struct rray_strided_iterator2_plan* plan
+  const struct rray_strided_iterator2_plan* plan
 ) {
   RRAY_SPLIT_ATOMIC(int, r_int_cbegin, r_int_begin);
 }
@@ -225,7 +225,7 @@ static void rray_split_int(
 static void rray_split_dbl(
   r_obj* x,
   r_obj* out,
-  struct rray_strided_iterator2_plan* plan
+  const struct rray_strided_iterator2_plan* plan
 ) {
   RRAY_SPLIT_ATOMIC(double, r_dbl_cbegin, r_dbl_begin);
 }
@@ -233,7 +233,7 @@ static void rray_split_dbl(
 static void rray_split_cpl(
   r_obj* x,
   r_obj* out,
-  struct rray_strided_iterator2_plan* plan
+  const struct rray_strided_iterator2_plan* plan
 ) {
   RRAY_SPLIT_ATOMIC(r_complex, r_cpl_cbegin, r_cpl_begin);
 }
@@ -241,7 +241,7 @@ static void rray_split_cpl(
 static void rray_split_raw(
   r_obj* x,
   r_obj* out,
-  struct rray_strided_iterator2_plan* plan
+  const struct rray_strided_iterator2_plan* plan
 ) {
   RRAY_SPLIT_ATOMIC(Rbyte, r_raw_cbegin, r_raw_begin);
 }
@@ -249,7 +249,7 @@ static void rray_split_raw(
 static void rray_split_chr(
   r_obj* x,
   r_obj* out,
-  struct rray_strided_iterator2_plan* plan
+  const struct rray_strided_iterator2_plan* plan
 ) {
   RRAY_SPLIT_BARRIER(r_chr_cbegin, r_chr_poke);
 }
@@ -257,7 +257,7 @@ static void rray_split_chr(
 static void rray_split_list(
   r_obj* x,
   r_obj* out,
-  struct rray_strided_iterator2_plan* plan
+  const struct rray_strided_iterator2_plan* plan
 ) {
   RRAY_SPLIT_BARRIER(r_list_cbegin, r_list_poke);
 }

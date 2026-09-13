@@ -9,7 +9,7 @@
 typedef r_obj* (*rray_reduce_fn)(
   r_obj* x,
   r_ssize out_size,
-  struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan
 );
 
 typedef rray_reduce_fn (*rray_reduce_fn_switch)(

@@ -65,7 +65,7 @@ static rray_reduce_fn rray_product_along_switch(
 static r_obj* rray_product_along_lgl(
   r_obj* x,
   r_ssize out_size,
-  struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan
 ) {
   RRAY_REDUCE(
     int,
@@ -81,7 +81,7 @@ static r_obj* rray_product_along_lgl(
 static r_obj* rray_product_along_lgl_na_rm(
   r_obj* x,
   r_ssize out_size,
-  struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan
 ) {
   RRAY_REDUCE(
     int,
@@ -97,7 +97,7 @@ static r_obj* rray_product_along_lgl_na_rm(
 static r_obj* rray_product_along_int(
   r_obj* x,
   r_ssize out_size,
-  struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan
 ) {
   RRAY_REDUCE(
     int,
@@ -113,7 +113,7 @@ static r_obj* rray_product_along_int(
 static r_obj* rray_product_along_int_na_rm(
   r_obj* x,
   r_ssize out_size,
-  struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan
 ) {
   RRAY_REDUCE(
     int,
@@ -129,7 +129,7 @@ static r_obj* rray_product_along_int_na_rm(
 static r_obj* rray_product_along_dbl(
   r_obj* x,
   r_ssize out_size,
-  struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan
 ) {
   RRAY_REDUCE(
     double,
@@ -145,7 +145,7 @@ static r_obj* rray_product_along_dbl(
 static r_obj* rray_product_along_dbl_na_rm(
   r_obj* x,
   r_ssize out_size,
-  struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan
 ) {
   RRAY_REDUCE(
     double,
@@ -161,7 +161,7 @@ static r_obj* rray_product_along_dbl_na_rm(
 static r_obj* rray_product_along_cpl(
   r_obj* x,
   r_ssize out_size,
-  struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan
 ) {
   RRAY_REDUCE(
     r_complex,
@@ -177,7 +177,7 @@ static r_obj* rray_product_along_cpl(
 static r_obj* rray_product_along_cpl_na_rm(
   r_obj* x,
   r_ssize out_size,
-  struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan
 ) {
   RRAY_REDUCE(
     r_complex,
