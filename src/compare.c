@@ -548,150 +548,61 @@ static r_obj* rray_compare_dbl_dbl(
 #undef RRAY_COMPARE
 #undef RRAY_COMPARE_IMPL
 
-#define RRAY_COMPARE_ONE(                                                      \
-  NAME,                                                                        \
-  X_CTYPE,                                                                     \
-  X_IS_MISSING,                                                                \
-  Y_CTYPE,                                                                     \
-  Y_IS_MISSING,                                                                \
-  OPERATOR                                                                     \
-)                                                                              \
-  static inline int NAME(X_CTYPE x, Y_CTYPE y) {                               \
-    const bool missing = X_IS_MISSING(x) | Y_IS_MISSING(y);                    \
-    const int elt = x OPERATOR y;                                              \
-    return missing ? r_globals.na_lgl : elt;                                   \
-  }
+#define RRAY_COMPARE_ONE(X_IS_MISSING, Y_IS_MISSING, OPERATOR)                 \
+  const bool missing = X_IS_MISSING(x) | Y_IS_MISSING(y);                      \
+  const int elt = x OPERATOR y;                                                \
+  return missing ? r_globals.na_lgl : elt;
 
-RRAY_COMPARE_ONE(
-  rray_greater_than_int_int_one,
-  int,
-  rray_int_is_missing,
-  int,
-  rray_int_is_missing,
-  >
-)
-RRAY_COMPARE_ONE(
-  rray_greater_than_or_equal_int_int_one,
-  int,
-  rray_int_is_missing,
-  int,
-  rray_int_is_missing,
-  >=
-)
-RRAY_COMPARE_ONE(
-  rray_less_than_int_int_one,
-  int,
-  rray_int_is_missing,
-  int,
-  rray_int_is_missing,
-  <
-)
-RRAY_COMPARE_ONE(
-  rray_less_than_or_equal_int_int_one,
-  int,
-  rray_int_is_missing,
-  int,
-  rray_int_is_missing,
-  <=
-)
+static inline int rray_greater_than_int_int_one(int x, int y) {
+  RRAY_COMPARE_ONE(rray_int_is_missing, rray_int_is_missing, >);
+}
+static inline int rray_greater_than_or_equal_int_int_one(int x, int y) {
+  RRAY_COMPARE_ONE(rray_int_is_missing, rray_int_is_missing, >=);
+}
+static inline int rray_less_than_int_int_one(int x, int y) {
+  RRAY_COMPARE_ONE(rray_int_is_missing, rray_int_is_missing, <);
+}
+static inline int rray_less_than_or_equal_int_int_one(int x, int y) {
+  RRAY_COMPARE_ONE(rray_int_is_missing, rray_int_is_missing, <=);
+}
 
-RRAY_COMPARE_ONE(
-  rray_greater_than_int_dbl_one,
-  int,
-  rray_int_is_missing,
-  double,
-  rray_dbl_is_missing,
-  >
-)
-RRAY_COMPARE_ONE(
-  rray_greater_than_or_equal_int_dbl_one,
-  int,
-  rray_int_is_missing,
-  double,
-  rray_dbl_is_missing,
-  >=
-)
-RRAY_COMPARE_ONE(
-  rray_less_than_int_dbl_one,
-  int,
-  rray_int_is_missing,
-  double,
-  rray_dbl_is_missing,
-  <
-)
-RRAY_COMPARE_ONE(
-  rray_less_than_or_equal_int_dbl_one,
-  int,
-  rray_int_is_missing,
-  double,
-  rray_dbl_is_missing,
-  <=
-)
+static inline int rray_greater_than_int_dbl_one(int x, double y) {
+  RRAY_COMPARE_ONE(rray_int_is_missing, rray_dbl_is_missing, >);
+}
+static inline int rray_greater_than_or_equal_int_dbl_one(int x, double y) {
+  RRAY_COMPARE_ONE(rray_int_is_missing, rray_dbl_is_missing, >=);
+}
+static inline int rray_less_than_int_dbl_one(int x, double y) {
+  RRAY_COMPARE_ONE(rray_int_is_missing, rray_dbl_is_missing, <);
+}
+static inline int rray_less_than_or_equal_int_dbl_one(int x, double y) {
+  RRAY_COMPARE_ONE(rray_int_is_missing, rray_dbl_is_missing, <=);
+}
 
-RRAY_COMPARE_ONE(
-  rray_greater_than_dbl_int_one,
-  double,
-  rray_dbl_is_missing,
-  int,
-  rray_int_is_missing,
-  >
-)
-RRAY_COMPARE_ONE(
-  rray_greater_than_or_equal_dbl_int_one,
-  double,
-  rray_dbl_is_missing,
-  int,
-  rray_int_is_missing,
-  >=
-)
-RRAY_COMPARE_ONE(
-  rray_less_than_dbl_int_one,
-  double,
-  rray_dbl_is_missing,
-  int,
-  rray_int_is_missing,
-  <
-)
-RRAY_COMPARE_ONE(
-  rray_less_than_or_equal_dbl_int_one,
-  double,
-  rray_dbl_is_missing,
-  int,
-  rray_int_is_missing,
-  <=
-)
+static inline int rray_greater_than_dbl_int_one(double x, int y) {
+  RRAY_COMPARE_ONE(rray_dbl_is_missing, rray_int_is_missing, >);
+}
+static inline int rray_greater_than_or_equal_dbl_int_one(double x, int y) {
+  RRAY_COMPARE_ONE(rray_dbl_is_missing, rray_int_is_missing, >=);
+}
+static inline int rray_less_than_dbl_int_one(double x, int y) {
+  RRAY_COMPARE_ONE(rray_dbl_is_missing, rray_int_is_missing, <);
+}
+static inline int rray_less_than_or_equal_dbl_int_one(double x, int y) {
+  RRAY_COMPARE_ONE(rray_dbl_is_missing, rray_int_is_missing, <=);
+}
 
-RRAY_COMPARE_ONE(
-  rray_greater_than_dbl_dbl_one,
-  double,
-  rray_dbl_is_missing,
-  double,
-  rray_dbl_is_missing,
-  >
-)
-RRAY_COMPARE_ONE(
-  rray_greater_than_or_equal_dbl_dbl_one,
-  double,
-  rray_dbl_is_missing,
-  double,
-  rray_dbl_is_missing,
-  >=
-)
-RRAY_COMPARE_ONE(
-  rray_less_than_dbl_dbl_one,
-  double,
-  rray_dbl_is_missing,
-  double,
-  rray_dbl_is_missing,
-  <
-)
-RRAY_COMPARE_ONE(
-  rray_less_than_or_equal_dbl_dbl_one,
-  double,
-  rray_dbl_is_missing,
-  double,
-  rray_dbl_is_missing,
-  <=
-)
+static inline int rray_greater_than_dbl_dbl_one(double x, double y) {
+  RRAY_COMPARE_ONE(rray_dbl_is_missing, rray_dbl_is_missing, >);
+}
+static inline int rray_greater_than_or_equal_dbl_dbl_one(double x, double y) {
+  RRAY_COMPARE_ONE(rray_dbl_is_missing, rray_dbl_is_missing, >=);
+}
+static inline int rray_less_than_dbl_dbl_one(double x, double y) {
+  RRAY_COMPARE_ONE(rray_dbl_is_missing, rray_dbl_is_missing, <);
+}
+static inline int rray_less_than_or_equal_dbl_dbl_one(double x, double y) {
+  RRAY_COMPARE_ONE(rray_dbl_is_missing, rray_dbl_is_missing, <=);
+}
 
 #undef RRAY_COMPARE_ONE
