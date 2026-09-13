@@ -300,39 +300,39 @@ static r_no_return void stop_unsupported_compare(
     for (struct rray_strided_iterator2 it = rray_strided_iterator2(plan);      \
          !rray_strided_iterator2_finished(&it);                                \
          rray_strided_iterator2_next(&it)) {                                   \
-      const r_ssize index = rray_strided_iterator2_index(&it);                 \
-      const r_ssize end = index + run_size;                                    \
+      const r_ssize run_start = rray_strided_iterator2_run_start(&it);         \
+      const r_ssize run_end = run_start + run_size;                            \
       r_ssize x_loc = rray_strided_iterator2_location1(&it);                   \
       r_ssize y_loc = rray_strided_iterator2_location2(&it);                   \
                                                                                \
-      if (x_stride == 0) {                                                     \
+      if (x_run_stride == 0) {                                                 \
         const X_CTYPE x_elt = v_x[x_loc];                                      \
-        if (y_stride == 0) {                                                   \
+        if (y_run_stride == 0) {                                               \
           const Y_CTYPE y_elt = v_y[y_loc];                                    \
-          for (r_ssize i = index; i < end; ++i) {                              \
+          for (r_ssize i = run_start; i < run_end; ++i) {                      \
             v_out[i] = ONE(x_elt, y_elt);                                      \
           }                                                                    \
         } else {                                                               \
-          for (r_ssize i = index; i < end; ++i) {                              \
+          for (r_ssize i = run_start; i < run_end; ++i) {                      \
             const Y_CTYPE y_elt = v_y[y_loc];                                  \
             v_out[i] = ONE(x_elt, y_elt);                                      \
-            y_loc += y_stride;                                                 \
+            y_loc += y_run_stride;                                             \
           }                                                                    \
         }                                                                      \
-      } else if (y_stride == 0) {                                              \
+      } else if (y_run_stride == 0) {                                          \
         const Y_CTYPE y_elt = v_y[y_loc];                                      \
-        for (r_ssize i = index; i < end; ++i) {                                \
+        for (r_ssize i = run_start; i < run_end; ++i) {                        \
           const X_CTYPE x_elt = v_x[x_loc];                                    \
           v_out[i] = ONE(x_elt, y_elt);                                        \
-          x_loc += x_stride;                                                   \
+          x_loc += x_run_stride;                                               \
         }                                                                      \
       } else {                                                                 \
-        for (r_ssize i = index; i < end; ++i) {                                \
+        for (r_ssize i = run_start; i < run_end; ++i) {                        \
           const X_CTYPE x_elt = v_x[x_loc];                                    \
           const Y_CTYPE y_elt = v_y[y_loc];                                    \
           v_out[i] = ONE(x_elt, y_elt);                                        \
-          x_loc += x_stride;                                                   \
-          y_loc += y_stride;                                                   \
+          x_loc += x_run_stride;                                               \
+          y_loc += y_run_stride;                                               \
         }                                                                      \
       }                                                                        \
     }                                                                          \
@@ -355,8 +355,8 @@ static r_no_return void stop_unsupported_compare(
   const Y_CTYPE* v_y = Y_CONST_DEREF(y);                                       \
                                                                                \
   const r_ssize run_size = rray_strided_iterator2_plan_run_size(plan);         \
-  const r_ssize x_stride = rray_strided_iterator2_plan_run_stride1(plan);      \
-  const r_ssize y_stride = rray_strided_iterator2_plan_run_stride2(plan);      \
+  const r_ssize x_run_stride = rray_strided_iterator2_plan_run_stride1(plan);  \
+  const r_ssize y_run_stride = rray_strided_iterator2_plan_run_stride2(plan);  \
                                                                                \
   switch (op) {                                                                \
   case RRAY_COMPARE_greater_than:                                              \

@@ -137,35 +137,39 @@ r_obj* rray_split(
   }                                                                            \
                                                                                \
   const r_ssize run_size = rray_strided_iterator2_plan_run_size(plan);         \
-  const r_ssize out_stride = rray_strided_iterator2_plan_run_stride1(plan);    \
-  const r_ssize out_elt_stride =                                               \
+  const r_ssize out_run_stride =                                               \
+    rray_strided_iterator2_plan_run_stride1(plan);                             \
+  const r_ssize out_elt_run_stride =                                           \
     rray_strided_iterator2_plan_run_stride2(plan);                             \
                                                                                \
   for (struct rray_strided_iterator2 it = rray_strided_iterator2(plan);        \
        !rray_strided_iterator2_finished(&it);                                  \
        rray_strided_iterator2_next(&it)) {                                     \
-    const r_ssize index = rray_strided_iterator2_index(&it);                   \
-    const r_ssize end = index + run_size;                                      \
+    const r_ssize run_start = rray_strided_iterator2_run_start(&it);           \
+    const r_ssize run_end = run_start + run_size;                              \
     r_ssize out_loc = rray_strided_iterator2_location1(&it);                   \
     r_ssize out_elt_loc = rray_strided_iterator2_location2(&it);               \
                                                                                \
-    if (out_stride == 0) {                                                     \
-      if (out_elt_stride == 0) {                                               \
-        for (r_ssize i = index; i < end; ++i) {                                \
+    if (out_run_stride == 0) {                                                 \
+      if (out_elt_run_stride == 0) {                                           \
+        for (r_ssize i = run_start; i < run_end; ++i) {                        \
           v_v_out[out_loc][out_elt_loc] = v_x[i];                              \
         }                                                                      \
       } else {                                                                 \
-        for (r_ssize i = index; i < end; ++i, out_elt_loc += out_elt_stride) { \
+        for (r_ssize i = run_start; i < run_end;                               \
+             ++i, out_elt_loc += out_elt_run_stride) {                         \
           v_v_out[out_loc][out_elt_loc] = v_x[i];                              \
         }                                                                      \
       }                                                                        \
-    } else if (out_elt_stride == 0) {                                          \
-      for (r_ssize i = index; i < end; ++i, out_loc += out_stride) {           \
+    } else if (out_elt_run_stride == 0) {                                      \
+      for (r_ssize i = run_start; i < run_end;                                 \
+           ++i, out_loc += out_run_stride) {                                   \
         v_v_out[out_loc][out_elt_loc] = v_x[i];                                \
       }                                                                        \
     } else {                                                                   \
-      for (r_ssize i = index; i < end;                                         \
-           ++i, out_loc += out_stride, out_elt_loc += out_elt_stride) {        \
+      for (r_ssize i = run_start; i < run_end; ++i,                            \
+                   out_loc += out_run_stride,                                  \
+                   out_elt_loc += out_elt_run_stride) {                        \
         v_v_out[out_loc][out_elt_loc] = v_x[i];                                \
       }                                                                        \
     }                                                                          \
@@ -178,35 +182,39 @@ r_obj* rray_split(
   r_obj* const* v_out = r_list_cbegin(out);                                    \
                                                                                \
   const r_ssize run_size = rray_strided_iterator2_plan_run_size(plan);         \
-  const r_ssize out_stride = rray_strided_iterator2_plan_run_stride1(plan);    \
-  const r_ssize out_elt_stride =                                               \
+  const r_ssize out_run_stride =                                               \
+    rray_strided_iterator2_plan_run_stride1(plan);                             \
+  const r_ssize out_elt_run_stride =                                           \
     rray_strided_iterator2_plan_run_stride2(plan);                             \
                                                                                \
   for (struct rray_strided_iterator2 it = rray_strided_iterator2(plan);        \
        !rray_strided_iterator2_finished(&it);                                  \
        rray_strided_iterator2_next(&it)) {                                     \
-    const r_ssize index = rray_strided_iterator2_index(&it);                   \
-    const r_ssize end = index + run_size;                                      \
+    const r_ssize run_start = rray_strided_iterator2_run_start(&it);           \
+    const r_ssize run_end = run_start + run_size;                              \
     r_ssize out_loc = rray_strided_iterator2_location1(&it);                   \
     r_ssize out_elt_loc = rray_strided_iterator2_location2(&it);               \
                                                                                \
-    if (out_stride == 0) {                                                     \
-      if (out_elt_stride == 0) {                                               \
-        for (r_ssize i = index; i < end; ++i) {                                \
+    if (out_run_stride == 0) {                                                 \
+      if (out_elt_run_stride == 0) {                                           \
+        for (r_ssize i = run_start; i < run_end; ++i) {                        \
           POKE(v_out[out_loc], out_elt_loc, v_x[i]);                           \
         }                                                                      \
       } else {                                                                 \
-        for (r_ssize i = index; i < end; ++i, out_elt_loc += out_elt_stride) { \
+        for (r_ssize i = run_start; i < run_end;                               \
+             ++i, out_elt_loc += out_elt_run_stride) {                         \
           POKE(v_out[out_loc], out_elt_loc, v_x[i]);                           \
         }                                                                      \
       }                                                                        \
-    } else if (out_elt_stride == 0) {                                          \
-      for (r_ssize i = index; i < end; ++i, out_loc += out_stride) {           \
+    } else if (out_elt_run_stride == 0) {                                      \
+      for (r_ssize i = run_start; i < run_end;                                 \
+           ++i, out_loc += out_run_stride) {                                   \
         POKE(v_out[out_loc], out_elt_loc, v_x[i]);                             \
       }                                                                        \
     } else {                                                                   \
-      for (r_ssize i = index; i < end;                                         \
-           ++i, out_loc += out_stride, out_elt_loc += out_elt_stride) {        \
+      for (r_ssize i = run_start; i < run_end; ++i,                            \
+                   out_loc += out_run_stride,                                  \
+                   out_elt_loc += out_elt_run_stride) {                        \
         POKE(v_out[out_loc], out_elt_loc, v_x[i]);                             \
       }                                                                        \
     }                                                                          \

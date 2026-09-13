@@ -56,17 +56,17 @@ r_no_return void stop_unsupported_reduce(
   for (struct rray_strided_iterator it = rray_strided_iterator(plan);          \
        !rray_strided_iterator_finished(&it);                                   \
        rray_strided_iterator_next(&it)) {                                      \
-    const r_ssize index = rray_strided_iterator_index(&it);                    \
-    const r_ssize end = index + rray_strided_iterator_run_size(&it);           \
+    const r_ssize run_start = rray_strided_iterator_run_start(&it);            \
+    const r_ssize run_end = run_start + rray_strided_iterator_run_size(&it);   \
     r_ssize loc = rray_strided_iterator_location(&it);                         \
-    const r_ssize stride = rray_strided_iterator_run_stride(&it);              \
+    const r_ssize run_stride = rray_strided_iterator_run_stride(&it);          \
                                                                                \
-    if (stride == 0) {                                                         \
-      for (r_ssize i = index; i < end; ++i) {                                  \
+    if (run_stride == 0) {                                                     \
+      for (r_ssize i = run_start; i < run_end; ++i) {                          \
         v_out[loc] = ONE(v_out[loc], v_x[i]);                                  \
       }                                                                        \
     } else {                                                                   \
-      for (r_ssize i = index; i < end; ++i, loc += stride) {                   \
+      for (r_ssize i = run_start; i < run_end; ++i, loc += run_stride) {       \
         v_out[loc] = ONE(v_out[loc], v_x[i]);                                  \
       }                                                                        \
     }                                                                          \
