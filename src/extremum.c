@@ -291,6 +291,62 @@ static r_no_return void stop_unsupported_extremum(
   );
 }
 
+#define RRAY_EXTREMUM_IMPL(                                                    \
+  X_CTYPE,                                                                     \
+  X_CONST_DEREF,                                                               \
+  X_CAST,                                                                      \
+  Y_CTYPE,                                                                     \
+  Y_CONST_DEREF,                                                               \
+  Y_CAST,                                                                      \
+  OUT_RTYPE,                                                                   \
+  OUT_CTYPE,                                                                   \
+  OUT_DEREF,                                                                   \
+  ONE                                                                          \
+)                                                                              \
+  r_obj* out = KEEP(r_alloc_vector(OUT_RTYPE, size));                          \
+  OUT_CTYPE* v_out = OUT_DEREF(out);                                           \
+                                                                               \
+  const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
+  const Y_CTYPE* v_y = Y_CONST_DEREF(y);                                       \
+                                                                               \
+  struct rray_strided_iterator2_cursor cursor =                                \
+    rray_strided_iterator2_begin(it);                                          \
+  for (; !rray_strided_iterator2_finished(&cursor);                            \
+       rray_strided_iterator2_next(&cursor)) {                                 \
+    const r_ssize index = rray_strided_iterator2_index(&cursor);               \
+    const r_ssize end = index + rray_strided_iterator2_run_size(&cursor);      \
+    const r_ssize x_loc = rray_strided_iterator2_location1(&cursor);           \
+    const r_ssize y_loc = rray_strided_iterator2_location2(&cursor);           \
+    const r_ssize x_stride = rray_strided_iterator2_run_stride1(&cursor);      \
+    const r_ssize y_stride = rray_strided_iterator2_run_stride2(&cursor);      \
+                                                                               \
+    if (x_stride == 0) {                                                       \
+      if (y_stride == 0) {                                                     \
+        for (r_ssize i = index; i < end; ++i) {                                \
+          v_out[i] = ONE(X_CAST(v_x[x_loc]), Y_CAST(v_y[y_loc]));              \
+        }                                                                      \
+      } else {                                                                 \
+        for (r_ssize i = index, y_loc_ = y_loc; i < end;                       \
+             ++i, y_loc_ += y_stride) {                                        \
+          v_out[i] = ONE(X_CAST(v_x[x_loc]), Y_CAST(v_y[y_loc_]));             \
+        }                                                                      \
+      }                                                                        \
+    } else if (y_stride == 0) {                                                \
+      for (r_ssize i = index, x_loc_ = x_loc; i < end;                         \
+           ++i, x_loc_ += x_stride) {                                          \
+        v_out[i] = ONE(X_CAST(v_x[x_loc_]), Y_CAST(v_y[y_loc]));               \
+      }                                                                        \
+    } else {                                                                   \
+      for (r_ssize i = index, x_loc_ = x_loc, y_loc_ = y_loc; i < end;         \
+           ++i, x_loc_ += x_stride, y_loc_ += y_stride) {                      \
+        v_out[i] = ONE(X_CAST(v_x[x_loc_]), Y_CAST(v_y[y_loc_]));              \
+      }                                                                        \
+    }                                                                          \
+  }                                                                            \
+                                                                               \
+  FREE(1);                                                                     \
+  return out;
+
 #define RRAY_EXTREMUM(                                                         \
   X_CTYPE,                                                                     \
   X_CONST_DEREF,                                                               \
@@ -304,24 +360,33 @@ static r_no_return void stop_unsupported_extremum(
   ONE_PROPAGATE_NA,                                                            \
   ONE_REMOVE_NA                                                                \
 )                                                                              \
-  r_obj* out = KEEP(r_alloc_vector(OUT_RTYPE, size));                          \
-  OUT_CTYPE* v_out = OUT_DEREF(out);                                           \
-                                                                               \
-  const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
-  const Y_CTYPE* v_y = Y_CONST_DEREF(y);                                       \
-                                                                               \
   if (na_rm) {                                                                 \
-    RRAY_STRIDED_ITERATOR2_FOR_EACH(it, i, x_loc, y_loc, {                     \
-      v_out[i] = ONE_REMOVE_NA(X_CAST(v_x[x_loc]), Y_CAST(v_y[y_loc]));        \
-    });                                                                        \
+    RRAY_EXTREMUM_IMPL(                                                        \
+      X_CTYPE,                                                                 \
+      X_CONST_DEREF,                                                           \
+      X_CAST,                                                                  \
+      Y_CTYPE,                                                                 \
+      Y_CONST_DEREF,                                                           \
+      Y_CAST,                                                                  \
+      OUT_RTYPE,                                                               \
+      OUT_CTYPE,                                                               \
+      OUT_DEREF,                                                               \
+      ONE_REMOVE_NA                                                            \
+    );                                                                         \
   } else {                                                                     \
-    RRAY_STRIDED_ITERATOR2_FOR_EACH(it, i, x_loc, y_loc, {                     \
-      v_out[i] = ONE_PROPAGATE_NA(X_CAST(v_x[x_loc]), Y_CAST(v_y[y_loc]));     \
-    });                                                                        \
-  }                                                                            \
-                                                                               \
-  FREE(1);                                                                     \
-  return out;
+    RRAY_EXTREMUM_IMPL(                                                        \
+      X_CTYPE,                                                                 \
+      X_CONST_DEREF,                                                           \
+      X_CAST,                                                                  \
+      Y_CTYPE,                                                                 \
+      Y_CONST_DEREF,                                                           \
+      Y_CAST,                                                                  \
+      OUT_RTYPE,                                                               \
+      OUT_CTYPE,                                                               \
+      OUT_DEREF,                                                               \
+      ONE_PROPAGATE_NA                                                         \
+    );                                                                         \
+  }
 
 static r_obj* rray_max_lgl_lgl(
   r_obj* x,
@@ -738,6 +803,7 @@ static r_obj* rray_min_dbl_dbl(
 }
 
 #undef RRAY_EXTREMUM
+#undef RRAY_EXTREMUM_IMPL
 
 // Each of the "one" functions below is carefully tuned to maximize
 // the chance of the resulting loop being vectorized by the compiler.

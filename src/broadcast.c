@@ -115,7 +115,25 @@ r_obj* rray_broadcast(
   const CTYPE* v_x = CONST_DEREF(x);                                           \
   CTYPE* v_out = DEREF(out);                                                   \
                                                                                \
-  RRAY_STRIDED_ITERATOR_FOR_EACH(it, i, loc, { v_out[i] = v_x[loc]; });        \
+  struct rray_strided_iterator_cursor cursor =                                 \
+    rray_strided_iterator_begin(it);                                           \
+  for (; !rray_strided_iterator_finished(&cursor);                             \
+       rray_strided_iterator_next(&cursor)) {                                  \
+    const r_ssize index = rray_strided_iterator_index(&cursor);                \
+    const r_ssize end = index + rray_strided_iterator_run_size(&cursor);       \
+    const r_ssize loc = rray_strided_iterator_location(&cursor);               \
+    const r_ssize stride = rray_strided_iterator_run_stride(&cursor);          \
+                                                                               \
+    if (stride == 0) {                                                         \
+      for (r_ssize i = index; i < end; ++i) {                                  \
+        v_out[i] = v_x[loc];                                                   \
+      }                                                                        \
+    } else {                                                                   \
+      for (r_ssize i = index, loc_ = loc; i < end; ++i, loc_ += stride) {      \
+        v_out[i] = v_x[loc_];                                                  \
+      }                                                                        \
+    }                                                                          \
+  }                                                                            \
                                                                                \
   FREE(1);                                                                     \
   return out;
@@ -124,7 +142,25 @@ r_obj* rray_broadcast(
   r_obj* out = KEEP(r_alloc_vector(RTYPE, size));                              \
   r_obj* const* v_x = CONST_DEREF(x);                                          \
                                                                                \
-  RRAY_STRIDED_ITERATOR_FOR_EACH(it, i, loc, { POKE(out, i, v_x[loc]); });     \
+  struct rray_strided_iterator_cursor cursor =                                 \
+    rray_strided_iterator_begin(it);                                           \
+  for (; !rray_strided_iterator_finished(&cursor);                             \
+       rray_strided_iterator_next(&cursor)) {                                  \
+    const r_ssize index = rray_strided_iterator_index(&cursor);                \
+    const r_ssize end = index + rray_strided_iterator_run_size(&cursor);       \
+    const r_ssize loc = rray_strided_iterator_location(&cursor);               \
+    const r_ssize stride = rray_strided_iterator_run_stride(&cursor);          \
+                                                                               \
+    if (stride == 0) {                                                         \
+      for (r_ssize i = index; i < end; ++i) {                                  \
+        POKE(out, i, v_x[loc]);                                                \
+      }                                                                        \
+    } else {                                                                   \
+      for (r_ssize i = index, loc_ = loc; i < end; ++i, loc_ += stride) {      \
+        POKE(out, i, v_x[loc_]);                                               \
+      }                                                                        \
+    }                                                                          \
+  }                                                                            \
                                                                                \
   FREE(1);                                                                     \
   return out;

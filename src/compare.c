@@ -302,13 +302,58 @@ static r_no_return void stop_unsupported_compare(
   Y_IS_MISSING,                                                                \
   OPERATOR                                                                     \
 )                                                                              \
-  RRAY_STRIDED_ITERATOR2_FOR_EACH(it, i, x_loc, y_loc, {                       \
-    const X_CTYPE x_elt = v_x[x_loc];                                          \
-    const Y_CTYPE y_elt = v_y[y_loc];                                          \
-    const bool missing = X_IS_MISSING(x_elt) | Y_IS_MISSING(y_elt);            \
-    const int elt = x_elt OPERATOR y_elt;                                      \
-    v_out[i] = missing ? r_globals.na_lgl : elt;                               \
-  })
+  do {                                                                         \
+    struct rray_strided_iterator2_cursor cursor =                              \
+      rray_strided_iterator2_begin(it);                                        \
+    for (; !rray_strided_iterator2_finished(&cursor);                          \
+         rray_strided_iterator2_next(&cursor)) {                               \
+      const r_ssize index = rray_strided_iterator2_index(&cursor);             \
+      const r_ssize end = index + rray_strided_iterator2_run_size(&cursor);    \
+      const r_ssize x_loc = rray_strided_iterator2_location1(&cursor);         \
+      const r_ssize y_loc = rray_strided_iterator2_location2(&cursor);         \
+      const r_ssize x_stride = rray_strided_iterator2_run_stride1(&cursor);    \
+      const r_ssize y_stride = rray_strided_iterator2_run_stride2(&cursor);    \
+                                                                               \
+      if (x_stride == 0) {                                                     \
+        if (y_stride == 0) {                                                   \
+          for (r_ssize i = index; i < end; ++i) {                              \
+            const X_CTYPE x_elt = v_x[x_loc];                                  \
+            const Y_CTYPE y_elt = v_y[y_loc];                                  \
+            const bool missing = X_IS_MISSING(x_elt) | Y_IS_MISSING(y_elt);    \
+            const int elt = x_elt OPERATOR y_elt;                              \
+            v_out[i] = missing ? r_globals.na_lgl : elt;                       \
+          }                                                                    \
+        } else {                                                               \
+          for (r_ssize i = index, y_loc_ = y_loc; i < end;                     \
+               ++i, y_loc_ += y_stride) {                                      \
+            const X_CTYPE x_elt = v_x[x_loc];                                  \
+            const Y_CTYPE y_elt = v_y[y_loc_];                                 \
+            const bool missing = X_IS_MISSING(x_elt) | Y_IS_MISSING(y_elt);    \
+            const int elt = x_elt OPERATOR y_elt;                              \
+            v_out[i] = missing ? r_globals.na_lgl : elt;                       \
+          }                                                                    \
+        }                                                                      \
+      } else if (y_stride == 0) {                                              \
+        for (r_ssize i = index, x_loc_ = x_loc; i < end;                       \
+             ++i, x_loc_ += x_stride) {                                        \
+          const X_CTYPE x_elt = v_x[x_loc_];                                   \
+          const Y_CTYPE y_elt = v_y[y_loc];                                    \
+          const bool missing = X_IS_MISSING(x_elt) | Y_IS_MISSING(y_elt);      \
+          const int elt = x_elt OPERATOR y_elt;                                \
+          v_out[i] = missing ? r_globals.na_lgl : elt;                         \
+        }                                                                      \
+      } else {                                                                 \
+        for (r_ssize i = index, x_loc_ = x_loc, y_loc_ = y_loc; i < end;       \
+             ++i, x_loc_ += x_stride, y_loc_ += y_stride) {                    \
+          const X_CTYPE x_elt = v_x[x_loc_];                                   \
+          const Y_CTYPE y_elt = v_y[y_loc_];                                   \
+          const bool missing = X_IS_MISSING(x_elt) | Y_IS_MISSING(y_elt);      \
+          const int elt = x_elt OPERATOR y_elt;                                \
+          v_out[i] = missing ? r_globals.na_lgl : elt;                         \
+        }                                                                      \
+      }                                                                        \
+    }                                                                          \
+  } while (0)
 
 #define RRAY_COMPARE(                                                          \
   X_CTYPE,                                                                     \

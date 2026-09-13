@@ -137,17 +137,17 @@
 //   with output strides [0, 1]. Each inner run accumulates into one fixed
 //   output location.
 struct rray_strided_iterator {
-  r_ssize index;
   r_ssize size;
-
-  // Since coalescing can multiply two axes' dimensions together, we use an
-  // `r_ssize` here even though an individual dimension can't be above an `int`.
-  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];
   r_ssize v_dimensions[RRAY_MAX_DIMENSIONALITY];
   int dimensionality;
-
-  r_ssize location;
   r_ssize v_strides[RRAY_MAX_DIMENSIONALITY];
+};
+
+struct rray_strided_iterator_cursor {
+  const struct rray_strided_iterator* iterator;
+  r_ssize index;
+  r_ssize location;
+  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];
 };
 
 static inline struct rray_strided_iterator rray_strided_iterator(
@@ -159,16 +159,12 @@ static inline struct rray_strided_iterator rray_strided_iterator(
 
   struct rray_strided_iterator it;
 
-  it.index = 0;
   it.size = rray_size_from_dimensions(v_dimensions, dimensionality);
 
   for (int i = 0; i < dimensionality; ++i) {
     it.v_dimensions[i] = (r_ssize) v_dimensions[i];
     it.v_strides[i] = v_strides[i];
   }
-  memset(it.v_point, 0, sizeof(r_ssize) * dimensionality);
-  it.location = 0;
-
   it.dimensionality = rray__strided_iterator_axes_coalesce(
     it.v_dimensions,
     it.v_strides,
@@ -210,96 +206,82 @@ static inline struct rray_strided_iterator rray_broadcast_iterator(
   return rray_strided_iterator(v_to_dimensions, to_dimensionality, v_strides);
 }
 
-// For-loop-style iteration, giving access to the flat index and mapped
-// location.
-//
-// The loop structure is more complicated than strictly necessary for
-// performance reasons. We process a run along the first axis while holding all
-// other axes fixed, so the inner loop only advances the index and location by
-// fixed increments. Point adjustment happens between runs. This makes the
-// inner loop easier for the compiler to optimize and vectorize. In our
-// benchmarks, batching rows improved performance by up to 3-4× and helped our
-// operations outperform base R in many cases, even with broadcasting support.
-#define RRAY_STRIDED_ITERATOR_FOR_EACH(IT, INDEX, LOCATION, ...)               \
-  do {                                                                         \
-    struct rray_strided_iterator* const iterator = (IT);                       \
-    const r_ssize* v_strides = iterator->v_strides;                            \
-    const r_ssize row_stride = v_strides[0];                                   \
-                                                                               \
-    if (row_stride == 0) {                                                     \
-      RRAY__STRIDED_ITERATOR_FOR_EACH(IT, INDEX, LOCATION, 0, __VA_ARGS__);    \
-    } else {                                                                   \
-      RRAY__STRIDED_ITERATOR_FOR_EACH(                                         \
-        IT,                                                                    \
-        INDEX,                                                                 \
-        LOCATION,                                                              \
-        row_stride,                                                            \
-        __VA_ARGS__                                                            \
-      );                                                                       \
-    }                                                                          \
-  } while (0)
+static inline struct rray_strided_iterator_cursor rray_strided_iterator_begin(
+  const struct rray_strided_iterator* iterator
+) {
+  struct rray_strided_iterator_cursor cursor;
+  cursor.iterator = iterator;
+  cursor.index = 0;
+  cursor.location = 0;
+  memset(cursor.v_point, 0, sizeof(cursor.v_point));
+  return cursor;
+}
 
-#define RRAY__STRIDED_ITERATOR_FOR_EACH(IT, INDEX, LOCATION, ROW_STRIDE, ...)  \
-  do {                                                                         \
-    /* Unpacking the iterator fields is critical for performance. It gives */  \
-    /* the compiler guarantees about loop counters and fixed inputs that */    \
-    /* unlock vectorization optimizations. */                                  \
-    struct rray_strided_iterator* const iterator = (IT);                       \
-    r_ssize INDEX = iterator->index;                                           \
-    const r_ssize size = iterator->size;                                       \
-    r_ssize* v_point = iterator->v_point;                                      \
-    const r_ssize* v_dimensions = iterator->v_dimensions;                      \
-    const int dimensionality = iterator->dimensionality;                       \
-    r_ssize LOCATION = iterator->location;                                     \
-    const r_ssize* v_strides = iterator->v_strides;                            \
-                                                                               \
-    const r_ssize rows = v_dimensions[0];                                      \
-    const r_ssize row_reset = rows * ROW_STRIDE;                               \
-                                                                               \
-    while (INDEX != size) {                                                    \
-      /* Apply expression for each row */                                      \
-      for (r_ssize row = 0; row < rows; ++row) {                               \
-        __VA_ARGS__                                                            \
-        LOCATION += ROW_STRIDE;                                                \
-        ++INDEX;                                                               \
-      }                                                                        \
-      LOCATION -= row_reset;                                                   \
-                                                                               \
-      /* We've iterated over the rows of this batch. */                        \
-      /* Advance to the start of the next batch of rows. */                    \
-      for (int axis = 1; axis < dimensionality; ++axis) {                      \
-        ++v_point[axis];                                                       \
-                                                                               \
-        if (v_point[axis] < v_dimensions[axis]) {                              \
-          LOCATION += v_strides[axis];                                         \
-          break;                                                               \
-        }                                                                      \
-                                                                               \
-        v_point[axis] = 0;                                                     \
-        LOCATION -= (v_dimensions[axis] - 1) * v_strides[axis];                \
-      }                                                                        \
-    }                                                                          \
-  } while (0)
+static inline bool rray_strided_iterator_finished(
+  const struct rray_strided_iterator_cursor* cursor
+) {
+  return cursor->index == cursor->iterator->size;
+}
+
+static inline r_ssize rray_strided_iterator_index(
+  const struct rray_strided_iterator_cursor* cursor
+) {
+  return cursor->index;
+}
+static inline r_ssize rray_strided_iterator_location(
+  const struct rray_strided_iterator_cursor* cursor
+) {
+  return cursor->location;
+}
+static inline r_ssize rray_strided_iterator_run_size(
+  const struct rray_strided_iterator_cursor* cursor
+) {
+  return cursor->iterator->v_dimensions[0];
+}
+static inline r_ssize rray_strided_iterator_run_stride(
+  const struct rray_strided_iterator_cursor* cursor
+) {
+  return cursor->iterator->v_strides[0];
+}
+
+static inline void rray_strided_iterator_next(
+  struct rray_strided_iterator_cursor* cursor
+) {
+  const struct rray_strided_iterator* iterator = cursor->iterator;
+  cursor->index += rray_strided_iterator_run_size(cursor);
+  if (cursor->index == iterator->size) {
+    return;
+  }
+  for (int axis = 1; axis < iterator->dimensionality; ++axis) {
+    ++cursor->v_point[axis];
+    if (cursor->v_point[axis] < iterator->v_dimensions[axis]) {
+      cursor->location += iterator->v_strides[axis];
+      return;
+    }
+    cursor->v_point[axis] = 0;
+    cursor->location -=
+      (iterator->v_dimensions[axis] - 1) * iterator->v_strides[axis];
+  }
+}
 
 // --------------------------------------------------------------------------
 
 // Same as `rray_strided_iterator`, but reports in two location spaces while
 // only walking the point space once
 struct rray_strided_iterator2 {
-  r_ssize index;
   r_ssize size;
-
-  // Since coalescing can multiply two axes' dimensions together, we use an
-  // `r_ssize` here even though an individual dimension can't be above an `int`.
-  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];
   r_ssize v_dimensions[RRAY_MAX_DIMENSIONALITY];
   int dimensionality;
-
-  r_ssize location1;
   r_ssize v_strides1[RRAY_MAX_DIMENSIONALITY];
-
-  r_ssize location2;
   r_ssize v_strides2[RRAY_MAX_DIMENSIONALITY];
+};
+
+struct rray_strided_iterator2_cursor {
+  const struct rray_strided_iterator2* iterator;
+  r_ssize index;
+  r_ssize location1;
+  r_ssize location2;
+  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];
 };
 
 static inline struct rray_strided_iterator2 rray_strided_iterator2(
@@ -312,7 +294,6 @@ static inline struct rray_strided_iterator2 rray_strided_iterator2(
 
   struct rray_strided_iterator2 it;
 
-  it.index = 0;
   it.size = rray_size_from_dimensions(v_dimensions, dimensionality);
 
   for (int i = 0; i < dimensionality; ++i) {
@@ -320,10 +301,6 @@ static inline struct rray_strided_iterator2 rray_strided_iterator2(
     it.v_strides1[i] = v_strides1[i];
     it.v_strides2[i] = v_strides2[i];
   }
-  memset(it.v_point, 0, sizeof(r_ssize) * dimensionality);
-  it.location1 = 0;
-  it.location2 = 0;
-
   it.dimensionality = rray__strided_iterator_axes_coalesce2(
     it.v_dimensions,
     it.v_strides1,
@@ -385,98 +362,76 @@ static inline struct rray_strided_iterator2 rray_broadcast_iterator2(
   );
 }
 
-#define RRAY_STRIDED_ITERATOR2_FOR_EACH(IT, INDEX, LOCATION1, LOCATION2, ...)  \
-  do {                                                                         \
-    struct rray_strided_iterator2* const iterator = (IT);                      \
-    const r_ssize* v_strides1 = iterator->v_strides1;                          \
-    const r_ssize* v_strides2 = iterator->v_strides2;                          \
-    const r_ssize row_stride1 = v_strides1[0];                                 \
-    const r_ssize row_stride2 = v_strides2[0];                                 \
-                                                                               \
-    if (row_stride1 == 0) {                                                    \
-      RRAY__STRIDED_ITERATOR2_FOR_EACH(                                        \
-        IT,                                                                    \
-        INDEX,                                                                 \
-        LOCATION1,                                                             \
-        LOCATION2,                                                             \
-        0,                                                                     \
-        row_stride2,                                                           \
-        __VA_ARGS__                                                            \
-      );                                                                       \
-    } else if (row_stride2 == 0) {                                             \
-      RRAY__STRIDED_ITERATOR2_FOR_EACH(                                        \
-        IT,                                                                    \
-        INDEX,                                                                 \
-        LOCATION1,                                                             \
-        LOCATION2,                                                             \
-        row_stride1,                                                           \
-        0,                                                                     \
-        __VA_ARGS__                                                            \
-      );                                                                       \
-    } else {                                                                   \
-      RRAY__STRIDED_ITERATOR2_FOR_EACH(                                        \
-        IT,                                                                    \
-        INDEX,                                                                 \
-        LOCATION1,                                                             \
-        LOCATION2,                                                             \
-        row_stride1,                                                           \
-        row_stride2,                                                           \
-        __VA_ARGS__                                                            \
-      );                                                                       \
-    }                                                                          \
-  } while (0)
+static inline struct rray_strided_iterator2_cursor rray_strided_iterator2_begin(
+  const struct rray_strided_iterator2* iterator
+) {
+  struct rray_strided_iterator2_cursor cursor;
+  cursor.iterator = iterator;
+  cursor.index = 0;
+  cursor.location1 = 0;
+  cursor.location2 = 0;
+  memset(cursor.v_point, 0, sizeof(cursor.v_point));
+  return cursor;
+}
 
-#define RRAY__STRIDED_ITERATOR2_FOR_EACH(                                      \
-  IT,                                                                          \
-  INDEX,                                                                       \
-  LOCATION1,                                                                   \
-  LOCATION2,                                                                   \
-  ROW_STRIDE1,                                                                 \
-  ROW_STRIDE2,                                                                 \
-  ...                                                                          \
-)                                                                              \
-  do {                                                                         \
-    struct rray_strided_iterator2* const iterator = (IT);                      \
-    r_ssize INDEX = iterator->index;                                           \
-    const r_ssize size = iterator->size;                                       \
-    r_ssize* v_point = iterator->v_point;                                      \
-    const r_ssize* v_dimensions = iterator->v_dimensions;                      \
-    const int dimensionality = iterator->dimensionality;                       \
-    r_ssize LOCATION1 = iterator->location1;                                   \
-    const r_ssize* v_strides1 = iterator->v_strides1;                          \
-    r_ssize LOCATION2 = iterator->location2;                                   \
-    const r_ssize* v_strides2 = iterator->v_strides2;                          \
-                                                                               \
-    const r_ssize rows = v_dimensions[0];                                      \
-    const r_ssize row_reset1 = rows * ROW_STRIDE1;                             \
-    const r_ssize row_reset2 = rows * ROW_STRIDE2;                             \
-                                                                               \
-    while (INDEX != size) {                                                    \
-      for (r_ssize row = 0; row < rows; ++row) {                               \
-        __VA_ARGS__                                                            \
-        LOCATION1 += ROW_STRIDE1;                                              \
-        LOCATION2 += ROW_STRIDE2;                                              \
-        ++INDEX;                                                               \
-      }                                                                        \
-      LOCATION1 -= row_reset1;                                                 \
-      LOCATION2 -= row_reset2;                                                 \
-                                                                               \
-      for (int axis = 1; axis < dimensionality; ++axis) {                      \
-        ++v_point[axis];                                                       \
-                                                                               \
-        if (v_point[axis] < v_dimensions[axis]) {                              \
-          LOCATION1 += v_strides1[axis];                                       \
-          LOCATION2 += v_strides2[axis];                                       \
-          break;                                                               \
-        }                                                                      \
-                                                                               \
-        v_point[axis] = 0;                                                     \
-                                                                               \
-        LOCATION1 -= (v_dimensions[axis] - 1) * v_strides1[axis];              \
-        LOCATION2 -= (v_dimensions[axis] - 1) * v_strides2[axis];              \
-      }                                                                        \
-    }                                                                          \
-  } while (0)
+static inline bool rray_strided_iterator2_finished(
+  const struct rray_strided_iterator2_cursor* cursor
+) {
+  return cursor->index == cursor->iterator->size;
+}
+static inline r_ssize rray_strided_iterator2_index(
+  const struct rray_strided_iterator2_cursor* cursor
+) {
+  return cursor->index;
+}
+static inline r_ssize rray_strided_iterator2_location1(
+  const struct rray_strided_iterator2_cursor* cursor
+) {
+  return cursor->location1;
+}
+static inline r_ssize rray_strided_iterator2_location2(
+  const struct rray_strided_iterator2_cursor* cursor
+) {
+  return cursor->location2;
+}
+static inline r_ssize rray_strided_iterator2_run_size(
+  const struct rray_strided_iterator2_cursor* cursor
+) {
+  return cursor->iterator->v_dimensions[0];
+}
+static inline r_ssize rray_strided_iterator2_run_stride1(
+  const struct rray_strided_iterator2_cursor* cursor
+) {
+  return cursor->iterator->v_strides1[0];
+}
+static inline r_ssize rray_strided_iterator2_run_stride2(
+  const struct rray_strided_iterator2_cursor* cursor
+) {
+  return cursor->iterator->v_strides2[0];
+}
+
+static inline void rray_strided_iterator2_next(
+  struct rray_strided_iterator2_cursor* cursor
+) {
+  const struct rray_strided_iterator2* iterator = cursor->iterator;
+  cursor->index += rray_strided_iterator2_run_size(cursor);
+  if (cursor->index == iterator->size) {
+    return;
+  }
+  for (int axis = 1; axis < iterator->dimensionality; ++axis) {
+    ++cursor->v_point[axis];
+    if (cursor->v_point[axis] < iterator->v_dimensions[axis]) {
+      cursor->location1 += iterator->v_strides1[axis];
+      cursor->location2 += iterator->v_strides2[axis];
+      return;
+    }
+    cursor->v_point[axis] = 0;
+    cursor->location1 -=
+      (iterator->v_dimensions[axis] - 1) * iterator->v_strides1[axis];
+    cursor->location2 -=
+      (iterator->v_dimensions[axis] - 1) * iterator->v_strides2[axis];
+  }
+}
 
 // --------------------------------------------------------------------------
 

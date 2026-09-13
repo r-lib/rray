@@ -60,9 +60,40 @@ r_no_return void stop_int_overflow(struct r_lazy error_call);
   const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
   const Y_CTYPE* v_y = Y_CONST_DEREF(y);                                       \
                                                                                \
-  RRAY_STRIDED_ITERATOR2_FOR_EACH(it, i, x_loc, y_loc, {                       \
-    v_out[i] = ONE(X_CAST(v_x[x_loc]), Y_CAST(v_y[y_loc]), error_call);        \
-  });                                                                          \
+  struct rray_strided_iterator2_cursor cursor =                                \
+    rray_strided_iterator2_begin(it);                                          \
+  for (; !rray_strided_iterator2_finished(&cursor);                            \
+       rray_strided_iterator2_next(&cursor)) {                                 \
+    const r_ssize index = rray_strided_iterator2_index(&cursor);               \
+    const r_ssize end = index + rray_strided_iterator2_run_size(&cursor);      \
+    const r_ssize x_loc = rray_strided_iterator2_location1(&cursor);           \
+    const r_ssize y_loc = rray_strided_iterator2_location2(&cursor);           \
+    const r_ssize x_stride = rray_strided_iterator2_run_stride1(&cursor);      \
+    const r_ssize y_stride = rray_strided_iterator2_run_stride2(&cursor);      \
+                                                                               \
+    if (x_stride == 0) {                                                       \
+      if (y_stride == 0) {                                                     \
+        for (r_ssize i = index; i < end; ++i) {                                \
+          v_out[i] = ONE(X_CAST(v_x[x_loc]), Y_CAST(v_y[y_loc]), error_call);  \
+        }                                                                      \
+      } else {                                                                 \
+        for (r_ssize i = index, y_loc_ = y_loc; i < end;                       \
+             ++i, y_loc_ += y_stride) {                                        \
+          v_out[i] = ONE(X_CAST(v_x[x_loc]), Y_CAST(v_y[y_loc_]), error_call); \
+        }                                                                      \
+      }                                                                        \
+    } else if (y_stride == 0) {                                                \
+      for (r_ssize i = index, x_loc_ = x_loc; i < end;                         \
+           ++i, x_loc_ += x_stride) {                                          \
+        v_out[i] = ONE(X_CAST(v_x[x_loc_]), Y_CAST(v_y[y_loc]), error_call);   \
+      }                                                                        \
+    } else {                                                                   \
+      for (r_ssize i = index, x_loc_ = x_loc, y_loc_ = y_loc; i < end;         \
+           ++i, x_loc_ += x_stride, y_loc_ += y_stride) {                      \
+        v_out[i] = ONE(X_CAST(v_x[x_loc_]), Y_CAST(v_y[y_loc_]), error_call);  \
+      }                                                                        \
+    }                                                                          \
+  }                                                                            \
                                                                                \
   FREE(1);                                                                     \
   return out;

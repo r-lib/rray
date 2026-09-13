@@ -226,6 +226,59 @@ static r_no_return void stop_unsupported_equality(
   );
 }
 
+#define RRAY_EQUALITY_IMPL(                                                    \
+  X_CTYPE,                                                                     \
+  X_CONST_DEREF,                                                               \
+  X_CAST,                                                                      \
+  Y_CTYPE,                                                                     \
+  Y_CONST_DEREF,                                                               \
+  Y_CAST,                                                                      \
+  ONE                                                                          \
+)                                                                              \
+  r_obj* out = KEEP(r_alloc_vector(R_TYPE_logical, size));                     \
+  int* v_out = r_lgl_begin(out);                                               \
+                                                                               \
+  const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
+  const Y_CTYPE* v_y = Y_CONST_DEREF(y);                                       \
+                                                                               \
+  struct rray_strided_iterator2_cursor cursor =                                \
+    rray_strided_iterator2_begin(it);                                          \
+  for (; !rray_strided_iterator2_finished(&cursor);                            \
+       rray_strided_iterator2_next(&cursor)) {                                 \
+    const r_ssize index = rray_strided_iterator2_index(&cursor);               \
+    const r_ssize end = index + rray_strided_iterator2_run_size(&cursor);      \
+    const r_ssize x_loc = rray_strided_iterator2_location1(&cursor);           \
+    const r_ssize y_loc = rray_strided_iterator2_location2(&cursor);           \
+    const r_ssize x_stride = rray_strided_iterator2_run_stride1(&cursor);      \
+    const r_ssize y_stride = rray_strided_iterator2_run_stride2(&cursor);      \
+                                                                               \
+    if (x_stride == 0) {                                                       \
+      if (y_stride == 0) {                                                     \
+        for (r_ssize i = index; i < end; ++i) {                                \
+          v_out[i] = ONE(X_CAST(v_x[x_loc]), Y_CAST(v_y[y_loc]));              \
+        }                                                                      \
+      } else {                                                                 \
+        for (r_ssize i = index, y_loc_ = y_loc; i < end;                       \
+             ++i, y_loc_ += y_stride) {                                        \
+          v_out[i] = ONE(X_CAST(v_x[x_loc]), Y_CAST(v_y[y_loc_]));             \
+        }                                                                      \
+      }                                                                        \
+    } else if (y_stride == 0) {                                                \
+      for (r_ssize i = index, x_loc_ = x_loc; i < end;                         \
+           ++i, x_loc_ += x_stride) {                                          \
+        v_out[i] = ONE(X_CAST(v_x[x_loc_]), Y_CAST(v_y[y_loc]));               \
+      }                                                                        \
+    } else {                                                                   \
+      for (r_ssize i = index, x_loc_ = x_loc, y_loc_ = y_loc; i < end;         \
+           ++i, x_loc_ += x_stride, y_loc_ += y_stride) {                      \
+        v_out[i] = ONE(X_CAST(v_x[x_loc_]), Y_CAST(v_y[y_loc_]));              \
+      }                                                                        \
+    }                                                                          \
+  }                                                                            \
+                                                                               \
+  FREE(1);                                                                     \
+  return out;
+
 #define RRAY_EQUALITY(                                                         \
   X_CTYPE,                                                                     \
   X_CONST_DEREF,                                                               \
@@ -236,24 +289,27 @@ static r_no_return void stop_unsupported_equality(
   EQUAL_ONE,                                                                   \
   NOT_EQUAL_ONE                                                                \
 )                                                                              \
-  r_obj* out = KEEP(r_alloc_vector(R_TYPE_logical, size));                     \
-  int* v_out = r_lgl_begin(out);                                               \
-                                                                               \
-  const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
-  const Y_CTYPE* v_y = Y_CONST_DEREF(y);                                       \
-                                                                               \
   if (op == RRAY_EQUAL_equal) {                                                \
-    RRAY_STRIDED_ITERATOR2_FOR_EACH(it, i, x_loc, y_loc, {                     \
-      v_out[i] = EQUAL_ONE(X_CAST(v_x[x_loc]), Y_CAST(v_y[y_loc]));            \
-    });                                                                        \
+    RRAY_EQUALITY_IMPL(                                                        \
+      X_CTYPE,                                                                 \
+      X_CONST_DEREF,                                                           \
+      X_CAST,                                                                  \
+      Y_CTYPE,                                                                 \
+      Y_CONST_DEREF,                                                           \
+      Y_CAST,                                                                  \
+      EQUAL_ONE                                                                \
+    );                                                                         \
   } else {                                                                     \
-    RRAY_STRIDED_ITERATOR2_FOR_EACH(it, i, x_loc, y_loc, {                     \
-      v_out[i] = NOT_EQUAL_ONE(X_CAST(v_x[x_loc]), Y_CAST(v_y[y_loc]));        \
-    });                                                                        \
-  }                                                                            \
-                                                                               \
-  FREE(1);                                                                     \
-  return out;
+    RRAY_EQUALITY_IMPL(                                                        \
+      X_CTYPE,                                                                 \
+      X_CONST_DEREF,                                                           \
+      X_CAST,                                                                  \
+      Y_CTYPE,                                                                 \
+      Y_CONST_DEREF,                                                           \
+      Y_CAST,                                                                  \
+      NOT_EQUAL_ONE                                                            \
+    );                                                                         \
+  }
 
 static r_obj* rray_equality_lgl_lgl(
   r_obj* x,
@@ -560,6 +616,7 @@ static r_obj* rray_equality_cpl_cpl(
 }
 
 #undef RRAY_EQUALITY
+#undef RRAY_EQUALITY_IMPL
 
 static inline int rray_equal_int_one(int x, int y) {
   const bool missing = rray_int_is_missing(x) | rray_int_is_missing(y);

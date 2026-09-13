@@ -136,9 +136,42 @@ r_obj* rray_split(
     v_v_out[i] = DEREF(v_out[i]);                                              \
   }                                                                            \
                                                                                \
-  RRAY_STRIDED_ITERATOR2_FOR_EACH(it, i, out_loc, out_elt_loc, {               \
-    v_v_out[out_loc][out_elt_loc] = v_x[i];                                    \
-  });                                                                          \
+  struct rray_strided_iterator2_cursor cursor =                                \
+    rray_strided_iterator2_begin(it);                                          \
+  for (; !rray_strided_iterator2_finished(&cursor);                            \
+       rray_strided_iterator2_next(&cursor)) {                                 \
+    const r_ssize index = rray_strided_iterator2_index(&cursor);               \
+    const r_ssize end = index + rray_strided_iterator2_run_size(&cursor);      \
+    const r_ssize out_loc = rray_strided_iterator2_location1(&cursor);         \
+    const r_ssize out_elt_loc = rray_strided_iterator2_location2(&cursor);     \
+    const r_ssize out_stride = rray_strided_iterator2_run_stride1(&cursor);    \
+    const r_ssize out_elt_stride =                                             \
+      rray_strided_iterator2_run_stride2(&cursor);                             \
+                                                                               \
+    if (out_stride == 0) {                                                     \
+      if (out_elt_stride == 0) {                                               \
+        for (r_ssize i = index; i < end; ++i) {                                \
+          v_v_out[out_loc][out_elt_loc] = v_x[i];                              \
+        }                                                                      \
+      } else {                                                                 \
+        for (r_ssize i = index, out_elt_loc_ = out_elt_loc; i < end;           \
+             ++i, out_elt_loc_ += out_elt_stride) {                            \
+          v_v_out[out_loc][out_elt_loc_] = v_x[i];                             \
+        }                                                                      \
+      }                                                                        \
+    } else if (out_elt_stride == 0) {                                          \
+      for (r_ssize i = index, out_loc_ = out_loc; i < end;                     \
+           ++i, out_loc_ += out_stride) {                                      \
+        v_v_out[out_loc_][out_elt_loc] = v_x[i];                               \
+      }                                                                        \
+    } else {                                                                   \
+      for (r_ssize i = index, out_loc_ = out_loc, out_elt_loc_ = out_elt_loc;  \
+           i < end;                                                            \
+           ++i, out_loc_ += out_stride, out_elt_loc_ += out_elt_stride) {      \
+        v_v_out[out_loc_][out_elt_loc_] = v_x[i];                              \
+      }                                                                        \
+    }                                                                          \
+  }                                                                            \
                                                                                \
   FREE(1);
 
@@ -146,9 +179,42 @@ r_obj* rray_split(
   r_obj* const* v_x = CONST_DEREF(x);                                          \
   r_obj* const* v_out = r_list_cbegin(out);                                    \
                                                                                \
-  RRAY_STRIDED_ITERATOR2_FOR_EACH(it, i, out_loc, out_elt_loc, {               \
-    POKE(v_out[out_loc], out_elt_loc, v_x[i]);                                 \
-  });
+  struct rray_strided_iterator2_cursor cursor =                                \
+    rray_strided_iterator2_begin(it);                                          \
+  for (; !rray_strided_iterator2_finished(&cursor);                            \
+       rray_strided_iterator2_next(&cursor)) {                                 \
+    const r_ssize index = rray_strided_iterator2_index(&cursor);               \
+    const r_ssize end = index + rray_strided_iterator2_run_size(&cursor);      \
+    const r_ssize out_loc = rray_strided_iterator2_location1(&cursor);         \
+    const r_ssize out_elt_loc = rray_strided_iterator2_location2(&cursor);     \
+    const r_ssize out_stride = rray_strided_iterator2_run_stride1(&cursor);    \
+    const r_ssize out_elt_stride =                                             \
+      rray_strided_iterator2_run_stride2(&cursor);                             \
+                                                                               \
+    if (out_stride == 0) {                                                     \
+      if (out_elt_stride == 0) {                                               \
+        for (r_ssize i = index; i < end; ++i) {                                \
+          POKE(v_out[out_loc], out_elt_loc, v_x[i]);                           \
+        }                                                                      \
+      } else {                                                                 \
+        for (r_ssize i = index, out_elt_loc_ = out_elt_loc; i < end;           \
+             ++i, out_elt_loc_ += out_elt_stride) {                            \
+          POKE(v_out[out_loc], out_elt_loc_, v_x[i]);                          \
+        }                                                                      \
+      }                                                                        \
+    } else if (out_elt_stride == 0) {                                          \
+      for (r_ssize i = index, out_loc_ = out_loc; i < end;                     \
+           ++i, out_loc_ += out_stride) {                                      \
+        POKE(v_out[out_loc_], out_elt_loc, v_x[i]);                            \
+      }                                                                        \
+    } else {                                                                   \
+      for (r_ssize i = index, out_loc_ = out_loc, out_elt_loc_ = out_elt_loc;  \
+           i < end;                                                            \
+           ++i, out_loc_ += out_stride, out_elt_loc_ += out_elt_stride) {      \
+        POKE(v_out[out_loc_], out_elt_loc_, v_x[i]);                           \
+      }                                                                        \
+    }                                                                          \
+  }
 
 static void rray_split_lgl(
   r_obj* x,
