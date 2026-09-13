@@ -131,8 +131,9 @@ r_obj* rray_broadcast(
         v_out[i] = x_elt;                                                      \
       }                                                                        \
     } else {                                                                   \
-      for (r_ssize i = run_start; i < run_end; ++i, loc += run_stride) {       \
+      for (r_ssize i = run_start; i < run_end; ++i) {                          \
         v_out[i] = v_x[loc];                                                   \
+        loc += run_stride;                                                     \
       }                                                                        \
     }                                                                          \
   }                                                                            \
@@ -160,8 +161,9 @@ r_obj* rray_broadcast(
         POKE(out, i, x_elt);                                                   \
       }                                                                        \
     } else {                                                                   \
-      for (r_ssize i = run_start; i < run_end; ++i, loc += run_stride) {       \
+      for (r_ssize i = run_start; i < run_end; ++i) {                          \
         POKE(out, i, v_x[loc]);                                                \
+        loc += run_stride;                                                     \
       }                                                                        \
     }                                                                          \
   }                                                                            \

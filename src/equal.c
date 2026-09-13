@@ -262,19 +262,23 @@ static r_no_return void stop_unsupported_equality(
         }                                                                      \
       } else {                                                                 \
         for (r_ssize i = run_start; i < run_end; ++i) {                        \
-          v_out[i] = ONE(X_CAST(x_elt), Y_CAST(v_y[y_loc]));                   \
+          const Y_CTYPE y_elt = v_y[y_loc];                                    \
+          v_out[i] = ONE(X_CAST(x_elt), Y_CAST(y_elt));                        \
           y_loc += y_run_stride;                                               \
         }                                                                      \
       }                                                                        \
     } else if (y_run_stride == 0) {                                            \
       const Y_CTYPE y_elt = v_y[y_loc];                                        \
       for (r_ssize i = run_start; i < run_end; ++i) {                          \
-        v_out[i] = ONE(X_CAST(v_x[x_loc]), Y_CAST(y_elt));                     \
+        const X_CTYPE x_elt = v_x[x_loc];                                      \
+        v_out[i] = ONE(X_CAST(x_elt), Y_CAST(y_elt));                          \
         x_loc += x_run_stride;                                                 \
       }                                                                        \
     } else {                                                                   \
       for (r_ssize i = run_start; i < run_end; ++i) {                          \
-        v_out[i] = ONE(X_CAST(v_x[x_loc]), Y_CAST(v_y[y_loc]));                \
+        const X_CTYPE x_elt = v_x[x_loc];                                      \
+        const Y_CTYPE y_elt = v_y[y_loc];                                      \
+        v_out[i] = ONE(X_CAST(x_elt), Y_CAST(y_elt));                          \
         x_loc += x_run_stride;                                                 \
         y_loc += y_run_stride;                                                 \
       }                                                                        \

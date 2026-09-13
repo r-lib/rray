@@ -68,8 +68,9 @@ r_no_return void stop_unsupported_reduce(
         v_out[loc] = ONE(v_out[loc], v_x[i]);                                  \
       }                                                                        \
     } else {                                                                   \
-      for (r_ssize i = run_start; i < run_end; ++i, loc += run_stride) {       \
+      for (r_ssize i = run_start; i < run_end; ++i) {                          \
         v_out[loc] = ONE(v_out[loc], v_x[i]);                                  \
+        loc += run_stride;                                                     \
       }                                                                        \
     }                                                                          \
   }                                                                            \

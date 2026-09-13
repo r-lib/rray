@@ -120,8 +120,9 @@ r_obj* rray_permute_axes(
         v_out[i] = x_elt;                                                      \
       }                                                                        \
     } else {                                                                   \
-      for (r_ssize i = run_start; i < run_end; ++i, loc += run_stride) {       \
+      for (r_ssize i = run_start; i < run_end; ++i) {                          \
         v_out[i] = v_x[loc];                                                   \
+        loc += run_stride;                                                     \
       }                                                                        \
     }                                                                          \
   }                                                                            \
@@ -149,8 +150,9 @@ r_obj* rray_permute_axes(
         POKE(out, i, x_elt);                                                   \
       }                                                                        \
     } else {                                                                   \
-      for (r_ssize i = run_start; i < run_end; ++i, loc += run_stride) {       \
+      for (r_ssize i = run_start; i < run_end; ++i) {                          \
         POKE(out, i, v_x[loc]);                                                \
+        loc += run_stride;                                                     \
       }                                                                        \
     }                                                                          \
   }                                                                            \
