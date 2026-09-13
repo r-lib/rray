@@ -10,7 +10,7 @@ typedef r_obj* (*rray_binary_arithmetic_fn)(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 );
 
@@ -60,16 +60,15 @@ r_no_return void stop_int_overflow(struct r_lazy error_call);
   const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
   const Y_CTYPE* v_y = Y_CONST_DEREF(y);                                       \
                                                                                \
-  for (struct rray_strided_iterator2_cursor cursor =                           \
-         rray_strided_iterator2_begin(it);                                     \
-       !rray_strided_iterator2_finished(&cursor);                              \
-       rray_strided_iterator2_next(&cursor)) {                                 \
-    const r_ssize index = rray_strided_iterator2_index(&cursor);               \
-    const r_ssize end = index + rray_strided_iterator2_run_size(&cursor);      \
-    r_ssize x_loc = rray_strided_iterator2_location1(&cursor);                 \
-    r_ssize y_loc = rray_strided_iterator2_location2(&cursor);                 \
-    const r_ssize x_stride = rray_strided_iterator2_run_stride1(&cursor);      \
-    const r_ssize y_stride = rray_strided_iterator2_run_stride2(&cursor);      \
+  for (struct rray_strided_iterator2 it = rray_strided_iterator2(plan);        \
+       !rray_strided_iterator2_finished(&it);                                  \
+       rray_strided_iterator2_next(&it)) {                                     \
+    const r_ssize index = rray_strided_iterator2_index(&it);                   \
+    const r_ssize end = index + rray_strided_iterator2_run_size(&it);          \
+    r_ssize x_loc = rray_strided_iterator2_location1(&it);                     \
+    r_ssize y_loc = rray_strided_iterator2_location2(&it);                     \
+    const r_ssize x_stride = rray_strided_iterator2_run_stride1(&it);          \
+    const r_ssize y_stride = rray_strided_iterator2_run_stride2(&it);          \
                                                                                \
     if (x_stride == 0) {                                                       \
       const X_CTYPE x_elt = v_x[x_loc];                                        \

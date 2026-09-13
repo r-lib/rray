@@ -73,7 +73,7 @@ r_obj* rray_split(
     r_attrib_poke_dim(out_elt, out_elt_dimensions);
   }
 
-  struct rray_strided_iterator2 it = rray_broadcast_iterator2(
+  struct rray_strided_iterator2_plan plan = rray_broadcast_iterator2(
     v_out_dimensions,
     dimensionality,
     v_out_elt_dimensions,
@@ -84,25 +84,25 @@ r_obj* rray_split(
 
   switch (type) {
   case R_TYPE_logical:
-    rray_split_lgl(x, out, &it);
+    rray_split_lgl(x, out, &plan);
     break;
   case R_TYPE_integer:
-    rray_split_int(x, out, &it);
+    rray_split_int(x, out, &plan);
     break;
   case R_TYPE_double:
-    rray_split_dbl(x, out, &it);
+    rray_split_dbl(x, out, &plan);
     break;
   case R_TYPE_complex:
-    rray_split_cpl(x, out, &it);
+    rray_split_cpl(x, out, &plan);
     break;
   case R_TYPE_raw:
-    rray_split_raw(x, out, &it);
+    rray_split_raw(x, out, &plan);
     break;
   case R_TYPE_character:
-    rray_split_chr(x, out, &it);
+    rray_split_chr(x, out, &plan);
     break;
   case R_TYPE_list:
-    rray_split_list(x, out, &it);
+    rray_split_list(x, out, &plan);
     break;
   default:
     r_stop_unreachable();
@@ -136,17 +136,15 @@ r_obj* rray_split(
     v_v_out[i] = DEREF(v_out[i]);                                              \
   }                                                                            \
                                                                                \
-  for (struct rray_strided_iterator2_cursor cursor =                           \
-         rray_strided_iterator2_begin(it);                                     \
-       !rray_strided_iterator2_finished(&cursor);                              \
-       rray_strided_iterator2_next(&cursor)) {                                 \
-    const r_ssize index = rray_strided_iterator2_index(&cursor);               \
-    const r_ssize end = index + rray_strided_iterator2_run_size(&cursor);      \
-    r_ssize out_loc = rray_strided_iterator2_location1(&cursor);               \
-    r_ssize out_elt_loc = rray_strided_iterator2_location2(&cursor);           \
-    const r_ssize out_stride = rray_strided_iterator2_run_stride1(&cursor);    \
-    const r_ssize out_elt_stride =                                             \
-      rray_strided_iterator2_run_stride2(&cursor);                             \
+  for (struct rray_strided_iterator2 it = rray_strided_iterator2(plan);        \
+       !rray_strided_iterator2_finished(&it);                                  \
+       rray_strided_iterator2_next(&it)) {                                     \
+    const r_ssize index = rray_strided_iterator2_index(&it);                   \
+    const r_ssize end = index + rray_strided_iterator2_run_size(&it);          \
+    r_ssize out_loc = rray_strided_iterator2_location1(&it);                   \
+    r_ssize out_elt_loc = rray_strided_iterator2_location2(&it);               \
+    const r_ssize out_stride = rray_strided_iterator2_run_stride1(&it);        \
+    const r_ssize out_elt_stride = rray_strided_iterator2_run_stride2(&it);    \
                                                                                \
     if (out_stride == 0) {                                                     \
       if (out_elt_stride == 0) {                                               \
@@ -176,17 +174,15 @@ r_obj* rray_split(
   r_obj* const* v_x = CONST_DEREF(x);                                          \
   r_obj* const* v_out = r_list_cbegin(out);                                    \
                                                                                \
-  for (struct rray_strided_iterator2_cursor cursor =                           \
-         rray_strided_iterator2_begin(it);                                     \
-       !rray_strided_iterator2_finished(&cursor);                              \
-       rray_strided_iterator2_next(&cursor)) {                                 \
-    const r_ssize index = rray_strided_iterator2_index(&cursor);               \
-    const r_ssize end = index + rray_strided_iterator2_run_size(&cursor);      \
-    r_ssize out_loc = rray_strided_iterator2_location1(&cursor);               \
-    r_ssize out_elt_loc = rray_strided_iterator2_location2(&cursor);           \
-    const r_ssize out_stride = rray_strided_iterator2_run_stride1(&cursor);    \
-    const r_ssize out_elt_stride =                                             \
-      rray_strided_iterator2_run_stride2(&cursor);                             \
+  for (struct rray_strided_iterator2 it = rray_strided_iterator2(plan);        \
+       !rray_strided_iterator2_finished(&it);                                  \
+       rray_strided_iterator2_next(&it)) {                                     \
+    const r_ssize index = rray_strided_iterator2_index(&it);                   \
+    const r_ssize end = index + rray_strided_iterator2_run_size(&it);          \
+    r_ssize out_loc = rray_strided_iterator2_location1(&it);                   \
+    r_ssize out_elt_loc = rray_strided_iterator2_location2(&it);               \
+    const r_ssize out_stride = rray_strided_iterator2_run_stride1(&it);        \
+    const r_ssize out_elt_stride = rray_strided_iterator2_run_stride2(&it);    \
                                                                                \
     if (out_stride == 0) {                                                     \
       if (out_elt_stride == 0) {                                               \
@@ -213,7 +209,7 @@ r_obj* rray_split(
 static void rray_split_lgl(
   r_obj* x,
   r_obj* out,
-  struct rray_strided_iterator2* it
+  struct rray_strided_iterator2_plan* plan
 ) {
   RRAY_SPLIT_ATOMIC(int, r_lgl_cbegin, r_lgl_begin);
 }
@@ -221,7 +217,7 @@ static void rray_split_lgl(
 static void rray_split_int(
   r_obj* x,
   r_obj* out,
-  struct rray_strided_iterator2* it
+  struct rray_strided_iterator2_plan* plan
 ) {
   RRAY_SPLIT_ATOMIC(int, r_int_cbegin, r_int_begin);
 }
@@ -229,7 +225,7 @@ static void rray_split_int(
 static void rray_split_dbl(
   r_obj* x,
   r_obj* out,
-  struct rray_strided_iterator2* it
+  struct rray_strided_iterator2_plan* plan
 ) {
   RRAY_SPLIT_ATOMIC(double, r_dbl_cbegin, r_dbl_begin);
 }
@@ -237,7 +233,7 @@ static void rray_split_dbl(
 static void rray_split_cpl(
   r_obj* x,
   r_obj* out,
-  struct rray_strided_iterator2* it
+  struct rray_strided_iterator2_plan* plan
 ) {
   RRAY_SPLIT_ATOMIC(r_complex, r_cpl_cbegin, r_cpl_begin);
 }
@@ -245,7 +241,7 @@ static void rray_split_cpl(
 static void rray_split_raw(
   r_obj* x,
   r_obj* out,
-  struct rray_strided_iterator2* it
+  struct rray_strided_iterator2_plan* plan
 ) {
   RRAY_SPLIT_ATOMIC(Rbyte, r_raw_cbegin, r_raw_begin);
 }
@@ -253,7 +249,7 @@ static void rray_split_raw(
 static void rray_split_chr(
   r_obj* x,
   r_obj* out,
-  struct rray_strided_iterator2* it
+  struct rray_strided_iterator2_plan* plan
 ) {
   RRAY_SPLIT_BARRIER(r_chr_cbegin, r_chr_poke);
 }
@@ -261,7 +257,7 @@ static void rray_split_chr(
 static void rray_split_list(
   r_obj* x,
   r_obj* out,
-  struct rray_strided_iterator2* it
+  struct rray_strided_iterator2_plan* plan
 ) {
   RRAY_SPLIT_BARRIER(r_list_cbegin, r_list_poke);
 }

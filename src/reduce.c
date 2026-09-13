@@ -40,7 +40,7 @@ r_obj* rray_reduce(
   const r_ssize out_size =
     rray_size_from_dimensions(v_out_dimensions, dimensionality);
 
-  struct rray_strided_iterator it = rray_broadcast_iterator(
+  struct rray_strided_iterator_plan plan = rray_broadcast_iterator(
     v_out_dimensions,
     dimensionality,
     v_x_dimensions,
@@ -49,7 +49,7 @@ r_obj* rray_reduce(
 
   const rray_reduce_fn fn = fn_switch(x, na_rm, arg, error_call);
 
-  r_obj* out = KEEP(fn(x, out_size, &it));
+  r_obj* out = KEEP(fn(x, out_size, &plan));
   r_attrib_poke_dim(out, out_dimensions);
 
   r_obj* out_names = KEEP(rray_reduce_names(x, axes));

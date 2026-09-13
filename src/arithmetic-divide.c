@@ -112,7 +112,7 @@ static r_obj* rray_divide_lgl_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
   RRAY_ARITHMETIC(
@@ -133,7 +133,7 @@ static r_obj* rray_divide_lgl_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
   RRAY_ARITHMETIC(
@@ -154,7 +154,7 @@ static r_obj* rray_divide_int_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
   RRAY_ARITHMETIC(
@@ -175,7 +175,7 @@ static r_obj* rray_divide_lgl_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
   RRAY_ARITHMETIC(
@@ -196,7 +196,7 @@ static r_obj* rray_divide_dbl_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
   RRAY_ARITHMETIC(
@@ -217,7 +217,7 @@ static r_obj* rray_divide_lgl_cpl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
   RRAY_ARITHMETIC(
@@ -238,7 +238,7 @@ static r_obj* rray_divide_cpl_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
   RRAY_ARITHMETIC(
@@ -259,7 +259,7 @@ static r_obj* rray_divide_int_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
   RRAY_ARITHMETIC(
@@ -280,7 +280,7 @@ static r_obj* rray_divide_int_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
   RRAY_ARITHMETIC(
@@ -301,7 +301,7 @@ static r_obj* rray_divide_dbl_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
   RRAY_ARITHMETIC(
@@ -322,7 +322,7 @@ static r_obj* rray_divide_int_cpl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
   RRAY_ARITHMETIC(
@@ -343,7 +343,7 @@ static r_obj* rray_divide_cpl_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
   RRAY_ARITHMETIC(
@@ -364,7 +364,7 @@ static r_obj* rray_divide_dbl_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
   RRAY_ARITHMETIC(
@@ -385,7 +385,7 @@ static r_obj* rray_divide_dbl_cpl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
   RRAY_ARITHMETIC(
@@ -406,7 +406,7 @@ static r_obj* rray_divide_cpl_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
   RRAY_ARITHMETIC(
@@ -427,7 +427,7 @@ static r_obj* rray_divide_cpl_cpl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
   RRAY_ARITHMETIC(

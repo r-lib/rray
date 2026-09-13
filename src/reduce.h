@@ -9,7 +9,7 @@
 typedef r_obj* (*rray_reduce_fn)(
   r_obj* x,
   r_ssize out_size,
-  struct rray_strided_iterator* it
+  struct rray_strided_iterator_plan* plan
 );
 
 typedef rray_reduce_fn (*rray_reduce_fn_switch)(
@@ -53,14 +53,13 @@ r_no_return void stop_unsupported_reduce(
                                                                                \
   const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
                                                                                \
-  for (struct rray_strided_iterator_cursor cursor =                            \
-         rray_strided_iterator_begin(it);                                      \
-       !rray_strided_iterator_finished(&cursor);                               \
-       rray_strided_iterator_next(&cursor)) {                                  \
-    const r_ssize index = rray_strided_iterator_index(&cursor);                \
-    const r_ssize end = index + rray_strided_iterator_run_size(&cursor);       \
-    r_ssize loc = rray_strided_iterator_location(&cursor);                     \
-    const r_ssize stride = rray_strided_iterator_run_stride(&cursor);          \
+  for (struct rray_strided_iterator it = rray_strided_iterator(plan);          \
+       !rray_strided_iterator_finished(&it);                                   \
+       rray_strided_iterator_next(&it)) {                                      \
+    const r_ssize index = rray_strided_iterator_index(&it);                    \
+    const r_ssize end = index + rray_strided_iterator_run_size(&it);           \
+    r_ssize loc = rray_strided_iterator_location(&it);                         \
+    const r_ssize stride = rray_strided_iterator_run_stride(&it);              \
                                                                                \
     if (stride == 0) {                                                         \
       for (r_ssize i = index; i < end; ++i) {                                  \

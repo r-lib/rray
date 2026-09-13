@@ -136,42 +136,42 @@
 //   produces output strides [0, 1, 3], which coalesce to dimensions [2, 12]
 //   with output strides [0, 1]. Each inner run accumulates into one fixed
 //   output location.
-struct rray_strided_iterator {
+struct rray_strided_iterator_plan {
   r_ssize size;
   r_ssize v_dimensions[RRAY_MAX_DIMENSIONALITY];
   int dimensionality;
   r_ssize v_strides[RRAY_MAX_DIMENSIONALITY];
 };
 
-struct rray_strided_iterator_cursor {
-  const struct rray_strided_iterator* iterator;
+struct rray_strided_iterator {
+  const struct rray_strided_iterator_plan* plan;
   r_ssize index;
   r_ssize location;
   r_ssize v_point[RRAY_MAX_DIMENSIONALITY];
 };
 
-static inline struct rray_strided_iterator rray_strided_iterator(
+static inline struct rray_strided_iterator_plan rray_strided_iterator_plan(
   const int* v_dimensions,
   int dimensionality,
   const r_ssize* v_strides
 ) {
   check_max_dimensionality(dimensionality);
 
-  struct rray_strided_iterator it;
+  struct rray_strided_iterator_plan plan;
 
-  it.size = rray_size_from_dimensions(v_dimensions, dimensionality);
+  plan.size = rray_size_from_dimensions(v_dimensions, dimensionality);
 
   for (int i = 0; i < dimensionality; ++i) {
-    it.v_dimensions[i] = (r_ssize) v_dimensions[i];
-    it.v_strides[i] = v_strides[i];
+    plan.v_dimensions[i] = (r_ssize) v_dimensions[i];
+    plan.v_strides[i] = v_strides[i];
   }
-  it.dimensionality = rray__strided_iterator_axes_coalesce(
-    it.v_dimensions,
-    it.v_strides,
+  plan.dimensionality = rray__strided_iterator_axes_coalesce(
+    plan.v_dimensions,
+    plan.v_strides,
     dimensionality
   );
 
-  return it;
+  return plan;
 }
 
 // Strided iterator specific to broadcasting
@@ -179,7 +179,7 @@ static inline struct rray_strided_iterator rray_strided_iterator(
 // An axis of `from` with a dimension of 1 gets a stride of 0, so it stands
 // still while the matching axis of `to` walks. Axes past
 // `from_dimensionality` are treated as dimension 1.
-static inline struct rray_strided_iterator rray_broadcast_iterator(
+static inline struct rray_strided_iterator_plan rray_broadcast_iterator(
   const int* v_from_dimensions,
   int from_dimensionality,
   const int* v_to_dimensions,
@@ -203,64 +203,67 @@ static inline struct rray_strided_iterator rray_broadcast_iterator(
     v_strides
   );
 
-  return rray_strided_iterator(v_to_dimensions, to_dimensionality, v_strides);
+  return rray_strided_iterator_plan(
+    v_to_dimensions,
+    to_dimensionality,
+    v_strides
+  );
 }
 
-static inline struct rray_strided_iterator_cursor rray_strided_iterator_begin(
-  const struct rray_strided_iterator* iterator
+static inline struct rray_strided_iterator rray_strided_iterator(
+  const struct rray_strided_iterator_plan* plan
 ) {
-  struct rray_strided_iterator_cursor cursor;
-  cursor.iterator = iterator;
-  cursor.index = 0;
-  cursor.location = 0;
-  memset(cursor.v_point, 0, sizeof(cursor.v_point));
-  return cursor;
+  struct rray_strided_iterator it;
+  it.plan = plan;
+  it.index = 0;
+  it.location = 0;
+  memset(it.v_point, 0, sizeof(it.v_point));
+  return it;
 }
 
 static inline bool rray_strided_iterator_finished(
-  const struct rray_strided_iterator_cursor* cursor
+  const struct rray_strided_iterator* it
 ) {
-  return cursor->index == cursor->iterator->size;
+  return it->index == it->plan->size;
 }
 
 static inline r_ssize rray_strided_iterator_index(
-  const struct rray_strided_iterator_cursor* cursor
+  const struct rray_strided_iterator* it
 ) {
-  return cursor->index;
+  return it->index;
 }
 static inline r_ssize rray_strided_iterator_location(
-  const struct rray_strided_iterator_cursor* cursor
+  const struct rray_strided_iterator* it
 ) {
-  return cursor->location;
+  return it->location;
 }
 static inline r_ssize rray_strided_iterator_run_size(
-  const struct rray_strided_iterator_cursor* cursor
+  const struct rray_strided_iterator* it
 ) {
-  return cursor->iterator->v_dimensions[0];
+  return it->plan->v_dimensions[0];
 }
 static inline r_ssize rray_strided_iterator_run_stride(
-  const struct rray_strided_iterator_cursor* cursor
+  const struct rray_strided_iterator* it
 ) {
-  return cursor->iterator->v_strides[0];
+  return it->plan->v_strides[0];
 }
 
 static inline void rray_strided_iterator_next(
-  struct rray_strided_iterator_cursor* cursor
+  struct rray_strided_iterator* it
 ) {
-  const struct rray_strided_iterator* iterator = cursor->iterator;
-  cursor->index += rray_strided_iterator_run_size(cursor);
-  if (cursor->index == iterator->size) {
+  const struct rray_strided_iterator_plan* plan = it->plan;
+  it->index += rray_strided_iterator_run_size(it);
+  if (it->index == plan->size) {
     return;
   }
-  for (int axis = 1; axis < iterator->dimensionality; ++axis) {
-    ++cursor->v_point[axis];
-    if (cursor->v_point[axis] < iterator->v_dimensions[axis]) {
-      cursor->location += iterator->v_strides[axis];
+  for (int axis = 1; axis < plan->dimensionality; ++axis) {
+    ++it->v_point[axis];
+    if (it->v_point[axis] < plan->v_dimensions[axis]) {
+      it->location += plan->v_strides[axis];
       return;
     }
-    cursor->v_point[axis] = 0;
-    cursor->location -=
-      (iterator->v_dimensions[axis] - 1) * iterator->v_strides[axis];
+    it->v_point[axis] = 0;
+    it->location -= (plan->v_dimensions[axis] - 1) * plan->v_strides[axis];
   }
 }
 
@@ -268,7 +271,7 @@ static inline void rray_strided_iterator_next(
 
 // Same as `rray_strided_iterator`, but reports in two location spaces while
 // only walking the point space once
-struct rray_strided_iterator2 {
+struct rray_strided_iterator2_plan {
   r_ssize size;
   r_ssize v_dimensions[RRAY_MAX_DIMENSIONALITY];
   int dimensionality;
@@ -276,15 +279,15 @@ struct rray_strided_iterator2 {
   r_ssize v_strides2[RRAY_MAX_DIMENSIONALITY];
 };
 
-struct rray_strided_iterator2_cursor {
-  const struct rray_strided_iterator2* iterator;
+struct rray_strided_iterator2 {
+  const struct rray_strided_iterator2_plan* plan;
   r_ssize index;
   r_ssize location1;
   r_ssize location2;
   r_ssize v_point[RRAY_MAX_DIMENSIONALITY];
 };
 
-static inline struct rray_strided_iterator2 rray_strided_iterator2(
+static inline struct rray_strided_iterator2_plan rray_strided_iterator2_plan(
   const int* v_dimensions,
   int dimensionality,
   const r_ssize* v_strides1,
@@ -292,28 +295,28 @@ static inline struct rray_strided_iterator2 rray_strided_iterator2(
 ) {
   check_max_dimensionality(dimensionality);
 
-  struct rray_strided_iterator2 it;
+  struct rray_strided_iterator2_plan plan;
 
-  it.size = rray_size_from_dimensions(v_dimensions, dimensionality);
+  plan.size = rray_size_from_dimensions(v_dimensions, dimensionality);
 
   for (int i = 0; i < dimensionality; ++i) {
-    it.v_dimensions[i] = (r_ssize) v_dimensions[i];
-    it.v_strides1[i] = v_strides1[i];
-    it.v_strides2[i] = v_strides2[i];
+    plan.v_dimensions[i] = (r_ssize) v_dimensions[i];
+    plan.v_strides1[i] = v_strides1[i];
+    plan.v_strides2[i] = v_strides2[i];
   }
-  it.dimensionality = rray__strided_iterator_axes_coalesce2(
-    it.v_dimensions,
-    it.v_strides1,
-    it.v_strides2,
+  plan.dimensionality = rray__strided_iterator_axes_coalesce2(
+    plan.v_dimensions,
+    plan.v_strides1,
+    plan.v_strides2,
     dimensionality
   );
 
-  return it;
+  return plan;
 }
 
 // Same as `rray_broadcast_iterator()`, but broadcasts two `from` spaces into
 // one shared `to` space
-static inline struct rray_strided_iterator2 rray_broadcast_iterator2(
+static inline struct rray_strided_iterator2_plan rray_broadcast_iterator2(
   const int* v_from1_dimensions,
   int from1_dimensionality,
   const int* v_from2_dimensions,
@@ -354,7 +357,7 @@ static inline struct rray_strided_iterator2 rray_broadcast_iterator2(
     v_strides2
   );
 
-  return rray_strided_iterator2(
+  return rray_strided_iterator2_plan(
     v_to_dimensions,
     to_dimensionality,
     v_strides1,
@@ -362,74 +365,72 @@ static inline struct rray_strided_iterator2 rray_broadcast_iterator2(
   );
 }
 
-static inline struct rray_strided_iterator2_cursor rray_strided_iterator2_begin(
-  const struct rray_strided_iterator2* iterator
+static inline struct rray_strided_iterator2 rray_strided_iterator2(
+  const struct rray_strided_iterator2_plan* plan
 ) {
-  struct rray_strided_iterator2_cursor cursor;
-  cursor.iterator = iterator;
-  cursor.index = 0;
-  cursor.location1 = 0;
-  cursor.location2 = 0;
-  memset(cursor.v_point, 0, sizeof(cursor.v_point));
-  return cursor;
+  struct rray_strided_iterator2 it;
+  it.plan = plan;
+  it.index = 0;
+  it.location1 = 0;
+  it.location2 = 0;
+  memset(it.v_point, 0, sizeof(it.v_point));
+  return it;
 }
 
 static inline bool rray_strided_iterator2_finished(
-  const struct rray_strided_iterator2_cursor* cursor
+  const struct rray_strided_iterator2* it
 ) {
-  return cursor->index == cursor->iterator->size;
+  return it->index == it->plan->size;
 }
 static inline r_ssize rray_strided_iterator2_index(
-  const struct rray_strided_iterator2_cursor* cursor
+  const struct rray_strided_iterator2* it
 ) {
-  return cursor->index;
+  return it->index;
 }
 static inline r_ssize rray_strided_iterator2_location1(
-  const struct rray_strided_iterator2_cursor* cursor
+  const struct rray_strided_iterator2* it
 ) {
-  return cursor->location1;
+  return it->location1;
 }
 static inline r_ssize rray_strided_iterator2_location2(
-  const struct rray_strided_iterator2_cursor* cursor
+  const struct rray_strided_iterator2* it
 ) {
-  return cursor->location2;
+  return it->location2;
 }
 static inline r_ssize rray_strided_iterator2_run_size(
-  const struct rray_strided_iterator2_cursor* cursor
+  const struct rray_strided_iterator2* it
 ) {
-  return cursor->iterator->v_dimensions[0];
+  return it->plan->v_dimensions[0];
 }
 static inline r_ssize rray_strided_iterator2_run_stride1(
-  const struct rray_strided_iterator2_cursor* cursor
+  const struct rray_strided_iterator2* it
 ) {
-  return cursor->iterator->v_strides1[0];
+  return it->plan->v_strides1[0];
 }
 static inline r_ssize rray_strided_iterator2_run_stride2(
-  const struct rray_strided_iterator2_cursor* cursor
+  const struct rray_strided_iterator2* it
 ) {
-  return cursor->iterator->v_strides2[0];
+  return it->plan->v_strides2[0];
 }
 
 static inline void rray_strided_iterator2_next(
-  struct rray_strided_iterator2_cursor* cursor
+  struct rray_strided_iterator2* it
 ) {
-  const struct rray_strided_iterator2* iterator = cursor->iterator;
-  cursor->index += rray_strided_iterator2_run_size(cursor);
-  if (cursor->index == iterator->size) {
+  const struct rray_strided_iterator2_plan* plan = it->plan;
+  it->index += rray_strided_iterator2_run_size(it);
+  if (it->index == plan->size) {
     return;
   }
-  for (int axis = 1; axis < iterator->dimensionality; ++axis) {
-    ++cursor->v_point[axis];
-    if (cursor->v_point[axis] < iterator->v_dimensions[axis]) {
-      cursor->location1 += iterator->v_strides1[axis];
-      cursor->location2 += iterator->v_strides2[axis];
+  for (int axis = 1; axis < plan->dimensionality; ++axis) {
+    ++it->v_point[axis];
+    if (it->v_point[axis] < plan->v_dimensions[axis]) {
+      it->location1 += plan->v_strides1[axis];
+      it->location2 += plan->v_strides2[axis];
       return;
     }
-    cursor->v_point[axis] = 0;
-    cursor->location1 -=
-      (iterator->v_dimensions[axis] - 1) * iterator->v_strides1[axis];
-    cursor->location2 -=
-      (iterator->v_dimensions[axis] - 1) * iterator->v_strides2[axis];
+    it->v_point[axis] = 0;
+    it->location1 -= (plan->v_dimensions[axis] - 1) * plan->v_strides1[axis];
+    it->location2 -= (plan->v_dimensions[axis] - 1) * plan->v_strides2[axis];
   }
 }
 
