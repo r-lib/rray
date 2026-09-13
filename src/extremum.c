@@ -309,9 +309,9 @@ static r_no_return void stop_unsupported_extremum(
   const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
   const Y_CTYPE* v_y = Y_CONST_DEREF(y);                                       \
                                                                                \
-  struct rray_strided_iterator2_cursor cursor =                                \
-    rray_strided_iterator2_begin(it);                                          \
-  for (; !rray_strided_iterator2_finished(&cursor);                            \
+  for (struct rray_strided_iterator2_cursor cursor =                           \
+         rray_strided_iterator2_begin(it);                                     \
+       !rray_strided_iterator2_finished(&cursor);                              \
        rray_strided_iterator2_next(&cursor)) {                                 \
     const r_ssize index = rray_strided_iterator2_index(&cursor);               \
     const r_ssize end = index + rray_strided_iterator2_run_size(&cursor);      \
@@ -328,19 +328,22 @@ static r_no_return void stop_unsupported_extremum(
           v_out[i] = ONE(X_CAST(x_elt), Y_CAST(y_elt));                        \
         }                                                                      \
       } else {                                                                 \
-        for (r_ssize i = index; i < end; ++i, y_loc += y_stride) {             \
+        for (r_ssize i = index; i < end; ++i) {                                \
           v_out[i] = ONE(X_CAST(x_elt), Y_CAST(v_y[y_loc]));                   \
+          y_loc += y_stride;                                                   \
         }                                                                      \
       }                                                                        \
     } else if (y_stride == 0) {                                                \
       const Y_CTYPE y_elt = v_y[y_loc];                                        \
-      for (r_ssize i = index; i < end; ++i, x_loc += x_stride) {               \
+      for (r_ssize i = index; i < end; ++i) {                                  \
         v_out[i] = ONE(X_CAST(v_x[x_loc]), Y_CAST(y_elt));                     \
+        x_loc += x_stride;                                                     \
       }                                                                        \
     } else {                                                                   \
-      for (r_ssize i = index; i < end;                                         \
-           ++i, x_loc += x_stride, y_loc += y_stride) {                        \
+      for (r_ssize i = index; i < end; ++i) {                                  \
         v_out[i] = ONE(X_CAST(v_x[x_loc]), Y_CAST(v_y[y_loc]));                \
+        x_loc += x_stride;                                                     \
+        y_loc += y_stride;                                                     \
       }                                                                        \
     }                                                                          \
   }                                                                            \

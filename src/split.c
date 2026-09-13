@@ -136,9 +136,9 @@ r_obj* rray_split(
     v_v_out[i] = DEREF(v_out[i]);                                              \
   }                                                                            \
                                                                                \
-  struct rray_strided_iterator2_cursor cursor =                                \
-    rray_strided_iterator2_begin(it);                                          \
-  for (; !rray_strided_iterator2_finished(&cursor);                            \
+  for (struct rray_strided_iterator2_cursor cursor =                           \
+         rray_strided_iterator2_begin(it);                                     \
+       !rray_strided_iterator2_finished(&cursor);                              \
        rray_strided_iterator2_next(&cursor)) {                                 \
     const r_ssize index = rray_strided_iterator2_index(&cursor);               \
     const r_ssize end = index + rray_strided_iterator2_run_size(&cursor);      \
@@ -176,9 +176,9 @@ r_obj* rray_split(
   r_obj* const* v_x = CONST_DEREF(x);                                          \
   r_obj* const* v_out = r_list_cbegin(out);                                    \
                                                                                \
-  struct rray_strided_iterator2_cursor cursor =                                \
-    rray_strided_iterator2_begin(it);                                          \
-  for (; !rray_strided_iterator2_finished(&cursor);                            \
+  for (struct rray_strided_iterator2_cursor cursor =                           \
+         rray_strided_iterator2_begin(it);                                     \
+       !rray_strided_iterator2_finished(&cursor);                              \
        rray_strided_iterator2_next(&cursor)) {                                 \
     const r_ssize index = rray_strided_iterator2_index(&cursor);               \
     const r_ssize end = index + rray_strided_iterator2_run_size(&cursor);      \

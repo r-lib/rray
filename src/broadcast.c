@@ -115,9 +115,9 @@ r_obj* rray_broadcast(
   const CTYPE* v_x = CONST_DEREF(x);                                           \
   CTYPE* v_out = DEREF(out);                                                   \
                                                                                \
-  struct rray_strided_iterator_cursor cursor =                                 \
-    rray_strided_iterator_begin(it);                                           \
-  for (; !rray_strided_iterator_finished(&cursor);                             \
+  for (struct rray_strided_iterator_cursor cursor =                            \
+         rray_strided_iterator_begin(it);                                      \
+       !rray_strided_iterator_finished(&cursor);                               \
        rray_strided_iterator_next(&cursor)) {                                  \
     const r_ssize index = rray_strided_iterator_index(&cursor);                \
     const r_ssize end = index + rray_strided_iterator_run_size(&cursor);       \
@@ -143,9 +143,9 @@ r_obj* rray_broadcast(
   r_obj* out = KEEP(r_alloc_vector(RTYPE, size));                              \
   r_obj* const* v_x = CONST_DEREF(x);                                          \
                                                                                \
-  struct rray_strided_iterator_cursor cursor =                                 \
-    rray_strided_iterator_begin(it);                                           \
-  for (; !rray_strided_iterator_finished(&cursor);                             \
+  for (struct rray_strided_iterator_cursor cursor =                            \
+         rray_strided_iterator_begin(it);                                      \
+       !rray_strided_iterator_finished(&cursor);                               \
        rray_strided_iterator_next(&cursor)) {                                  \
     const r_ssize index = rray_strided_iterator_index(&cursor);                \
     const r_ssize end = index + rray_strided_iterator_run_size(&cursor);       \

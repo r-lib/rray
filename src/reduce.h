@@ -53,9 +53,9 @@ r_no_return void stop_unsupported_reduce(
                                                                                \
   const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
                                                                                \
-  struct rray_strided_iterator_cursor cursor =                                 \
-    rray_strided_iterator_begin(it);                                           \
-  for (; !rray_strided_iterator_finished(&cursor);                             \
+  for (struct rray_strided_iterator_cursor cursor =                            \
+         rray_strided_iterator_begin(it);                                      \
+       !rray_strided_iterator_finished(&cursor);                               \
        rray_strided_iterator_next(&cursor)) {                                  \
     const r_ssize index = rray_strided_iterator_index(&cursor);                \
     const r_ssize end = index + rray_strided_iterator_run_size(&cursor);       \
