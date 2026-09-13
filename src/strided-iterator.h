@@ -237,22 +237,22 @@ static inline r_ssize rray_strided_iterator_location(
 ) {
   return it->location;
 }
-static inline r_ssize rray_strided_iterator_run_size(
-  const struct rray_strided_iterator* it
+static inline r_ssize rray_strided_iterator_plan_run_size(
+  const struct rray_strided_iterator_plan* plan
 ) {
-  return it->plan->v_dimensions[0];
+  return plan->v_dimensions[0];
 }
-static inline r_ssize rray_strided_iterator_run_stride(
-  const struct rray_strided_iterator* it
+static inline r_ssize rray_strided_iterator_plan_run_stride(
+  const struct rray_strided_iterator_plan* plan
 ) {
-  return it->plan->v_strides[0];
+  return plan->v_strides[0];
 }
 
 static inline void rray_strided_iterator_next(
   struct rray_strided_iterator* it
 ) {
   const struct rray_strided_iterator_plan* plan = it->plan;
-  it->run_start += rray_strided_iterator_run_size(it);
+  it->run_start += rray_strided_iterator_plan_run_size(plan);
   if (it->run_start == plan->size) {
     return;
   }

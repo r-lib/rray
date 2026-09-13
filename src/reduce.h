@@ -53,13 +53,15 @@ r_no_return void stop_unsupported_reduce(
                                                                                \
   const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
                                                                                \
+  const r_ssize run_size = rray_strided_iterator_plan_run_size(plan);          \
+  const r_ssize run_stride = rray_strided_iterator_plan_run_stride(plan);      \
+                                                                               \
   for (struct rray_strided_iterator it = rray_strided_iterator(plan);          \
        !rray_strided_iterator_finished(&it);                                   \
        rray_strided_iterator_next(&it)) {                                      \
     const r_ssize run_start = rray_strided_iterator_run_start(&it);            \
-    const r_ssize run_end = run_start + rray_strided_iterator_run_size(&it);   \
+    const r_ssize run_end = run_start + run_size;                              \
     r_ssize loc = rray_strided_iterator_location(&it);                         \
-    const r_ssize run_stride = rray_strided_iterator_run_stride(&it);          \
                                                                                \
     if (run_stride == 0) {                                                     \
       for (r_ssize i = run_start; i < run_end; ++i) {                          \

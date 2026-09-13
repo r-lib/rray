@@ -104,13 +104,15 @@ r_obj* rray_permute_axes(
   const CTYPE* v_x = CONST_DEREF(x);                                           \
   CTYPE* v_out = DEREF(out);                                                   \
                                                                                \
+  const r_ssize run_size = rray_strided_iterator_plan_run_size(plan);          \
+  const r_ssize run_stride = rray_strided_iterator_plan_run_stride(plan);      \
+                                                                               \
   for (struct rray_strided_iterator it = rray_strided_iterator(plan);          \
        !rray_strided_iterator_finished(&it);                                   \
        rray_strided_iterator_next(&it)) {                                      \
     const r_ssize run_start = rray_strided_iterator_run_start(&it);            \
-    const r_ssize run_end = run_start + rray_strided_iterator_run_size(&it);   \
+    const r_ssize run_end = run_start + run_size;                              \
     r_ssize loc = rray_strided_iterator_location(&it);                         \
-    const r_ssize run_stride = rray_strided_iterator_run_stride(&it);          \
                                                                                \
     if (run_stride == 0) {                                                     \
       const CTYPE x_elt = v_x[loc];                                            \
@@ -131,13 +133,15 @@ r_obj* rray_permute_axes(
   r_obj* out = KEEP(r_alloc_vector(RTYPE, size));                              \
   r_obj* const* v_x = CONST_DEREF(x);                                          \
                                                                                \
+  const r_ssize run_size = rray_strided_iterator_plan_run_size(plan);          \
+  const r_ssize run_stride = rray_strided_iterator_plan_run_stride(plan);      \
+                                                                               \
   for (struct rray_strided_iterator it = rray_strided_iterator(plan);          \
        !rray_strided_iterator_finished(&it);                                   \
        rray_strided_iterator_next(&it)) {                                      \
     const r_ssize run_start = rray_strided_iterator_run_start(&it);            \
-    const r_ssize run_end = run_start + rray_strided_iterator_run_size(&it);   \
+    const r_ssize run_end = run_start + run_size;                              \
     r_ssize loc = rray_strided_iterator_location(&it);                         \
-    const r_ssize run_stride = rray_strided_iterator_run_stride(&it);          \
                                                                                \
     if (run_stride == 0) {                                                     \
       r_obj* const x_elt = v_x[loc];                                           \
