@@ -59,7 +59,7 @@ r_no_return void stop_unsupported_reduce(
        rray_strided_iterator_next(&cursor)) {                                  \
     const r_ssize index = rray_strided_iterator_index(&cursor);                \
     const r_ssize end = index + rray_strided_iterator_run_size(&cursor);       \
-    const r_ssize loc = rray_strided_iterator_location(&cursor);               \
+    r_ssize loc = rray_strided_iterator_location(&cursor);                     \
     const r_ssize stride = rray_strided_iterator_run_stride(&cursor);          \
                                                                                \
     if (stride == 0) {                                                         \
@@ -67,8 +67,8 @@ r_no_return void stop_unsupported_reduce(
         v_out[loc] = ONE(v_out[loc], v_x[i]);                                  \
       }                                                                        \
     } else {                                                                   \
-      for (r_ssize i = index, loc_ = loc; i < end; ++i, loc_ += stride) {      \
-        v_out[loc_] = ONE(v_out[loc_], v_x[i]);                                \
+      for (r_ssize i = index; i < end; ++i, loc += stride) {                   \
+        v_out[loc] = ONE(v_out[loc], v_x[i]);                                  \
       }                                                                        \
     }                                                                          \
   }                                                                            \

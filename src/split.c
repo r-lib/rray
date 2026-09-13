@@ -142,8 +142,8 @@ r_obj* rray_split(
        rray_strided_iterator2_next(&cursor)) {                                 \
     const r_ssize index = rray_strided_iterator2_index(&cursor);               \
     const r_ssize end = index + rray_strided_iterator2_run_size(&cursor);      \
-    const r_ssize out_loc = rray_strided_iterator2_location1(&cursor);         \
-    const r_ssize out_elt_loc = rray_strided_iterator2_location2(&cursor);     \
+    r_ssize out_loc = rray_strided_iterator2_location1(&cursor);               \
+    r_ssize out_elt_loc = rray_strided_iterator2_location2(&cursor);           \
     const r_ssize out_stride = rray_strided_iterator2_run_stride1(&cursor);    \
     const r_ssize out_elt_stride =                                             \
       rray_strided_iterator2_run_stride2(&cursor);                             \
@@ -154,21 +154,18 @@ r_obj* rray_split(
           v_v_out[out_loc][out_elt_loc] = v_x[i];                              \
         }                                                                      \
       } else {                                                                 \
-        for (r_ssize i = index, out_elt_loc_ = out_elt_loc; i < end;           \
-             ++i, out_elt_loc_ += out_elt_stride) {                            \
-          v_v_out[out_loc][out_elt_loc_] = v_x[i];                             \
+        for (r_ssize i = index; i < end; ++i, out_elt_loc += out_elt_stride) { \
+          v_v_out[out_loc][out_elt_loc] = v_x[i];                              \
         }                                                                      \
       }                                                                        \
     } else if (out_elt_stride == 0) {                                          \
-      for (r_ssize i = index, out_loc_ = out_loc; i < end;                     \
-           ++i, out_loc_ += out_stride) {                                      \
-        v_v_out[out_loc_][out_elt_loc] = v_x[i];                               \
+      for (r_ssize i = index; i < end; ++i, out_loc += out_stride) {           \
+        v_v_out[out_loc][out_elt_loc] = v_x[i];                                \
       }                                                                        \
     } else {                                                                   \
-      for (r_ssize i = index, out_loc_ = out_loc, out_elt_loc_ = out_elt_loc;  \
-           i < end;                                                            \
-           ++i, out_loc_ += out_stride, out_elt_loc_ += out_elt_stride) {      \
-        v_v_out[out_loc_][out_elt_loc_] = v_x[i];                              \
+      for (r_ssize i = index; i < end;                                         \
+           ++i, out_loc += out_stride, out_elt_loc += out_elt_stride) {        \
+        v_v_out[out_loc][out_elt_loc] = v_x[i];                                \
       }                                                                        \
     }                                                                          \
   }                                                                            \
@@ -185,8 +182,8 @@ r_obj* rray_split(
        rray_strided_iterator2_next(&cursor)) {                                 \
     const r_ssize index = rray_strided_iterator2_index(&cursor);               \
     const r_ssize end = index + rray_strided_iterator2_run_size(&cursor);      \
-    const r_ssize out_loc = rray_strided_iterator2_location1(&cursor);         \
-    const r_ssize out_elt_loc = rray_strided_iterator2_location2(&cursor);     \
+    r_ssize out_loc = rray_strided_iterator2_location1(&cursor);               \
+    r_ssize out_elt_loc = rray_strided_iterator2_location2(&cursor);           \
     const r_ssize out_stride = rray_strided_iterator2_run_stride1(&cursor);    \
     const r_ssize out_elt_stride =                                             \
       rray_strided_iterator2_run_stride2(&cursor);                             \
@@ -197,21 +194,18 @@ r_obj* rray_split(
           POKE(v_out[out_loc], out_elt_loc, v_x[i]);                           \
         }                                                                      \
       } else {                                                                 \
-        for (r_ssize i = index, out_elt_loc_ = out_elt_loc; i < end;           \
-             ++i, out_elt_loc_ += out_elt_stride) {                            \
-          POKE(v_out[out_loc], out_elt_loc_, v_x[i]);                          \
+        for (r_ssize i = index; i < end; ++i, out_elt_loc += out_elt_stride) { \
+          POKE(v_out[out_loc], out_elt_loc, v_x[i]);                           \
         }                                                                      \
       }                                                                        \
     } else if (out_elt_stride == 0) {                                          \
-      for (r_ssize i = index, out_loc_ = out_loc; i < end;                     \
-           ++i, out_loc_ += out_stride) {                                      \
-        POKE(v_out[out_loc_], out_elt_loc, v_x[i]);                            \
+      for (r_ssize i = index; i < end; ++i, out_loc += out_stride) {           \
+        POKE(v_out[out_loc], out_elt_loc, v_x[i]);                             \
       }                                                                        \
     } else {                                                                   \
-      for (r_ssize i = index, out_loc_ = out_loc, out_elt_loc_ = out_elt_loc;  \
-           i < end;                                                            \
-           ++i, out_loc_ += out_stride, out_elt_loc_ += out_elt_stride) {      \
-        POKE(v_out[out_loc_], out_elt_loc_, v_x[i]);                           \
+      for (r_ssize i = index; i < end;                                         \
+           ++i, out_loc += out_stride, out_elt_loc += out_elt_stride) {        \
+        POKE(v_out[out_loc], out_elt_loc, v_x[i]);                             \
       }                                                                        \
     }                                                                          \
   }

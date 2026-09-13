@@ -121,16 +121,17 @@ r_obj* rray_broadcast(
        rray_strided_iterator_next(&cursor)) {                                  \
     const r_ssize index = rray_strided_iterator_index(&cursor);                \
     const r_ssize end = index + rray_strided_iterator_run_size(&cursor);       \
-    const r_ssize loc = rray_strided_iterator_location(&cursor);               \
+    r_ssize loc = rray_strided_iterator_location(&cursor);                     \
     const r_ssize stride = rray_strided_iterator_run_stride(&cursor);          \
                                                                                \
     if (stride == 0) {                                                         \
+      const CTYPE x_elt = v_x[loc];                                            \
       for (r_ssize i = index; i < end; ++i) {                                  \
-        v_out[i] = v_x[loc];                                                   \
+        v_out[i] = x_elt;                                                      \
       }                                                                        \
     } else {                                                                   \
-      for (r_ssize i = index, loc_ = loc; i < end; ++i, loc_ += stride) {      \
-        v_out[i] = v_x[loc_];                                                  \
+      for (r_ssize i = index; i < end; ++i, loc += stride) {                   \
+        v_out[i] = v_x[loc];                                                   \
       }                                                                        \
     }                                                                          \
   }                                                                            \
@@ -148,16 +149,17 @@ r_obj* rray_broadcast(
        rray_strided_iterator_next(&cursor)) {                                  \
     const r_ssize index = rray_strided_iterator_index(&cursor);                \
     const r_ssize end = index + rray_strided_iterator_run_size(&cursor);       \
-    const r_ssize loc = rray_strided_iterator_location(&cursor);               \
+    r_ssize loc = rray_strided_iterator_location(&cursor);                     \
     const r_ssize stride = rray_strided_iterator_run_stride(&cursor);          \
                                                                                \
     if (stride == 0) {                                                         \
+      r_obj* const x_elt = v_x[loc];                                           \
       for (r_ssize i = index; i < end; ++i) {                                  \
-        POKE(out, i, v_x[loc]);                                                \
+        POKE(out, i, x_elt);                                                   \
       }                                                                        \
     } else {                                                                   \
-      for (r_ssize i = index, loc_ = loc; i < end; ++i, loc_ += stride) {      \
-        POKE(out, i, v_x[loc_]);                                               \
+      for (r_ssize i = index; i < end; ++i, loc += stride) {                   \
+        POKE(out, i, v_x[loc]);                                                \
       }                                                                        \
     }                                                                          \
   }                                                                            \
