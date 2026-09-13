@@ -136,15 +136,18 @@ r_obj* rray_split(
     v_v_out[i] = DEREF(v_out[i]);                                              \
   }                                                                            \
                                                                                \
+  const r_ssize run_size = rray_strided_iterator2_plan_run_size(plan);         \
+  const r_ssize out_stride = rray_strided_iterator2_plan_run_stride1(plan);    \
+  const r_ssize out_elt_stride =                                               \
+    rray_strided_iterator2_plan_run_stride2(plan);                             \
+                                                                               \
   for (struct rray_strided_iterator2 it = rray_strided_iterator2(plan);        \
        !rray_strided_iterator2_finished(&it);                                  \
        rray_strided_iterator2_next(&it)) {                                     \
     const r_ssize index = rray_strided_iterator2_index(&it);                   \
-    const r_ssize end = index + rray_strided_iterator2_run_size(&it);          \
+    const r_ssize end = index + run_size;                                      \
     r_ssize out_loc = rray_strided_iterator2_location1(&it);                   \
     r_ssize out_elt_loc = rray_strided_iterator2_location2(&it);               \
-    const r_ssize out_stride = rray_strided_iterator2_run_stride1(&it);        \
-    const r_ssize out_elt_stride = rray_strided_iterator2_run_stride2(&it);    \
                                                                                \
     if (out_stride == 0) {                                                     \
       if (out_elt_stride == 0) {                                               \
@@ -174,15 +177,18 @@ r_obj* rray_split(
   r_obj* const* v_x = CONST_DEREF(x);                                          \
   r_obj* const* v_out = r_list_cbegin(out);                                    \
                                                                                \
+  const r_ssize run_size = rray_strided_iterator2_plan_run_size(plan);         \
+  const r_ssize out_stride = rray_strided_iterator2_plan_run_stride1(plan);    \
+  const r_ssize out_elt_stride =                                               \
+    rray_strided_iterator2_plan_run_stride2(plan);                             \
+                                                                               \
   for (struct rray_strided_iterator2 it = rray_strided_iterator2(plan);        \
        !rray_strided_iterator2_finished(&it);                                  \
        rray_strided_iterator2_next(&it)) {                                     \
     const r_ssize index = rray_strided_iterator2_index(&it);                   \
-    const r_ssize end = index + rray_strided_iterator2_run_size(&it);          \
+    const r_ssize end = index + run_size;                                      \
     r_ssize out_loc = rray_strided_iterator2_location1(&it);                   \
     r_ssize out_elt_loc = rray_strided_iterator2_location2(&it);               \
-    const r_ssize out_stride = rray_strided_iterator2_run_stride1(&it);        \
-    const r_ssize out_elt_stride = rray_strided_iterator2_run_stride2(&it);    \
                                                                                \
     if (out_stride == 0) {                                                     \
       if (out_elt_stride == 0) {                                               \

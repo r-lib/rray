@@ -240,16 +240,17 @@ static r_no_return void stop_unsupported_equality(
                                                                                \
   const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
   const Y_CTYPE* v_y = Y_CONST_DEREF(y);                                       \
+  const r_ssize run_size = rray_strided_iterator2_plan_run_size(plan);         \
+  const r_ssize x_stride = rray_strided_iterator2_plan_run_stride1(plan);      \
+  const r_ssize y_stride = rray_strided_iterator2_plan_run_stride2(plan);      \
                                                                                \
   for (struct rray_strided_iterator2 it = rray_strided_iterator2(plan);        \
        !rray_strided_iterator2_finished(&it);                                  \
        rray_strided_iterator2_next(&it)) {                                     \
     const r_ssize index = rray_strided_iterator2_index(&it);                   \
-    const r_ssize end = index + rray_strided_iterator2_run_size(&it);          \
+    const r_ssize end = index + run_size;                                      \
     r_ssize x_loc = rray_strided_iterator2_location1(&it);                     \
     r_ssize y_loc = rray_strided_iterator2_location2(&it);                     \
-    const r_ssize x_stride = rray_strided_iterator2_run_stride1(&it);          \
-    const r_ssize y_stride = rray_strided_iterator2_run_stride2(&it);          \
                                                                                \
     if (x_stride == 0) {                                                       \
       const X_CTYPE x_elt = v_x[x_loc];                                        \

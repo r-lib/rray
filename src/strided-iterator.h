@@ -397,27 +397,27 @@ static inline r_ssize rray_strided_iterator2_location2(
 ) {
   return it->location2;
 }
-static inline r_ssize rray_strided_iterator2_run_size(
-  const struct rray_strided_iterator2* it
+static inline r_ssize rray_strided_iterator2_plan_run_size(
+  const struct rray_strided_iterator2_plan* plan
 ) {
-  return it->plan->v_dimensions[0];
+  return plan->v_dimensions[0];
 }
-static inline r_ssize rray_strided_iterator2_run_stride1(
-  const struct rray_strided_iterator2* it
+static inline r_ssize rray_strided_iterator2_plan_run_stride1(
+  const struct rray_strided_iterator2_plan* plan
 ) {
-  return it->plan->v_strides1[0];
+  return plan->v_strides1[0];
 }
-static inline r_ssize rray_strided_iterator2_run_stride2(
-  const struct rray_strided_iterator2* it
+static inline r_ssize rray_strided_iterator2_plan_run_stride2(
+  const struct rray_strided_iterator2_plan* plan
 ) {
-  return it->plan->v_strides2[0];
+  return plan->v_strides2[0];
 }
 
 static inline void rray_strided_iterator2_next(
   struct rray_strided_iterator2* it
 ) {
   const struct rray_strided_iterator2_plan* plan = it->plan;
-  it->index += rray_strided_iterator2_run_size(it);
+  it->index += rray_strided_iterator2_plan_run_size(plan);
   if (it->index == plan->size) {
     return;
   }
