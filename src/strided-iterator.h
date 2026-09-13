@@ -210,6 +210,17 @@ static inline struct rray_strided_iterator_plan rray_broadcast_iterator_plan(
   );
 }
 
+static inline r_ssize rray_strided_iterator_plan_run_size(
+  const struct rray_strided_iterator_plan* plan
+) {
+  return plan->v_dimensions[0];
+}
+static inline r_ssize rray_strided_iterator_plan_run_stride(
+  const struct rray_strided_iterator_plan* plan
+) {
+  return plan->v_strides[0];
+}
+
 static inline struct rray_strided_iterator rray_strided_iterator(
   const struct rray_strided_iterator_plan* plan
 ) {
@@ -237,17 +248,6 @@ static inline r_ssize rray_strided_iterator_location(
 ) {
   return it->location;
 }
-static inline r_ssize rray_strided_iterator_plan_run_size(
-  const struct rray_strided_iterator_plan* plan
-) {
-  return plan->v_dimensions[0];
-}
-static inline r_ssize rray_strided_iterator_plan_run_stride(
-  const struct rray_strided_iterator_plan* plan
-) {
-  return plan->v_strides[0];
-}
-
 static inline void rray_strided_iterator_next(
   struct rray_strided_iterator* it
 ) {
@@ -365,6 +365,22 @@ static inline struct rray_strided_iterator2_plan rray_broadcast_iterator2_plan(
   );
 }
 
+static inline r_ssize rray_strided_iterator2_plan_run_size(
+  const struct rray_strided_iterator2_plan* plan
+) {
+  return plan->v_dimensions[0];
+}
+static inline r_ssize rray_strided_iterator2_plan_run_stride1(
+  const struct rray_strided_iterator2_plan* plan
+) {
+  return plan->v_strides1[0];
+}
+static inline r_ssize rray_strided_iterator2_plan_run_stride2(
+  const struct rray_strided_iterator2_plan* plan
+) {
+  return plan->v_strides2[0];
+}
+
 static inline struct rray_strided_iterator2 rray_strided_iterator2(
   const struct rray_strided_iterator2_plan* plan
 ) {
@@ -397,22 +413,6 @@ static inline r_ssize rray_strided_iterator2_location2(
 ) {
   return it->location2;
 }
-static inline r_ssize rray_strided_iterator2_plan_run_size(
-  const struct rray_strided_iterator2_plan* plan
-) {
-  return plan->v_dimensions[0];
-}
-static inline r_ssize rray_strided_iterator2_plan_run_stride1(
-  const struct rray_strided_iterator2_plan* plan
-) {
-  return plan->v_strides1[0];
-}
-static inline r_ssize rray_strided_iterator2_plan_run_stride2(
-  const struct rray_strided_iterator2_plan* plan
-) {
-  return plan->v_strides2[0];
-}
-
 static inline void rray_strided_iterator2_next(
   struct rray_strided_iterator2* it
 ) {
