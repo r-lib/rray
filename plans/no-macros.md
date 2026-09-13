@@ -237,6 +237,65 @@ The bodies look repetitive. Do not reduce that repetition by moving a
 stride-dependent branch into the inner loop. The exact loop body is part of
 the performance contract.
 
+## `rray_mean_along()` motivates nested reduction traversal
+
+The current reduction plan walks `x` in its physical order and maps every
+element to an output location. That is a good fit for `sum()` and `product()`,
+but a mean needs more state. R accumulates means in `LDOUBLE`, uses a scaled
+sum when the first sum overflows, and makes a correction pass for rounding
+error.
+
+`RRAY_REDUCE()` cannot express that state because its R output vector is also
+its accumulator. A custom mean could use the current iterator macro with
+`long double` buffers indexed by output location. That works, but it needs a
+sum buffer, a count buffer for `na_rm`, and state for the correction pass.
+
+A better reduction-specific traversal visits one complete reduced slice for
+each output location. It needs two immutable strided plans:
+
+| Plan | Axes | Location |
+|---|---|---|
+| Outer | Retained axes, in their original order | The base location in `x` |
+| Inner | Reduced axes, in their original order | An offset from that base |
+
+Both plans use the physical strides of `x`. This is a virtual axis permutation,
+not a copy or a physical permutation of `x`. The outer cursor index is the
+flat output location because collapsed axes have dimension 1.
+
+The cursors still advance by runs. A mean must therefore walk every output
+location in the current outer run before advancing the outer cursor:
+
+```c
+for (
+  ; !rray_strided_iterator_finished(&outer)
+  ; rray_strided_iterator_next(&outer)
+) {
+  r_ssize out_loc = rray_strided_iterator_index(&outer);
+  const r_ssize out_end =
+    out_loc + rray_strided_iterator_run_size(&outer);
+  r_ssize x_base = rray_strided_iterator_location(&outer);
+  const r_ssize x_stride = rray_strided_iterator_run_stride(&outer);
+
+  for (; out_loc < out_end; ++out_loc, x_base += x_stride) {
+    struct rray_strided_iterator_cursor inner =
+      rray_strided_iterator_begin(&iterator.inner);
+  }
+}
+```
+
+For each output location, real mean can use scalar `long double` values for
+the sum and correction, plus an `r_ssize` count when removing missing values.
+It restarts the immutable inner plan for each numerical pass. The usual path
+uses one sum pass and one correction pass. A first sum that is not finite uses
+a scaled sum pass, then a correction pass when that scaled mean is finite.
+Complex mean uses separate real and imaginary accumulators.
+
+This removes the need for per-output `long double` state. An empty retained
+axis set represents one output location. An empty reduced axis set represents
+one input value per output location. A zero-size reduced slice produces `NaN`.
+The grouped order may read a later or middle axis with a stride, so benchmark it
+against the existing input-major reduction before using it for other reducers.
+
 ## Why zero strides need explicit paths
 
 After coalescing, a zero first-axis stride means one input or output location
