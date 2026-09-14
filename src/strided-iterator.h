@@ -4,6 +4,7 @@
 #include "dimensionality.h"
 #include "rlang.h"
 #include "size.h"
+#include "utils.h"
 
 #include "decl/strided-iterator-decl.h"
 
@@ -270,6 +271,15 @@ static inline void rray_strided_iterator_next(
   }
 }
 
+static inline void rray_strided_point_init(
+  r_ssize* v_point,
+  int dimensionality
+) {
+  if (dimensionality > 1) {
+    memset(v_point + 1, 0, sizeof(*v_point) * (size_t) (dimensionality - 1));
+  }
+}
+
 // --------------------------------------------------------------------------
 
 // Same as `rray_strided_iterator`, but reports in two location spaces while
@@ -433,6 +443,26 @@ static inline void rray_strided_iterator2_next(
     it->location1 -= (plan->v_dimensions[axis] - 1) * plan->v_strides1[axis];
     it->location2 -= (plan->v_dimensions[axis] - 1) * plan->v_strides2[axis];
   }
+}
+
+static inline struct r_ssize2 rray_strided_next_locations2(
+  struct r_ssize2 locations,
+  r_ssize* v_point,
+  const struct rray_strided_iterator2_plan* plan
+) {
+  for (int axis = 1; axis < plan->dimensionality; ++axis) {
+    ++v_point[axis];
+    if (v_point[axis] < plan->v_dimensions[axis]) {
+      locations.x += plan->v_strides1[axis];
+      locations.y += plan->v_strides2[axis];
+      return locations;
+    }
+    v_point[axis] = 0;
+    locations.x -= (plan->v_dimensions[axis] - 1) * plan->v_strides1[axis];
+    locations.y -= (plan->v_dimensions[axis] - 1) * plan->v_strides2[axis];
+  }
+
+  return locations;
 }
 
 // --------------------------------------------------------------------------

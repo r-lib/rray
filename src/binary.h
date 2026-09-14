@@ -4,6 +4,7 @@
 #include "rlang.h"
 
 #include "strided-iterator.h"
+#include "utils.h"
 
 #define RRAY_BINARY_ARGS(...) , __VA_ARGS__
 #define RRAY_BINARY_NO_ARGS
@@ -31,13 +32,16 @@
   const r_ssize x_run_stride = rray_strided_iterator2_plan_run_stride1(plan);  \
   const r_ssize y_run_stride = rray_strided_iterator2_plan_run_stride2(plan);  \
                                                                                \
-  for (struct rray_strided_iterator2 it = rray_strided_iterator2();            \
-       !rray_strided_iterator2_finished(&it, plan);                            \
-       rray_strided_iterator2_next(&it, plan)) {                               \
-    const r_ssize run_start = rray_strided_iterator2_run_start(&it);           \
+  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];                                    \
+  rray_strided_point_init(v_point, plan->dimensionality);                      \
+                                                                               \
+  r_ssize run_start = 0;                                                       \
+  struct r_ssize2 locations = {.x = 0, .y = 0};                                \
+                                                                               \
+  while (run_start != plan->size) {                                            \
     const r_ssize run_end = run_start + run_size;                              \
-    r_ssize x_loc = rray_strided_iterator2_location1(&it);                     \
-    r_ssize y_loc = rray_strided_iterator2_location2(&it);                     \
+    r_ssize x_loc = locations.x;                                               \
+    r_ssize y_loc = locations.y;                                               \
                                                                                \
     if (x_run_stride == 0) {                                                   \
       const X_CTYPE x_elt = v_x[x_loc];                                        \
@@ -69,6 +73,9 @@
         y_loc += y_run_stride;                                                 \
       }                                                                        \
     }                                                                          \
+                                                                               \
+    run_start = run_end;                                                       \
+    locations = rray_strided_next_locations2(locations, v_point, plan);        \
   }                                                                            \
                                                                                \
   FREE(1);                                                                     \

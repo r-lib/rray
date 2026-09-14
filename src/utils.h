@@ -9,6 +9,11 @@
 #include "arg.h"
 #include "type.h"
 
+struct r_ssize2 {
+  r_ssize x;
+  r_ssize y;
+};
+
 // Operations such as `*`, `/`, and `^` are either more efficient or more
 // correct (around infinities) if they go through the C99 `_Complex`. The C99
 // standard guarantees that `_Complex` has the same representation as a two
