@@ -61,48 +61,6 @@ static rray_reduce_grouped_fn rray_mean_along_switch(
   r_stop_unreachable();
 }
 
-#define RRAY_REDUCE_OUTER(                                                     \
-  X_CTYPE,                                                                     \
-  X_CONST_DEREF,                                                               \
-  OUT_RTYPE,                                                                   \
-  OUT_CTYPE,                                                                   \
-  OUT_DEREF,                                                                   \
-  ONE                                                                          \
-)                                                                              \
-  const r_ssize size = rray_strided_iterator_plan_size(outer_plan);            \
-                                                                               \
-  r_obj* out = KEEP(r_alloc_vector(OUT_RTYPE, out_size));                      \
-  OUT_CTYPE* v_out = OUT_DEREF(out);                                           \
-                                                                               \
-  const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
-                                                                               \
-  r_ssize out_start = 0;                                                       \
-  const r_ssize out_run_size =                                                 \
-    rray_strided_iterator_plan_run_size(outer_plan);                           \
-                                                                               \
-  r_ssize x_start = 0;                                                         \
-  const r_ssize x_run_stride =                                                 \
-    rray_strided_iterator_plan_run_stride(outer_plan);                         \
-                                                                               \
-  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];                                    \
-  r_memset(v_point, 0, sizeof(r_ssize) * (size_t) outer_plan->dimensionality); \
-                                                                               \
-  while (out_start != size) {                                                  \
-    const r_ssize out_run_end = out_start + out_run_size;                      \
-    r_ssize x_base = x_start;                                                  \
-                                                                               \
-    for (r_ssize i = out_start; i < out_run_end; ++i) {                        \
-      v_out[i] = ONE(v_x, x_base, inner_plan);                                 \
-      x_base += x_run_stride;                                                  \
-    }                                                                          \
-                                                                               \
-    out_start = out_run_end;                                                   \
-    RRAY_STRIDED_ITERATOR_NEXT(x_start, v_point, outer_plan);                  \
-  }                                                                            \
-                                                                               \
-  FREE(1);                                                                     \
-  return out;
-
 static r_obj* rray_mean_along_lgl(
   r_obj* x,
   r_ssize out_size,
@@ -198,39 +156,6 @@ static r_obj* rray_mean_along_dbl_na_rm(
     rray_mean_along_dbl_one_na_rm
   );
 }
-
-#define RRAY_REDUCE_INNER(X_CTYPE, ACCUMULATE)                                 \
-  do {                                                                         \
-    const r_ssize size = rray_strided_iterator_plan_size(inner_plan);          \
-                                                                               \
-    r_ssize run_start = 0;                                                     \
-    const r_ssize run_size = rray_strided_iterator_plan_run_size(inner_plan);  \
-                                                                               \
-    r_ssize x_start = x_base;                                                  \
-    const r_ssize x_run_stride =                                               \
-      rray_strided_iterator_plan_run_stride(inner_plan);                       \
-                                                                               \
-    r_ssize v_point[RRAY_MAX_DIMENSIONALITY];                                  \
-    r_memset(                                                                  \
-      v_point,                                                                 \
-      0,                                                                       \
-      sizeof(r_ssize) * (size_t) inner_plan->dimensionality                    \
-    );                                                                         \
-                                                                               \
-    while (run_start != size) {                                                \
-      const r_ssize run_end = run_start + run_size;                            \
-      r_ssize x_loc = x_start;                                                 \
-                                                                               \
-      for (r_ssize i = run_start; i < run_end; ++i) {                          \
-        const X_CTYPE x_elt = v_x[x_loc];                                      \
-        ACCUMULATE;                                                            \
-        x_loc += x_run_stride;                                                 \
-      }                                                                        \
-                                                                               \
-      run_start = run_end;                                                     \
-      RRAY_STRIDED_ITERATOR_NEXT(x_start, v_point, inner_plan);                \
-    }                                                                          \
-  } while (0)
 
 static inline double rray_mean_along_lgl_one(
   const int* v_x,
@@ -394,6 +319,3 @@ static inline double rray_mean_along_dbl_missing(
 
   return R_NaN;
 }
-
-#undef RRAY_REDUCE_OUTER
-#undef RRAY_REDUCE_INNER
