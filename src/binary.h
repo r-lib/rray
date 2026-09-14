@@ -78,7 +78,7 @@
     }                                                                          \
                                                                                \
     run_start = run_end;                                                       \
-    RRAY_ITERATOR_NEXT2(x_start, y_start, v_point, plan);                      \
+    RRAY_STRIDED_ITERATOR_NEXT2(x_start, y_start, v_point, plan);              \
   }                                                                            \
                                                                                \
   FREE(1);                                                                     \

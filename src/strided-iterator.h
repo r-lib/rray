@@ -440,7 +440,7 @@ static inline void rray_strided_iterator2_next(
   }
 }
 
-#define RRAY_ITERATOR_NEXT2(START1, START2, V_POINT, PLAN)                     \
+#define RRAY_STRIDED_ITERATOR_NEXT2(START1, START2, V_POINT, PLAN)             \
   for (int axis = 1; axis < PLAN->dimensionality; ++axis) {                    \
     ++V_POINT[axis];                                                           \
     if (V_POINT[axis] < PLAN->v_dimensions[axis]) {                            \
