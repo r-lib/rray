@@ -19,10 +19,6 @@
 #'
 #' If summing an integer array would overflow, an error is thrown.
 #'
-#' `rray_mean_along()` follows `mean()`. The mean of no values is `NaN`, and
-#' complex arrays aren't supported. If the values being averaged contain both
-#' `NA` and `NaN`, the result is `NA`.
-#'
 #' @section Casting:
 #' Certain inputs are upcast, changing the return type:
 #'

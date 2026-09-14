@@ -49,10 +49,6 @@ The dimensionality of \code{x} is retained in the result, with the reduced axes
 collapsed to size 1.
 
 If summing an integer array would overflow, an error is thrown.
-
-\code{rray_mean_along()} follows \code{mean()}. The mean of no values is \code{NaN}, and
-complex arrays aren't supported. If the values being averaged contain both
-\code{NA} and \code{NaN}, the result is \code{NA}.
 }
 \section{Casting}{
 
