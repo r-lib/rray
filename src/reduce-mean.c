@@ -61,7 +61,7 @@ static rray_reduce_grouped_fn rray_mean_along_switch(
   r_stop_unreachable();
 }
 
-#define RRAY_REDUCE_GROUPED(                                                   \
+#define RRAY_REDUCE_OUTER(                                                     \
   X_CTYPE,                                                                     \
   X_CONST_DEREF,                                                               \
   OUT_RTYPE,                                                                   \
@@ -109,7 +109,7 @@ static r_obj* rray_mean_along_lgl(
   const struct rray_strided_iterator_plan* outer_plan,
   const struct rray_strided_iterator_plan* inner_plan
 ) {
-  RRAY_REDUCE_GROUPED(
+  RRAY_REDUCE_OUTER(
     int,
     r_lgl_cbegin,
     R_TYPE_double,
@@ -125,7 +125,7 @@ static r_obj* rray_mean_along_lgl_na_rm(
   const struct rray_strided_iterator_plan* outer_plan,
   const struct rray_strided_iterator_plan* inner_plan
 ) {
-  RRAY_REDUCE_GROUPED(
+  RRAY_REDUCE_OUTER(
     int,
     r_lgl_cbegin,
     R_TYPE_double,
@@ -141,7 +141,7 @@ static r_obj* rray_mean_along_int(
   const struct rray_strided_iterator_plan* outer_plan,
   const struct rray_strided_iterator_plan* inner_plan
 ) {
-  RRAY_REDUCE_GROUPED(
+  RRAY_REDUCE_OUTER(
     int,
     r_int_cbegin,
     R_TYPE_double,
@@ -157,7 +157,7 @@ static r_obj* rray_mean_along_int_na_rm(
   const struct rray_strided_iterator_plan* outer_plan,
   const struct rray_strided_iterator_plan* inner_plan
 ) {
-  RRAY_REDUCE_GROUPED(
+  RRAY_REDUCE_OUTER(
     int,
     r_int_cbegin,
     R_TYPE_double,
@@ -173,7 +173,7 @@ static r_obj* rray_mean_along_dbl(
   const struct rray_strided_iterator_plan* outer_plan,
   const struct rray_strided_iterator_plan* inner_plan
 ) {
-  RRAY_REDUCE_GROUPED(
+  RRAY_REDUCE_OUTER(
     double,
     r_dbl_cbegin,
     R_TYPE_double,
@@ -189,7 +189,7 @@ static r_obj* rray_mean_along_dbl_na_rm(
   const struct rray_strided_iterator_plan* outer_plan,
   const struct rray_strided_iterator_plan* inner_plan
 ) {
-  RRAY_REDUCE_GROUPED(
+  RRAY_REDUCE_OUTER(
     double,
     r_dbl_cbegin,
     R_TYPE_double,
@@ -389,5 +389,5 @@ static inline double rray_mean_along_dbl_missing(
   return R_NaN;
 }
 
-#undef RRAY_REDUCE_GROUPED
+#undef RRAY_REDUCE_OUTER
 #undef RRAY_REDUCE_SLICE
