@@ -9,6 +9,12 @@
 // --------------------------------------------------------------------------
 // rray_reduce
 
+// Flat reduction is useful when the output element is the only state carried
+// between input elements. It walks `x` once in storage order, updating the
+// output element that each input contributes to. This is faster than nested
+// reduction because it reads `x` linearly and avoids a separate inner traversal
+// for each output element.
+
 typedef r_obj* (*rray_reduce_fn)(
   r_obj* x,
   r_ssize out_size,
