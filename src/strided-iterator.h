@@ -4,7 +4,6 @@
 #include "dimensionality.h"
 #include "rlang.h"
 #include "size.h"
-#include "utils.h"
 
 #include "decl/strided-iterator-decl.h"
 
@@ -271,15 +270,6 @@ static inline void rray_strided_iterator_next(
   }
 }
 
-static inline void rray_strided_point_init(
-  r_ssize* v_point,
-  int dimensionality
-) {
-  if (dimensionality > 1) {
-    memset(v_point + 1, 0, sizeof(*v_point) * (size_t) (dimensionality - 1));
-  }
-}
-
 // --------------------------------------------------------------------------
 
 // Same as `rray_strided_iterator`, but reports in two location spaces while
@@ -445,25 +435,18 @@ static inline void rray_strided_iterator2_next(
   }
 }
 
-static inline struct r_ssize2 rray_strided_next_locations2(
-  struct r_ssize2 locations,
-  r_ssize* v_point,
-  const struct rray_strided_iterator2_plan* plan
-) {
-  for (int axis = 1; axis < plan->dimensionality; ++axis) {
-    ++v_point[axis];
-    if (v_point[axis] < plan->v_dimensions[axis]) {
-      locations.x += plan->v_strides1[axis];
-      locations.y += plan->v_strides2[axis];
-      return locations;
-    }
-    v_point[axis] = 0;
-    locations.x -= (plan->v_dimensions[axis] - 1) * plan->v_strides1[axis];
-    locations.y -= (plan->v_dimensions[axis] - 1) * plan->v_strides2[axis];
+#define RRAY_ITERATOR_NEXT2(LOCATION1, LOCATION2, V_POINT, PLAN)               \
+  for (int axis = 1; axis < PLAN->dimensionality; ++axis) {                    \
+    ++V_POINT[axis];                                                           \
+    if (V_POINT[axis] < PLAN->v_dimensions[axis]) {                            \
+      LOCATION1 += PLAN->v_strides1[axis];                                     \
+      LOCATION2 += PLAN->v_strides2[axis];                                     \
+      break;                                                                   \
+    }                                                                          \
+    V_POINT[axis] = 0;                                                         \
+    LOCATION1 -= (PLAN->v_dimensions[axis] - 1) * PLAN->v_strides1[axis];      \
+    LOCATION2 -= (PLAN->v_dimensions[axis] - 1) * PLAN->v_strides2[axis];      \
   }
-
-  return locations;
-}
 
 // --------------------------------------------------------------------------
 

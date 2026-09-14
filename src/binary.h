@@ -4,7 +4,6 @@
 #include "rlang.h"
 
 #include "strided-iterator.h"
-#include "utils.h"
 
 #define RRAY_BINARY_ARGS(...) , __VA_ARGS__
 #define RRAY_BINARY_NO_ARGS
@@ -33,15 +32,16 @@
   const r_ssize y_run_stride = rray_strided_iterator2_plan_run_stride2(plan);  \
                                                                                \
   r_ssize v_point[RRAY_MAX_DIMENSIONALITY];                                    \
-  rray_strided_point_init(v_point, plan->dimensionality);                      \
+  r_memset(v_point, 0, sizeof(r_ssize) * (size_t) plan->dimensionality);       \
                                                                                \
   r_ssize run_start = 0;                                                       \
-  struct r_ssize2 locations = {.x = 0, .y = 0};                                \
+  r_ssize x_location = 0;                                                      \
+  r_ssize y_location = 0;                                                      \
                                                                                \
   while (run_start != plan->size) {                                            \
     const r_ssize run_end = run_start + run_size;                              \
-    r_ssize x_loc = locations.x;                                               \
-    r_ssize y_loc = locations.y;                                               \
+    r_ssize x_loc = x_location;                                                \
+    r_ssize y_loc = y_location;                                                \
                                                                                \
     if (x_run_stride == 0) {                                                   \
       const X_CTYPE x_elt = v_x[x_loc];                                        \
@@ -75,7 +75,7 @@
     }                                                                          \
                                                                                \
     run_start = run_end;                                                       \
-    locations = rray_strided_next_locations2(locations, v_point, plan);        \
+    RRAY_ITERATOR_NEXT2(x_location, y_location, v_point, plan);                \
   }                                                                            \
                                                                                \
   FREE(1);                                                                     \
