@@ -7,7 +7,6 @@
 #include "dimensions.h"
 #include "strided-iterator.h"
 #include "missing.h"
-#include "size.h"
 #include "type.h"
 #include "typeof2.h"
 #include "utils.h"
@@ -89,8 +88,6 @@ static r_obj* rray_equality(
   const int* v_dimensions = r_int_cbegin(dimensions);
   const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
 
-  const r_ssize size = rray_size_from_dimensions(v_dimensions, dimensionality);
-
   struct rray_strided_iterator2_plan plan = rray_broadcast_iterator2_plan(
     v_x_dimensions,
     x_dimensionality,
@@ -100,7 +97,7 @@ static r_obj* rray_equality(
     dimensionality
   );
 
-  r_obj* out = KEEP(fn(x, y, size, &plan, op));
+  r_obj* out = KEEP(fn(x, y, &plan, op));
   r_attrib_poke_dim(out, dimensions);
 
   r_obj* out_names = KEEP(rray_broadcast_names2(x, y, dimensions));
@@ -270,7 +267,6 @@ static r_no_return void stop_unsupported_equality(
 static r_obj* rray_equality_lgl_lgl(
   r_obj* x,
   r_obj* y,
-  r_ssize size,
   const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {
@@ -289,7 +285,6 @@ static r_obj* rray_equality_lgl_lgl(
 static r_obj* rray_equality_lgl_int(
   r_obj* x,
   r_obj* y,
-  r_ssize size,
   const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {
@@ -308,7 +303,6 @@ static r_obj* rray_equality_lgl_int(
 static r_obj* rray_equality_int_lgl(
   r_obj* x,
   r_obj* y,
-  r_ssize size,
   const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {
@@ -327,7 +321,6 @@ static r_obj* rray_equality_int_lgl(
 static r_obj* rray_equality_lgl_dbl(
   r_obj* x,
   r_obj* y,
-  r_ssize size,
   const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {
@@ -346,7 +339,6 @@ static r_obj* rray_equality_lgl_dbl(
 static r_obj* rray_equality_dbl_lgl(
   r_obj* x,
   r_obj* y,
-  r_ssize size,
   const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {
@@ -365,7 +357,6 @@ static r_obj* rray_equality_dbl_lgl(
 static r_obj* rray_equality_lgl_cpl(
   r_obj* x,
   r_obj* y,
-  r_ssize size,
   const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {
@@ -384,7 +375,6 @@ static r_obj* rray_equality_lgl_cpl(
 static r_obj* rray_equality_cpl_lgl(
   r_obj* x,
   r_obj* y,
-  r_ssize size,
   const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {
@@ -403,7 +393,6 @@ static r_obj* rray_equality_cpl_lgl(
 static r_obj* rray_equality_int_int(
   r_obj* x,
   r_obj* y,
-  r_ssize size,
   const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {
@@ -422,7 +411,6 @@ static r_obj* rray_equality_int_int(
 static r_obj* rray_equality_int_dbl(
   r_obj* x,
   r_obj* y,
-  r_ssize size,
   const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {
@@ -441,7 +429,6 @@ static r_obj* rray_equality_int_dbl(
 static r_obj* rray_equality_dbl_int(
   r_obj* x,
   r_obj* y,
-  r_ssize size,
   const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {
@@ -460,7 +447,6 @@ static r_obj* rray_equality_dbl_int(
 static r_obj* rray_equality_int_cpl(
   r_obj* x,
   r_obj* y,
-  r_ssize size,
   const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {
@@ -479,7 +465,6 @@ static r_obj* rray_equality_int_cpl(
 static r_obj* rray_equality_cpl_int(
   r_obj* x,
   r_obj* y,
-  r_ssize size,
   const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {
@@ -498,7 +483,6 @@ static r_obj* rray_equality_cpl_int(
 static r_obj* rray_equality_dbl_dbl(
   r_obj* x,
   r_obj* y,
-  r_ssize size,
   const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {
@@ -517,7 +501,6 @@ static r_obj* rray_equality_dbl_dbl(
 static r_obj* rray_equality_dbl_cpl(
   r_obj* x,
   r_obj* y,
-  r_ssize size,
   const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {
@@ -536,7 +519,6 @@ static r_obj* rray_equality_dbl_cpl(
 static r_obj* rray_equality_cpl_dbl(
   r_obj* x,
   r_obj* y,
-  r_ssize size,
   const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {
@@ -555,7 +537,6 @@ static r_obj* rray_equality_cpl_dbl(
 static r_obj* rray_equality_cpl_cpl(
   r_obj* x,
   r_obj* y,
-  r_ssize size,
   const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {

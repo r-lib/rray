@@ -21,25 +21,27 @@
   ONE,                                                                         \
   ONE_ARGS                                                                     \
 )                                                                              \
+  const r_ssize size = rray_strided_iterator2_plan_size(plan);                 \
+                                                                               \
   r_obj* out = KEEP(r_alloc_vector(OUT_RTYPE, size));                          \
   OUT_CTYPE* v_out = OUT_DEREF(out);                                           \
                                                                                \
   const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
   const Y_CTYPE* v_y = Y_CONST_DEREF(y);                                       \
                                                                                \
-  const r_ssize plan_size = rray_strided_iterator2_plan_size(plan);            \
+  r_ssize run_start = 0;                                                       \
   const r_ssize run_size = rray_strided_iterator2_plan_run_size(plan);         \
+                                                                               \
+  r_ssize x_start = 0;                                                         \
   const r_ssize x_run_stride = rray_strided_iterator2_plan_run_stride1(plan);  \
+                                                                               \
+  r_ssize y_start = 0;                                                         \
   const r_ssize y_run_stride = rray_strided_iterator2_plan_run_stride2(plan);  \
                                                                                \
   r_ssize v_point[RRAY_MAX_DIMENSIONALITY];                                    \
   r_memset(v_point, 0, sizeof(r_ssize) * (size_t) plan->dimensionality);       \
                                                                                \
-  r_ssize run_start = 0;                                                       \
-  r_ssize x_start = 0;                                                         \
-  r_ssize y_start = 0;                                                         \
-                                                                               \
-  while (run_start != plan_size) {                                             \
+  while (run_start != size) {                                                  \
     const r_ssize run_end = run_start + run_size;                              \
     r_ssize x_loc = x_start;                                                   \
     r_ssize y_loc = y_start;                                                   \

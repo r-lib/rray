@@ -9,7 +9,6 @@
 typedef r_obj* (*rray_binary_arithmetic_fn)(
   r_obj* x,
   r_obj* y,
-  r_ssize size,
   const struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 );

@@ -3,7 +3,6 @@
 #include "broadcast-names.h"
 #include "dimensionality.h"
 #include "dimensions.h"
-#include "size.h"
 #include "type.h"
 #include "utils.h"
 
@@ -47,8 +46,6 @@ r_obj* rray_binary_arithmetic(
   const int* v_dimensions = r_int_cbegin(dimensions);
   const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
 
-  const r_ssize size = rray_size_from_dimensions(v_dimensions, dimensionality);
-
   struct rray_strided_iterator2_plan plan = rray_broadcast_iterator2_plan(
     v_x_dimensions,
     x_dimensionality,
@@ -58,7 +55,7 @@ r_obj* rray_binary_arithmetic(
     dimensionality
   );
 
-  r_obj* out = KEEP(fn(x, y, size, &plan, error_call));
+  r_obj* out = KEEP(fn(x, y, &plan, error_call));
   r_attrib_poke_dim(out, dimensions);
 
   r_obj* out_names = KEEP(rray_broadcast_names2(x, y, dimensions));
