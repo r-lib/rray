@@ -1110,8 +1110,7 @@ shell in `src/reduce.c`/`src/reduce.h` (see 2.1).
 `rray_mean_along()` needs numerical state per output element, so it uses the
 `rray_reduce_grouped()` shell rather than `rray_reduce()`. That shell walks the
 retained axes and the reduced axes with two immutable plans, which lets the
-mean core make several passes over one reduced slice before moving on. See the
-`rray_mean_along()` section of `plans/no-macros.md`.
+mean core make several passes over one reduced slice before moving on.
 
 `rray_all_along()` and `rray_any_along()` share that shape too, so they are
 `@rdname reduce` entries as well. They are the one place two reducers share a C
