@@ -143,8 +143,12 @@
 //   output location.
 struct rray_strided_iterator_plan {
   r_ssize size;
+
+  // Since coalescing can multiply two axes' dimensions together, we use an
+  // `r_ssize` here even though an individual dimension can't be above an `int`.
   r_ssize v_dimensions[RRAY_MAX_DIMENSIONALITY];
   int dimensionality;
+
   r_ssize v_strides[RRAY_MAX_DIMENSIONALITY];
 };
 
@@ -272,8 +276,12 @@ static inline void rray_strided_iterator_next(
 // only walking the point space once
 struct rray_strided_iterator2_plan {
   r_ssize size;
+
+  // Since coalescing can multiply two axes' dimensions together, we use an
+  // `r_ssize` here even though an individual dimension can't be above an `int`.
   r_ssize v_dimensions[RRAY_MAX_DIMENSIONALITY];
   int dimensionality;
+
   r_ssize v_strides1[RRAY_MAX_DIMENSIONALITY];
   r_ssize v_strides2[RRAY_MAX_DIMENSIONALITY];
 };
