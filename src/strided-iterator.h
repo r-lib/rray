@@ -171,6 +171,7 @@ static inline struct rray_strided_iterator_plan rray_strided_iterator_plan(
     plan.v_dimensions[i] = (r_ssize) v_dimensions[i];
     plan.v_strides[i] = v_strides[i];
   }
+
   plan.dimensionality = rray__strided_iterator_axes_coalesce(
     plan.v_dimensions,
     plan.v_strides,
@@ -276,6 +277,7 @@ static inline struct rray_strided_iterator2_plan rray_strided_iterator2_plan(
     plan.v_strides1[i] = v_strides1[i];
     plan.v_strides2[i] = v_strides2[i];
   }
+
   plan.dimensionality = rray__strided_iterator_axes_coalesce2(
     plan.v_dimensions,
     plan.v_strides1,
