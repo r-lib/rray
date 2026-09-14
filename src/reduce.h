@@ -136,11 +136,11 @@ r_obj* rray_reduce_grouped(
                                                                                \
   while (out_run_start != size) {                                              \
     const r_ssize out_run_end = out_run_start + out_run_size;                  \
-    r_ssize x_base = x_start;                                                  \
+    r_ssize x_loc = x_start;                                                   \
                                                                                \
     for (r_ssize i = out_run_start; i < out_run_end; ++i) {                    \
-      v_out[i] = ONE(v_x, x_base, inner_plan);                                 \
-      x_base += x_run_stride;                                                  \
+      v_out[i] = ONE(v_x, x_loc, inner_plan);                                  \
+      x_loc += x_run_stride;                                                   \
     }                                                                          \
                                                                                \
     out_run_start = out_run_end;                                               \
@@ -157,7 +157,6 @@ r_obj* rray_reduce_grouped(
     r_ssize run_start = 0;                                                     \
     const r_ssize run_size = rray_strided_iterator_plan_run_size(inner_plan);  \
                                                                                \
-    r_ssize x_start = x_base;                                                  \
     const r_ssize x_run_stride =                                               \
       rray_strided_iterator_plan_run_stride(inner_plan);                       \
                                                                                \
