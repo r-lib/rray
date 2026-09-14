@@ -199,7 +199,7 @@ static r_obj* rray_mean_along_dbl_na_rm(
   );
 }
 
-#define RRAY_REDUCE_SLICE(X_CTYPE, ACCUMULATE)                                 \
+#define RRAY_REDUCE_INNER(X_CTYPE, ACCUMULATE)                                 \
   do {                                                                         \
     const r_ssize size = rray_strided_iterator_plan_size(plan);                \
     const r_ssize run_size = rray_strided_iterator_plan_run_size(plan);        \
@@ -235,7 +235,7 @@ static inline double rray_mean_along_lgl_one(
 
   long double s = 0.0;
 
-  RRAY_REDUCE_SLICE(int, {
+  RRAY_REDUCE_INNER(int, {
     if (x_elt == r_globals.na_lgl) {
       return r_globals.na_dbl;
     }
@@ -253,7 +253,7 @@ static inline double rray_mean_along_lgl_one_na_rm(
   r_ssize n = 0;
   long double s = 0.0;
 
-  RRAY_REDUCE_SLICE(int, {
+  RRAY_REDUCE_INNER(int, {
     const bool ok = x_elt != r_globals.na_lgl;
     s += ok ? x_elt : 0;
     n += ok;
@@ -271,7 +271,7 @@ static inline double rray_mean_along_int_one(
 
   long double s = 0.0;
 
-  RRAY_REDUCE_SLICE(int, {
+  RRAY_REDUCE_INNER(int, {
     if (x_elt == r_globals.na_int) {
       return r_globals.na_dbl;
     }
@@ -289,7 +289,7 @@ static inline double rray_mean_along_int_one_na_rm(
   r_ssize n = 0;
   long double s = 0.0;
 
-  RRAY_REDUCE_SLICE(int, {
+  RRAY_REDUCE_INNER(int, {
     const bool ok = x_elt != r_globals.na_int;
     s += ok ? x_elt : 0;
     n += ok;
@@ -307,7 +307,7 @@ static inline double rray_mean_along_dbl_one(
 
   long double s = 0.0;
 
-  RRAY_REDUCE_SLICE(double, s += x_elt);
+  RRAY_REDUCE_INNER(double, s += x_elt);
 
   if (ISNAN((double) s)) {
     return rray_mean_along_dbl_missing(v_x, x_base, plan);
@@ -318,16 +318,16 @@ static inline double rray_mean_along_dbl_one(
 
     if (R_FINITE((double) s)) {
       long double t = 0.0;
-      RRAY_REDUCE_SLICE(double, t += x_elt - s);
+      RRAY_REDUCE_INNER(double, t += x_elt - s);
       s += t / n;
     }
   } else {
     s = 0.0;
-    RRAY_REDUCE_SLICE(double, s += x_elt / n);
+    RRAY_REDUCE_INNER(double, s += x_elt / n);
 
     if (R_FINITE((double) s)) {
       long double t = 0.0;
-      RRAY_REDUCE_SLICE(double, t += (x_elt - s) / n);
+      RRAY_REDUCE_INNER(double, t += (x_elt - s) / n);
       s += t;
     }
   }
@@ -343,7 +343,7 @@ static inline double rray_mean_along_dbl_one_na_rm(
   r_ssize n = 0;
   long double s = 0.0;
 
-  RRAY_REDUCE_SLICE(double, {
+  RRAY_REDUCE_INNER(double, {
     const bool ok = !ISNAN(x_elt);
     s += ok ? x_elt : 0;
     n += ok;
@@ -358,16 +358,16 @@ static inline double rray_mean_along_dbl_one_na_rm(
 
     if (R_FINITE((double) s)) {
       long double t = 0.0;
-      RRAY_REDUCE_SLICE(double, t += ISNAN(x_elt) ? 0 : x_elt - s);
+      RRAY_REDUCE_INNER(double, t += ISNAN(x_elt) ? 0 : x_elt - s);
       s += t / n;
     }
   } else {
     s = 0.0;
-    RRAY_REDUCE_SLICE(double, s += ISNAN(x_elt) ? 0 : x_elt / n);
+    RRAY_REDUCE_INNER(double, s += ISNAN(x_elt) ? 0 : x_elt / n);
 
     if (R_FINITE((double) s)) {
       long double t = 0.0;
-      RRAY_REDUCE_SLICE(double, t += ISNAN(x_elt) ? 0 : (x_elt - s) / n);
+      RRAY_REDUCE_INNER(double, t += ISNAN(x_elt) ? 0 : (x_elt - s) / n);
       s += t;
     }
   }
@@ -380,7 +380,7 @@ static inline double rray_mean_along_dbl_missing(
   r_ssize x_base,
   const struct rray_strided_iterator_plan* plan
 ) {
-  RRAY_REDUCE_SLICE(double, {
+  RRAY_REDUCE_INNER(double, {
     if (R_IsNA(x_elt)) {
       return r_globals.na_dbl;
     }
@@ -390,4 +390,4 @@ static inline double rray_mean_along_dbl_missing(
 }
 
 #undef RRAY_REDUCE_OUTER
-#undef RRAY_REDUCE_SLICE
+#undef RRAY_REDUCE_INNER
