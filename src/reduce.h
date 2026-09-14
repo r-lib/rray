@@ -87,7 +87,6 @@ r_obj* rray_reduce(
 
 typedef r_obj* (*rray_reduce_grouped_fn)(
   r_obj* x,
-  r_ssize out_size,
   const struct rray_strided_iterator_plan* outer_plan,
   const struct rray_strided_iterator_plan* inner_plan
 );
@@ -118,7 +117,7 @@ r_obj* rray_reduce_grouped(
 )                                                                              \
   const r_ssize size = rray_strided_iterator_plan_size(outer_plan);            \
                                                                                \
-  r_obj* out = KEEP(r_alloc_vector(OUT_RTYPE, out_size));                      \
+  r_obj* out = KEEP(r_alloc_vector(OUT_RTYPE, size));                          \
   OUT_CTYPE* v_out = OUT_DEREF(out);                                           \
                                                                                \
   const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \

@@ -93,10 +93,6 @@ r_obj* rray_reduce_grouped(
     axes_size,
     1
   ));
-  const int* v_out_dimensions = r_int_cbegin(out_dimensions);
-
-  const r_ssize out_size =
-    rray_size_from_dimensions(v_out_dimensions, dimensionality);
 
   r_obj* retained_axes =
     KEEP(rray_axes_complement(v_axes, axes_size, dimensionality));
@@ -122,7 +118,7 @@ r_obj* rray_reduce_grouped(
 
   const rray_reduce_grouped_fn fn = fn_switch(x, na_rm, arg, error_call);
 
-  r_obj* out = KEEP(fn(x, out_size, &outer_plan, &inner_plan));
+  r_obj* out = KEEP(fn(x, &outer_plan, &inner_plan));
   r_attrib_poke_dim(out, out_dimensions);
 
   r_obj* out_names = KEEP(rray_reduce_names(x, axes));
