@@ -218,6 +218,11 @@ static inline struct rray_strided_iterator_plan rray_broadcast_iterator_plan(
   );
 }
 
+static inline r_ssize rray_strided_iterator_plan_size(
+  const struct rray_strided_iterator_plan* plan
+) {
+  return plan->size;
+}
 static inline r_ssize rray_strided_iterator_plan_run_size(
   const struct rray_strided_iterator_plan* plan
 ) {
@@ -269,6 +274,17 @@ static inline void rray_strided_iterator_next(
     it->location -= (plan->v_dimensions[axis] - 1) * plan->v_strides[axis];
   }
 }
+
+#define RRAY_STRIDED_ITERATOR_NEXT(START, V_POINT, PLAN)                       \
+  for (int axis = 1; axis < PLAN->dimensionality; ++axis) {                    \
+    ++V_POINT[axis];                                                           \
+    if (V_POINT[axis] < PLAN->v_dimensions[axis]) {                            \
+      START += PLAN->v_strides[axis];                                          \
+      break;                                                                   \
+    }                                                                          \
+    V_POINT[axis] = 0;                                                         \
+    START -= (PLAN->v_dimensions[axis] - 1) * PLAN->v_strides[axis];           \
+  }
 
 // --------------------------------------------------------------------------
 
