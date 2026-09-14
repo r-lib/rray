@@ -186,6 +186,75 @@ later axes for every element. Earlier work found that batching first-axis runs
 can improve these operations by 3 to 4 times. The run boundary must stay
 outside the element loop.
 
+## `rray_mean_along()` plan
+
+The macro-free API also makes a better `rray_mean_along()` traversal possible.
+The current reduction traversal walks `x` in physical order and maps each
+element to an output location. That works well for sums and products, but a
+mean needs more numerical state and may need several passes over each reduced
+slice.
+
+R accumulates real means in `LDOUBLE`. It can use a scaled sum if the first sum
+overflows, then makes a correction pass to reduce rounding error. Removing
+missing values also requires a count for each slice. Complex means need
+separate real and imaginary accumulators.
+
+`RRAY_REDUCE()` uses its R output vector as the accumulator, so it cannot hold
+this wider state directly. One implementation could allocate sum and count
+buffers indexed by output location. A better plan is to visit one complete
+reduced slice for each output location. This needs two immutable strided plans:
+
+| Plan | Axes | Reported location |
+|---|---|---|
+| Outer | Retained axes in their original order | Base location in `x` |
+| Inner | Reduced axes in their original order | Offset from that base |
+
+Both plans use the physical strides of `x`. They change the order in which the
+array is visited without copying or physically permuting it. The outer run
+start is the flat output location because reduced axes have dimension one in
+the output.
+
+The outer iterator still advances by runs. Each output location in the current
+outer run therefore starts its own inner iterator:
+
+```c
+const r_ssize out_run_size =
+  rray_strided_iterator_plan_run_size(outer_plan);
+const r_ssize x_run_stride =
+  rray_strided_iterator_plan_run_stride(outer_plan);
+
+for (struct rray_strided_iterator outer = rray_strided_iterator();
+     !rray_strided_iterator_finished(&outer, outer_plan);
+     rray_strided_iterator_next(&outer, outer_plan)) {
+  r_ssize out_location = rray_strided_iterator_run_start(&outer);
+  const r_ssize out_end = out_location + out_run_size;
+  r_ssize x_base = rray_strided_iterator_location(&outer);
+
+  for (; out_location < out_end;
+       ++out_location, x_base += x_run_stride) {
+    struct rray_strided_iterator inner = rray_strided_iterator();
+  }
+}
+```
+
+The example stops where each fresh inner traversal begins. The mean worker
+then walks `inner_plan` with the same run-based loop shape.
+
+For each output location, the real implementation can use scalar `long double`
+values for the sum and correction, plus one `r_ssize` count when removing
+missing values. It creates a fresh inner iterator for each numerical pass over
+the same inner plan. The usual path needs a sum pass and a correction pass. A
+non-finite first sum can add a scaled sum pass before correction.
+
+This avoids per-output `long double` buffers and is a useful reason to keep
+plans immutable and restartable. An empty retained axis set represents one
+output location. An empty reduced axis set represents one input value per
+output location. A zero-size reduced slice produces `NaN`.
+
+The grouped traversal can read a middle or later axis with a stride. It should
+be benchmarked against the current input-major reduction before it is used for
+other reducers.
+
 ## Coalescing
 
 Coalescing merges adjacent compatible axes before traversal. For example,
