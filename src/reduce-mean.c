@@ -202,12 +202,13 @@ static r_obj* rray_mean_along_dbl_na_rm(
 #define RRAY_REDUCE_INNER(X_CTYPE, ACCUMULATE)                                 \
   do {                                                                         \
     const r_ssize size = rray_strided_iterator_plan_size(inner_plan);          \
-    const r_ssize run_size = rray_strided_iterator_plan_run_size(inner_plan);  \
-    const r_ssize x_run_stride =                                               \
-      rray_strided_iterator_plan_run_stride(inner_plan);                       \
                                                                                \
     r_ssize run_start = 0;                                                     \
+    const r_ssize run_size = rray_strided_iterator_plan_run_size(inner_plan);  \
+                                                                               \
     r_ssize x_start = x_base;                                                  \
+    const r_ssize x_run_stride =                                               \
+      rray_strided_iterator_plan_run_stride(inner_plan);                       \
                                                                                \
     r_ssize v_point[RRAY_MAX_DIMENSIONALITY];                                  \
     r_memset(                                                                  \
