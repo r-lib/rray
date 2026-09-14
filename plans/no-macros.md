@@ -186,10 +186,13 @@ later axes for every element. Earlier work found that batching first-axis runs
 can improve these operations by 3 to 4 times. The run boundary must stay
 outside the element loop.
 
-## `rray_mean_along()` plan
+## `rray_mean_along()` grouped traversal
 
-The macro-free API also makes a better `rray_mean_along()` traversal possible.
-The current reduction traversal walks `x` in physical order and maps each
+The macro-free API also made a better `rray_mean_along()` traversal possible.
+This is now implemented in `rray_reduce_grouped()` in `src/reduce.c` and
+`src/reduce-mean.c`. The rest of this section describes that design.
+
+The ordinary reduction traversal walks `x` in physical order and maps each
 element to an output location. That works well for sums and products, but a
 mean needs more numerical state and may need several passes over each reduced
 slice.
@@ -214,46 +217,67 @@ array is visited without copying or physically permuting it. The outer run
 start is the flat output location because reduced axes have dimension one in
 the output.
 
-The outer iterator still advances by runs. Each output location in the current
-outer run therefore starts its own inner iterator:
+The outer walk still advances by runs. Every output location in the current
+outer run starts a fresh traversal of the inner plan. `RRAY_REDUCE_GROUPED()`
+in `src/reduce-mean.c` is that outer walk, and its `ONE` hook receives the
+whole slice rather than one element:
 
 ```c
-const r_ssize out_run_size =
-  rray_strided_iterator_plan_run_size(outer_plan);
-const r_ssize x_run_stride =
-  rray_strided_iterator_plan_run_stride(outer_plan);
+while (out_start != out_size) {
+  const r_ssize out_run_end = out_start + out_run_size;
+  r_ssize x_base = x_start;
 
-for (struct rray_strided_iterator outer = rray_strided_iterator();
-     !rray_strided_iterator_finished(&outer, outer_plan);
-     rray_strided_iterator_next(&outer, outer_plan)) {
-  r_ssize out_location = rray_strided_iterator_run_start(&outer);
-  const r_ssize out_end = out_location + out_run_size;
-  r_ssize x_base = rray_strided_iterator_location(&outer);
-
-  for (; out_location < out_end;
-       ++out_location, x_base += x_run_stride) {
-    struct rray_strided_iterator inner = rray_strided_iterator();
+  for (r_ssize i = out_start; i < out_run_end; ++i) {
+    v_out[i] = ONE(v_x, x_base, inner_plan);
+    x_base += x_run_stride;
   }
+
+  out_start = out_run_end;
+  RRAY_STRIDED_ITERATOR_NEXT(x_start, v_point, outer_plan);
 }
 ```
 
-The example stops where each fresh inner traversal begins. The mean worker
-then walks `inner_plan` with the same run-based loop shape.
-
-For each output location, the real implementation can use scalar `long double`
-values for the sum and correction, plus one `r_ssize` count when removing
-missing values. It creates a fresh inner iterator for each numerical pass over
-the same inner plan. The usual path needs a sum pass and a correction pass. A
-non-finite first sum can add a scaled sum pass before correction.
+`RRAY_REDUCE_SLICE()` is one pass of the inner walk. A core calls it once per
+pass, so the state it carries is just local scalars. The double core uses two
+`long double` values for the sum and the correction, plus one `r_ssize` count
+when removing missing values. The usual path needs a sum pass and a correction
+pass. A non-finite first sum adds a scaled sum pass before the correction.
 
 This avoids per-output `long double` buffers and is a useful reason to keep
 plans immutable and restartable. An empty retained axis set represents one
 output location. An empty reduced axis set represents one input value per
-output location. A zero-size reduced slice produces `NaN`.
+output location. A zero-size reduced slice produces `NaN`. Both empty cases
+become a plan with one axis of dimension 1 and a stride of 0, because the
+coalescing pass has nothing to report for a dimensionality of 0.
 
-The grouped traversal can read a middle or later axis with a stride. It should
-be benchmarked against the current input-major reduction before it is used for
-other reducers.
+The grouped traversal can read a middle or later axis with a stride, so it was
+benchmarked on a 1000 by 1000 double matrix. `bench/mean.R` compares it with
+the input-major `rray_sum_along()` and with base R. `bench/matrix-stats.R`
+compares it with `matrixStats::colMeans2()` and `rowMeans2()`, which default to
+`refine = TRUE` and so make the same two passes.
+
+Reducing the first axis costs about 2.3 times the single-pass sum, and reducing
+the second axis about 4.6 times. Most of that is the extra pass rather than the
+strided read, because the two axes are within 15% of each other.
+
+Against matrixStats, which is the fair two-pass comparison, `na_rm = FALSE` is
+at parity or slightly ahead in both directions, 0.94 times for columns and 0.98
+for rows. `rowMeans()` remains much faster, because it makes one input-major
+pass and skips the correction. Reducers that do not need the extra state should
+stay on `rray_reduce()`.
+
+Two gaps are worth knowing about:
+
+- `na_rm = TRUE` costs about 1.6 times matrixStats. On input with no missing
+  values, matrixStats charges almost nothing for the flag while we go from
+  1.58 ms to 2.76 ms. The likely cause is the `ISNAN()` branch in every pass of
+  the na_rm cores blocking vectorization.
+
+- With `na_rm = FALSE` and a missing value in every column, matrixStats leaves a
+  column on the first one and is 100 times faster. We run the whole sum pass
+  before the missing scan bails. Their early exit is a per-element branch, which
+  is also why they are 6% slower on input with no missing values, so this is a
+  deliberate trade rather than a defect.
 
 ## Coalescing
 

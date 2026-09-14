@@ -16,7 +16,7 @@ if (side * side != size) {
 dimensions <- c(side, side)
 
 cases <- expand.grid(
-  operation = c("sum", "product", "all", "any"),
+  operation = c("sum", "product", "mean", "all", "any"),
   na_rm = c(FALSE, TRUE),
   missing = c("none", "sparse", "dense"),
   direction = c("columns", "rows"),
@@ -28,6 +28,7 @@ make_input <- function(operation, missing) {
     operation,
     sum = as.double(seq_len(size) %% 1000L),
     product = 1 + as.double(seq_len(size) %% 10L) / 1000,
+    mean = as.double(seq_len(size) %% 1000L),
     all = rep(TRUE, size),
     any = rep(FALSE, size)
   )
@@ -50,6 +51,11 @@ functions <- list(
     rray = rray_product_along,
     columns = matrixStats::colProds,
     rows = matrixStats::rowProds
+  ),
+  mean = list(
+    rray = rray_mean_along,
+    columns = matrixStats::colMeans2,
+    rows = matrixStats::rowMeans2
   ),
   all = list(
     rray = rray_all_along,

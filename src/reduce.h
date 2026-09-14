@@ -28,6 +28,29 @@ r_obj* rray_reduce(
   struct r_lazy error_call
 );
 
+typedef r_obj* (*rray_reduce_grouped_fn)(
+  r_obj* x,
+  r_ssize out_size,
+  const struct rray_strided_iterator_plan* outer_plan,
+  const struct rray_strided_iterator_plan* inner_plan
+);
+
+typedef rray_reduce_grouped_fn (*rray_reduce_grouped_fn_switch)(
+  r_obj* x,
+  bool na_rm,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+);
+
+r_obj* rray_reduce_grouped(
+  r_obj* x,
+  r_obj* axes,
+  bool na_rm,
+  rray_reduce_grouped_fn_switch fn_switch,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+);
+
 r_no_return void stop_unsupported_reduce(
   const char* op,
   r_obj* x,
