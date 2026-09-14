@@ -35,13 +35,13 @@
   r_memset(v_point, 0, sizeof(r_ssize) * (size_t) plan->dimensionality);       \
                                                                                \
   r_ssize run_start = 0;                                                       \
-  r_ssize x_offset = 0;                                                        \
-  r_ssize y_offset = 0;                                                        \
+  r_ssize x_start = 0;                                                         \
+  r_ssize y_start = 0;                                                         \
                                                                                \
   while (run_start != plan->size) {                                            \
     const r_ssize run_end = run_start + run_size;                              \
-    r_ssize x_loc = x_offset;                                                  \
-    r_ssize y_loc = y_offset;                                                  \
+    r_ssize x_loc = x_start;                                                   \
+    r_ssize y_loc = y_start;                                                   \
                                                                                \
     if (x_run_stride == 0) {                                                   \
       const X_CTYPE x_elt = v_x[x_loc];                                        \
@@ -75,7 +75,7 @@
     }                                                                          \
                                                                                \
     run_start = run_end;                                                       \
-    RRAY_ITERATOR_NEXT2(x_offset, y_offset, v_point, plan);                    \
+    RRAY_ITERATOR_NEXT2(x_start, y_start, v_point, plan);                      \
   }                                                                            \
                                                                                \
   FREE(1);                                                                     \

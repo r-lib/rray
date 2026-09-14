@@ -435,17 +435,17 @@ static inline void rray_strided_iterator2_next(
   }
 }
 
-#define RRAY_ITERATOR_NEXT2(OFFSET1, OFFSET2, V_POINT, PLAN)                   \
+#define RRAY_ITERATOR_NEXT2(START1, START2, V_POINT, PLAN)                     \
   for (int axis = 1; axis < PLAN->dimensionality; ++axis) {                    \
     ++V_POINT[axis];                                                           \
     if (V_POINT[axis] < PLAN->v_dimensions[axis]) {                            \
-      OFFSET1 += PLAN->v_strides1[axis];                                       \
-      OFFSET2 += PLAN->v_strides2[axis];                                       \
+      START1 += PLAN->v_strides1[axis];                                        \
+      START2 += PLAN->v_strides2[axis];                                        \
       break;                                                                   \
     }                                                                          \
     V_POINT[axis] = 0;                                                         \
-    OFFSET1 -= (PLAN->v_dimensions[axis] - 1) * PLAN->v_strides1[axis];        \
-    OFFSET2 -= (PLAN->v_dimensions[axis] - 1) * PLAN->v_strides2[axis];        \
+    START1 -= (PLAN->v_dimensions[axis] - 1) * PLAN->v_strides1[axis];         \
+    START2 -= (PLAN->v_dimensions[axis] - 1) * PLAN->v_strides2[axis];         \
   }
 
 // --------------------------------------------------------------------------
