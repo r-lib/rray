@@ -241,7 +241,13 @@ static inline double rray_mean_along_dbl_one(
   RRAY_REDUCE_INNER(double, s += x_elt);
 
   if (ISNAN((double) s)) {
-    return rray_mean_along_dbl_missing(v_x, x_base, inner_plan);
+    RRAY_REDUCE_INNER(double, {
+      if (R_IsNA(x_elt)) {
+        return r_globals.na_dbl;
+      }
+    });
+
+    return R_NaN;
   }
 
   if (R_FINITE((double) s)) {
@@ -304,18 +310,4 @@ static inline double rray_mean_along_dbl_one_na_rm(
   }
 
   return (double) s;
-}
-
-static inline double rray_mean_along_dbl_missing(
-  const double* v_x,
-  r_ssize x_base,
-  const struct rray_strided_iterator_plan* inner_plan
-) {
-  RRAY_REDUCE_INNER(double, {
-    if (R_IsNA(x_elt)) {
-      return r_globals.na_dbl;
-    }
-  });
-
-  return R_NaN;
 }

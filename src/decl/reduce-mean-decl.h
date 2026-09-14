@@ -72,9 +72,3 @@ static inline double rray_mean_along_dbl_one_na_rm(
   r_ssize x_base,
   const struct rray_strided_iterator_plan* inner_plan
 );
-
-static inline double rray_mean_along_dbl_missing(
-  const double* v_x,
-  r_ssize x_base,
-  const struct rray_strided_iterator_plan* inner_plan
-);
