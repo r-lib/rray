@@ -1,5 +1,6 @@
 #include "equal.h"
 
+#include "binary.h"
 #include "broadcast-names.h"
 #include "cast.h"
 #include "dimensionality.h"
@@ -226,68 +227,6 @@ static r_no_return void stop_unsupported_equality(
   );
 }
 
-#define RRAY_EQUALITY_IMPL(                                                    \
-  X_CTYPE,                                                                     \
-  X_CONST_DEREF,                                                               \
-  X_CAST,                                                                      \
-  Y_CTYPE,                                                                     \
-  Y_CONST_DEREF,                                                               \
-  Y_CAST,                                                                      \
-  ONE                                                                          \
-)                                                                              \
-  r_obj* out = KEEP(r_alloc_vector(R_TYPE_logical, size));                     \
-  int* v_out = r_lgl_begin(out);                                               \
-                                                                               \
-  const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
-  const Y_CTYPE* v_y = Y_CONST_DEREF(y);                                       \
-                                                                               \
-  const r_ssize run_size = rray_strided_iterator2_plan_run_size(plan);         \
-  const r_ssize x_run_stride = rray_strided_iterator2_plan_run_stride1(plan);  \
-  const r_ssize y_run_stride = rray_strided_iterator2_plan_run_stride2(plan);  \
-                                                                               \
-  for (struct rray_strided_iterator2 it = rray_strided_iterator2();            \
-       !rray_strided_iterator2_finished(&it, plan);                            \
-       rray_strided_iterator2_next(&it, plan)) {                               \
-    const r_ssize run_start = rray_strided_iterator2_run_start(&it);           \
-    const r_ssize run_end = run_start + run_size;                              \
-    r_ssize x_loc = rray_strided_iterator2_location1(&it);                     \
-    r_ssize y_loc = rray_strided_iterator2_location2(&it);                     \
-                                                                               \
-    if (x_run_stride == 0) {                                                   \
-      const X_CTYPE x_elt = v_x[x_loc];                                        \
-      if (y_run_stride == 0) {                                                 \
-        const Y_CTYPE y_elt = v_y[y_loc];                                      \
-        for (r_ssize i = run_start; i < run_end; ++i) {                        \
-          v_out[i] = ONE(X_CAST(x_elt), Y_CAST(y_elt));                        \
-        }                                                                      \
-      } else {                                                                 \
-        for (r_ssize i = run_start; i < run_end; ++i) {                        \
-          const Y_CTYPE y_elt = v_y[y_loc];                                    \
-          v_out[i] = ONE(X_CAST(x_elt), Y_CAST(y_elt));                        \
-          y_loc += y_run_stride;                                               \
-        }                                                                      \
-      }                                                                        \
-    } else if (y_run_stride == 0) {                                            \
-      const Y_CTYPE y_elt = v_y[y_loc];                                        \
-      for (r_ssize i = run_start; i < run_end; ++i) {                          \
-        const X_CTYPE x_elt = v_x[x_loc];                                      \
-        v_out[i] = ONE(X_CAST(x_elt), Y_CAST(y_elt));                          \
-        x_loc += x_run_stride;                                                 \
-      }                                                                        \
-    } else {                                                                   \
-      for (r_ssize i = run_start; i < run_end; ++i) {                          \
-        const X_CTYPE x_elt = v_x[x_loc];                                      \
-        const Y_CTYPE y_elt = v_y[y_loc];                                      \
-        v_out[i] = ONE(X_CAST(x_elt), Y_CAST(y_elt));                          \
-        x_loc += x_run_stride;                                                 \
-        y_loc += y_run_stride;                                                 \
-      }                                                                        \
-    }                                                                          \
-  }                                                                            \
-                                                                               \
-  FREE(1);                                                                     \
-  return out;
-
 #define RRAY_EQUALITY(                                                         \
   X_CTYPE,                                                                     \
   X_CONST_DEREF,                                                               \
@@ -299,24 +238,32 @@ static r_no_return void stop_unsupported_equality(
   NOT_EQUAL_ONE                                                                \
 )                                                                              \
   if (op == RRAY_EQUAL_equal) {                                                \
-    RRAY_EQUALITY_IMPL(                                                        \
+    RRAY_BINARY(                                                               \
       X_CTYPE,                                                                 \
       X_CONST_DEREF,                                                           \
       X_CAST,                                                                  \
       Y_CTYPE,                                                                 \
       Y_CONST_DEREF,                                                           \
       Y_CAST,                                                                  \
-      EQUAL_ONE                                                                \
+      R_TYPE_logical,                                                          \
+      int,                                                                     \
+      r_lgl_begin,                                                             \
+      EQUAL_ONE,                                                               \
+      RRAY_BINARY_NO_ARGS                                                      \
     );                                                                         \
   } else {                                                                     \
-    RRAY_EQUALITY_IMPL(                                                        \
+    RRAY_BINARY(                                                               \
       X_CTYPE,                                                                 \
       X_CONST_DEREF,                                                           \
       X_CAST,                                                                  \
       Y_CTYPE,                                                                 \
       Y_CONST_DEREF,                                                           \
       Y_CAST,                                                                  \
-      NOT_EQUAL_ONE                                                            \
+      R_TYPE_logical,                                                          \
+      int,                                                                     \
+      r_lgl_begin,                                                             \
+      NOT_EQUAL_ONE,                                                           \
+      RRAY_BINARY_NO_ARGS                                                      \
     );                                                                         \
   }
 
@@ -625,7 +572,6 @@ static r_obj* rray_equality_cpl_cpl(
 }
 
 #undef RRAY_EQUALITY
-#undef RRAY_EQUALITY_IMPL
 
 static inline int rray_equal_int_one(int x, int y) {
   const bool missing = rray_int_is_missing(x) | rray_int_is_missing(y);
