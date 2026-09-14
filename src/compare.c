@@ -1,6 +1,8 @@
 #include "compare.h"
 
+#include "binary.h"
 #include "broadcast-names.h"
+#include "cast.h"
 #include "dimensionality.h"
 #include "dimensions.h"
 #include "strided-iterator.h"
@@ -295,86 +297,82 @@ static r_no_return void stop_unsupported_compare(
   );
 }
 
-#define RRAY_COMPARE_IMPL(X_CTYPE, Y_CTYPE, ONE)                               \
-  do {                                                                         \
-    for (struct rray_strided_iterator2 it = rray_strided_iterator2();          \
-         !rray_strided_iterator2_finished(&it, plan);                          \
-         rray_strided_iterator2_next(&it, plan)) {                             \
-      const r_ssize run_start = rray_strided_iterator2_run_start(&it);         \
-      const r_ssize run_end = run_start + run_size;                            \
-      r_ssize x_loc = rray_strided_iterator2_location1(&it);                   \
-      r_ssize y_loc = rray_strided_iterator2_location2(&it);                   \
-                                                                               \
-      if (x_run_stride == 0) {                                                 \
-        const X_CTYPE x_elt = v_x[x_loc];                                      \
-        if (y_run_stride == 0) {                                               \
-          const Y_CTYPE y_elt = v_y[y_loc];                                    \
-          for (r_ssize i = run_start; i < run_end; ++i) {                      \
-            v_out[i] = ONE(x_elt, y_elt);                                      \
-          }                                                                    \
-        } else {                                                               \
-          for (r_ssize i = run_start; i < run_end; ++i) {                      \
-            const Y_CTYPE y_elt = v_y[y_loc];                                  \
-            v_out[i] = ONE(x_elt, y_elt);                                      \
-            y_loc += y_run_stride;                                             \
-          }                                                                    \
-        }                                                                      \
-      } else if (y_run_stride == 0) {                                          \
-        const Y_CTYPE y_elt = v_y[y_loc];                                      \
-        for (r_ssize i = run_start; i < run_end; ++i) {                        \
-          const X_CTYPE x_elt = v_x[x_loc];                                    \
-          v_out[i] = ONE(x_elt, y_elt);                                        \
-          x_loc += x_run_stride;                                               \
-        }                                                                      \
-      } else {                                                                 \
-        for (r_ssize i = run_start; i < run_end; ++i) {                        \
-          const X_CTYPE x_elt = v_x[x_loc];                                    \
-          const Y_CTYPE y_elt = v_y[y_loc];                                    \
-          v_out[i] = ONE(x_elt, y_elt);                                        \
-          x_loc += x_run_stride;                                               \
-          y_loc += y_run_stride;                                               \
-        }                                                                      \
-      }                                                                        \
-    }                                                                          \
-  } while (0)
-
 #define RRAY_COMPARE(                                                          \
   X_CTYPE,                                                                     \
   X_CONST_DEREF,                                                               \
+  X_CAST,                                                                      \
   Y_CTYPE,                                                                     \
   Y_CONST_DEREF,                                                               \
+  Y_CAST,                                                                      \
   GREATER_THAN_ONE,                                                            \
   GREATER_THAN_OR_EQUAL_ONE,                                                   \
   LESS_THAN_ONE,                                                               \
   LESS_THAN_OR_EQUAL_ONE                                                       \
 )                                                                              \
-  r_obj* out = KEEP(r_alloc_vector(R_TYPE_logical, size));                     \
-  int* v_out = r_lgl_begin(out);                                               \
-                                                                               \
-  const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
-  const Y_CTYPE* v_y = Y_CONST_DEREF(y);                                       \
-                                                                               \
-  const r_ssize run_size = rray_strided_iterator2_plan_run_size(plan);         \
-  const r_ssize x_run_stride = rray_strided_iterator2_plan_run_stride1(plan);  \
-  const r_ssize y_run_stride = rray_strided_iterator2_plan_run_stride2(plan);  \
-                                                                               \
   switch (op) {                                                                \
-  case RRAY_COMPARE_greater_than:                                              \
-    RRAY_COMPARE_IMPL(X_CTYPE, Y_CTYPE, GREATER_THAN_ONE);                     \
-    break;                                                                     \
-  case RRAY_COMPARE_greater_than_or_equal:                                     \
-    RRAY_COMPARE_IMPL(X_CTYPE, Y_CTYPE, GREATER_THAN_OR_EQUAL_ONE);            \
-    break;                                                                     \
-  case RRAY_COMPARE_less_than:                                                 \
-    RRAY_COMPARE_IMPL(X_CTYPE, Y_CTYPE, LESS_THAN_ONE);                        \
-    break;                                                                     \
-  case RRAY_COMPARE_less_than_or_equal:                                        \
-    RRAY_COMPARE_IMPL(X_CTYPE, Y_CTYPE, LESS_THAN_OR_EQUAL_ONE);               \
-    break;                                                                     \
+  case RRAY_COMPARE_greater_than: {                                            \
+    RRAY_BINARY(                                                               \
+      X_CTYPE,                                                                 \
+      X_CONST_DEREF,                                                           \
+      X_CAST,                                                                  \
+      Y_CTYPE,                                                                 \
+      Y_CONST_DEREF,                                                           \
+      Y_CAST,                                                                  \
+      R_TYPE_logical,                                                          \
+      int,                                                                     \
+      r_lgl_begin,                                                             \
+      GREATER_THAN_ONE,                                                        \
+      RRAY_BINARY_NO_ARGS                                                      \
+    );                                                                         \
+  }                                                                            \
+  case RRAY_COMPARE_greater_than_or_equal: {                                   \
+    RRAY_BINARY(                                                               \
+      X_CTYPE,                                                                 \
+      X_CONST_DEREF,                                                           \
+      X_CAST,                                                                  \
+      Y_CTYPE,                                                                 \
+      Y_CONST_DEREF,                                                           \
+      Y_CAST,                                                                  \
+      R_TYPE_logical,                                                          \
+      int,                                                                     \
+      r_lgl_begin,                                                             \
+      GREATER_THAN_OR_EQUAL_ONE,                                               \
+      RRAY_BINARY_NO_ARGS                                                      \
+    );                                                                         \
+  }                                                                            \
+  case RRAY_COMPARE_less_than: {                                               \
+    RRAY_BINARY(                                                               \
+      X_CTYPE,                                                                 \
+      X_CONST_DEREF,                                                           \
+      X_CAST,                                                                  \
+      Y_CTYPE,                                                                 \
+      Y_CONST_DEREF,                                                           \
+      Y_CAST,                                                                  \
+      R_TYPE_logical,                                                          \
+      int,                                                                     \
+      r_lgl_begin,                                                             \
+      LESS_THAN_ONE,                                                           \
+      RRAY_BINARY_NO_ARGS                                                      \
+    );                                                                         \
+  }                                                                            \
+  case RRAY_COMPARE_less_than_or_equal: {                                      \
+    RRAY_BINARY(                                                               \
+      X_CTYPE,                                                                 \
+      X_CONST_DEREF,                                                           \
+      X_CAST,                                                                  \
+      Y_CTYPE,                                                                 \
+      Y_CONST_DEREF,                                                           \
+      Y_CAST,                                                                  \
+      R_TYPE_logical,                                                          \
+      int,                                                                     \
+      r_lgl_begin,                                                             \
+      LESS_THAN_OR_EQUAL_ONE,                                                  \
+      RRAY_BINARY_NO_ARGS                                                      \
+    );                                                                         \
+  }                                                                            \
   }                                                                            \
                                                                                \
-  FREE(1);                                                                     \
-  return out;
+  r_stop_unreachable();
 
 static r_obj* rray_compare_lgl_lgl(
   r_obj* x,
@@ -386,8 +384,10 @@ static r_obj* rray_compare_lgl_lgl(
   RRAY_COMPARE(
     int,
     r_lgl_cbegin,
+    rray_cast_lgl_to_int_one,
     int,
     r_lgl_cbegin,
+    rray_cast_lgl_to_int_one,
     rray_greater_than_int_int_one,
     rray_greater_than_or_equal_int_int_one,
     rray_less_than_int_int_one,
@@ -405,8 +405,10 @@ static r_obj* rray_compare_lgl_int(
   RRAY_COMPARE(
     int,
     r_lgl_cbegin,
+    rray_cast_lgl_to_int_one,
     int,
     r_int_cbegin,
+    rray_cast_int_to_int_one,
     rray_greater_than_int_int_one,
     rray_greater_than_or_equal_int_int_one,
     rray_less_than_int_int_one,
@@ -424,8 +426,10 @@ static r_obj* rray_compare_int_lgl(
   RRAY_COMPARE(
     int,
     r_int_cbegin,
+    rray_cast_int_to_int_one,
     int,
     r_lgl_cbegin,
+    rray_cast_lgl_to_int_one,
     rray_greater_than_int_int_one,
     rray_greater_than_or_equal_int_int_one,
     rray_less_than_int_int_one,
@@ -443,8 +447,10 @@ static r_obj* rray_compare_lgl_dbl(
   RRAY_COMPARE(
     int,
     r_lgl_cbegin,
+    rray_cast_lgl_to_int_one,
     double,
     r_dbl_cbegin,
+    rray_cast_dbl_to_dbl_one,
     rray_greater_than_int_dbl_one,
     rray_greater_than_or_equal_int_dbl_one,
     rray_less_than_int_dbl_one,
@@ -462,8 +468,10 @@ static r_obj* rray_compare_dbl_lgl(
   RRAY_COMPARE(
     double,
     r_dbl_cbegin,
+    rray_cast_dbl_to_dbl_one,
     int,
     r_lgl_cbegin,
+    rray_cast_lgl_to_int_one,
     rray_greater_than_dbl_int_one,
     rray_greater_than_or_equal_dbl_int_one,
     rray_less_than_dbl_int_one,
@@ -481,8 +489,10 @@ static r_obj* rray_compare_int_int(
   RRAY_COMPARE(
     int,
     r_int_cbegin,
+    rray_cast_int_to_int_one,
     int,
     r_int_cbegin,
+    rray_cast_int_to_int_one,
     rray_greater_than_int_int_one,
     rray_greater_than_or_equal_int_int_one,
     rray_less_than_int_int_one,
@@ -500,8 +510,10 @@ static r_obj* rray_compare_int_dbl(
   RRAY_COMPARE(
     int,
     r_int_cbegin,
+    rray_cast_int_to_int_one,
     double,
     r_dbl_cbegin,
+    rray_cast_dbl_to_dbl_one,
     rray_greater_than_int_dbl_one,
     rray_greater_than_or_equal_int_dbl_one,
     rray_less_than_int_dbl_one,
@@ -519,8 +531,10 @@ static r_obj* rray_compare_dbl_int(
   RRAY_COMPARE(
     double,
     r_dbl_cbegin,
+    rray_cast_dbl_to_dbl_one,
     int,
     r_int_cbegin,
+    rray_cast_int_to_int_one,
     rray_greater_than_dbl_int_one,
     rray_greater_than_or_equal_dbl_int_one,
     rray_less_than_dbl_int_one,
@@ -538,8 +552,10 @@ static r_obj* rray_compare_dbl_dbl(
   RRAY_COMPARE(
     double,
     r_dbl_cbegin,
+    rray_cast_dbl_to_dbl_one,
     double,
     r_dbl_cbegin,
+    rray_cast_dbl_to_dbl_one,
     rray_greater_than_dbl_dbl_one,
     rray_greater_than_or_equal_dbl_dbl_one,
     rray_less_than_dbl_dbl_one,
@@ -548,7 +564,6 @@ static r_obj* rray_compare_dbl_dbl(
 }
 
 #undef RRAY_COMPARE
-#undef RRAY_COMPARE_IMPL
 
 #define RRAY_COMPARE_ONE(X_IS_MISSING, Y_IS_MISSING, OPERATOR)                 \
   const bool missing = X_IS_MISSING(x) | Y_IS_MISSING(y);                      \

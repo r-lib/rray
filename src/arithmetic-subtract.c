@@ -3,6 +3,7 @@
 #include <limits.h>
 
 #include "arithmetic.h"
+#include "binary.h"
 #include "cast.h"
 #include "type.h"
 #include "typeof2.h"
@@ -117,7 +118,7 @@ static r_obj* rray_subtract_lgl_lgl(
   const struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_int_one,
@@ -127,7 +128,8 @@ static r_obj* rray_subtract_lgl_lgl(
     R_TYPE_integer,
     int,
     r_int_begin,
-    rray_subtract_int_one
+    rray_subtract_int_one,
+    RRAY_BINARY_ARGS(error_call)
   );
 }
 
@@ -138,7 +140,7 @@ static r_obj* rray_subtract_lgl_int(
   const struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_int_one,
@@ -148,7 +150,8 @@ static r_obj* rray_subtract_lgl_int(
     R_TYPE_integer,
     int,
     r_int_begin,
-    rray_subtract_int_one
+    rray_subtract_int_one,
+    RRAY_BINARY_ARGS(error_call)
   );
 }
 
@@ -159,7 +162,7 @@ static r_obj* rray_subtract_int_lgl(
   const struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     int,
     r_int_cbegin,
     rray_cast_int_to_int_one,
@@ -169,7 +172,8 @@ static r_obj* rray_subtract_int_lgl(
     R_TYPE_integer,
     int,
     r_int_begin,
-    rray_subtract_int_one
+    rray_subtract_int_one,
+    RRAY_BINARY_ARGS(error_call)
   );
 }
 
@@ -180,7 +184,7 @@ static r_obj* rray_subtract_lgl_dbl(
   const struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_dbl_one,
@@ -190,7 +194,8 @@ static r_obj* rray_subtract_lgl_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_subtract_dbl_one
+    rray_subtract_dbl_one,
+    RRAY_BINARY_ARGS(error_call)
   );
 }
 
@@ -201,7 +206,7 @@ static r_obj* rray_subtract_dbl_lgl(
   const struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
@@ -211,7 +216,8 @@ static r_obj* rray_subtract_dbl_lgl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_subtract_dbl_one
+    rray_subtract_dbl_one,
+    RRAY_BINARY_ARGS(error_call)
   );
 }
 
@@ -222,7 +228,7 @@ static r_obj* rray_subtract_lgl_cpl(
   const struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_cpl_one,
@@ -232,7 +238,8 @@ static r_obj* rray_subtract_lgl_cpl(
     R_TYPE_complex,
     r_complex,
     r_cpl_begin,
-    rray_subtract_cpl_one
+    rray_subtract_cpl_one,
+    RRAY_BINARY_ARGS(error_call)
   );
 }
 
@@ -243,7 +250,7 @@ static r_obj* rray_subtract_cpl_lgl(
   const struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     r_complex,
     r_cpl_cbegin,
     rray_cast_cpl_to_cpl_one,
@@ -253,7 +260,8 @@ static r_obj* rray_subtract_cpl_lgl(
     R_TYPE_complex,
     r_complex,
     r_cpl_begin,
-    rray_subtract_cpl_one
+    rray_subtract_cpl_one,
+    RRAY_BINARY_ARGS(error_call)
   );
 }
 
@@ -264,7 +272,7 @@ static r_obj* rray_subtract_int_int(
   const struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     int,
     r_int_cbegin,
     rray_cast_int_to_int_one,
@@ -274,7 +282,8 @@ static r_obj* rray_subtract_int_int(
     R_TYPE_integer,
     int,
     r_int_begin,
-    rray_subtract_int_one
+    rray_subtract_int_one,
+    RRAY_BINARY_ARGS(error_call)
   );
 }
 
@@ -285,7 +294,7 @@ static r_obj* rray_subtract_int_dbl(
   const struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     int,
     r_int_cbegin,
     rray_cast_int_to_dbl_one,
@@ -295,7 +304,8 @@ static r_obj* rray_subtract_int_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_subtract_dbl_one
+    rray_subtract_dbl_one,
+    RRAY_BINARY_ARGS(error_call)
   );
 }
 
@@ -306,7 +316,7 @@ static r_obj* rray_subtract_dbl_int(
   const struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
@@ -316,7 +326,8 @@ static r_obj* rray_subtract_dbl_int(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_subtract_dbl_one
+    rray_subtract_dbl_one,
+    RRAY_BINARY_ARGS(error_call)
   );
 }
 
@@ -327,7 +338,7 @@ static r_obj* rray_subtract_int_cpl(
   const struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     int,
     r_int_cbegin,
     rray_cast_int_to_cpl_one,
@@ -337,7 +348,8 @@ static r_obj* rray_subtract_int_cpl(
     R_TYPE_complex,
     r_complex,
     r_cpl_begin,
-    rray_subtract_cpl_one
+    rray_subtract_cpl_one,
+    RRAY_BINARY_ARGS(error_call)
   );
 }
 
@@ -348,7 +360,7 @@ static r_obj* rray_subtract_cpl_int(
   const struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     r_complex,
     r_cpl_cbegin,
     rray_cast_cpl_to_cpl_one,
@@ -358,7 +370,8 @@ static r_obj* rray_subtract_cpl_int(
     R_TYPE_complex,
     r_complex,
     r_cpl_begin,
-    rray_subtract_cpl_one
+    rray_subtract_cpl_one,
+    RRAY_BINARY_ARGS(error_call)
   );
 }
 
@@ -369,7 +382,7 @@ static r_obj* rray_subtract_dbl_dbl(
   const struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
@@ -379,7 +392,8 @@ static r_obj* rray_subtract_dbl_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_subtract_dbl_one
+    rray_subtract_dbl_one,
+    RRAY_BINARY_ARGS(error_call)
   );
 }
 
@@ -390,7 +404,7 @@ static r_obj* rray_subtract_dbl_cpl(
   const struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_cpl_one,
@@ -400,7 +414,8 @@ static r_obj* rray_subtract_dbl_cpl(
     R_TYPE_complex,
     r_complex,
     r_cpl_begin,
-    rray_subtract_cpl_one
+    rray_subtract_cpl_one,
+    RRAY_BINARY_ARGS(error_call)
   );
 }
 
@@ -411,7 +426,7 @@ static r_obj* rray_subtract_cpl_dbl(
   const struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     r_complex,
     r_cpl_cbegin,
     rray_cast_cpl_to_cpl_one,
@@ -421,7 +436,8 @@ static r_obj* rray_subtract_cpl_dbl(
     R_TYPE_complex,
     r_complex,
     r_cpl_begin,
-    rray_subtract_cpl_one
+    rray_subtract_cpl_one,
+    RRAY_BINARY_ARGS(error_call)
   );
 }
 
@@ -432,7 +448,7 @@ static r_obj* rray_subtract_cpl_cpl(
   const struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 ) {
-  RRAY_ARITHMETIC(
+  RRAY_BINARY(
     r_complex,
     r_cpl_cbegin,
     rray_cast_cpl_to_cpl_one,
@@ -442,7 +458,8 @@ static r_obj* rray_subtract_cpl_cpl(
     R_TYPE_complex,
     r_complex,
     r_cpl_begin,
-    rray_subtract_cpl_one
+    rray_subtract_cpl_one,
+    RRAY_BINARY_ARGS(error_call)
   );
 }
 
