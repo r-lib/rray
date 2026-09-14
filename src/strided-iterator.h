@@ -7,15 +7,19 @@
 
 #include "decl/strided-iterator-decl.h"
 
-// Strided iterator
+// Strided iterator plan
 //
-// Walks the multidimensional point space defined by `v_dimensions`. Reports a
-// 1D `location` in an alternate subspace defined by `v_strides`.
+// Optimizes and assists in walking a multidimensional point space defined by
+// `v_dimensions`. As it walks, it updates a user provided `start` in an
+// alternate subspace defined by `v_strides`.
 //
-// The iterator uses a two-stage design on purpose. The plan holds dimensions
-// and strides that do not change, while the iterator holds only the positions
-// that change as it walks. Keeping the changing state small lets the compiler
-// keep it in registers instead of repeatedly writing it to memory.
+// For performance and flexibility, the user is responsible for managing the run
+// loop along the first axis. We've tried many alternative approaches but they
+// tend to tank performance quickly as you increase the level of abstractions.
+//
+// The plan holds only immutable state. The positions that change as it walks
+// are managed by the caller. This lets the compiler keep these positions in
+// registers, which has significant performance implications.
 //
 // --------------------------------------------------------------------------
 // Examples
