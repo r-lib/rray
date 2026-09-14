@@ -45,36 +45,36 @@ static r_obj* rray_mean_along_dbl_na_rm(
 static inline double rray_mean_along_lgl_one(
   const int* v_x,
   r_ssize x_base,
-  const struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* inner_plan
 );
 static inline double rray_mean_along_lgl_one_na_rm(
   const int* v_x,
   r_ssize x_base,
-  const struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* inner_plan
 );
 static inline double rray_mean_along_int_one(
   const int* v_x,
   r_ssize x_base,
-  const struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* inner_plan
 );
 static inline double rray_mean_along_int_one_na_rm(
   const int* v_x,
   r_ssize x_base,
-  const struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* inner_plan
 );
 static inline double rray_mean_along_dbl_one(
   const double* v_x,
   r_ssize x_base,
-  const struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* inner_plan
 );
 static inline double rray_mean_along_dbl_one_na_rm(
   const double* v_x,
   r_ssize x_base,
-  const struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* inner_plan
 );
 
 static inline double rray_mean_along_dbl_missing(
   const double* v_x,
   r_ssize x_base,
-  const struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* inner_plan
 );
