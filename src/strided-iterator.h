@@ -286,13 +286,6 @@ struct rray_strided_iterator2_plan {
   r_ssize v_strides2[RRAY_MAX_DIMENSIONALITY];
 };
 
-struct rray_strided_iterator2 {
-  r_ssize run_start;
-  r_ssize location1;
-  r_ssize location2;
-  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];
-};
-
 static inline struct rray_strided_iterator2_plan rray_strided_iterator2_plan(
   const int* v_dimensions,
   int dimensionality,
@@ -390,54 +383,6 @@ static inline r_ssize rray_strided_iterator2_plan_run_stride2(
   const struct rray_strided_iterator2_plan* plan
 ) {
   return plan->v_strides2[0];
-}
-
-static inline struct rray_strided_iterator2 rray_strided_iterator2(void) {
-  struct rray_strided_iterator2 it;
-  it.run_start = 0;
-  it.location1 = 0;
-  it.location2 = 0;
-  memset(it.v_point, 0, sizeof(it.v_point));
-  return it;
-}
-
-static inline bool rray_strided_iterator2_finished(
-  const struct rray_strided_iterator2* it,
-  const struct rray_strided_iterator2_plan* plan
-) {
-  return it->run_start == plan->size;
-}
-static inline r_ssize rray_strided_iterator2_run_start(
-  const struct rray_strided_iterator2* it
-) {
-  return it->run_start;
-}
-static inline r_ssize rray_strided_iterator2_location1(
-  const struct rray_strided_iterator2* it
-) {
-  return it->location1;
-}
-static inline r_ssize rray_strided_iterator2_location2(
-  const struct rray_strided_iterator2* it
-) {
-  return it->location2;
-}
-static inline void rray_strided_iterator2_next(
-  struct rray_strided_iterator2* it,
-  const struct rray_strided_iterator2_plan* plan
-) {
-  it->run_start += rray_strided_iterator2_plan_run_size(plan);
-  for (int axis = 1; axis < plan->dimensionality; ++axis) {
-    ++it->v_point[axis];
-    if (it->v_point[axis] < plan->v_dimensions[axis]) {
-      it->location1 += plan->v_strides1[axis];
-      it->location2 += plan->v_strides2[axis];
-      return;
-    }
-    it->v_point[axis] = 0;
-    it->location1 -= (plan->v_dimensions[axis] - 1) * plan->v_strides1[axis];
-    it->location2 -= (plan->v_dimensions[axis] - 1) * plan->v_strides2[axis];
-  }
 }
 
 #define RRAY_STRIDED_ITERATOR_NEXT2(START1, START2, V_POINT, PLAN)             \
