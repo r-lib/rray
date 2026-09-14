@@ -26,18 +26,18 @@
 //
 // For broadcasting, the dimensions you broadcast to make up the larger point
 // space. This is walked in order. The original dimensions of the array make
-// up the subspace. So as you walk the output's point space you can fetch
+// up the subspace. So as you walk the output's point space you can create
 // `location`s back into your original array to pull from.
 //
 // For reducing, it's actually a special form of broadcasting. The original
 // dimensions of the array are the point space. The reduced dimensions are the
-// subspace. So as you walk the original array, you can fetch `location`s into
+// subspace. So as you walk the original array, you can create `location`s into
 // the output to accumulate the reduced result at.
 //
 // For permuting axes, the permuted dimensions make up the point space. The
 // original dimensions of the array make up the subspace. So as you walk the
-// output's point space you can fetch `location`s back into your original array
-// to pull from.
+// output's point space you can create `location`s back into your original
+// array to pull from.
 //
 // --------------------------------------------------------------------------
 // Optimization - First axis runs
