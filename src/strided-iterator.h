@@ -371,6 +371,11 @@ static inline struct rray_strided_iterator2_plan rray_broadcast_iterator2_plan(
   );
 }
 
+static inline r_ssize rray_strided_iterator2_plan_size(
+  const struct rray_strided_iterator2_plan* plan
+) {
+  return plan->size;
+}
 static inline r_ssize rray_strided_iterator2_plan_run_size(
   const struct rray_strided_iterator2_plan* plan
 ) {
