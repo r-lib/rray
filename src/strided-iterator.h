@@ -165,6 +165,18 @@ static inline struct rray_strided_iterator_plan rray_strided_iterator_plan(
 
   struct rray_strided_iterator_plan plan;
 
+  // Zero dimensionality is typically a byproduct of dividing an array's axes
+  // into complements. If a user reduces over all axes, the retained complement
+  // technically has 0 axes and 1 element. We normalize to 1 axis with 1 element
+  // so R can actually represent it.
+  if (dimensionality == 0) {
+    plan.size = 1;
+    plan.v_dimensions[0] = 1;
+    plan.dimensionality = 1;
+    plan.v_strides[0] = 0;
+    return plan;
+  }
+
   plan.size = rray_size_from_dimensions(v_dimensions, dimensionality);
 
   for (int i = 0; i < dimensionality; ++i) {
@@ -269,6 +281,19 @@ static inline struct rray_strided_iterator2_plan rray_strided_iterator2_plan(
   check_max_dimensionality(dimensionality);
 
   struct rray_strided_iterator2_plan plan;
+
+  // Zero dimensionality is typically a byproduct of dividing an array's axes
+  // into complements. If a user reduces over all axes, the retained complement
+  // technically has 0 axes and 1 element. We normalize to 1 axis with 1 element
+  // so R can actually represent it.
+  if (dimensionality == 0) {
+    plan.size = 1;
+    plan.v_dimensions[0] = 1;
+    plan.dimensionality = 1;
+    plan.v_strides1[0] = 0;
+    plan.v_strides2[0] = 0;
+    return plan;
+  }
 
   plan.size = rray_size_from_dimensions(v_dimensions, dimensionality);
 

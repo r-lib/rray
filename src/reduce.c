@@ -137,12 +137,6 @@ static struct rray_strided_iterator_plan rray_reduce_axes_plan(
   const int* v_axes,
   r_ssize axes_size
 ) {
-  if (axes_size == 0) {
-    const int dimension = 1;
-    const r_ssize stride = 0;
-    return rray_strided_iterator_plan(&dimension, 1, &stride);
-  }
-
   int v_dimensions[RRAY_MAX_DIMENSIONALITY];
   r_ssize v_strides[RRAY_MAX_DIMENSIONALITY];
 
