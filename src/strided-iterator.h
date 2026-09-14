@@ -241,8 +241,8 @@ static inline r_ssize rray_strided_iterator_plan_run_stride(
 
 // --------------------------------------------------------------------------
 
-// Same as `rray_strided_iterator`, but reports in two location spaces while
-// only walking the point space once
+// Same as `rray_strided_iterator_plan`, but reports in two location spaces
+// while only walking the point space once
 struct rray_strided_iterator2_plan {
   r_ssize size;
 
@@ -282,8 +282,8 @@ static inline struct rray_strided_iterator2_plan rray_strided_iterator2_plan(
   return plan;
 }
 
-// Same as `rray_broadcast_iterator()`, but broadcasts two `from` spaces into
-// one shared `to` space
+// Same as `rray_broadcast_iterator_plan()`, but broadcasts two `from` spaces
+// into one shared `to` space
 static inline struct rray_strided_iterator2_plan rray_broadcast_iterator2_plan(
   const int* v_from1_dimensions,
   int from1_dimensionality,
