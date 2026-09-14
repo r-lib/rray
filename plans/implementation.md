@@ -1108,7 +1108,7 @@ shell in `src/reduce.c`/`src/reduce.h` (see 2.1).
 `R/reduce.R` and their own `src/reduce-{name}.c` beside it.
 
 `rray_mean_along()` needs numerical state per output element, so it uses the
-`rray_reduce_grouped()` shell rather than `rray_reduce()`. That shell walks the
+`rray_reduce_nested()` shell rather than `rray_reduce()`. That shell walks the
 retained axes and the reduced axes with two immutable plans, which lets the
 mean core make several passes over one reduced slice before moving on.
 

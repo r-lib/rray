@@ -1,4 +1,4 @@
-static rray_reduce_grouped_fn rray_mean_along_switch(
+static rray_reduce_nested_fn rray_mean_along_switch(
   r_obj* x,
   bool na_rm,
   struct rray_arg* arg,

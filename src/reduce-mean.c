@@ -24,7 +24,7 @@ r_obj* rray_mean_along(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  return rray_reduce_grouped(
+  return rray_reduce_nested(
     x,
     axes,
     na_rm,
@@ -34,7 +34,7 @@ r_obj* rray_mean_along(
   );
 }
 
-static rray_reduce_grouped_fn rray_mean_along_switch(
+static rray_reduce_nested_fn rray_mean_along_switch(
   r_obj* x,
   bool na_rm,
   struct rray_arg* arg,

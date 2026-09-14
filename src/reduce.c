@@ -65,11 +65,11 @@ r_obj* rray_reduce(
   return out;
 }
 
-r_obj* rray_reduce_grouped(
+r_obj* rray_reduce_nested(
   r_obj* x,
   r_obj* axes,
   bool na_rm,
-  rray_reduce_grouped_fn_switch fn_switch,
+  rray_reduce_nested_fn_switch fn_switch,
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
@@ -116,7 +116,7 @@ r_obj* rray_reduce_grouped(
   const struct rray_strided_iterator_plan inner_plan =
     rray_reduce_axes_plan(v_x_dimensions, v_x_strides, v_axes, axes_size);
 
-  const rray_reduce_grouped_fn fn = fn_switch(x, na_rm, arg, error_call);
+  const rray_reduce_nested_fn fn = fn_switch(x, na_rm, arg, error_call);
 
   r_obj* out = KEEP(fn(x, &outer_plan, &inner_plan));
   r_attrib_poke_dim(out, out_dimensions);

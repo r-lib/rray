@@ -83,26 +83,26 @@ r_obj* rray_reduce(
   return out;
 
 // --------------------------------------------------------------------------
-// rray_reduce_grouped
+// rray_reduce_nested
 
-typedef r_obj* (*rray_reduce_grouped_fn)(
+typedef r_obj* (*rray_reduce_nested_fn)(
   r_obj* x,
   const struct rray_strided_iterator_plan* outer_plan,
   const struct rray_strided_iterator_plan* inner_plan
 );
 
-typedef rray_reduce_grouped_fn (*rray_reduce_grouped_fn_switch)(
+typedef rray_reduce_nested_fn (*rray_reduce_nested_fn_switch)(
   r_obj* x,
   bool na_rm,
   struct rray_arg* arg,
   struct r_lazy error_call
 );
 
-r_obj* rray_reduce_grouped(
+r_obj* rray_reduce_nested(
   r_obj* x,
   r_obj* axes,
   bool na_rm,
-  rray_reduce_grouped_fn_switch fn_switch,
+  rray_reduce_nested_fn_switch fn_switch,
   struct rray_arg* arg,
   struct r_lazy error_call
 );
