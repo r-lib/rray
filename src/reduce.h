@@ -85,6 +85,13 @@ r_obj* rray_reduce(
 // --------------------------------------------------------------------------
 // rray_reduce_nested
 
+// Nested reduction is needed when an output element cannot hold all reduction
+// state, such as the sum and count required by a mean. The outer plan walks the
+// retained axes to select each output element, and the inner plan walks the
+// reduction axes to compute it. Conceptually, this is like using
+// `rray_permute_axes()` to bring the reduction axes to the front, without
+// materializing the permuted array.
+
 typedef r_obj* (*rray_reduce_nested_fn)(
   r_obj* x,
   const struct rray_strided_iterator_plan* outer_plan,
