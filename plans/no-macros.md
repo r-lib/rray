@@ -260,24 +260,45 @@ Reducing the first axis costs about 2.3 times the single-pass sum, and reducing
 the second axis about 4.6 times. Most of that is the extra pass rather than the
 strided read, because the two axes are within 15% of each other.
 
-Against matrixStats, which is the fair two-pass comparison, `na_rm = FALSE` is
-at parity or slightly ahead in both directions, 0.94 times for columns and 0.98
-for rows. `rowMeans()` remains much faster, because it makes one input-major
-pass and skips the correction. Reducers that do not need the extra state should
-stay on `rray_reduce()`.
+Against matrixStats, which is the fair two-pass comparison, we are at parity or
+slightly ahead everywhere except one case. Ratios run from 0.88 to 0.99 across
+both directions and both `na_rm` settings. `rowMeans()` remains much faster,
+because it makes one input-major pass and skips the correction. Reducers that do
+not need the extra state should stay on `rray_reduce()`.
 
-Two gaps are worth knowing about:
+The one loss is `na_rm = FALSE` with a missing value in every column, where
+matrixStats leaves a column on the first one and is 100 times faster. We run the
+whole sum pass before the missing scan bails. Their early exit is a per-element
+branch, which is also why they are 6% slower on input with no missing values, so
+this is a deliberate trade rather than a defect.
 
-- `na_rm = TRUE` costs about 1.6 times matrixStats. On input with no missing
-  values, matrixStats charges almost nothing for the flag while we go from
-  1.58 ms to 2.76 ms. The likely cause is the `ISNAN()` branch in every pass of
-  the na_rm cores blocking vectorization.
+## Missing value tests must be branchless
 
-- With `na_rm = FALSE` and a missing value in every column, matrixStats leaves a
-  column on the first one and is 100 times faster. We run the whole sum pass
-  before the missing scan bails. Their early exit is a per-element branch, which
-  is also why they are 6% slower on input with no missing values, so this is a
-  deliberate trade rather than a defect.
+The na_rm cores skip missing values with a select rather than a branch:
+
+```c
+const bool ok = !ISNAN(x_elt);
+s += ok ? x_elt : 0;
+n += ok;
+```
+
+The obvious `if (!ISNAN(x_elt)) { s += x_elt; ++n; }` costs 1.7 times as much,
+2.76 ms against 1.62 ms, and made `na_rm = TRUE` 1.6 times slower than
+matrixStats instead of slightly faster.
+
+The reason is not the accumulate. Clang will not reassociate a floating point
+sum, so `s` stays a serial scalar chain either way. The branch instead stopped
+the loop being unrolled. Branchless, the hot loop loads eight doubles per
+iteration with `ldp` into NEON pairs, counts with a vectorized `sub.2d` over the
+compare mask, and issues eight scalar `fadd`s with no control flow. That leaves
+the serial chain as the only real cost, which is why `na_rm = TRUE` now runs at
+the same speed as `na_rm = FALSE`.
+
+The substitution is exact rather than approximate. Adding `0` where the branch
+would skip is safe because the accumulator starts at `+0.0`, and a sum reaches
+`-0.0` only by adding `-0.0` to `-0.0`, so `s + 0.0 == s` always holds. Any new
+stateful reducer should check that property before copying the pattern, and
+`test-reduce-mean.R` pins the sign of a zero mean so a regression is caught.
 
 ## Coalescing
 

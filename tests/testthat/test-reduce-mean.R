@@ -182,6 +182,13 @@ test_that("na_rm with all missing values gives `NaN`", {
   expect_identical(as.vector(rray_mean_along(x, 1L, na_rm = TRUE)), NaN)
 })
 
+test_that("na_rm does not change the sign of a zero mean", {
+  x <- c(-0, NA)
+  out <- as.vector(rray_mean_along(x, 1L, na_rm = TRUE))
+  expect_identical(out, mean(x, na.rm = TRUE))
+  expect_identical(1 / out, Inf)
+})
+
 test_that("na_rm keeps infinities", {
   x <- c(Inf, NA, 1)
   expect_identical(as.vector(rray_mean_along(x, 1L, na_rm = TRUE)), Inf)

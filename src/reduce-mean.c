@@ -254,10 +254,9 @@ static inline double rray_mean_along_lgl_one_na_rm(
   long double s = 0.0;
 
   RRAY_REDUCE_SLICE(int, {
-    if (x_elt != r_globals.na_lgl) {
-      s += x_elt;
-      ++n;
-    }
+    const bool ok = x_elt != r_globals.na_lgl;
+    s += ok ? x_elt : 0;
+    n += ok;
   });
 
   return (double) (s / n);
@@ -291,10 +290,9 @@ static inline double rray_mean_along_int_one_na_rm(
   long double s = 0.0;
 
   RRAY_REDUCE_SLICE(int, {
-    if (x_elt != r_globals.na_int) {
-      s += x_elt;
-      ++n;
-    }
+    const bool ok = x_elt != r_globals.na_int;
+    s += ok ? x_elt : 0;
+    n += ok;
   });
 
   return (double) (s / n);
@@ -346,10 +344,9 @@ static inline double rray_mean_along_dbl_one_na_rm(
   long double s = 0.0;
 
   RRAY_REDUCE_SLICE(double, {
-    if (!ISNAN(x_elt)) {
-      s += x_elt;
-      ++n;
-    }
+    const bool ok = !ISNAN(x_elt);
+    s += ok ? x_elt : 0;
+    n += ok;
   });
 
   if (ISNAN((double) s)) {
@@ -361,28 +358,16 @@ static inline double rray_mean_along_dbl_one_na_rm(
 
     if (R_FINITE((double) s)) {
       long double t = 0.0;
-      RRAY_REDUCE_SLICE(double, {
-        if (!ISNAN(x_elt)) {
-          t += x_elt - s;
-        }
-      });
+      RRAY_REDUCE_SLICE(double, t += ISNAN(x_elt) ? 0 : x_elt - s);
       s += t / n;
     }
   } else {
     s = 0.0;
-    RRAY_REDUCE_SLICE(double, {
-      if (!ISNAN(x_elt)) {
-        s += x_elt / n;
-      }
-    });
+    RRAY_REDUCE_SLICE(double, s += ISNAN(x_elt) ? 0 : x_elt / n);
 
     if (R_FINITE((double) s)) {
       long double t = 0.0;
-      RRAY_REDUCE_SLICE(double, {
-        if (!ISNAN(x_elt)) {
-          t += (x_elt - s) / n;
-        }
-      });
+      RRAY_REDUCE_SLICE(double, t += ISNAN(x_elt) ? 0 : (x_elt - s) / n);
       s += t;
     }
   }
