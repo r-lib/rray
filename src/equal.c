@@ -90,7 +90,7 @@ static r_obj* rray_equality(
 
   const r_ssize size = rray_size_from_dimensions(v_dimensions, dimensionality);
 
-  struct rray_strided_iterator2 it = rray_broadcast_iterator2(
+  struct rray_strided_iterator2_plan plan = rray_broadcast_iterator2_plan(
     v_x_dimensions,
     x_dimensionality,
     v_y_dimensions,
@@ -99,7 +99,7 @@ static r_obj* rray_equality(
     dimensionality
   );
 
-  r_obj* out = KEEP(fn(x, y, size, &it, op));
+  r_obj* out = KEEP(fn(x, y, size, &plan, op));
   r_attrib_poke_dim(out, dimensions);
 
   r_obj* out_names = KEEP(rray_broadcast_names2(x, y, dimensions));
@@ -226,6 +226,68 @@ static r_no_return void stop_unsupported_equality(
   );
 }
 
+#define RRAY_EQUALITY_IMPL(                                                    \
+  X_CTYPE,                                                                     \
+  X_CONST_DEREF,                                                               \
+  X_CAST,                                                                      \
+  Y_CTYPE,                                                                     \
+  Y_CONST_DEREF,                                                               \
+  Y_CAST,                                                                      \
+  ONE                                                                          \
+)                                                                              \
+  r_obj* out = KEEP(r_alloc_vector(R_TYPE_logical, size));                     \
+  int* v_out = r_lgl_begin(out);                                               \
+                                                                               \
+  const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
+  const Y_CTYPE* v_y = Y_CONST_DEREF(y);                                       \
+                                                                               \
+  const r_ssize run_size = rray_strided_iterator2_plan_run_size(plan);         \
+  const r_ssize x_run_stride = rray_strided_iterator2_plan_run_stride1(plan);  \
+  const r_ssize y_run_stride = rray_strided_iterator2_plan_run_stride2(plan);  \
+                                                                               \
+  for (struct rray_strided_iterator2 it = rray_strided_iterator2();            \
+       !rray_strided_iterator2_finished(&it, plan);                            \
+       rray_strided_iterator2_next(&it, plan)) {                               \
+    const r_ssize run_start = rray_strided_iterator2_run_start(&it);           \
+    const r_ssize run_end = run_start + run_size;                              \
+    r_ssize x_loc = rray_strided_iterator2_location1(&it);                     \
+    r_ssize y_loc = rray_strided_iterator2_location2(&it);                     \
+                                                                               \
+    if (x_run_stride == 0) {                                                   \
+      const X_CTYPE x_elt = v_x[x_loc];                                        \
+      if (y_run_stride == 0) {                                                 \
+        const Y_CTYPE y_elt = v_y[y_loc];                                      \
+        for (r_ssize i = run_start; i < run_end; ++i) {                        \
+          v_out[i] = ONE(X_CAST(x_elt), Y_CAST(y_elt));                        \
+        }                                                                      \
+      } else {                                                                 \
+        for (r_ssize i = run_start; i < run_end; ++i) {                        \
+          const Y_CTYPE y_elt = v_y[y_loc];                                    \
+          v_out[i] = ONE(X_CAST(x_elt), Y_CAST(y_elt));                        \
+          y_loc += y_run_stride;                                               \
+        }                                                                      \
+      }                                                                        \
+    } else if (y_run_stride == 0) {                                            \
+      const Y_CTYPE y_elt = v_y[y_loc];                                        \
+      for (r_ssize i = run_start; i < run_end; ++i) {                          \
+        const X_CTYPE x_elt = v_x[x_loc];                                      \
+        v_out[i] = ONE(X_CAST(x_elt), Y_CAST(y_elt));                          \
+        x_loc += x_run_stride;                                                 \
+      }                                                                        \
+    } else {                                                                   \
+      for (r_ssize i = run_start; i < run_end; ++i) {                          \
+        const X_CTYPE x_elt = v_x[x_loc];                                      \
+        const Y_CTYPE y_elt = v_y[y_loc];                                      \
+        v_out[i] = ONE(X_CAST(x_elt), Y_CAST(y_elt));                          \
+        x_loc += x_run_stride;                                                 \
+        y_loc += y_run_stride;                                                 \
+      }                                                                        \
+    }                                                                          \
+  }                                                                            \
+                                                                               \
+  FREE(1);                                                                     \
+  return out;
+
 #define RRAY_EQUALITY(                                                         \
   X_CTYPE,                                                                     \
   X_CONST_DEREF,                                                               \
@@ -236,30 +298,33 @@ static r_no_return void stop_unsupported_equality(
   EQUAL_ONE,                                                                   \
   NOT_EQUAL_ONE                                                                \
 )                                                                              \
-  r_obj* out = KEEP(r_alloc_vector(R_TYPE_logical, size));                     \
-  int* v_out = r_lgl_begin(out);                                               \
-                                                                               \
-  const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
-  const Y_CTYPE* v_y = Y_CONST_DEREF(y);                                       \
-                                                                               \
   if (op == RRAY_EQUAL_equal) {                                                \
-    RRAY_STRIDED_ITERATOR2_FOR_EACH(it, i, x_loc, y_loc, {                     \
-      v_out[i] = EQUAL_ONE(X_CAST(v_x[x_loc]), Y_CAST(v_y[y_loc]));            \
-    });                                                                        \
+    RRAY_EQUALITY_IMPL(                                                        \
+      X_CTYPE,                                                                 \
+      X_CONST_DEREF,                                                           \
+      X_CAST,                                                                  \
+      Y_CTYPE,                                                                 \
+      Y_CONST_DEREF,                                                           \
+      Y_CAST,                                                                  \
+      EQUAL_ONE                                                                \
+    );                                                                         \
   } else {                                                                     \
-    RRAY_STRIDED_ITERATOR2_FOR_EACH(it, i, x_loc, y_loc, {                     \
-      v_out[i] = NOT_EQUAL_ONE(X_CAST(v_x[x_loc]), Y_CAST(v_y[y_loc]));        \
-    });                                                                        \
-  }                                                                            \
-                                                                               \
-  FREE(1);                                                                     \
-  return out;
+    RRAY_EQUALITY_IMPL(                                                        \
+      X_CTYPE,                                                                 \
+      X_CONST_DEREF,                                                           \
+      X_CAST,                                                                  \
+      Y_CTYPE,                                                                 \
+      Y_CONST_DEREF,                                                           \
+      Y_CAST,                                                                  \
+      NOT_EQUAL_ONE                                                            \
+    );                                                                         \
+  }
 
 static r_obj* rray_equality_lgl_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {
   RRAY_EQUALITY(
@@ -278,7 +343,7 @@ static r_obj* rray_equality_lgl_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {
   RRAY_EQUALITY(
@@ -297,7 +362,7 @@ static r_obj* rray_equality_int_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {
   RRAY_EQUALITY(
@@ -316,7 +381,7 @@ static r_obj* rray_equality_lgl_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {
   RRAY_EQUALITY(
@@ -335,7 +400,7 @@ static r_obj* rray_equality_dbl_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {
   RRAY_EQUALITY(
@@ -354,7 +419,7 @@ static r_obj* rray_equality_lgl_cpl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {
   RRAY_EQUALITY(
@@ -373,7 +438,7 @@ static r_obj* rray_equality_cpl_lgl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {
   RRAY_EQUALITY(
@@ -392,7 +457,7 @@ static r_obj* rray_equality_int_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {
   RRAY_EQUALITY(
@@ -411,7 +476,7 @@ static r_obj* rray_equality_int_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {
   RRAY_EQUALITY(
@@ -430,7 +495,7 @@ static r_obj* rray_equality_dbl_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {
   RRAY_EQUALITY(
@@ -449,7 +514,7 @@ static r_obj* rray_equality_int_cpl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {
   RRAY_EQUALITY(
@@ -468,7 +533,7 @@ static r_obj* rray_equality_cpl_int(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {
   RRAY_EQUALITY(
@@ -487,7 +552,7 @@ static r_obj* rray_equality_dbl_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {
   RRAY_EQUALITY(
@@ -506,7 +571,7 @@ static r_obj* rray_equality_dbl_cpl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {
   RRAY_EQUALITY(
@@ -525,7 +590,7 @@ static r_obj* rray_equality_cpl_dbl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {
   RRAY_EQUALITY(
@@ -544,7 +609,7 @@ static r_obj* rray_equality_cpl_cpl(
   r_obj* x,
   r_obj* y,
   r_ssize size,
-  struct rray_strided_iterator2* it,
+  const struct rray_strided_iterator2_plan* plan,
   enum rray_equality_op op
 ) {
   RRAY_EQUALITY(
@@ -560,6 +625,7 @@ static r_obj* rray_equality_cpl_cpl(
 }
 
 #undef RRAY_EQUALITY
+#undef RRAY_EQUALITY_IMPL
 
 static inline int rray_equal_int_one(int x, int y) {
   const bool missing = rray_int_is_missing(x) | rray_int_is_missing(y);

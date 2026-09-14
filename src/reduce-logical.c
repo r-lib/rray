@@ -101,7 +101,7 @@ static rray_reduce_fn rray_any_along_switch(
 static r_obj* rray_all_along_lgl(
   r_obj* x,
   r_ssize out_size,
-  struct rray_strided_iterator* it
+  const struct rray_strided_iterator_plan* plan
 ) {
   RRAY_REDUCE(
     int,
@@ -117,7 +117,7 @@ static r_obj* rray_all_along_lgl(
 static r_obj* rray_all_along_lgl_na_rm(
   r_obj* x,
   r_ssize out_size,
-  struct rray_strided_iterator* it
+  const struct rray_strided_iterator_plan* plan
 ) {
   RRAY_REDUCE(
     int,
@@ -133,7 +133,7 @@ static r_obj* rray_all_along_lgl_na_rm(
 static r_obj* rray_any_along_lgl(
   r_obj* x,
   r_ssize out_size,
-  struct rray_strided_iterator* it
+  const struct rray_strided_iterator_plan* plan
 ) {
   RRAY_REDUCE(
     int,
@@ -149,7 +149,7 @@ static r_obj* rray_any_along_lgl(
 static r_obj* rray_any_along_lgl_na_rm(
   r_obj* x,
   r_ssize out_size,
-  struct rray_strided_iterator* it
+  const struct rray_strided_iterator_plan* plan
 ) {
   RRAY_REDUCE(
     int,

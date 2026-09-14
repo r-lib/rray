@@ -9,7 +9,7 @@
 typedef r_obj* (*rray_reduce_fn)(
   r_obj* x,
   r_ssize out_size,
-  struct rray_strided_iterator* it
+  const struct rray_strided_iterator_plan* plan
 );
 
 typedef rray_reduce_fn (*rray_reduce_fn_switch)(
@@ -53,9 +53,27 @@ r_no_return void stop_unsupported_reduce(
                                                                                \
   const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
                                                                                \
-  RRAY_STRIDED_ITERATOR_FOR_EACH(it, i, loc, {                                 \
-    v_out[loc] = ONE(v_out[loc], v_x[i]);                                      \
-  });                                                                          \
+  const r_ssize run_size = rray_strided_iterator_plan_run_size(plan);          \
+  const r_ssize run_stride = rray_strided_iterator_plan_run_stride(plan);      \
+                                                                               \
+  for (struct rray_strided_iterator it = rray_strided_iterator();              \
+       !rray_strided_iterator_finished(&it, plan);                             \
+       rray_strided_iterator_next(&it, plan)) {                                \
+    const r_ssize run_start = rray_strided_iterator_run_start(&it);            \
+    const r_ssize run_end = run_start + run_size;                              \
+    r_ssize loc = rray_strided_iterator_location(&it);                         \
+                                                                               \
+    if (run_stride == 0) {                                                     \
+      for (r_ssize i = run_start; i < run_end; ++i) {                          \
+        v_out[loc] = ONE(v_out[loc], v_x[i]);                                  \
+      }                                                                        \
+    } else {                                                                   \
+      for (r_ssize i = run_start; i < run_end; ++i) {                          \
+        v_out[loc] = ONE(v_out[loc], v_x[i]);                                  \
+        loc += run_stride;                                                     \
+      }                                                                        \
+    }                                                                          \
+  }                                                                            \
                                                                                \
   FREE(1);                                                                     \
   return out;

@@ -49,7 +49,7 @@ r_obj* rray_binary_arithmetic(
 
   const r_ssize size = rray_size_from_dimensions(v_dimensions, dimensionality);
 
-  struct rray_strided_iterator2 it = rray_broadcast_iterator2(
+  struct rray_strided_iterator2_plan plan = rray_broadcast_iterator2_plan(
     v_x_dimensions,
     x_dimensionality,
     v_y_dimensions,
@@ -58,7 +58,7 @@ r_obj* rray_binary_arithmetic(
     dimensionality
   );
 
-  r_obj* out = KEEP(fn(x, y, size, &it, error_call));
+  r_obj* out = KEEP(fn(x, y, size, &plan, error_call));
   r_attrib_poke_dim(out, dimensions);
 
   r_obj* out_names = KEEP(rray_broadcast_names2(x, y, dimensions));
