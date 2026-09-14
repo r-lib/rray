@@ -44,6 +44,8 @@ r_no_return void stop_unsupported_reduce(
   OUT_INIT,                                                                    \
   ONE                                                                          \
 )                                                                              \
+  const r_ssize size = rray_strided_iterator_plan_size(plan);                  \
+                                                                               \
   r_obj* out = KEEP(r_alloc_vector(OUT_RTYPE, out_size));                      \
   OUT_CTYPE* v_out = OUT_DEREF(out);                                           \
                                                                                \
@@ -53,26 +55,32 @@ r_no_return void stop_unsupported_reduce(
                                                                                \
   const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
                                                                                \
+  r_ssize run_start = 0;                                                       \
   const r_ssize run_size = rray_strided_iterator_plan_run_size(plan);          \
-  const r_ssize run_stride = rray_strided_iterator_plan_run_stride(plan);      \
                                                                                \
-  for (struct rray_strided_iterator it = rray_strided_iterator();              \
-       !rray_strided_iterator_finished(&it, plan);                             \
-       rray_strided_iterator_next(&it, plan)) {                                \
-    const r_ssize run_start = rray_strided_iterator_run_start(&it);            \
+  r_ssize out_start = 0;                                                       \
+  const r_ssize out_run_stride = rray_strided_iterator_plan_run_stride(plan);  \
+                                                                               \
+  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];                                    \
+  r_memset(v_point, 0, sizeof(r_ssize) * (size_t) plan->dimensionality);       \
+                                                                               \
+  while (run_start != size) {                                                  \
     const r_ssize run_end = run_start + run_size;                              \
-    r_ssize loc = rray_strided_iterator_location(&it);                         \
+    r_ssize out_loc = out_start;                                               \
                                                                                \
-    if (run_stride == 0) {                                                     \
+    if (out_run_stride == 0) {                                                 \
       for (r_ssize i = run_start; i < run_end; ++i) {                          \
-        v_out[loc] = ONE(v_out[loc], v_x[i]);                                  \
+        v_out[out_loc] = ONE(v_out[out_loc], v_x[i]);                          \
       }                                                                        \
     } else {                                                                   \
       for (r_ssize i = run_start; i < run_end; ++i) {                          \
-        v_out[loc] = ONE(v_out[loc], v_x[i]);                                  \
-        loc += run_stride;                                                     \
+        v_out[out_loc] = ONE(v_out[out_loc], v_x[i]);                          \
+        out_loc += out_run_stride;                                             \
       }                                                                        \
     }                                                                          \
+                                                                               \
+    run_start = run_end;                                                       \
+    RRAY_STRIDED_ITERATOR_NEXT(out_start, v_point, plan);                      \
   }                                                                            \
                                                                                \
   FREE(1);                                                                     \

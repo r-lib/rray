@@ -124,6 +124,8 @@ r_obj* rray_split(
 }
 
 #define RRAY_SPLIT_ATOMIC(CTYPE, CONST_DEREF, DEREF)                           \
+  const r_ssize size = rray_strided_iterator2_plan_size(plan);                 \
+                                                                               \
   const r_ssize out_size = r_length(out);                                      \
                                                                                \
   const CTYPE* v_x = CONST_DEREF(x);                                           \
@@ -136,19 +138,24 @@ r_obj* rray_split(
     v_v_out[i] = DEREF(v_out[i]);                                              \
   }                                                                            \
                                                                                \
+  r_ssize run_start = 0;                                                       \
   const r_ssize run_size = rray_strided_iterator2_plan_run_size(plan);         \
+                                                                               \
+  r_ssize out_start = 0;                                                       \
   const r_ssize out_run_stride =                                               \
     rray_strided_iterator2_plan_run_stride1(plan);                             \
+                                                                               \
+  r_ssize out_elt_start = 0;                                                   \
   const r_ssize out_elt_run_stride =                                           \
     rray_strided_iterator2_plan_run_stride2(plan);                             \
                                                                                \
-  for (struct rray_strided_iterator2 it = rray_strided_iterator2();            \
-       !rray_strided_iterator2_finished(&it, plan);                            \
-       rray_strided_iterator2_next(&it, plan)) {                               \
-    const r_ssize run_start = rray_strided_iterator2_run_start(&it);           \
+  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];                                    \
+  r_memset(v_point, 0, sizeof(r_ssize) * (size_t) plan->dimensionality);       \
+                                                                               \
+  while (run_start != size) {                                                  \
     const r_ssize run_end = run_start + run_size;                              \
-    r_ssize out_loc = rray_strided_iterator2_location1(&it);                   \
-    r_ssize out_elt_loc = rray_strided_iterator2_location2(&it);               \
+    r_ssize out_loc = out_start;                                               \
+    r_ssize out_elt_loc = out_elt_start;                                       \
                                                                                \
     if (out_run_stride == 0) {                                                 \
       if (out_elt_run_stride == 0) {                                           \
@@ -173,27 +180,37 @@ r_obj* rray_split(
         out_elt_loc += out_elt_run_stride;                                     \
       }                                                                        \
     }                                                                          \
+                                                                               \
+    run_start = run_end;                                                       \
+    RRAY_STRIDED_ITERATOR_NEXT2(out_start, out_elt_start, v_point, plan);      \
   }                                                                            \
                                                                                \
   FREE(1);
 
 #define RRAY_SPLIT_BARRIER(CONST_DEREF, POKE)                                  \
+  const r_ssize size = rray_strided_iterator2_plan_size(plan);                 \
+                                                                               \
   r_obj* const* v_x = CONST_DEREF(x);                                          \
   r_obj* const* v_out = r_list_cbegin(out);                                    \
                                                                                \
+  r_ssize run_start = 0;                                                       \
   const r_ssize run_size = rray_strided_iterator2_plan_run_size(plan);         \
+                                                                               \
+  r_ssize out_start = 0;                                                       \
   const r_ssize out_run_stride =                                               \
     rray_strided_iterator2_plan_run_stride1(plan);                             \
+                                                                               \
+  r_ssize out_elt_start = 0;                                                   \
   const r_ssize out_elt_run_stride =                                           \
     rray_strided_iterator2_plan_run_stride2(plan);                             \
                                                                                \
-  for (struct rray_strided_iterator2 it = rray_strided_iterator2();            \
-       !rray_strided_iterator2_finished(&it, plan);                            \
-       rray_strided_iterator2_next(&it, plan)) {                               \
-    const r_ssize run_start = rray_strided_iterator2_run_start(&it);           \
+  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];                                    \
+  r_memset(v_point, 0, sizeof(r_ssize) * (size_t) plan->dimensionality);       \
+                                                                               \
+  while (run_start != size) {                                                  \
     const r_ssize run_end = run_start + run_size;                              \
-    r_ssize out_loc = rray_strided_iterator2_location1(&it);                   \
-    r_ssize out_elt_loc = rray_strided_iterator2_location2(&it);               \
+    r_ssize out_loc = out_start;                                               \
+    r_ssize out_elt_loc = out_elt_start;                                       \
                                                                                \
     if (out_run_stride == 0) {                                                 \
       if (out_elt_run_stride == 0) {                                           \
@@ -218,6 +235,9 @@ r_obj* rray_split(
         out_elt_loc += out_elt_run_stride;                                     \
       }                                                                        \
     }                                                                          \
+                                                                               \
+    run_start = run_end;                                                       \
+    RRAY_STRIDED_ITERATOR_NEXT2(out_start, out_elt_start, v_point, plan);      \
   }
 
 static void rray_split_lgl(

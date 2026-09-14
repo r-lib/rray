@@ -4,7 +4,6 @@
 #include "dimensionality.h"
 #include "dimensions.h"
 #include "strided-iterator.h"
-#include "size.h"
 #include "utils.h"
 
 #include "decl/broadcast-decl.h"
@@ -60,8 +59,6 @@ r_obj* rray_broadcast(
     error_call
   );
 
-  const r_ssize size = rray_size_from_dimensions(v_dimensions, dimensionality);
-
   struct rray_strided_iterator_plan plan = rray_broadcast_iterator_plan(
     v_x_dimensions,
     x_dimensionality,
@@ -73,25 +70,25 @@ r_obj* rray_broadcast(
 
   switch (r_typeof(x)) {
   case R_TYPE_logical:
-    out = rray_broadcast_lgl(x, size, &plan);
+    out = rray_broadcast_lgl(x, &plan);
     break;
   case R_TYPE_integer:
-    out = rray_broadcast_int(x, size, &plan);
+    out = rray_broadcast_int(x, &plan);
     break;
   case R_TYPE_double:
-    out = rray_broadcast_dbl(x, size, &plan);
+    out = rray_broadcast_dbl(x, &plan);
     break;
   case R_TYPE_complex:
-    out = rray_broadcast_cpl(x, size, &plan);
+    out = rray_broadcast_cpl(x, &plan);
     break;
   case R_TYPE_raw:
-    out = rray_broadcast_raw(x, size, &plan);
+    out = rray_broadcast_raw(x, &plan);
     break;
   case R_TYPE_character:
-    out = rray_broadcast_chr(x, size, &plan);
+    out = rray_broadcast_chr(x, &plan);
     break;
   case R_TYPE_list:
-    out = rray_broadcast_list(x, size, &plan);
+    out = rray_broadcast_list(x, &plan);
     break;
   default:
     r_stop_unreachable();
@@ -111,61 +108,79 @@ r_obj* rray_broadcast(
 }
 
 #define RRAY_BROADCAST_ATOMIC(RTYPE, CTYPE, CONST_DEREF, DEREF)                \
+  const r_ssize size = rray_strided_iterator_plan_size(plan);                  \
+                                                                               \
   r_obj* out = KEEP(r_alloc_vector(RTYPE, size));                              \
-  const CTYPE* v_x = CONST_DEREF(x);                                           \
   CTYPE* v_out = DEREF(out);                                                   \
                                                                                \
+  const CTYPE* v_x = CONST_DEREF(x);                                           \
+                                                                               \
+  r_ssize run_start = 0;                                                       \
   const r_ssize run_size = rray_strided_iterator_plan_run_size(plan);          \
-  const r_ssize run_stride = rray_strided_iterator_plan_run_stride(plan);      \
                                                                                \
-  for (struct rray_strided_iterator it = rray_strided_iterator();              \
-       !rray_strided_iterator_finished(&it, plan);                             \
-       rray_strided_iterator_next(&it, plan)) {                                \
-    const r_ssize run_start = rray_strided_iterator_run_start(&it);            \
+  r_ssize x_start = 0;                                                         \
+  const r_ssize x_run_stride = rray_strided_iterator_plan_run_stride(plan);    \
+                                                                               \
+  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];                                    \
+  r_memset(v_point, 0, sizeof(r_ssize) * (size_t) plan->dimensionality);       \
+                                                                               \
+  while (run_start != size) {                                                  \
     const r_ssize run_end = run_start + run_size;                              \
-    r_ssize loc = rray_strided_iterator_location(&it);                         \
+    r_ssize x_loc = x_start;                                                   \
                                                                                \
-    if (run_stride == 0) {                                                     \
-      const CTYPE x_elt = v_x[loc];                                            \
+    if (x_run_stride == 0) {                                                   \
+      const CTYPE x_elt = v_x[x_loc];                                          \
       for (r_ssize i = run_start; i < run_end; ++i) {                          \
         v_out[i] = x_elt;                                                      \
       }                                                                        \
     } else {                                                                   \
       for (r_ssize i = run_start; i < run_end; ++i) {                          \
-        v_out[i] = v_x[loc];                                                   \
-        loc += run_stride;                                                     \
+        v_out[i] = v_x[x_loc];                                                 \
+        x_loc += x_run_stride;                                                 \
       }                                                                        \
     }                                                                          \
+                                                                               \
+    run_start = run_end;                                                       \
+    RRAY_STRIDED_ITERATOR_NEXT(x_start, v_point, plan);                        \
   }                                                                            \
                                                                                \
   FREE(1);                                                                     \
   return out;
 
 #define RRAY_BROADCAST_BARRIER(RTYPE, CONST_DEREF, POKE)                       \
+  const r_ssize size = rray_strided_iterator_plan_size(plan);                  \
+                                                                               \
   r_obj* out = KEEP(r_alloc_vector(RTYPE, size));                              \
+                                                                               \
   r_obj* const* v_x = CONST_DEREF(x);                                          \
                                                                                \
+  r_ssize run_start = 0;                                                       \
   const r_ssize run_size = rray_strided_iterator_plan_run_size(plan);          \
-  const r_ssize run_stride = rray_strided_iterator_plan_run_stride(plan);      \
                                                                                \
-  for (struct rray_strided_iterator it = rray_strided_iterator();              \
-       !rray_strided_iterator_finished(&it, plan);                             \
-       rray_strided_iterator_next(&it, plan)) {                                \
-    const r_ssize run_start = rray_strided_iterator_run_start(&it);            \
+  r_ssize x_start = 0;                                                         \
+  const r_ssize x_run_stride = rray_strided_iterator_plan_run_stride(plan);    \
+                                                                               \
+  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];                                    \
+  r_memset(v_point, 0, sizeof(r_ssize) * (size_t) plan->dimensionality);       \
+                                                                               \
+  while (run_start != size) {                                                  \
     const r_ssize run_end = run_start + run_size;                              \
-    r_ssize loc = rray_strided_iterator_location(&it);                         \
+    r_ssize x_loc = x_start;                                                   \
                                                                                \
-    if (run_stride == 0) {                                                     \
-      r_obj* const x_elt = v_x[loc];                                           \
+    if (x_run_stride == 0) {                                                   \
+      r_obj* const x_elt = v_x[x_loc];                                         \
       for (r_ssize i = run_start; i < run_end; ++i) {                          \
         POKE(out, i, x_elt);                                                   \
       }                                                                        \
     } else {                                                                   \
       for (r_ssize i = run_start; i < run_end; ++i) {                          \
-        POKE(out, i, v_x[loc]);                                                \
-        loc += run_stride;                                                     \
+        POKE(out, i, v_x[x_loc]);                                              \
+        x_loc += x_run_stride;                                                 \
       }                                                                        \
     }                                                                          \
+                                                                               \
+    run_start = run_end;                                                       \
+    RRAY_STRIDED_ITERATOR_NEXT(x_start, v_point, plan);                        \
   }                                                                            \
                                                                                \
   FREE(1);                                                                     \
@@ -173,7 +188,6 @@ r_obj* rray_broadcast(
 
 static r_obj* rray_broadcast_lgl(
   r_obj* x,
-  r_ssize size,
   const struct rray_strided_iterator_plan* plan
 ) {
   RRAY_BROADCAST_ATOMIC(R_TYPE_logical, int, r_lgl_cbegin, r_lgl_begin);
@@ -181,7 +195,6 @@ static r_obj* rray_broadcast_lgl(
 
 static r_obj* rray_broadcast_int(
   r_obj* x,
-  r_ssize size,
   const struct rray_strided_iterator_plan* plan
 ) {
   RRAY_BROADCAST_ATOMIC(R_TYPE_integer, int, r_int_cbegin, r_int_begin);
@@ -189,7 +202,6 @@ static r_obj* rray_broadcast_int(
 
 static r_obj* rray_broadcast_dbl(
   r_obj* x,
-  r_ssize size,
   const struct rray_strided_iterator_plan* plan
 ) {
   RRAY_BROADCAST_ATOMIC(R_TYPE_double, double, r_dbl_cbegin, r_dbl_begin);
@@ -197,7 +209,6 @@ static r_obj* rray_broadcast_dbl(
 
 static r_obj* rray_broadcast_cpl(
   r_obj* x,
-  r_ssize size,
   const struct rray_strided_iterator_plan* plan
 ) {
   RRAY_BROADCAST_ATOMIC(R_TYPE_complex, r_complex, r_cpl_cbegin, r_cpl_begin);
@@ -205,7 +216,6 @@ static r_obj* rray_broadcast_cpl(
 
 static r_obj* rray_broadcast_raw(
   r_obj* x,
-  r_ssize size,
   const struct rray_strided_iterator_plan* plan
 ) {
   RRAY_BROADCAST_ATOMIC(R_TYPE_raw, Rbyte, r_raw_cbegin, r_raw_begin);
@@ -213,7 +223,6 @@ static r_obj* rray_broadcast_raw(
 
 static r_obj* rray_broadcast_chr(
   r_obj* x,
-  r_ssize size,
   const struct rray_strided_iterator_plan* plan
 ) {
   RRAY_BROADCAST_BARRIER(R_TYPE_character, r_chr_cbegin, r_chr_poke);
@@ -221,7 +230,6 @@ static r_obj* rray_broadcast_chr(
 
 static r_obj* rray_broadcast_list(
   r_obj* x,
-  r_ssize size,
   const struct rray_strided_iterator_plan* plan
 ) {
   RRAY_BROADCAST_BARRIER(R_TYPE_list, r_list_cbegin, r_list_poke);

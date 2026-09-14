@@ -21,23 +21,30 @@
   ONE,                                                                         \
   ONE_ARGS                                                                     \
 )                                                                              \
+  const r_ssize size = rray_strided_iterator2_plan_size(plan);                 \
+                                                                               \
   r_obj* out = KEEP(r_alloc_vector(OUT_RTYPE, size));                          \
   OUT_CTYPE* v_out = OUT_DEREF(out);                                           \
                                                                                \
   const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
   const Y_CTYPE* v_y = Y_CONST_DEREF(y);                                       \
                                                                                \
+  r_ssize run_start = 0;                                                       \
   const r_ssize run_size = rray_strided_iterator2_plan_run_size(plan);         \
+                                                                               \
+  r_ssize x_start = 0;                                                         \
   const r_ssize x_run_stride = rray_strided_iterator2_plan_run_stride1(plan);  \
+                                                                               \
+  r_ssize y_start = 0;                                                         \
   const r_ssize y_run_stride = rray_strided_iterator2_plan_run_stride2(plan);  \
                                                                                \
-  for (struct rray_strided_iterator2 it = rray_strided_iterator2();            \
-       !rray_strided_iterator2_finished(&it, plan);                            \
-       rray_strided_iterator2_next(&it, plan)) {                               \
-    const r_ssize run_start = rray_strided_iterator2_run_start(&it);           \
+  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];                                    \
+  r_memset(v_point, 0, sizeof(r_ssize) * (size_t) plan->dimensionality);       \
+                                                                               \
+  while (run_start != size) {                                                  \
     const r_ssize run_end = run_start + run_size;                              \
-    r_ssize x_loc = rray_strided_iterator2_location1(&it);                     \
-    r_ssize y_loc = rray_strided_iterator2_location2(&it);                     \
+    r_ssize x_loc = x_start;                                                   \
+    r_ssize y_loc = y_start;                                                   \
                                                                                \
     if (x_run_stride == 0) {                                                   \
       const X_CTYPE x_elt = v_x[x_loc];                                        \
@@ -69,6 +76,9 @@
         y_loc += y_run_stride;                                                 \
       }                                                                        \
     }                                                                          \
+                                                                               \
+    run_start = run_end;                                                       \
+    RRAY_STRIDED_ITERATOR_NEXT2(x_start, y_start, v_point, plan);              \
   }                                                                            \
                                                                                \
   FREE(1);                                                                     \
