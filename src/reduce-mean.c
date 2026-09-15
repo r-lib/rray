@@ -189,6 +189,7 @@ static inline double rray_mean_along_lgl_one_na_rm(
   return (double) (sum / count);
 }
 
+// Impossible to overflow to `NaN`
 static inline double rray_mean_along_int_one(
   const int* v_x,
   r_ssize x_start,
@@ -235,8 +236,13 @@ static inline double rray_mean_along_dbl_one(
   // State
   long double sum = 0.0;
 
+  // Naively sum up the elements
   RRAY_REDUCE_INNER(double, sum += x_elt);
 
+  // If the sum is `NaN` or `NA`, we return a missing value. Existing `NA`
+  // should win over `NaN` so the result is deterministic but that's
+  // implementation defined, so if we see either we do another pass through the
+  // data looking for any `NA`, otherwise we return `NaN`.
   if (ISNAN((double) sum)) {
     RRAY_REDUCE_INNER(double, {
       if (R_IsNA(x_elt)) {
@@ -250,6 +256,7 @@ static inline double rray_mean_along_dbl_one(
   const r_ssize count = rray_strided_iterator_plan_size(inner_plan);
 
   if (R_FINITE((double) sum)) {
+    // Naive sum was finite! Compute the mean, and apply the correction.
     sum /= count;
 
     // State
@@ -257,6 +264,10 @@ static inline double rray_mean_along_dbl_one(
     RRAY_REDUCE_INNER(double, correction += x_elt - sum);
     sum += correction / count;
   } else {
+    // Naive sum overflowed to infinity. This doesn't necessarily mean that the
+    // mean would also overflow though (since it's scaled by the count). So
+    // compute a more expensive and lossy scaled sum to see if that overflows.
+    // And if it doesn't, apply a correction there too.
     sum = 0.0;
     RRAY_REDUCE_INNER(double, sum += x_elt / count);
 
