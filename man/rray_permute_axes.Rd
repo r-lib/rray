@@ -2,7 +2,7 @@
 % Please edit documentation in R/permute-axes.R
 \name{rray_permute_axes}
 \alias{rray_permute_axes}
-\title{Permute the axes of an array}
+\title{Permute array axes}
 \usage{
 rray_permute_axes(x, axes)
 }
@@ -37,4 +37,7 @@ rray_dimensions(rray_permute_axes(y, c(3, 2, 1)))
 # Swap the first two axes, leaving the third alone
 # (4, 3, 2) -> (3, 4, 2)
 rray_dimensions(rray_permute_axes(y, c(2, 1, 3)))
+}
+\seealso{
+\code{\link[=rray_move_axes]{rray_move_axes()}}
 }

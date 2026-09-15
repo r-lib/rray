@@ -1,4 +1,4 @@
-#' Permute the axes of an array
+#' Permute array axes
 #'
 #' `rray_permute_axes()` reorders the axes of an array.
 #'
@@ -13,6 +13,8 @@
 #'
 #' @returns
 #' An array with the axes of `x` reordered by `axes`.
+#'
+#' @seealso [rray_move_axes()]
 #'
 #' @export
 #' @examples
