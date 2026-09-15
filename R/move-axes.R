@@ -1,4 +1,4 @@
-#' Move the axes of an array
+#' Move array axes
 #'
 #' `rray_move_axes()` moves `axes` to new positions. The axes that don't move
 #' keep their relative order, and fill in the positions that are left over.

@@ -2,7 +2,7 @@
 % Please edit documentation in R/permute-axes.R
 \name{rray_permute_axes}
 \alias{rray_permute_axes}
-\title{Permute the axes of an array}
+\title{Permute array axes}
 \usage{
 rray_permute_axes(x, axes)
 }

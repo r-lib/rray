@@ -2,7 +2,7 @@
 % Please edit documentation in R/move-axes.R
 \name{rray_move_axes}
 \alias{rray_move_axes}
-\title{Move the axes of an array}
+\title{Move array axes}
 \usage{
 rray_move_axes(x, axes, to)
 }
