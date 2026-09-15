@@ -138,6 +138,10 @@ static struct rray_strided_iterator_plan rray_reduce_axes_plan(
   const int* v_axes,
   r_ssize axes_size
 ) {
+  // An empty axes set is a byproduct of dividing an array's axes into
+  // complements. If a user reduces over all axes, the retained complement
+  // technically has 0 axes and 1 element. We normalize to 1 axis with 1 element
+  // so R can actually represent it.
   if (axes_size == 0) {
     const int dimension = 1;
     const r_ssize stride = 0;
