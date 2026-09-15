@@ -93,6 +93,11 @@ r_obj* rray_reduce_nested(
   const int* v_axes = r_int_cbegin(axes);
   const r_ssize axes_size = r_length(axes);
 
+  r_obj* retained_axes =
+    KEEP(rray_axes_complement(v_axes, axes_size, dimensionality));
+  const int* v_retained_axes = r_int_cbegin(retained_axes);
+  const r_ssize retained_axes_size = r_length(retained_axes);
+
   r_obj* out_dimensions = KEEP(rray_set_axes_dimension(
     v_x_dimensions,
     dimensionality,
@@ -100,11 +105,6 @@ r_obj* rray_reduce_nested(
     axes_size,
     1
   ));
-
-  r_obj* retained_axes =
-    KEEP(rray_axes_complement(v_axes, axes_size, dimensionality));
-  const int* v_retained_axes = r_int_cbegin(retained_axes);
-  const r_ssize retained_axes_size = r_length(retained_axes);
 
   const struct rray_strided_iterator_plan outer_plan = rray_reduce_axes_plan(
     v_x_dimensions,
