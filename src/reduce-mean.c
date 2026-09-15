@@ -280,6 +280,7 @@ static inline double rray_mean_along_dbl_one_na_rm(
     count += ok;
   });
 
+  // Handles `c(Inf, -Inf)`. `NaN` and `NA` have otherwise been filtered out.
   if (ISNAN((double) sum)) {
     return R_NaN;
   }
