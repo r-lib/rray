@@ -128,45 +128,39 @@ r_obj* rray_reduce_nested(
   OUT_DEREF,                                                                   \
   ONE                                                                          \
 )                                                                              \
-  do {                                                                         \
-    const r_ssize size = rray_strided_iterator_plan_size(outer_plan);          \
+  const r_ssize size = rray_strided_iterator_plan_size(outer_plan);            \
                                                                                \
-    r_obj* out = KEEP(r_alloc_vector(OUT_RTYPE, size));                        \
-    OUT_CTYPE* v_out = OUT_DEREF(out);                                         \
+  r_obj* out = KEEP(r_alloc_vector(OUT_RTYPE, size));                          \
+  OUT_CTYPE* v_out = OUT_DEREF(out);                                           \
                                                                                \
-    const X_CTYPE* v_x = X_CONST_DEREF(x);                                     \
+  const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
                                                                                \
-    r_ssize out_run_start = 0;                                                 \
-    const r_ssize out_run_size =                                               \
-      rray_strided_iterator_plan_run_size(outer_plan);                         \
+  r_ssize out_run_start = 0;                                                   \
+  const r_ssize out_run_size =                                                 \
+    rray_strided_iterator_plan_run_size(outer_plan);                           \
                                                                                \
-    r_ssize x_start = 0;                                                       \
-    const r_ssize x_run_stride =                                               \
-      rray_strided_iterator_plan_run_stride(outer_plan);                       \
+  r_ssize x_start = 0;                                                         \
+  const r_ssize x_run_stride =                                                 \
+    rray_strided_iterator_plan_run_stride(outer_plan);                         \
                                                                                \
-    r_ssize v_point[RRAY_MAX_DIMENSIONALITY];                                  \
-    r_memset(                                                                  \
-      v_point,                                                                 \
-      0,                                                                       \
-      sizeof(r_ssize) * (size_t) outer_plan->dimensionality                    \
-    );                                                                         \
+  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];                                    \
+  r_memset(v_point, 0, sizeof(r_ssize) * (size_t) outer_plan->dimensionality); \
                                                                                \
-    while (out_run_start != size) {                                            \
-      const r_ssize out_run_end = out_run_start + out_run_size;                \
-      r_ssize x_loc = x_start;                                                 \
+  while (out_run_start != size) {                                              \
+    const r_ssize out_run_end = out_run_start + out_run_size;                  \
+    r_ssize x_loc = x_start;                                                   \
                                                                                \
-      for (r_ssize i = out_run_start; i < out_run_end; ++i) {                  \
-        v_out[i] = ONE(v_x, x_loc, inner_plan);                                \
-        x_loc += x_run_stride;                                                 \
-      }                                                                        \
-                                                                               \
-      out_run_start = out_run_end;                                             \
-      RRAY_STRIDED_ITERATOR_NEXT(x_start, v_point, outer_plan);                \
+    for (r_ssize i = out_run_start; i < out_run_end; ++i) {                    \
+      v_out[i] = ONE(v_x, x_loc, inner_plan);                                  \
+      x_loc += x_run_stride;                                                   \
     }                                                                          \
                                                                                \
-    FREE(1);                                                                   \
-    return out;                                                                \
-  } while (0)
+    out_run_start = out_run_end;                                               \
+    RRAY_STRIDED_ITERATOR_NEXT(x_start, v_point, outer_plan);                  \
+  }                                                                            \
+                                                                               \
+  FREE(1);                                                                     \
+  return out;
 
 #define RRAY_REDUCE_INNER(X_CTYPE, ACCUMULATE)                                 \
   do {                                                                         \
