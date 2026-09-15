@@ -143,9 +143,10 @@ static struct rray_strided_iterator_plan rray_reduce_axes_plan(
   // technically has 0 axes and 1 element. We normalize to 1 axis with 1 element
   // so R can actually represent it.
   if (axes_size == 0) {
+    const int dimensionality = 1;
     const int dimension = 1;
     const r_ssize stride = 0;
-    return rray_strided_iterator_plan(&dimension, 1, &stride);
+    return rray_strided_iterator_plan(&dimension, dimensionality, &stride);
   }
 
   int v_dimensions[RRAY_MAX_DIMENSIONALITY];
