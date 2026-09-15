@@ -248,18 +248,18 @@ static inline double rray_mean_along_dbl_one(
     sum /= count;
 
     if (R_FINITE((double) sum)) {
-      long double t = 0.0;
-      RRAY_REDUCE_INNER(double, t += x_elt - sum);
-      sum += t / count;
+      long double correction = 0.0;
+      RRAY_REDUCE_INNER(double, correction += x_elt - sum);
+      sum += correction / count;
     }
   } else {
     sum = 0.0;
     RRAY_REDUCE_INNER(double, sum += x_elt / count);
 
     if (R_FINITE((double) sum)) {
-      long double t = 0.0;
-      RRAY_REDUCE_INNER(double, t += (x_elt - sum) / count);
-      sum += t;
+      long double correction = 0.0;
+      RRAY_REDUCE_INNER(double, correction += (x_elt - sum) / count);
+      sum += correction;
     }
   }
 
@@ -288,18 +288,21 @@ static inline double rray_mean_along_dbl_one_na_rm(
     sum /= count;
 
     if (R_FINITE((double) sum)) {
-      long double t = 0.0;
-      RRAY_REDUCE_INNER(double, t += ISNAN(x_elt) ? 0 : x_elt - sum);
-      sum += t / count;
+      long double correction = 0.0;
+      RRAY_REDUCE_INNER(double, correction += ISNAN(x_elt) ? 0 : x_elt - sum);
+      sum += correction / count;
     }
   } else {
     sum = 0.0;
     RRAY_REDUCE_INNER(double, sum += ISNAN(x_elt) ? 0 : x_elt / count);
 
     if (R_FINITE((double) sum)) {
-      long double t = 0.0;
-      RRAY_REDUCE_INNER(double, t += ISNAN(x_elt) ? 0 : (x_elt - sum) / count);
-      sum += t;
+      long double correction = 0.0;
+      RRAY_REDUCE_INNER(
+        double,
+        correction += ISNAN(x_elt) ? 0 : (x_elt - sum) / count
+      );
+      sum += correction;
     }
   }
 
