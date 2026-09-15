@@ -232,8 +232,6 @@ static inline double rray_mean_along_dbl_one(
 
   RRAY_REDUCE_INNER(double, sum += x_elt);
 
-  const r_ssize count = rray_strided_iterator_plan_size(inner_plan);
-
   if (ISNAN((double) sum)) {
     RRAY_REDUCE_INNER(double, {
       if (R_IsNA(x_elt)) {
@@ -243,6 +241,8 @@ static inline double rray_mean_along_dbl_one(
 
     return R_NaN;
   }
+
+  const r_ssize count = rray_strided_iterator_plan_size(inner_plan);
 
   if (R_FINITE((double) sum)) {
     sum /= count;
