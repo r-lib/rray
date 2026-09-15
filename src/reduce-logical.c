@@ -35,7 +35,14 @@ r_obj* rray_all_along(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  return rray_reduce(x, axes, na_rm, rray_all_along_switch, arg, error_call);
+  return rray_reduce_flat(
+    x,
+    axes,
+    na_rm,
+    rray_all_along_switch,
+    arg,
+    error_call
+  );
 }
 
 r_obj* rray_any_along(
@@ -45,10 +52,17 @@ r_obj* rray_any_along(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  return rray_reduce(x, axes, na_rm, rray_any_along_switch, arg, error_call);
+  return rray_reduce_flat(
+    x,
+    axes,
+    na_rm,
+    rray_any_along_switch,
+    arg,
+    error_call
+  );
 }
 
-static rray_reduce_fn rray_all_along_switch(
+static rray_reduce_flat_fn rray_all_along_switch(
   r_obj* x,
   bool na_rm,
   struct rray_arg* arg,
@@ -73,7 +87,7 @@ static rray_reduce_fn rray_all_along_switch(
   r_stop_unreachable();
 }
 
-static rray_reduce_fn rray_any_along_switch(
+static rray_reduce_flat_fn rray_any_along_switch(
   r_obj* x,
   bool na_rm,
   struct rray_arg* arg,
@@ -103,7 +117,7 @@ static r_obj* rray_all_along_lgl(
   r_ssize out_size,
   const struct rray_strided_iterator_plan* plan
 ) {
-  RRAY_REDUCE(
+  RRAY_REDUCE_FLAT(
     int,
     r_lgl_cbegin,
     R_TYPE_logical,
@@ -119,7 +133,7 @@ static r_obj* rray_all_along_lgl_na_rm(
   r_ssize out_size,
   const struct rray_strided_iterator_plan* plan
 ) {
-  RRAY_REDUCE(
+  RRAY_REDUCE_FLAT(
     int,
     r_lgl_cbegin,
     R_TYPE_logical,
@@ -135,7 +149,7 @@ static r_obj* rray_any_along_lgl(
   r_ssize out_size,
   const struct rray_strided_iterator_plan* plan
 ) {
-  RRAY_REDUCE(
+  RRAY_REDUCE_FLAT(
     int,
     r_lgl_cbegin,
     R_TYPE_logical,
@@ -151,7 +165,7 @@ static r_obj* rray_any_along_lgl_na_rm(
   r_ssize out_size,
   const struct rray_strided_iterator_plan* plan
 ) {
-  RRAY_REDUCE(
+  RRAY_REDUCE_FLAT(
     int,
     r_lgl_cbegin,
     R_TYPE_logical,

@@ -24,7 +24,7 @@ r_obj* rray_product_along(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  return rray_reduce(
+  return rray_reduce_flat(
     x,
     axes,
     na_rm,
@@ -34,7 +34,7 @@ r_obj* rray_product_along(
   );
 }
 
-static rray_reduce_fn rray_product_along_switch(
+static rray_reduce_flat_fn rray_product_along_switch(
   r_obj* x,
   bool na_rm,
   struct rray_arg* arg,
@@ -67,7 +67,7 @@ static r_obj* rray_product_along_lgl(
   r_ssize out_size,
   const struct rray_strided_iterator_plan* plan
 ) {
-  RRAY_REDUCE(
+  RRAY_REDUCE_FLAT(
     int,
     r_lgl_cbegin,
     R_TYPE_double,
@@ -83,7 +83,7 @@ static r_obj* rray_product_along_lgl_na_rm(
   r_ssize out_size,
   const struct rray_strided_iterator_plan* plan
 ) {
-  RRAY_REDUCE(
+  RRAY_REDUCE_FLAT(
     int,
     r_lgl_cbegin,
     R_TYPE_double,
@@ -99,7 +99,7 @@ static r_obj* rray_product_along_int(
   r_ssize out_size,
   const struct rray_strided_iterator_plan* plan
 ) {
-  RRAY_REDUCE(
+  RRAY_REDUCE_FLAT(
     int,
     r_int_cbegin,
     R_TYPE_double,
@@ -115,7 +115,7 @@ static r_obj* rray_product_along_int_na_rm(
   r_ssize out_size,
   const struct rray_strided_iterator_plan* plan
 ) {
-  RRAY_REDUCE(
+  RRAY_REDUCE_FLAT(
     int,
     r_int_cbegin,
     R_TYPE_double,
@@ -131,7 +131,7 @@ static r_obj* rray_product_along_dbl(
   r_ssize out_size,
   const struct rray_strided_iterator_plan* plan
 ) {
-  RRAY_REDUCE(
+  RRAY_REDUCE_FLAT(
     double,
     r_dbl_cbegin,
     R_TYPE_double,
@@ -147,7 +147,7 @@ static r_obj* rray_product_along_dbl_na_rm(
   r_ssize out_size,
   const struct rray_strided_iterator_plan* plan
 ) {
-  RRAY_REDUCE(
+  RRAY_REDUCE_FLAT(
     double,
     r_dbl_cbegin,
     R_TYPE_double,
@@ -163,7 +163,7 @@ static r_obj* rray_product_along_cpl(
   r_ssize out_size,
   const struct rray_strided_iterator_plan* plan
 ) {
-  RRAY_REDUCE(
+  RRAY_REDUCE_FLAT(
     r_complex,
     r_cpl_cbegin,
     R_TYPE_complex,
@@ -179,7 +179,7 @@ static r_obj* rray_product_along_cpl_na_rm(
   r_ssize out_size,
   const struct rray_strided_iterator_plan* plan
 ) {
-  RRAY_REDUCE(
+  RRAY_REDUCE_FLAT(
     r_complex,
     r_cpl_cbegin,
     R_TYPE_complex,

@@ -7,7 +7,7 @@
 #include "strided-iterator.h"
 
 // --------------------------------------------------------------------------
-// rray_reduce
+// rray_reduce_flat
 
 // Flat reduction is useful when the output element is the only state carried
 // between input elements. It walks `x` once in storage order, updating the
@@ -15,29 +15,29 @@
 // reduction because it reads `x` linearly and avoids a separate inner traversal
 // for each output element.
 
-typedef r_obj* (*rray_reduce_fn)(
+typedef r_obj* (*rray_reduce_flat_fn)(
   r_obj* x,
   r_ssize out_size,
   const struct rray_strided_iterator_plan* plan
 );
 
-typedef rray_reduce_fn (*rray_reduce_fn_switch)(
+typedef rray_reduce_flat_fn (*rray_reduce_flat_fn_switch)(
   r_obj* x,
   bool na_rm,
   struct rray_arg* arg,
   struct r_lazy error_call
 );
 
-r_obj* rray_reduce(
+r_obj* rray_reduce_flat(
   r_obj* x,
   r_obj* axes,
   bool na_rm,
-  rray_reduce_fn_switch fn_switch,
+  rray_reduce_flat_fn_switch fn_switch,
   struct rray_arg* arg,
   struct r_lazy error_call
 );
 
-#define RRAY_REDUCE(                                                           \
+#define RRAY_REDUCE_FLAT(                                                      \
   X_CTYPE,                                                                     \
   X_CONST_DEREF,                                                               \
   OUT_RTYPE,                                                                   \

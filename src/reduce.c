@@ -11,11 +11,11 @@
 
 #include "decl/reduce-decl.h"
 
-r_obj* rray_reduce(
+r_obj* rray_reduce_flat(
   r_obj* x,
   r_obj* axes,
   bool na_rm,
-  rray_reduce_fn_switch fn_switch,
+  rray_reduce_flat_fn_switch fn_switch,
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
@@ -50,7 +50,7 @@ r_obj* rray_reduce(
     dimensionality
   );
 
-  const rray_reduce_fn fn = fn_switch(x, na_rm, arg, error_call);
+  const rray_reduce_flat_fn fn = fn_switch(x, na_rm, arg, error_call);
 
   r_obj* out = KEEP(fn(x, out_size, &plan));
   r_attrib_poke_dim(out, out_dimensions);

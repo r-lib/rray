@@ -1,10 +1,10 @@
-static rray_reduce_fn rray_all_along_switch(
+static rray_reduce_flat_fn rray_all_along_switch(
   r_obj* x,
   bool na_rm,
   struct rray_arg* arg,
   struct r_lazy error_call
 );
-static rray_reduce_fn rray_any_along_switch(
+static rray_reduce_flat_fn rray_any_along_switch(
   r_obj* x,
   bool na_rm,
   struct rray_arg* arg,
