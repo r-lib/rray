@@ -156,8 +156,6 @@ static inline double rray_mean_along_lgl_one(
   r_ssize x_start,
   const struct rray_strided_iterator_plan* inner_plan
 ) {
-  const r_ssize count = rray_strided_iterator_plan_size(inner_plan);
-
   long double sum = 0.0;
 
   RRAY_REDUCE_INNER(int, {
@@ -166,6 +164,8 @@ static inline double rray_mean_along_lgl_one(
     }
     sum += x_elt;
   });
+
+  const r_ssize count = rray_strided_iterator_plan_size(inner_plan);
 
   return (double) (sum / count);
 }
@@ -192,8 +192,6 @@ static inline double rray_mean_along_int_one(
   r_ssize x_start,
   const struct rray_strided_iterator_plan* inner_plan
 ) {
-  const r_ssize count = rray_strided_iterator_plan_size(inner_plan);
-
   long double sum = 0.0;
 
   RRAY_REDUCE_INNER(int, {
@@ -202,6 +200,8 @@ static inline double rray_mean_along_int_one(
     }
     sum += x_elt;
   });
+
+  const r_ssize count = rray_strided_iterator_plan_size(inner_plan);
 
   return (double) (sum / count);
 }
@@ -228,11 +228,11 @@ static inline double rray_mean_along_dbl_one(
   r_ssize x_start,
   const struct rray_strided_iterator_plan* inner_plan
 ) {
-  const r_ssize count = rray_strided_iterator_plan_size(inner_plan);
-
   long double sum = 0.0;
 
   RRAY_REDUCE_INNER(double, sum += x_elt);
+
+  const r_ssize count = rray_strided_iterator_plan_size(inner_plan);
 
   if (ISNAN((double) sum)) {
     RRAY_REDUCE_INNER(double, {
