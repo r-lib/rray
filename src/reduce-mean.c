@@ -156,18 +156,18 @@ static inline double rray_mean_along_lgl_one(
   r_ssize x_start,
   const struct rray_strided_iterator_plan* inner_plan
 ) {
-  const r_ssize n = rray_strided_iterator_plan_size(inner_plan);
+  const r_ssize count = rray_strided_iterator_plan_size(inner_plan);
 
-  long double s = 0.0;
+  long double sum = 0.0;
 
   RRAY_REDUCE_INNER(int, {
     if (x_elt == r_globals.na_lgl) {
       return r_globals.na_dbl;
     }
-    s += x_elt;
+    sum += x_elt;
   });
 
-  return (double) (s / n);
+  return (double) (sum / count);
 }
 
 static inline double rray_mean_along_lgl_one_na_rm(
@@ -175,16 +175,16 @@ static inline double rray_mean_along_lgl_one_na_rm(
   r_ssize x_start,
   const struct rray_strided_iterator_plan* inner_plan
 ) {
-  r_ssize n = 0;
-  long double s = 0.0;
+  r_ssize count = 0;
+  long double sum = 0.0;
 
   RRAY_REDUCE_INNER(int, {
     const bool ok = x_elt != r_globals.na_lgl;
-    s += ok ? x_elt : 0;
-    n += ok;
+    sum += ok ? x_elt : 0;
+    count += ok;
   });
 
-  return (double) (s / n);
+  return (double) (sum / count);
 }
 
 static inline double rray_mean_along_int_one(
@@ -192,18 +192,18 @@ static inline double rray_mean_along_int_one(
   r_ssize x_start,
   const struct rray_strided_iterator_plan* inner_plan
 ) {
-  const r_ssize n = rray_strided_iterator_plan_size(inner_plan);
+  const r_ssize count = rray_strided_iterator_plan_size(inner_plan);
 
-  long double s = 0.0;
+  long double sum = 0.0;
 
   RRAY_REDUCE_INNER(int, {
     if (x_elt == r_globals.na_int) {
       return r_globals.na_dbl;
     }
-    s += x_elt;
+    sum += x_elt;
   });
 
-  return (double) (s / n);
+  return (double) (sum / count);
 }
 
 static inline double rray_mean_along_int_one_na_rm(
@@ -211,16 +211,16 @@ static inline double rray_mean_along_int_one_na_rm(
   r_ssize x_start,
   const struct rray_strided_iterator_plan* inner_plan
 ) {
-  r_ssize n = 0;
-  long double s = 0.0;
+  r_ssize count = 0;
+  long double sum = 0.0;
 
   RRAY_REDUCE_INNER(int, {
     const bool ok = x_elt != r_globals.na_int;
-    s += ok ? x_elt : 0;
-    n += ok;
+    sum += ok ? x_elt : 0;
+    count += ok;
   });
 
-  return (double) (s / n);
+  return (double) (sum / count);
 }
 
 static inline double rray_mean_along_dbl_one(
@@ -228,13 +228,13 @@ static inline double rray_mean_along_dbl_one(
   r_ssize x_start,
   const struct rray_strided_iterator_plan* inner_plan
 ) {
-  const r_ssize n = rray_strided_iterator_plan_size(inner_plan);
+  const r_ssize count = rray_strided_iterator_plan_size(inner_plan);
 
-  long double s = 0.0;
+  long double sum = 0.0;
 
-  RRAY_REDUCE_INNER(double, s += x_elt);
+  RRAY_REDUCE_INNER(double, sum += x_elt);
 
-  if (ISNAN((double) s)) {
+  if (ISNAN((double) sum)) {
     RRAY_REDUCE_INNER(double, {
       if (R_IsNA(x_elt)) {
         return r_globals.na_dbl;
@@ -244,26 +244,26 @@ static inline double rray_mean_along_dbl_one(
     return R_NaN;
   }
 
-  if (R_FINITE((double) s)) {
-    s /= n;
+  if (R_FINITE((double) sum)) {
+    sum /= count;
 
-    if (R_FINITE((double) s)) {
+    if (R_FINITE((double) sum)) {
       long double t = 0.0;
-      RRAY_REDUCE_INNER(double, t += x_elt - s);
-      s += t / n;
+      RRAY_REDUCE_INNER(double, t += x_elt - sum);
+      sum += t / count;
     }
   } else {
-    s = 0.0;
-    RRAY_REDUCE_INNER(double, s += x_elt / n);
+    sum = 0.0;
+    RRAY_REDUCE_INNER(double, sum += x_elt / count);
 
-    if (R_FINITE((double) s)) {
+    if (R_FINITE((double) sum)) {
       long double t = 0.0;
-      RRAY_REDUCE_INNER(double, t += (x_elt - s) / n);
-      s += t;
+      RRAY_REDUCE_INNER(double, t += (x_elt - sum) / count);
+      sum += t;
     }
   }
 
-  return (double) s;
+  return (double) sum;
 }
 
 static inline double rray_mean_along_dbl_one_na_rm(
@@ -271,37 +271,37 @@ static inline double rray_mean_along_dbl_one_na_rm(
   r_ssize x_start,
   const struct rray_strided_iterator_plan* inner_plan
 ) {
-  r_ssize n = 0;
-  long double s = 0.0;
+  r_ssize count = 0;
+  long double sum = 0.0;
 
   RRAY_REDUCE_INNER(double, {
     const bool ok = !ISNAN(x_elt);
-    s += ok ? x_elt : 0;
-    n += ok;
+    sum += ok ? x_elt : 0;
+    count += ok;
   });
 
-  if (ISNAN((double) s)) {
+  if (ISNAN((double) sum)) {
     return R_NaN;
   }
 
-  if (R_FINITE((double) s)) {
-    s /= n;
+  if (R_FINITE((double) sum)) {
+    sum /= count;
 
-    if (R_FINITE((double) s)) {
+    if (R_FINITE((double) sum)) {
       long double t = 0.0;
-      RRAY_REDUCE_INNER(double, t += ISNAN(x_elt) ? 0 : x_elt - s);
-      s += t / n;
+      RRAY_REDUCE_INNER(double, t += ISNAN(x_elt) ? 0 : x_elt - sum);
+      sum += t / count;
     }
   } else {
-    s = 0.0;
-    RRAY_REDUCE_INNER(double, s += ISNAN(x_elt) ? 0 : x_elt / n);
+    sum = 0.0;
+    RRAY_REDUCE_INNER(double, sum += ISNAN(x_elt) ? 0 : x_elt / count);
 
-    if (R_FINITE((double) s)) {
+    if (R_FINITE((double) sum)) {
       long double t = 0.0;
-      RRAY_REDUCE_INNER(double, t += ISNAN(x_elt) ? 0 : (x_elt - s) / n);
-      s += t;
+      RRAY_REDUCE_INNER(double, t += ISNAN(x_elt) ? 0 : (x_elt - sum) / count);
+      sum += t;
     }
   }
 
-  return (double) s;
+  return (double) sum;
 }
