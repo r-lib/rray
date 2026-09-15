@@ -252,12 +252,10 @@ static inline double rray_mean_along_dbl_one(
   if (R_FINITE((double) sum)) {
     sum /= count;
 
-    if (R_FINITE((double) sum)) {
-      // State
-      long double correction = 0.0;
-      RRAY_REDUCE_INNER(double, correction += x_elt - sum);
-      sum += correction / count;
-    }
+    // State
+    long double correction = 0.0;
+    RRAY_REDUCE_INNER(double, correction += x_elt - sum);
+    sum += correction / count;
   } else {
     sum = 0.0;
     RRAY_REDUCE_INNER(double, sum += x_elt / count);
@@ -296,12 +294,10 @@ static inline double rray_mean_along_dbl_one_na_rm(
   if (R_FINITE((double) sum)) {
     sum /= count;
 
-    if (R_FINITE((double) sum)) {
-      // State
-      long double correction = 0.0;
-      RRAY_REDUCE_INNER(double, correction += ISNAN(x_elt) ? 0 : x_elt - sum);
-      sum += correction / count;
-    }
+    // State
+    long double correction = 0.0;
+    RRAY_REDUCE_INNER(double, correction += ISNAN(x_elt) ? 0 : x_elt - sum);
+    sum += correction / count;
   } else {
     sum = 0.0;
     RRAY_REDUCE_INNER(double, sum += ISNAN(x_elt) ? 0 : x_elt / count);
