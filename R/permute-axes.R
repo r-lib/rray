@@ -14,6 +14,8 @@
 #' @returns
 #' An array with the axes of `x` reordered by `axes`.
 #'
+#' @seealso [rray_move_axes()]
+#'
 #' @export
 #' @examples
 #' x <- array(1:6, c(2, 3))

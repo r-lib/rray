@@ -70,6 +70,80 @@ r_obj* arg_as_axes(
   return axes;
 }
 
+r_obj* arg_as_axes_unsorted(
+  r_obj* axes,
+  int dimensionality,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+) {
+  check_max_dimensionality(dimensionality);
+
+  if (r_typeof(axes) != R_TYPE_integer) {
+    axes = vec_cast(axes, r_globals.empty_int, arg, NULL);
+  }
+  KEEP(axes);
+
+  if (r_attrib_has_any(axes)) {
+    r_abort_lazy_call(
+      error_call,
+      "%s can't have attributes.",
+      rray_arg_format(arg)
+    );
+  }
+
+  const r_ssize axes_size = r_length(axes);
+
+  bool v_seen[RRAY_MAX_DIMENSIONALITY] = {false};
+
+  const int* v_axes = r_int_cbegin(axes);
+
+  for (r_ssize i = 0; i < axes_size; ++i) {
+    const int axis = v_axes[i];
+
+    if (axis == r_globals.na_int) {
+      r_abort_lazy_call(
+        error_call,
+        "%s must not contain missing values.",
+        rray_arg_format(arg)
+      );
+    }
+
+    if (axis < 1) {
+      r_abort_lazy_call(
+        error_call,
+        "%s must contain values greater than or equal to 1, not %d.",
+        rray_arg_format(arg),
+        axis
+      );
+    }
+
+    if (axis > dimensionality) {
+      r_abort_lazy_call(
+        error_call,
+        "%s must contain values less than or equal to the "
+        "dimensionality of %d, not %d.",
+        rray_arg_format(arg),
+        dimensionality,
+        axis
+      );
+    }
+
+    if (v_seen[axis - 1]) {
+      r_abort_lazy_call(
+        error_call,
+        "%s must not contain %d more than once.",
+        rray_arg_format(arg),
+        axis
+      );
+    }
+
+    v_seen[axis - 1] = true;
+  }
+
+  FREE(1);
+  return axes;
+}
+
 r_obj* arg_as_axes_permutation(
   r_obj* axes,
   int dimensionality,

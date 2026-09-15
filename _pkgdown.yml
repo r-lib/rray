@@ -30,6 +30,7 @@ reference:
   - rray_squeeze
   - rray_split
   - rray_permute_axes
+  - rray_move_axes
 
 - title: Binary
   contents:

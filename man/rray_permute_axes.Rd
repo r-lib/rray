@@ -38,3 +38,6 @@ rray_dimensions(rray_permute_axes(y, c(3, 2, 1)))
 # (4, 3, 2) -> (3, 4, 2)
 rray_dimensions(rray_permute_axes(y, c(2, 1, 3)))
 }
+\seealso{
+\code{\link[=rray_move_axes]{rray_move_axes()}}
+}
