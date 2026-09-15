@@ -39,15 +39,16 @@ rray4 should differ in two deliberate ways:
 - `rray_combine()` and `rray_stack()` broadcast their inputs on every axis
   except the axis being combined.
 
-The plan assumes that `.axis` is required. This matches the proposed R
-signatures and the package's existing axis-taking functions. Python uses the
-first axis as the default, so this is one open API choice to confirm before
-implementation.
+`.axis` is required. Because it follows `...`, callers must name it. This
+matches the proposed R signatures and the package's existing axis-taking
+functions. Python uses the first axis as the default, so this is an intentional
+R API difference.
 
 ## Decision summary
 
 - Implement broadcasting in the first version. It is well defined and fits
   the rest of rray4.
+- Require callers to supply `.axis` by name. It has no default.
 - `rray_combine()` accepts `.axis` from 1 through the greatest input
   dimensionality.
 - `rray_stack()` accepts `.axis` from 1 through the common input
@@ -824,7 +825,7 @@ Use snapshots for every error test.
 Required cases are:
 
 - no inputs to combine or stack;
-- a missing `.axis` if the required-argument choice is kept;
+- a missing `.axis`;
 - `.axis` with length other than 1;
 - missing `.axis` value;
 - `.axis` with attributes;
@@ -934,8 +935,8 @@ than the original singleton shapes.
 
 ## Work order
 
-1. Confirm the two open public choices: required `.axis`, and partial names on
-   the combine axis.
+1. Confirm the remaining open public choice about partial names on the combine
+   axis.
 2. Add `.axis` argument support in `src/arg.c` and `src/arg.h`.
 3. Implement and test `rray_combine()` without names.
 4. Add combine names and their tests.
