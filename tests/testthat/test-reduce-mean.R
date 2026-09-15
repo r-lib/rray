@@ -193,8 +193,20 @@ test_that("na_rm keeps infinities", {
   x <- c(Inf, NA, 1)
   expect_identical(as.vector(rray_mean_along(x, 1L, na_rm = TRUE)), Inf)
 
+  x <- c(-Inf, NA, 1)
+  expect_identical(as.vector(rray_mean_along(x, 1L, na_rm = TRUE)), -Inf)
+})
+
+test_that("na_rm gives `NaN` when infinities of both signs remain", {
   x <- c(Inf, -Inf, NA)
   expect_identical(as.vector(rray_mean_along(x, 1L, na_rm = TRUE)), NaN)
+
+  x <- c(-Inf, NaN, Inf)
+  expect_identical(as.vector(rray_mean_along(x, 1L, na_rm = TRUE)), NaN)
+
+  x <- array(c(Inf, -Inf, Inf, NA), c(2L, 2L))
+  out <- rray_mean_along(x, 1L, na_rm = TRUE)
+  expect_identical(as.vector(out), c(NaN, Inf))
 })
 
 test_that("na_rm with no missing values matches the default", {
