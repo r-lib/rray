@@ -1,8 +1,14 @@
 test_that("moves a single axis", {
   x <- array(1:24, c(2L, 3L, 4L))
 
-  expect_identical(rray_move_axes(x, 1L, 3L), aperm(x, c(2L, 3L, 1L)))
-  expect_identical(rray_move_axes(x, 3L, 1L), aperm(x, c(3L, 1L, 2L)))
+  expect_identical(
+    rray_move_axes(x, 1L, 3L),
+    rray_permute_axes(x, c(2L, 3L, 1L))
+  )
+  expect_identical(
+    rray_move_axes(x, 3L, 1L),
+    rray_permute_axes(x, c(3L, 1L, 2L))
+  )
 })
 
 test_that("`axes[[i]]` ends up at position `to[[i]]`", {
@@ -10,7 +16,7 @@ test_that("`axes[[i]]` ends up at position `to[[i]]`", {
   out <- rray_move_axes(x, c(1L, 2L), c(4L, 3L))
 
   expect_identical(rray_dimensions(out), c(3L, 2L, 5L, 7L))
-  expect_identical(out, aperm(x, c(3L, 4L, 2L, 1L)))
+  expect_identical(out, rray_permute_axes(x, c(3L, 4L, 2L, 1L)))
 })
 
 test_that("axes that don't move keep their relative order", {
@@ -74,7 +80,10 @@ test_that("works with every native type", {
   )
 
   for (x in xs) {
-    expect_identical(rray_move_axes(x, 1L, 2L), aperm(x))
+    expect_identical(
+      rray_move_axes(x, 1L, 2L),
+      rray_permute_axes(x, c(2L, 1L))
+    )
   }
 })
 
