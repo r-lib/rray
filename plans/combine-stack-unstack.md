@@ -162,6 +162,37 @@ Broadcasting happens before the new axis is inserted:
 stack on axis 2              -> [2, 2, 4, 3]
 ```
 
+A useful feature of broadcasted stack is building feature planes over a grid:
+
+```r
+row <- array(c(10, 20), c(2, 1))
+column <- array(c(1, 2, 3), c(1, 3))
+
+out <- rray_stack(
+  row = row,
+  column = column,
+  .axis = 3
+)
+```
+
+The inputs broadcast to `[2, 3]`, then stack to `[2, 3, 2]`:
+
+```text
+out[, , "row"]       out[, , "column"]
+
+10 10 10              1 2 3
+20 20 20              1 2 3
+```
+
+Each `out[i, j, ]` contains the row and column features for one grid position.
+The same pattern is useful for coordinate grids, model feature arrays, image
+channels, and parameter grids. Without broadcasted stack, callers must
+explicitly broadcast every input before packing them along the new axis.
+
+Use this as a main `rray_stack()` documentation example. It shows that
+broadcasting is a useful part of the function rather than only a relaxed shape
+check. It also shows dots names becoming names on the new axis.
+
 One input is valid and adds a new axis with dimension 1. No inputs is an
 error.
 
@@ -861,6 +892,8 @@ Keep every test inside a `test_that()` block.
 - Check common type promotion.
 - Broadcast singleton dimensions.
 - Broadcast differing dimensionality.
+- Test the documented row and column feature-plane example, including values,
+  dimensions, and new-axis names.
 - Reject incompatible dimensions.
 - Check zero-size inputs.
 - Move dots names to the new axis.
