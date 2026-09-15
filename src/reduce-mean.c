@@ -190,7 +190,6 @@ static inline double rray_mean_along_lgl_one_na_rm(
 }
 
 // Impossible to overflow to `NaN`
-// Impossible to overflow to `NaN`
 static inline double rray_mean_along_int_one(
   const int* v_x,
   r_ssize x_start,
