@@ -5,6 +5,8 @@
 #'
 #' - `rray_product_along()` computes the product along the specified `axes`.
 #'
+#' - `rray_mean_along()` computes the mean along the specified `axes`.
+#'
 #' - `rray_all_along()` checks if all values are `TRUE` along the specified
 #'   `axes`.
 #'
@@ -21,6 +23,8 @@
 #' Certain inputs are upcast, changing the return type:
 #'
 #' - `rray_product_along()`: logicals and integers are cast to double.
+#'
+#' - `rray_mean_along()`: logicals and integers are cast to double.
 #'
 #' @param x An array.
 #'
@@ -51,6 +55,9 @@
 #' # Product along rows
 #' rray_product_along(x, 1L)
 #'
+#' # Mean along rows
+#' rray_mean_along(x, 1L)
+#'
 #' y <- array(c(TRUE, TRUE, FALSE, TRUE), c(2L, 2L))
 #'
 #' rray_all_along(y, 1L)
@@ -69,6 +76,13 @@ rray_sum_along <- function(x, axes, ..., na_rm = FALSE) {
 rray_product_along <- function(x, axes, ..., na_rm = FALSE) {
   check_dots_empty0(...)
   .Call(ffi_rray_product_along, x, axes, na_rm, environment())
+}
+
+#' @rdname reduce
+#' @export
+rray_mean_along <- function(x, axes, ..., na_rm = FALSE) {
+  check_dots_empty0(...)
+  .Call(ffi_rray_mean_along, x, axes, na_rm, environment())
 }
 
 #' @rdname reduce

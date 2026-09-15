@@ -674,11 +674,11 @@ Reduction:
 |---|---|---|---|---|
 | `sum` | int | int | dbl | cpl |
 | `prod` | dbl | dbl | dbl | cpl |
-| `mean` | dbl | dbl | dbl | cpl |
+| `mean` | dbl | dbl | dbl | error |
 
 `sum` on an integer array stays integer and errors on overflow. `prod` promotes
 to double, matching base R's `prod()`, because integer products overflow almost
-immediately.
+immediately. `mean` does not support complex.
 
 ### Operators that promote nothing
 
@@ -1082,7 +1082,7 @@ Names: reduce.
 |---|---|---|
 | `rray_sum_along(x, axes, ..., na_rm = FALSE)` | `sum` | promoted, exists |
 | `rray_product_along(x, axes, ..., na_rm = FALSE)` | `prod` | promoted, int to dbl |
-| `rray_mean(x, axes, ..., na_rm = FALSE)` | `mean` | promoted, lgl and int to dbl |
+| `rray_mean_along(x, axes, ..., na_rm = FALSE)` | `mean` | promoted, lgl and int to dbl, exists |
 | `rray_max_along(x, axes, ..., na_rm = FALSE)` | `max` | preserved, errors on cpl |
 | `rray_min_along(x, axes, ..., na_rm = FALSE)` | `min` | preserved, errors on cpl |
 | `rray_all_along(x, axes, ..., na_rm = FALSE)` | `all` | fixed, logical in, logical out, exists |
@@ -1101,10 +1101,16 @@ rray_max_pos(x, 2)     # along the columns
 `R/reduce.R`, with its C in `src/reduce-sum.c` on top of the `rray_reduce()`
 shell in `src/reduce.c`/`src/reduce.h` (see 2.1).
 
-`rray_product_along()`, `rray_mean()`, `rray_max_along()`, and `rray_min_along()` share
+`rray_product_along()`, `rray_mean_along()`, `rray_max_along()`, and
+`rray_min_along()` share
 `rray_sum_along()`'s
 `(x, axes, ..., na_rm = FALSE)` shape, so they add `@rdname reduce` entries to
 `R/reduce.R` and their own `src/reduce-{name}.c` beside it.
+
+`rray_mean_along()` needs numerical state per output element, so it uses the
+`rray_reduce_nested()` shell rather than `rray_reduce()`. That shell walks the
+retained axes and the reduced axes with two immutable plans, which lets the
+mean core make several passes over one reduced slice before moving on.
 
 `rray_all_along()` and `rray_any_along()` share that shape too, so they are
 `@rdname reduce` entries as well. They are the one place two reducers share a C

@@ -4,6 +4,7 @@
 \alias{reduce}
 \alias{rray_sum_along}
 \alias{rray_product_along}
+\alias{rray_mean_along}
 \alias{rray_all_along}
 \alias{rray_any_along}
 \title{Reduce an array along axes}
@@ -11,6 +12,8 @@
 rray_sum_along(x, axes, ..., na_rm = FALSE)
 
 rray_product_along(x, axes, ..., na_rm = FALSE)
+
+rray_mean_along(x, axes, ..., na_rm = FALSE)
 
 rray_all_along(x, axes, ..., na_rm = FALSE)
 
@@ -34,6 +37,7 @@ An array with the same dimensionality as \code{x}, but with the dimensions along
 \itemize{
 \item \code{rray_sum_along()} computes the sum along the specified \code{axes}.
 \item \code{rray_product_along()} computes the product along the specified \code{axes}.
+\item \code{rray_mean_along()} computes the mean along the specified \code{axes}.
 \item \code{rray_all_along()} checks if all values are \code{TRUE} along the specified
 \code{axes}.
 \item \code{rray_any_along()} checks if any value is \code{TRUE} along the specified
@@ -51,6 +55,7 @@ If summing an integer array would overflow, an error is thrown.
 Certain inputs are upcast, changing the return type:
 \itemize{
 \item \code{rray_product_along()}: logicals and integers are cast to double.
+\item \code{rray_mean_along()}: logicals and integers are cast to double.
 }
 }
 
@@ -68,6 +73,9 @@ rray_sum_along(x, c(1L, 2L))
 
 # Product along rows
 rray_product_along(x, 1L)
+
+# Mean along rows
+rray_mean_along(x, 1L)
 
 y <- array(c(TRUE, TRUE, FALSE, TRUE), c(2L, 2L))
 
