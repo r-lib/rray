@@ -156,6 +156,7 @@ static inline double rray_mean_along_lgl_one(
   r_ssize x_start,
   const struct rray_strided_iterator_plan* inner_plan
 ) {
+  // State
   long double sum = 0.0;
 
   RRAY_REDUCE_INNER(int, {
@@ -175,6 +176,7 @@ static inline double rray_mean_along_lgl_one_na_rm(
   r_ssize x_start,
   const struct rray_strided_iterator_plan* inner_plan
 ) {
+  // State
   r_ssize count = 0;
   long double sum = 0.0;
 
@@ -192,6 +194,7 @@ static inline double rray_mean_along_int_one(
   r_ssize x_start,
   const struct rray_strided_iterator_plan* inner_plan
 ) {
+  // State
   long double sum = 0.0;
 
   RRAY_REDUCE_INNER(int, {
@@ -211,6 +214,7 @@ static inline double rray_mean_along_int_one_na_rm(
   r_ssize x_start,
   const struct rray_strided_iterator_plan* inner_plan
 ) {
+  // State
   r_ssize count = 0;
   long double sum = 0.0;
 
@@ -228,6 +232,7 @@ static inline double rray_mean_along_dbl_one(
   r_ssize x_start,
   const struct rray_strided_iterator_plan* inner_plan
 ) {
+  // State
   long double sum = 0.0;
 
   RRAY_REDUCE_INNER(double, sum += x_elt);
@@ -248,6 +253,7 @@ static inline double rray_mean_along_dbl_one(
     sum /= count;
 
     if (R_FINITE((double) sum)) {
+      // State
       long double correction = 0.0;
       RRAY_REDUCE_INNER(double, correction += x_elt - sum);
       sum += correction / count;
@@ -257,6 +263,7 @@ static inline double rray_mean_along_dbl_one(
     RRAY_REDUCE_INNER(double, sum += x_elt / count);
 
     if (R_FINITE((double) sum)) {
+      // State
       long double correction = 0.0;
       RRAY_REDUCE_INNER(double, correction += (x_elt - sum) / count);
       sum += correction;
@@ -271,6 +278,7 @@ static inline double rray_mean_along_dbl_one_na_rm(
   r_ssize x_start,
   const struct rray_strided_iterator_plan* inner_plan
 ) {
+  // State
   r_ssize count = 0;
   long double sum = 0.0;
 
@@ -289,6 +297,7 @@ static inline double rray_mean_along_dbl_one_na_rm(
     sum /= count;
 
     if (R_FINITE((double) sum)) {
+      // State
       long double correction = 0.0;
       RRAY_REDUCE_INNER(double, correction += ISNAN(x_elt) ? 0 : x_elt - sum);
       sum += correction / count;
@@ -298,6 +307,7 @@ static inline double rray_mean_along_dbl_one_na_rm(
     RRAY_REDUCE_INNER(double, sum += ISNAN(x_elt) ? 0 : x_elt / count);
 
     if (R_FINITE((double) sum)) {
+      // State
       long double correction = 0.0;
       RRAY_REDUCE_INNER(
         double,
