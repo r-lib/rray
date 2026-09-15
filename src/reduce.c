@@ -82,6 +82,13 @@ r_obj* rray_reduce_nested(
   const int dimensionality = rray_dimensionality_from_dimensions(x_dimensions);
   check_max_dimensionality(dimensionality);
 
+  r_ssize v_x_strides[RRAY_MAX_DIMENSIONALITY];
+  rray_fill_strides_from_dimensions(
+    v_x_dimensions,
+    dimensionality,
+    v_x_strides
+  );
+
   axes = KEEP(arg_as_axes(axes, dimensionality, rray_args.axes, error_call));
   const int* v_axes = r_int_cbegin(axes);
   const r_ssize axes_size = r_length(axes);
@@ -98,13 +105,6 @@ r_obj* rray_reduce_nested(
     KEEP(rray_axes_complement(v_axes, axes_size, dimensionality));
   const int* v_retained_axes = r_int_cbegin(retained_axes);
   const r_ssize retained_axes_size = r_length(retained_axes);
-
-  r_ssize v_x_strides[RRAY_MAX_DIMENSIONALITY];
-  rray_fill_strides_from_dimensions(
-    v_x_dimensions,
-    dimensionality,
-    v_x_strides
-  );
 
   const struct rray_strided_iterator_plan outer_plan = rray_reduce_axes_plan(
     v_x_dimensions,
