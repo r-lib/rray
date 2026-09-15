@@ -98,15 +98,21 @@ r_obj* rray_reduce_nested(
   const int* v_retained_axes = r_int_cbegin(retained_axes);
   const r_ssize retained_axes_size = r_length(retained_axes);
 
-  const struct rray_strided_iterator_plan outer_plan = rray_reduce_axes_plan(
-    v_x_dimensions,
-    v_x_strides,
-    v_retained_axes,
-    retained_axes_size
-  );
+  const struct rray_strided_iterator_plan outer_plan =
+    rray_reduce_nested_iterator_plan(
+      v_x_dimensions,
+      v_x_strides,
+      v_retained_axes,
+      retained_axes_size
+    );
 
   const struct rray_strided_iterator_plan inner_plan =
-    rray_reduce_axes_plan(v_x_dimensions, v_x_strides, v_axes, axes_size);
+    rray_reduce_nested_iterator_plan(
+      v_x_dimensions,
+      v_x_strides,
+      v_axes,
+      axes_size
+    );
 
   const rray_reduce_nested_fn fn = fn_switch(x, na_rm, arg, error_call);
 
@@ -132,7 +138,7 @@ r_obj* rray_reduce_nested(
   return out;
 }
 
-static struct rray_strided_iterator_plan rray_reduce_axes_plan(
+static struct rray_strided_iterator_plan rray_reduce_nested_iterator_plan(
   const int* v_x_dimensions,
   const r_ssize* v_x_strides,
   const int* v_axes,
