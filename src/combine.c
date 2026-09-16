@@ -6,7 +6,6 @@
 #include "broadcast-names.h"
 #include "cast-common.h"
 #include "dimensionality.h"
-#include "dimensions.h"
 #include "ptype-common.h"
 #include "strided-iterator.h"
 #include "strides.h"
@@ -46,25 +45,7 @@ r_obj* rray_combine(
   const r_ssize xs_size = r_length(xs);
   r_obj* const* v_xs = r_list_cbegin(xs);
 
-  r_obj* xs_names = KEEP(r_names(xs));
-
-  r_ssize x_i = 0;
-  struct rray_arg* x_arg = new_subscript_arg(arg, xs_names, xs_size, &x_i);
-  KEEP(x_arg->shelter);
-
-  r_ssize out_i = 0;
-  struct rray_arg* out_arg = new_subscript_arg(arg, xs_names, xs_size, &out_i);
-  KEEP(out_arg->shelter);
-
-  int dimensionality = 1;
-
-  for (x_i = 0; x_i < xs_size; ++x_i) {
-    const int x_dimensionality =
-      rray_dimensionality(v_xs[x_i], x_arg, error_call);
-    if (x_dimensionality > dimensionality) {
-      dimensionality = x_dimensionality;
-    }
-  }
+  const int dimensionality = list_max_dimensionality(xs, arg, error_call);
 
   check_axis(axis, dimensionality, rray_args.dot_axis, error_call);
 
@@ -77,6 +58,16 @@ r_obj* rray_combine(
     v_out_dimensions[i] = 1;
     v_out_args[i] = 0;
   }
+
+  r_obj* xs_names = KEEP(r_names(xs));
+
+  r_ssize x_i = 0;
+  struct rray_arg* x_arg = new_subscript_arg(arg, xs_names, xs_size, &x_i);
+  KEEP(x_arg->shelter);
+
+  r_ssize out_i = 0;
+  struct rray_arg* out_arg = new_subscript_arg(arg, xs_names, xs_size, &out_i);
+  KEEP(out_arg->shelter);
 
   r_ssize axis_dimension = 0;
 
