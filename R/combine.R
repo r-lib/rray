@@ -9,7 +9,7 @@
 #'   dimensionality.
 #'
 #' @returns
-#' An array with the following dimensions.
+#' An array with the following dimensions:
 #' - Along `.axis`, the input dimensions are added together.
 #' - Along all other axes, the common dimensions are taken via broadcasting.
 #'

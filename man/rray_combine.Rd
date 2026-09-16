@@ -13,7 +13,7 @@ rray_combine(..., .axis)
 dimensionality.}
 }
 \value{
-An array with the following dimensions.
+An array with the following dimensions:
 \itemize{
 \item Along \code{.axis}, the input dimensions are added together.
 \item Along all other axes, the common dimensions are taken via broadcasting.
