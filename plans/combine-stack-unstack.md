@@ -262,7 +262,7 @@ stack(xs, axis) = combine(expand_each(xs, axis), axis)
 ### Costs and risks
 
 - The behavior differs from Python even though the functions use Python as
-  their model. This must be stated clearly in the R documentation.
+  their model. The rray4 behavior must still have one clear definition.
 - A missing trailing axis acts like dimension 1. Combining on that implicit
   axis is logical but may surprise a reader.
 - The output write is strided when the selected axis is not last. A flat
@@ -521,9 +521,8 @@ rray_unstack <- function(x, .axis) {
 }
 ```
 
-All three functions need exported roxygen documentation. The docs should say
-that `.axis` is one based, explain each valid range, and call out the
-broadcasting difference from Python.
+All three functions need exported roxygen documentation. The docs should
+explain the valid `.axis` range for each function.
 
 Add all three topics to the Manipulation section of `_pkgdown.yml`.
 `devtools::document()` will update `NAMESPACE` and the generated help files.
