@@ -136,13 +136,13 @@ r_obj* rray_combine(r_obj* xs, int axis, struct r_lazy error_call) {
     const int x_axis_dimension =
       (axis <= x_dimensionality) ? v_x_dimensions[axis - 1] : 1;
 
-    int v_chunk_dimensions[RRAY_MAX_DIMENSIONALITY];
+    int v_x_broadcast_dimensions[RRAY_MAX_DIMENSIONALITY];
     r_memcpy(
-      v_chunk_dimensions,
+      v_x_broadcast_dimensions,
       v_out_dimensions,
       sizeof(int) * dimensionality
     );
-    v_chunk_dimensions[axis - 1] = x_axis_dimension;
+    v_x_broadcast_dimensions[axis - 1] = x_axis_dimension;
 
     r_ssize v_x_strides[RRAY_MAX_DIMENSIONALITY];
     rray__fill_broadcast_strides(
@@ -153,7 +153,7 @@ r_obj* rray_combine(r_obj* xs, int axis, struct r_lazy error_call) {
     );
 
     const struct rray_strided_iterator2_plan plan = rray_strided_iterator2_plan(
-      v_chunk_dimensions,
+      v_x_broadcast_dimensions,
       dimensionality,
       v_out_strides,
       v_x_strides
