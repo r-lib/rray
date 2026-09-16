@@ -18,7 +18,14 @@ r_obj* ffi_rray_combine(r_obj* ffi_xs, r_obj* ffi_axis, r_obj* ffi_frame) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
 
   const int axis = arg_as_int(ffi_axis, rray_args.dot_axis, error_call);
-  return rray_combine(ffi_xs, axis, r_null, rray_args.empty, error_call);
+  return rray_combine(
+    ffi_xs,
+    axis,
+    r_null,
+    rray_args.empty,
+    rray_args.empty,
+    error_call
+  );
 }
 
 r_obj* rray_combine(
@@ -26,15 +33,16 @@ r_obj* rray_combine(
   int axis,
   r_obj* ptype,
   struct rray_arg* arg,
+  struct rray_arg* ptype_arg,
   struct r_lazy error_call
 ) {
   if (r_length(xs) == 0) {
     r_abort_lazy_call(error_call, "Must supply at least one array to `...`.");
   }
 
-  ptype = KEEP(rray_ptype_common(xs, ptype, arg, rray_args.empty, error_call));
+  ptype = KEEP(rray_ptype_common(xs, ptype, arg, ptype_arg, error_call));
 
-  xs = KEEP(rray_cast_common(xs, ptype, arg, rray_args.empty, error_call));
+  xs = KEEP(rray_cast_common(xs, ptype, arg, ptype_arg, error_call));
 
   const r_ssize xs_size = r_length(xs);
   r_obj* const* v_xs = r_list_cbegin(xs);
