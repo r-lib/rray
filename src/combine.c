@@ -37,7 +37,8 @@ r_obj* rray_combine(r_obj* xs, int axis, struct r_lazy error_call) {
   int dimensionality = 1;
 
   for (r_ssize i = 0; i < xs_size; ++i) {
-    const int x_dimensionality = (int) r_length(r_dim(v_xs[i]));
+    const int x_dimensionality =
+      rray_dimensionality(v_xs[i], rray_args.empty, error_call);
     if (x_dimensionality > dimensionality) {
       dimensionality = x_dimensionality;
     }
