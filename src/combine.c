@@ -307,48 +307,66 @@ static void rray_combine_copy(
 }
 
 #define RRAY_COMBINE_ATOMIC(CTYPE, CONST_DEREF, DEREF)                         \
+  const r_ssize size = rray_strided_iterator2_plan_size(plan);                 \
+                                                                               \
   const CTYPE* v_x = CONST_DEREF(x);                                           \
   CTYPE* v_out = DEREF(out);                                                   \
-  const r_ssize size = rray_strided_iterator2_plan_size(plan);                 \
-  const r_ssize run_size = rray_strided_iterator2_plan_run_size(plan);         \
-  const r_ssize out_stride = rray_strided_iterator2_plan_run_stride1(plan);    \
-  const r_ssize x_stride = rray_strided_iterator2_plan_run_stride2(plan);      \
+                                                                               \
   r_ssize run_start = 0;                                                       \
+  const r_ssize run_size = rray_strided_iterator2_plan_run_size(plan);         \
+                                                                               \
+  const r_ssize out_run_stride =                                               \
+    rray_strided_iterator2_plan_run_stride1(plan);                             \
+                                                                               \
   r_ssize x_start = 0;                                                         \
+  const r_ssize x_run_stride = rray_strided_iterator2_plan_run_stride2(plan);  \
+                                                                               \
   r_ssize v_point[RRAY_MAX_DIMENSIONALITY];                                    \
   r_memset(v_point, 0, sizeof(r_ssize) * (size_t) plan->dimensionality);       \
+                                                                               \
   while (run_start != size) {                                                  \
     const r_ssize run_end = run_start + run_size;                              \
     r_ssize out_loc = out_start;                                               \
     r_ssize x_loc = x_start;                                                   \
+                                                                               \
     for (r_ssize i = run_start; i < run_end; ++i) {                            \
       v_out[out_loc] = v_x[x_loc];                                             \
-      out_loc += out_stride;                                                   \
-      x_loc += x_stride;                                                       \
+      out_loc += out_run_stride;                                               \
+      x_loc += x_run_stride;                                                   \
     }                                                                          \
+                                                                               \
     run_start = run_end;                                                       \
     RRAY_STRIDED_ITERATOR_NEXT2(out_start, x_start, v_point, plan);            \
   }
 
 #define RRAY_COMBINE_BARRIER(CONST_DEREF, POKE)                                \
-  r_obj* const* v_x = CONST_DEREF(x);                                          \
   const r_ssize size = rray_strided_iterator2_plan_size(plan);                 \
-  const r_ssize run_size = rray_strided_iterator2_plan_run_size(plan);         \
-  const r_ssize out_stride = rray_strided_iterator2_plan_run_stride1(plan);    \
-  const r_ssize x_stride = rray_strided_iterator2_plan_run_stride2(plan);      \
+                                                                               \
+  r_obj* const* v_x = CONST_DEREF(x);                                          \
+                                                                               \
   r_ssize run_start = 0;                                                       \
+  const r_ssize run_size = rray_strided_iterator2_plan_run_size(plan);         \
+                                                                               \
+  const r_ssize out_run_stride =                                               \
+    rray_strided_iterator2_plan_run_stride1(plan);                             \
+                                                                               \
   r_ssize x_start = 0;                                                         \
+  const r_ssize x_run_stride = rray_strided_iterator2_plan_run_stride2(plan);  \
+                                                                               \
   r_ssize v_point[RRAY_MAX_DIMENSIONALITY];                                    \
   r_memset(v_point, 0, sizeof(r_ssize) * (size_t) plan->dimensionality);       \
+                                                                               \
   while (run_start != size) {                                                  \
     const r_ssize run_end = run_start + run_size;                              \
     r_ssize out_loc = out_start;                                               \
     r_ssize x_loc = x_start;                                                   \
+                                                                               \
     for (r_ssize i = run_start; i < run_end; ++i) {                            \
       POKE(out, out_loc, v_x[x_loc]);                                          \
-      out_loc += out_stride;                                                   \
-      x_loc += x_stride;                                                       \
+      out_loc += out_run_stride;                                               \
+      x_loc += x_run_stride;                                                   \
     }                                                                          \
+                                                                               \
     run_start = run_end;                                                       \
     RRAY_STRIDED_ITERATOR_NEXT2(out_start, x_start, v_point, plan);            \
   }
