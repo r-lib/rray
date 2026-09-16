@@ -117,7 +117,7 @@ r_obj* rray_combine(r_obj* xs, int axis, struct r_lazy error_call) {
   const r_ssize out_size =
     rray_combine_size(v_out_dimensions, dimensionality, error_call);
 
-  r_obj* out = KEEP(r_alloc_vector(r_typeof(v_xs[0]), out_size));
+  r_obj* out = KEEP(r_alloc_vector(r_typeof(ptype), out_size));
 
   r_ssize v_out_strides[RRAY_MAX_DIMENSIONALITY];
   rray_fill_strides_from_dimensions(
