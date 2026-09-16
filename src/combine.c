@@ -7,6 +7,7 @@
 #include "cast-common.h"
 #include "dimensionality.h"
 #include "ptype-common.h"
+#include "size.h"
 #include "strided-iterator.h"
 #include "strides.h"
 #include "utils.h"
@@ -117,8 +118,11 @@ r_obj* rray_combine(
   }
 
   v_out_dimensions[axis - 1] = (int) axis_dimension;
-  const r_ssize out_size =
-    rray_combine_size(v_out_dimensions, dimensionality, error_call);
+  const r_ssize out_size = rray_size_from_dimensions_checked(
+    v_out_dimensions,
+    dimensionality,
+    error_call
+  );
 
   r_obj* out = KEEP(r_alloc_vector(r_typeof(ptype), out_size));
 
@@ -175,24 +179,6 @@ r_obj* rray_combine(
   }
 
   FREE(8);
-  return out;
-}
-
-static r_ssize rray_combine_size(
-  const int* v_dimensions,
-  int dimensionality,
-  struct r_lazy error_call
-) {
-  r_ssize out = 1;
-
-  for (int i = 0; i < dimensionality; ++i) {
-    const int dimension = v_dimensions[i];
-    if (dimension != 0 && out > R_SSIZE_MAX / dimension) {
-      r_abort_lazy_call(error_call, "The result is too large.");
-    }
-    out *= dimension;
-  }
-
   return out;
 }
 

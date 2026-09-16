@@ -1,8 +1,3 @@
-static r_ssize rray_combine_size(
-  const int* v_dimensions,
-  int dimensionality,
-  struct r_lazy error_call
-);
 static r_obj* rray_combine_names(r_obj* xs, r_obj* dimensions, int axis);
 static r_obj* rray_combine_axis_names(r_obj* xs, int axis);
 static void rray_combine_copy(
