@@ -6,7 +6,7 @@
 #' @param ... Arrays to combine.
 #'
 #' @param .axis A single integer between 1 and the greatest input
-#'   dimensionality. An input without this axis contributes a dimension of 1.
+#'   dimensionality.
 #'
 #' @returns
 #' An array with the input dimensions added together along `.axis` and common

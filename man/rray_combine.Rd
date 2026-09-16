@@ -10,7 +10,7 @@ rray_combine(..., .axis)
 \item{...}{Arrays to combine.}
 
 \item{.axis}{A single integer between 1 and the greatest input
-dimensionality. An input without this axis contributes a dimension of 1.}
+dimensionality.}
 }
 \value{
 An array with the input dimensions added together along \code{.axis} and common
