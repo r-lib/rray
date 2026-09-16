@@ -5,8 +5,4 @@
 
 r_obj* rray_combine(r_obj* xs, int axis, struct r_lazy error_call);
 
-r_obj* rray_combine_prepare(r_obj* xs, struct r_lazy error_call);
-
-r_obj* rray_combine_prepared(r_obj* xs, int axis, struct r_lazy error_call);
-
 #endif
