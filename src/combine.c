@@ -18,43 +18,48 @@ r_obj* ffi_rray_combine(r_obj* ffi_xs, r_obj* ffi_axis, r_obj* ffi_frame) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
 
   const int axis = arg_as_int(ffi_axis, rray_args.dot_axis, error_call);
-  return rray_combine(ffi_xs, axis, error_call);
+  return rray_combine(ffi_xs, axis, r_null, rray_args.empty, error_call);
 }
 
-r_obj* rray_combine(r_obj* xs, int axis, struct r_lazy error_call) {
+r_obj* rray_combine(
+  r_obj* xs,
+  int axis,
+  r_obj* ptype,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+) {
   if (r_length(xs) == 0) {
     r_abort_lazy_call(error_call, "Must supply at least one array to `...`.");
   }
 
-  r_obj* ptype =
-    KEEP(rray_ptype_common(xs, r_null, NULL, rray_args.empty, error_call));
+  ptype = KEEP(rray_ptype_common(xs, ptype, arg, rray_args.empty, error_call));
 
-  xs = KEEP(rray_cast_common(xs, ptype, NULL, rray_args.empty, error_call));
+  xs = KEEP(rray_cast_common(xs, ptype, arg, rray_args.empty, error_call));
 
   const r_ssize xs_size = r_length(xs);
   r_obj* const* v_xs = r_list_cbegin(xs);
 
+  r_obj* xs_names = KEEP(r_names(xs));
+
+  r_ssize x_i = 0;
+  struct rray_arg* x_arg = new_subscript_arg(arg, xs_names, xs_size, &x_i);
+  KEEP(x_arg->shelter);
+
+  r_ssize out_i = 0;
+  struct rray_arg* out_arg = new_subscript_arg(arg, xs_names, xs_size, &out_i);
+  KEEP(out_arg->shelter);
+
   int dimensionality = 1;
 
-  for (r_ssize i = 0; i < xs_size; ++i) {
+  for (x_i = 0; x_i < xs_size; ++x_i) {
     const int x_dimensionality =
-      rray_dimensionality(v_xs[i], rray_args.empty, error_call);
+      rray_dimensionality(v_xs[x_i], x_arg, error_call);
     if (x_dimensionality > dimensionality) {
       dimensionality = x_dimensionality;
     }
   }
 
   check_axis(axis, dimensionality, rray_args.dot_axis, error_call);
-
-  r_obj* xs_names = KEEP(r_names(xs));
-
-  r_ssize x_i = 0;
-  struct rray_arg* x_arg = new_subscript_arg(NULL, xs_names, xs_size, &x_i);
-  KEEP(x_arg->shelter);
-
-  r_ssize out_i = 0;
-  struct rray_arg* out_arg = new_subscript_arg(NULL, xs_names, xs_size, &out_i);
-  KEEP(out_arg->shelter);
 
   r_obj* out_dimensions = KEEP(r_alloc_integer(dimensionality));
   int* v_out_dimensions = r_int_begin(out_dimensions);
@@ -68,7 +73,7 @@ r_obj* rray_combine(r_obj* xs, int axis, struct r_lazy error_call) {
 
   r_ssize axis_dimension = 0;
 
-  for (; x_i < xs_size; ++x_i) {
+  for (x_i = 0; x_i < xs_size; ++x_i) {
     r_obj* x_dimensions = r_dim(v_xs[x_i]);
     const int* v_x_dimensions = r_int_cbegin(x_dimensions);
     const int x_dimensionality = (int) r_length(x_dimensions);
