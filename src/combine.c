@@ -185,17 +185,11 @@ static r_ssize rray_combine_size(
   int dimensionality,
   struct r_lazy error_call
 ) {
-  for (int i = 0; i < dimensionality; ++i) {
-    if (v_dimensions[i] == 0) {
-      return 0;
-    }
-  }
-
   r_ssize out = 1;
 
   for (int i = 0; i < dimensionality; ++i) {
     const int dimension = v_dimensions[i];
-    if (out > R_SSIZE_MAX / dimension) {
+    if (dimension != 0 && out > R_SSIZE_MAX / dimension) {
       r_abort_lazy_call(error_call, "The result is too large.");
     }
     out *= dimension;
