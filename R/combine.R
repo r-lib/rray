@@ -9,8 +9,9 @@
 #'   dimensionality.
 #'
 #' @returns
-#' An array with the input dimensions added together along `.axis` and common
-#' broadcast dimensions on every other axis.
+#' An array with the following dimensions.
+#' - Along `.axis`, the input dimensions are added together.
+#' - Along all other axes, the common dimensions are taken via broadcasting.
 #'
 #' @export
 #' @examples
