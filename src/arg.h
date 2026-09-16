@@ -16,6 +16,7 @@ struct rray_args {
   struct rray_arg* y;
   struct rray_arg* names;
   struct rray_arg* axis;
+  struct rray_arg* dot_axis;
   struct rray_arg* axes;
   struct rray_arg* from;
   struct rray_arg* to;
