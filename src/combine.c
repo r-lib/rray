@@ -56,7 +56,9 @@ r_obj* rray_combine(r_obj* xs, int axis, struct r_lazy error_call) {
   struct rray_arg* out_arg = new_subscript_arg(NULL, xs_names, xs_size, &out_i);
   KEEP(out_arg->shelter);
 
-  int v_out_dimensions[RRAY_MAX_DIMENSIONALITY];
+  r_obj* out_dimensions = KEEP(r_alloc_integer(dimensionality));
+  int* v_out_dimensions = r_int_begin(out_dimensions);
+
   r_ssize v_out_args[RRAY_MAX_DIMENSIONALITY];
 
   for (int i = 0; i < dimensionality; ++i) {
@@ -114,14 +116,6 @@ r_obj* rray_combine(r_obj* xs, int axis, struct r_lazy error_call) {
   v_out_dimensions[axis - 1] = (int) axis_dimension;
   const r_ssize out_size =
     rray_combine_size(v_out_dimensions, dimensionality, error_call);
-
-  r_obj* out_dimensions = KEEP(r_alloc_integer(dimensionality));
-  int* v_out_dimensions_object = r_int_begin(out_dimensions);
-  r_memcpy(
-    v_out_dimensions_object,
-    v_out_dimensions,
-    sizeof(int) * dimensionality
-  );
 
   r_obj* out = KEEP(r_alloc_vector(r_typeof(v_xs[0]), out_size));
 
