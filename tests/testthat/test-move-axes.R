@@ -11,7 +11,7 @@ test_that("moves a single axis", {
   )
 })
 
-test_that("`axes[[i]]` ends up at location `to[[i]]`", {
+test_that("`axes[[i]]` ends up at position `to[[i]]`", {
   x <- array(seq_len(7L * 5L * 3L * 2L), c(7L, 5L, 3L, 2L))
   out <- rray_move_axes(x, c(1L, 2L), c(4L, 3L))
 

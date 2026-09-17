@@ -1,22 +1,22 @@
 #' Move array axes
 #'
-#' `rray_move_axes()` moves `axes` to new locations. The axes that don't move
-#' keep their relative order, and fill in the locations that are left over.
+#' `rray_move_axes()` moves `axes` to new positions. The axes that don't move
+#' keep their relative order, and fill in the positions that are left over.
 #'
 #' @details
-#' Names travel with their axis to its new location.
+#' Names travel with their axis to its new position.
 #'
 #' @param x An array.
 #'
 #' @param axes An integer vector of axes to move. It must not use an axis of
 #'   `x` more than once.
 #'
-#' @param to An integer vector of locations to move `axes` to. `axes[[i]]` ends
-#'   up at location `to[[i]]`. It must be the same length as `axes`, and must
-#'   not use a location more than once.
+#' @param to An integer vector of positions to move `axes` to. `axes[[i]]` ends
+#'   up at position `to[[i]]`. It must be the same length as `axes`, and must
+#'   not use a position more than once.
 #'
 #' @returns
-#' An array with the `axes` of `x` moved to the locations in `to`.
+#' An array with the `axes` of `x` moved to the positions in `to`.
 #'
 #' @seealso [rray_permute_axes()]
 #'

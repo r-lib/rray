@@ -7,7 +7,7 @@
 
 r_obj* rray_insert_axes(
   r_obj* x,
-  r_obj* at,
+  r_obj* axes,
   struct rray_arg* arg,
   struct r_lazy error_call
 );
