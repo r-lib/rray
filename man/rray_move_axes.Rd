@@ -12,9 +12,9 @@ rray_move_axes(x, from, to)
 \item{from}{An integer vector of axes in \code{x} to move. It must not use an
 axis of \code{x} more than once.}
 
-\item{to}{An integer vector of positions to move \code{from} to. \code{from[[i]]} ends
-up at position \code{to[[i]]}. It must be the same length as \code{from}, and must
-not use a position more than once.}
+\item{to}{An integer vector of axes in the output to move to. \code{from[[i]]}
+ends up at axis \code{to[[i]]}. It must be the same length as \code{from}, and must
+not use an axis more than once.}
 }
 \value{
 An array with the \code{from} axes of \code{x} moved to the positions in \code{to}.
