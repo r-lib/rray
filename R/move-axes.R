@@ -11,9 +11,7 @@
 #'
 #' @param from An integer vector of axes in `x` to move.
 #'
-#' @param to An integer vector of axes in the output to move to. `from[[i]]`
-#'   ends up at axis `to[[i]]`. It must be the same length as `from`, and must
-#'   not use an axis more than once.
+#' @param to An integer vector of axes in the output to move to.
 #'
 #' @returns
 #' An array.
