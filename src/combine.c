@@ -56,7 +56,7 @@ r_obj* rray_combine(
     KEEP(rray_dimensions_common_opts(xs, &axis, 1, arg, error_call));
   int* v_out_dimensions = r_int_begin(out_dimensions);
 
-  r_ssize axis_dimension = 0;
+  int axis_dimension = 0;
 
   for (r_ssize x_i = 0; x_i < xs_size; ++x_i) {
     r_obj* x_dimensions = r_dim(v_xs[x_i]);
@@ -74,7 +74,7 @@ r_obj* rray_combine(
     axis_dimension += x_axis_dimension;
   }
 
-  v_out_dimensions[axis - 1] = (int) axis_dimension;
+  v_out_dimensions[axis - 1] = axis_dimension;
 
   const r_ssize out_size = rray_size_from_dimensions_checked(
     v_out_dimensions,
