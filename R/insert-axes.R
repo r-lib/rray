@@ -34,7 +34,7 @@
 #'
 #' @param x An array.
 #'
-#' @param axes An integer vector of positions in the result to insert axes at.
+#' @param axes An integer vector of locations in the _result_ to insert axes at.
 #'   It must be in strictly increasing order.
 #'
 #' @returns

@@ -9,7 +9,7 @@ rray_insert_axes(x, axes)
 \arguments{
 \item{x}{An array.}
 
-\item{axes}{An integer vector of positions in the result to insert axes at.
+\item{axes}{An integer vector of locations in the \emph{result} to insert axes at.
 It must be in strictly increasing order.}
 }
 \value{
