@@ -1,6 +1,6 @@
 #' Remove array axes
 #'
-#' `rray_remove_axes()` drops axes with a dimension of 1.
+#' `rray_remove_axes()` removes axes with a dimension of 1.
 #'
 #' @details
 #' Removed axes lose their names.

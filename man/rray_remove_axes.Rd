@@ -16,7 +16,7 @@ have a dimension of 1. At least one axis must remain.}
 An array with the selected \code{axes} removed.
 }
 \description{
-\code{rray_remove_axes()} drops axes with a dimension of 1.
+\code{rray_remove_axes()} removes axes with a dimension of 1.
 }
 \details{
 Removed axes lose their names.
