@@ -43,7 +43,7 @@ For reference, the numpy names:
 ## Decision summary
 
 - Both functions take a single `axis`. It is required and has no default, which
-  matches `rray_split()`, `rray_squeeze()`, and `rray_permute_axes()`.
+  matches `rray_split()`, `rray_remove_axes()`, and `rray_permute_axes()`.
 
 - `axis` must be between 1 and the dimensionality of `x`. Out of range is an
   error. These functions never add an axis, that is what `rray_broadcast()` is

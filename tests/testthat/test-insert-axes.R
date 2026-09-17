@@ -110,7 +110,7 @@ test_that("axes are coerced to integer", {
   expect_identical(rray_insert_axes(x, 2), array(1:3, c(3L, 1L)))
 })
 
-test_that("squeezing the inserted axes returns the input", {
+test_that("removing the inserted axes returns the input", {
   x <- array(
     1:6,
     c(2L, 3L),
@@ -118,7 +118,7 @@ test_that("squeezing the inserted axes returns the input", {
   )
   axes <- c(1L, 3L)
 
-  expect_identical(rray_squeeze(rray_insert_axes(x, axes), axes), x)
+  expect_identical(rray_remove_axes(rray_insert_axes(x, axes), axes), x)
 })
 
 test_that("errors on invalid axes", {

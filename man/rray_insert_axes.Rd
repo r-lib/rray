@@ -64,9 +64,9 @@ rray_dimensions(rray_insert_axes(x, c(2, 3)))
 # Inserting no axes returns `x` unchanged
 rray_insert_axes(x, integer())
 
-# `rray_squeeze()` undoes an insertion
-rray_squeeze(rray_insert_axes(x, 2), 2)
+# `rray_remove_axes()` undoes an insertion
+rray_remove_axes(rray_insert_axes(x, 2), 2)
 }
 \seealso{
-\code{\link[=rray_squeeze]{rray_squeeze()}}
+\code{\link[=rray_remove_axes]{rray_remove_axes()}}
 }

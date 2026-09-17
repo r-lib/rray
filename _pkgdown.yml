@@ -34,7 +34,7 @@ reference:
   - rray_permute_axes
   - rray_move_axes
   - rray_insert_axes
-  - rray_squeeze
+  - rray_remove_axes
 
 - title: Binary
   contents:
