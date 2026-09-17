@@ -1,6 +1,7 @@
 static inline void rray_dimensions_merge(
   int* v_out_dimensions,
   r_ssize* v_out_args,
+  const bool* v_ignored,
   int* p_out_dimensionality,
   r_ssize* p_out_i,
   const int* v_x_dimensions,

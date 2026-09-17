@@ -6,6 +6,7 @@
 #include "broadcast-names.h"
 #include "cast-common.h"
 #include "dimensionality.h"
+#include "dimensions.h"
 #include "ptype-common.h"
 #include "size.h"
 #include "strided-iterator.h"
@@ -47,74 +48,30 @@ r_obj* rray_combine(
   r_obj* const* v_xs = r_list_cbegin(xs);
 
   const int dimensionality = list_max_dimensionality(xs, arg, error_call);
+  check_max_dimensionality(dimensionality);
 
   check_axis(axis, dimensionality, rray_args.dot_axis, error_call);
 
-  r_obj* out_dimensions = KEEP(r_alloc_integer(dimensionality));
+  r_obj* out_dimensions =
+    KEEP(rray_dimensions_common_opts(xs, &axis, 1, arg, error_call));
   int* v_out_dimensions = r_int_begin(out_dimensions);
-
-  r_ssize v_out_args[RRAY_MAX_DIMENSIONALITY];
-
-  for (int i = 0; i < dimensionality; ++i) {
-    v_out_dimensions[i] = 1;
-    v_out_args[i] = 0;
-  }
-
-  r_obj* xs_names = KEEP(r_names(xs));
-
-  r_ssize x_i = 0;
-  struct rray_arg* x_arg = new_subscript_arg(arg, xs_names, xs_size, &x_i);
-  KEEP(x_arg->shelter);
-
-  r_ssize out_i = 0;
-  struct rray_arg* out_arg = new_subscript_arg(arg, xs_names, xs_size, &out_i);
-  KEEP(out_arg->shelter);
 
   r_ssize axis_dimension = 0;
 
-  for (x_i = 0; x_i < xs_size; ++x_i) {
+  for (r_ssize x_i = 0; x_i < xs_size; ++x_i) {
     r_obj* x_dimensions = r_dim(v_xs[x_i]);
-    const int* v_x_dimensions = r_int_cbegin(x_dimensions);
     const int x_dimensionality = (int) r_length(x_dimensions);
+    const int x_axis_dimension =
+      (axis <= x_dimensionality) ? r_int_cbegin(x_dimensions)[axis - 1] : 1;
 
-    for (int i = 0; i < dimensionality; ++i) {
-      const int x_dimension = (i < x_dimensionality) ? v_x_dimensions[i] : 1;
-
-      if (i == axis - 1) {
-        if (axis_dimension > INT_MAX - x_dimension) {
-          r_abort_lazy_call(
-            error_call,
-            "The combined dimension on `.axis` is too large."
-          );
-        }
-        axis_dimension += x_dimension;
-        continue;
-      }
-
-      const int out_dimension = v_out_dimensions[i];
-
-      if (out_dimension == x_dimension || x_dimension == 1) {
-        continue;
-      }
-
-      if (out_dimension == 1) {
-        v_out_dimensions[i] = x_dimension;
-        v_out_args[i] = x_i;
-        continue;
-      }
-
-      out_i = v_out_args[i];
+    if (axis_dimension > INT_MAX - x_axis_dimension) {
       r_abort_lazy_call(
         error_call,
-        "Can't find common dimensions at axis %d. "
-        "%s has dimension %d and %s has dimension %d.",
-        i + 1,
-        rray_arg_format(out_arg),
-        out_dimension,
-        rray_arg_format(x_arg),
-        x_dimension
+        "The combined dimension on `.axis` is too large."
       );
     }
+
+    axis_dimension += x_axis_dimension;
   }
 
   v_out_dimensions[axis - 1] = (int) axis_dimension;
@@ -135,7 +92,7 @@ r_obj* rray_combine(
 
   r_ssize axis_offset = 0;
 
-  for (x_i = 0; x_i < xs_size; ++x_i) {
+  for (r_ssize x_i = 0; x_i < xs_size; ++x_i) {
     r_obj* x = v_xs[x_i];
     r_obj* x_dimensions = r_dim(x);
     const int* v_x_dimensions = r_int_cbegin(x_dimensions);
@@ -178,7 +135,7 @@ r_obj* rray_combine(
     r_attrib_poke_dim_names(out, out_names);
   }
 
-  FREE(8);
+  FREE(5);
   return out;
 }
 

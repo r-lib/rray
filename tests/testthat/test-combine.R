@@ -94,6 +94,16 @@ test_that("broadcasts every non-combine axis", {
   expect_identical(out[, 3:6, ], y)
 })
 
+test_that("conflicting dimensions are allowed on the combine axis", {
+  x <- array(1:4, c(2L, 2L))
+  y <- array(1:6, c(3L, 2L))
+
+  out <- rray_combine(x, y, .axis = 1L)
+  expect_identical(dim(out), c(5L, 2L))
+  expect_identical(out[1:2, ], x)
+  expect_identical(out[3:5, ], y)
+})
+
 test_that("combines on an implicit trailing axis", {
   x <- 1:2
   y <- array(3:8, c(2L, 3L))
@@ -170,6 +180,27 @@ test_that("validates inputs and axis", {
     rray_combine(x, .axis = 1.5)
     rray_combine(x, .axis = 0L)
     rray_combine(x, .axis = 3L)
+  })
+})
+
+test_that("rejects a dimensionality above the maximum", {
+  x <- array(1, rep(1L, 100L))
+  expect_snapshot(rray_combine(x, x, .axis = 100L), error = TRUE)
+})
+
+test_that("incompatible dimension errors name the inputs", {
+  expect_snapshot(error = TRUE, {
+    rray_combine(
+      x = array(1, c(2L, 2L)),
+      y = array(1, c(3L, 2L)),
+      .axis = 2L
+    )
+    rray_combine(
+      a = array(1, c(2L, 1L, 1L)),
+      b = array(1, c(2L, 3L, 1L)),
+      c = array(1, c(2L, 4L, 1L)),
+      .axis = 1L
+    )
   })
 })
 

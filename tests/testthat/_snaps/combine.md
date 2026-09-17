@@ -47,6 +47,28 @@
       Error in `rray_combine()`:
       ! `.axis` must be less than or equal to the dimensionality of 2, not 3.
 
+# rejects a dimensionality above the maximum
+
+    Code
+      rray_combine(x, x, .axis = 100L)
+    Condition
+      Error in `rray_combine()`:
+      ! rray can't support arrays with a dimensionality greater than 64. A dimensionality of 100 was requested.
+
+# incompatible dimension errors name the inputs
+
+    Code
+      rray_combine(x = array(1, c(2L, 2L)), y = array(1, c(3L, 2L)), .axis = 2L)
+    Condition
+      Error in `rray_combine()`:
+      ! Can't find common dimensions at axis 1. `x` has dimension 2 and `y` has dimension 3.
+    Code
+      rray_combine(a = array(1, c(2L, 1L, 1L)), b = array(1, c(2L, 3L, 1L)), c = array(
+        1, c(2L, 4L, 1L)), .axis = 1L)
+    Condition
+      Error in `rray_combine()`:
+      ! Can't find common dimensions at axis 2. `b` has dimension 3 and `c` has dimension 4.
+
 # rejects incompatible inputs
 
     Code

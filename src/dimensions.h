@@ -43,6 +43,15 @@ bool rray_dimensions_are_equal(
 r_obj* rray_dimensions_common(
   r_obj* xs,
   r_obj* dimensions,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+);
+
+r_obj* rray_dimensions_common_opts(
+  r_obj* xs,
+  const int* v_ignore,
+  r_ssize ignore_size,
+  struct rray_arg* arg,
   struct r_lazy error_call
 );
 
