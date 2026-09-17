@@ -4,24 +4,22 @@
 \alias{rray_move_axes}
 \title{Move array axes}
 \usage{
-rray_move_axes(x, axes, to)
+rray_move_axes(x, from, to)
 }
 \arguments{
 \item{x}{An array.}
 
-\item{axes}{An integer vector of axes to move. It must not use an axis of
-\code{x} more than once.}
+\item{from}{An integer vector of axes in \code{x} to move.}
 
-\item{to}{An integer vector of positions to move \code{axes} to. \code{axes[[i]]} ends
-up at position \code{to[[i]]}. It must be the same length as \code{axes}, and must
-not use a position more than once.}
+\item{to}{An integer vector of axes in the output to move to.}
 }
 \value{
-An array with the \code{axes} of \code{x} moved to the positions in \code{to}.
+An array.
 }
 \description{
-\code{rray_move_axes()} moves \code{axes} to new positions. The axes that don't move
-keep their relative order, and fill in the positions that are left over.
+\code{rray_move_axes()} takes axes \code{from} \code{x} and moves them \code{to} axes in the
+output. The axes that don't move keep their relative order, and fill in the
+locations that are left over.
 }
 \details{
 Names travel with their axis to its new position.
