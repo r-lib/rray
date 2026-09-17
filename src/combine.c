@@ -157,7 +157,8 @@ static r_obj* rray_combine_names(r_obj* xs, r_obj* dimensions, int axis) {
     r_list_poke(out, axis - 1, r_null);
   }
 
-  r_obj* axis_names = KEEP(rray_combine_axis_names(xs, axis));
+  const r_ssize axis_dimension = r_int_get(dimensions, axis - 1);
+  r_obj* axis_names = KEEP(rray_combine_axis_names(xs, axis, axis_dimension));
 
   if (axis_names != r_null) {
     if (out == r_null) {
@@ -171,47 +172,36 @@ static r_obj* rray_combine_names(r_obj* xs, r_obj* dimensions, int axis) {
   return out;
 }
 
-static r_obj* rray_combine_axis_names(r_obj* xs, int axis) {
+static r_obj* rray_combine_axis_names(r_obj* xs, int axis, r_ssize size) {
   const r_ssize n = r_length(xs);
   r_obj* const* v_xs = r_list_cbegin(xs);
 
-  bool any_names = false;
-  r_ssize size = 0;
+  r_obj* out = r_null;
+  r_keep_loc out_loc;
+  KEEP_HERE(out, &out_loc);
 
-  for (r_ssize i = 0; i < n; ++i) {
-    r_obj* x = v_xs[i];
-    r_obj* dimensions = r_dim(x);
-    const int dimensionality = (int) r_length(dimensions);
-    const int dimension =
-      (axis <= dimensionality) ? r_int_get(dimensions, axis - 1) : 1;
-    size += dimension;
-
-    r_obj* names = r_dim_names(x);
-    if (names != r_null && axis <= dimensionality) {
-      any_names = any_names || r_list_get(names, axis - 1) != r_null;
-    }
-  }
-
-  if (!any_names) {
-    return r_null;
-  }
-
-  r_obj* out = KEEP(r_alloc_character(size));
   r_ssize out_i = 0;
 
   for (r_ssize i = 0; i < n; ++i) {
     r_obj* x = v_xs[i];
     r_obj* dimensions = r_dim(x);
-    const int dimensionality = (int) r_length(dimensions);
+    const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
     const int dimension =
       (axis <= dimensionality) ? r_int_get(dimensions, axis - 1) : 1;
+
     r_obj* names = r_dim_names(x);
     r_obj* axis_names = (names != r_null && axis <= dimensionality)
       ? r_list_get(names, axis - 1)
       : r_null;
 
     if (axis_names != r_null) {
+      if (out == r_null) {
+        out = r_alloc_character(size);
+        KEEP_AT(out, out_loc);
+      }
+
       r_obj* const* v_axis_names = r_chr_cbegin(axis_names);
+
       for (int j = 0; j < dimension; ++j) {
         r_chr_poke(out, out_i + j, v_axis_names[j]);
       }
