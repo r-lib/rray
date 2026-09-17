@@ -19,7 +19,7 @@ An array with new axes of dimension 1 at \code{axes}.
 \code{rray_insert_axes()} inserts new axes with a dimension of 1.
 }
 \details{
-\code{axes} are positions in the result, not positions in \code{x}. Inserting 2 axes
+\code{axes} are locations in the result, not locations in \code{x}. Inserting 2 axes
 into an array with a dimensionality of 3 gives a result with a
 dimensionality of 5 (2 + 3), so \code{axes} can be any value between 1 and 5.
 
@@ -44,7 +44,7 @@ result  (x, 1, 1, x, x)
 }\if{html}{\out{</div>}}
 
 Inserted axes have no names. The axes of \code{x} keep their names and carry them
-to their new positions.
+to their new locations.
 }
 \examples{
 x <- array(1:24, c(2, 3, 4))

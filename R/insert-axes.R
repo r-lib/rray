@@ -3,7 +3,7 @@
 #' `rray_insert_axes()` inserts new axes with a dimension of 1.
 #'
 #' @details
-#' `axes` are positions in the result, not positions in `x`. Inserting 2 axes
+#' `axes` are locations in the result, not locations in `x`. Inserting 2 axes
 #' into an array with a dimensionality of 3 gives a result with a
 #' dimensionality of 5 (2 + 3), so `axes` can be any value between 1 and 5.
 #'
@@ -30,7 +30,7 @@
 #' ```
 #'
 #' Inserted axes have no names. The axes of `x` keep their names and carry them
-#' to their new positions.
+#' to their new locations.
 #'
 #' @param x An array.
 #'

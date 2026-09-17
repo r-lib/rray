@@ -68,7 +68,7 @@ test_that("inserts into a bare vector", {
   expect_identical(rray_insert_axes(1:3, 2L), array(1:3, c(3L, 1L)))
 })
 
-test_that("existing axes carry their names to their new positions", {
+test_that("existing axes carry their names to their new locations", {
   x <- array(
     1:6,
     c(2L, 3L),
