@@ -58,8 +58,8 @@ r_obj* rray_combine(
 
   int axis_dimension = 0;
 
-  for (r_ssize x_i = 0; x_i < xs_size; ++x_i) {
-    r_obj* x_dimensions = r_dim(v_xs[x_i]);
+  for (r_ssize i = 0; i < xs_size; ++i) {
+    r_obj* x_dimensions = r_dim(v_xs[i]);
     const int x_dimensionality = (int) r_length(x_dimensions);
     const int x_axis_dimension =
       (axis <= x_dimensionality) ? r_int_cbegin(x_dimensions)[axis - 1] : 1;
@@ -93,8 +93,8 @@ r_obj* rray_combine(
 
   r_ssize axis_offset = 0;
 
-  for (r_ssize x_i = 0; x_i < xs_size; ++x_i) {
-    r_obj* x = v_xs[x_i];
+  for (r_ssize i = 0; i < xs_size; ++i) {
+    r_obj* x = v_xs[i];
     r_obj* x_dimensions = r_dim(x);
     const int* v_x_dimensions = r_int_cbegin(x_dimensions);
     const int x_dimensionality = (int) r_length(x_dimensions);
