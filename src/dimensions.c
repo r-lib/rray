@@ -183,13 +183,13 @@ r_obj* rray_dimensions_common_opts(
   // populated by the time that axis can conflict
   r_ssize v_out_args[RRAY_MAX_DIMENSIONALITY];
 
-  bool v_ignored[RRAY_MAX_DIMENSIONALITY];
-
   for (int i = 0; i < RRAY_MAX_DIMENSIONALITY; ++i) {
     v_out_dimensions[i] = 1;
     v_out_args[i] = 0;
-    v_ignored[i] = false;
   }
+
+  bool v_ignored[RRAY_MAX_DIMENSIONALITY];
+  r_memset(v_ignored, 0, sizeof(bool) * RRAY_MAX_DIMENSIONALITY);
 
   for (r_ssize i = 0; i < ignore_size; ++i) {
     v_ignored[v_ignore[i] - 1] = true;
