@@ -45,7 +45,7 @@ r_obj* rray_insert_axes(
   KEEP_HERE(out_names, &out_names_loc);
 
   r_ssize axes_i = 0;
-  int x_i = 0;
+  r_ssize x_i = 0;
 
   for (int i = 0; i < out_dimensionality; ++i) {
     if (axes_i < axes_size && v_axes[axes_i] - 1 == i) {
