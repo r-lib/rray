@@ -9,8 +9,8 @@
 #'
 #' @param x An array.
 #'
-#' @param from An integer vector of axes to move. It must not use an axis of
-#'   `x` more than once.
+#' @param from An integer vector of axes in `x` to move. It must not use an
+#'   axis of `x` more than once.
 #'
 #' @param to An integer vector of positions to move `from` to. `from[[i]]` ends
 #'   up at position `to[[i]]`. It must be the same length as `from`, and must

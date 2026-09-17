@@ -9,8 +9,8 @@ rray_move_axes(x, from, to)
 \arguments{
 \item{x}{An array.}
 
-\item{from}{An integer vector of axes to move. It must not use an axis of
-\code{x} more than once.}
+\item{from}{An integer vector of axes in \code{x} to move. It must not use an
+axis of \code{x} more than once.}
 
 \item{to}{An integer vector of positions to move \code{from} to. \code{from[[i]]} ends
 up at position \code{to[[i]]}. It must be the same length as \code{from}, and must
