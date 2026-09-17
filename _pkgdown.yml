@@ -28,6 +28,7 @@ reference:
   - rray_broadcast
   - rray_broadcast_common
   - rray_squeeze
+  - rray_insert_axes
   - rray_split
   - rray_permute_axes
   - rray_move_axes

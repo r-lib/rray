@@ -70,12 +70,16 @@ r_no_return void stop_scalar_input(
   );
 }
 
-int arg_as_int(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
-  if (r_typeof(x) != R_TYPE_integer) {
-    x = KEEP(vec_cast(x, r_globals.empty_int, arg, NULL));
-  } else {
-    KEEP(x);
+r_obj* arg_as_integer(r_obj* x, struct rray_arg* arg) {
+  if (r_typeof(x) == R_TYPE_integer) {
+    return x;
   }
+
+  return vec_cast(x, r_globals.empty_int, arg, NULL);
+}
+
+int arg_as_int(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
+  x = KEEP(arg_as_integer(x, arg));
 
   if (r_attrib_has_any(x)) {
     r_abort_lazy_call(
