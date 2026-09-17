@@ -9,8 +9,8 @@ rray_insert_axes(x, axes)
 \arguments{
 \item{x}{An array.}
 
-\item{axes}{An integer vector of the axes of the \emph{result} that are inserted.
-It must be in strictly increasing order.}
+\item{axes}{An integer vector referring to axes in the \emph{output} that are
+newly inserted. It must be in strictly increasing order.}
 }
 \value{
 An array with new axes of dimension 1 at \code{axes}.
