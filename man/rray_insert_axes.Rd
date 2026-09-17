@@ -19,10 +19,9 @@ An array with new axes of dimension 1 at \code{axes}.
 \code{rray_insert_axes()} inserts new axes with a dimension of 1.
 }
 \details{
-\code{axes} are axes of the result, not axes of \code{x}. They are exactly the axes
-that the result gains. Inserting 2 axes into an array with a dimensionality
-of 3 gives a result with a dimensionality of 5 (2 + 3), so \code{axes} can be any
-value between 1 and 5.
+\code{axes} refer to axes of the result, not axes of \code{x}. Inserting 2 axes into
+an array with a dimensionality of 3 gives a result with a dimensionality of
+5 (2 + 3), so \code{axes} can be any value between 1 and 5.
 
 To work out the result, write out the axes of the result and mark the ones
 listed in \code{axes} with 1. Then use the dimensions of \code{x} to fill in the rest
