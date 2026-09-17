@@ -1,8 +1,8 @@
 #' Move array axes
 #'
-#' `rray_move_axes()` moves the `from` axes to new positions. The axes that
-#' don't move keep their relative order, and fill in the positions that are
-#' left over.
+#' `rray_move_axes()` takes axes `from` `x` and moves them `to` axes in the
+#' output. The axes that don't move keep their relative order, and fill in the
+#' locations that are left over.
 #'
 #' @details
 #' Names travel with their axis to its new position.

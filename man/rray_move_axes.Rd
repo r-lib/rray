@@ -20,9 +20,9 @@ not use a position more than once.}
 An array with the \code{from} axes of \code{x} moved to the positions in \code{to}.
 }
 \description{
-\code{rray_move_axes()} moves the \code{from} axes to new positions. The axes that
-don't move keep their relative order, and fill in the positions that are
-left over.
+\code{rray_move_axes()} takes axes \code{from} \code{x} and moves them \code{to} axes in the
+output. The axes that don't move keep their relative order, and fill in the
+locations that are left over.
 }
 \details{
 Names travel with their axis to its new position.
