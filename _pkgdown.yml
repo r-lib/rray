@@ -27,11 +27,14 @@ reference:
   contents:
   - rray_broadcast
   - rray_broadcast_common
-  - rray_squeeze
-  - rray_insert_axes
   - rray_split
+
+- title: Axes
+  contents:
   - rray_permute_axes
   - rray_move_axes
+  - rray_insert_axes
+  - rray_squeeze
 
 - title: Binary
   contents:
