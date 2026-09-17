@@ -14,6 +14,6 @@ int rray_dimensionality(
 );
 int rray_dimensionality_from_dimensions(r_obj* dimensions);
 
-void check_max_dimensionality(r_ssize dimensionality);
+void check_max_dimensionality(int dimensionality);
 
 #endif

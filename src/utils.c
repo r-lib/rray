@@ -1,5 +1,7 @@
 #include "utils.h"
 
+#include <limits.h>
+
 #include "syms.h"
 #include "wrapper.h"
 
@@ -120,6 +122,14 @@ bool r_has_name_at(r_obj* names, r_ssize i) {
   }
 
   return r_str_is_name(r_chr_get(names, i));
+}
+
+int int_add_checked(int x, int y) {
+  if ((y > 0 && x > INT_MAX - y) || (y < 0 && x < INT_MIN - y)) {
+    r_abort("Can't add %d and %d, the result doesn't fit in an integer.", x, y);
+  }
+
+  return x + y;
 }
 
 r_obj* vec_cast(

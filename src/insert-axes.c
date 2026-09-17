@@ -27,8 +27,9 @@ r_obj* rray_insert_axes(
   axes = KEEP(arg_as_integer(axes, rray_args.axes));
   const r_ssize axes_size = r_length(axes);
 
-  check_max_dimensionality((r_ssize) dimensionality + axes_size);
-  const int out_dimensionality = dimensionality + (int) axes_size;
+  const int out_dimensionality =
+    int_add_checked(dimensionality, (int) axes_size);
+  check_max_dimensionality(out_dimensionality);
 
   check_axes(axes, out_dimensionality, rray_args.axes, error_call);
   const int* v_axes = r_int_cbegin(axes);
