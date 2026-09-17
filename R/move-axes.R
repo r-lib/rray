@@ -17,7 +17,7 @@
 #'   not use an axis more than once.
 #'
 #' @returns
-#' An array with the `from` axes of `x` moved to the positions in `to`.
+#' An array.
 #'
 #' @seealso [rray_permute_axes()]
 #'
