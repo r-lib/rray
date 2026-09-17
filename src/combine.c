@@ -65,7 +65,7 @@ r_obj* rray_combine(
     const int x_dimensionality =
       rray_dimensionality_from_dimensions(x_dimensions);
     const int x_axis_dimension =
-      (axis <= x_dimensionality) ? r_int_cbegin(x_dimensions)[axis - 1] : 1;
+      (axis <= x_dimensionality) ? r_int_get(x_dimensions, axis - 1) : 1;
     FREE(1);
 
     if (axis_dimension > INT_MAX - x_axis_dimension) {
