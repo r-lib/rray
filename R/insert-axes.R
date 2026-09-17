@@ -40,7 +40,7 @@
 #' @returns
 #' An array with new axes of dimension 1 at `axes`.
 #'
-#' @seealso [rray_squeeze()]
+#' @seealso [rray_remove_axes()]
 #'
 #' @export
 #' @examples
@@ -61,8 +61,8 @@
 #' # Inserting no axes returns `x` unchanged
 #' rray_insert_axes(x, integer())
 #'
-#' # `rray_squeeze()` undoes an insertion
-#' rray_squeeze(rray_insert_axes(x, 2), 2)
+#' # `rray_remove_axes()` undoes an insertion
+#' rray_remove_axes(rray_insert_axes(x, 2), 2)
 rray_insert_axes <- function(x, axes) {
   .Call(ffi_rray_insert_axes, x, axes, environment())
 }

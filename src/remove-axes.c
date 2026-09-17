@@ -1,4 +1,4 @@
-#include "squeeze.h"
+#include "remove-axes.h"
 
 #include "axes.h"
 #include "dimensionality.h"
@@ -6,12 +6,12 @@
 #include "utils.h"
 #include "wrapper.h"
 
-r_obj* ffi_rray_squeeze(r_obj* ffi_x, r_obj* ffi_axes, r_obj* ffi_frame) {
+r_obj* ffi_rray_remove_axes(r_obj* ffi_x, r_obj* ffi_axes, r_obj* ffi_frame) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  return rray_squeeze(ffi_x, ffi_axes, rray_args.x, error_call);
+  return rray_remove_axes(ffi_x, ffi_axes, rray_args.x, error_call);
 }
 
-r_obj* rray_squeeze(
+r_obj* rray_remove_axes(
   r_obj* x,
   r_obj* axes,
   struct rray_arg* arg,
@@ -29,7 +29,7 @@ r_obj* rray_squeeze(
   const r_ssize axes_size = r_length(axes);
 
   if (axes_size == dimensionality) {
-    r_abort_lazy_call(error_call, "`axes` can't squeeze every axis.");
+    r_abort_lazy_call(error_call, "`axes` can't remove every axis.");
   }
 
   const int out_dimensionality = dimensionality - (int) axes_size;
@@ -48,12 +48,12 @@ r_obj* rray_squeeze(
   int out_i = 0;
 
   for (int i = 0; i < dimensionality; ++i) {
-    // Check if we are squeezing this axis
+    // Check if we are removing this axis
     if (axes_i < axes_size && v_axes[axes_i] - 1 == i) {
       if (v_x_dimensions[i] != 1) {
         r_abort_lazy_call(
           error_call,
-          "Can't squeeze axis %d of %s because it has dimension %d, not 1.",
+          "Can't remove axis %d of %s because it has dimension %d, not 1.",
           i + 1,
           rray_arg_format(arg),
           v_x_dimensions[i]
@@ -64,7 +64,7 @@ r_obj* rray_squeeze(
       continue;
     }
 
-    // Shift all unsqueezed axes left
+    // Shift all remaining axes left
     v_out_dimensions[out_i] = v_x_dimensions[i];
 
     if (v_x_names != NULL && v_x_names[i] != r_null) {

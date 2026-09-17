@@ -463,7 +463,7 @@ unstack on axis 2:
 ```
 
 Names on the `dimnames` list itself are not a new concern for these functions.
-Follow the behavior of the existing broadcast and squeeze helpers.
+Follow the behavior of the existing broadcast and remove-axes helpers.
 
 ## Round trips
 
@@ -1011,7 +1011,7 @@ large improvement already measured for leading-axis slices and should not make
 trailing-axis slices materially slower.
 
 If the iterator or a shared dimension helper changes, also run the broadcast,
-squeeze, cast-common, and ptype-common tests directly before the full suite.
+remove-axes, cast-common, and ptype-common tests directly before the full suite.
 
 ## Done means
 
