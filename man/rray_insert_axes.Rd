@@ -34,7 +34,7 @@ result  (x, 1, x, x)
       = (2, 1, 3, 4)
 }\if{html}{\out{</div>}}
 
-Inserting two axes side by side is the same walk, with two marked axes:
+This allows you to insert two axes side by side:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{x       (2, 3, 4)
 axes    c(2, 3)

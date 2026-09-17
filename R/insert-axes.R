@@ -19,7 +19,7 @@
 #'       = (2, 1, 3, 4)
 #' ```
 #'
-#' Inserting two axes side by side is the same walk, with two marked axes:
+#' This allows you to insert two axes side by side:
 #'
 #' ```
 #' x       (2, 3, 4)
