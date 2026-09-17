@@ -52,12 +52,12 @@ r_obj* rray_move_axes(
   bool v_filled[RRAY_MAX_DIMENSIONALITY] = {false};
 
   for (r_ssize i = 0; i < from_size; ++i) {
-    const int axis = v_from[i];
-    const int location = v_to[i];
+    const int from_elt = v_from[i];
+    const int to_elt = v_to[i];
 
-    v_permutation[location - 1] = axis;
-    v_moved[axis - 1] = true;
-    v_filled[location - 1] = true;
+    v_permutation[to_elt - 1] = from_elt;
+    v_moved[from_elt - 1] = true;
+    v_filled[to_elt - 1] = true;
   }
 
   int axis = 1;
