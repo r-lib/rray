@@ -9,11 +9,18 @@ r_obj* arg_as_axes(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  if (r_typeof(axes) != R_TYPE_integer) {
-    axes = vec_cast(axes, r_globals.empty_int, arg, NULL);
-  }
-  KEEP(axes);
+  axes = KEEP(arg_as_integer(axes, arg));
+  check_axes(axes, dimensionality, arg, error_call);
+  FREE(1);
+  return axes;
+}
 
+void check_axes(
+  r_obj* axes,
+  int dimensionality,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+) {
   if (r_attrib_has_any(axes)) {
     r_abort_lazy_call(
       error_call,
@@ -65,9 +72,6 @@ r_obj* arg_as_axes(
       );
     }
   }
-
-  FREE(1);
-  return axes;
 }
 
 r_obj* arg_as_axes_unsorted(
@@ -78,10 +82,7 @@ r_obj* arg_as_axes_unsorted(
 ) {
   check_max_dimensionality(dimensionality);
 
-  if (r_typeof(axes) != R_TYPE_integer) {
-    axes = vec_cast(axes, r_globals.empty_int, arg, NULL);
-  }
-  KEEP(axes);
+  axes = KEEP(arg_as_integer(axes, arg));
 
   if (r_attrib_has_any(axes)) {
     r_abort_lazy_call(
@@ -152,10 +153,7 @@ r_obj* arg_as_axes_permutation(
 ) {
   check_max_dimensionality(dimensionality);
 
-  if (r_typeof(axes) != R_TYPE_integer) {
-    axes = vec_cast(axes, r_globals.empty_int, arg, NULL);
-  }
-  KEEP(axes);
+  axes = KEEP(arg_as_integer(axes, arg));
 
   if (r_attrib_has_any(axes)) {
     r_abort_lazy_call(
