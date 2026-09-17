@@ -167,7 +167,7 @@ r_obj* rray_combine(
     );
 
     const r_ssize out_start = axis_offset * v_out_strides[axis - 1];
-    rray_combine_copy(x, out, out_start, &plan);
+    rray_combine_fill(x, out, out_start, &plan);
     axis_offset += x_axis_dimension;
   }
 
@@ -262,7 +262,7 @@ static r_obj* rray_combine_axis_names(r_obj* xs, int axis) {
   return out;
 }
 
-static void rray_combine_copy(
+static void rray_combine_fill(
   r_obj* x,
   r_obj* out,
   r_ssize out_start,
@@ -270,32 +270,32 @@ static void rray_combine_copy(
 ) {
   switch (r_typeof(x)) {
   case R_TYPE_logical:
-    rray_combine_lgl(x, out, out_start, plan);
+    rray_combine_fill_lgl(x, out, out_start, plan);
     break;
   case R_TYPE_integer:
-    rray_combine_int(x, out, out_start, plan);
+    rray_combine_fill_int(x, out, out_start, plan);
     break;
   case R_TYPE_double:
-    rray_combine_dbl(x, out, out_start, plan);
+    rray_combine_fill_dbl(x, out, out_start, plan);
     break;
   case R_TYPE_complex:
-    rray_combine_cpl(x, out, out_start, plan);
+    rray_combine_fill_cpl(x, out, out_start, plan);
     break;
   case R_TYPE_raw:
-    rray_combine_raw(x, out, out_start, plan);
+    rray_combine_fill_raw(x, out, out_start, plan);
     break;
   case R_TYPE_character:
-    rray_combine_chr(x, out, out_start, plan);
+    rray_combine_fill_chr(x, out, out_start, plan);
     break;
   case R_TYPE_list:
-    rray_combine_list(x, out, out_start, plan);
+    rray_combine_fill_list(x, out, out_start, plan);
     break;
   default:
     r_stop_unreachable();
   }
 }
 
-#define RRAY_COMBINE_ATOMIC(CTYPE, CONST_DEREF, DEREF)                         \
+#define RRAY_COMBINE_FILL_ATOMIC(CTYPE, CONST_DEREF, DEREF)                    \
   const r_ssize size = rray_strided_iterator2_plan_size(plan);                 \
                                                                                \
   const CTYPE* v_x = CONST_DEREF(x);                                           \
@@ -328,7 +328,7 @@ static void rray_combine_copy(
     RRAY_STRIDED_ITERATOR_NEXT2(out_start, x_start, v_point, plan);            \
   }
 
-#define RRAY_COMBINE_BARRIER(CONST_DEREF, POKE)                                \
+#define RRAY_COMBINE_FILL_BARRIER(CONST_DEREF, POKE)                           \
   const r_ssize size = rray_strided_iterator2_plan_size(plan);                 \
                                                                                \
   r_obj* const* v_x = CONST_DEREF(x);                                          \
@@ -360,68 +360,68 @@ static void rray_combine_copy(
     RRAY_STRIDED_ITERATOR_NEXT2(out_start, x_start, v_point, plan);            \
   }
 
-static void rray_combine_lgl(
+static void rray_combine_fill_lgl(
   r_obj* x,
   r_obj* out,
   r_ssize out_start,
   const struct rray_strided_iterator2_plan* plan
 ) {
-  RRAY_COMBINE_ATOMIC(int, r_lgl_cbegin, r_lgl_begin);
+  RRAY_COMBINE_FILL_ATOMIC(int, r_lgl_cbegin, r_lgl_begin);
 }
 
-static void rray_combine_int(
+static void rray_combine_fill_int(
   r_obj* x,
   r_obj* out,
   r_ssize out_start,
   const struct rray_strided_iterator2_plan* plan
 ) {
-  RRAY_COMBINE_ATOMIC(int, r_int_cbegin, r_int_begin);
+  RRAY_COMBINE_FILL_ATOMIC(int, r_int_cbegin, r_int_begin);
 }
 
-static void rray_combine_dbl(
+static void rray_combine_fill_dbl(
   r_obj* x,
   r_obj* out,
   r_ssize out_start,
   const struct rray_strided_iterator2_plan* plan
 ) {
-  RRAY_COMBINE_ATOMIC(double, r_dbl_cbegin, r_dbl_begin);
+  RRAY_COMBINE_FILL_ATOMIC(double, r_dbl_cbegin, r_dbl_begin);
 }
 
-static void rray_combine_cpl(
+static void rray_combine_fill_cpl(
   r_obj* x,
   r_obj* out,
   r_ssize out_start,
   const struct rray_strided_iterator2_plan* plan
 ) {
-  RRAY_COMBINE_ATOMIC(r_complex, r_cpl_cbegin, r_cpl_begin);
+  RRAY_COMBINE_FILL_ATOMIC(r_complex, r_cpl_cbegin, r_cpl_begin);
 }
 
-static void rray_combine_raw(
+static void rray_combine_fill_raw(
   r_obj* x,
   r_obj* out,
   r_ssize out_start,
   const struct rray_strided_iterator2_plan* plan
 ) {
-  RRAY_COMBINE_ATOMIC(Rbyte, r_raw_cbegin, r_raw_begin);
+  RRAY_COMBINE_FILL_ATOMIC(Rbyte, r_raw_cbegin, r_raw_begin);
 }
 
-static void rray_combine_chr(
+static void rray_combine_fill_chr(
   r_obj* x,
   r_obj* out,
   r_ssize out_start,
   const struct rray_strided_iterator2_plan* plan
 ) {
-  RRAY_COMBINE_BARRIER(r_chr_cbegin, r_chr_poke);
+  RRAY_COMBINE_FILL_BARRIER(r_chr_cbegin, r_chr_poke);
 }
 
-static void rray_combine_list(
+static void rray_combine_fill_list(
   r_obj* x,
   r_obj* out,
   r_ssize out_start,
   const struct rray_strided_iterator2_plan* plan
 ) {
-  RRAY_COMBINE_BARRIER(r_list_cbegin, r_list_poke);
+  RRAY_COMBINE_FILL_BARRIER(r_list_cbegin, r_list_poke);
 }
 
-#undef RRAY_COMBINE_ATOMIC
-#undef RRAY_COMBINE_BARRIER
+#undef RRAY_COMBINE_FILL_ATOMIC
+#undef RRAY_COMBINE_FILL_BARRIER
