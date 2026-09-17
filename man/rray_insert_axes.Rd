@@ -23,9 +23,9 @@ An array with new axes of dimension 1 at \code{axes}.
 into an array with a dimensionality of 3 gives a result with a
 dimensionality of 5 (2 + 3), so \code{axes} can be any value between 1 and 5.
 
-To work out the result, lay out its \code{d + k} axes and mark the ones listed in
-\code{axes}. Marked axes get a dimension of 1, and the dimensions of \code{x} fill in
-the rest, in order.
+To work out the result, write out the resulting axes and mark the locations
+listed in \code{axes} with 1. Then use the dimensions of \code{x} to fill in the rest
+in order.
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{x       (2, 3, 4)
 axes    2
