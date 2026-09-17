@@ -59,10 +59,14 @@ r_obj* rray_combine(
   int axis_dimension = 0;
 
   for (r_ssize i = 0; i < xs_size; ++i) {
-    r_obj* x_dimensions = r_dim(v_xs[i]);
-    const int x_dimensionality = (int) r_length(x_dimensions);
+    r_obj* x = v_xs[i];
+
+    r_obj* x_dimensions = KEEP(rray_dimensions(x, arg, error_call));
+    const int x_dimensionality =
+      rray_dimensionality_from_dimensions(x_dimensions);
     const int x_axis_dimension =
       (axis <= x_dimensionality) ? r_int_cbegin(x_dimensions)[axis - 1] : 1;
+    FREE(1);
 
     if (axis_dimension > INT_MAX - x_axis_dimension) {
       r_abort_lazy_call(
@@ -95,9 +99,11 @@ r_obj* rray_combine(
 
   for (r_ssize i = 0; i < xs_size; ++i) {
     r_obj* x = v_xs[i];
-    r_obj* x_dimensions = r_dim(x);
+
+    r_obj* x_dimensions = KEEP(rray_dimensions(x, arg, error_call));
     const int* v_x_dimensions = r_int_cbegin(x_dimensions);
-    const int x_dimensionality = (int) r_length(x_dimensions);
+    const int x_dimensionality =
+      rray_dimensionality_from_dimensions(x_dimensions);
     const int x_axis_dimension =
       (axis <= x_dimensionality) ? v_x_dimensions[axis - 1] : 1;
 
@@ -127,6 +133,8 @@ r_obj* rray_combine(
     const r_ssize out_start = axis_offset * v_out_strides[axis - 1];
     rray_combine_fill(x, out, out_start, &plan);
     axis_offset += x_axis_dimension;
+
+    FREE(1);
   }
 
   r_obj* out_names = KEEP(rray_combine_names(xs, out_dimensions, axis));
