@@ -65,7 +65,8 @@ shape is:
 ```c
 r_obj* rray_dimensions_common_opts(
   r_obj* xs,
-  r_obj* ignore,
+  const int* v_ignore,
+  r_ssize ignore_size,
   struct rray_arg* arg,
   struct r_lazy error_call
 );
@@ -76,9 +77,10 @@ declared in `src/dimensions.h` because `src/combine.c` calls it.
 
 The contracts are:
 
-- `ignore` is either `r_null` or an integer vector of one-based axes.
+- `v_ignore` points to an array of one-based axes.
+- `ignore_size` is the number of axes in `v_ignore`.
 - This is an internal interface. Its callers must pass validated axes.
-- `r_null` means no axes are ignored.
+- `NULL` with `ignore_size = 0` means no axes are ignored.
 - Every ignored axis has dimension `1` in the result.
 - Ignoring an axis does not remove it and does not lower the result
   dimensionality.
@@ -90,20 +92,21 @@ The ordinary `rray_dimensions_common()` entry point should keep its current
 `.dimensions` behavior:
 
 - If `dimensions` is not `r_null`, validate and return that override.
-- Otherwise call the internal helper with `ignore = r_null`.
+- Otherwise call the internal helper with `v_ignore = NULL` and
+  `ignore_size = 0`.
 
 This keeps ignored axes out of the `.dimensions` override path. There is no
 useful meaning for combining an explicit dimensions override with ignored axes
 in the current API.
 
 Within the helper, initialize output dimensions to `1` as today. Convert
-`ignore` into a small stack allocated lookup, or use another simple approach
+`v_ignore` into a small stack allocated lookup, or use another simple approach
 that makes the merge loop clear. When an axis is ignored, skip its
 `rray_dimension2()` call so its output dimension remains `1`. Still update the
 common dimensionality from every input before processing its axes.
 
-Do not validate `ignore` through an R-facing axis parser. The normal entry
-point always passes `r_null`, and `rray_combine()` has already validated its
+Do not validate `v_ignore` through an R-facing axis parser. The normal entry
+point always passes `NULL, 0`, and `rray_combine()` has already validated its
 axis with `check_axis()`.
 
 ## Refactor `rray_combine()`
@@ -115,15 +118,14 @@ an invalid axis.
 
 After `check_axis()`:
 
-1. Allocate a protected integer scalar containing `axis`.
-2. Call the internal common dimension helper with the cast `xs`, that scalar
-   as `ignore`, the existing `arg`, and `error_call`.
-3. Protect the returned dimensions.
-4. Make a small pass over `xs` to sum the dimension on `axis`.
-5. Treat a missing trailing axis as an implicit dimension of `1`, matching the
+1. Call the internal common dimension helper with the cast `xs`, `&axis`, an
+   `ignore_size` of `1`, the existing `arg`, and `error_call`.
+2. Protect the returned dimensions.
+3. Make a small pass over `xs` to sum the dimension on `axis`.
+4. Treat a missing trailing axis as an implicit dimension of `1`, matching the
    current combine behavior.
-6. Retain the current `INT_MAX` overflow check and its exact error message.
-7. Store the checked sum into the ignored axis of the returned dimensions.
+5. Retain the current `INT_MAX` overflow check and its exact error message.
+6. Store the checked sum into the ignored axis of the returned dimensions.
 
 The extra pass over the input list is acceptable. It only reads dimensions,
 and the array filling work dominates it. Do not complicate the dimensions
@@ -184,8 +186,8 @@ do not make the new contract obvious:
 - Zero dimensions on and off the combine axis still work.
 - Named inputs still appear correctly in incompatible dimension errors.
 
-There is no R-facing test for `ignore` because it is intentionally not exposed.
-Exercise it through `rray_combine()`.
+There is no R-facing test for `v_ignore` and `ignore_size` because they are
+intentionally not exposed. Exercise them through `rray_combine()`.
 
 Run at least:
 
@@ -212,8 +214,8 @@ After the code is complete:
 For the protection pass, list every new or touched `r_obj*` in the diff and
 identify the next function that reads it. Check whether that function can
 allocate before protecting or consuming the value. Pay particular attention to
-the scalar `ignore` object, the common dimensions result, input names, and the
-argument shelters constructed in the dimensions helper.
+the common dimensions result, input names, and the argument shelters
+constructed in the dimensions helper.
 
 Do not use `gctorture()` or `gctorture2()`.
 
