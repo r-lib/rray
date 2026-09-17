@@ -71,7 +71,7 @@ extern r_obj* ffi_rray_split(r_obj* ffi_x, r_obj* ffi_axes, r_obj* ffi_frame);
 extern r_obj* ffi_rray_squeeze(r_obj* ffi_x, r_obj* ffi_axes, r_obj* ffi_frame);
 extern r_obj* ffi_rray_insert_axes(
   r_obj* ffi_x,
-  r_obj* ffi_axes,
+  r_obj* ffi_at,
   r_obj* ffi_frame
 );
 extern r_obj* ffi_rray_permute_axes(

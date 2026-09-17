@@ -4,31 +4,31 @@
 \alias{rray_insert_axes}
 \title{Insert array axes}
 \usage{
-rray_insert_axes(x, axes)
+rray_insert_axes(x, at)
 }
 \arguments{
 \item{x}{An array.}
 
-\item{axes}{An integer vector of locations in the \emph{result} to insert axes at.
+\item{at}{An integer vector of locations in the \emph{result} to insert axes at.
 It must be in strictly increasing order.}
 }
 \value{
-An array with new axes of dimension 1 at \code{axes}.
+An array with new axes of dimension 1 at the locations in \code{at}.
 }
 \description{
 \code{rray_insert_axes()} inserts new axes with a dimension of 1.
 }
 \details{
-\code{axes} are locations in the result, not locations in \code{x}. Inserting 2 axes
-into an array with a dimensionality of 3 gives a result with a
-dimensionality of 5 (2 + 3), so \code{axes} can be any value between 1 and 5.
+\code{at} holds locations in the result, not axes of \code{x}. Inserting 2 axes into
+an array with a dimensionality of 3 gives a result with a dimensionality of
+5 (2 + 3), so \code{at} can be any value between 1 and 5.
 
 To work out the result, write out the resulting axes and mark the locations
-listed in \code{axes} with 1. Then use the dimensions of \code{x} to fill in the rest
-in order.
+listed in \code{at} with 1. Then use the dimensions of \code{x} to fill in the rest in
+order.
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{x       (2, 3, 4)
-axes    2
+at      2
 
 result  (x, 1, x, x)
       = (2, 1, 3, 4)
@@ -37,7 +37,7 @@ result  (x, 1, x, x)
 This allows you to insert two axes side by side:
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{x       (2, 3, 4)
-axes    c(2, 3)
+at      c(2, 3)
 
 result  (x, 1, 1, x, x)
       = (2, 1, 1, 3, 4)

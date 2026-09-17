@@ -4,7 +4,7 @@
 #'
 #' @details
 #' Squeezed axes lose their names.
-#' Surviving axes keep their names and carry them to their new positions.
+#' Surviving axes keep their names and carry them to their new locations.
 #'
 #' @param x An array.
 #'

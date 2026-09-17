@@ -12,19 +12,19 @@ rray_move_axes(x, axes, to)
 \item{axes}{An integer vector of axes to move. It must not use an axis of
 \code{x} more than once.}
 
-\item{to}{An integer vector of positions to move \code{axes} to. \code{axes[[i]]} ends
-up at position \code{to[[i]]}. It must be the same length as \code{axes}, and must
-not use a position more than once.}
+\item{to}{An integer vector of locations to move \code{axes} to. \code{axes[[i]]} ends
+up at location \code{to[[i]]}. It must be the same length as \code{axes}, and must
+not use a location more than once.}
 }
 \value{
-An array with the \code{axes} of \code{x} moved to the positions in \code{to}.
+An array with the \code{axes} of \code{x} moved to the locations in \code{to}.
 }
 \description{
-\code{rray_move_axes()} moves \code{axes} to new positions. The axes that don't move
-keep their relative order, and fill in the positions that are left over.
+\code{rray_move_axes()} moves \code{axes} to new locations. The axes that don't move
+keep their relative order, and fill in the locations that are left over.
 }
 \details{
-Names travel with their axis to its new position.
+Names travel with their axis to its new location.
 }
 \examples{
 x <- array(1:24, c(2, 3, 4))

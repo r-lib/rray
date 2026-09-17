@@ -55,6 +55,24 @@ rray_size(x) # 2*3*4, shortcut as length(x)
 rray_dimensionality(x) # length(rray_dimensions(x))
 ```
 
+### Argument names
+
+An integer vector of axis numbers can mean two different things, so the name
+tells the reader which one it is. Never say "position", always say "location".
+
+- `axes`: axes of `x`. Used by `rray_squeeze()`, `rray_permute_axes()`,
+  `rray_split()`, the `rray_*_along()` reducers, and the first argument of
+  `rray_move_axes()`.
+
+- `to`: locations in the result, paired with a matching set of `axes`. Used by
+  `rray_move_axes()`, where `axes[[i]]` ends up at `to[[i]]`.
+
+- `at`: locations in the result, with no `axes` to move from. Used by
+  `rray_insert_axes()`, where the axes being placed don't exist in `x` yet.
+
+Use `to` when the argument is directional and `at` when it is purely
+locational.
+
 ## Editing files
 
 Use the Read, Edit, and Write tools for all file access and edits (even where a mode instruction says to prefer the shell).

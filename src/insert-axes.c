@@ -6,14 +6,14 @@
 #include "utils.h"
 #include "wrapper.h"
 
-r_obj* ffi_rray_insert_axes(r_obj* ffi_x, r_obj* ffi_axes, r_obj* ffi_frame) {
+r_obj* ffi_rray_insert_axes(r_obj* ffi_x, r_obj* ffi_at, r_obj* ffi_frame) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  return rray_insert_axes(ffi_x, ffi_axes, rray_args.x, error_call);
+  return rray_insert_axes(ffi_x, ffi_at, rray_args.x, error_call);
 }
 
 r_obj* rray_insert_axes(
   r_obj* x,
-  r_obj* axes,
+  r_obj* at,
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
@@ -24,15 +24,14 @@ r_obj* rray_insert_axes(
   const int* v_x_dimensions = r_int_cbegin(x_dimensions);
   const int dimensionality = rray_dimensionality_from_dimensions(x_dimensions);
 
-  axes = KEEP(arg_as_integer(axes, rray_args.axes));
-  const r_ssize axes_size = r_length(axes);
+  at = KEEP(arg_as_integer(at, rray_args.at));
+  const r_ssize at_size = r_length(at);
 
-  const int out_dimensionality =
-    int_add_checked(dimensionality, (int) axes_size);
+  const int out_dimensionality = int_add_checked(dimensionality, (int) at_size);
   check_max_dimensionality(out_dimensionality);
 
-  check_axes(axes, out_dimensionality, rray_args.axes, error_call);
-  const int* v_axes = r_int_cbegin(axes);
+  check_axes(at, out_dimensionality, rray_args.at, error_call);
+  const int* v_at = r_int_cbegin(at);
 
   r_obj* out_dimensions = KEEP(r_alloc_integer(out_dimensionality));
   int* v_out_dimensions = r_int_begin(out_dimensions);
@@ -44,13 +43,13 @@ r_obj* rray_insert_axes(
   r_keep_loc out_names_loc;
   KEEP_HERE(out_names, &out_names_loc);
 
-  r_ssize axes_i = 0;
+  r_ssize at_i = 0;
   r_ssize x_i = 0;
 
   for (int i = 0; i < out_dimensionality; ++i) {
-    if (axes_i < axes_size && v_axes[axes_i] - 1 == i) {
+    if (at_i < at_size && v_at[at_i] - 1 == i) {
       v_out_dimensions[i] = 1;
-      ++axes_i;
+      ++at_i;
       continue;
     }
 

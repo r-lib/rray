@@ -105,7 +105,7 @@ test_that("does not modify the input", {
   expect_identical(x, expected)
 })
 
-test_that("axes are coerced to integer", {
+test_that("`at` is coerced to integer", {
   x <- array(1:3, 3L)
   expect_identical(rray_insert_axes(x, 2), array(1:3, c(3L, 1L)))
 })
@@ -116,12 +116,12 @@ test_that("squeezing the inserted axes returns the input", {
     c(2L, 3L),
     dimnames = list(c("a", "b"), c("x", "y", "z"))
   )
-  axes <- c(1L, 3L)
+  at <- c(1L, 3L)
 
-  expect_identical(rray_squeeze(rray_insert_axes(x, axes), axes), x)
+  expect_identical(rray_squeeze(rray_insert_axes(x, at), at), x)
 })
 
-test_that("errors on invalid axes", {
+test_that("errors on invalid `at`", {
   x <- array(1L, c(1L, 1L))
 
   expect_snapshot(error = TRUE, {

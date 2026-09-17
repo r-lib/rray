@@ -18,7 +18,7 @@ An array with the axes of \code{x} reordered by \code{axes}.
 \code{rray_permute_axes()} reorders the axes of an array.
 }
 \details{
-Names travel with their axis to its new position.
+Names travel with their axis to its new location.
 
 \code{rray_permute_axes(x, c(2, 1))} transposes a matrix, like \code{\link[=t]{t()}}.
 }

@@ -3,17 +3,17 @@
 #' `rray_insert_axes()` inserts new axes with a dimension of 1.
 #'
 #' @details
-#' `axes` are locations in the result, not locations in `x`. Inserting 2 axes
-#' into an array with a dimensionality of 3 gives a result with a
-#' dimensionality of 5 (2 + 3), so `axes` can be any value between 1 and 5.
+#' `at` holds locations in the result, not axes of `x`. Inserting 2 axes into
+#' an array with a dimensionality of 3 gives a result with a dimensionality of
+#' 5 (2 + 3), so `at` can be any value between 1 and 5.
 #'
 #' To work out the result, write out the resulting axes and mark the locations
-#' listed in `axes` with 1. Then use the dimensions of `x` to fill in the rest
-#' in order.
+#' listed in `at` with 1. Then use the dimensions of `x` to fill in the rest in
+#' order.
 #'
 #' ```
 #' x       (2, 3, 4)
-#' axes    2
+#' at      2
 #'
 #' result  (x, 1, x, x)
 #'       = (2, 1, 3, 4)
@@ -23,7 +23,7 @@
 #'
 #' ```
 #' x       (2, 3, 4)
-#' axes    c(2, 3)
+#' at      c(2, 3)
 #'
 #' result  (x, 1, 1, x, x)
 #'       = (2, 1, 1, 3, 4)
@@ -34,11 +34,11 @@
 #'
 #' @param x An array.
 #'
-#' @param axes An integer vector of locations in the _result_ to insert axes at.
+#' @param at An integer vector of locations in the _result_ to insert axes at.
 #'   It must be in strictly increasing order.
 #'
 #' @returns
-#' An array with new axes of dimension 1 at `axes`.
+#' An array with new axes of dimension 1 at the locations in `at`.
 #'
 #' @seealso [rray_squeeze()]
 #'
@@ -63,6 +63,6 @@
 #'
 #' # `rray_squeeze()` undoes an insertion
 #' rray_squeeze(rray_insert_axes(x, 2), 2)
-rray_insert_axes <- function(x, axes) {
-  .Call(ffi_rray_insert_axes, x, axes, environment())
+rray_insert_axes <- function(x, at) {
+  .Call(ffi_rray_insert_axes, x, at, environment())
 }

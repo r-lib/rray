@@ -20,7 +20,7 @@ An array with the selected \code{axes} removed.
 }
 \details{
 Squeezed axes lose their names.
-Surviving axes keep their names and carry them to their new positions.
+Surviving axes keep their names and carry them to their new locations.
 }
 \examples{
 x <- array(1:10, c(10, 1, 1))
