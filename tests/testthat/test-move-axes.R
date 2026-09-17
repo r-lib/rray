@@ -11,7 +11,7 @@ test_that("moves a single axis", {
   )
 })
 
-test_that("`axes[[i]]` ends up at position `to[[i]]`", {
+test_that("`from[[i]]` ends up at position `to[[i]]`", {
   x <- array(seq_len(7L * 5L * 3L * 2L), c(7L, 5L, 3L, 2L))
   out <- rray_move_axes(x, c(1L, 2L), c(4L, 3L))
 
@@ -87,7 +87,7 @@ test_that("works with every native type", {
   }
 })
 
-test_that("errors on invalid `axes`", {
+test_that("errors on invalid `from`", {
   x <- array(1:24, c(2L, 3L, 4L))
 
   expect_snapshot(error = TRUE, {
@@ -115,7 +115,7 @@ test_that("errors on invalid `to`", {
   })
 })
 
-test_that("`axes` and `to` must be the same length", {
+test_that("`from` and `to` must be the same length", {
   x <- array(1:24, c(2L, 3L, 4L))
 
   expect_snapshot(error = TRUE, {

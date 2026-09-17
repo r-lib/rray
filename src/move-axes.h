@@ -7,7 +7,7 @@
 
 r_obj* rray_move_axes(
   r_obj* x,
-  r_obj* axes,
+  r_obj* from,
   r_obj* to,
   struct rray_arg* arg,
   struct r_lazy error_call

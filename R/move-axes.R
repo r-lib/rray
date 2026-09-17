@@ -1,22 +1,23 @@
 #' Move array axes
 #'
-#' `rray_move_axes()` moves `axes` to new positions. The axes that don't move
-#' keep their relative order, and fill in the positions that are left over.
+#' `rray_move_axes()` moves the `from` axes to new positions. The axes that
+#' don't move keep their relative order, and fill in the positions that are
+#' left over.
 #'
 #' @details
 #' Names travel with their axis to its new position.
 #'
 #' @param x An array.
 #'
-#' @param axes An integer vector of axes to move. It must not use an axis of
+#' @param from An integer vector of axes to move. It must not use an axis of
 #'   `x` more than once.
 #'
-#' @param to An integer vector of positions to move `axes` to. `axes[[i]]` ends
-#'   up at position `to[[i]]`. It must be the same length as `axes`, and must
+#' @param to An integer vector of positions to move `from` to. `from[[i]]` ends
+#'   up at position `to[[i]]`. It must be the same length as `from`, and must
 #'   not use a position more than once.
 #'
 #' @returns
-#' An array with the `axes` of `x` moved to the positions in `to`.
+#' An array with the `from` axes of `x` moved to the positions in `to`.
 #'
 #' @seealso [rray_permute_axes()]
 #'
@@ -39,6 +40,6 @@
 #' # Swap the first two axes
 #' # (2, 3, 4) -> (3, 2, 4)
 #' rray_dimensions(rray_move_axes(x, c(1, 2), c(2, 1)))
-rray_move_axes <- function(x, axes, to) {
-  .Call(ffi_rray_move_axes, x, axes, to, environment())
+rray_move_axes <- function(x, from, to) {
+  .Call(ffi_rray_move_axes, x, from, to, environment())
 }
