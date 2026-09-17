@@ -210,18 +210,14 @@ static r_obj* rray_combine_axis_names(r_obj* xs, int axis) {
       ? r_list_get(names, axis - 1)
       : r_null;
 
-    if (axis_names == r_null) {
-      for (int j = 0; j < dimension; ++j) {
-        r_chr_poke(out, out_i, r_strs.empty);
-        ++out_i;
-      }
-    } else {
+    if (axis_names != r_null) {
       r_obj* const* v_axis_names = r_chr_cbegin(axis_names);
       for (int j = 0; j < dimension; ++j) {
-        r_chr_poke(out, out_i, v_axis_names[j]);
-        ++out_i;
+        r_chr_poke(out, out_i + j, v_axis_names[j]);
       }
     }
+
+    out_i += dimension;
   }
 
   FREE(1);
