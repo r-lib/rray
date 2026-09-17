@@ -23,13 +23,24 @@ An array with new axes of dimension 1 at \code{axes}.
 into an array with a dimensionality of \code{d} gives a result with a
 dimensionality of \code{d + k}, so \code{axes} can be as large as \code{d + k}.
 
-The result is built by walking its axes from front to back. An axis listed
-in \code{axes} gets a dimension of 1, and every other axis takes the next
-dimension of \code{x} in order.
+To work out the result, lay out its \code{d + k} axes and mark the ones listed in
+\code{axes}. Marked axes get a dimension of 1, and the dimensions of \code{x} fill in
+the rest, in order.
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{x       (2, 3, 4)
 axes    2
-result  (2, 1, 3, 4)
+
+result  (x, 1, x, x)
+      = (2, 1, 3, 4)
+}\if{html}{\out{</div>}}
+
+Inserting two axes side by side is the same walk, with two marked axes:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{x       (2, 3, 4)
+axes    c(2, 3)
+
+result  (x, 1, 1, x, x)
+      = (2, 1, 1, 3, 4)
 }\if{html}{\out{</div>}}
 
 Inserted axes have no names. The axes of \code{x} keep their names and carry them

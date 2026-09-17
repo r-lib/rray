@@ -7,14 +7,26 @@
 #' into an array with a dimensionality of `d` gives a result with a
 #' dimensionality of `d + k`, so `axes` can be as large as `d + k`.
 #'
-#' The result is built by walking its axes from front to back. An axis listed
-#' in `axes` gets a dimension of 1, and every other axis takes the next
-#' dimension of `x` in order.
+#' To work out the result, lay out its `d + k` axes and mark the ones listed in
+#' `axes`. Marked axes get a dimension of 1, and the dimensions of `x` fill in
+#' the rest, in order.
 #'
 #' ```
 #' x       (2, 3, 4)
 #' axes    2
-#' result  (2, 1, 3, 4)
+#'
+#' result  (x, 1, x, x)
+#'       = (2, 1, 3, 4)
+#' ```
+#'
+#' Inserting two axes side by side is the same walk, with two marked axes:
+#'
+#' ```
+#' x       (2, 3, 4)
+#' axes    c(2, 3)
+#'
+#' result  (x, 1, 1, x, x)
+#'       = (2, 1, 1, 3, 4)
 #' ```
 #'
 #' Inserted axes have no names. The axes of `x` keep their names and carry them
