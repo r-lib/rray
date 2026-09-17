@@ -75,6 +75,7 @@ r_obj* rray_combine(
   }
 
   v_out_dimensions[axis - 1] = (int) axis_dimension;
+
   const r_ssize out_size = rray_size_from_dimensions_checked(
     v_out_dimensions,
     dimensionality,
