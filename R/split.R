@@ -10,15 +10,13 @@
 #'
 #' @param axis A single integer between 1 and the dimensionality of `x`.
 #'
-#' @param dimensions An integer vector describing the dimension of each array
-#'   along `axis`. One of:
+#' @param dimensions One of:
 #'
-#'   - A single value, used as the dimension of every array. It must be
-#'     positive and must evenly divide the dimension of `x` along `axis`.
+#'   - A single positive integer, used as the dimension of every array. It must
+#'     evenly divide the dimension of `x` along `axis`.
 #'
-#'   - A vector of any other length, giving the dimension of each array
-#'     directly. The values must be non-negative and must sum to the dimension
-#'     of `x` along `axis`.
+#'   - A vector of positive (or zero) integers, giving the dimension of each
+#'     array directly. They must sum to the dimension of `x` along `axis`.
 #'
 #' @returns
 #' An unnamed list of arrays with the same dimensionality as `x`.

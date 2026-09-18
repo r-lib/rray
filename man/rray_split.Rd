@@ -11,14 +11,12 @@ rray_split(x, axis, dimensions)
 
 \item{axis}{A single integer between 1 and the dimensionality of \code{x}.}
 
-\item{dimensions}{An integer vector describing the dimension of each array
-along \code{axis}. One of:
+\item{dimensions}{One of:
 \itemize{
-\item A single value, used as the dimension of every array. It must be
-positive and must evenly divide the dimension of \code{x} along \code{axis}.
-\item A vector of any other length, giving the dimension of each array
-directly. The values must be non-negative and must sum to the dimension
-of \code{x} along \code{axis}.
+\item A single positive integer, used as the dimension of every array. It must
+evenly divide the dimension of \code{x} along \code{axis}.
+\item A vector of positive (or zero) integers, giving the dimension of each
+array directly. They must sum to the dimension of \code{x} along \code{axis}.
 }}
 }
 \value{
