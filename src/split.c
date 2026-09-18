@@ -51,6 +51,7 @@ r_obj* rray_split(
   );
   const int* v_dimensions = r_int_cbegin(dimensions);
 
+  // i.e. each array is the same dimension and splits `axis` evenly
   const bool uniform = r_length(dimensions) == 1;
 
   const r_ssize out_size =
