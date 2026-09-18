@@ -301,19 +301,11 @@ static void rray_split_fill(
   while (run_start != size) {                                                  \
     const r_ssize run_end = run_start + run_size;                              \
                                                                                \
-    if (x_run_stride == 1) {                                                   \
-      r_memcpy(                                                                \
-        v_out + run_start,                                                     \
-        v_x + x_start,                                                         \
-        sizeof(CTYPE) * (size_t) run_size                                      \
-      );                                                                       \
-    } else {                                                                   \
-      r_ssize x_loc = x_start;                                                 \
+    r_ssize x_loc = x_start;                                                   \
                                                                                \
-      for (r_ssize i = run_start; i < run_end; ++i) {                          \
-        v_out[i] = v_x[x_loc];                                                 \
-        x_loc += x_run_stride;                                                 \
-      }                                                                        \
+    for (r_ssize i = run_start; i < run_end; ++i) {                            \
+      v_out[i] = v_x[x_loc];                                                   \
+      x_loc += x_run_stride;                                                   \
     }                                                                          \
                                                                                \
     run_start = run_end;                                                       \
