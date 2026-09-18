@@ -83,7 +83,7 @@ r_obj* rray_split(
 
   r_ssize out_elt_size = 0;
 
-  struct rray_strided_iterator_plan plan = {0};
+  struct rray_strided_iterator_plan out_elt_plan = {0};
   int plan_dimension = -1;
 
   int x_axis_start = 0;
@@ -102,14 +102,14 @@ r_obj* rray_split(
       );
       v_out_elt_dimensions[axis - 1] = dimension;
 
-      plan = rray_strided_iterator_plan(
+      out_elt_plan = rray_strided_iterator_plan(
         v_out_elt_dimensions,
         dimensionality,
         v_x_strides
       );
 
       plan_dimension = dimension;
-      out_elt_size = rray_strided_iterator_plan_size(&plan);
+      out_elt_size = rray_strided_iterator_plan_size(&out_elt_plan);
     }
 
     r_obj* out_elt = r_alloc_vector(type, out_elt_size);
@@ -117,7 +117,7 @@ r_obj* rray_split(
     r_attrib_poke_dim(out_elt, out_elt_dimensions);
 
     const r_ssize x_start = x_axis_start * x_axis_stride;
-    rray_split_fill(x, out_elt, x_start, &plan);
+    rray_split_fill(x, out_elt, x_start, &out_elt_plan);
 
     if (x_axis_names != r_null) {
       r_obj* out_elt_names = KEEP(rray_split_elt_names(
