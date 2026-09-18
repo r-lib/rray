@@ -87,17 +87,19 @@ r_obj* rray_split(
     const int dimension = uniform ? v_dimensions[0] : v_dimensions[i];
 
     if (dimension != plan_dimension) {
-      out_elt_dimensions = rray_set_axes_dimension(
-        v_x_dimensions,
-        dimensionality,
-        &axis,
-        1,
-        dimension
-      );
+      out_elt_dimensions = r_alloc_integer(dimensionality);
       KEEP_AT(out_elt_dimensions, out_elt_dimensions_loc);
 
+      int* v_out_elt_dimensions = r_int_begin(out_elt_dimensions);
+      r_memcpy(
+        v_out_elt_dimensions,
+        v_x_dimensions,
+        sizeof(int) * dimensionality
+      );
+      v_out_elt_dimensions[axis - 1] = dimension;
+
       plan = rray_strided_iterator_plan(
-        r_int_cbegin(out_elt_dimensions),
+        v_out_elt_dimensions,
         dimensionality,
         v_x_strides
       );

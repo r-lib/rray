@@ -100,28 +100,6 @@ r_obj* rray_set_dimensions(
   return out;
 }
 
-r_obj* rray_set_axes_dimension(
-  const int* v_dimensions,
-  int dimensionality,
-  const int* v_axes,
-  r_ssize axes_size,
-  int dimension
-) {
-  r_obj* out = KEEP(r_alloc_integer(dimensionality));
-  int* v_out = r_int_begin(out);
-
-  // Start with `v_dimensions`
-  r_memcpy(v_out, v_dimensions, sizeof(int) * dimensionality);
-
-  // Set `axes` to `dimension`
-  for (r_ssize i = 0; i < axes_size; ++i) {
-    v_out[v_axes[i] - 1] = dimension;
-  }
-
-  FREE(1);
-  return out;
-}
-
 r_obj* ffi_rray_dimensions_common(
   r_obj* ffi_xs,
   r_obj* ffi_dimensions,
