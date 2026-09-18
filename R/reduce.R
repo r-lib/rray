@@ -26,12 +26,12 @@
 #'
 #' - `rray_mean_along()`: logicals and integers are cast to double.
 #'
+#' @inheritParams rlang::args_dots_empty
+#'
 #' @param x An array.
 #'
 #' @param axes An integer vector of axes to reduce over. `1` reduces
 #'   rows, `2` reduces columns, and so on.
-#'
-#' @param ... These dots are for future extensions and must be empty.
 #'
 #' @param na_rm If `TRUE`, missing values are removed before reducing.
 #'

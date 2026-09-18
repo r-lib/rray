@@ -5,6 +5,8 @@
 #'
 #' Using `rray_combine()` along the same `axis` reconstructs `x`.
 #'
+#' @inheritParams rlang::args_dots_empty
+#'
 #' @param x An array.
 #'
 #' @param axis A single integer representing the axis to split on.
@@ -25,19 +27,20 @@
 #' x <- array(1:12, c(6, 2))
 #'
 #' # Three arrays of two rows
-#' rray_split(x, 1, 2)
+#' rray_split(x, axis = 1, dimensions = 2)
 #'
 #' # Arrays of one and five rows
-#' rray_split(x, 1, c(1, 5))
+#' rray_split(x, axis = 1, dimensions = c(1, 5))
 #'
 #' # One array per column
-#' rray_split(x, 2, 1)
+#' rray_split(x, axis = 2, dimensions = 1)
 #'
 #' # Arrays of dimension zero are allowed in the explicit form
-#' rray_split(x, 2, c(0, 2))
+#' rray_split(x, axis = 2, dimensions = c(0, 2))
 #'
 #' # Splitting and combining along the same axis are inverses
-#' rray_combine(!!!rray_split(x, 1, 3), .axis = 1)
-rray_split <- function(x, axis, dimensions) {
+#' rray_combine(!!!rray_split(x, axis = 1, dimensions = 3), .axis = 1)
+rray_split <- function(x, ..., axis, dimensions) {
+  check_dots_empty0(...)
   .Call(ffi_rray_split, x, axis, dimensions, environment())
 }

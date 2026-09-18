@@ -197,14 +197,14 @@ local({
 
   gc()
   print(bench::mark(
-    unnamed_axis1 = rray_split(x, 1L, 1L),
-    unnamed_axis2 = rray_split(x, 2L, 1L),
-    unnamed_axis3 = rray_split(x, 3L, 1L),
-    leading_unit_axis3 = rray_split(leading_unit, 3L, 1L),
-    named_axis1 = rray_split(named, 1L, 1L),
-    uniform_axis1 = rray_split(x, 1L, 10L),
-    uniform_axis3 = rray_split(x, 3L, 10L),
-    explicit_axis1 = rray_split(x, 1L, c(1L, 9L, 30L, 60L)),
+    unnamed_axis1 = rray_split(x, axis = 1L, dimensions = 1L),
+    unnamed_axis2 = rray_split(x, axis = 2L, dimensions = 1L),
+    unnamed_axis3 = rray_split(x, axis = 3L, dimensions = 1L),
+    leading_unit_axis3 = rray_split(leading_unit, axis = 3L, dimensions = 1L),
+    named_axis1 = rray_split(named, axis = 1L, dimensions = 1L),
+    uniform_axis1 = rray_split(x, axis = 1L, dimensions = 10L),
+    uniform_axis3 = rray_split(x, axis = 3L, dimensions = 10L),
+    explicit_axis1 = rray_split(x, axis = 1L, dimensions = c(1L, 9L, 30L, 60L)),
     iterations = 10L,
     check = FALSE,
     memory = FALSE

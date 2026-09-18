@@ -7,6 +7,8 @@
 #' @details
 #' Names travel with their axis to its new position.
 #'
+#' @inheritParams rlang::args_dots_empty
+#'
 #' @param x An array.
 #'
 #' @param from An integer vector of axes in `x` to move.
@@ -24,19 +26,20 @@
 #'
 #' # Move the first axis to the end
 #' # (2, 3, 4) -> (3, 4, 2)
-#' rray_dimensions(rray_move_axes(x, 1, 3))
+#' rray_dimensions(rray_move_axes(x, from = 1, to = 3))
 #'
 #' # Move the last axis to the front
 #' # (2, 3, 4) -> (4, 2, 3)
-#' rray_dimensions(rray_move_axes(x, 3, 1))
+#' rray_dimensions(rray_move_axes(x, from = 3, to = 1))
 #'
 #' # Move two axes at once, the axis that stays fills in what is left
 #' # (2, 3, 4) -> (4, 2, 3)
-#' rray_dimensions(rray_move_axes(x, c(1, 3), c(2, 1)))
+#' rray_dimensions(rray_move_axes(x, from = c(1, 3), to = c(2, 1)))
 #'
 #' # Swap the first two axes
 #' # (2, 3, 4) -> (3, 2, 4)
-#' rray_dimensions(rray_move_axes(x, c(1, 2), c(2, 1)))
-rray_move_axes <- function(x, from, to) {
+#' rray_dimensions(rray_move_axes(x, from = c(1, 2), to = c(2, 1)))
+rray_move_axes <- function(x, ..., from, to) {
+  check_dots_empty0(...)
   .Call(ffi_rray_move_axes, x, from, to, environment())
 }
