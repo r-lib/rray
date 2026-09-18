@@ -24,10 +24,3 @@ static inline void rray__check_broadcast_dimensions(
   const int* v_to_dimensions,
   int to_dimensionality
 );
-
-static inline void rray__fill_broadcast_strides(
-  const int* v_from_dimensions,
-  int from_dimensionality,
-  int to_dimensionality,
-  r_ssize* v_out
-);

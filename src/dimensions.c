@@ -128,18 +128,34 @@ r_obj* ffi_rray_dimensions_common(
   r_obj* ffi_frame
 ) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  return rray_dimensions_common(ffi_xs, ffi_dimensions, error_call);
+  return rray_dimensions_common(
+    ffi_xs,
+    ffi_dimensions,
+    rray_args.empty,
+    error_call
+  );
 }
 
 r_obj* rray_dimensions_common(
   r_obj* xs,
   r_obj* dimensions,
+  struct rray_arg* arg,
   struct r_lazy error_call
 ) {
   if (dimensions != r_null) {
     return arg_as_dimensions(dimensions, rray_args.dot_dimensions, error_call);
   }
 
+  return rray_dimensions_common_opts(xs, NULL, 0, arg, error_call);
+}
+
+r_obj* rray_dimensions_common_opts(
+  r_obj* xs,
+  const int* v_ignore,
+  r_ssize ignore_size,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+) {
   const r_ssize n = r_length(xs);
 
   if (n == 0) {
@@ -150,11 +166,11 @@ r_obj* rray_dimensions_common(
   r_obj* xs_names = KEEP(r_names(xs));
 
   r_ssize x_i = 0;
-  struct rray_arg* x_arg = new_subscript_arg(NULL, xs_names, n, &x_i);
+  struct rray_arg* x_arg = new_subscript_arg(arg, xs_names, n, &x_i);
   KEEP(x_arg->shelter);
 
   r_ssize out_i = 0;
-  struct rray_arg* out_arg = new_subscript_arg(NULL, xs_names, n, &out_i);
+  struct rray_arg* out_arg = new_subscript_arg(arg, xs_names, n, &out_i);
   KEEP(out_arg->shelter);
 
   int out_dimensionality = 1;
@@ -172,6 +188,13 @@ r_obj* rray_dimensions_common(
     v_out_args[i] = 0;
   }
 
+  bool v_ignored[RRAY_MAX_DIMENSIONALITY];
+  r_memset(v_ignored, 0, sizeof(bool) * RRAY_MAX_DIMENSIONALITY);
+
+  for (r_ssize i = 0; i < ignore_size; ++i) {
+    v_ignored[v_ignore[i] - 1] = true;
+  }
+
   for (; x_i < n; ++x_i) {
     r_obj* x = v_xs[x_i];
 
@@ -186,6 +209,7 @@ r_obj* rray_dimensions_common(
     rray_dimensions_merge(
       v_out_dimensions,
       v_out_args,
+      v_ignored,
       &out_dimensionality,
       &out_i,
       v_x_dimensions,
@@ -210,6 +234,7 @@ r_obj* rray_dimensions_common(
 static inline void rray_dimensions_merge(
   int* v_out_dimensions,
   r_ssize* v_out_args,
+  const bool* v_ignored,
   int* p_out_dimensionality,
   r_ssize* p_out_i,
   const int* v_x_dimensions,
@@ -228,6 +253,10 @@ static inline void rray_dimensions_merge(
   *p_out_dimensionality = common_dimensionality;
 
   for (int i = 0; i < common_dimensionality; ++i) {
+    if (v_ignored[i]) {
+      continue;
+    }
+
     const int out_dimension =
       (i < out_dimensionality) ? v_out_dimensions[i] : 1;
     const int x_dimension = (i < x_dimensionality) ? v_x_dimensions[i] : 1;

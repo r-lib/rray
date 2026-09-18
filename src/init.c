@@ -67,6 +67,11 @@ extern r_obj* ffi_rray_set_dimensions(
   r_obj* ffi_dimensions,
   r_obj* ffi_frame
 );
+extern r_obj* ffi_rray_combine(
+  r_obj* ffi_xs,
+  r_obj* ffi_axis,
+  r_obj* ffi_frame
+);
 extern r_obj* ffi_rray_split(r_obj* ffi_x, r_obj* ffi_axes, r_obj* ffi_frame);
 extern r_obj* ffi_rray_remove_axes(
   r_obj* ffi_x,
@@ -204,6 +209,7 @@ static const R_CallMethodDef CallEntries[] = {
   {"ffi_rray_reduce_names", (DL_FUNC) &ffi_rray_reduce_names, 2},
   {"ffi_rray_split_names", (DL_FUNC) &ffi_rray_split_names, 2},
   {"ffi_rray_set_dimensions", (DL_FUNC) &ffi_rray_set_dimensions, 3},
+  {"ffi_rray_combine", (DL_FUNC) &ffi_rray_combine, 3},
   {"ffi_rray_split", (DL_FUNC) &ffi_rray_split, 3},
   {"ffi_rray_remove_axes", (DL_FUNC) &ffi_rray_remove_axes, 3},
   {"ffi_rray_insert_axes", (DL_FUNC) &ffi_rray_insert_axes, 3},

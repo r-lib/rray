@@ -252,7 +252,8 @@ r_obj* rray_broadcast_common(
   r_obj* dimensions,
   struct r_lazy error_call
 ) {
-  dimensions = KEEP(rray_dimensions_common(xs, dimensions, error_call));
+  dimensions =
+    KEEP(rray_dimensions_common(xs, dimensions, rray_args.empty, error_call));
 
   const r_ssize n = r_length(xs);
   r_obj* const* v_xs = r_list_cbegin(xs);
