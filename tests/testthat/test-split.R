@@ -97,13 +97,38 @@ test_that("works with every type", {
   for (input in inputs) {
     x <- array(input, c(2, 2))
 
-    expect_identical(rray_split(x, 1, 1), expected_split(x, 1, 1))
-    expect_identical(rray_split(x, 2, 1), expected_split(x, 2, 1))
-    expect_identical(rray_split(x, 1, c(0, 2)), expected_split(x, 1, c(0, 2)))
+    expect_identical(
+      rray_split(x, 1, 1),
+      list(x[1, , drop = FALSE], x[2, , drop = FALSE])
+    )
+    expect_identical(
+      rray_split(x, 2, 1),
+      list(x[, 1, drop = FALSE], x[, 2, drop = FALSE])
+    )
+    expect_identical(
+      rray_split(x, 1, c(0, 2)),
+      list(x[0, , drop = FALSE], x)
+    )
   }
 })
 
 test_that("matches a reference implementation", {
+  expected_split <- function(x, axis, dimensions) {
+    x_dimensions <- dim(x)
+
+    if (length(dimensions) == 1L) {
+      dimensions <- rep(dimensions, x_dimensions[[axis]] %/% dimensions)
+    }
+
+    starts <- cumsum(dimensions) - dimensions
+
+    lapply(seq_along(dimensions), function(i) {
+      indices <- lapply(x_dimensions, seq_len)
+      indices[[axis]] <- starts[[i]] + seq_len(dimensions[[i]])
+      do.call(`[`, c(list(x), indices, list(drop = FALSE)))
+    })
+  }
+
   shapes <- list(5L, c(6L, 2L), c(2L, 6L), c(1L, 6L, 2L), c(2L, 3L, 4L))
 
   for (x_dimensions in shapes) {
