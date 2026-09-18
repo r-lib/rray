@@ -81,9 +81,10 @@ r_obj* rray_split(
   r_keep_loc out_elt_dimensions_loc;
   KEEP_HERE(out_elt_dimensions, &out_elt_dimensions_loc);
 
+  r_ssize out_elt_size = 0;
+
   struct rray_strided_iterator_plan plan = {0};
   int plan_dimension = -1;
-  r_ssize out_elt_size = 0;
 
   int x_axis_start = 0;
 
