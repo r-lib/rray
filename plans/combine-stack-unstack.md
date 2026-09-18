@@ -1,207 +1,220 @@
-# Combine, stack, and unstack
+# Combine, split, stack, and unstack
 
 ## Status
 
-This document is an implementation plan. It does not describe code that is
-already present.
+This document is an implementation plan. `rray_combine()` is already present.
+The remaining work adds split, stack, and unstack around it, and rewrites the
+existing split API.
 
-The target branch is `feature/combine-stack-unstack`, based on `main`.
+The plan rewrite lives on `feature/combine-plan-rewrite`, based on `main`.
 
 ## Goal
 
-Add three array manipulation functions:
+Provide a parallel family of array operations:
 
 ```r
 rray_combine(..., .axis)
+rray_split(x, axis, sizes)
 rray_stack(..., .axis)
-rray_unstack(x, .axis)
+rray_unstack(x, axis)
 ```
 
-This family replaces `rray_split()`. Remove split in the same implementation
-change. There is no deprecation period and no private split engine left behind.
+The pairs have direct relationships:
 
-They follow the main ideas of the Python Array API functions `concat()`,
-`stack()`, and `unstack()`:
+- `rray_split()` divides one existing axis into contiguous chunks. Combining
+  those chunks on the same axis reconstructs the input.
+- `rray_stack()` inserts a new singleton axis into each input, then combines
+  the inputs on that axis.
+- `rray_unstack()` splits one existing axis into chunks of size 1, then removes
+  that singleton axis from every chunk.
 
-- `rray_combine()` joins arrays along an existing axis.
-- `rray_stack()` joins arrays along a new axis.
-- `rray_unstack()` removes one axis and returns its slices in a list.
+Axes are one based. Negative axes are not accepted.
 
-The Python references are:
+`.axis` follows `...` in combine and stack, so callers must name it. Split and
+unstack take `axis` as an ordinary argument.
 
-- <https://data-apis.org/array-api/2024.12/API_specification/generated/array_api.concat.html>
-- <https://data-apis.org/array-api/2024.12/API_specification/generated/array_api.stack.html>
-- <https://data-apis.org/array-api/2024.12/API_specification/generated/array_api.unstack.html>
+## Current state
 
-rray4 should differ in two deliberate ways:
+`rray_combine()` has been merged. Treat its behavior and implementation as the
+foundation for this work, not as unfinished work to repeat.
 
-- Axes are one based and negative axes are not accepted.
-- `rray_combine()` and `rray_stack()` broadcast their inputs on every axis
-  except the axis being combined.
+The merged implementation already provides:
 
-`.axis` is required. Because it follows `...`, callers must name it. This
-matches the proposed R signatures and the package's existing axis-taking
-functions. Python uses the first axis as the default, so this is an intentional
-R API difference.
+- broadcasting on every axis except `.axis`;
+- support for differing input dimensionality through implicit trailing axes of
+  dimension 1;
+- common type calculation and casting;
+- an internal `ptype` argument used by C callers;
+- concatenation of names on the combined axis;
+- broadcast name selection on every other axis;
+- checked dimension sums and output sizes;
+- strided writes into the final output without full broadcast copies.
+
+The public R function does not expose `.ptype` yet. Stack should follow the
+same rule. Keep prototype selection internal and do not add `.ptype` to either
+public signature in this change.
+
+The merged combine implementation deliberately has no lower-level prepared
+entry point. Keep that boundary. Stack should compose the existing internal
+`rray_combine()` entry point rather than exposing a second combine engine.
+
+The current `rray_split(x, axes)` accepts multiple axes and always makes chunks
+of size 1. Replace that interface with the single-axis, variable-size split in
+this plan. This is a breaking replacement with no deprecation period.
 
 ## Decision summary
 
-- Implement broadcasting in the first version. It is well defined and fits
-  the rest of rray4.
-- Require callers to supply `.axis` by name. It has no default.
-- `rray_combine()` accepts `.axis` from 1 through the greatest input
-  dimensionality.
-- `rray_stack()` accepts `.axis` from 1 through the common input
-  dimensionality plus 1. For a 2D input, axes 1, 2, and 3 are all valid.
-- `rray_unstack()` accepts arrays with dimensionality 2 or greater. rray4 has
-  no 0D arrays, so unstacking a 1D array cannot return valid rray4 arrays.
-- Inputs use the common rray4 type. No `.ptype` argument is added.
-- Names on the combined axis are concatenated. Missing pieces are represented
-  by empty strings if another input supplies names.
-- Names of `...` become names on the new axis made by `rray_stack()`.
-- Names on the removed axis become names of the list returned by
-  `rray_unstack()`.
-- `rray_stack()` should be built as cheap dimension views followed by the
-  combine engine.
-- `rray_unstack()` replaces `rray_split()` and owns the slice engine directly.
-- Remove the old split API and all of its private name machinery.
+- Keep the existing public `rray_combine(..., .axis)` unchanged.
+- Replace `rray_split(x, axes)` with `rray_split(x, axis, sizes)`.
+- Split along one axis only and retain that axis in every output.
+- A length-1 `sizes` value is a uniform chunk size and must divide the selected
+  axis dimension exactly.
+- A `sizes` vector with length other than 1 gives each chunk size directly. Its
+  entries may be zero and must sum to the selected axis dimension.
+- A scalar chunk size must be positive. Zero is only meaningful in the explicit
+  vector form.
+- Optimize the uniform `sizes = 1L` case because unstack uses it and it is the
+  most common direct split.
+- Implement stack as trailing singleton expansion where needed, insertion of a
+  singleton axis, and a call to the existing combine engine.
+- Add an internal `rray_expand_dimensionality()` helper that pads dimensions
+  with trailing ones without copying data.
+- Expand an input for stack only when it has fewer than `axis - 1` dimensions.
+  There is no need to expand all inputs to the greatest dimensionality.
+- Implement unstack as split with `sizes = 1L`, followed by removal of the
+  selected singleton axis from every piece.
+- Names of `...` become names on the new axis made by stack.
+- Names on the removed axis become names of the list returned by unstack.
+- Keep prototype control internal for combine and stack.
+- Add no lower-level R or FFI entry points beyond the wrappers for the new
+  public functions.
 
 ## Public behavior
 
 ### `rray_combine()`
 
-`rray_combine()` joins one or more arrays along `.axis`. The selected axis
-keeps its dimension from each input, and those dimensions are added together.
-Every other axis is broadcast to a common dimension.
-
-For inputs with the same dimensionality:
+`rray_combine()` joins one or more arrays along an existing axis. The selected
+dimensions are added. Every other axis broadcasts to a common dimension.
 
 ```text
 [2, 3] + [4, 3] along axis 1 -> [6, 3]
 [2, 3] + [2, 5] along axis 2 -> [2, 8]
 ```
 
-The selected axis is not broadcast. A dimension of 1 on that axis contributes
-one position to the result. On all other axes, the usual rray4 rule applies:
-equal dimensions are compatible, and a dimension of 1 can expand.
+The selected axis does not broadcast. Missing trailing axes act as dimensions
+of 1, including when the missing axis is the selected axis.
 
 ```text
-[2, 1, 3] + [3, 2] along axis 1
-
-pad the second input:       [3, 2, 1]
-broadcast the first chunk:  [2, 2, 3]
-broadcast the second chunk: [3, 2, 3]
-combine the chunks:         [5, 2, 3]
+[2] + [2, 3] along axis 2 -> [2, 4]
 ```
 
-This confirms the example in the request. rray4 aligns dimensions from the
-first axis and adds missing singleton axes at the end. It does not use NumPy's
-right-aligned broadcasting rule.
+No public behavior changes are planned for combine. Its current tests remain
+part of the verification for stack and split composition.
 
-An axis that is missing from a lower-dimensional input is treated as an
-implicit dimension of 1. For example:
+### `rray_split()`
+
+`rray_split()` divides `x` into contiguous chunks along one existing `axis`.
+Each output keeps the dimensionality of `x`. Only the selected axis dimension
+changes.
+
+For `x` with dimensions `[6, 3]`:
 
 ```text
-[2] + [2, 3] along axis 2
-
-pad the first input: [2, 1]
-result:              [2, 4]
+split on axis 1 with sizes 2       -> three arrays of [2, 3]
+split on axis 1 with sizes c(1, 5) -> arrays of [1, 3] and [5, 3]
+split on axis 1 with sizes c(0, 6) -> arrays of [0, 3] and [6, 3]
 ```
 
-This follows directly from existing rray4 broadcasting. It should be shown in
-the documentation because it is less obvious than singleton broadcasting on
-an axis that is already present.
+The two forms of `sizes` have different meanings.
 
-One input is valid. It is normalized to an array and cast to its own common
-type. Its dimensions and names are otherwise unchanged.
+#### Uniform chunk size
 
-No inputs is an error. Named dots are used in error messages but do not add or
-prefix names on the combined axis.
+A length-1 `sizes` value is the size of every chunk. It must be positive and
+the selected axis dimension must be evenly divisible by it.
+
+```text
+axis dimension 6, sizes 1 -> 6 chunks of size 1
+axis dimension 6, sizes 2 -> 3 chunks of size 2
+axis dimension 6, sizes 6 -> 1 chunk of size 6
+axis dimension 6, sizes 4 -> error
+```
+
+An axis dimension of 0 produces an empty list for any positive uniform chunk
+size. In particular, `sizes = 1L` works without a special error.
+
+#### Explicit chunk sizes
+
+A `sizes` vector with length other than 1 gives the size of every output chunk
+in order. Every entry must be nonnegative and their checked sum must equal the
+selected axis dimension. Zero-size chunks are retained in the output list.
+
+```text
+axis dimension 6, sizes c(2, 0, 4) -> chunk sizes 2, 0, and 4
+axis dimension 6, sizes c(2, 3)    -> error
+```
+
+`integer()` is valid only when the selected axis has dimension 0. It returns an
+empty list. This is the explicit counterpart of splitting an empty axis into no
+chunks.
+
+The output is always an unnamed list. Split has no source for names describing
+the chunk boundaries. Axis names stay on the selected axis inside each chunk.
+
+The central identity is:
+
+```r
+pieces <- rray_split(x, axis, sizes)
+out <- rlang::inject(rray_combine(!!!pieces, .axis = axis))
+```
+
+`out` should be identical to `x`, including type, dimensions, values, and
+dimension names, for every valid split that produces at least one piece.
+Combine requires at least one input, so an empty split of a zero-length axis
+does not have a combine round trip.
 
 ### `rray_stack()`
 
-`rray_stack()` first finds the common broadcast dimensions of its inputs. It
-then inserts a singleton axis into each input and combines along that axis.
+`rray_stack()` joins one or more inputs along a newly inserted axis. Old axes
+broadcast according to the existing combine rules.
 
-For two 2 by 3 arrays:
-
-```text
-axis 1: [2, 2, 3]
-axis 2: [2, 2, 3]
-axis 3: [2, 3, 2]
-```
-
-The first two results happen to have the same dimensions because there are two
-inputs. Their values are laid out differently. With three inputs the
-difference is clearer:
+For two arrays with dimensions `[2, 3]`:
 
 ```text
-three [2, 3] arrays on axis 1 -> [3, 2, 3]
-three [2, 3] arrays on axis 2 -> [2, 3, 3]
-three [2, 3] arrays on axis 3 -> [2, 3, 3]
+stack on axis 1 -> [2, 2, 3]
+stack on axis 2 -> [2, 2, 3]
+stack on axis 3 -> [2, 3, 2]
 ```
 
-Again, the last two shapes happen to match because both an old dimension and
-the input count are 3. Indexing tests must check values, not just dimensions.
+The first two shapes happen to match because there are two inputs. Their value
+layouts differ. Tests must check slices, not only dimensions.
 
-The useful mechanical description is:
+For greatest input dimensionality `D`, valid axes are 1 through `D + 1`.
+Stacking adds exactly one axis, so the output dimensionality is `D + 1`.
+
+Stack broadcasts old axes because it delegates to combine:
 
 ```text
-stack [2, 3] on axis 1: [1, 2, 3], then combine on axis 1
-stack [2, 3] on axis 2: [2, 1, 3], then combine on axis 2
-stack [2, 3] on axis 3: [2, 3, 1], then combine on axis 3
+[2, 1, 3] and [1, 4, 3]
+stack on axis 2 -> [2, 2, 4, 3]
 ```
 
-For inputs with common dimensionality `D`, valid axes are `1` through `D + 1`.
-The output has dimensionality `D + 1`. This means the user's check was right:
-a 2D array may be stacked on axis 3 to put the new axis last.
-
-Broadcasting happens before the new axis is inserted:
+Inputs of different dimensionality also work:
 
 ```text
-[2, 1, 3] and [1, 4, 3] -> common dimensions [2, 4, 3]
-stack on axis 2              -> [2, 2, 4, 3]
+[2] and [2, 3]
+stack on axis 3 -> [2, 3, 2]
 ```
 
-A useful feature of broadcasted stack is building feature planes over a grid:
+One input is valid and adds an axis of dimension 1. No inputs is an error.
 
-```r
-row <- array(c(10, 20), c(2, 1))
-column <- array(c(1, 2, 3), c(1, 3))
-
-out <- rray_stack(
-  row = row,
-  column = column,
-  .axis = 3
-)
-```
-
-The inputs broadcast to `[2, 3]`, then stack to `[2, 3, 2]`:
-
-```text
-out[, , "row"]       out[, , "column"]
-
-10 10 10              1 2 3
-20 20 20              1 2 3
-```
-
-Each `out[i, j, ]` contains the row and column features for one grid position.
-The same pattern is useful for coordinate grids, model feature arrays, image
-channels, and parameter grids. Without broadcasted stack, callers must
-explicitly broadcast every input before packing them along the new axis.
-
-Use this as a main `rray_stack()` documentation example. It shows that
-broadcasting is a useful part of the function rather than only a relaxed shape
-check. It also shows dots names becoming names on the new axis.
-
-One input is valid and adds a new axis with dimension 1. No inputs is an
-error.
+Stack uses the common rray4 type chosen by combine. Its public R interface has
+no `.ptype` argument. The internal C entry point accepts a prototype so an
+internal caller can select one without adding another public path.
 
 ### `rray_unstack()`
 
-`rray_unstack()` returns one slice for every position on `.axis`, in storage
-order for that axis. The selected axis is removed from each slice rather than
-kept with dimension 1.
+`rray_unstack()` returns one slice for every position on `axis`. The selected
+axis is removed from each slice.
 
 ```text
 unstack [2, 3, 4] on axis 1 -> 2 arrays of [3, 4]
@@ -209,678 +222,453 @@ unstack [2, 3, 4] on axis 2 -> 3 arrays of [2, 4]
 unstack [2, 3, 4] on axis 3 -> 4 arrays of [2, 3]
 ```
 
-The input must have dimensionality 2 or greater. The Python Array API can
-unstack a 1D array into 0D arrays. rray4 normalizes vectors to 1D arrays and
-does not support 0D arrays, so accepting that case would break the package's
-basic array rule.
+Its definition is deliberately mechanical:
 
-An axis with dimension 0 returns an empty list. An axis with dimension 1
-returns a one-element list.
+1. Call `rray_split(x, axis, sizes = 1L)`.
+2. Call `rray_remove_axes(piece, axis)` on every piece.
+3. Use the removed axis names as the names of the output list.
 
-The result type is always list. Each element keeps the storage type of `x`.
+The input must have dimensionality 2 or greater. rray4 has no zero-dimensional
+arrays, and `rray_remove_axes()` cannot remove the only axis.
 
-## Broadcasting is a sound extension
+An axis of dimension 0 returns an empty list. An axis of dimension 1 returns a
+one-element list. Every element keeps the storage type of `x`.
 
-NumPy and the Python Array API require equal input shapes for `stack()`, and
-equal shapes outside the selected axis for `concat()`. rray4 does not need to
-copy that restriction.
+## Why stack only expands to `axis - 1`
 
-For combine, define the result in two steps:
+`rray_insert_axes()` refers to axes in the result. An input must therefore have
+at least `axis - 1` dimensions before a new axis can be inserted at `axis`.
 
-1. Find one common broadcast dimension for every non-combine axis.
-2. Broadcast each input to its own chunk, keeping its combine-axis dimension,
-   then place the chunks one after another.
+It does not need the greatest input dimensionality first. The combine engine
+already treats missing trailing dimensions as 1.
 
-There is no conflict between broadcasting and combining because they control
-different axes. The combined axis is added, never recycled. Every other axis
-uses the existing common-dimension rule.
-
-The rule is also stable across more than two inputs. Common non-combine
-dimensions are computed across the full input list. The final combine-axis
-dimension is the sum across the same full list. Grouping inputs differently
-does not change the dimensions or values, apart from the package's existing
-first-input rule for choosing names.
-
-For stack, the same rule applies after inserting a singleton axis. This gives
-a clean relation:
+For inputs `[2]` and `[2, 3]` stacked on axis 3:
 
 ```text
-stack(xs, axis) = combine(expand_each(xs, axis), axis)
+[2]    -> expand to [2, 1] -> insert axis 3 -> [2, 1, 1]
+[2, 3]                         insert axis 3 -> [2, 3, 1]
+combine on axis 3                              -> [2, 3, 2]
 ```
 
-### Benefits
-
-- Broadcasting is the main purpose of rray4, so strict shape matching would
-  be an odd exception.
-- The rule handles singleton dimensions and differing dimensionality with one
-  model already used elsewhere in the package.
-- The implementation can read inputs through broadcast strides. It does not
-  need full broadcast copies.
-- Adding broadcasting later would expand the accepted input set, but deciding
-  it now gives names and errors one clear design from the start.
-
-### Costs and risks
-
-- The behavior differs from Python even though the functions use Python as
-  their model. The rray4 behavior must still have one clear definition.
-- A missing trailing axis acts like dimension 1. Combining on that implicit
-  axis is logical but may surprise a reader.
-- The output write is strided when the selected axis is not last. A flat
-  `memcpy()` implementation is not enough.
-- Names need separate rules for the combined axis and broadcast axes.
-
-These costs are manageable. The iterator already represents the required
-source and destination strides. The plan therefore recommends broadcasting in
-the first version, without a `.broadcast` switch.
-
-If implementation work finds a real blocker, strict shape matching can ship
-first and broadcasting can follow without breaking successful calls. That is
-a fallback, not the target behavior of this plan.
-
-## Type rules
-
-`rray_combine()` and `rray_stack()` find one common type across all inputs by
-using the existing `rray_ptype_common()` and `rray_cast_common()` rules.
-
-The supported results are:
-
-| Inputs | Result |
-|---|---|
-| logical only | logical |
-| logical and integer | integer |
-| logical, integer, double | widest of those types |
-| logical, integer, double, complex | widest of those types |
-| character only | character |
-| raw only | raw |
-| list only | list |
-
-Incompatible families remain an error. For example, integer and character do
-not combine. Classed inputs, `NULL`, functions, environments, and other scalar
-objects remain errors under the existing array checks.
-
-There is no `.ptype` argument in this API. It can be added later if users need
-an explicit type override. The first implementation should keep the surface
-small.
-
-The combine engine may materialize an input only when it must cast to the
-common type. Broadcasting must happen while copying into the final output, not
-by calling `rray_broadcast()` on every input.
-
-`rray_unstack()` does not combine types. Every output element has exactly the
-storage type of `x`.
-
-## Dimension rules
-
-### Common setup
-
-Bare vectors are normalized to 1D arrays before dimension work. Differing
-dimensionality follows the current package rule: shorter dimension vectors are
-padded with trailing ones.
-
-All outputs must stay within `RRAY_MAX_DIMENSIONALITY`, which is currently 64.
-
-### Combine dimensions
-
-Let `D` be the greatest dimensionality across the inputs. `.axis` must be from
-1 through `D`.
-
-Build `out_dimensions` as follows:
-
-- On `.axis`, use the sum of each input's dimension. Use 1 when the input does
-  not reach that axis.
-- On every other axis, merge dimensions with the current broadcasting rule.
-
-For each input, also build `chunk_dimensions`:
-
-- Start with `out_dimensions`.
-- Replace the combine-axis dimension with that input's actual or implicit
-  dimension.
-
-The input must broadcast to `chunk_dimensions`.
-
-### Stack dimensions
-
-Find ordinary common broadcast dimensions across the inputs first. Let their
-length be `D`. `.axis` must be from 1 through `D + 1`.
-
-Insert the number of inputs at `.axis` in the common dimensions. These are the
-output dimensions.
-
-Each input gets a cheap view whose dimensions are made in two steps:
-
-1. Pad its dimensions with trailing ones to length `D`.
-2. Insert a dimension of 1 at `.axis`.
-
-Combining those views on `.axis` produces the required result and lets the
-combine engine handle all data movement.
-
-Stack must reject common dimensionality 64 because its output would have
-dimensionality 65.
-
-### Unstack dimensions
-
-Copy the dimensions of `x` except for `.axis`. Since `x` must be at least 2D,
-at least one dimension remains.
-
-### Zero dimensions and overflow
-
-Zero dimensions remain valid.
-
-- A non-combine dimension of 1 can broadcast to 0, following current rray4
-  rules.
-- A combine-axis dimension of 0 contributes nothing to the sum.
-- Stacking zero-size arrays still adds a new axis whose dimension is the
-  number of inputs.
-- Unstacking an axis of dimension 0 returns an empty list.
-
-Dimension sums must be computed in `r_ssize`, checked against `INT_MAX`, and
-only then stored in the integer dimensions vector. The number of stack inputs
-must also fit in an R dimension.
-
-The full product of the output dimensions must be checked before allocation.
-Do not rely on signed overflow in `rray_size_from_dimensions()`. A checked
-helper must return 0 immediately if any dimension is 0, even if large earlier
-dimensions would overflow when multiplied. A local helper is enough unless
-another pending feature already adds a shared checked-size function.
-
-## Name rules
-
-Names are part of the operation, not an afterthought. The three functions must
-form a useful round trip when the inputs already share dimensions.
-
-### Names on non-combine axes
-
-Use the existing broadcast-name rule on every axis that is not being combined:
-
-- An input can contribute names only when its dimension on that axis is kept.
-- Names from a dimension that expands are dropped.
-- The first eligible input with names wins.
-- If no input contributes names on any axis, do not attach a `dimnames`
-  attribute.
-
-This is the behavior of `rray_broadcast_names_common()` and should be reused
-rather than copied.
-
-### Names on the axis combined by `rray_combine()`
-
-Concatenate axis names in input order.
-
-If every input lacks names on that axis, the output axis is unnamed. If any
-input supplies names, allocate the full axis-name vector and use `""` for each
-position contributed by an unnamed input. Keep `NA` names as `NA`.
-
-For example:
+For the same inputs stacked on axis 1, neither input needs expansion:
 
 ```text
-c("a", "b") + unnamed length 2 + c("e")
--> c("a", "b", "", "", "e")
+[2]    -> insert axis 1 -> [1, 2]
+[2, 3] -> insert axis 1 -> [1, 2, 3]
+combine on axis 1       -> [2, 2, 3]
 ```
 
-This preserves all available information and matches ordinary R vector
-concatenation. A stricter alternative is to drop the complete axis names when
-any input is unnamed. Confirm this choice before implementation.
+The implicit trailing axis on the first prepared input broadcasts to 3. This
+keeps stack small and lets combine remain the single source of broadcasting
+rules.
 
-Names of dots do not affect `rray_combine()`. A named input may contribute
-many positions, so one dots name has no direct position-preserving meaning.
+## Internal dimensionality expansion
 
-### Names made by `rray_stack()`
+Add an internal C helper to `src/dimensionality.c` and
+`src/dimensionality.h`:
 
-Names of `...` become names on the new axis. This gives:
+```c
+r_obj* rray_expand_dimensionality(
+  r_obj* x,
+  int dimensionality,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+);
+```
+
+Its contract is:
+
+- normalize and validate `x` as an unclassed array;
+- require `dimensionality` to be at least the current dimensionality;
+- require the target to stay within `RRAY_MAX_DIMENSIONALITY`;
+- return a metadata-only wrapper;
+- copy the existing dimensions and append dimensions of 1;
+- preserve existing axis names in place;
+- leave every appended axis unnamed;
+- return a no-copy view even when no expansion is needed.
+
+Do not add an R wrapper or an FFI registration in this change. The helper is
+implementation support for stack. If it later proves useful as a public array
+operation, it can be documented and exported separately.
+
+Stack should only call it when an input dimensionality is less than
+`axis - 1`. Inputs that already reach the insertion point go directly to
+`rray_insert_axes()`.
+
+## Split implementation
+
+Replace the current multiple-axis split engine. The new engine works one chunk
+at a time, which also incorporates the useful result from
+`plans/split-optimize.md`: write one output buffer to completion instead of
+keeping many output write streams active.
+
+### Validation and size planning
+
+1. Normalize and validate `x` as an unclassed array.
+2. Convert `axis` to one integer and validate it against the dimensionality of
+   `x`.
+3. Convert `sizes` to an integer vector without attributes.
+4. Read the dimension on `axis`.
+5. Select uniform mode when `sizes` has length 1.
+6. In uniform mode, require a positive size and exact divisibility. Set the
+   output count to `axis_dimension / size`.
+7. In explicit mode, require nonnegative entries and a checked sum equal to the
+   axis dimension. Set the output count to `length(sizes)`.
+8. Allocate the output list once.
+
+Add `axis` and `sizes` argument tags to `struct rray_args` if suitable tags do
+not already exist. Errors must name `axis` and `sizes`, not `.axis`.
+
+Do not divide by the selected dimension. A zero axis dimension is valid.
+
+### Dimensions and allocation
+
+Every output copies the dimensions of `x` and replaces the selected dimension
+with its chunk size.
+
+Uniform mode can allocate one dimensions vector and share it across every
+output because all chunks have the same shape. This is especially important
+for `sizes = 1L`.
+
+Explicit mode must use dimensions matching each chunk. It may share dimensions
+between equal chunk sizes if that keeps the code clear, but no cache is
+required for the first implementation.
+
+Use checked size calculation before allocating each output. A zero chunk size
+produces a valid zero-size array with a zero dimension on `axis`.
+
+### Data movement
+
+Compute ordinary input strides once. For each chunk:
+
+1. Build a point space from that chunk's output dimensions.
+2. Use the input strides as the source location strides.
+3. Start the source at the cumulative axis offset multiplied by the input
+   stride for `axis`.
+4. Write the current output sequentially from location 0.
+5. Advance the cumulative axis offset by the chunk size.
+
+This traverses one complete chunk before moving to the next. It avoids the
+cache conflict problem recorded in `plans/split-optimize.md` for the old flat
+split kernel.
+
+Uniform mode should build the iterator plan once and reuse it for every chunk.
+The `sizes = 1L` path then has one dimensions object, one plan, and one simple
+outer loop over axis positions.
+
+Use one typed core for each native type. Atomic types write through direct
+pointers. Character and list types use write barriers. A contiguous source run
+may use a bulk copy for atomic types when the iterator reports stride 1.
+
+Zero-size chunks allocate and attach metadata but perform no copy. Repeated
+zero chunks do not advance the source offset.
+
+### Split names
+
+Each chunk keeps names on every axis:
+
+- names on non-split axes are shared unchanged;
+- names on the split axis are sliced over the same contiguous range as the
+  data;
+- a zero-size named chunk receives `character()` on the split axis;
+- if `x` has no dimension names, no output gets a `dimnames` attribute.
+
+The current `rray_split_names()` machinery is designed for multiple axes of
+size 1. Replace it with single-axis chunk name handling owned by split. Remove
+its separate FFI entry point. There should be no user-callable lower-level name
+operation.
+
+The result list itself stays unnamed.
+
+## Stack implementation
+
+Stack should be a small composition around the current combine engine.
+
+### Validation and preparation
+
+1. Reject an empty input list.
+2. Convert `.axis` with `arg_as_int()` and `rray_args.dot_axis`.
+3. Find the greatest input dimensionality `D` with the existing helper and
+   original dots argument context.
+4. Check that `D + 1` stays within `RRAY_MAX_DIMENSIONALITY`.
+5. Validate `.axis` from 1 through `D + 1`.
+6. For each input whose dimensionality is less than `.axis - 1`, call
+   `rray_expand_dimensionality()` with `.axis - 1`.
+7. Call `rray_insert_axes()` on each prepared input with `.axis`.
+8. Keep the original dots names on the prepared list.
+
+Build a subscript argument for each input before calling expansion or insertion
+so errors still identify a named dots element or its `..n` position.
+
+The inserted views do not copy data. They preserve old axis names, leave the
+new axis unnamed, and leave combine responsible for casting, broadcasting, and
+copying into the final result.
+
+### Delegate to combine
+
+Give stack an internal C signature parallel to combine:
+
+```c
+r_obj* rray_stack(
+  r_obj* xs,
+  int axis,
+  r_obj* ptype,
+  struct rray_arg* arg,
+  struct rray_arg* ptype_arg,
+  struct r_lazy error_call
+);
+```
+
+The FFI wrapper passes `r_null` for `ptype` and empty internal argument tags,
+just as the current combine FFI wrapper does. There is no public `.ptype`
+argument.
+
+Call the existing `rray_combine()` with the prepared views, `.axis`, and the
+internal prototype. Do not add a prepared combine helper to a header and do not
+duplicate combine's type, dimensions, names, iterator, or fill logic.
+
+Errors raised by combine must retain the `rray_stack()` call and the original
+dots argument names.
+
+### Stack names
+
+After combine returns, replace names on the inserted axis with the names of
+`...`:
 
 ```r
 rray_stack(first = x, second = y, .axis = 2L)
 ```
 
-a new second axis named `c("first", "second")`.
+The new second axis has names `c("first", "second")`.
 
-If no dots are named, the new axis is unnamed. If only some dots are named,
-`list2()` supplies empty strings for the others, and that partial name vector
-is kept.
+If no inputs are named, the new axis is unnamed. If only some are named, keep
+the empty strings supplied by `list2()`. Old axis names are already handled by
+insert and combine.
 
-Names on all old axes use the common broadcast-name rule. The new axis names
-from dots replace any temporary names produced while using the combine engine.
+Do not mutate the result returned from combine in place if it could be shared.
+Use the package's normal wrapper and attribute replacement pattern.
 
-### Names returned by `rray_unstack()`
+## Unstack implementation
 
-Names from the removed axis become `names()` on the output list. If the axis
-has no names, the list is unnamed. This also applies to a zero-length named
-axis, where `character()` is a valid zero-length names attribute.
+Unstack should reuse split and remove-axes rather than owning another copy
+engine.
 
-Names on every surviving axis keep their order and shift left to close the
-removed position. The removed names must not remain as singleton dimension
-names on the output arrays.
+1. Normalize and validate `x`.
+2. Require dimensionality 2 or greater.
+3. Convert and validate `axis` as one axis of `x`.
+4. Call the internal split entry point with `sizes = 1L`.
+5. Call `rray_remove_axes()` on `axis` for every split piece.
+6. Set the output list names to the original names on `axis`.
 
-For a named input:
+The split pieces already have the right values, type, and surviving axis
+names. Removing the singleton axis is a metadata-only operation and drops its
+one-element name from each piece.
 
-```text
-dimensions: [2, 3]
-axis names: list(c("r1", "r2"), c("a", "b", "c"))
+Keep unstack as a native feature pair so validation, argument context, and the
+loop over pieces stay in C. Do not expose the internal split result or a
+`keepdims` switch through another R entry point.
 
-unstack on axis 2:
-- list names: c("a", "b", "c")
-- each element dimensions: [2]
-- each element axis names: list(c("r1", "r2"))
-```
+For an unnamed removed axis, leave the output list unnamed. For a named axis
+of dimension 0, `character()` is a valid zero-length names attribute and should
+be retained.
 
-Names on the `dimnames` list itself are not a new concern for these functions.
-Follow the behavior of the existing broadcast and remove-axes helpers.
+## Names and round trips
 
-## Round trips
+Names make the two pairs useful inverses.
 
-The main identity is:
+### Split and combine
+
+Split subsets the selected axis names into each chunk. Combine concatenates
+those names. Names on other axes are shared by split and selected by combine's
+existing broadcast name rules.
+
+For every nonempty valid split:
 
 ```r
-rray_stack(!!!rray_unstack(x, .axis = axis), .axis = axis)
+pieces <- rray_split(x, axis, sizes)
+rray_combine(!!!pieces, .axis = axis)
 ```
 
-It should reproduce the values, dimensions, type, and axis names of `x` for
-every valid axis. It should also restore the removed axis names through the
-names of the spliced list.
+must reproduce all names on `x`.
 
-The other direction is exact when stack does not need to broadcast:
+### Stack and unstack
+
+Stack turns dots names into names on the new axis. Unstack turns those axis
+names back into list names.
+
+```r
+pieces <- rray_unstack(x, axis)
+out <- rlang::inject(rray_stack(!!!pieces, .axis = axis))
+```
+
+This should reproduce the values, dimensions, type, and dimension names of
+`x` for every valid axis.
+
+The other direction is exact when stack does not broadcast or cast:
 
 ```r
 rray_unstack(
   rray_stack(a = x, b = y, .axis = axis),
-  .axis = axis
+  axis = axis
 )
 ```
 
-It returns `list(a = x, b = y)` when `x` and `y` already have the same
-dimensions and compatible names.
+It returns `list(a = x, b = y)` when `x` and `y` already have equal dimensions,
+types, and compatible names.
 
-When stack broadcasts inputs, unstack returns their broadcasted forms. It
-cannot recover dimensions of 1 that were expanded, so this is expected:
-
-```text
-[2, 1] and [1, 3] stack to common old dimensions [2, 3]
-unstack returns two [2, 3] arrays
-```
+When stack broadcasts or casts, unstack returns the broadcasted and cast forms.
+It cannot recover singleton dimensions that expanded or narrower input types.
 
 ## R interface
 
-Create one R file per public function:
+Keep one R file per public operation:
 
 - `R/combine.R`
+- `R/split.R`
 - `R/stack.R`
 - `R/unstack.R`
 
-The wrappers should be thin:
+The new wrappers are thin:
 
 ```r
-rray_combine <- function(..., .axis) {
-  .Call(ffi_rray_combine, list2(...), .axis, environment())
+rray_split <- function(x, axis, sizes) {
+  .Call(ffi_rray_split, x, axis, sizes, environment())
 }
 
 rray_stack <- function(..., .axis) {
   .Call(ffi_rray_stack, list2(...), .axis, environment())
 }
 
-rray_unstack <- function(x, .axis) {
-  .Call(ffi_rray_unstack, x, .axis, environment())
+rray_unstack <- function(x, axis) {
+  .Call(ffi_rray_unstack, x, axis, environment())
 }
 ```
 
-All three functions need exported roxygen documentation. The docs should
-explain the valid `.axis` range for each function.
+Do not change the `rray_combine()` wrapper and do not add `.ptype` to any
+public wrapper.
 
-Add all three topics to the Manipulation section of `_pkgdown.yml`.
-`devtools::document()` will update `NAMESPACE` and the generated help files.
+Export and document all four functions. Replace the existing split
+documentation with the new single-axis and sizes behavior. Add stack and
+unstack to the Manipulation section of `_pkgdown.yml` next to combine and
+split.
 
-Remove `rray_split` from the Manipulation section. Redocumenting must remove
-its export from `NAMESPACE`.
+## Native files and registration
 
-## Native interface and files
-
-Add these feature pairs and decl headers:
+Keep or add these feature pairs and decl headers:
 
 - `src/combine.c`, `src/combine.h`, `src/decl/combine-decl.h`
+- `src/split.c`, `src/split.h`, `src/decl/split-decl.h`
 - `src/stack.c`, `src/stack.h`, `src/decl/stack-decl.h`
 - `src/unstack.c`, `src/unstack.h`, `src/decl/unstack-decl.h`
 
-Remove the old split files:
+Update `src/dimensionality.c` and `src/dimensionality.h` with the internal
+expansion helper. Add declarations to a decl header only for static helpers.
 
-- `R/split.R`
+Remove the old split-name feature files after their needed behavior is folded
+into split:
+
 - `R/split-names.R`
-- `src/split.c`
-- `src/split.h`
-- `src/decl/split-decl.h`
 - `src/split-names.c`
 - `src/split-names.h`
 - `src/decl/split-names-decl.h`
-- `tests/testthat/test-split.R`
 - `tests/testthat/test-split-names.R`
-- `tests/testthat/_snaps/split.md`
-- `plans/split-optimize.md`
 
-Update benchmark files that call split:
-
-- Replace the single-axis split cases in `bench/iterator.R` with unstack cases.
-- Remove the multi-axis split case from `bench/iterator.R`.
-- Remove the split-specific sections from `bench/stride-zero.R`. Add combine
-  iterator cases there only if they still answer the stride question that file
-  measures.
-
-Remove both split FFI declarations and registrations from `src/init.c`:
+Remove `ffi_rray_split_names` from `src/init.c`. Change `ffi_rray_split` to
+arity 4, and add stack and unstack registrations:
 
 ```text
-ffi_rray_split
-ffi_rray_split_names
-```
-
-Add FFI declarations and registrations to `src/init.c`:
-
-```text
-ffi_rray_combine(ffi_xs, ffi_axis, ffi_frame)
+ffi_rray_split(ffi_x, ffi_axis, ffi_sizes, ffi_frame)
 ffi_rray_stack(ffi_xs, ffi_axis, ffi_frame)
 ffi_rray_unstack(ffi_x, ffi_axis, ffi_frame)
 ```
 
-The registration arities are 3 for all three functions.
+Do not register dimensionality expansion or any lower-level combine, split,
+stack, or unstack helper.
 
-Add `dot_axis` to `struct rray_args` in `src/arg.h` and initialize it as
-`".axis"` in `src/arg.c`. Existing functions should keep using `axis`.
+The C files must follow the package's top-down order. FFI wrappers come first,
+internal entry points next, then helpers and typed cores in the order used. The
+decl include stays last. Do not add source comments.
 
-The `.c` files must follow the package's top-down order. FFI wrappers come
-first, public internal functions next, then helpers and typed cores in the
-order used. The decl include stays last. Do not add source comments.
+## Existing split references
 
-Headers should declare internal C functions only. Keep FFI declarations in
-`src/init.c`.
+The old split API appears in tests, benchmarks, and broader plans. Update each
+reference intentionally.
 
-## Combine implementation
-
-Combine and unstack each need a data-movement engine. Stack prepares views and
-calls the combine engine.
-
-### Phase 1: validate and cast
-
-1. Reject an empty input list.
-2. Convert `.axis` with `arg_as_int()` and the new `rray_args.dot_axis` tag.
-3. Build a dots subscript argument with `new_subscript_arg()`. It should report
-   `x` for a named input and `..2` for an unnamed second input.
-4. Find the common type across the raw input list.
-5. Pass that resolved prototype to `rray_cast_common()`. This avoids finding
-   the common type twice. Identity casts keep their data; widening casts make
-   ordinary array copies.
-6. Read dimensions from the cast arrays and find `D`.
-7. Check `.axis` against `D`.
-
-Keep list names through every prepared list so type, dimension, and class
-errors continue to name the right dots input.
-
-The public internal `rray_combine()` should do this preparation and then call a
-second internal helper that accepts an already normalized, common-type list.
-`rray_stack()` can use the same preparation and call that helper after making
-its dimension views. This avoids a second type pass when stack delegates to
-combine.
-
-### Phase 2: plan dimensions and names
-
-Build the output dimensions and one chunk-dimensions vector per input using the
-rules above. Check the combine-axis sum and final size.
-
-Build output names in two parts:
-
-- Call `rray_broadcast_names_common()` with the output dimensions, then clear
-  the combine-axis slot. Inputs normally cannot contribute on that axis because
-  their dimensions do not match the summed output dimension, but clearing it
-  also handles the one-input case.
-- Build the concatenated combine-axis names and place them in that slot.
-
-Only allocate an output names list if at least one axis has names.
-
-### Phase 3: allocate and copy
-
-Allocate one output vector in the common type and attach attributes only after
-the data copy succeeds.
-
-Compute ordinary column-major strides for the final output once. For each
-input:
-
-1. Compute broadcast source strides from its dimensions into its chunk
-   dimensions. A source dimension of 1 gets stride 0. Missing trailing axes
-   also get stride 0.
-2. Use the chunk dimensions as the point space.
-3. Use final output strides as the first location space.
-4. Use broadcast source strides as the second location space.
-5. Start the output location at the cumulative combine-axis offset multiplied
-   by the final output stride for that axis.
-6. Copy every point, then advance the cumulative offset by this input's
-   combine-axis dimension.
-
-This maps a local point in a chunk to both its source value and its final output
-position. It handles a broadcast read and a strided output write in one pass.
-
-Build the traversal with `rray_strided_iterator2_plan()`. Do not use
-`rray_broadcast_iterator2_plan()`: the final output has a larger dimension on
-the combined axis than the current chunk, so it is not a broadcast location
-space.
-
-The shape is:
-
-```text
-point dimensions: chunk dimensions
-location 1:       final output strides
-location 2:       broadcast input strides
-location 1 start: axis offset * output axis stride
-location 2 start: 0
-```
-
-Use one typed core per native type. Atomic types write through direct pointers.
-Character and list outputs use write barriers. The inputs are already cast to
-one common type, so the copy kernels do not need a matrix of source and output
-type combinations.
-
-The implementation should allocate no full broadcast input. Apart from small
-dimension, name, plan, and wrapper objects, it allocates the final output plus
-any input casts required by common type promotion.
-
-## Stack implementation
-
-`rray_stack()` should reuse the combine implementation through metadata-only
-views.
-
-1. Reject an empty input list.
-2. Convert `.axis` with `arg_as_int()`.
-3. Find the common type, then normalize and cast every input to it with the
-   same preparation helper used by `rray_combine()`.
-4. Find ordinary common broadcast dimensions across the prepared inputs with
-   `rray_dimensions_common()`.
-5. Check that adding one axis stays within maximum dimensionality.
-6. Check `.axis` from 1 through `D + 1`.
-7. Wrap each prepared input with `r_wrap()`.
-8. Give the wrapper padded dimensions with a singleton inserted at `.axis`.
-9. Move its existing axis names to the matching new positions. Leave the new
-   axis and padded trailing axes unnamed.
-10. Put the wrappers in a list that keeps the original dots names.
-11. Call the prepared common-type combine helper on that list and `.axis`.
-12. Replace the new axis names with the original dots names, when present.
-
-Adding or moving dimensions of size 1 does not change the underlying flat data
-order. The wrappers therefore avoid both copies and full broadcasts.
-
-Do not implement stack as repeated calls to `rray_broadcast()` followed by
-combine. That would allocate one full common-size input per dots element.
-
-The combine entry point used by stack should accept an existing error call and
-dots argument context. Errors raised inside combine must still point at the
-`rray_stack()` call and use the original input names.
-
-## Unstack implementation
-
-`rray_unstack()` replaces `rray_split()`, so move the useful single-axis part
-of the split engine into `src/unstack.c`. Do not keep a private split layer or a
-`keepdims` option. Unstack only accepts one axis and always removes it.
-
-### Phase 1: validate and plan
-
-1. Normalize and validate `x`.
-2. Read its dimensions and require dimensionality 2 or greater.
-3. Convert and validate `.axis` as one axis of `x`.
-4. Build `out_dimensions` by removing `.axis` from the input dimensions.
-5. Build the retained axes by removing `.axis` from the full axis sequence.
-6. Compute ordinary column-major strides for `x`.
-7. Build an outer iterator plan over `.axis`.
-8. Build an inner iterator plan over the retained axes.
-9. Compute the size of one output array from `out_dimensions`.
-10. Allocate one output array for every position on `.axis`.
-
-The relation to the removed function is:
-
-```text
-split   [2, 3, 4] on axis 2 -> 3 arrays of [2, 1, 4]
-unstack [2, 3, 4] on axis 2 -> 3 arrays of [2, 4]
-```
-
-Only the second form remains public or private after this work.
-
-### Phase 2: copy data
-
-Use a two-stage traversal:
-
-```text
-outer plan: selected axis, chooses one output array
-inner plan: retained axes, fills that output array from start to end
-```
-
-The outer plan has one dimension and uses the input stride for `.axis`. The
-inner plan gathers the dimensions and input strides for every retained axis in
-their original order. Build both with `rray_strided_iterator_plan()`.
-
-Together the plans visit each input value exactly once. The outer loop selects
-one result and one starting input location. The inner loop reads that complete
-slice and writes it sequentially into the result.
-
-Do not move the current flat split traversal unchanged. It writes to many
-separate output vectors while walking `x`, which causes severe cache conflicts
-for common leading-axis shapes. Measurements recorded in
-`plans/split-optimize.md` found the one-output-at-a-time traversal 2.5 to 5
-times faster in the important slow cases. Fold this design into unstack before
-deleting that plan.
-
-The current split typed kernels are still useful as a source for type access
-and write-barrier details. Rewrite them around the nested traversal and rename
-every macro, typed core, and helper to unstack. Remove all code for multiple
-axes and for keeping selected axes with dimension 1.
-
-Use one typed core for each native type. Each outer iteration obtains the data
-pointer for one atomic output and fills it sequentially. Character and list
-outputs write through the barrier. No shelter containing pointers to every
-output is needed. Attach `out_dimensions` when each result array is allocated,
-so no later reshape pass is needed.
-
-For atomic types, add a bulk copy path when the inner plan is one contiguous
-run with input stride 1. Keep the ordinary strided path for every other shape.
-The old measurements found this useful for trailing-axis slices, while the
-nested traversal fixes the much larger leading-axis cache problem.
-
-An input axis with dimension 0 allocates an empty output list and performs no
-copy. Do not divide the total input size by the selected dimension because that
-would divide by zero. Compute each element size from `out_dimensions`.
-
-### Phase 3: attach names
-
-Build retained dimension names once by copying every input axis name except
-the selected one. Share that list across all result arrays. If every retained
-axis is unnamed, do not attach a `dimnames` attribute.
-
-Set `names(out)` to the selected axis names. No per-output subsetting is
-needed because the selected axis no longer exists in an output array.
-
-The old `rray_split_names()` machinery should not move into unstack. It made a
-different names list for each output because split kept singleton axes.
-Unstack needs one retained names list plus the output list names.
-
-## Removing split
-
-This family replaces `rray_split()`. The implementation pull request must
-remove it completely rather than deprecating it.
-
-Remove its R wrappers, native entry points, headers, decl headers, tests,
-snapshots, registration, export, and pkgdown entry. Remove
-`plans/split-optimize.md` because it plans work on code that no longer exists.
-Update the split benchmark sections so every checked-in benchmark still runs.
-
-Some broader plans mention split as an example of a two-location iterator or
-of `NULL` handling. Update these references so the repository does not point
-at the removed API:
-
-- `plans/implementation.md`
-- `plans/n-ary.md`
-- `plans/null.md`
-
-Keep the general `rray_strided_iterator2_plan()` support. Combine still needs
-two locations, so removing split is not a reason to remove that iterator.
-
-Move useful single-axis test coverage from the split tests into the unstack
-tests before deleting the old files. Multiple-axis split behavior, empty
-`axes`, and kept singleton axes have no replacement and should disappear.
+- Rewrite `tests/testthat/test-split.R` for the new signature and behavior.
+- Remove its old multiple-axis cases.
+- Fold useful single-axis correctness coverage into the new tests.
+- Remove the old split-names tests after moving relevant name cases.
+- Update split calls in `bench/iterator.R` and `bench/stride-zero.R`.
+- Keep leading, middle, and trailing axis benchmarks for uniform size 1.
+- Add representative uniform chunks larger than 1 and explicit unequal
+  chunks.
+- Remove or update multiple-axis split references in
+  `plans/implementation.md`, `plans/n-ary.md`, and `plans/null.md`.
+- Delete `plans/split-optimize.md` after its one-output-at-a-time traversal and
+  benchmark requirements are incorporated into the implementation.
 
 ## Errors and validation
 
-Use snapshots for every error test.
+Use snapshots for error tests.
 
-Required cases are:
+Split must cover:
 
-- no inputs to combine or stack;
-- a missing `.axis`;
-- `.axis` with length other than 1;
-- missing `.axis` value;
-- `.axis` with attributes;
-- a lossy or impossible cast of `.axis` to integer;
-- `.axis < 1`;
-- `.axis` above the function's valid range;
-- stack output above maximum dimensionality;
-- unstack input below dimensionality 2;
-- incompatible non-combine dimensions;
-- incompatible common types;
-- classed input;
-- non-array input, including `NULL`;
-- combine-axis dimension sum above `INT_MAX` where a practical synthetic test
-  can reach the check without allocating the data;
-- output size overflow where a practical synthetic test can reach the check.
+- missing `axis` or `sizes`;
+- `axis` with length other than 1, missing values, attributes, or a lossy cast;
+- `axis` below 1 or above the input dimensionality;
+- `sizes` with attributes, missing values, or lossy casts;
+- scalar `sizes` equal to or below 0;
+- a scalar size that does not divide the axis dimension;
+- negative explicit sizes;
+- an explicit checked sum below or above the axis dimension;
+- an empty explicit vector for a nonempty axis;
+- classed and invalid array inputs.
 
-Errors involving an input should identify the named dots element or its `..n`
-position. Errors involving the axis should say `.axis`.
+Stack must cover:
+
+- no inputs;
+- missing or invalid `.axis`;
+- `.axis` below 1 or above `D + 1`;
+- an output above maximum dimensionality;
+- incompatible dimensions outside the new axis;
+- incompatible types;
+- classed and invalid array inputs;
+- errors that identify a named input or its `..n` position.
+
+Unstack must cover:
+
+- missing or invalid `axis`;
+- 1D input;
+- an axis outside the input dimensionality;
+- classed and invalid array inputs.
+
+Errors from composed operations must point to the public call the user made.
+Stack errors say `.axis`. Split and unstack errors say `axis`.
 
 ## Test plan
 
-Create:
+### Combine regression tests
 
-- `tests/testthat/test-combine.R`
-- `tests/testthat/test-stack.R`
-- `tests/testthat/test-unstack.R`
+Keep the current combine suite passing. Add tests only where stack or split
+composition reveals a missing guarantee. Do not recreate already merged
+combine coverage.
 
-Delete the old split test files and snapshot listed above after their useful
-single-axis cases have been moved to unstack.
+### Split tests
 
-Keep every test inside a `test_that()` block.
-
-### Combine tests
-
-- Combine 1D arrays.
-- Combine 2D and 3D arrays along every valid axis.
-- Check values through array indexing, not only dimensions.
-- Check one input.
-- Check more than two inputs.
-- Check dots splicing with `!!!`.
-- Check common type promotion across logical, integer, double, and complex.
-- Check character, raw, and list arrays.
-- Check incompatible type families.
-- Broadcast dimension 1 on each non-combine axis.
-- Broadcast differing dimensionality.
-- Include `[2, 1, 3]` with `[3, 2]` on axis 1 and expect `[5, 2, 3]`.
-- Combine on an axis missing from a lower-dimensional input.
-- Reject an incompatible non-combine axis.
-- Check a zero combine-axis dimension.
-- Check a zero non-combine dimension, including broadcasting 1 to 0.
-- Concatenate complete axis names.
-- Fill unnamed chunks with empty names when another chunk is named.
-- Keep non-combine names from the first eligible input.
-- Drop names from a broadcast dimension.
-- Show that dots names do not prefix combine-axis names.
-- Check that inputs are not modified.
+- Split vectors, matrices, and 3D arrays along every axis.
+- Check exact values and dimensions for uniform sizes 1, 2, and the full axis.
+- Check explicit equal, unequal, and zero chunk sizes.
+- Check `integer()` against a zero and nonzero axis dimension.
+- Check a zero-dimensional axis in uniform mode.
+- Check zero-size chunks at the beginning, middle, and end.
+- Check all seven native storage types.
+- Keep names on non-split axes.
+- Slice names on the split axis, including zero-size chunks.
+- Keep the result list unnamed.
+- Check that input objects are not modified.
+- Check combine round trips for uniform and explicit forms.
+- Compare against a small reference implementation built from `[` over a
+  range of shapes, axes, and chunk plans.
 
 ### Stack tests
 
@@ -888,76 +676,86 @@ Keep every test inside a `test_that()` block.
 - Stack 2D arrays on axes 1, 2, and 3.
 - Check exact values by slicing the new axis.
 - Check one input and more than two inputs.
-- Check all seven native types.
+- Check all seven native storage types.
 - Check common type promotion.
 - Broadcast singleton dimensions.
 - Broadcast differing dimensionality.
-- Test the documented row and column feature-plane example, including values,
-  dimensions, and new-axis names.
-- Reject incompatible dimensions.
+- Exercise an axis that requires trailing expansion for only some inputs.
+- Reject incompatible dimensions and types.
 - Check zero-size inputs.
 - Move dots names to the new axis.
 - Keep partial dots names with empty strings.
 - Leave the new axis unnamed when dots are unnamed.
-- Keep old-axis names under broadcasting.
-- Check dimensionality 64 is rejected because stack would make 65.
-- Check that inputs are not modified.
+- Keep old axis names under broadcasting.
+- Reject greatest input dimensionality 64 because stack would make 65.
+- Check that input objects are not modified.
+
+### Dimensionality expansion tests
+
+Exercise the internal helper through stack:
+
+- no expansion for insertion axes already reachable by an input;
+- one and several appended singleton axes;
+- preservation of existing dimensions and names;
+- unnamed appended axes;
+- differing input dimensionality at the last valid stack axis.
+
+There is no R-facing test for `rray_expand_dimensionality()` because it is not
+public.
 
 ### Unstack tests
 
 - Unstack a 2D array along both axes.
 - Unstack a 3D array along every axis.
 - Check dimensions and exact slice values.
-- Check all seven native types.
+- Check all seven native storage types.
 - Check an axis with dimension 0.
 - Check an axis with dimension 1.
 - Move removed axis names to list names.
 - Shift surviving axis names to their new positions.
-- Handle partial `dimnames`.
-- Reject 1D input.
-- Reject invalid axes, classed input, and non-array input.
+- Handle partial dimension names.
+- Reject a 1D input.
 - Check that `x` is not modified.
 
 ### Round-trip tests
 
-For each axis of a named 2D and 3D array, test:
+For each axis of named 2D and 3D arrays, test both families:
 
 ```r
-pieces <- rray_unstack(x, .axis = axis)
+pieces <- rray_split(x, axis, sizes)
+out <- rlang::inject(rray_combine(!!!pieces, .axis = axis))
+expect_identical(out, x)
+
+pieces <- rray_unstack(x, axis)
 out <- rlang::inject(rray_stack(!!!pieces, .axis = axis))
 expect_identical(out, x)
 ```
 
 Also unstack a stack of named equal-shape inputs and expect the original named
-list. Add one broadcasted stack case and expect the common-size versions rather
-than the original singleton shapes.
+list. Add one broadcasted and one cast stack case and expect the normalized
+outputs rather than the original inputs.
 
 ## Work order
 
-1. Confirm the remaining open public choice about partial names on the combine
-   axis.
-2. Add `.axis` argument support in `src/arg.c` and `src/arg.h`.
-3. Implement and test `rray_combine()` without names.
-4. Add combine names and their tests.
-5. Implement `rray_stack()` through dimension views and combine.
-6. Add stack names and round-trip tests.
-7. Implement the direct `rray_unstack()` engine and add its names.
-8. Move useful single-axis split tests to unstack, then remove the split API,
-   native code, tests, snapshot, and obsolete optimization plan.
-9. Update split benchmarks and broader plans that refer to split.
-10. Register the new native routines and add all R documentation.
-11. Add the three topics to `_pkgdown.yml` and remove `rray_split`.
-12. Run the protection audit, formatting, documentation, tests, benchmarks,
-    and pkgdown checks below.
-
-Keeping names as a separate step makes data-order failures easier to isolate.
-Stack should come after combine because its implementation depends on it.
-Unstack can be built independently after the public decisions are fixed.
+1. Rewrite split validation around one `axis` and `sizes`.
+2. Replace its flat multiple-output traversal with one-chunk-at-a-time copying.
+3. Add chunk dimension names and remove the old split-name entry point.
+4. Add and test the internal dimensionality expansion helper.
+5. Implement stack with expansion, axis insertion, and the current combine
+   entry point.
+6. Add dots names to the new stack axis.
+7. Implement unstack through split and remove-axes.
+8. Add pairwise round-trip tests.
+9. Update registration, documentation, pkgdown, benchmarks, and broader plan
+   references.
+10. Delete the obsolete split optimization plan.
+11. Run the protection audit, formatting, documentation checks, focused tests,
+    benchmarks, and the full test suite.
 
 ## C protection audit
 
-Before running any C change, perform the package's required separate protection
-pass over the full diff.
+Before running any C change, perform the required separate protection pass over
+the full diff.
 
 For every new or touched `r_obj*`:
 
@@ -965,30 +763,32 @@ For every new or touched `r_obj*`:
 2. Check whether that function can allocate before it protects or consumes the
    value.
 3. Add `KEEP()`, `KEEP_HERE()`, or `KEEP_AT()` where needed.
-4. Check pointers from `r_int_cbegin()`, `r_list_cbegin()`, and the typed vector
-   accessors. Their owner must stay protected across every later allocation.
-5. Check metadata views in stack. The wrapped input, inserted dimensions,
-   inserted names, and prepared list must all remain protected until combine
-   has finished with them.
-6. Check shared retained dimensions and names in unstack while attributes are
-   attached to each list element.
-7. Balance every success-path `FREE()` count. Error paths unwind through R.
+4. Check pointers returned by vector accessors. Their owners must stay
+   protected across every later allocation.
+5. Check shared dimensions and names in uniform split while outputs are
+   allocated and attributes are attached.
+6. Check each explicit split dimensions and names object through allocation and
+   attachment.
+7. Check stack's expanded wrappers, inserted wrappers, prepared list, prototype,
+   and combined result.
+8. Check unstack's split list and every remove-axes wrapper.
+9. Balance every success-path `FREE()` count. Error paths unwind through R.
 
 Do not use `gctorture()` or `gctorture2()`.
 
 ## Verification
 
-After C or R code is generated, run all required formatters:
+After C or R code is generated, run both required formatters:
 
 ```sh
 clang-format -i src/*.c src/*.h
 air format .
 ```
 
-Then run focused tests:
+Run focused tests:
 
 ```sh
-Rscript -e "devtools::test(filter = '^(combine|stack|unstack)$')"
+Rscript -e "devtools::test(filter = '^(combine|split|stack|unstack|dimensionality|insert-axes|remove-axes)$')"
 ```
 
 Redocument and check the reference index:
@@ -1004,33 +804,35 @@ Run the full test suite last:
 Rscript -e "devtools::test()"
 ```
 
-Run the updated unstack section of `bench/iterator.R` against a build from
-before the change. Check leading, middle, and trailing axes. Correctness does
-not depend on a fixed timing threshold, but the new traversal should retain the
-large improvement already measured for leading-axis slices and should not make
-trailing-axis slices materially slower.
-
-If the iterator or a shared dimension helper changes, also run the broadcast,
-remove-axes, cast-common, and ptype-common tests directly before the full suite.
+Benchmark split on leading, middle, and trailing axes with `sizes = 1L`. Compare
+the result with the current implementation using the round-robin method from
+`plans/split-optimize.md`. Also benchmark a larger uniform chunk size and an
+explicit unequal plan. Correctness does not depend on a fixed timing threshold,
+but the new traversal should remove the severe leading-axis slowdown and keep
+trailing-axis performance in the same range.
 
 ## Done means
 
-- All three functions are exported and documented.
-- Their axes, dimensions, type, value order, names, zero-size behavior, and
-  errors match this plan.
-- Combine and stack broadcast without full broadcast intermediates.
-- Stack accepts the last insertion point, `D + 1`.
-- Unstack rejects 1D input and returns arrays with one fewer axis.
-- Stack and unstack pass the stated round trips.
-- `rray_split()` and `rray_split_names()` have no remaining R or C entry point.
-- Old split files, tests, snapshots, documentation, pkgdown entries, and the
-  obsolete split optimization plan are removed.
-- Checked-in benchmarks no longer call split, and the new unstack traversal is
-  measured on leading, middle, and trailing axes.
-- Broader plans no longer refer to split as a live API.
+- The four public signatures match this plan.
+- Combine remains unchanged and all of its current tests pass.
+- Split accepts one axis and both forms of `sizes`.
+- Split retains its selected axis and handles zero-size chunks.
+- Uniform split, especially `sizes = 1L`, reuses dimensions and traversal work.
+- Stack is implemented through expansion, insertion, and combine.
+- Stack expands inputs only as far as the insertion point requires.
+- Unstack is implemented through size-1 split and remove-axes.
+- Split/combine and stack/unstack pass the stated round trips.
+- Public combine and stack do not expose `.ptype`.
+- Internal combine and stack can receive a prototype.
+- No lower-level R or FFI entry points exist beyond the wrappers for the public
+  functions.
+- Names, zero dimensions, value order, types, and errors match this plan.
+- Old multiple-axis split behavior and split-name registration are gone.
+- Checked-in benchmarks and broader plans use the new split signature.
+- The obsolete split optimization plan is removed after its design is applied.
 - No input is modified.
-- Native routines are registered.
-- `_pkgdown.yml` includes all three topics.
+- Native routines are registered with the correct arities.
+- `_pkgdown.yml` includes combine, split, stack, and unstack.
 - The explicit protection pass is complete.
 - All C and R files are formatted.
-- Focused tests, full tests, documentation, and pkgdown checks pass.
+- Focused tests, the full suite, documentation, and pkgdown checks pass.
