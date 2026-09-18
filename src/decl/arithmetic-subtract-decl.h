@@ -103,11 +103,7 @@ static r_obj* rray_subtract_cpl_cpl(
   struct r_lazy error_call
 );
 
-static inline int rray_subtract_int_one(
-  int x,
-  int y,
-  struct r_lazy error_call
-);
+static inline int rray_subtract_int_one(int x, int y, struct r_lazy error_call);
 static inline double rray_subtract_dbl_one(
   double x,
   double y,
