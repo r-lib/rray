@@ -4,6 +4,7 @@
 #include "dimensionality.h"
 #include "rlang.h"
 #include "size.h"
+#include "strides.h"
 
 #include "decl/strided-iterator-decl.h"
 
@@ -203,7 +204,7 @@ static inline struct rray_strided_iterator_plan rray_broadcast_iterator_plan(
 
   r_ssize v_strides[RRAY_MAX_DIMENSIONALITY];
 
-  rray__fill_broadcast_strides(
+  rray_fill_broadcast_strides_from_dimensions(
     v_from_dimensions,
     from_dimensionality,
     to_dimensionality,
@@ -317,14 +318,14 @@ static inline struct rray_strided_iterator2_plan rray_broadcast_iterator2_plan(
   r_ssize v_strides1[RRAY_MAX_DIMENSIONALITY];
   r_ssize v_strides2[RRAY_MAX_DIMENSIONALITY];
 
-  rray__fill_broadcast_strides(
+  rray_fill_broadcast_strides_from_dimensions(
     v_from1_dimensions,
     from1_dimensionality,
     to_dimensionality,
     v_strides1
   );
 
-  rray__fill_broadcast_strides(
+  rray_fill_broadcast_strides_from_dimensions(
     v_from2_dimensions,
     from2_dimensionality,
     to_dimensionality,
@@ -493,21 +494,6 @@ static inline void rray__check_broadcast_dimensions(
         to_dimension
       );
     }
-  }
-}
-
-static inline void rray__fill_broadcast_strides(
-  const int* v_from_dimensions,
-  int from_dimensionality,
-  int to_dimensionality,
-  r_ssize* v_out
-) {
-  r_ssize stride = 1;
-
-  for (int i = 0; i < to_dimensionality; ++i) {
-    const int dimension = (i < from_dimensionality) ? v_from_dimensions[i] : 1;
-    v_out[i] = (dimension == 1) ? 0 : stride;
-    stride *= dimension;
   }
 }
 

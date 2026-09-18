@@ -116,7 +116,7 @@ r_obj* rray_combine(
     v_x_broadcast_dimensions[axis - 1] = x_axis_dimension;
 
     r_ssize v_x_strides[RRAY_MAX_DIMENSIONALITY];
-    rray__fill_broadcast_strides(
+    rray_fill_broadcast_strides_from_dimensions(
       v_x_dimensions,
       x_dimensionality,
       dimensionality,
