@@ -27,10 +27,6 @@ preexisting axes are broadcast to their common dimension.
 The new axis has a dimension equal to the number of arrays you are stacking.
 }
 \details{
-\code{.axis} refers to an axis of the result. Stacking adds one axis, so with a
-greatest input dimensionality of \code{D}, \code{.axis} can be any value between 1 and
-\code{D + 1}.
-
 Names of \code{...} become the names of the new axis. Existing axis names are
 carried over from the inputs like they are with \code{\link[=rray_combine]{rray_combine()}}.
 }

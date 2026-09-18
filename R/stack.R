@@ -7,10 +7,6 @@
 #' The new axis has a dimension equal to the number of arrays you are stacking.
 #'
 #' @details
-#' `.axis` refers to an axis of the result. Stacking adds one axis, so with a
-#' greatest input dimensionality of `D`, `.axis` can be any value between 1 and
-#' `D + 1`.
-#'
 #' Names of `...` become the names of the new axis. Existing axis names are
 #' carried over from the inputs like they are with [rray_combine()].
 #'
