@@ -137,7 +137,8 @@ r_obj* rray_combine(
     FREE(1);
   }
 
-  r_obj* out_names = KEEP(rray_combine_names(xs, out_dimensions, axis));
+  r_obj* out_names =
+    KEEP(rray_combine_names(xs, out_dimensions, axis, axis_dimension));
 
   r_attrib_poke_dim(out, out_dimensions);
   if (out_names != r_null) {
@@ -148,7 +149,12 @@ r_obj* rray_combine(
   return out;
 }
 
-static r_obj* rray_combine_names(r_obj* xs, r_obj* dimensions, int axis) {
+static r_obj* rray_combine_names(
+  r_obj* xs,
+  r_obj* dimensions,
+  int axis,
+  int axis_dimension
+) {
   r_obj* out = rray_broadcast_names_common(xs, dimensions);
   r_keep_loc out_loc;
   KEEP_HERE(out, &out_loc);
@@ -157,7 +163,6 @@ static r_obj* rray_combine_names(r_obj* xs, r_obj* dimensions, int axis) {
     r_list_poke(out, axis - 1, r_null);
   }
 
-  const r_ssize axis_dimension = r_int_get(dimensions, axis - 1);
   r_obj* axis_names = KEEP(rray_combine_axis_names(xs, axis, axis_dimension));
 
   if (axis_names != r_null) {
@@ -172,7 +177,7 @@ static r_obj* rray_combine_names(r_obj* xs, r_obj* dimensions, int axis) {
   return out;
 }
 
-static r_obj* rray_combine_axis_names(r_obj* xs, int axis, r_ssize size) {
+static r_obj* rray_combine_axis_names(r_obj* xs, int axis, int axis_dimension) {
   const r_ssize n = r_length(xs);
   r_obj* const* v_xs = r_list_cbegin(xs);
 
@@ -196,7 +201,7 @@ static r_obj* rray_combine_axis_names(r_obj* xs, int axis, r_ssize size) {
 
     if (axis_names != r_null) {
       if (out == r_null) {
-        out = r_alloc_character(size);
+        out = r_alloc_character(axis_dimension);
         KEEP_AT(out, out_loc);
       }
 

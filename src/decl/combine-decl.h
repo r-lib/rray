@@ -1,5 +1,10 @@
-static r_obj* rray_combine_names(r_obj* xs, r_obj* dimensions, int axis);
-static r_obj* rray_combine_axis_names(r_obj* xs, int axis, r_ssize size);
+static r_obj* rray_combine_names(
+  r_obj* xs,
+  r_obj* dimensions,
+  int axis,
+  int axis_dimension
+);
+static r_obj* rray_combine_axis_names(r_obj* xs, int axis, int axis_dimension);
 static void rray_combine_fill(
   r_obj* x,
   r_obj* out,
