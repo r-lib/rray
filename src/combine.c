@@ -134,10 +134,11 @@ r_obj* rray_combine(
     axis_offset += x_axis_dimension;
   }
 
+  r_attrib_poke_dim(out, out_dimensions);
+
   r_obj* out_names =
     KEEP(rray_combine_names(xs, out_dimensions, axis, axis_dimension));
 
-  r_attrib_poke_dim(out, out_dimensions);
   if (out_names != r_null) {
     r_attrib_poke_dim_names(out, out_names);
   }
