@@ -87,6 +87,9 @@ r_obj* rray_split(
 
   int previous_dimension = -1;
 
+  // The location along the axis. For example, with a 2x10 array split along
+  // columns this runs from 0-9. The `x_axis_stride` maps it to `x_start`, a
+  // flat location into `x` itself.
   int x_axis_start = 0;
 
   for (r_ssize i = 0; i < out_size; ++i) {
