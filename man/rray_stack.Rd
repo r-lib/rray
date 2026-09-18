@@ -43,9 +43,9 @@ rray_dimensions(rray_stack(x, y, .axis = 1))
 rray_stack(x, y, .axis = 3)
 
 # Existing axes are broadcast
-# (2, 1) and (2, 2) -> (2, 2, 2)
-a <- array(1:2, c(2, 1))
-b <- array(1:4, c(2, 2))
+# (3, 1) and (3, 4) -> (2, 3, 4)
+a <- array(1:3, c(3, 1))
+b <- array(1:12, c(3, 4))
 rray_dimensions(rray_stack(a, b, .axis = 1))
 
 # Names of `...` name the new axis
