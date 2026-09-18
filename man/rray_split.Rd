@@ -11,7 +11,15 @@ rray_split(x, axis, dimensions)
 
 \item{axis}{A single integer between 1 and the dimensionality of \code{x}.}
 
-\item{dimensions}{An integer vector of output dimensions along \code{axis}.}
+\item{dimensions}{An integer vector describing the dimension of each array
+along \code{axis}. One of:
+\itemize{
+\item A single value, used as the dimension of every array. It must be
+positive and must evenly divide the dimension of \code{x} along \code{axis}.
+\item A vector of any other length, giving the dimension of each array
+directly. The values must be non-negative and must sum to the dimension
+of \code{x} along \code{axis}.
+}}
 }
 \value{
 An unnamed list of arrays with the same dimensionality as \code{x}.
@@ -19,15 +27,6 @@ An unnamed list of arrays with the same dimensionality as \code{x}.
 \description{
 \code{rray_split()} divides \code{x} into contiguous arrays along \code{axis}. Every array
 keeps the dimensionality of \code{x}, only the dimension along \code{axis} changes.
-
-\code{dimensions} describes those arrays in one of two ways:
-\itemize{
-\item A single value is the dimension of every array. It must be positive and
-must evenly divide the dimension of \code{x} along \code{axis}.
-\item A vector of any other length gives the dimension of each array directly.
-The values must be non-negative and must sum to the dimension of \code{x} along
-\code{axis}.
-}
 
 Combining the arrays along the same axis reconstructs \code{x}.
 }

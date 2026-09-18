@@ -4,22 +4,21 @@
 #' `rray_split()` divides `x` into contiguous arrays along `axis`. Every array
 #' keeps the dimensionality of `x`, only the dimension along `axis` changes.
 #'
-#' `dimensions` describes those arrays in one of two ways:
-#'
-#' - A single value is the dimension of every array. It must be positive and
-#'   must evenly divide the dimension of `x` along `axis`.
-#'
-#' - A vector of any other length gives the dimension of each array directly.
-#'   The values must be non-negative and must sum to the dimension of `x` along
-#'   `axis`.
-#'
 #' Combining the arrays along the same axis reconstructs `x`.
 #'
 #' @param x An array.
 #'
 #' @param axis A single integer between 1 and the dimensionality of `x`.
 #'
-#' @param dimensions An integer vector of output dimensions along `axis`.
+#' @param dimensions An integer vector describing the dimension of each array
+#'   along `axis`. One of:
+#'
+#'   - A single value, used as the dimension of every array. It must be
+#'     positive and must evenly divide the dimension of `x` along `axis`.
+#'
+#'   - A vector of any other length, giving the dimension of each array
+#'     directly. The values must be non-negative and must sum to the dimension
+#'     of `x` along `axis`.
 #'
 #' @returns
 #' An unnamed list of arrays with the same dimensionality as `x`.
