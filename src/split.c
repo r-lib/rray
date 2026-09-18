@@ -168,19 +168,19 @@ static void check_split_dimensions(
       );
     }
   } else {
-    r_ssize total = 0;
+    r_ssize total_dimension = 0;
 
     for (r_ssize i = 0; i < size; ++i) {
-      total += v_dimensions[i];
+      total_dimension += v_dimensions[i];
     }
 
-    if (total != axis_dimension) {
+    if (total_dimension != axis_dimension) {
       r_abort_lazy_call(
         error_call,
         "%s must sum to the `axis` dimension of %d, not %" R_PRI_SSIZE ".",
         rray_arg_format(arg),
         axis_dimension,
-        total
+        total_dimension
       );
     }
   }
