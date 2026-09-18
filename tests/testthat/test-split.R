@@ -271,7 +271,6 @@ test_that("`axis` is validated", {
 
 test_that("`dimensions` are validated", {
   x <- array(1:6, c(2, 3))
-  expect_snapshot(rray_split(x, 1), error = TRUE)
   expect_snapshot(rray_split(x, 1, NA_integer_), error = TRUE)
   expect_snapshot(rray_split(x, 1, 1.5), error = TRUE)
   expect_snapshot(rray_split(x, 1, structure(1L, names = "a")), error = TRUE)

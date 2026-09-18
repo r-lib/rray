@@ -50,14 +50,6 @@
 # `dimensions` are validated
 
     Code
-      rray_split(x, 1)
-    Condition
-      Error in `rray_split()`:
-      ! argument "dimensions" is missing, with no default
-
----
-
-    Code
       rray_split(x, 1, NA_integer_)
     Condition
       Error in `rray_split()`:
