@@ -100,28 +100,6 @@ r_obj* rray_set_dimensions(
   return out;
 }
 
-r_obj* rray_set_axes_dimension(
-  const int* v_dimensions,
-  int dimensionality,
-  const int* v_axes,
-  r_ssize axes_size,
-  int dimension
-) {
-  r_obj* out = KEEP(r_alloc_integer(dimensionality));
-  int* v_out = r_int_begin(out);
-
-  // Start with `v_dimensions`
-  r_memcpy(v_out, v_dimensions, sizeof(int) * dimensionality);
-
-  // Set `axes` to `dimension`
-  for (r_ssize i = 0; i < axes_size; ++i) {
-    v_out[v_axes[i] - 1] = dimension;
-  }
-
-  FREE(1);
-  return out;
-}
-
 r_obj* ffi_rray_dimensions_common(
   r_obj* ffi_xs,
   r_obj* ffi_dimensions,
@@ -362,49 +340,15 @@ r_obj* arg_as_dimensions(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  if (r_typeof(dimensions) != R_TYPE_integer) {
-    dimensions = vec_cast(dimensions, r_globals.empty_int, arg, NULL);
-  }
-  KEEP(dimensions);
+  dimensions =
+    KEEP(arg_as_non_negative_bare_integer(dimensions, arg, error_call));
 
-  if (r_attrib_has_any(dimensions)) {
-    r_abort_lazy_call(
-      error_call,
-      "%s can't have attributes.",
-      rray_arg_format(arg)
-    );
-  }
-
-  const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
-
-  if (dimensionality == 0) {
+  if (rray_dimensionality_from_dimensions(dimensions) == 0) {
     r_abort_lazy_call(
       error_call,
       "%s must have at least one element.",
       rray_arg_format(arg)
     );
-  }
-
-  const int* v_dimensions = r_int_cbegin(dimensions);
-
-  for (int i = 0; i < dimensionality; ++i) {
-    const int dimension = v_dimensions[i];
-
-    if (dimension == r_globals.na_int) {
-      r_abort_lazy_call(
-        error_call,
-        "%s must not contain missing values.",
-        rray_arg_format(arg)
-      );
-    }
-
-    if (dimension < 0) {
-      r_abort_lazy_call(
-        error_call,
-        "%s must not contain negative values.",
-        rray_arg_format(arg)
-      );
-    }
   }
 
   FREE(1);

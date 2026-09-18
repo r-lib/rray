@@ -34,7 +34,7 @@ The goals are:
 - preserve deterministic left-to-right floating-point and integer arithmetic;
 - reuse the existing common-dimension, common-type, and common-name machinery;
 - leave `rray_iterator2` available for operations that intrinsically require
-  two simultaneous locations, notably `rray_split()`.
+  two simultaneous locations, notably `rray_combine()`.
 
 This is intentionally limited to addition. Subtraction, division, and
 exponentiation have less natural N-ary APIs. Multiplication could adopt the
@@ -393,8 +393,8 @@ Likely files:
 - generated documentation and namespace files if roxygen changes require them.
 
 Avoid changing `rray_iterator2` as part of this feature. It remains useful to
-binary arithmetic and `rray_split()`, and its removal is an independent design
-decision.
+binary arithmetic and `rray_combine()`, and its removal is an independent
+design decision.
 
 ## R-level fast-path considerations
 
@@ -690,4 +690,4 @@ This gives the public API arbitrary arity without placing operand-count
 dynamism in the inner loop, without allocating broadcast or cast
 intermediates, and without paying the measured accumulator cost for the common
 two-input call. Keep `rray_iterator2` for binary arithmetic and for other
-algorithms such as split that genuinely need two simultaneous locations.
+algorithms such as combine that genuinely need two simultaneous locations.

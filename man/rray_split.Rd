@@ -2,37 +2,46 @@
 % Please edit documentation in R/split.R
 \name{rray_split}
 \alias{rray_split}
-\title{Split an array along axes}
+\title{Split an array along an axis}
 \usage{
-rray_split(x, axes)
+rray_split(x, axis, dimensions)
 }
 \arguments{
 \item{x}{An array.}
 
-\item{axes}{An integer vector of axes to split along. The number of resulting
-subarrays is the product of the dimensions along \code{axes}.}
+\item{axis}{A single integer representing the axis to split on.}
+
+\item{dimensions}{One of:
+\itemize{
+\item A single positive integer, used as the dimension of every array. It must
+evenly divide the dimension of \code{x} along \code{axis}.
+\item A vector of positive (or zero) integers, giving the dimension of each
+array directly. They must sum to the dimension of \code{x} along \code{axis}.
+}}
 }
 \value{
-A list of arrays, each with the same dimensionality as \code{x} but
-with a dimension of 1 along the split \code{axes}.
+A list of arrays each with the same dimensions as \code{x}, except along \code{axis}.
 }
 \description{
-\code{rray_split()} splits \code{x} along the specified \code{axes}, returning a
-list of subarrays. The dimensionality of \code{x} is retained in each
-subarray, with the split axes collapsed to a dimension of 1.
+\code{rray_split()} divides \code{x} into contiguous arrays along an \code{axis}.
+
+Using \code{rray_combine()} along the same \code{axis} reconstructs \code{x}.
 }
 \examples{
-x <- array(1:24, c(4, 3, 2))
+x <- array(1:12, c(6, 2))
 
-# Split along the 3rd axis
-# (4, 3, 2) -> two (4, 3, 1) arrays
-rray_split(x, 3)
+# Three arrays of two rows
+rray_split(x, 1, 2)
 
-# Split along the 1st axis
-# (4, 3, 2) -> four (1, 3, 2) arrays
-rray_split(x, 1)
+# Arrays of one and five rows
+rray_split(x, 1, c(1, 5))
 
-# Split along multiple axes
-# (4, 3, 2) -> twelve (1, 1, 2) arrays
-rray_split(x, c(1, 2))
+# One array per column
+rray_split(x, 2, 1)
+
+# Arrays of dimension zero are allowed in the explicit form
+rray_split(x, 2, c(0, 2))
+
+# Splitting and combining along the same axis are inverses
+rray_combine(!!!rray_split(x, 1, 3), .axis = 1)
 }

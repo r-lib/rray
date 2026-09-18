@@ -31,14 +31,12 @@ r_obj* rray_reduce(
   const int* v_axes = r_int_cbegin(axes);
   const r_ssize axes_size = r_length(axes);
 
-  r_obj* out_dimensions = KEEP(rray_set_axes_dimension(
-    v_x_dimensions,
-    dimensionality,
-    v_axes,
-    axes_size,
-    1
-  ));
-  const int* v_out_dimensions = r_int_cbegin(out_dimensions);
+  r_obj* out_dimensions = KEEP(r_alloc_integer(dimensionality));
+  int* v_out_dimensions = r_int_begin(out_dimensions);
+  r_memcpy(v_out_dimensions, v_x_dimensions, sizeof(int) * dimensionality);
+  for (r_ssize i = 0; i < axes_size; ++i) {
+    v_out_dimensions[v_axes[i] - 1] = 1;
+  }
 
   const r_ssize out_size =
     rray_size_from_dimensions(v_out_dimensions, dimensionality);
@@ -118,13 +116,12 @@ r_obj* rray_reduce_nested(
 
   r_obj* out = KEEP(fn(x, &outer_plan, &inner_plan));
 
-  r_obj* out_dimensions = KEEP(rray_set_axes_dimension(
-    v_x_dimensions,
-    dimensionality,
-    v_axes,
-    axes_size,
-    1
-  ));
+  r_obj* out_dimensions = KEEP(r_alloc_integer(dimensionality));
+  int* v_out_dimensions = r_int_begin(out_dimensions);
+  r_memcpy(v_out_dimensions, v_x_dimensions, sizeof(int) * dimensionality);
+  for (r_ssize i = 0; i < axes_size; ++i) {
+    v_out_dimensions[v_axes[i] - 1] = 1;
+  }
 
   r_attrib_poke_dim(out, out_dimensions);
 

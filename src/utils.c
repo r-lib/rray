@@ -72,16 +72,15 @@ r_no_return void stop_scalar_input(
   );
 }
 
-r_obj* arg_as_integer(r_obj* x, struct rray_arg* arg) {
-  if (r_typeof(x) == R_TYPE_integer) {
-    return x;
+r_obj* arg_as_bare_integer(
+  r_obj* x,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+) {
+  if (r_typeof(x) != R_TYPE_integer) {
+    x = vec_cast(x, r_globals.empty_int, arg, NULL);
   }
-
-  return vec_cast(x, r_globals.empty_int, arg, NULL);
-}
-
-int arg_as_int(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
-  x = KEEP(arg_as_integer(x, arg));
+  KEEP(x);
 
   if (r_attrib_has_any(x)) {
     r_abort_lazy_call(
@@ -90,6 +89,13 @@ int arg_as_int(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
       rray_arg_format(arg)
     );
   }
+
+  FREE(1);
+  return x;
+}
+
+int arg_as_int(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
+  x = KEEP(arg_as_bare_integer(x, arg, error_call));
 
   if (r_length(x) != 1) {
     r_abort_lazy_call(
@@ -104,6 +110,40 @@ int arg_as_int(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
 
   FREE(1);
   return out;
+}
+
+r_obj* arg_as_non_negative_bare_integer(
+  r_obj* x,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+) {
+  x = KEEP(arg_as_bare_integer(x, arg, error_call));
+
+  const r_ssize size = r_length(x);
+  const int* v_x = r_int_cbegin(x);
+
+  for (r_ssize i = 0; i < size; ++i) {
+    const int elt = v_x[i];
+
+    if (elt == r_globals.na_int) {
+      r_abort_lazy_call(
+        error_call,
+        "%s must not contain missing values.",
+        rray_arg_format(arg)
+      );
+    }
+
+    if (elt < 0) {
+      r_abort_lazy_call(
+        error_call,
+        "%s must not contain negative values.",
+        rray_arg_format(arg)
+      );
+    }
+  }
+
+  FREE(1);
+  return x;
 }
 
 bool r_has_name_at(r_obj* names, r_ssize i) {

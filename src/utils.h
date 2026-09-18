@@ -39,9 +39,19 @@ r_obj* vec_as_array(r_obj* x);
 
 r_obj* arg_as_array(r_obj* x, struct rray_arg* arg, struct r_lazy error_call);
 
-r_obj* arg_as_integer(r_obj* x, struct rray_arg* arg);
+r_obj* arg_as_bare_integer(
+  r_obj* x,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+);
 
 int arg_as_int(r_obj* x, struct rray_arg* arg, struct r_lazy error_call);
+
+r_obj* arg_as_non_negative_bare_integer(
+  r_obj* x,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+);
 
 bool r_has_name_at(r_obj* names, r_ssize i);
 

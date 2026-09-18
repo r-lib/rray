@@ -419,26 +419,6 @@ results[["control/sum_outer"]] <- bench::mark(
 )
 print(results[["control/sum_outer"]])
 
-cat("\nrray_split() with the second location at inner stride zero\n")
-# rray_split() over axis 1 of [100, 100, 100]
-results[["iterator2/split_axis1"]] <- bench::mark(
-  result = rray_split(array_x, 1L),
-  iterations = iterations,
-  check = FALSE,
-  memory = FALSE
-)
-print(results[["iterator2/split_axis1"]])
-
-cat("\nrray_split() with the first location at inner stride zero\n")
-# rray_split() over axis 2 of [100, 100, 100]
-results[["iterator2/split_axis2"]] <- bench::mark(
-  result = rray_split(array_x, 2L),
-  iterations = iterations,
-  check = FALSE,
-  memory = FALSE
-)
-print(results[["iterator2/split_axis2"]])
-
 summary <- do.call(
   rbind,
   lapply(names(results), function(name) {
