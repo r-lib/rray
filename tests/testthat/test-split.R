@@ -29,7 +29,7 @@ test_that("a uniform size can be larger than 1", {
   expect_identical(out, list(x))
 })
 
-test_that("explicit sizes give each chunk directly", {
+test_that("explicit dimensions give each chunk directly", {
   x <- array(1:12, c(6, 2))
 
   out <- rray_split(x, 1, c(3, 3))
@@ -41,7 +41,7 @@ test_that("explicit sizes give each chunk directly", {
   expect_identical(out[[1]], array(c(1L, 7L), c(1, 2)))
 })
 
-test_that("explicit sizes can contain zeroes", {
+test_that("explicit dimensions can contain zeroes", {
   x <- array(1:6, c(3, 2))
   empty <- array(integer(), c(0, 2))
 
@@ -106,37 +106,40 @@ test_that("works with every type", {
 test_that("matches a reference implementation", {
   shapes <- list(5L, c(6L, 2L), c(2L, 6L), c(1L, 6L, 2L), c(2L, 3L, 4L))
 
-  for (dimensions in shapes) {
-    x <- array(seq_len(prod(dimensions)), dimensions)
+  for (x_dimensions in shapes) {
+    x <- array(seq_len(prod(x_dimensions)), x_dimensions)
 
     named <- x
-    dimnames(named) <- lapply(dimensions, function(dimension) {
+    dimnames(named) <- lapply(x_dimensions, function(dimension) {
       paste0("n", seq_len(dimension))
     })
 
-    for (axis in seq_along(dimensions)) {
-      dimension <- dimensions[[axis]]
+    for (axis in seq_along(x_dimensions)) {
+      axis_dimension <- x_dimensions[[axis]]
 
-      uniform <- Filter(\(size) dimension %% size == 0L, seq_len(dimension))
+      uniform <- Filter(
+        \(dimension) axis_dimension %% dimension == 0L,
+        seq_len(axis_dimension)
+      )
 
       plans <- c(
         as.list(uniform),
         list(
-          rep(1L, dimension),
-          c(0L, dimension),
-          c(dimension, 0L),
-          c(1L, 0L, dimension - 1L)
+          rep(1L, axis_dimension),
+          c(0L, axis_dimension),
+          c(axis_dimension, 0L),
+          c(1L, 0L, axis_dimension - 1L)
         )
       )
 
-      for (sizes in plans) {
+      for (dimensions in plans) {
         expect_identical(
-          rray_split(x, axis, sizes),
-          expected_split(x, axis, sizes)
+          rray_split(x, axis, dimensions),
+          expected_split(x, axis, dimensions)
         )
         expect_identical(
-          rray_split(named, axis, sizes),
-          expected_split(named, axis, sizes)
+          rray_split(named, axis, dimensions),
+          expected_split(named, axis, dimensions)
         )
       }
     }
@@ -215,17 +218,17 @@ test_that("combining the chunks reproduces the input", {
   )
 
   for (axis in seq_along(dim(x))) {
-    dimension <- dim(x)[[axis]]
+    axis_dimension <- dim(x)[[axis]]
 
     plans <- list(
       1L,
-      dimension,
-      c(1L, dimension - 1L),
-      c(0L, dimension)
+      axis_dimension,
+      c(1L, axis_dimension - 1L),
+      c(0L, axis_dimension)
     )
 
-    for (sizes in plans) {
-      chunks <- rray_split(x, axis, sizes)
+    for (dimensions in plans) {
+      chunks <- rray_split(x, axis, dimensions)
       expect_identical(rray_combine(!!!chunks, .axis = axis), x)
     }
   }
@@ -242,7 +245,7 @@ test_that("`axis` is validated", {
   expect_snapshot(rray_split(x, structure(1L, class = "foo"), 1), error = TRUE)
 })
 
-test_that("`sizes` are validated", {
+test_that("`dimensions` are validated", {
   x <- array(1:6, c(2, 3))
   expect_snapshot(rray_split(x, 1), error = TRUE)
   expect_snapshot(rray_split(x, 1, NA_integer_), error = TRUE)

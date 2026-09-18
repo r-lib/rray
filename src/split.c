@@ -12,18 +12,18 @@
 r_obj* ffi_rray_split(
   r_obj* ffi_x,
   r_obj* ffi_axis,
-  r_obj* ffi_sizes,
+  r_obj* ffi_dimensions,
   r_obj* ffi_frame
 ) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
   const int axis = arg_as_int(ffi_axis, rray_args.axis, error_call);
-  return rray_split(ffi_x, axis, ffi_sizes, rray_args.x, error_call);
+  return rray_split(ffi_x, axis, ffi_dimensions, rray_args.x, error_call);
 }
 
 r_obj* rray_split(
   r_obj* x,
   int axis,
-  r_obj* sizes,
+  r_obj* dimensions,
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
@@ -38,14 +38,18 @@ r_obj* rray_split(
   check_axis(axis, dimensionality, rray_args.axis, error_call);
   const int axis_dimension = v_x_dimensions[axis - 1];
 
-  sizes =
-    KEEP(arg_as_sizes(sizes, axis_dimension, rray_args.sizes, error_call));
-  const int* v_sizes = r_int_cbegin(sizes);
+  dimensions = KEEP(arg_as_chunk_dimensions(
+    dimensions,
+    axis_dimension,
+    rray_args.dimensions,
+    error_call
+  ));
+  const int* v_dimensions = r_int_cbegin(dimensions);
 
-  const bool uniform = r_length(sizes) == 1;
+  const bool uniform = r_length(dimensions) == 1;
 
   const r_ssize out_size =
-    uniform ? axis_dimension / v_sizes[0] : r_length(sizes);
+    uniform ? axis_dimension / v_dimensions[0] : r_length(dimensions);
 
   r_obj* out = KEEP(r_alloc_list(out_size));
 
@@ -67,9 +71,9 @@ r_obj* rray_split(
 
   const enum r_type type = r_typeof(x);
 
-  r_obj* dimensions = r_null;
-  r_keep_loc dimensions_loc;
-  KEEP_HERE(dimensions, &dimensions_loc);
+  r_obj* out_elt_dimensions = r_null;
+  r_keep_loc out_elt_dimensions_loc;
+  KEEP_HERE(out_elt_dimensions, &out_elt_dimensions_loc);
 
   struct rray_strided_iterator_plan plan = {0};
   int plan_dimension = -1;
@@ -78,20 +82,20 @@ r_obj* rray_split(
   int axis_offset = 0;
 
   for (r_ssize i = 0; i < out_size; ++i) {
-    const int dimension = uniform ? v_sizes[0] : v_sizes[i];
+    const int dimension = uniform ? v_dimensions[0] : v_dimensions[i];
 
     if (dimension != plan_dimension) {
-      dimensions = rray_set_axes_dimension(
+      out_elt_dimensions = rray_set_axes_dimension(
         v_x_dimensions,
         dimensionality,
         &axis,
         1,
         dimension
       );
-      KEEP_AT(dimensions, dimensions_loc);
+      KEEP_AT(out_elt_dimensions, out_elt_dimensions_loc);
 
       plan = rray_strided_iterator_plan(
-        r_int_cbegin(dimensions),
+        r_int_cbegin(out_elt_dimensions),
         dimensionality,
         v_x_strides
       );
@@ -102,7 +106,7 @@ r_obj* rray_split(
 
     r_obj* out_elt = r_alloc_vector(type, out_elt_size);
     r_list_poke(out, i, out_elt);
-    r_attrib_poke_dim(out_elt, dimensions);
+    r_attrib_poke_dim(out_elt, out_elt_dimensions);
 
     rray_split_fill(x, out_elt, axis_offset * axis_stride, &plan);
 
@@ -128,15 +132,15 @@ r_obj* rray_split(
   return out;
 }
 
-static r_obj* arg_as_sizes(
-  r_obj* sizes,
+static r_obj* arg_as_chunk_dimensions(
+  r_obj* dimensions,
   int axis_dimension,
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  sizes = KEEP(arg_as_integer(sizes, arg));
+  dimensions = KEEP(arg_as_integer(dimensions, arg));
 
-  if (r_attrib_has_any(sizes)) {
+  if (r_attrib_has_any(dimensions)) {
     r_abort_lazy_call(
       error_call,
       "%s can't have attributes.",
@@ -144,13 +148,13 @@ static r_obj* arg_as_sizes(
     );
   }
 
-  const r_ssize size = r_length(sizes);
-  const int* v_sizes = r_int_cbegin(sizes);
+  const r_ssize size = r_length(dimensions);
+  const int* v_dimensions = r_int_cbegin(dimensions);
 
   r_ssize total = 0;
 
   for (r_ssize i = 0; i < size; ++i) {
-    const int dimension = v_sizes[i];
+    const int dimension = v_dimensions[i];
 
     if (dimension == r_globals.na_int) {
       r_abort_lazy_call(
@@ -172,7 +176,7 @@ static r_obj* arg_as_sizes(
   }
 
   if (size == 1) {
-    const int dimension = v_sizes[0];
+    const int dimension = v_dimensions[0];
 
     if (dimension == 0) {
       r_abort_lazy_call(
@@ -203,7 +207,7 @@ static r_obj* arg_as_sizes(
   }
 
   FREE(1);
-  return sizes;
+  return dimensions;
 }
 
 static bool names_are_all_null(r_obj* names) {

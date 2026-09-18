@@ -55,13 +55,13 @@
       Error in `rray_split()`:
       ! `axis` can't have attributes.
 
-# `sizes` are validated
+# `dimensions` are validated
 
     Code
       rray_split(x, 1)
     Condition
       Error in `rray_split()`:
-      ! argument "sizes" is missing, with no default
+      ! argument "dimensions" is missing, with no default
 
 ---
 
@@ -69,7 +69,7 @@
       rray_split(x, 1, NA_integer_)
     Condition
       Error in `rray_split()`:
-      ! `sizes` must not contain missing values.
+      ! `dimensions` must not contain missing values.
 
 ---
 
@@ -77,7 +77,7 @@
       rray_split(x, 1, 1.5)
     Condition
       Error:
-      ! Can't convert from `sizes` <double> to <integer> due to loss of precision.
+      ! Can't convert from `dimensions` <double> to <integer> due to loss of precision.
       * Locations: 1
 
 ---
@@ -86,7 +86,7 @@
       rray_split(x, 1, structure(1L, names = "a"))
     Condition
       Error in `rray_split()`:
-      ! `sizes` can't have attributes.
+      ! `dimensions` can't have attributes.
 
 ---
 
@@ -94,7 +94,7 @@
       rray_split(x, 1, 0)
     Condition
       Error in `rray_split()`:
-      ! A single `sizes` value must be positive, not 0.
+      ! A single `dimensions` value must be positive, not 0.
 
 ---
 
@@ -102,7 +102,7 @@
       rray_split(x, 1, -1)
     Condition
       Error in `rray_split()`:
-      ! `sizes` must not contain negative values.
+      ! `dimensions` must not contain negative values.
 
 ---
 
@@ -110,7 +110,7 @@
       rray_split(x, 2, 2)
     Condition
       Error in `rray_split()`:
-      ! A single `sizes` value of 2 must evenly divide the `axis` dimension of 3.
+      ! A single `dimensions` value of 2 must evenly divide the `axis` dimension of 3.
 
 ---
 
@@ -118,7 +118,7 @@
       rray_split(x, 1, c(1, -1))
     Condition
       Error in `rray_split()`:
-      ! `sizes` must not contain negative values.
+      ! `dimensions` must not contain negative values.
 
 ---
 
@@ -126,7 +126,7 @@
       rray_split(x, 1, c(1, 2))
     Condition
       Error in `rray_split()`:
-      ! `sizes` must sum to the `axis` dimension of 2, not 3.
+      ! `dimensions` must sum to the `axis` dimension of 2, not 3.
 
 ---
 
@@ -134,7 +134,7 @@
       rray_split(x, 2, c(1, 1))
     Condition
       Error in `rray_split()`:
-      ! `sizes` must sum to the `axis` dimension of 3, not 2.
+      ! `dimensions` must sum to the `axis` dimension of 3, not 2.
 
 ---
 
@@ -142,7 +142,7 @@
       rray_split(x, 1, integer())
     Condition
       Error in `rray_split()`:
-      ! `sizes` must sum to the `axis` dimension of 2, not 0.
+      ! `dimensions` must sum to the `axis` dimension of 2, not 0.
 
 # errors on invalid input
 

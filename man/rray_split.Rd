@@ -4,14 +4,14 @@
 \alias{rray_split}
 \title{Split an array along an axis}
 \usage{
-rray_split(x, axis, sizes)
+rray_split(x, axis, dimensions)
 }
 \arguments{
 \item{x}{An array.}
 
 \item{axis}{A single integer between 1 and the dimensionality of \code{x}.}
 
-\item{sizes}{An integer vector of chunk dimensions along \code{axis}.}
+\item{dimensions}{An integer vector of chunk dimensions along \code{axis}.}
 }
 \value{
 An unnamed list of arrays with the same dimensionality as \code{x}.
@@ -20,7 +20,7 @@ An unnamed list of arrays with the same dimensionality as \code{x}.
 \code{rray_split()} divides \code{x} into contiguous chunks along \code{axis}. Every chunk
 keeps the dimensionality of \code{x}, only the dimension along \code{axis} changes.
 
-\code{sizes} describes those chunks in one of two ways:
+\code{dimensions} describes those chunks in one of two ways:
 \itemize{
 \item A single value is the dimension of every chunk. It must be positive and
 must evenly divide the dimension of \code{x} along \code{axis}.

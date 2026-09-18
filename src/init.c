@@ -74,7 +74,7 @@ extern r_obj* ffi_rray_combine(
 extern r_obj* ffi_rray_split(
   r_obj* ffi_x,
   r_obj* ffi_axis,
-  r_obj* ffi_sizes,
+  r_obj* ffi_dimensions,
   r_obj* ffi_frame
 );
 extern r_obj* ffi_rray_remove_axes(

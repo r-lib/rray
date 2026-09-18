@@ -1,5 +1,5 @@
-static r_obj* arg_as_sizes(
-  r_obj* sizes,
+static r_obj* arg_as_chunk_dimensions(
+  r_obj* dimensions,
   int axis_dimension,
   struct rray_arg* arg,
   struct r_lazy error_call
