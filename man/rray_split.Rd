@@ -20,7 +20,7 @@ array directly. They must sum to the dimension of \code{x} along \code{axis}.
 }}
 }
 \value{
-An unnamed list of arrays with the same dimensionality as \code{x}.
+A list of arrays each with the same dimensions as \code{x}, except along \code{axis}.
 }
 \description{
 \code{rray_split()} divides \code{x} into contiguous arrays along an \code{axis}.

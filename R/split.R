@@ -18,7 +18,7 @@
 #'     array directly. They must sum to the dimension of `x` along `axis`.
 #'
 #' @returns
-#' An unnamed list of arrays with the same dimensionality as `x`.
+#' A list of arrays each with the same dimensions as `x`, except along `axis`.
 #'
 #' @export
 #' @examples
