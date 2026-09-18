@@ -43,6 +43,12 @@ r_obj* arg_as_integer(r_obj* x, struct rray_arg* arg);
 
 int arg_as_int(r_obj* x, struct rray_arg* arg, struct r_lazy error_call);
 
+r_obj* arg_as_non_negative_integer(
+  r_obj* x,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+);
+
 bool r_has_name_at(r_obj* names, r_ssize i);
 
 int int_add_checked(int x, int y);

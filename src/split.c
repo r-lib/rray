@@ -38,12 +38,15 @@ r_obj* rray_split(
   check_axis(axis, dimensionality, rray_args.axis, error_call);
   const int axis_dimension = v_x_dimensions[axis - 1];
 
-  dimensions = KEEP(arg_as_split_dimensions(
+  dimensions = KEEP(
+    arg_as_non_negative_integer(dimensions, rray_args.dimensions, error_call)
+  );
+  check_split_dimensions(
     dimensions,
     axis_dimension,
     rray_args.dimensions,
     error_call
-  ));
+  );
   const int* v_dimensions = r_int_cbegin(dimensions);
 
   const bool uniform = r_length(dimensions) == 1;
@@ -132,48 +135,14 @@ r_obj* rray_split(
   return out;
 }
 
-static r_obj* arg_as_split_dimensions(
+static void check_split_dimensions(
   r_obj* dimensions,
   int axis_dimension,
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  dimensions = KEEP(arg_as_integer(dimensions, arg));
-
-  if (r_attrib_has_any(dimensions)) {
-    r_abort_lazy_call(
-      error_call,
-      "%s can't have attributes.",
-      rray_arg_format(arg)
-    );
-  }
-
   const r_ssize size = r_length(dimensions);
   const int* v_dimensions = r_int_cbegin(dimensions);
-
-  r_ssize total = 0;
-
-  for (r_ssize i = 0; i < size; ++i) {
-    const int dimension = v_dimensions[i];
-
-    if (dimension == r_globals.na_int) {
-      r_abort_lazy_call(
-        error_call,
-        "%s must not contain missing values.",
-        rray_arg_format(arg)
-      );
-    }
-
-    if (dimension < 0) {
-      r_abort_lazy_call(
-        error_call,
-        "%s must not contain negative values.",
-        rray_arg_format(arg)
-      );
-    }
-
-    total += dimension;
-  }
 
   if (size == 1) {
     const int dimension = v_dimensions[0];
@@ -196,7 +165,17 @@ static r_obj* arg_as_split_dimensions(
         axis_dimension
       );
     }
-  } else if (total != axis_dimension) {
+
+    return;
+  }
+
+  r_ssize total = 0;
+
+  for (r_ssize i = 0; i < size; ++i) {
+    total += v_dimensions[i];
+  }
+
+  if (total != axis_dimension) {
     r_abort_lazy_call(
       error_call,
       "%s must sum to the `axis` dimension of %d, not %" R_PRI_SSIZE ".",
@@ -205,9 +184,6 @@ static r_obj* arg_as_split_dimensions(
       total
     );
   }
-
-  FREE(1);
-  return dimensions;
 }
 
 static bool names_are_all_null(r_obj* names) {

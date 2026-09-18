@@ -106,6 +106,48 @@ int arg_as_int(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
   return out;
 }
 
+r_obj* arg_as_non_negative_integer(
+  r_obj* x,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+) {
+  x = KEEP(arg_as_integer(x, arg));
+
+  if (r_attrib_has_any(x)) {
+    r_abort_lazy_call(
+      error_call,
+      "%s can't have attributes.",
+      rray_arg_format(arg)
+    );
+  }
+
+  const r_ssize size = r_length(x);
+  const int* v_x = r_int_cbegin(x);
+
+  for (r_ssize i = 0; i < size; ++i) {
+    const int elt = v_x[i];
+
+    if (elt == r_globals.na_int) {
+      r_abort_lazy_call(
+        error_call,
+        "%s must not contain missing values.",
+        rray_arg_format(arg)
+      );
+    }
+
+    if (elt < 0) {
+      r_abort_lazy_call(
+        error_call,
+        "%s must not contain negative values.",
+        rray_arg_format(arg)
+      );
+    }
+  }
+
+  FREE(1);
+  return x;
+}
+
 bool r_has_name_at(r_obj* names, r_ssize i) {
   if (r_typeof(names) != R_TYPE_character) {
     return false;

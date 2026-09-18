@@ -1,4 +1,4 @@
-static r_obj* arg_as_split_dimensions(
+static void check_split_dimensions(
   r_obj* dimensions,
   int axis_dimension,
   struct rray_arg* arg,
