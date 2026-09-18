@@ -164,7 +164,7 @@ The central identity is:
 
 ```r
 pieces <- rray_split(x, axis, sizes)
-out <- rlang::inject(rray_combine(!!!pieces, .axis = axis))
+out <- rray_combine(!!!pieces, .axis = axis)
 ```
 
 `out` should be identical to `x`, including type, dimensions, values, and
@@ -498,7 +498,7 @@ names back into list names.
 
 ```r
 pieces <- rray_unstack(x, axis)
-out <- rlang::inject(rray_stack(!!!pieces, .axis = axis))
+out <- rray_stack(!!!pieces, .axis = axis)
 ```
 
 This should reproduce the values, dimensions, type, and dimension names of
@@ -723,11 +723,11 @@ For each axis of named 2D and 3D arrays, test both families:
 
 ```r
 pieces <- rray_split(x, axis, sizes)
-out <- rlang::inject(rray_combine(!!!pieces, .axis = axis))
+out <- rray_combine(!!!pieces, .axis = axis)
 expect_identical(out, x)
 
 pieces <- rray_unstack(x, axis)
-out <- rlang::inject(rray_stack(!!!pieces, .axis = axis))
+out <- rray_stack(!!!pieces, .axis = axis)
 expect_identical(out, x)
 ```
 
