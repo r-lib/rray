@@ -9,8 +9,10 @@ rray_stack(..., .axis)
 \arguments{
 \item{...}{Arrays to stack.}
 
-\item{.axis}{A single integer between 1 and one plus the greatest input
-dimensionality.}
+\item{.axis}{A single integer representing the axis in the \emph{result} to stack
+along. Must be between 1 and one greater than the maximum dimensionality
+of the input arrays. For example, you can stack 2D matrices along axis 3,
+but not axis 4.}
 }
 \value{
 An array with the following dimensions:
