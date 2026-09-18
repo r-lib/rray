@@ -42,9 +42,6 @@ rray_dimensions(rray_stack(x, y, .axis = 1))
 # (3, 4) -> (3, 4, 2)
 rray_stack(x, y, .axis = 3)
 
-# One input adds an axis of dimension 1
-rray_dimensions(rray_stack(x, .axis = 2))
-
 # Existing axes are broadcast
 # (2, 1) and (2, 2) -> (2, 2, 2)
 a <- array(1:2, c(2, 1))
