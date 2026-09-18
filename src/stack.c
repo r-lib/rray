@@ -60,20 +60,20 @@ static r_obj* rray_stack_prepare(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  const r_ssize n = r_length(xs);
+  const r_ssize xs_size = r_length(xs);
   r_obj* const* v_xs = r_list_cbegin(xs);
   r_obj* xs_names = KEEP(r_names(xs));
 
-  r_obj* out = KEEP(r_alloc_list(n));
+  r_obj* out = KEEP(r_alloc_list(xs_size));
   r_attrib_poke_names(out, xs_names);
 
   r_ssize i = 0;
-  struct rray_arg* x_arg = new_subscript_arg(arg, xs_names, n, &i);
+  struct rray_arg* x_arg = new_subscript_arg(arg, xs_names, xs_size, &i);
   KEEP(x_arg->shelter);
 
   r_obj* axes = KEEP(r_int(axis));
 
-  for (; i < n; ++i) {
+  for (; i < xs_size; ++i) {
     r_obj* x = v_xs[i];
 
     if (rray_dimensionality(x, x_arg, error_call) < axis - 1) {

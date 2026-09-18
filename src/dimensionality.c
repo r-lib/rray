@@ -54,31 +54,24 @@ r_obj* rray_expand_dimensionality(
     v_out_dimensions[i] = 1;
   }
 
+  r_obj* out = KEEP(r_wrap(x));
+  r_attrib_poke_dim(out, out_dimensions);
+
   r_obj* x_names = r_dim_names(x);
 
-  r_obj* out_names = r_null;
-  r_keep_loc out_names_loc;
-  KEEP_HERE(out_names, &out_names_loc);
-
   if (x_names != r_null) {
-    out_names = r_alloc_list(dimensionality);
-    KEEP_AT(out_names, out_names_loc);
-
+    r_obj* out_names = KEEP(r_alloc_list(dimensionality));
     r_obj* const* v_x_names = r_list_cbegin(x_names);
 
     for (int i = 0; i < x_dimensionality; ++i) {
       r_list_poke(out_names, i, v_x_names[i]);
     }
-  }
 
-  r_obj* out = KEEP(r_wrap(x));
-  r_attrib_poke_dim(out, out_dimensions);
-
-  if (out_names != r_null) {
     r_attrib_poke_dim_names(out, out_names);
+    FREE(1);
   }
 
-  FREE(5);
+  FREE(4);
   return out;
 }
 
