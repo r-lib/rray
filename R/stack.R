@@ -4,9 +4,7 @@
 #' `rray_stack()` joins arrays along a new axis inserted at `.axis`. All
 #' preexisting axes are broadcast to their common dimension.
 #'
-#' The new axis has one position per input, so stacking two arrays of
-#' dimensions `(2, 3)` on the first axis gives an array of dimensions
-#' `(2, 2, 3)`.
+#' The new axis has a dimension equal to the number of arrays you are stacking.
 #'
 #' @details
 #' `.axis` refers to an axis of the result. Stacking adds one axis, so with a
