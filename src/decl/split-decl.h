@@ -6,7 +6,7 @@ static void check_split_dimensions(
 );
 
 static r_obj* rray_split_elt_names(
-  r_obj* x_names,
+  r_obj* const* v_x_names,
   int dimensionality,
   int axis,
   r_obj* x_axis_names,
