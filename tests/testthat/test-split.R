@@ -29,7 +29,7 @@ test_that("a uniform size can be larger than 1", {
   expect_identical(out, list(x))
 })
 
-test_that("explicit dimensions give each chunk directly", {
+test_that("explicit dimensions give each array directly", {
   x <- array(1:12, c(6, 2))
 
   out <- rray_split(x, 1, c(3, 3))
@@ -166,7 +166,7 @@ test_that("names on the split axis are sliced", {
   expect_identical(dimnames(out[[2]]), list("b", c("x", "y", "z")))
 })
 
-test_that("zero size chunks drop the names on the split axis", {
+test_that("zero size arrays drop the names on the split axis", {
   x <- array(1:6, c(2, 3), dimnames = list(c("a", "b"), c("x", "y", "z")))
 
   out <- rray_split(x, 2, c(0, 3))
@@ -210,7 +210,7 @@ test_that("`x` is not modified", {
   expect_identical(x, before)
 })
 
-test_that("combining the chunks reproduces the input", {
+test_that("combining the arrays reproduces the input", {
   x <- array(
     1:24,
     c(2, 3, 4),
@@ -228,8 +228,8 @@ test_that("combining the chunks reproduces the input", {
     )
 
     for (dimensions in plans) {
-      chunks <- rray_split(x, axis, dimensions)
-      expect_identical(rray_combine(!!!chunks, .axis = axis), x)
+      arrays <- rray_split(x, axis, dimensions)
+      expect_identical(rray_combine(!!!arrays, .axis = axis), x)
     }
   }
 })

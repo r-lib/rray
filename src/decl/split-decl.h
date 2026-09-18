@@ -1,4 +1,4 @@
-static r_obj* arg_as_chunk_dimensions(
+static r_obj* arg_as_split_dimensions(
   r_obj* dimensions,
   int axis_dimension,
   struct rray_arg* arg,
@@ -7,7 +7,7 @@ static r_obj* arg_as_chunk_dimensions(
 
 static bool names_are_all_null(r_obj* names);
 
-static r_obj* rray_split_chunk_names(
+static r_obj* rray_split_elt_names(
   r_obj* x_names,
   int dimensionality,
   int axis,

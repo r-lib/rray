@@ -11,39 +11,39 @@ rray_split(x, axis, dimensions)
 
 \item{axis}{A single integer between 1 and the dimensionality of \code{x}.}
 
-\item{dimensions}{An integer vector of chunk dimensions along \code{axis}.}
+\item{dimensions}{An integer vector of output dimensions along \code{axis}.}
 }
 \value{
 An unnamed list of arrays with the same dimensionality as \code{x}.
 }
 \description{
-\code{rray_split()} divides \code{x} into contiguous chunks along \code{axis}. Every chunk
+\code{rray_split()} divides \code{x} into contiguous arrays along \code{axis}. Every array
 keeps the dimensionality of \code{x}, only the dimension along \code{axis} changes.
 
-\code{dimensions} describes those chunks in one of two ways:
+\code{dimensions} describes those arrays in one of two ways:
 \itemize{
-\item A single value is the dimension of every chunk. It must be positive and
+\item A single value is the dimension of every array. It must be positive and
 must evenly divide the dimension of \code{x} along \code{axis}.
-\item A vector of any other length gives the dimension of each chunk directly.
+\item A vector of any other length gives the dimension of each array directly.
 The values must be non-negative and must sum to the dimension of \code{x} along
 \code{axis}.
 }
 
-Combining the chunks along the same axis reconstructs \code{x}.
+Combining the arrays along the same axis reconstructs \code{x}.
 }
 \examples{
 x <- array(1:12, c(6, 2))
 
-# Three chunks of two rows
+# Three arrays of two rows
 rray_split(x, 1, 2)
 
-# Chunks of one and five rows
+# Arrays of one and five rows
 rray_split(x, 1, c(1, 5))
 
-# One chunk per column
+# One array per column
 rray_split(x, 2, 1)
 
-# Chunks of dimension zero are allowed in the explicit form
+# Arrays of dimension zero are allowed in the explicit form
 rray_split(x, 2, c(0, 2))
 
 # Splitting and combining along the same axis are inverses

@@ -339,7 +339,7 @@ belongs in the caller, which has always done it already.
 the elements that survived.
 
 `rray_split()` is the one case producing many arrays at once, so it owns its
-own name handling rather than calling into this family. Each chunk slices the
+own name handling rather than calling into this family. Each output slices the
 names on the split axis over the same range as its data, and carries the names
 on every other axis over whole.
 

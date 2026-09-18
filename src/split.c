@@ -38,7 +38,7 @@ r_obj* rray_split(
   check_axis(axis, dimensionality, rray_args.axis, error_call);
   const int axis_dimension = v_x_dimensions[axis - 1];
 
-  dimensions = KEEP(arg_as_chunk_dimensions(
+  dimensions = KEEP(arg_as_split_dimensions(
     dimensions,
     axis_dimension,
     rray_args.dimensions,
@@ -111,7 +111,7 @@ r_obj* rray_split(
     rray_split_fill(x, out_elt, axis_offset * axis_stride, &plan);
 
     if (axis_names != r_null) {
-      r_obj* out_elt_names = KEEP(rray_split_chunk_names(
+      r_obj* out_elt_names = KEEP(rray_split_elt_names(
         x_names,
         dimensionality,
         axis,
@@ -132,7 +132,7 @@ r_obj* rray_split(
   return out;
 }
 
-static r_obj* arg_as_chunk_dimensions(
+static r_obj* arg_as_split_dimensions(
   r_obj* dimensions,
   int axis_dimension,
   struct rray_arg* arg,
@@ -223,7 +223,7 @@ static bool names_are_all_null(r_obj* names) {
   return true;
 }
 
-static r_obj* rray_split_chunk_names(
+static r_obj* rray_split_elt_names(
   r_obj* x_names,
   int dimensionality,
   int axis,
