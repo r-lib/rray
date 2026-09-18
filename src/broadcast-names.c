@@ -1,6 +1,5 @@
 #include "broadcast-names.h"
 
-#include "axes.h"
 #include "dimensionality.h"
 #include "dimensions.h"
 #include "names.h"
@@ -41,14 +40,18 @@ r_obj* rray_broadcast_names_common(r_obj* xs, r_obj* dimensions) {
 r_obj* rray_broadcast_names_common_opts(
   r_obj* xs,
   r_obj* dimensions,
-  const int* v_ignore_axes,
-  r_ssize ignore_axes_size
+  const int* v_ignore,
+  r_ssize ignore_size
 ) {
   const r_ssize n = r_length(xs);
   r_obj* const* v_xs = r_list_cbegin(xs);
 
   bool v_ignored[RRAY_MAX_DIMENSIONALITY];
-  rray_fill_ignored_from_axes(v_ignore_axes, ignore_axes_size, v_ignored);
+  r_memset(v_ignored, 0, sizeof(bool) * RRAY_MAX_DIMENSIONALITY);
+
+  for (r_ssize i = 0; i < ignore_size; ++i) {
+    v_ignored[v_ignore[i] - 1] = true;
+  }
 
   r_obj* out = r_null;
   r_keep_loc out_loc;

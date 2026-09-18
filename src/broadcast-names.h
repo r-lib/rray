@@ -10,8 +10,8 @@ r_obj* rray_broadcast_names_common(r_obj* xs, r_obj* dimensions);
 r_obj* rray_broadcast_names_common_opts(
   r_obj* xs,
   r_obj* dimensions,
-  const int* v_ignore_axes,
-  r_ssize ignore_axes_size
+  const int* v_ignore,
+  r_ssize ignore_size
 );
 
 #endif
