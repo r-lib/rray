@@ -23,10 +23,13 @@ reference:
   - rray_set_row_names
   - rray_set_col_names
 
-- title: Manipulation
+- title: Broadcasting
   contents:
   - rray_broadcast
   - rray_broadcast_common
+
+- title: Combining and Splitting
+  contents:
   - rray_combine
   - rray_split
   - rray_stack
