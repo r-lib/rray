@@ -47,10 +47,10 @@ r_obj* rray_combine(
   const r_ssize xs_size = r_length(xs);
   r_obj* const* v_xs = r_list_cbegin(xs);
 
-  const int dimensionality = list_max_dimensionality(xs, arg, error_call);
-  check_max_dimensionality(dimensionality);
+  const int out_dimensionality = list_max_dimensionality(xs, arg, error_call);
+  check_max_dimensionality(out_dimensionality);
 
-  check_axis(axis, dimensionality, rray_args.dot_axis, error_call);
+  check_axis(axis, out_dimensionality, rray_args.dot_axis, error_call);
 
   r_obj* out_dimensions =
     KEEP(rray_dimensions_common_opts(xs, &axis, 1, arg, error_call));
@@ -82,7 +82,7 @@ r_obj* rray_combine(
 
   const r_ssize out_size = rray_size_from_dimensions_checked(
     v_out_dimensions,
-    dimensionality,
+    out_dimensionality,
     error_call
   );
 
@@ -91,7 +91,7 @@ r_obj* rray_combine(
   r_ssize v_out_strides[RRAY_MAX_DIMENSIONALITY];
   rray_fill_strides_from_dimensions(
     v_out_dimensions,
-    dimensionality,
+    out_dimensionality,
     v_out_strides
   );
 
@@ -99,7 +99,7 @@ r_obj* rray_combine(
   r_memcpy(
     v_x_broadcast_dimensions,
     v_out_dimensions,
-    sizeof(int) * dimensionality
+    sizeof(int) * out_dimensionality
   );
 
   r_ssize v_x_strides[RRAY_MAX_DIMENSIONALITY];
@@ -121,13 +121,13 @@ r_obj* rray_combine(
     rray_fill_broadcast_strides_from_dimensions(
       v_x_dimensions,
       x_dimensionality,
-      dimensionality,
+      out_dimensionality,
       v_x_strides
     );
 
     const struct rray_strided_iterator2_plan plan = rray_strided_iterator2_plan(
       v_x_broadcast_dimensions,
-      dimensionality,
+      out_dimensionality,
       v_out_strides,
       v_x_strides
     );
