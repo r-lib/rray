@@ -5,8 +5,6 @@ static void check_split_dimensions(
   struct r_lazy error_call
 );
 
-static bool names_are_all_null(r_obj* names);
-
 static r_obj* rray_split_elt_names(
   r_obj* x_names,
   int dimensionality,

@@ -214,7 +214,7 @@ test_that("NULL dimension names are handled", {
   expect_null(dimnames(rray_split(x, 1, 1)[[1]]))
 
   x <- array(1:6, c(2, 3), dimnames = list(NULL, NULL))
-  expect_null(dimnames(rray_split(x, 1, 1)[[1]]))
+  expect_identical(dimnames(rray_split(x, 1, 1)[[1]]), list(NULL, NULL))
 })
 
 test_that("the result list is unnamed", {

@@ -59,9 +59,6 @@ r_obj* rray_split(
   r_obj* out = KEEP(r_alloc_list(out_size));
 
   r_obj* x_names = r_dim_names(x);
-  if (x_names != r_null && names_are_all_null(x_names)) {
-    x_names = r_null;
-  }
 
   r_obj* axis_names =
     (x_names == r_null) ? r_null : r_list_get(x_names, axis - 1);
@@ -184,19 +181,6 @@ static void check_split_dimensions(
       );
     }
   }
-}
-
-static bool names_are_all_null(r_obj* names) {
-  const r_ssize size = r_length(names);
-  r_obj* const* v_names = r_list_cbegin(names);
-
-  for (r_ssize i = 0; i < size; ++i) {
-    if (v_names[i] != r_null) {
-      return false;
-    }
-  }
-
-  return true;
 }
 
 static r_obj* rray_split_elt_names(
