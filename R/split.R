@@ -1,10 +1,9 @@
 #' Split an array along an axis
 #'
 #' @description
-#' `rray_split()` divides `x` into contiguous arrays along `axis`. Every array
-#' keeps the dimensionality of `x`, only the dimension along `axis` changes.
+#' `rray_split()` divides `x` into contiguous arrays along an `axis`.
 #'
-#' Combining the arrays along the same axis reconstructs `x`.
+#' Using `rray_combine()` along the same `axis` reconstructs `x`.
 #'
 #' @param x An array.
 #'

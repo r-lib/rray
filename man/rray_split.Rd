@@ -23,10 +23,9 @@ array directly. They must sum to the dimension of \code{x} along \code{axis}.
 An unnamed list of arrays with the same dimensionality as \code{x}.
 }
 \description{
-\code{rray_split()} divides \code{x} into contiguous arrays along \code{axis}. Every array
-keeps the dimensionality of \code{x}, only the dimension along \code{axis} changes.
+\code{rray_split()} divides \code{x} into contiguous arrays along an \code{axis}.
 
-Combining the arrays along the same axis reconstructs \code{x}.
+Using \code{rray_combine()} along the same \code{axis} reconstructs \code{x}.
 }
 \examples{
 x <- array(1:12, c(6, 2))
