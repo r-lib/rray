@@ -14,6 +14,13 @@ int rray_dimensionality(
 );
 int rray_dimensionality_from_dimensions(r_obj* dimensions);
 
+r_obj* rray_expand_dimensionality(
+  r_obj* x,
+  int dimensionality,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+);
+
 int list_max_dimensionality(
   r_obj* xs,
   struct rray_arg* arg,

@@ -1,6 +1,8 @@
 #include "dimensionality.h"
 
 #include "dimensions.h"
+#include "utils.h"
+#include "wrapper.h"
 
 r_obj* ffi_rray_dimensionality(r_obj* ffi_x, r_obj* ffi_frame) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
@@ -18,6 +20,66 @@ int rray_dimensionality(
 
 int rray_dimensionality_from_dimensions(r_obj* dimensions) {
   return (int) r_length(dimensions);
+}
+
+r_obj* rray_expand_dimensionality(
+  r_obj* x,
+  int dimensionality,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+) {
+  check_unclassed(x, arg, error_call);
+  x = KEEP(arg_as_array(x, arg, error_call));
+
+  r_obj* x_dimensions = KEEP(rray_dimensions(x, arg, error_call));
+  const int* v_x_dimensions = r_int_cbegin(x_dimensions);
+  const int x_dimensionality =
+    rray_dimensionality_from_dimensions(x_dimensions);
+
+  if (dimensionality <= x_dimensionality) {
+    r_stop_internal(
+      "`dimensionality` of %d must be greater than the dimensionality of %d.",
+      dimensionality,
+      x_dimensionality
+    );
+  }
+
+  check_max_dimensionality(dimensionality);
+
+  r_obj* out_dimensions = KEEP(r_alloc_integer(dimensionality));
+  int* v_out_dimensions = r_int_begin(out_dimensions);
+  r_memcpy(v_out_dimensions, v_x_dimensions, sizeof(int) * x_dimensionality);
+
+  for (int i = x_dimensionality; i < dimensionality; ++i) {
+    v_out_dimensions[i] = 1;
+  }
+
+  r_obj* x_names = r_dim_names(x);
+
+  r_obj* out_names = r_null;
+  r_keep_loc out_names_loc;
+  KEEP_HERE(out_names, &out_names_loc);
+
+  if (x_names != r_null) {
+    out_names = r_alloc_list(dimensionality);
+    KEEP_AT(out_names, out_names_loc);
+
+    r_obj* const* v_x_names = r_list_cbegin(x_names);
+
+    for (int i = 0; i < x_dimensionality; ++i) {
+      r_list_poke(out_names, i, v_x_names[i]);
+    }
+  }
+
+  r_obj* out = KEEP(r_wrap(x));
+  r_attrib_poke_dim(out, out_dimensions);
+
+  if (out_names != r_null) {
+    r_attrib_poke_dim_names(out, out_names);
+  }
+
+  FREE(5);
+  return out;
 }
 
 int list_max_dimensionality(

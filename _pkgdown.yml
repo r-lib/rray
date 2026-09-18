@@ -29,6 +29,7 @@ reference:
   - rray_broadcast_common
   - rray_combine
   - rray_split
+  - rray_stack
 
 - title: Axes
   contents:
