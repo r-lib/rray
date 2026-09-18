@@ -49,8 +49,8 @@ r_obj* rray_dimensions_common(
 
 r_obj* rray_dimensions_common_opts(
   r_obj* xs,
-  const int* v_ignore,
-  r_ssize ignore_size,
+  const int* v_ignore_axes,
+  r_ssize ignore_axes_size,
   struct rray_arg* arg,
   struct r_lazy error_call
 );

@@ -285,3 +285,15 @@ r_obj* rray_axes_complement(
   FREE(1);
   return out;
 }
+
+void rray_fill_ignored_from_axes(
+  const int* v_ignore_axes,
+  r_ssize ignore_axes_size,
+  bool* v_ignored
+) {
+  r_memset(v_ignored, 0, sizeof(bool) * RRAY_MAX_DIMENSIONALITY);
+
+  for (r_ssize i = 0; i < ignore_axes_size; ++i) {
+    v_ignored[v_ignore_axes[i] - 1] = true;
+  }
+}

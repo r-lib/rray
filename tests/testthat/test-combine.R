@@ -155,6 +155,27 @@ test_that("combines axis names and broadcasts other names", {
   expect_identical(dimnames(out), list(c("a", NA_character_, "")))
 })
 
+test_that("names on the combine axis never come from broadcasting", {
+  x <- array(1:4, c(2L, 2L), dimnames = list(c("x1", "x2"), c("a", "b")))
+
+  expect_identical(
+    dimnames(rray_combine(x, .axis = 1L)),
+    list(c("x1", "x2"), c("a", "b"))
+  )
+
+  y <- array(integer(), c(0L, 2L))
+  expect_identical(
+    dimnames(rray_combine(x, y, .axis = 1L)),
+    list(c("x1", "x2"), c("a", "b"))
+  )
+
+  z <- array(integer(), c(0L, 2L), dimnames = list(character(), c("c", "d")))
+  expect_identical(
+    dimnames(rray_combine(z, x, .axis = 1L)),
+    list(c("x1", "x2"), c("c", "d"))
+  )
+})
+
 test_that("does not modify inputs", {
   x <- array(1:2, c(2L, 1L), dimnames = list(c("a", "b"), "x"))
   y <- array(3:8, c(2L, 3L))

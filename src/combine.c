@@ -157,13 +157,9 @@ static r_obj* rray_combine_names(
   int axis,
   int axis_dimension
 ) {
-  r_obj* out = rray_broadcast_names_common(xs, dimensions);
+  r_obj* out = rray_broadcast_names_common_opts(xs, dimensions, &axis, 1);
   r_keep_loc out_loc;
   KEEP_HERE(out, &out_loc);
-
-  if (out != r_null) {
-    r_list_poke(out, axis - 1, r_null);
-  }
 
   r_obj* axis_names = KEEP(rray_combine_axis_names(xs, axis, axis_dimension));
 

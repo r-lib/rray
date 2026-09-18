@@ -1,5 +1,6 @@
 #include "broadcast-names.h"
 
+#include "axes.h"
 #include "dimensionality.h"
 #include "dimensions.h"
 #include "names.h"
@@ -11,7 +12,7 @@ r_obj* ffi_rray_broadcast_names(r_obj* ffi_x, r_obj* ffi_dimensions) {
 }
 
 r_obj* rray_broadcast_names(r_obj* x, r_obj* dimensions) {
-  return rray_broadcast_names_fill(r_null, x, dimensions);
+  return rray_broadcast_names_fill(r_null, x, dimensions, NULL);
 }
 
 r_obj* ffi_rray_broadcast_names2(
@@ -23,8 +24,8 @@ r_obj* ffi_rray_broadcast_names2(
 }
 
 r_obj* rray_broadcast_names2(r_obj* x, r_obj* y, r_obj* dimensions) {
-  r_obj* out = KEEP(rray_broadcast_names_fill(r_null, x, dimensions));
-  out = rray_broadcast_names_fill(out, y, dimensions);
+  r_obj* out = KEEP(rray_broadcast_names_fill(r_null, x, dimensions, NULL));
+  out = rray_broadcast_names_fill(out, y, dimensions, NULL);
   FREE(1);
   return out;
 }
@@ -34,15 +35,27 @@ r_obj* ffi_rray_broadcast_names_common(r_obj* ffi_xs, r_obj* ffi_dimensions) {
 }
 
 r_obj* rray_broadcast_names_common(r_obj* xs, r_obj* dimensions) {
+  return rray_broadcast_names_common_opts(xs, dimensions, NULL, 0);
+}
+
+r_obj* rray_broadcast_names_common_opts(
+  r_obj* xs,
+  r_obj* dimensions,
+  const int* v_ignore_axes,
+  r_ssize ignore_axes_size
+) {
   const r_ssize n = r_length(xs);
   r_obj* const* v_xs = r_list_cbegin(xs);
+
+  bool v_ignored[RRAY_MAX_DIMENSIONALITY];
+  rray_fill_ignored_from_axes(v_ignore_axes, ignore_axes_size, v_ignored);
 
   r_obj* out = r_null;
   r_keep_loc out_loc;
   KEEP_HERE(out, &out_loc);
 
   for (r_ssize i = 0; i < n; ++i) {
-    out = rray_broadcast_names_fill(out, v_xs[i], dimensions);
+    out = rray_broadcast_names_fill(out, v_xs[i], dimensions, v_ignored);
     KEEP_AT(out, out_loc);
   }
 
@@ -57,7 +70,8 @@ r_obj* rray_broadcast_names_common(r_obj* xs, r_obj* dimensions) {
 static r_obj* rray_broadcast_names_fill(
   r_obj* out,
   r_obj* x,
-  r_obj* dimensions
+  r_obj* dimensions,
+  const bool* v_ignored
 ) {
   r_obj* x_names = rray_names(x, rray_args.x, r_lazy_null);
   if (x_names == r_null) {
@@ -79,6 +93,9 @@ static r_obj* rray_broadcast_names_fill(
   KEEP_HERE(out, &out_loc);
 
   for (int i = 0; i < x_dimensionality; ++i) {
+    if (v_ignored != NULL && v_ignored[i]) {
+      continue;
+    }
     if (v_x_names[i] == r_null) {
       // No names to contribute on this axis
       continue;

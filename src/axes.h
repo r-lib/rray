@@ -46,4 +46,10 @@ r_obj* rray_axes_complement(
   int dimensionality
 );
 
+void rray_fill_ignored_from_axes(
+  const int* v_ignore_axes,
+  r_ssize ignore_axes_size,
+  bool* v_ignored
+);
+
 #endif

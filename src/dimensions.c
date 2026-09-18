@@ -1,5 +1,6 @@
 #include "dimensions.h"
 
+#include "axes.h"
 #include "dimensionality.h"
 #include "size.h"
 #include "utils.h"
@@ -151,8 +152,8 @@ r_obj* rray_dimensions_common(
 
 r_obj* rray_dimensions_common_opts(
   r_obj* xs,
-  const int* v_ignore,
-  r_ssize ignore_size,
+  const int* v_ignore_axes,
+  r_ssize ignore_axes_size,
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
@@ -189,11 +190,7 @@ r_obj* rray_dimensions_common_opts(
   }
 
   bool v_ignored[RRAY_MAX_DIMENSIONALITY];
-  r_memset(v_ignored, 0, sizeof(bool) * RRAY_MAX_DIMENSIONALITY);
-
-  for (r_ssize i = 0; i < ignore_size; ++i) {
-    v_ignored[v_ignore[i] - 1] = true;
-  }
+  rray_fill_ignored_from_axes(v_ignore_axes, ignore_axes_size, v_ignored);
 
   for (; x_i < n; ++x_i) {
     r_obj* x = v_xs[x_i];
