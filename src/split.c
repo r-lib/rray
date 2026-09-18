@@ -74,6 +74,9 @@ r_obj* rray_split(
 
   const enum r_type type = r_typeof(x);
 
+  // Initialized on the first iteration. Changes any time the output dimension
+  // along `axis` changes, but in the uniform case all arrays share the same
+  // dimensions object!
   r_obj* out_elt_dimensions = r_null;
   r_keep_loc out_elt_dimensions_loc;
   KEEP_HERE(out_elt_dimensions, &out_elt_dimensions_loc);
