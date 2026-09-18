@@ -43,7 +43,7 @@ test_that("combines one or more than two inputs", {
 
   xs <- list(x, x + 4L, x + 8L)
   expect_identical(
-    rlang::inject(rray_combine(!!!xs, .axis = 2L)),
+    rray_combine(!!!xs, .axis = 2L),
     out
   )
 })
