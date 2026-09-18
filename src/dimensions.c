@@ -362,7 +362,8 @@ r_obj* arg_as_dimensions(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  dimensions = KEEP(arg_as_non_negative_integer(dimensions, arg, error_call));
+  dimensions =
+    KEEP(arg_as_non_negative_bare_integer(dimensions, arg, error_call));
 
   if (rray_dimensionality_from_dimensions(dimensions) == 0) {
     r_abort_lazy_call(

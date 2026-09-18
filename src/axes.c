@@ -9,7 +9,7 @@ r_obj* arg_as_axes(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  axes = KEEP(arg_as_integer(axes, arg));
+  axes = KEEP(arg_as_bare_integer(axes, arg, error_call));
   check_axes(axes, dimensionality, arg, error_call);
   FREE(1);
   return axes;
@@ -21,14 +21,6 @@ void check_axes(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  if (r_attrib_has_any(axes)) {
-    r_abort_lazy_call(
-      error_call,
-      "%s can't have attributes.",
-      rray_arg_format(arg)
-    );
-  }
-
   const r_ssize axes_size = r_length(axes);
 
   const int* v_axes = r_int_cbegin(axes);
@@ -82,15 +74,7 @@ r_obj* arg_as_axes_unsorted(
 ) {
   check_max_dimensionality(dimensionality);
 
-  axes = KEEP(arg_as_integer(axes, arg));
-
-  if (r_attrib_has_any(axes)) {
-    r_abort_lazy_call(
-      error_call,
-      "%s can't have attributes.",
-      rray_arg_format(arg)
-    );
-  }
+  axes = KEEP(arg_as_bare_integer(axes, arg, error_call));
 
   const r_ssize axes_size = r_length(axes);
 
@@ -153,15 +137,7 @@ r_obj* arg_as_axes_permutation(
 ) {
   check_max_dimensionality(dimensionality);
 
-  axes = KEEP(arg_as_integer(axes, arg));
-
-  if (r_attrib_has_any(axes)) {
-    r_abort_lazy_call(
-      error_call,
-      "%s can't have attributes.",
-      rray_arg_format(arg)
-    );
-  }
+  axes = KEEP(arg_as_bare_integer(axes, arg, error_call));
 
   const r_ssize axes_size = r_length(axes);
 

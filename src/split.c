@@ -38,9 +38,11 @@ r_obj* rray_split(
   check_axis(axis, dimensionality, rray_args.axis, error_call);
   const int axis_dimension = v_x_dimensions[axis - 1];
 
-  dimensions = KEEP(
-    arg_as_non_negative_integer(dimensions, rray_args.dimensions, error_call)
-  );
+  dimensions = KEEP(arg_as_non_negative_bare_integer(
+    dimensions,
+    rray_args.dimensions,
+    error_call
+  ));
   check_split_dimensions(
     dimensions,
     axis_dimension,

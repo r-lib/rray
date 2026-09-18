@@ -72,16 +72,15 @@ r_no_return void stop_scalar_input(
   );
 }
 
-r_obj* arg_as_integer(r_obj* x, struct rray_arg* arg) {
-  if (r_typeof(x) == R_TYPE_integer) {
-    return x;
+r_obj* arg_as_bare_integer(
+  r_obj* x,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+) {
+  if (r_typeof(x) != R_TYPE_integer) {
+    x = vec_cast(x, r_globals.empty_int, arg, NULL);
   }
-
-  return vec_cast(x, r_globals.empty_int, arg, NULL);
-}
-
-int arg_as_int(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
-  x = KEEP(arg_as_integer(x, arg));
+  KEEP(x);
 
   if (r_attrib_has_any(x)) {
     r_abort_lazy_call(
@@ -90,6 +89,13 @@ int arg_as_int(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
       rray_arg_format(arg)
     );
   }
+
+  FREE(1);
+  return x;
+}
+
+int arg_as_int(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
+  x = KEEP(arg_as_bare_integer(x, arg, error_call));
 
   if (r_length(x) != 1) {
     r_abort_lazy_call(
@@ -106,20 +112,12 @@ int arg_as_int(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
   return out;
 }
 
-r_obj* arg_as_non_negative_integer(
+r_obj* arg_as_non_negative_bare_integer(
   r_obj* x,
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  x = KEEP(arg_as_integer(x, arg));
-
-  if (r_attrib_has_any(x)) {
-    r_abort_lazy_call(
-      error_call,
-      "%s can't have attributes.",
-      rray_arg_format(arg)
-    );
-  }
+  x = KEEP(arg_as_bare_integer(x, arg, error_call));
 
   const r_ssize size = r_length(x);
   const int* v_x = r_int_cbegin(x);
