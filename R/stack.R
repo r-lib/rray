@@ -8,7 +8,7 @@
 #'
 #' @details
 #' Names of `...` become the names of the new axis. Existing axis names are
-#' carried over from the inputs like they are with [rray_combine()].
+#' otherwise carried over.
 #'
 #' @param ... Arrays to stack.
 #'

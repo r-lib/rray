@@ -28,7 +28,7 @@ The new axis has a dimension equal to the number of arrays you are stacking.
 }
 \details{
 Names of \code{...} become the names of the new axis. Existing axis names are
-carried over from the inputs like they are with \code{\link[=rray_combine]{rray_combine()}}.
+otherwise carried over.
 }
 \examples{
 x <- array(1:6, c(2, 3))
