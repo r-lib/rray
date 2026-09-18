@@ -64,7 +64,7 @@ r_obj* rray_reduce(
   const r_ssize out_run_stride = rray_strided_iterator_plan_run_stride(plan);  \
                                                                                \
   r_ssize v_point[RRAY_MAX_DIMENSIONALITY];                                    \
-  r_memset(v_point, 0, sizeof(r_ssize) * (size_t) plan->dimensionality);       \
+  rray_strided_iterator_plan_point_init(plan, v_point);                        \
                                                                                \
   while (run_start != size) {                                                  \
     const r_ssize run_end = run_start + run_size;                              \
@@ -144,7 +144,7 @@ r_obj* rray_reduce_nested(
     rray_strided_iterator_plan_run_stride(outer_plan);                         \
                                                                                \
   r_ssize v_point[RRAY_MAX_DIMENSIONALITY];                                    \
-  r_memset(v_point, 0, sizeof(r_ssize) * (size_t) outer_plan->dimensionality); \
+  rray_strided_iterator_plan_point_init(outer_plan, v_point);                  \
                                                                                \
   while (out_run_start != size) {                                              \
     const r_ssize out_run_end = out_run_start + out_run_size;                  \
@@ -173,11 +173,7 @@ r_obj* rray_reduce_nested(
       rray_strided_iterator_plan_run_stride(inner_plan);                       \
                                                                                \
     r_ssize v_point[RRAY_MAX_DIMENSIONALITY];                                  \
-    r_memset(                                                                  \
-      v_point,                                                                 \
-      0,                                                                       \
-      sizeof(r_ssize) * (size_t) inner_plan->dimensionality                    \
-    );                                                                         \
+    rray_strided_iterator_plan_point_init(inner_plan, v_point);                \
                                                                                \
     while (run_start != size) {                                                \
       const r_ssize run_end = run_start + run_size;                            \
