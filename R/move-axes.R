@@ -7,9 +7,9 @@
 #' @details
 #' Names travel with their axis to its new position.
 #'
-#' @param x An array.
+#' @inheritParams rlang::args_dots_empty
 #'
-#' @param ... These dots are for future extensions and must be empty.
+#' @param x An array.
 #'
 #' @param from An integer vector of axes in `x` to move.
 #'

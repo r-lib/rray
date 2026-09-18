@@ -9,11 +9,11 @@
 #' The arrays are broadcast to common dimensions first, so they do not have to
 #' be the same shape.
 #'
+#' @inheritParams rlang::args_dots_empty
+#'
 #' @param x An array.
 #'
 #' @param y An array.
-#'
-#' @param ... These dots are for future extensions and must be empty.
 #'
 #' @param na_rm If `TRUE`, missing values are removed before taking the maximum
 #'   or minimum.
