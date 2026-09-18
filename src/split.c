@@ -84,14 +84,15 @@ r_obj* rray_split(
   r_ssize out_elt_size = 0;
 
   struct rray_strided_iterator_plan out_elt_plan = {0};
-  int plan_dimension = -1;
+
+  int previous_dimension = -1;
 
   int x_axis_start = 0;
 
   for (r_ssize i = 0; i < out_size; ++i) {
     const int dimension = uniform ? v_dimensions[0] : v_dimensions[i];
 
-    if (dimension != plan_dimension) {
+    if (dimension != previous_dimension) {
       out_elt_dimensions = r_alloc_integer(dimensionality);
       KEEP_AT(out_elt_dimensions, out_elt_dimensions_loc);
       int* v_out_elt_dimensions = r_int_begin(out_elt_dimensions);
@@ -108,7 +109,7 @@ r_obj* rray_split(
         v_x_strides
       );
 
-      plan_dimension = dimension;
+      previous_dimension = dimension;
       out_elt_size = rray_strided_iterator_plan_size(&out_elt_plan);
     }
 
