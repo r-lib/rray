@@ -81,7 +81,7 @@ r_obj* rray_split(
   int plan_dimension = -1;
   r_ssize out_elt_size = 0;
 
-  int x_axis_loc = 0;
+  int x_axis_start = 0;
 
   for (r_ssize i = 0; i < out_size; ++i) {
     const int dimension = uniform ? v_dimensions[0] : v_dimensions[i];
@@ -111,7 +111,7 @@ r_obj* rray_split(
     r_list_poke(out, i, out_elt);
     r_attrib_poke_dim(out_elt, out_elt_dimensions);
 
-    const r_ssize x_start = x_axis_loc * x_axis_stride;
+    const r_ssize x_start = x_axis_start * x_axis_stride;
     rray_split_fill(x, out_elt, x_start, &plan);
 
     if (x_axis_names != r_null) {
@@ -120,7 +120,7 @@ r_obj* rray_split(
         dimensionality,
         axis,
         x_axis_names,
-        x_axis_loc,
+        x_axis_start,
         dimension
       ));
       r_attrib_poke_dim_names(out_elt, out_elt_names);
@@ -129,7 +129,7 @@ r_obj* rray_split(
       r_attrib_poke_dim_names(out_elt, x_names);
     }
 
-    x_axis_loc += dimension;
+    x_axis_start += dimension;
   }
 
   FREE(5);
@@ -190,7 +190,7 @@ static r_obj* rray_split_elt_names(
   int dimensionality,
   int axis,
   r_obj* x_axis_names,
-  int x_axis_loc,
+  int x_axis_start,
   int dimension
 ) {
   r_obj* out = KEEP(r_alloc_list(dimensionality));
@@ -207,7 +207,7 @@ static r_obj* rray_split_elt_names(
   r_obj* const* v_x_axis_names = r_chr_cbegin(x_axis_names);
 
   for (int i = 0; i < dimension; ++i) {
-    r_chr_poke(out_axis_names, i, v_x_axis_names[x_axis_loc + i]);
+    r_chr_poke(out_axis_names, i, v_x_axis_names[x_axis_start + i]);
   }
 
   FREE(1);
