@@ -122,7 +122,7 @@ r_obj* rray_broadcast(
   const r_ssize x_run_stride = rray_strided_iterator_plan_run_stride(plan);    \
                                                                                \
   r_ssize v_point[RRAY_MAX_DIMENSIONALITY];                                    \
-  r_memset(v_point, 0, sizeof(r_ssize) * (size_t) plan->dimensionality);       \
+  rray_strided_iterator_plan_point_init(plan, v_point);                        \
                                                                                \
   while (run_start != size) {                                                  \
     const r_ssize run_end = run_start + run_size;                              \
@@ -161,7 +161,7 @@ r_obj* rray_broadcast(
   const r_ssize x_run_stride = rray_strided_iterator_plan_run_stride(plan);    \
                                                                                \
   r_ssize v_point[RRAY_MAX_DIMENSIONALITY];                                    \
-  r_memset(v_point, 0, sizeof(r_ssize) * (size_t) plan->dimensionality);       \
+  rray_strided_iterator_plan_point_init(plan, v_point);                        \
                                                                                \
   while (run_start != size) {                                                  \
     const r_ssize run_end = run_start + run_size;                              \

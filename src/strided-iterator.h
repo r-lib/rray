@@ -233,6 +233,12 @@ static inline r_ssize rray_strided_iterator_plan_run_stride(
 ) {
   return plan->v_strides[0];
 }
+static inline void rray_strided_iterator_plan_point_init(
+  const struct rray_strided_iterator_plan* plan,
+  r_ssize* v_point
+) {
+  r_memset(v_point, 0, sizeof(r_ssize) * (size_t) plan->dimensionality);
+}
 
 #define RRAY_STRIDED_ITERATOR_NEXT(START, V_POINT, PLAN)                       \
   for (int axis = 1; axis < PLAN->dimensionality; ++axis) {                    \
@@ -359,6 +365,12 @@ static inline r_ssize rray_strided_iterator2_plan_run_stride2(
   const struct rray_strided_iterator2_plan* plan
 ) {
   return plan->v_strides2[0];
+}
+static inline void rray_strided_iterator2_plan_point_init(
+  const struct rray_strided_iterator2_plan* plan,
+  r_ssize* v_point
+) {
+  r_memset(v_point, 0, sizeof(r_ssize) * (size_t) plan->dimensionality);
 }
 
 #define RRAY_STRIDED_ITERATOR_NEXT2(START1, START2, V_POINT, PLAN)             \
