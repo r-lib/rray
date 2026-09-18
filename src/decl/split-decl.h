@@ -1,35 +1,66 @@
-static void rray_split_lgl(
-  r_obj* x,
-  r_obj* out,
-  const struct rray_strided_iterator2_plan* plan
+static r_obj* arg_as_sizes(
+  r_obj* sizes,
+  int axis_dimension,
+  struct rray_arg* arg,
+  struct r_lazy error_call
 );
-static void rray_split_int(
-  r_obj* x,
-  r_obj* out,
-  const struct rray_strided_iterator2_plan* plan
+
+static bool names_are_all_null(r_obj* names);
+
+static r_obj* rray_split_chunk_names(
+  r_obj* x_names,
+  int dimensionality,
+  int axis,
+  r_obj* axis_names,
+  int axis_offset,
+  int dimension
 );
-static void rray_split_dbl(
+
+static void rray_split_fill(
   r_obj* x,
   r_obj* out,
-  const struct rray_strided_iterator2_plan* plan
+  r_ssize x_start,
+  const struct rray_strided_iterator_plan* plan
 );
-static void rray_split_cpl(
+static void rray_split_fill_lgl(
   r_obj* x,
   r_obj* out,
-  const struct rray_strided_iterator2_plan* plan
+  r_ssize x_start,
+  const struct rray_strided_iterator_plan* plan
 );
-static void rray_split_raw(
+static void rray_split_fill_int(
   r_obj* x,
   r_obj* out,
-  const struct rray_strided_iterator2_plan* plan
+  r_ssize x_start,
+  const struct rray_strided_iterator_plan* plan
 );
-static void rray_split_chr(
+static void rray_split_fill_dbl(
   r_obj* x,
   r_obj* out,
-  const struct rray_strided_iterator2_plan* plan
+  r_ssize x_start,
+  const struct rray_strided_iterator_plan* plan
 );
-static void rray_split_list(
+static void rray_split_fill_cpl(
   r_obj* x,
   r_obj* out,
-  const struct rray_strided_iterator2_plan* plan
+  r_ssize x_start,
+  const struct rray_strided_iterator_plan* plan
+);
+static void rray_split_fill_raw(
+  r_obj* x,
+  r_obj* out,
+  r_ssize x_start,
+  const struct rray_strided_iterator_plan* plan
+);
+static void rray_split_fill_chr(
+  r_obj* x,
+  r_obj* out,
+  r_ssize x_start,
+  const struct rray_strided_iterator_plan* plan
+);
+static void rray_split_fill_list(
+  r_obj* x,
+  r_obj* out,
+  r_ssize x_start,
+  const struct rray_strided_iterator_plan* plan
 );

@@ -338,12 +338,10 @@ belongs in the caller, which has always done it already.
 **Subset.** Names are subset alongside the data, so an axis keeps the names of
 the elements that survived.
 
-`rray_split()` is the one case producing many arrays at once, so its
-`rray_split_names(x, dimensions)` returns one set of names per output element.
-A split axis gets the single name at that element's point, an unsplit axis
-carries its names over whole. It needs no `axes` argument, because an axis is
-split exactly when its split dimension is not 1, and splitting a size 1 axis
-gives the same answer either way.
+`rray_split()` is the one case producing many arrays at once, so it owns its
+own name handling rather than calling into this family. Each chunk slices the
+names on the split axis over the same range as its data, and carries the names
+on every other axis over whole.
 
 **Dropped.** All names are discarded. Used where no axis survives in a
 recognisable form, such as a reshape.

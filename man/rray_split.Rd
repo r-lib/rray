@@ -2,37 +2,50 @@
 % Please edit documentation in R/split.R
 \name{rray_split}
 \alias{rray_split}
-\title{Split an array along axes}
+\title{Split an array along an axis}
 \usage{
-rray_split(x, axes)
+rray_split(x, axis, sizes)
 }
 \arguments{
 \item{x}{An array.}
 
-\item{axes}{An integer vector of axes to split along. The number of resulting
-subarrays is the product of the dimensions along \code{axes}.}
+\item{axis}{A single integer between 1 and the dimensionality of \code{x}.}
+
+\item{sizes}{An integer vector of chunk dimensions along \code{axis}.}
 }
 \value{
-A list of arrays, each with the same dimensionality as \code{x} but
-with a dimension of 1 along the split \code{axes}.
+An unnamed list of arrays with the same dimensionality as \code{x}.
 }
 \description{
-\code{rray_split()} splits \code{x} along the specified \code{axes}, returning a
-list of subarrays. The dimensionality of \code{x} is retained in each
-subarray, with the split axes collapsed to a dimension of 1.
+\code{rray_split()} divides \code{x} into contiguous chunks along \code{axis}. Every chunk
+keeps the dimensionality of \code{x}, only the dimension along \code{axis} changes.
+
+\code{sizes} describes those chunks in one of two ways:
+\itemize{
+\item A single value is the dimension of every chunk. It must be positive and
+must evenly divide the dimension of \code{x} along \code{axis}.
+\item A vector of any other length gives the dimension of each chunk directly.
+The values must be non-negative and must sum to the dimension of \code{x} along
+\code{axis}.
+}
+
+Combining the chunks along the same axis reconstructs \code{x}.
 }
 \examples{
-x <- array(1:24, c(4, 3, 2))
+x <- array(1:12, c(6, 2))
 
-# Split along the 3rd axis
-# (4, 3, 2) -> two (4, 3, 1) arrays
-rray_split(x, 3)
+# Three chunks of two rows
+rray_split(x, 1, 2)
 
-# Split along the 1st axis
-# (4, 3, 2) -> four (1, 3, 2) arrays
-rray_split(x, 1)
+# Chunks of one and five rows
+rray_split(x, 1, c(1, 5))
 
-# Split along multiple axes
-# (4, 3, 2) -> twelve (1, 1, 2) arrays
-rray_split(x, c(1, 2))
+# One chunk per column
+rray_split(x, 2, 1)
+
+# Chunks of dimension zero are allowed in the explicit form
+rray_split(x, 2, c(0, 2))
+
+# Splitting and combining along the same axis are inverses
+rray_combine(!!!rray_split(x, 1, 3), .axis = 1)
 }

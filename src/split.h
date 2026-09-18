@@ -7,7 +7,8 @@
 
 r_obj* rray_split(
   r_obj* x,
-  r_obj* axes,
+  int axis,
+  r_obj* sizes,
   struct rray_arg* arg,
   struct r_lazy error_call
 );
