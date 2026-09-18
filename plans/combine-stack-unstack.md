@@ -279,13 +279,13 @@ r_obj* rray_expand_dimensionality(
 Its contract is:
 
 - normalize and validate `x` as an unclassed array;
-- require `dimensionality` to be at least the current dimensionality;
+- require `dimensionality` to be greater than the current dimensionality;
 - require the target to stay within `RRAY_MAX_DIMENSIONALITY`;
 - return a metadata-only wrapper;
 - copy the existing dimensions and append dimensions of 1;
 - preserve existing axis names in place;
 - leave every appended axis unnamed;
-- return a no-copy view even when no expansion is needed.
+- always append at least one singleton axis.
 
 Do not add an R wrapper or an FFI registration in this change. The helper is
 implementation support for stack. If it later proves useful as a public array
@@ -694,7 +694,7 @@ combine coverage.
 
 Exercise the internal helper through stack:
 
-- no expansion for insertion axes already reachable by an input;
+- stack bypasses the helper when the insertion axis is already reachable;
 - one and several appended singleton axes;
 - preservation of existing dimensions and names;
 - unnamed appended axes;
