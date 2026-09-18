@@ -6,12 +6,14 @@
 
 #include "decl/broadcast-names-decl.h"
 
+static const bool V_IGNORED_FALSE[RRAY_MAX_DIMENSIONALITY] = {false};
+
 r_obj* ffi_rray_broadcast_names(r_obj* ffi_x, r_obj* ffi_dimensions) {
   return rray_broadcast_names(ffi_x, ffi_dimensions);
 }
 
 r_obj* rray_broadcast_names(r_obj* x, r_obj* dimensions) {
-  return rray_broadcast_names_fill(r_null, x, dimensions, NULL);
+  return rray_broadcast_names_fill(r_null, x, dimensions, V_IGNORED_FALSE);
 }
 
 r_obj* ffi_rray_broadcast_names2(
@@ -23,8 +25,9 @@ r_obj* ffi_rray_broadcast_names2(
 }
 
 r_obj* rray_broadcast_names2(r_obj* x, r_obj* y, r_obj* dimensions) {
-  r_obj* out = KEEP(rray_broadcast_names_fill(r_null, x, dimensions, NULL));
-  out = rray_broadcast_names_fill(out, y, dimensions, NULL);
+  r_obj* out =
+    KEEP(rray_broadcast_names_fill(r_null, x, dimensions, V_IGNORED_FALSE));
+  out = rray_broadcast_names_fill(out, y, dimensions, V_IGNORED_FALSE);
   FREE(1);
   return out;
 }
@@ -96,7 +99,7 @@ static r_obj* rray_broadcast_names_fill(
   KEEP_HERE(out, &out_loc);
 
   for (int i = 0; i < x_dimensionality; ++i) {
-    if (v_ignored != NULL && v_ignored[i]) {
+    if (v_ignored[i]) {
       continue;
     }
     if (v_x_names[i] == r_null) {
