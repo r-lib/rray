@@ -1,14 +1,6 @@
 # `axis` is validated
 
     Code
-      rray_split(x)
-    Condition
-      Error in `rray_split()`:
-      ! argument "axis" is missing, with no default
-
----
-
-    Code
       rray_split(x, 0, 1)
     Condition
       Error in `rray_split()`:

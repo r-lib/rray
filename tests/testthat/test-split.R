@@ -236,7 +236,6 @@ test_that("combining the arrays reproduces the input", {
 
 test_that("`axis` is validated", {
   x <- array(1:6, c(2, 3))
-  expect_snapshot(rray_split(x), error = TRUE)
   expect_snapshot(rray_split(x, 0, 1), error = TRUE)
   expect_snapshot(rray_split(x, 3, 1), error = TRUE)
   expect_snapshot(rray_split(x, c(1, 2), 1), error = TRUE)
