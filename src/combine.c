@@ -95,6 +95,15 @@ r_obj* rray_combine(
     v_out_strides
   );
 
+  int v_x_broadcast_dimensions[RRAY_MAX_DIMENSIONALITY];
+  r_memcpy(
+    v_x_broadcast_dimensions,
+    v_out_dimensions,
+    sizeof(int) * dimensionality
+  );
+
+  r_ssize v_x_strides[RRAY_MAX_DIMENSIONALITY];
+
   r_ssize axis_offset = 0;
 
   for (r_ssize i = 0; i < xs_size; ++i) {
@@ -107,15 +116,8 @@ r_obj* rray_combine(
     const int x_axis_dimension =
       (axis <= x_dimensionality) ? v_x_dimensions[axis - 1] : 1;
 
-    int v_x_broadcast_dimensions[RRAY_MAX_DIMENSIONALITY];
-    r_memcpy(
-      v_x_broadcast_dimensions,
-      v_out_dimensions,
-      sizeof(int) * dimensionality
-    );
     v_x_broadcast_dimensions[axis - 1] = x_axis_dimension;
 
-    r_ssize v_x_strides[RRAY_MAX_DIMENSIONALITY];
     rray_fill_broadcast_strides_from_dimensions(
       v_x_dimensions,
       x_dimensionality,
