@@ -89,7 +89,6 @@ r_obj* rray_split(
     if (dimension != plan_dimension) {
       out_elt_dimensions = r_alloc_integer(dimensionality);
       KEEP_AT(out_elt_dimensions, out_elt_dimensions_loc);
-
       int* v_out_elt_dimensions = r_int_begin(out_elt_dimensions);
       r_memcpy(
         v_out_elt_dimensions,
