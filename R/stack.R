@@ -27,13 +27,13 @@
 #'
 #' @export
 #' @examples
-#' x <- array(1:6, c(2, 3))
-#' y <- array(7:12, c(2, 3))
+#' x <- array(1:12, c(3, 4))
+#' y <- array(13:24, c(3, 4))
 #'
-#' # (2, 3) -> (2, 2, 3)
+#' # (3, 4) -> (2, 3, 4)
 #' rray_dimensions(rray_stack(x, y, .axis = 1))
 #'
-#' # (2, 3) -> (2, 3, 2)
+#' # (3, 4) -> (3, 4, 2)
 #' rray_stack(x, y, .axis = 3)
 #'
 #' # One input adds an axis of dimension 1
