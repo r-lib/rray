@@ -111,7 +111,8 @@ r_obj* rray_split(
     r_list_poke(out, i, out_elt);
     r_attrib_poke_dim(out_elt, out_elt_dimensions);
 
-    rray_split_fill(x, out_elt, x_axis_loc * x_axis_stride, &plan);
+    const r_ssize x_start = x_axis_loc * x_axis_stride;
+    rray_split_fill(x, out_elt, x_start, &plan);
 
     if (x_axis_names != r_null) {
       r_obj* out_elt_names = KEEP(rray_split_elt_names(
