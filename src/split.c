@@ -167,24 +167,22 @@ static void check_split_dimensions(
         axis_dimension
       );
     }
+  } else {
+    r_ssize total = 0;
 
-    return;
-  }
+    for (r_ssize i = 0; i < size; ++i) {
+      total += v_dimensions[i];
+    }
 
-  r_ssize total = 0;
-
-  for (r_ssize i = 0; i < size; ++i) {
-    total += v_dimensions[i];
-  }
-
-  if (total != axis_dimension) {
-    r_abort_lazy_call(
-      error_call,
-      "%s must sum to the `axis` dimension of %d, not %" R_PRI_SSIZE ".",
-      rray_arg_format(arg),
-      axis_dimension,
-      total
-    );
+    if (total != axis_dimension) {
+      r_abort_lazy_call(
+        error_call,
+        "%s must sum to the `axis` dimension of %d, not %" R_PRI_SSIZE ".",
+        rray_arg_format(arg),
+        axis_dimension,
+        total
+      );
+    }
   }
 }
 
