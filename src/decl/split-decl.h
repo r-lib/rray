@@ -9,7 +9,7 @@ static r_obj* rray_split_elt_names(
   r_obj* x_names,
   int dimensionality,
   int axis,
-  r_obj* axis_names,
+  r_obj* x_axis_names,
   int x_axis_loc,
   int dimension
 );
