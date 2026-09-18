@@ -7,7 +7,7 @@
 #'
 #' @param x An array.
 #'
-#' @param axis A single integer between 1 and the dimensionality of `x`.
+#' @param axis A single integer representing the axis to split on.
 #'
 #' @param dimensions One of:
 #'

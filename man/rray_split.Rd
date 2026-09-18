@@ -9,7 +9,7 @@ rray_split(x, axis, dimensions)
 \arguments{
 \item{x}{An array.}
 
-\item{axis}{A single integer between 1 and the dimensionality of \code{x}.}
+\item{axis}{A single integer representing the axis to split on.}
 
 \item{dimensions}{One of:
 \itemize{
