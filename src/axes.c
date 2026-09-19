@@ -72,7 +72,7 @@ r_obj* arg_as_axes_unsorted(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  check_max_dimensionality(dimensionality);
+  check_dimensionality(dimensionality);
 
   axes = KEEP(arg_as_bare_integer(axes, arg, error_call));
 
@@ -135,7 +135,7 @@ r_obj* arg_as_axes_permutation(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  check_max_dimensionality(dimensionality);
+  check_dimensionality(dimensionality);
 
   axes = KEEP(arg_as_bare_integer(axes, arg, error_call));
 

@@ -48,7 +48,7 @@ r_obj* rray_combine(
   r_obj* const* v_xs = r_list_cbegin(xs);
 
   const int out_dimensionality = list_max_dimensionality(xs, arg, error_call);
-  check_max_dimensionality(out_dimensionality);
+  check_dimensionality(out_dimensionality);
 
   check_axis(axis, out_dimensionality, rray_args.dot_axis, error_call);
 

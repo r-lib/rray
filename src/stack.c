@@ -43,7 +43,7 @@ r_obj* rray_stack(
 
   const int dimensionality =
     int_add_checked(rray_dimensionality_from_dimensions(dimensions), 1);
-  check_max_dimensionality(dimensionality);
+  check_dimensionality(dimensionality);
 
   check_axis(axis, dimensionality, rray_args.dot_axis, error_call);
 

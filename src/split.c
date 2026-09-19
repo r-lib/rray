@@ -33,7 +33,7 @@ r_obj* rray_split(
   r_obj* x_dimensions = KEEP(rray_dimensions(x, arg, error_call));
   const int* v_x_dimensions = r_int_cbegin(x_dimensions);
   const int dimensionality = rray_dimensionality_from_dimensions(x_dimensions);
-  check_max_dimensionality(dimensionality);
+  check_dimensionality(dimensionality);
 
   check_axis(axis, dimensionality, rray_args.axis, error_call);
   const int axis_dimension = v_x_dimensions[axis - 1];

@@ -23,7 +23,7 @@ static inline void rray_point_iterator_init(
   const int* v_point_dimensions,
   int point_dimensionality
 ) {
-  check_max_dimensionality(point_dimensionality);
+  check_dimensionality(point_dimensionality);
 
   it->index = 0;
   it->size = size;

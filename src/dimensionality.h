@@ -27,6 +27,6 @@ int list_max_dimensionality(
   struct r_lazy error_call
 );
 
-void check_max_dimensionality(int dimensionality);
+void check_dimensionality(int dimensionality);
 
 #endif

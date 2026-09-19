@@ -180,7 +180,7 @@ r_obj* rray_dimensions_common_opts(
     const int* v_x_dimensions = r_int_cbegin(x_dimensions);
     const int x_dimensionality =
       rray_dimensionality_from_dimensions(x_dimensions);
-    check_max_dimensionality(x_dimensionality);
+    check_dimensionality(x_dimensionality);
 
     // Update `v_out_dimensions` and `out_dimensionality` in place
     // with common dimensions
@@ -269,7 +269,7 @@ r_obj* rray_dimensions2(
   const int dimensionality =
     (x_dimensionality > y_dimensionality) ? x_dimensionality : y_dimensionality;
 
-  check_max_dimensionality(dimensionality);
+  check_dimensionality(dimensionality);
 
   r_obj* out = KEEP(r_alloc_integer(dimensionality));
   int* v_out = r_int_begin(out);
