@@ -178,6 +178,14 @@
 ---
 
     Code
+      rray_rep_each(x, times = max, axis = 1)
+    Condition
+      Error in `rray_rep_each()`:
+      ! The repeated dimension along `axis` is too large.
+
+---
+
+    Code
       rray_rep_each(x, times = c(max, max), axis = 1)
     Condition
       Error in `rray_rep_each()`:

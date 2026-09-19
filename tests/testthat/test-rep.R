@@ -386,6 +386,7 @@ test_that("`times` is validated", {
 test_that("errors if the repeated dimension is too large", {
   x <- array(1:2, 2)
   max <- .Machine$integer.max
+  expect_snapshot(rray_rep_each(x, times = max, axis = 1), error = TRUE)
   expect_snapshot(rray_rep_each(x, times = c(max, max), axis = 1), error = TRUE)
 })
 
