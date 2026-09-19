@@ -45,7 +45,6 @@ r_obj* rray_stack(
   r_obj* out = KEEP(rray_combine(xs, axis, ptype, arg, ptype_arg, error_call));
 
   r_obj* names = KEEP(r_names(xs));
-
   if (names != r_null) {
     out = rray_set_axis_names(out, axis, names, arg, error_call);
   }
