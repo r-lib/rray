@@ -4,7 +4,7 @@
 \alias{rray-rep}
 \alias{rray_rep}
 \alias{rray_rep_each}
-\title{Repeat an array along an axis}
+\title{Repeat an array}
 \usage{
 rray_rep(x, ..., times, axis)
 

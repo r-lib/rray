@@ -1,4 +1,4 @@
-#' Repeat an array along an axis
+#' Repeat an array
 #'
 #' @description
 #' - `rray_rep()` repeats the whole `axis` of `x`, `times` times. The dimension
