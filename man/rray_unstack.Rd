@@ -20,7 +20,7 @@ been removed.
 \code{axis} is removed from each of them, so each array has one fewer dimension
 than \code{x}.
 
-Using \code{rray_stack()} along the same \code{axis} reconstructs \code{x}.
+Using \code{\link[=rray_stack]{rray_stack()}} along the same \code{axis} reconstructs \code{x}.
 }
 \details{
 Names along \code{axis} become the names of the returned list. Names on the

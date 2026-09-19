@@ -5,7 +5,7 @@
 #' `axis` is removed from each of them, so each array has one fewer dimension
 #' than `x`.
 #'
-#' Using `rray_stack()` along the same `axis` reconstructs `x`.
+#' Using [rray_stack()] along the same `axis` reconstructs `x`.
 #'
 #' @details
 #' Names along `axis` become the names of the returned list. Names on the
