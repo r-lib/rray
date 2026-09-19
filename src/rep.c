@@ -98,19 +98,19 @@ static r_obj* rray_rep_impl(
     block_size *= v_dimensions[i];
   }
 
+  if (!each) {
+    block_size *= axis_dimension;
+  }
+
   r_ssize n_groups = 1;
   for (int i = axis; i < dimensionality; ++i) {
     n_groups *= v_dimensions[i];
   }
 
-  r_ssize n_blocks_per_group = axis_dimension;
-
-  if (!each) {
-    block_size *= axis_dimension;
-    n_blocks_per_group = 1;
-  }
+  const r_ssize n_blocks_per_group = each ? axis_dimension : 1;
 
   if (times_size == 1) {
+    // Groups flatten away with uniform `times`
     const int times = v_times[0];
     const r_ssize n_blocks = n_groups * n_blocks_per_group;
     rray_rep_fill_uniform(x, out, block_size, n_blocks, times);
@@ -268,9 +268,9 @@ static void rray_rep_fill_uniform(
   for (r_ssize block = 0; block < n_blocks; ++block) {                         \
     const CTYPE* v_x_block = v_x + block * block_size;                         \
                                                                                \
-    for (int repeat = 0; repeat < times; ++repeat) {                           \
-      for (r_ssize element = 0; element < block_size; ++element) {             \
-        v_out[out_i] = v_x_block[element];                                     \
+    for (int time = 0; time < times; ++time) {                                 \
+      for (r_ssize i = 0; i < block_size; ++i) {                               \
+        v_out[out_i] = v_x_block[i];                                           \
         ++out_i;                                                               \
       }                                                                        \
     }                                                                          \
@@ -284,9 +284,9 @@ static void rray_rep_fill_uniform(
   for (r_ssize block = 0; block < n_blocks; ++block) {                         \
     r_obj* const* v_x_block = v_x + block * block_size;                        \
                                                                                \
-    for (int repeat = 0; repeat < times; ++repeat) {                           \
-      for (r_ssize element = 0; element < block_size; ++element) {             \
-        POKE(out, out_i, v_x_block[element]);                                  \
+    for (int time = 0; time < times; ++time) {                                 \
+      for (r_ssize i = 0; i < block_size; ++i) {                               \
+        POKE(out, out_i, v_x_block[i]);                                        \
         ++out_i;                                                               \
       }                                                                        \
     }                                                                          \
@@ -456,14 +456,15 @@ static void rray_rep_fill_varying(
   r_ssize out_i = 0;                                                           \
                                                                                \
   for (r_ssize group = 0; group < n_groups; ++group) {                         \
+    const r_ssize n_blocks_so_far = group * n_blocks_per_group;                \
+                                                                               \
     for (r_ssize block = 0; block < n_blocks_per_group; ++block) {             \
-      const CTYPE* v_x_block =                                                 \
-        v_x + (group * n_blocks_per_group + block) * block_size;               \
+      const CTYPE* v_x_block = v_x + (n_blocks_so_far + block) * block_size;   \
       const int times = v_times[block];                                        \
                                                                                \
-      for (int repeat = 0; repeat < times; ++repeat) {                         \
-        for (r_ssize element = 0; element < block_size; ++element) {           \
-          v_out[out_i] = v_x_block[element];                                   \
+      for (int time = 0; time < times; ++time) {                               \
+        for (r_ssize i = 0; i < block_size; ++i) {                             \
+          v_out[out_i] = v_x_block[i];                                         \
           ++out_i;                                                             \
         }                                                                      \
       }                                                                        \
@@ -476,14 +477,15 @@ static void rray_rep_fill_varying(
   r_ssize out_i = 0;                                                           \
                                                                                \
   for (r_ssize group = 0; group < n_groups; ++group) {                         \
+    const r_ssize n_blocks_so_far = group * n_blocks_per_group;                \
+                                                                               \
     for (r_ssize block = 0; block < n_blocks_per_group; ++block) {             \
-      r_obj* const* v_x_block =                                                \
-        v_x + (group * n_blocks_per_group + block) * block_size;               \
+      r_obj* const* v_x_block = v_x + (n_blocks_so_far + block) * block_size;  \
       const int times = v_times[block];                                        \
                                                                                \
-      for (int repeat = 0; repeat < times; ++repeat) {                         \
-        for (r_ssize element = 0; element < block_size; ++element) {           \
-          POKE(out, out_i, v_x_block[element]);                                \
+      for (int time = 0; time < times; ++time) {                               \
+        for (r_ssize i = 0; i < block_size; ++i) {                             \
+          POKE(out, out_i, v_x_block[i]);                                      \
           ++out_i;                                                             \
         }                                                                      \
       }                                                                        \
