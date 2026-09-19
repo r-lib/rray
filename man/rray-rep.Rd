@@ -47,7 +47,7 @@ duplicate names. Every other axis keeps its names untouched.
 \examples{
 x <- array(1:6, c(3, 2))
 
-# The whole axis, twice
+# All rows in bulk, twice
 rray_rep(x, times = 2, axis = 1)
 
 # Each row, twice
