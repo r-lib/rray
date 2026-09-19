@@ -7,7 +7,7 @@
 rray_unstack(x, axis)
 }
 \arguments{
-\item{x}{An array with a dimensionality of at least 2.}
+\item{x}{An array.}
 
 \item{axis}{A single integer representing the axis to unstack along.}
 }

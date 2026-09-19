@@ -11,7 +11,7 @@
 #' Names along `axis` become the names of the returned list. Names on the
 #' surviving axes are carried over to their new locations.
 #'
-#' @param x An array with a dimensionality of at least 2.
+#' @param x An array.
 #'
 #' @param axis A single integer representing the axis to unstack along.
 #'
