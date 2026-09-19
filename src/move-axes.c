@@ -22,7 +22,7 @@ r_obj* rray_move_axes(
   struct r_lazy error_call
 ) {
   const int dimensionality = rray_dimensionality(x, arg, error_call);
-  check_max_dimensionality(dimensionality);
+  check_dimensionality(dimensionality);
 
   from = KEEP(
     arg_as_axes_unsorted(from, dimensionality, rray_args.from, error_call)

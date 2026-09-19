@@ -46,7 +46,7 @@ r_obj* rray_expand_dimensionality(
     );
   }
 
-  check_max_dimensionality(dimensionality);
+  check_dimensionality(dimensionality);
 
   r_obj* out_dimensions = KEEP(r_alloc_integer(dimensionality));
   int* v_out_dimensions = r_int_begin(out_dimensions);
@@ -106,7 +106,14 @@ int list_max_dimensionality(
   return out;
 }
 
-void check_max_dimensionality(int dimensionality) {
+void check_dimensionality(int dimensionality) {
+  if (dimensionality < 1) {
+    r_stop_internal(
+      "`dimensionality` (%d) must be at least 1.",
+      dimensionality
+    );
+  }
+
   if (dimensionality > RRAY_MAX_DIMENSIONALITY) {
     r_abort(
       "rray can't support arrays with a dimensionality greater than %d. "

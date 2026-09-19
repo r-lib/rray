@@ -78,7 +78,7 @@ r_obj* rray_reduce_nested(
   const int* v_x_dimensions = r_int_cbegin(x_dimensions);
 
   const int dimensionality = rray_dimensionality_from_dimensions(x_dimensions);
-  check_max_dimensionality(dimensionality);
+  check_dimensionality(dimensionality);
 
   r_ssize v_x_strides[RRAY_MAX_DIMENSIONALITY];
   rray_fill_strides_from_dimensions(

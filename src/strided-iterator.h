@@ -162,7 +162,7 @@ static inline struct rray_strided_iterator_plan rray_strided_iterator_plan(
   int dimensionality,
   const r_ssize* v_strides
 ) {
-  check_max_dimensionality(dimensionality);
+  check_dimensionality(dimensionality);
 
   struct rray_strided_iterator_plan plan;
 
@@ -193,7 +193,7 @@ static inline struct rray_strided_iterator_plan rray_broadcast_iterator_plan(
   const int* v_to_dimensions,
   int to_dimensionality
 ) {
-  check_max_dimensionality(to_dimensionality);
+  check_dimensionality(to_dimensionality);
 
   rray__check_broadcast_dimensions(
     v_from_dimensions,
@@ -273,7 +273,7 @@ static inline struct rray_strided_iterator2_plan rray_strided_iterator2_plan(
   const r_ssize* v_strides1,
   const r_ssize* v_strides2
 ) {
-  check_max_dimensionality(dimensionality);
+  check_dimensionality(dimensionality);
 
   struct rray_strided_iterator2_plan plan;
 
@@ -305,7 +305,7 @@ static inline struct rray_strided_iterator2_plan rray_broadcast_iterator2_plan(
   const int* v_to_dimensions,
   int to_dimensionality
 ) {
-  check_max_dimensionality(to_dimensionality);
+  check_dimensionality(to_dimensionality);
 
   rray__check_broadcast_dimensions(
     v_from1_dimensions,
