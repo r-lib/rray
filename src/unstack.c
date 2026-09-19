@@ -47,8 +47,11 @@ r_obj* rray_unstack(
     r_list_poke(out, i, rray_remove_axes(elt, axes, arg, error_call));
   }
 
-  r_attrib_poke_names(out, rray_axis_names(x, axis, arg, error_call));
+  r_obj* names = KEEP(rray_axis_names(x, axis, arg, error_call));
+  if (names != r_null) {
+    r_attrib_poke_names(out, names);
+  }
 
-  FREE(4);
+  FREE(5);
   return out;
 }
