@@ -52,5 +52,5 @@ rray_dimensions(rray_stack(a, b, .axis = 1))
 rray_stack(first = 1:2, second = 3:4, .axis = 2)
 }
 \seealso{
-\code{\link[=rray_combine]{rray_combine()}}
+\code{\link[=rray_unstack]{rray_unstack()}}, \code{\link[=rray_combine]{rray_combine()}}
 }

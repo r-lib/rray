@@ -23,7 +23,7 @@
 #' - Along all other axes, the common dimensions of the inputs taken via
 #'   broadcasting.
 #'
-#' @seealso [rray_combine()]
+#' @seealso [rray_unstack()], [rray_combine()]
 #'
 #' @export
 #' @examples
