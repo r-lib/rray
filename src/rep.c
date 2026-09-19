@@ -68,16 +68,16 @@ static r_obj* rray_rep_impl(
   check_dimensionality(dimensionality);
 
   check_axis(axis, dimensionality, rray_args.axis, error_call);
-  const int dimension = v_dimensions[axis - 1];
+  const int axis_dimension = v_dimensions[axis - 1];
 
   times = KEEP(
-    arg_as_times(times, each ? dimension : 1, rray_args.times, error_call)
+    arg_as_times(times, each ? axis_dimension : 1, rray_args.times, error_call)
   );
   const int* v_times = r_int_cbegin(times);
   const r_ssize times_size = r_length(times);
 
   const int out_dimension =
-    rray_rep_dimension(dimension, v_times, times_size, error_call);
+    rray_rep_dimension(axis_dimension, v_times, times_size, error_call);
 
   r_obj* out_dimensions = KEEP(r_alloc_integer(dimensionality));
   int* v_out_dimensions = r_int_begin(out_dimensions);
@@ -93,26 +93,36 @@ static r_obj* rray_rep_impl(
   r_obj* out = KEEP(r_alloc_vector(r_typeof(x), out_size));
   r_attrib_poke_dim(out, out_dimensions);
 
-  r_ssize inner = 1;
+  r_ssize block_size = 1;
   for (int i = 0; i < axis - 1; ++i) {
-    inner *= v_dimensions[i];
+    block_size *= v_dimensions[i];
   }
 
-  r_ssize outer = 1;
+  r_ssize n_groups = 1;
   for (int i = axis; i < dimensionality; ++i) {
-    outer *= v_dimensions[i];
+    n_groups *= v_dimensions[i];
+  }
+
+  r_ssize n_blocks_per_group = axis_dimension;
+
+  if (!each) {
+    block_size *= axis_dimension;
+    n_blocks_per_group = 1;
   }
 
   if (times_size == 1) {
     const int times = v_times[0];
-
-    if (each) {
-      rray_rep_fill(x, out, inner, outer * dimension, times);
-    } else {
-      rray_rep_fill(x, out, inner * dimension, outer, times);
-    }
+    const r_ssize n_blocks = n_groups * n_blocks_per_group;
+    rray_rep_fill_uniform(x, out, block_size, n_blocks, times);
   } else {
-    rray_rep_fill_ragged(x, out, inner, dimension, outer, v_times);
+    rray_rep_fill_varying(
+      x,
+      out,
+      block_size,
+      n_blocks_per_group,
+      n_groups,
+      v_times
+    );
   }
 
   r_obj* out_names = KEEP(rray_rep_names(
@@ -175,7 +185,7 @@ static r_no_return void stop_times_size(
 }
 
 static int rray_rep_dimension(
-  int dimension,
+  int axis_dimension,
   const int* v_times,
   r_ssize times_size,
   struct r_lazy error_call
@@ -185,16 +195,16 @@ static int rray_rep_dimension(
     // rep / rep-each.
     const int times = v_times[0];
 
-    if (times != 0 && dimension > INT_MAX / times) {
+    if (times != 0 && axis_dimension > INT_MAX / times) {
       stop_dimension_too_large(error_call);
     }
 
-    return dimension * times;
+    return axis_dimension * times;
   } else {
     // Vector `times`. Must be rep-each. Sum them to get the output dimension.
     int out = 0;
 
-    for (int i = 0; i < dimension; ++i) {
+    for (int i = 0; i < axis_dimension; ++i) {
       const int times = v_times[i];
 
       if (out > INT_MAX - times) {
@@ -215,299 +225,350 @@ static r_no_return void stop_dimension_too_large(struct r_lazy error_call) {
   );
 }
 
-static void rray_rep_fill(
+static void rray_rep_fill_uniform(
   r_obj* x,
   r_obj* out,
-  r_ssize block,
+  r_ssize block_size,
   r_ssize n_blocks,
   int times
 ) {
   switch (r_typeof(x)) {
   case R_TYPE_logical:
-    rray_rep_fill_lgl(x, out, block, n_blocks, times);
+    rray_rep_fill_uniform_lgl(x, out, block_size, n_blocks, times);
     break;
   case R_TYPE_integer:
-    rray_rep_fill_int(x, out, block, n_blocks, times);
+    rray_rep_fill_uniform_int(x, out, block_size, n_blocks, times);
     break;
   case R_TYPE_double:
-    rray_rep_fill_dbl(x, out, block, n_blocks, times);
+    rray_rep_fill_uniform_dbl(x, out, block_size, n_blocks, times);
     break;
   case R_TYPE_complex:
-    rray_rep_fill_cpl(x, out, block, n_blocks, times);
+    rray_rep_fill_uniform_cpl(x, out, block_size, n_blocks, times);
     break;
   case R_TYPE_raw:
-    rray_rep_fill_raw(x, out, block, n_blocks, times);
+    rray_rep_fill_uniform_raw(x, out, block_size, n_blocks, times);
     break;
   case R_TYPE_character:
-    rray_rep_fill_chr(x, out, block, n_blocks, times);
+    rray_rep_fill_uniform_chr(x, out, block_size, n_blocks, times);
     break;
   case R_TYPE_list:
-    rray_rep_fill_list(x, out, block, n_blocks, times);
+    rray_rep_fill_uniform_list(x, out, block_size, n_blocks, times);
     break;
   default:
     r_stop_unreachable();
   }
 }
 
-#define RRAY_REP_FILL_ATOMIC(CTYPE, CONST_DEREF, DEREF)                        \
+#define RRAY_REP_FILL_UNIFORM_ATOMIC(CTYPE, CONST_DEREF, DEREF)                \
   const CTYPE* v_x = CONST_DEREF(x);                                           \
   CTYPE* v_out = DEREF(out);                                                   \
                                                                                \
   r_ssize out_i = 0;                                                           \
                                                                                \
-  for (r_ssize i = 0; i < n_blocks; ++i) {                                     \
-    const CTYPE* v_block = v_x + i * block;                                    \
+  for (r_ssize block = 0; block < n_blocks; ++block) {                         \
+    const CTYPE* v_x_block = v_x + block * block_size;                         \
                                                                                \
-    for (int j = 0; j < times; ++j) {                                          \
-      for (r_ssize k = 0; k < block; ++k) {                                    \
-        v_out[out_i] = v_block[k];                                             \
+    for (int repeat = 0; repeat < times; ++repeat) {                           \
+      for (r_ssize element = 0; element < block_size; ++element) {             \
+        v_out[out_i] = v_x_block[element];                                     \
         ++out_i;                                                               \
       }                                                                        \
     }                                                                          \
   }
 
-#define RRAY_REP_FILL_BARRIER(CONST_DEREF, POKE)                               \
+#define RRAY_REP_FILL_UNIFORM_BARRIER(CONST_DEREF, POKE)                       \
   r_obj* const* v_x = CONST_DEREF(x);                                          \
                                                                                \
   r_ssize out_i = 0;                                                           \
                                                                                \
-  for (r_ssize i = 0; i < n_blocks; ++i) {                                     \
-    r_obj* const* v_block = v_x + i * block;                                   \
+  for (r_ssize block = 0; block < n_blocks; ++block) {                         \
+    r_obj* const* v_x_block = v_x + block * block_size;                        \
                                                                                \
-    for (int j = 0; j < times; ++j) {                                          \
-      for (r_ssize k = 0; k < block; ++k) {                                    \
-        POKE(out, out_i, v_block[k]);                                          \
+    for (int repeat = 0; repeat < times; ++repeat) {                           \
+      for (r_ssize element = 0; element < block_size; ++element) {             \
+        POKE(out, out_i, v_x_block[element]);                                  \
         ++out_i;                                                               \
       }                                                                        \
     }                                                                          \
   }
 
-static void rray_rep_fill_lgl(
+static void rray_rep_fill_uniform_lgl(
   r_obj* x,
   r_obj* out,
-  r_ssize block,
+  r_ssize block_size,
   r_ssize n_blocks,
   int times
 ) {
-  RRAY_REP_FILL_ATOMIC(int, r_lgl_cbegin, r_lgl_begin);
+  RRAY_REP_FILL_UNIFORM_ATOMIC(int, r_lgl_cbegin, r_lgl_begin);
 }
 
-static void rray_rep_fill_int(
+static void rray_rep_fill_uniform_int(
   r_obj* x,
   r_obj* out,
-  r_ssize block,
+  r_ssize block_size,
   r_ssize n_blocks,
   int times
 ) {
-  RRAY_REP_FILL_ATOMIC(int, r_int_cbegin, r_int_begin);
+  RRAY_REP_FILL_UNIFORM_ATOMIC(int, r_int_cbegin, r_int_begin);
 }
 
-static void rray_rep_fill_dbl(
+static void rray_rep_fill_uniform_dbl(
   r_obj* x,
   r_obj* out,
-  r_ssize block,
+  r_ssize block_size,
   r_ssize n_blocks,
   int times
 ) {
-  RRAY_REP_FILL_ATOMIC(double, r_dbl_cbegin, r_dbl_begin);
+  RRAY_REP_FILL_UNIFORM_ATOMIC(double, r_dbl_cbegin, r_dbl_begin);
 }
 
-static void rray_rep_fill_cpl(
+static void rray_rep_fill_uniform_cpl(
   r_obj* x,
   r_obj* out,
-  r_ssize block,
+  r_ssize block_size,
   r_ssize n_blocks,
   int times
 ) {
-  RRAY_REP_FILL_ATOMIC(r_complex, r_cpl_cbegin, r_cpl_begin);
+  RRAY_REP_FILL_UNIFORM_ATOMIC(r_complex, r_cpl_cbegin, r_cpl_begin);
 }
 
-static void rray_rep_fill_raw(
+static void rray_rep_fill_uniform_raw(
   r_obj* x,
   r_obj* out,
-  r_ssize block,
+  r_ssize block_size,
   r_ssize n_blocks,
   int times
 ) {
-  RRAY_REP_FILL_ATOMIC(Rbyte, r_raw_cbegin, r_raw_begin);
+  RRAY_REP_FILL_UNIFORM_ATOMIC(Rbyte, r_raw_cbegin, r_raw_begin);
 }
 
-static void rray_rep_fill_chr(
+static void rray_rep_fill_uniform_chr(
   r_obj* x,
   r_obj* out,
-  r_ssize block,
+  r_ssize block_size,
   r_ssize n_blocks,
   int times
 ) {
-  RRAY_REP_FILL_BARRIER(r_chr_cbegin, r_chr_poke);
+  RRAY_REP_FILL_UNIFORM_BARRIER(r_chr_cbegin, r_chr_poke);
 }
 
-static void rray_rep_fill_list(
+static void rray_rep_fill_uniform_list(
   r_obj* x,
   r_obj* out,
-  r_ssize block,
+  r_ssize block_size,
   r_ssize n_blocks,
   int times
 ) {
-  RRAY_REP_FILL_BARRIER(r_list_cbegin, r_list_poke);
+  RRAY_REP_FILL_UNIFORM_BARRIER(r_list_cbegin, r_list_poke);
 }
 
-#undef RRAY_REP_FILL_ATOMIC
-#undef RRAY_REP_FILL_BARRIER
+#undef RRAY_REP_FILL_UNIFORM_ATOMIC
+#undef RRAY_REP_FILL_UNIFORM_BARRIER
 
-static void rray_rep_fill_ragged(
+static void rray_rep_fill_varying(
   r_obj* x,
   r_obj* out,
-  r_ssize inner,
-  r_ssize dimension,
-  r_ssize outer,
+  r_ssize block_size,
+  r_ssize n_blocks_per_group,
+  r_ssize n_groups,
   const int* v_times
 ) {
   switch (r_typeof(x)) {
   case R_TYPE_logical:
-    rray_rep_fill_ragged_lgl(x, out, inner, dimension, outer, v_times);
+    rray_rep_fill_varying_lgl(
+      x,
+      out,
+      block_size,
+      n_blocks_per_group,
+      n_groups,
+      v_times
+    );
     break;
   case R_TYPE_integer:
-    rray_rep_fill_ragged_int(x, out, inner, dimension, outer, v_times);
+    rray_rep_fill_varying_int(
+      x,
+      out,
+      block_size,
+      n_blocks_per_group,
+      n_groups,
+      v_times
+    );
     break;
   case R_TYPE_double:
-    rray_rep_fill_ragged_dbl(x, out, inner, dimension, outer, v_times);
+    rray_rep_fill_varying_dbl(
+      x,
+      out,
+      block_size,
+      n_blocks_per_group,
+      n_groups,
+      v_times
+    );
     break;
   case R_TYPE_complex:
-    rray_rep_fill_ragged_cpl(x, out, inner, dimension, outer, v_times);
+    rray_rep_fill_varying_cpl(
+      x,
+      out,
+      block_size,
+      n_blocks_per_group,
+      n_groups,
+      v_times
+    );
     break;
   case R_TYPE_raw:
-    rray_rep_fill_ragged_raw(x, out, inner, dimension, outer, v_times);
+    rray_rep_fill_varying_raw(
+      x,
+      out,
+      block_size,
+      n_blocks_per_group,
+      n_groups,
+      v_times
+    );
     break;
   case R_TYPE_character:
-    rray_rep_fill_ragged_chr(x, out, inner, dimension, outer, v_times);
+    rray_rep_fill_varying_chr(
+      x,
+      out,
+      block_size,
+      n_blocks_per_group,
+      n_groups,
+      v_times
+    );
     break;
   case R_TYPE_list:
-    rray_rep_fill_ragged_list(x, out, inner, dimension, outer, v_times);
+    rray_rep_fill_varying_list(
+      x,
+      out,
+      block_size,
+      n_blocks_per_group,
+      n_groups,
+      v_times
+    );
     break;
   default:
     r_stop_unreachable();
   }
 }
 
-#define RRAY_REP_FILL_RAGGED_ATOMIC(CTYPE, CONST_DEREF, DEREF)                 \
+#define RRAY_REP_FILL_VARYING_ATOMIC(CTYPE, CONST_DEREF, DEREF)                \
   const CTYPE* v_x = CONST_DEREF(x);                                           \
   CTYPE* v_out = DEREF(out);                                                   \
                                                                                \
   r_ssize out_i = 0;                                                           \
                                                                                \
-  for (r_ssize o = 0; o < outer; ++o) {                                        \
-    for (r_ssize d = 0; d < dimension; ++d) {                                  \
-      const CTYPE* v_slice = v_x + (o * dimension + d) * inner;                \
-      const int times = v_times[d];                                            \
+  for (r_ssize group = 0; group < n_groups; ++group) {                         \
+    for (r_ssize block = 0; block < n_blocks_per_group; ++block) {             \
+      const CTYPE* v_x_block =                                                 \
+        v_x + (group * n_blocks_per_group + block) * block_size;               \
+      const int times = v_times[block];                                        \
                                                                                \
-      for (int j = 0; j < times; ++j) {                                        \
-        for (r_ssize k = 0; k < inner; ++k) {                                  \
-          v_out[out_i] = v_slice[k];                                           \
+      for (int repeat = 0; repeat < times; ++repeat) {                         \
+        for (r_ssize element = 0; element < block_size; ++element) {           \
+          v_out[out_i] = v_x_block[element];                                   \
           ++out_i;                                                             \
         }                                                                      \
       }                                                                        \
     }                                                                          \
   }
 
-#define RRAY_REP_FILL_RAGGED_BARRIER(CONST_DEREF, POKE)                        \
+#define RRAY_REP_FILL_VARYING_BARRIER(CONST_DEREF, POKE)                       \
   r_obj* const* v_x = CONST_DEREF(x);                                          \
                                                                                \
   r_ssize out_i = 0;                                                           \
                                                                                \
-  for (r_ssize o = 0; o < outer; ++o) {                                        \
-    for (r_ssize d = 0; d < dimension; ++d) {                                  \
-      r_obj* const* v_slice = v_x + (o * dimension + d) * inner;               \
-      const int times = v_times[d];                                            \
+  for (r_ssize group = 0; group < n_groups; ++group) {                         \
+    for (r_ssize block = 0; block < n_blocks_per_group; ++block) {             \
+      r_obj* const* v_x_block =                                                \
+        v_x + (group * n_blocks_per_group + block) * block_size;               \
+      const int times = v_times[block];                                        \
                                                                                \
-      for (int j = 0; j < times; ++j) {                                        \
-        for (r_ssize k = 0; k < inner; ++k) {                                  \
-          POKE(out, out_i, v_slice[k]);                                        \
+      for (int repeat = 0; repeat < times; ++repeat) {                         \
+        for (r_ssize element = 0; element < block_size; ++element) {           \
+          POKE(out, out_i, v_x_block[element]);                                \
           ++out_i;                                                             \
         }                                                                      \
       }                                                                        \
     }                                                                          \
   }
 
-static void rray_rep_fill_ragged_lgl(
+static void rray_rep_fill_varying_lgl(
   r_obj* x,
   r_obj* out,
-  r_ssize inner,
-  r_ssize dimension,
-  r_ssize outer,
+  r_ssize block_size,
+  r_ssize n_blocks_per_group,
+  r_ssize n_groups,
   const int* v_times
 ) {
-  RRAY_REP_FILL_RAGGED_ATOMIC(int, r_lgl_cbegin, r_lgl_begin);
+  RRAY_REP_FILL_VARYING_ATOMIC(int, r_lgl_cbegin, r_lgl_begin);
 }
 
-static void rray_rep_fill_ragged_int(
+static void rray_rep_fill_varying_int(
   r_obj* x,
   r_obj* out,
-  r_ssize inner,
-  r_ssize dimension,
-  r_ssize outer,
+  r_ssize block_size,
+  r_ssize n_blocks_per_group,
+  r_ssize n_groups,
   const int* v_times
 ) {
-  RRAY_REP_FILL_RAGGED_ATOMIC(int, r_int_cbegin, r_int_begin);
+  RRAY_REP_FILL_VARYING_ATOMIC(int, r_int_cbegin, r_int_begin);
 }
 
-static void rray_rep_fill_ragged_dbl(
+static void rray_rep_fill_varying_dbl(
   r_obj* x,
   r_obj* out,
-  r_ssize inner,
-  r_ssize dimension,
-  r_ssize outer,
+  r_ssize block_size,
+  r_ssize n_blocks_per_group,
+  r_ssize n_groups,
   const int* v_times
 ) {
-  RRAY_REP_FILL_RAGGED_ATOMIC(double, r_dbl_cbegin, r_dbl_begin);
+  RRAY_REP_FILL_VARYING_ATOMIC(double, r_dbl_cbegin, r_dbl_begin);
 }
 
-static void rray_rep_fill_ragged_cpl(
+static void rray_rep_fill_varying_cpl(
   r_obj* x,
   r_obj* out,
-  r_ssize inner,
-  r_ssize dimension,
-  r_ssize outer,
+  r_ssize block_size,
+  r_ssize n_blocks_per_group,
+  r_ssize n_groups,
   const int* v_times
 ) {
-  RRAY_REP_FILL_RAGGED_ATOMIC(r_complex, r_cpl_cbegin, r_cpl_begin);
+  RRAY_REP_FILL_VARYING_ATOMIC(r_complex, r_cpl_cbegin, r_cpl_begin);
 }
 
-static void rray_rep_fill_ragged_raw(
+static void rray_rep_fill_varying_raw(
   r_obj* x,
   r_obj* out,
-  r_ssize inner,
-  r_ssize dimension,
-  r_ssize outer,
+  r_ssize block_size,
+  r_ssize n_blocks_per_group,
+  r_ssize n_groups,
   const int* v_times
 ) {
-  RRAY_REP_FILL_RAGGED_ATOMIC(Rbyte, r_raw_cbegin, r_raw_begin);
+  RRAY_REP_FILL_VARYING_ATOMIC(Rbyte, r_raw_cbegin, r_raw_begin);
 }
 
-static void rray_rep_fill_ragged_chr(
+static void rray_rep_fill_varying_chr(
   r_obj* x,
   r_obj* out,
-  r_ssize inner,
-  r_ssize dimension,
-  r_ssize outer,
+  r_ssize block_size,
+  r_ssize n_blocks_per_group,
+  r_ssize n_groups,
   const int* v_times
 ) {
-  RRAY_REP_FILL_RAGGED_BARRIER(r_chr_cbegin, r_chr_poke);
+  RRAY_REP_FILL_VARYING_BARRIER(r_chr_cbegin, r_chr_poke);
 }
 
-static void rray_rep_fill_ragged_list(
+static void rray_rep_fill_varying_list(
   r_obj* x,
   r_obj* out,
-  r_ssize inner,
-  r_ssize dimension,
-  r_ssize outer,
+  r_ssize block_size,
+  r_ssize n_blocks_per_group,
+  r_ssize n_groups,
   const int* v_times
 ) {
-  RRAY_REP_FILL_RAGGED_BARRIER(r_list_cbegin, r_list_poke);
+  RRAY_REP_FILL_VARYING_BARRIER(r_list_cbegin, r_list_poke);
 }
 
-#undef RRAY_REP_FILL_RAGGED_ATOMIC
-#undef RRAY_REP_FILL_RAGGED_BARRIER
+#undef RRAY_REP_FILL_VARYING_ATOMIC
+#undef RRAY_REP_FILL_VARYING_BARRIER
 
 static r_obj* rray_rep_names(
   r_obj* names,

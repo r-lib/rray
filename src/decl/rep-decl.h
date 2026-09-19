@@ -22,7 +22,7 @@ static r_no_return void stop_times_size(
 );
 
 static int rray_rep_dimension(
-  int dimension,
+  int axis_dimension,
   const int* v_times,
   r_ssize times_size,
   struct r_lazy error_call
@@ -30,125 +30,125 @@ static int rray_rep_dimension(
 
 static r_no_return void stop_dimension_too_large(struct r_lazy error_call);
 
-static void rray_rep_fill(
+static void rray_rep_fill_uniform(
   r_obj* x,
   r_obj* out,
-  r_ssize block,
+  r_ssize block_size,
   r_ssize n_blocks,
   int times
 );
-static void rray_rep_fill_lgl(
+static void rray_rep_fill_uniform_lgl(
   r_obj* x,
   r_obj* out,
-  r_ssize block,
+  r_ssize block_size,
   r_ssize n_blocks,
   int times
 );
-static void rray_rep_fill_int(
+static void rray_rep_fill_uniform_int(
   r_obj* x,
   r_obj* out,
-  r_ssize block,
+  r_ssize block_size,
   r_ssize n_blocks,
   int times
 );
-static void rray_rep_fill_dbl(
+static void rray_rep_fill_uniform_dbl(
   r_obj* x,
   r_obj* out,
-  r_ssize block,
+  r_ssize block_size,
   r_ssize n_blocks,
   int times
 );
-static void rray_rep_fill_cpl(
+static void rray_rep_fill_uniform_cpl(
   r_obj* x,
   r_obj* out,
-  r_ssize block,
+  r_ssize block_size,
   r_ssize n_blocks,
   int times
 );
-static void rray_rep_fill_raw(
+static void rray_rep_fill_uniform_raw(
   r_obj* x,
   r_obj* out,
-  r_ssize block,
+  r_ssize block_size,
   r_ssize n_blocks,
   int times
 );
-static void rray_rep_fill_chr(
+static void rray_rep_fill_uniform_chr(
   r_obj* x,
   r_obj* out,
-  r_ssize block,
+  r_ssize block_size,
   r_ssize n_blocks,
   int times
 );
-static void rray_rep_fill_list(
+static void rray_rep_fill_uniform_list(
   r_obj* x,
   r_obj* out,
-  r_ssize block,
+  r_ssize block_size,
   r_ssize n_blocks,
   int times
 );
 
-static void rray_rep_fill_ragged(
+static void rray_rep_fill_varying(
   r_obj* x,
   r_obj* out,
-  r_ssize inner,
-  r_ssize dimension,
-  r_ssize outer,
+  r_ssize block_size,
+  r_ssize n_blocks_per_group,
+  r_ssize n_groups,
   const int* v_times
 );
-static void rray_rep_fill_ragged_lgl(
+static void rray_rep_fill_varying_lgl(
   r_obj* x,
   r_obj* out,
-  r_ssize inner,
-  r_ssize dimension,
-  r_ssize outer,
+  r_ssize block_size,
+  r_ssize n_blocks_per_group,
+  r_ssize n_groups,
   const int* v_times
 );
-static void rray_rep_fill_ragged_int(
+static void rray_rep_fill_varying_int(
   r_obj* x,
   r_obj* out,
-  r_ssize inner,
-  r_ssize dimension,
-  r_ssize outer,
+  r_ssize block_size,
+  r_ssize n_blocks_per_group,
+  r_ssize n_groups,
   const int* v_times
 );
-static void rray_rep_fill_ragged_dbl(
+static void rray_rep_fill_varying_dbl(
   r_obj* x,
   r_obj* out,
-  r_ssize inner,
-  r_ssize dimension,
-  r_ssize outer,
+  r_ssize block_size,
+  r_ssize n_blocks_per_group,
+  r_ssize n_groups,
   const int* v_times
 );
-static void rray_rep_fill_ragged_cpl(
+static void rray_rep_fill_varying_cpl(
   r_obj* x,
   r_obj* out,
-  r_ssize inner,
-  r_ssize dimension,
-  r_ssize outer,
+  r_ssize block_size,
+  r_ssize n_blocks_per_group,
+  r_ssize n_groups,
   const int* v_times
 );
-static void rray_rep_fill_ragged_raw(
+static void rray_rep_fill_varying_raw(
   r_obj* x,
   r_obj* out,
-  r_ssize inner,
-  r_ssize dimension,
-  r_ssize outer,
+  r_ssize block_size,
+  r_ssize n_blocks_per_group,
+  r_ssize n_groups,
   const int* v_times
 );
-static void rray_rep_fill_ragged_chr(
+static void rray_rep_fill_varying_chr(
   r_obj* x,
   r_obj* out,
-  r_ssize inner,
-  r_ssize dimension,
-  r_ssize outer,
+  r_ssize block_size,
+  r_ssize n_blocks_per_group,
+  r_ssize n_groups,
   const int* v_times
 );
-static void rray_rep_fill_ragged_list(
+static void rray_rep_fill_varying_list(
   r_obj* x,
   r_obj* out,
-  r_ssize inner,
-  r_ssize dimension,
-  r_ssize outer,
+  r_ssize block_size,
+  r_ssize n_blocks_per_group,
+  r_ssize n_groups,
   const int* v_times
 );
 
