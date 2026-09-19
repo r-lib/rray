@@ -105,9 +105,9 @@ static r_obj* rray_rep_impl(
   }
 
   if (each) {
-    rray_rep_copy(x, out, inner, dimension, outer, v_times, times_stride);
+    rray_rep_fill(x, out, inner, dimension, outer, v_times, times_stride);
   } else {
-    rray_rep_copy(x, out, inner * dimension, 1, outer, v_times, times_stride);
+    rray_rep_fill(x, out, inner * dimension, 1, outer, v_times, times_stride);
   }
 
   r_obj* out_names = KEEP(rray_rep_names(
@@ -210,7 +210,7 @@ static r_no_return void stop_dimension_too_large(struct r_lazy error_call) {
   );
 }
 
-static void rray_rep_copy(
+static void rray_rep_fill(
   r_obj* x,
   r_obj* out,
   r_ssize inner,
@@ -221,32 +221,32 @@ static void rray_rep_copy(
 ) {
   switch (r_typeof(x)) {
   case R_TYPE_logical:
-    rray_rep_copy_lgl(x, out, inner, middle, outer, v_times, times_stride);
+    rray_rep_fill_lgl(x, out, inner, middle, outer, v_times, times_stride);
     break;
   case R_TYPE_integer:
-    rray_rep_copy_int(x, out, inner, middle, outer, v_times, times_stride);
+    rray_rep_fill_int(x, out, inner, middle, outer, v_times, times_stride);
     break;
   case R_TYPE_double:
-    rray_rep_copy_dbl(x, out, inner, middle, outer, v_times, times_stride);
+    rray_rep_fill_dbl(x, out, inner, middle, outer, v_times, times_stride);
     break;
   case R_TYPE_complex:
-    rray_rep_copy_cpl(x, out, inner, middle, outer, v_times, times_stride);
+    rray_rep_fill_cpl(x, out, inner, middle, outer, v_times, times_stride);
     break;
   case R_TYPE_raw:
-    rray_rep_copy_raw(x, out, inner, middle, outer, v_times, times_stride);
+    rray_rep_fill_raw(x, out, inner, middle, outer, v_times, times_stride);
     break;
   case R_TYPE_character:
-    rray_rep_copy_chr(x, out, inner, middle, outer, v_times, times_stride);
+    rray_rep_fill_chr(x, out, inner, middle, outer, v_times, times_stride);
     break;
   case R_TYPE_list:
-    rray_rep_copy_list(x, out, inner, middle, outer, v_times, times_stride);
+    rray_rep_fill_list(x, out, inner, middle, outer, v_times, times_stride);
     break;
   default:
     r_stop_unreachable();
   }
 }
 
-#define RRAY_REP_COPY_ATOMIC(CTYPE, CONST_DEREF, DEREF)                        \
+#define RRAY_REP_FILL_ATOMIC(CTYPE, CONST_DEREF, DEREF)                        \
   const CTYPE* v_x = CONST_DEREF(x);                                           \
   CTYPE* v_out = DEREF(out);                                                   \
                                                                                \
@@ -264,7 +264,7 @@ static void rray_rep_copy(
     }                                                                          \
   }
 
-#define RRAY_REP_COPY_BARRIER(CONST_DEREF, POKE)                               \
+#define RRAY_REP_FILL_BARRIER(CONST_DEREF, POKE)                               \
   r_obj* const* v_x = CONST_DEREF(x);                                          \
                                                                                \
   r_ssize out_i = 0;                                                           \
@@ -283,7 +283,7 @@ static void rray_rep_copy(
     }                                                                          \
   }
 
-static void rray_rep_copy_lgl(
+static void rray_rep_fill_lgl(
   r_obj* x,
   r_obj* out,
   r_ssize inner,
@@ -292,10 +292,10 @@ static void rray_rep_copy_lgl(
   const int* v_times,
   r_ssize times_stride
 ) {
-  RRAY_REP_COPY_ATOMIC(int, r_lgl_cbegin, r_lgl_begin);
+  RRAY_REP_FILL_ATOMIC(int, r_lgl_cbegin, r_lgl_begin);
 }
 
-static void rray_rep_copy_int(
+static void rray_rep_fill_int(
   r_obj* x,
   r_obj* out,
   r_ssize inner,
@@ -304,10 +304,10 @@ static void rray_rep_copy_int(
   const int* v_times,
   r_ssize times_stride
 ) {
-  RRAY_REP_COPY_ATOMIC(int, r_int_cbegin, r_int_begin);
+  RRAY_REP_FILL_ATOMIC(int, r_int_cbegin, r_int_begin);
 }
 
-static void rray_rep_copy_dbl(
+static void rray_rep_fill_dbl(
   r_obj* x,
   r_obj* out,
   r_ssize inner,
@@ -316,10 +316,10 @@ static void rray_rep_copy_dbl(
   const int* v_times,
   r_ssize times_stride
 ) {
-  RRAY_REP_COPY_ATOMIC(double, r_dbl_cbegin, r_dbl_begin);
+  RRAY_REP_FILL_ATOMIC(double, r_dbl_cbegin, r_dbl_begin);
 }
 
-static void rray_rep_copy_cpl(
+static void rray_rep_fill_cpl(
   r_obj* x,
   r_obj* out,
   r_ssize inner,
@@ -328,10 +328,10 @@ static void rray_rep_copy_cpl(
   const int* v_times,
   r_ssize times_stride
 ) {
-  RRAY_REP_COPY_ATOMIC(r_complex, r_cpl_cbegin, r_cpl_begin);
+  RRAY_REP_FILL_ATOMIC(r_complex, r_cpl_cbegin, r_cpl_begin);
 }
 
-static void rray_rep_copy_raw(
+static void rray_rep_fill_raw(
   r_obj* x,
   r_obj* out,
   r_ssize inner,
@@ -340,10 +340,10 @@ static void rray_rep_copy_raw(
   const int* v_times,
   r_ssize times_stride
 ) {
-  RRAY_REP_COPY_ATOMIC(Rbyte, r_raw_cbegin, r_raw_begin);
+  RRAY_REP_FILL_ATOMIC(Rbyte, r_raw_cbegin, r_raw_begin);
 }
 
-static void rray_rep_copy_chr(
+static void rray_rep_fill_chr(
   r_obj* x,
   r_obj* out,
   r_ssize inner,
@@ -352,10 +352,10 @@ static void rray_rep_copy_chr(
   const int* v_times,
   r_ssize times_stride
 ) {
-  RRAY_REP_COPY_BARRIER(r_chr_cbegin, r_chr_poke);
+  RRAY_REP_FILL_BARRIER(r_chr_cbegin, r_chr_poke);
 }
 
-static void rray_rep_copy_list(
+static void rray_rep_fill_list(
   r_obj* x,
   r_obj* out,
   r_ssize inner,
@@ -364,11 +364,11 @@ static void rray_rep_copy_list(
   const int* v_times,
   r_ssize times_stride
 ) {
-  RRAY_REP_COPY_BARRIER(r_list_cbegin, r_list_poke);
+  RRAY_REP_FILL_BARRIER(r_list_cbegin, r_list_poke);
 }
 
-#undef RRAY_REP_COPY_ATOMIC
-#undef RRAY_REP_COPY_BARRIER
+#undef RRAY_REP_FILL_ATOMIC
+#undef RRAY_REP_FILL_BARRIER
 
 static r_obj* rray_rep_names(
   r_obj* names,

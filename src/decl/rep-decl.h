@@ -30,7 +30,7 @@ static int rray_rep_dimension(
 
 static r_no_return void stop_dimension_too_large(struct r_lazy error_call);
 
-static void rray_rep_copy(
+static void rray_rep_fill(
   r_obj* x,
   r_obj* out,
   r_ssize inner,
@@ -39,7 +39,7 @@ static void rray_rep_copy(
   const int* v_times,
   r_ssize times_stride
 );
-static void rray_rep_copy_lgl(
+static void rray_rep_fill_lgl(
   r_obj* x,
   r_obj* out,
   r_ssize inner,
@@ -48,7 +48,7 @@ static void rray_rep_copy_lgl(
   const int* v_times,
   r_ssize times_stride
 );
-static void rray_rep_copy_int(
+static void rray_rep_fill_int(
   r_obj* x,
   r_obj* out,
   r_ssize inner,
@@ -57,7 +57,7 @@ static void rray_rep_copy_int(
   const int* v_times,
   r_ssize times_stride
 );
-static void rray_rep_copy_dbl(
+static void rray_rep_fill_dbl(
   r_obj* x,
   r_obj* out,
   r_ssize inner,
@@ -66,7 +66,7 @@ static void rray_rep_copy_dbl(
   const int* v_times,
   r_ssize times_stride
 );
-static void rray_rep_copy_cpl(
+static void rray_rep_fill_cpl(
   r_obj* x,
   r_obj* out,
   r_ssize inner,
@@ -75,7 +75,7 @@ static void rray_rep_copy_cpl(
   const int* v_times,
   r_ssize times_stride
 );
-static void rray_rep_copy_raw(
+static void rray_rep_fill_raw(
   r_obj* x,
   r_obj* out,
   r_ssize inner,
@@ -84,7 +84,7 @@ static void rray_rep_copy_raw(
   const int* v_times,
   r_ssize times_stride
 );
-static void rray_rep_copy_chr(
+static void rray_rep_fill_chr(
   r_obj* x,
   r_obj* out,
   r_ssize inner,
@@ -93,7 +93,7 @@ static void rray_rep_copy_chr(
   const int* v_times,
   r_ssize times_stride
 );
-static void rray_rep_copy_list(
+static void rray_rep_fill_list(
   r_obj* x,
   r_obj* out,
   r_ssize inner,
