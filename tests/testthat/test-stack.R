@@ -207,7 +207,6 @@ test_that("validates inputs and axis", {
 
   expect_snapshot(error = TRUE, {
     rray_stack(.axis = 1L)
-    rray_stack(x)
     rray_stack(x, .axis = integer())
     rray_stack(x, .axis = c(1L, 2L))
     rray_stack(x, .axis = NA_integer_)

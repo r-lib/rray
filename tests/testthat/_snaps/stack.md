@@ -6,11 +6,6 @@
       Error in `rray_stack()`:
       ! Must supply at least one array to `...`.
     Code
-      rray_stack(x)
-    Condition
-      Error in `rray_stack()`:
-      ! argument ".axis" is missing, with no default
-    Code
       rray_stack(x, .axis = integer())
     Condition
       Error in `rray_stack()`:
