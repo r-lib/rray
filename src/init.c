@@ -79,6 +79,18 @@ extern r_obj* ffi_rray_split(
 );
 extern r_obj* ffi_rray_stack(r_obj* ffi_xs, r_obj* ffi_axis, r_obj* ffi_frame);
 extern r_obj* ffi_rray_unstack(r_obj* ffi_x, r_obj* ffi_axis, r_obj* ffi_frame);
+extern r_obj* ffi_rray_rep(
+  r_obj* ffi_x,
+  r_obj* ffi_times,
+  r_obj* ffi_axis,
+  r_obj* ffi_frame
+);
+extern r_obj* ffi_rray_rep_each(
+  r_obj* ffi_x,
+  r_obj* ffi_times,
+  r_obj* ffi_axis,
+  r_obj* ffi_frame
+);
 extern r_obj* ffi_rray_remove_axes(
   r_obj* ffi_x,
   r_obj* ffi_axes,
@@ -218,6 +230,8 @@ static const R_CallMethodDef CallEntries[] = {
   {"ffi_rray_split", (DL_FUNC) &ffi_rray_split, 4},
   {"ffi_rray_stack", (DL_FUNC) &ffi_rray_stack, 3},
   {"ffi_rray_unstack", (DL_FUNC) &ffi_rray_unstack, 3},
+  {"ffi_rray_rep", (DL_FUNC) &ffi_rray_rep, 4},
+  {"ffi_rray_rep_each", (DL_FUNC) &ffi_rray_rep_each, 4},
   {"ffi_rray_remove_axes", (DL_FUNC) &ffi_rray_remove_axes, 3},
   {"ffi_rray_insert_axes", (DL_FUNC) &ffi_rray_insert_axes, 3},
   {"ffi_rray_permute_axes", (DL_FUNC) &ffi_rray_permute_axes, 3},
