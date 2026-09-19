@@ -391,6 +391,8 @@ static void rray_rep_fill_ragged(
   const CTYPE* v_x = CONST_DEREF(x);                                           \
   CTYPE* v_out = DEREF(out);                                                   \
                                                                                \
+  r_ssize out_i = 0;                                                           \
+                                                                               \
   for (r_ssize o = 0; o < outer; ++o) {                                        \
     for (r_ssize d = 0; d < dimension; ++d) {                                  \
       const CTYPE* v_slice = v_x + (o * dimension + d) * inner;                \
@@ -398,7 +400,8 @@ static void rray_rep_fill_ragged(
                                                                                \
       for (int j = 0; j < times; ++j) {                                        \
         for (r_ssize k = 0; k < inner; ++k) {                                  \
-          *v_out++ = v_slice[k];                                               \
+          v_out[out_i] = v_slice[k];                                           \
+          ++out_i;                                                             \
         }                                                                      \
       }                                                                        \
     }                                                                          \
