@@ -75,7 +75,6 @@ static r_obj* rray_rep_impl(
   );
   const int* v_times = r_int_cbegin(times);
   const r_ssize times_size = r_length(times);
-  const r_ssize times_stride = (times_size == 1) ? 0 : 1;
 
   const int out_dimension =
     rray_rep_dimension(dimension, v_times, times_size, error_call);
@@ -104,10 +103,16 @@ static r_obj* rray_rep_impl(
     outer *= v_dimensions[i];
   }
 
-  if (each) {
-    rray_rep_fill(x, out, inner, dimension, outer, v_times, times_stride);
+  if (times_size == 1) {
+    const int times = v_times[0];
+
+    if (each) {
+      rray_rep_fill(x, out, inner, outer * dimension, times);
+    } else {
+      rray_rep_fill(x, out, inner * dimension, outer, times);
+    }
   } else {
-    rray_rep_fill(x, out, inner * dimension, 1, outer, v_times, times_stride);
+    rray_rep_fill_ragged(x, out, inner, dimension, outer, v_times);
   }
 
   r_obj* out_names = KEEP(rray_rep_names(
@@ -116,7 +121,7 @@ static r_obj* rray_rep_impl(
     out_dimension,
     each,
     v_times,
-    times_stride
+    times_size
   ));
   if (out_names != r_null) {
     r_attrib_poke_dim_names(out, out_names);
@@ -213,33 +218,31 @@ static r_no_return void stop_dimension_too_large(struct r_lazy error_call) {
 static void rray_rep_fill(
   r_obj* x,
   r_obj* out,
-  r_ssize inner,
-  r_ssize middle,
-  r_ssize outer,
-  const int* v_times,
-  r_ssize times_stride
+  r_ssize block,
+  r_ssize n_blocks,
+  int times
 ) {
   switch (r_typeof(x)) {
   case R_TYPE_logical:
-    rray_rep_fill_lgl(x, out, inner, middle, outer, v_times, times_stride);
+    rray_rep_fill_lgl(x, out, block, n_blocks, times);
     break;
   case R_TYPE_integer:
-    rray_rep_fill_int(x, out, inner, middle, outer, v_times, times_stride);
+    rray_rep_fill_int(x, out, block, n_blocks, times);
     break;
   case R_TYPE_double:
-    rray_rep_fill_dbl(x, out, inner, middle, outer, v_times, times_stride);
+    rray_rep_fill_dbl(x, out, block, n_blocks, times);
     break;
   case R_TYPE_complex:
-    rray_rep_fill_cpl(x, out, inner, middle, outer, v_times, times_stride);
+    rray_rep_fill_cpl(x, out, block, n_blocks, times);
     break;
   case R_TYPE_raw:
-    rray_rep_fill_raw(x, out, inner, middle, outer, v_times, times_stride);
+    rray_rep_fill_raw(x, out, block, n_blocks, times);
     break;
   case R_TYPE_character:
-    rray_rep_fill_chr(x, out, inner, middle, outer, v_times, times_stride);
+    rray_rep_fill_chr(x, out, block, n_blocks, times);
     break;
   case R_TYPE_list:
-    rray_rep_fill_list(x, out, inner, middle, outer, v_times, times_stride);
+    rray_rep_fill_list(x, out, block, n_blocks, times);
     break;
   default:
     r_stop_unreachable();
@@ -250,16 +253,12 @@ static void rray_rep_fill(
   const CTYPE* v_x = CONST_DEREF(x);                                           \
   CTYPE* v_out = DEREF(out);                                                   \
                                                                                \
-  r_ssize out_i = 0;                                                           \
+  for (r_ssize i = 0; i < n_blocks; ++i) {                                     \
+    const CTYPE* v_block = v_x + i * block;                                    \
                                                                                \
-  for (r_ssize o = 0; o < outer; ++o) {                                        \
-    for (r_ssize m = 0; m < middle; ++m) {                                     \
-      const CTYPE* v_block = v_x + (o * middle + m) * inner;                   \
-      const int times = v_times[m * times_stride];                             \
-                                                                               \
-      for (int j = 0; j < times; ++j) {                                        \
-        r_memcpy(v_out + out_i, v_block, sizeof(CTYPE) * (size_t) inner);      \
-        out_i += inner;                                                        \
+    for (int j = 0; j < times; ++j) {                                          \
+      for (r_ssize k = 0; k < block; ++k) {                                    \
+        *v_out++ = v_block[k];                                                 \
       }                                                                        \
     }                                                                          \
   }
@@ -269,16 +268,13 @@ static void rray_rep_fill(
                                                                                \
   r_ssize out_i = 0;                                                           \
                                                                                \
-  for (r_ssize o = 0; o < outer; ++o) {                                        \
-    for (r_ssize m = 0; m < middle; ++m) {                                     \
-      const r_ssize x_start = (o * middle + m) * inner;                        \
-      const int times = v_times[m * times_stride];                             \
+  for (r_ssize i = 0; i < n_blocks; ++i) {                                     \
+    r_obj* const* v_block = v_x + i * block;                                   \
                                                                                \
-      for (int j = 0; j < times; ++j) {                                        \
-        for (r_ssize i = 0; i < inner; ++i) {                                  \
-          POKE(out, out_i, v_x[x_start + i]);                                  \
-          ++out_i;                                                             \
-        }                                                                      \
+    for (int j = 0; j < times; ++j) {                                          \
+      for (r_ssize k = 0; k < block; ++k) {                                    \
+        POKE(out, out_i, v_block[k]);                                          \
+        ++out_i;                                                               \
       }                                                                        \
     }                                                                          \
   }
@@ -286,11 +282,9 @@ static void rray_rep_fill(
 static void rray_rep_fill_lgl(
   r_obj* x,
   r_obj* out,
-  r_ssize inner,
-  r_ssize middle,
-  r_ssize outer,
-  const int* v_times,
-  r_ssize times_stride
+  r_ssize block,
+  r_ssize n_blocks,
+  int times
 ) {
   RRAY_REP_FILL_ATOMIC(int, r_lgl_cbegin, r_lgl_begin);
 }
@@ -298,11 +292,9 @@ static void rray_rep_fill_lgl(
 static void rray_rep_fill_int(
   r_obj* x,
   r_obj* out,
-  r_ssize inner,
-  r_ssize middle,
-  r_ssize outer,
-  const int* v_times,
-  r_ssize times_stride
+  r_ssize block,
+  r_ssize n_blocks,
+  int times
 ) {
   RRAY_REP_FILL_ATOMIC(int, r_int_cbegin, r_int_begin);
 }
@@ -310,11 +302,9 @@ static void rray_rep_fill_int(
 static void rray_rep_fill_dbl(
   r_obj* x,
   r_obj* out,
-  r_ssize inner,
-  r_ssize middle,
-  r_ssize outer,
-  const int* v_times,
-  r_ssize times_stride
+  r_ssize block,
+  r_ssize n_blocks,
+  int times
 ) {
   RRAY_REP_FILL_ATOMIC(double, r_dbl_cbegin, r_dbl_begin);
 }
@@ -322,11 +312,9 @@ static void rray_rep_fill_dbl(
 static void rray_rep_fill_cpl(
   r_obj* x,
   r_obj* out,
-  r_ssize inner,
-  r_ssize middle,
-  r_ssize outer,
-  const int* v_times,
-  r_ssize times_stride
+  r_ssize block,
+  r_ssize n_blocks,
+  int times
 ) {
   RRAY_REP_FILL_ATOMIC(r_complex, r_cpl_cbegin, r_cpl_begin);
 }
@@ -334,11 +322,9 @@ static void rray_rep_fill_cpl(
 static void rray_rep_fill_raw(
   r_obj* x,
   r_obj* out,
-  r_ssize inner,
-  r_ssize middle,
-  r_ssize outer,
-  const int* v_times,
-  r_ssize times_stride
+  r_ssize block,
+  r_ssize n_blocks,
+  int times
 ) {
   RRAY_REP_FILL_ATOMIC(Rbyte, r_raw_cbegin, r_raw_begin);
 }
@@ -346,11 +332,9 @@ static void rray_rep_fill_raw(
 static void rray_rep_fill_chr(
   r_obj* x,
   r_obj* out,
-  r_ssize inner,
-  r_ssize middle,
-  r_ssize outer,
-  const int* v_times,
-  r_ssize times_stride
+  r_ssize block,
+  r_ssize n_blocks,
+  int times
 ) {
   RRAY_REP_FILL_BARRIER(r_chr_cbegin, r_chr_poke);
 }
@@ -358,11 +342,9 @@ static void rray_rep_fill_chr(
 static void rray_rep_fill_list(
   r_obj* x,
   r_obj* out,
-  r_ssize inner,
-  r_ssize middle,
-  r_ssize outer,
-  const int* v_times,
-  r_ssize times_stride
+  r_ssize block,
+  r_ssize n_blocks,
+  int times
 ) {
   RRAY_REP_FILL_BARRIER(r_list_cbegin, r_list_poke);
 }
@@ -370,13 +352,164 @@ static void rray_rep_fill_list(
 #undef RRAY_REP_FILL_ATOMIC
 #undef RRAY_REP_FILL_BARRIER
 
+static void rray_rep_fill_ragged(
+  r_obj* x,
+  r_obj* out,
+  r_ssize inner,
+  r_ssize dimension,
+  r_ssize outer,
+  const int* v_times
+) {
+  switch (r_typeof(x)) {
+  case R_TYPE_logical:
+    rray_rep_fill_ragged_lgl(x, out, inner, dimension, outer, v_times);
+    break;
+  case R_TYPE_integer:
+    rray_rep_fill_ragged_int(x, out, inner, dimension, outer, v_times);
+    break;
+  case R_TYPE_double:
+    rray_rep_fill_ragged_dbl(x, out, inner, dimension, outer, v_times);
+    break;
+  case R_TYPE_complex:
+    rray_rep_fill_ragged_cpl(x, out, inner, dimension, outer, v_times);
+    break;
+  case R_TYPE_raw:
+    rray_rep_fill_ragged_raw(x, out, inner, dimension, outer, v_times);
+    break;
+  case R_TYPE_character:
+    rray_rep_fill_ragged_chr(x, out, inner, dimension, outer, v_times);
+    break;
+  case R_TYPE_list:
+    rray_rep_fill_ragged_list(x, out, inner, dimension, outer, v_times);
+    break;
+  default:
+    r_stop_unreachable();
+  }
+}
+
+#define RRAY_REP_FILL_RAGGED_ATOMIC(CTYPE, CONST_DEREF, DEREF)                 \
+  const CTYPE* v_x = CONST_DEREF(x);                                           \
+  CTYPE* v_out = DEREF(out);                                                   \
+                                                                               \
+  for (r_ssize o = 0; o < outer; ++o) {                                        \
+    for (r_ssize d = 0; d < dimension; ++d) {                                  \
+      const CTYPE* v_slice = v_x + (o * dimension + d) * inner;                \
+      const int times = v_times[d];                                            \
+                                                                               \
+      for (int j = 0; j < times; ++j) {                                        \
+        for (r_ssize k = 0; k < inner; ++k) {                                  \
+          *v_out++ = v_slice[k];                                               \
+        }                                                                      \
+      }                                                                        \
+    }                                                                          \
+  }
+
+#define RRAY_REP_FILL_RAGGED_BARRIER(CONST_DEREF, POKE)                        \
+  r_obj* const* v_x = CONST_DEREF(x);                                          \
+                                                                               \
+  r_ssize out_i = 0;                                                           \
+                                                                               \
+  for (r_ssize o = 0; o < outer; ++o) {                                        \
+    for (r_ssize d = 0; d < dimension; ++d) {                                  \
+      r_obj* const* v_slice = v_x + (o * dimension + d) * inner;               \
+      const int times = v_times[d];                                            \
+                                                                               \
+      for (int j = 0; j < times; ++j) {                                        \
+        for (r_ssize k = 0; k < inner; ++k) {                                  \
+          POKE(out, out_i, v_slice[k]);                                        \
+          ++out_i;                                                             \
+        }                                                                      \
+      }                                                                        \
+    }                                                                          \
+  }
+
+static void rray_rep_fill_ragged_lgl(
+  r_obj* x,
+  r_obj* out,
+  r_ssize inner,
+  r_ssize dimension,
+  r_ssize outer,
+  const int* v_times
+) {
+  RRAY_REP_FILL_RAGGED_ATOMIC(int, r_lgl_cbegin, r_lgl_begin);
+}
+
+static void rray_rep_fill_ragged_int(
+  r_obj* x,
+  r_obj* out,
+  r_ssize inner,
+  r_ssize dimension,
+  r_ssize outer,
+  const int* v_times
+) {
+  RRAY_REP_FILL_RAGGED_ATOMIC(int, r_int_cbegin, r_int_begin);
+}
+
+static void rray_rep_fill_ragged_dbl(
+  r_obj* x,
+  r_obj* out,
+  r_ssize inner,
+  r_ssize dimension,
+  r_ssize outer,
+  const int* v_times
+) {
+  RRAY_REP_FILL_RAGGED_ATOMIC(double, r_dbl_cbegin, r_dbl_begin);
+}
+
+static void rray_rep_fill_ragged_cpl(
+  r_obj* x,
+  r_obj* out,
+  r_ssize inner,
+  r_ssize dimension,
+  r_ssize outer,
+  const int* v_times
+) {
+  RRAY_REP_FILL_RAGGED_ATOMIC(r_complex, r_cpl_cbegin, r_cpl_begin);
+}
+
+static void rray_rep_fill_ragged_raw(
+  r_obj* x,
+  r_obj* out,
+  r_ssize inner,
+  r_ssize dimension,
+  r_ssize outer,
+  const int* v_times
+) {
+  RRAY_REP_FILL_RAGGED_ATOMIC(Rbyte, r_raw_cbegin, r_raw_begin);
+}
+
+static void rray_rep_fill_ragged_chr(
+  r_obj* x,
+  r_obj* out,
+  r_ssize inner,
+  r_ssize dimension,
+  r_ssize outer,
+  const int* v_times
+) {
+  RRAY_REP_FILL_RAGGED_BARRIER(r_chr_cbegin, r_chr_poke);
+}
+
+static void rray_rep_fill_ragged_list(
+  r_obj* x,
+  r_obj* out,
+  r_ssize inner,
+  r_ssize dimension,
+  r_ssize outer,
+  const int* v_times
+) {
+  RRAY_REP_FILL_RAGGED_BARRIER(r_list_cbegin, r_list_poke);
+}
+
+#undef RRAY_REP_FILL_RAGGED_ATOMIC
+#undef RRAY_REP_FILL_RAGGED_BARRIER
+
 static r_obj* rray_rep_names(
   r_obj* names,
   int axis,
   r_ssize out_dimension,
   bool each,
   const int* v_times,
-  r_ssize times_stride
+  r_ssize times_size
 ) {
   if (names == r_null) {
     return r_null;
@@ -398,7 +531,7 @@ static r_obj* rray_rep_names(
   }
 
   r_obj* out_axis_names = KEEP(
-    rray_rep_axis_names(axis_names, out_dimension, each, v_times, times_stride)
+    rray_rep_axis_names(axis_names, out_dimension, each, v_times, times_size)
   );
   r_list_poke(out, axis - 1, out_axis_names);
 
@@ -411,7 +544,7 @@ static r_obj* rray_rep_axis_names(
   r_ssize out_dimension,
   bool each,
   const int* v_times,
-  r_ssize times_stride
+  r_ssize times_size
 ) {
   const r_ssize axis_dimension = r_length(axis_names);
   r_obj* const* v_axis_names = r_chr_cbegin(axis_names);
@@ -420,20 +553,29 @@ static r_obj* rray_rep_axis_names(
 
   r_ssize out_i = 0;
 
-  if (each) {
-    for (r_ssize i = 0; i < axis_dimension; ++i) {
-      const int times = v_times[i * times_stride];
+  if (!each) {
+    const int times = v_times[0];
 
+    for (int j = 0; j < times; ++j) {
+      for (r_ssize i = 0; i < axis_dimension; ++i) {
+        r_chr_poke(out, out_i, v_axis_names[i]);
+        ++out_i;
+      }
+    }
+  } else if (times_size == 1) {
+    const int times = v_times[0];
+
+    for (r_ssize i = 0; i < axis_dimension; ++i) {
       for (int j = 0; j < times; ++j) {
         r_chr_poke(out, out_i, v_axis_names[i]);
         ++out_i;
       }
     }
   } else {
-    const int times = v_times[0];
+    for (r_ssize i = 0; i < axis_dimension; ++i) {
+      const int times = v_times[i];
 
-    for (int j = 0; j < times; ++j) {
-      for (r_ssize i = 0; i < axis_dimension; ++i) {
+      for (int j = 0; j < times; ++j) {
         r_chr_poke(out, out_i, v_axis_names[i]);
         ++out_i;
       }

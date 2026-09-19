@@ -233,6 +233,18 @@ test_that("`times` can vary by slice", {
   )
 })
 
+test_that("`times` can vary by slice along a middle axis", {
+  x <- array(1:24, c(2, 3, 4))
+  expect_identical(
+    rray_rep_each(x, times = c(1, 2, 3), axis = 2),
+    x[, c(1, 2, 2, 3, 3, 3), , drop = FALSE]
+  )
+  expect_identical(
+    rray_rep_each(x, times = c(2, 0, 1), axis = 2),
+    x[, c(1, 1, 3), , drop = FALSE]
+  )
+})
+
 test_that("zeroes in `times` drop individual slices", {
   x <- array(1:3, 3)
   expect_identical(
