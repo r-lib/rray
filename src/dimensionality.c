@@ -38,8 +38,10 @@ r_obj* rray_expand_dimensionality(
 
   if (dimensionality <= x_dimensionality) {
     r_stop_internal(
-      "`dimensionality` of %d must be greater than the dimensionality of %d.",
+      "`dimensionality` (%d) must be greater than the dimensionality of %s "
+      "(%d).",
       dimensionality,
+      rray_arg_format(arg),
       x_dimensionality
     );
   }
