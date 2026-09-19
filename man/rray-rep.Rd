@@ -50,7 +50,7 @@ x <- array(1:6, c(3, 2))
 # All rows in bulk, twice
 rray_rep(x, times = 2, axis = 1)
 
-# Each row, twice
+# Each row individually, twice
 rray_rep_each(x, times = 2, axis = 1)
 
 # Columns rather than rows
