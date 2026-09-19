@@ -553,29 +553,31 @@ static r_obj* rray_rep_axis_names(
 
   r_ssize out_i = 0;
 
-  if (!each) {
+  if (each) {
+    if (times_size == 1) {
+      const int times = v_times[0];
+
+      for (r_ssize i = 0; i < axis_dimension; ++i) {
+        for (int j = 0; j < times; ++j) {
+          r_chr_poke(out, out_i, v_axis_names[i]);
+          ++out_i;
+        }
+      }
+    } else {
+      for (r_ssize i = 0; i < axis_dimension; ++i) {
+        const int times = v_times[i];
+
+        for (int j = 0; j < times; ++j) {
+          r_chr_poke(out, out_i, v_axis_names[i]);
+          ++out_i;
+        }
+      }
+    }
+  } else {
     const int times = v_times[0];
 
     for (int j = 0; j < times; ++j) {
       for (r_ssize i = 0; i < axis_dimension; ++i) {
-        r_chr_poke(out, out_i, v_axis_names[i]);
-        ++out_i;
-      }
-    }
-  } else if (times_size == 1) {
-    const int times = v_times[0];
-
-    for (r_ssize i = 0; i < axis_dimension; ++i) {
-      for (int j = 0; j < times; ++j) {
-        r_chr_poke(out, out_i, v_axis_names[i]);
-        ++out_i;
-      }
-    }
-  } else {
-    for (r_ssize i = 0; i < axis_dimension; ++i) {
-      const int times = v_times[i];
-
-      for (int j = 0; j < times; ++j) {
         r_chr_poke(out, out_i, v_axis_names[i]);
         ++out_i;
       }
