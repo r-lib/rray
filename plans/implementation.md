@@ -881,27 +881,6 @@ Signature: `rray_expand(x, axis)`. Single axis. Attributes only.
 
 Files: `R/expand.R`, `src/expand.c`, `src/expand.h`.
 
-### `rray_tile()`
-
-Repeat an array along axes.
-
-```r
-x <- matrix(1:5)
-rray_tile(x, 2)             # repeat rows twice
-rray_tile(x, c(2, 3))       # rows twice, columns three times
-rray_tile(x, c(1, 2, 2))    # tile into a third dimension
-```
-
-Different from broadcasting: broadcasting only repeats an axis whose dimension
-is 1, tiling repeats any axis.
-
-Names: follow the axis. Type: preserved. Tiled axes change dimension so they
-lose their names, untiled axes keep theirs.
-
-Signature: `rray_tile(x, times)`.
-
-Files: `R/tile.R`, `src/tile.c`, `src/tile.h`.
-
 ### `rray_flip()`
 
 Reverse the order along an axis.
