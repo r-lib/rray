@@ -3,6 +3,7 @@
 #include "axes.h"
 #include "combine.h"
 #include "dimensionality.h"
+#include "dimensions.h"
 #include "insert-axes.h"
 #include "names.h"
 #include "utils.h"
@@ -34,8 +35,15 @@ r_obj* rray_stack(
     r_abort_lazy_call(error_call, "Must supply at least one array to `...`.");
   }
 
+  // This does two important things:
+  // - Computes dimensions we pull dimensionality from
+  // - Throws broadcast errors before axes have been inserted, so the error
+  //   message numbering is meaningful
+  r_obj* dimensions =
+    KEEP(rray_dimensions_common_opts(xs, NULL, 0, arg, error_call));
+
   const int dimensionality =
-    int_add_checked(list_max_dimensionality(xs, arg, error_call), 1);
+    int_add_checked(rray_dimensionality_from_dimensions(dimensions), 1);
   check_max_dimensionality(dimensionality);
 
   check_axis(axis, dimensionality, rray_args.dot_axis, error_call);
@@ -49,7 +57,7 @@ r_obj* rray_stack(
     out = rray_set_axis_names(out, axis, names, arg, error_call);
   }
 
-  FREE(3);
+  FREE(4);
   return out;
 }
 

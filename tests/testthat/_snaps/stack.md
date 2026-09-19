@@ -56,7 +56,7 @@
       rray_stack(array(1:4, c(2L, 2L)), array(1:6, c(3L, 2L)), .axis = 1L)
     Condition
       Error in `rray_stack()`:
-      ! Can't find common dimensions at axis 2. `..1` has dimension 2 and `..2` has dimension 3.
+      ! Can't find common dimensions at axis 1. `..1` has dimension 2 and `..2` has dimension 3.
     Code
       rray_stack(x = array(1, c(2L, 2L)), y = array(1, c(3L, 2L)), .axis = 3L)
     Condition
