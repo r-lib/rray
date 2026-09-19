@@ -17,8 +17,6 @@
 #' Names repeat alongside the data, so the repeated axis can come back with
 #' duplicate names. Every other axis keeps its names untouched.
 #'
-#' The type of `x` is always preserved.
-#'
 #' @inheritParams rlang::args_dots_empty
 #'
 #' @param x An array.

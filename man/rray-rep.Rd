@@ -43,8 +43,6 @@ along an axis.
 \details{
 Names repeat alongside the data, so the repeated axis can come back with
 duplicate names. Every other axis keeps its names untouched.
-
-The type of \code{x} is always preserved.
 }
 \examples{
 x <- array(1:6, c(3, 2))
