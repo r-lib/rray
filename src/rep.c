@@ -253,12 +253,15 @@ static void rray_rep_fill(
   const CTYPE* v_x = CONST_DEREF(x);                                           \
   CTYPE* v_out = DEREF(out);                                                   \
                                                                                \
+  r_ssize out_i = 0;                                                           \
+                                                                               \
   for (r_ssize i = 0; i < n_blocks; ++i) {                                     \
     const CTYPE* v_block = v_x + i * block;                                    \
                                                                                \
     for (int j = 0; j < times; ++j) {                                          \
       for (r_ssize k = 0; k < block; ++k) {                                    \
-        *v_out++ = v_block[k];                                                 \
+        v_out[out_i] = v_block[k];                                             \
+        ++out_i;                                                               \
       }                                                                        \
     }                                                                          \
   }
