@@ -39,8 +39,7 @@ r_obj* rray_stack(
   // - Computes dimensions we pull dimensionality from
   // - Throws broadcast errors before axes have been inserted, so the error
   //   message numbering is meaningful
-  r_obj* dimensions =
-    KEEP(rray_dimensions_common_opts(xs, NULL, 0, arg, error_call));
+  r_obj* dimensions = KEEP(rray_dimensions_common(xs, r_null, arg, error_call));
 
   const int dimensionality =
     int_add_checked(rray_dimensionality_from_dimensions(dimensions), 1);
