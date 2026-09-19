@@ -1,9 +1,9 @@
 #' Unstack an array
 #'
 #' @description
-#' `rray_unstack()` returns one array for every position along `axis`. The
-#' `axis` is removed from each of them, so each array has one fewer dimension
-#' than `x`.
+#' `rray_unstack()` splits an array along `axis` and then removes that `axis`
+#' from each of the resulting arrays. The result is a list of arrays that have
+#' a dimensionality 1 less than `x` itself.
 #'
 #' Using [rray_stack()] along the same `axis` reconstructs `x`.
 #'

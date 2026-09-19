@@ -16,9 +16,9 @@ A list of arrays with the same dimensions as \code{x}, except that \code{axis} h
 been removed.
 }
 \description{
-\code{rray_unstack()} returns one array for every position along \code{axis}. The
-\code{axis} is removed from each of them, so each array has one fewer dimension
-than \code{x}.
+\code{rray_unstack()} splits an array along \code{axis} and then removes that \code{axis}
+from each of the resulting arrays. The result is a list of arrays that have
+a dimensionality 1 less than \code{x} itself.
 
 Using \code{\link[=rray_stack]{rray_stack()}} along the same \code{axis} reconstructs \code{x}.
 }
