@@ -28,10 +28,12 @@ An array with the same dimensions as \code{x}, except along \code{axis}.
 }
 \description{
 \itemize{
-\item \code{rray_rep()} repeats the whole \code{axis} of \code{x}, \code{times} times. The dimension
-along \code{axis} becomes \code{dimension * times}.
-\item \code{rray_rep_each()} repeats each slice of \code{axis} in place. The dimension
-along \code{axis} becomes \code{sum(times)}.
+\item \code{rray_rep()} repeats the entire \code{axis} of \code{x} in bulk, i.e. repeat all of
+the columns 5 \code{times}.
+\item \code{rray_rep_each()} repeats each individual element of the \code{axis} of \code{x}
+separately, i.e. repeat the first column 2 \code{times}, the second column 3
+\code{times}, and so on. For convenience, you can also provide a single number
+to repeat each element along the \code{axis} the same number of times.
 }
 
 These are the array versions of \code{\link[vctrs:vec-rep]{vctrs::vec_rep()}} and

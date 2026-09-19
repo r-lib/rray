@@ -1,11 +1,13 @@
 #' Repeat an array
 #'
 #' @description
-#' - `rray_rep()` repeats the whole `axis` of `x`, `times` times. The dimension
-#'   along `axis` becomes `dimension * times`.
+#' - `rray_rep()` repeats the entire `axis` of `x` in bulk, i.e. repeat all of
+#'   the columns 5 `times`.
 #'
-#' - `rray_rep_each()` repeats each slice of `axis` in place. The dimension
-#'   along `axis` becomes `sum(times)`.
+#' - `rray_rep_each()` repeats each individual element of the `axis` of `x`
+#'   separately, i.e. repeat the first column 2 `times`, the second column 3
+#'   `times`, and so on. For convenience, you can also provide a single number
+#'   to repeat each element along the `axis` the same number of times.
 #'
 #' These are the array versions of [vctrs::vec_rep()] and
 #' [vctrs::vec_rep_each()], which repeat along the size of a vector rather than
