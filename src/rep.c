@@ -206,7 +206,7 @@ static int rray_rep_dimension(
 static r_no_return void stop_dimension_too_large(struct r_lazy error_call) {
   r_abort_lazy_call(
     error_call,
-    "The repeated dimension along `axis` is too large."
+    "The dimension implied by `times` is too large for R."
   );
 }
 

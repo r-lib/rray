@@ -173,7 +173,7 @@
       rray_rep(x, times = .Machine$integer.max, axis = 1)
     Condition
       Error in `rray_rep()`:
-      ! The repeated dimension along `axis` is too large.
+      ! The dimension implied by `times` is too large for R.
 
 ---
 
@@ -181,7 +181,7 @@
       rray_rep_each(x, times = max, axis = 1)
     Condition
       Error in `rray_rep_each()`:
-      ! The repeated dimension along `axis` is too large.
+      ! The dimension implied by `times` is too large for R.
 
 ---
 
@@ -189,7 +189,7 @@
       rray_rep_each(x, times = c(max, max), axis = 1)
     Condition
       Error in `rray_rep_each()`:
-      ! The repeated dimension along `axis` is too large.
+      ! The dimension implied by `times` is too large for R.
 
 # errors on invalid input
 
