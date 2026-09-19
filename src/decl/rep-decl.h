@@ -24,7 +24,7 @@ static r_no_return void stop_times_size(
 static int rray_rep_dimension(
   int dimension,
   const int* v_times,
-  r_ssize times_stride,
+  r_ssize times_size,
   struct r_lazy error_call
 );
 

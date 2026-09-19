@@ -74,10 +74,11 @@ static r_obj* rray_rep_impl(
     arg_as_times(times, each ? dimension : 1, rray_args.times, error_call)
   );
   const int* v_times = r_int_cbegin(times);
-  const r_ssize times_stride = (r_length(times) == 1) ? 0 : 1;
+  const r_ssize times_size = r_length(times);
+  const r_ssize times_stride = (times_size == 1) ? 0 : 1;
 
   const int out_dimension =
-    rray_rep_dimension(dimension, v_times, times_stride, error_call);
+    rray_rep_dimension(dimension, v_times, times_size, error_call);
 
   r_obj* out_dimensions = KEEP(r_alloc_integer(dimensionality));
   int* v_out_dimensions = r_int_begin(out_dimensions);
@@ -171,10 +172,10 @@ static r_no_return void stop_times_size(
 static int rray_rep_dimension(
   int dimension,
   const int* v_times,
-  r_ssize times_stride,
+  r_ssize times_size,
   struct r_lazy error_call
 ) {
-  if (times_stride == 0) {
+  if (times_size == 1) {
     const int times = v_times[0];
 
     if (times != 0 && dimension > INT_MAX / times) {
@@ -182,21 +183,21 @@ static int rray_rep_dimension(
     }
 
     return dimension * times;
-  }
+  } else {
+    int out = 0;
 
-  int out = 0;
+    for (int i = 0; i < dimension; ++i) {
+      const int times = v_times[i];
 
-  for (int i = 0; i < dimension; ++i) {
-    const int times = v_times[i];
+      if (out > INT_MAX - times) {
+        stop_dimension_too_large(error_call);
+      }
 
-    if (out > INT_MAX - times) {
-      stop_dimension_too_large(error_call);
+      out += times;
     }
 
-    out += times;
+    return out;
   }
-
-  return out;
 }
 
 static r_no_return void stop_dimension_too_large(struct r_lazy error_call) {
