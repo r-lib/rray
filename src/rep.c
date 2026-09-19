@@ -388,12 +388,12 @@ static r_obj* rray_rep_names(
     return names;
   }
 
-  const r_ssize size = r_length(names);
-
-  r_obj* out = KEEP(r_alloc_list(size));
+  const r_ssize names_size = r_length(names);
   r_obj* const* v_names = r_list_cbegin(names);
 
-  for (r_ssize i = 0; i < size; ++i) {
+  r_obj* out = KEEP(r_alloc_list(names_size));
+
+  for (r_ssize i = 0; i < names_size; ++i) {
     r_list_poke(out, i, v_names[i]);
   }
 
