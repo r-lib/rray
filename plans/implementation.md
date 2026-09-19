@@ -862,25 +862,6 @@ Signature: `rray_flatten(x)`. Attributes only.
 
 Files: `R/flatten.R`, `src/flatten.c`, `src/flatten.h`.
 
-### `rray_expand()`
-
-Insert an axis of dimension 1.
-
-```r
-x <- array(1:10, c(5, 2))     # row names a-e, col names c1, c2
-rray_expand(x, 1)             # (1, 5, 2)
-rray_expand(x, 2)             # (5, 1, 2)
-rray_expand(x, 3)             # (5, 2, 1)
-```
-
-Names: follow the axis. Type: preserved. In `rray_expand(x, 1)` the 5 row names
-become the names of the new second axis, and the inserted first axis has none.
-This is the difference from `rray_set_dimensions()`, which drops everything.
-
-Signature: `rray_expand(x, axis)`. Single axis. Attributes only.
-
-Files: `R/expand.R`, `src/expand.c`, `src/expand.h`.
-
 ### `rray_flip()`
 
 Reverse the order along an axis.
