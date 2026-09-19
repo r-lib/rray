@@ -176,6 +176,8 @@ static int rray_rep_dimension(
   struct r_lazy error_call
 ) {
   if (times_size == 1) {
+    // Single `times`. Multiply by `axis`'s `dimension` regardless of
+    // rep / rep-each.
     const int times = v_times[0];
 
     if (times != 0 && dimension > INT_MAX / times) {
