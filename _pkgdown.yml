@@ -42,7 +42,7 @@ reference:
   - rray_insert_axes
   - rray_remove_axes
 
-- title: Binary
+- title: Elementwise
   contents:
   - arithmetic
   - extremum
