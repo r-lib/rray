@@ -186,6 +186,7 @@ static int rray_rep_dimension(
 
     return dimension * times;
   } else {
+    // Vector `times`. Must be rep-each. Sum them to get the output dimension.
     int out = 0;
 
     for (int i = 0; i < dimension; ++i) {
