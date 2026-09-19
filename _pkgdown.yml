@@ -35,6 +35,10 @@ reference:
   - rray_stack
   - rray_unstack
 
+- title: Repeating
+  contents:
+  - rray-rep
+
 - title: Axes
   contents:
   - rray_permute_axes
