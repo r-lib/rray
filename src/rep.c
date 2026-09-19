@@ -413,15 +413,15 @@ static r_obj* rray_rep_axis_names(
   const int* v_times,
   r_ssize times_stride
 ) {
-  const r_ssize dimension = r_length(axis_names);
+  const r_ssize axis_dimension = r_length(axis_names);
+  r_obj* const* v_axis_names = r_chr_cbegin(axis_names);
 
   r_obj* out = KEEP(r_alloc_character(out_dimension));
-  r_obj* const* v_axis_names = r_chr_cbegin(axis_names);
 
   r_ssize out_i = 0;
 
   if (each) {
-    for (r_ssize i = 0; i < dimension; ++i) {
+    for (r_ssize i = 0; i < axis_dimension; ++i) {
       const int times = v_times[i * times_stride];
 
       for (int j = 0; j < times; ++j) {
@@ -433,7 +433,7 @@ static r_obj* rray_rep_axis_names(
     const int times = v_times[0];
 
     for (int j = 0; j < times; ++j) {
-      for (r_ssize i = 0; i < dimension; ++i) {
+      for (r_ssize i = 0; i < axis_dimension; ++i) {
         r_chr_poke(out, out_i, v_axis_names[i]);
         ++out_i;
       }
