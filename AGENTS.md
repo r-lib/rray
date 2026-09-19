@@ -168,6 +168,7 @@ air format .
 - Avoid `expect_true()` and `expect_false()` in favour of a specific expectation which will give a better failure message. A few expectations in newer releases that you might not know about are `expect_all_true()`, `expect_all_equal()`, and `expect_r6_class()`.
 - When testing errors and warnings, don't us `expect_error()` or `expect_warning()`. Instead, use `expect_snapshot(error = TRUE)` for errors and `expect_snapshot()` for warnings because these allow the user to review the full text of the output.
 - Avoid the `.package` argument to `local_mocked_bindings()`; this modifies the namespace of another package which is not good practice. Instead create a mockable version of the function in the current package. See `?local_mocked_bindings` for more details.
+- Only snapshot errors we throw. Don't snapshot errors that come from R itself, like `argument ".axis" is missing, with no default`, since we don't control that text and the test just pins down base R's wording.
 
 ### Documentation
 

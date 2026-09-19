@@ -2,11 +2,11 @@
 
 ## Status
 
-This document is an implementation plan. `rray_combine()` is already present.
-The remaining work adds split, stack, and unstack around it, and rewrites the
-existing split API.
+This document is an implementation plan. `rray_combine()`, `rray_split()`, and
+`rray_stack()` are done. The remaining work adds unstack.
 
-The plan rewrite lives on `feature/combine-plan-rewrite`, based on `main`.
+Split shipped with its second argument named `dimensions` rather than `sizes`,
+behind empty dots. This document uses the shipped name throughout.
 
 ## Goal
 
@@ -14,7 +14,7 @@ Provide a parallel family of array operations:
 
 ```r
 rray_combine(..., .axis)
-rray_split(x, axis, sizes)
+rray_split(x, ..., axis, dimensions)
 rray_stack(..., .axis)
 rray_unstack(x, axis)
 ```
@@ -31,7 +31,7 @@ The pairs have direct relationships:
 Axes are one based. Negative axes are not accepted.
 
 `.axis` follows `...` in combine and stack, so callers must name it. Split and
-unstack take `axis` as an ordinary argument.
+unstack take `axis` after empty dots, so callers name it there too.
 
 ## Current state
 
@@ -50,38 +50,40 @@ The merged implementation already provides:
 - checked dimension sums and output sizes;
 - strided writes into the final output without full broadcast copies.
 
-The public R function does not expose `.ptype` yet. Stack should follow the
-same rule. Keep prototype selection internal and do not add `.ptype` to either
-public signature in this change.
+The public R function does not expose `.ptype`. Stack follows the same rule.
+Prototype selection stays internal on both.
 
 The merged combine implementation deliberately has no lower-level prepared
-entry point. Keep that boundary. Stack should compose the existing internal
+entry point. Keep that boundary. Stack composes the existing internal
 `rray_combine()` entry point rather than exposing a second combine engine.
 
-The current `rray_split(x, axes)` accepts multiple axes and always makes chunks
-of size 1. Replace that interface with the single-axis, variable-size split in
-this plan. This is a breaking replacement with no deprecation period.
+`rray_split()` has been merged with the single-axis, variable-dimension
+interface described below. The old multiple-axis split is gone.
+
+`rray_stack()` has been merged. It prepares each input with
+`rray_expand_dimensionality()` and `rray_insert_axes()`, calls `rray_combine()`,
+and then names the new axis from `...`.
 
 ## Decision summary
 
 - Keep the existing public `rray_combine(..., .axis)` unchanged.
-- Replace `rray_split(x, axes)` with `rray_split(x, axis, sizes)`.
+- Replace `rray_split(x, axes)` with `rray_split(x, ..., axis, dimensions)`.
 - Split along one axis only and retain that axis in every output.
-- A length-1 `sizes` value is a uniform chunk size and must divide the selected
-  axis dimension exactly.
-- A `sizes` vector with length other than 1 gives each chunk size directly. Its
-  entries may be zero and must sum to the selected axis dimension.
-- A scalar chunk size must be positive. Zero is only meaningful in the explicit
-  vector form.
-- Optimize the uniform `sizes = 1L` case because unstack uses it and it is the
-  most common direct split.
+- A length-1 `dimensions` value is a uniform chunk dimension and must divide the
+  selected axis dimension exactly.
+- A `dimensions` vector with length other than 1 gives each chunk dimension
+  directly. Its entries may be zero and must sum to the selected axis dimension.
+- A scalar chunk dimension must be positive. Zero is only meaningful in the
+  explicit vector form.
+- Optimize the uniform `dimensions = 1L` case because unstack uses it and it is
+  the most common direct split.
 - Implement stack as trailing singleton expansion where needed, insertion of a
   singleton axis, and a call to the existing combine engine.
 - Add an internal `rray_expand_dimensionality()` helper that pads dimensions
   with trailing ones without copying data.
 - Expand an input for stack only when it has fewer than `axis - 1` dimensions.
   There is no need to expand all inputs to the greatest dimensionality.
-- Implement unstack as split with `sizes = 1L`, followed by removal of the
+- Implement unstack as split with `dimensions = 1L`, followed by removal of the
   selected singleton axis from every piece.
 - Names of `...` become names on the new axis made by stack.
 - Names on the removed axis become names of the list returned by unstack.
@@ -120,37 +122,38 @@ changes.
 For `x` with dimensions `[6, 3]`:
 
 ```text
-split on axis 1 with sizes 2       -> three arrays of [2, 3]
-split on axis 1 with sizes c(1, 5) -> arrays of [1, 3] and [5, 3]
-split on axis 1 with sizes c(0, 6) -> arrays of [0, 3] and [6, 3]
+split on axis 1 with dimensions 2       -> three arrays of [2, 3]
+split on axis 1 with dimensions c(1, 5) -> arrays of [1, 3] and [5, 3]
+split on axis 1 with dimensions c(0, 6) -> arrays of [0, 3] and [6, 3]
 ```
 
-The two forms of `sizes` have different meanings.
+The two forms of `dimensions` have different meanings.
 
-#### Uniform chunk size
+#### Uniform chunk dimension
 
-A length-1 `sizes` value is the size of every chunk. It must be positive and
-the selected axis dimension must be evenly divisible by it.
+A length-1 `dimensions` value is the dimension of every chunk. It must be
+positive and the selected axis dimension must be evenly divisible by it.
 
 ```text
-axis dimension 6, sizes 1 -> 6 chunks of size 1
-axis dimension 6, sizes 2 -> 3 chunks of size 2
-axis dimension 6, sizes 6 -> 1 chunk of size 6
-axis dimension 6, sizes 4 -> error
+axis dimension 6, dimensions 1 -> 6 chunks of dimension 1
+axis dimension 6, dimensions 2 -> 3 chunks of dimension 2
+axis dimension 6, dimensions 6 -> 1 chunk of dimension 6
+axis dimension 6, dimensions 4 -> error
 ```
 
 An axis dimension of 0 produces an empty list for any positive uniform chunk
-size. In particular, `sizes = 1L` works without a special error.
+dimension. In particular, `dimensions = 1L` works without a special error.
 
-#### Explicit chunk sizes
+#### Explicit chunk dimensions
 
-A `sizes` vector with length other than 1 gives the size of every output chunk
-in order. Every entry must be nonnegative and their checked sum must equal the
-selected axis dimension. Zero-size chunks are retained in the output list.
+A `dimensions` vector with length other than 1 gives the dimension of every
+output chunk in order. Every entry must be nonnegative and their checked sum
+must equal the selected axis dimension. Zero-dimension chunks are retained in
+the output list.
 
 ```text
-axis dimension 6, sizes c(2, 0, 4) -> chunk sizes 2, 0, and 4
-axis dimension 6, sizes c(2, 3)    -> error
+axis dimension 6, dimensions c(2, 0, 4) -> chunk dimensions 2, 0, and 4
+axis dimension 6, dimensions c(2, 3)    -> error
 ```
 
 `integer()` is valid only when the selected axis has dimension 0. It returns an
@@ -163,7 +166,7 @@ the chunk boundaries. Axis names stay on the selected axis inside each chunk.
 The central identity is:
 
 ```r
-pieces <- rray_split(x, axis, sizes)
+pieces <- rray_split(x, axis = axis, dimensions = dimensions)
 out <- rray_combine(!!!pieces, .axis = axis)
 ```
 
@@ -224,7 +227,7 @@ unstack [2, 3, 4] on axis 3 -> 4 arrays of [2, 3]
 
 Its definition is deliberately mechanical:
 
-1. Call `rray_split(x, axis, sizes = 1L)`.
+1. Call `rray_split(x, axis = axis, dimensions = 1L)`.
 2. Call `rray_remove_axes(piece, axis)` on every piece.
 3. Use the removed axis names as the names of the output list.
 
@@ -264,8 +267,7 @@ rules.
 
 ## Internal dimensionality expansion
 
-Add an internal C helper to `src/dimensionality.c` and
-`src/dimensionality.h`:
+This helper is in `src/dimensionality.c` and `src/dimensionality.h`:
 
 ```c
 r_obj* rray_expand_dimensionality(
@@ -287,37 +289,36 @@ Its contract is:
 - leave every appended axis unnamed;
 - always append at least one singleton axis.
 
-Do not add an R wrapper or an FFI registration in this change. The helper is
-implementation support for stack. If it later proves useful as a public array
-operation, it can be documented and exported separately.
+It has no R wrapper and no FFI registration. The helper is implementation
+support for stack. If it later proves useful as a public array operation, it can
+be documented and exported separately.
 
-Stack should only call it when an input dimensionality is less than
-`axis - 1`. Inputs that already reach the insertion point go directly to
-`rray_insert_axes()`.
+A dimensionality that is not greater than the current one is an internal error,
+because the only caller checks first. Stack calls it only when an input
+dimensionality is less than `axis - 1`. Inputs that already reach the insertion
+point go directly to `rray_insert_axes()`.
 
 ## Split implementation
 
-Replace the current multiple-axis split engine. The new engine works one chunk
-at a time, which also incorporates the useful result from
-`plans/split-optimize.md`: write one output buffer to completion instead of
-keeping many output write streams active.
+Done. The engine works one chunk at a time, which also incorporates the useful
+result from `plans/split-optimize.md`: write one output buffer to completion
+instead of keeping many output write streams active.
 
 ### Validation and size planning
 
 1. Normalize and validate `x` as an unclassed array.
 2. Convert `axis` to one integer and validate it against the dimensionality of
    `x`.
-3. Convert `sizes` to an integer vector without attributes.
+3. Convert `dimensions` to an integer vector without attributes.
 4. Read the dimension on `axis`.
-5. Select uniform mode when `sizes` has length 1.
-6. In uniform mode, require a positive size and exact divisibility. Set the
-   output count to `axis_dimension / size`.
+5. Select uniform mode when `dimensions` has length 1.
+6. In uniform mode, require a positive dimension and exact divisibility. Set the
+   output count to `axis_dimension / dimension`.
 7. In explicit mode, require nonnegative entries and a checked sum equal to the
-   axis dimension. Set the output count to `length(sizes)`.
+   axis dimension. Set the output count to `length(dimensions)`.
 8. Allocate the output list once.
 
-Add `axis` and `sizes` argument tags to `struct rray_args` if suitable tags do
-not already exist. Errors must name `axis` and `sizes`, not `.axis`.
+Errors name `axis` and `dimensions`, not `.axis`.
 
 Do not divide by the selected dimension. A zero axis dimension is valid.
 
@@ -328,11 +329,10 @@ with its chunk size.
 
 Uniform mode can allocate one dimensions vector and share it across every
 output because all chunks have the same shape. This is especially important
-for `sizes = 1L`.
+for `dimensions = 1L`.
 
-Explicit mode must use dimensions matching each chunk. It may share dimensions
-between equal chunk sizes if that keeps the code clear, but no cache is
-required for the first implementation.
+Explicit mode must use dimensions matching each chunk. It shares one dimensions
+object across a run of equal chunk dimensions.
 
 Use checked size calculation before allocating each output. A zero chunk size
 produces a valid zero-size array with a zero dimension on `axis`.
@@ -353,8 +353,8 @@ cache conflict problem recorded in `plans/split-optimize.md` for the old flat
 split kernel.
 
 Uniform mode should build the iterator plan once and reuse it for every chunk.
-The `sizes = 1L` path then has one dimensions object, one plan, and one simple
-outer loop over axis positions.
+The `dimensions = 1L` path then has one dimensions object, one plan, and one
+simple outer loop over axis positions.
 
 Use one typed core for each native type. Atomic types write through direct
 pointers. Character and list types use write barriers. A contiguous source run
@@ -382,7 +382,8 @@ The result list itself stays unnamed.
 
 ## Stack implementation
 
-Stack should be a small composition around the current combine engine.
+Done. Stack is a small composition around the combine engine, in `src/stack.c`
+with `rray_stack_prepare()` as its only helper.
 
 ### Validation and preparation
 
@@ -445,8 +446,9 @@ If no inputs are named, the new axis is unnamed. If only some are named, keep
 the empty strings supplied by `list2()`. Old axis names are already handled by
 insert and combine.
 
-Do not mutate the result returned from combine in place if it could be shared.
-Use the package's normal wrapper and attribute replacement pattern.
+Stack does not mutate the result returned from combine in place, in case combine
+ever gains a fast path that returns an input. It calls `rray_set_axis_names()`,
+which wraps the result and attaches a fresh names list.
 
 ## Unstack implementation
 
@@ -456,7 +458,7 @@ engine.
 1. Normalize and validate `x`.
 2. Require dimensionality 2 or greater.
 3. Convert and validate `axis` as one axis of `x`.
-4. Call the internal split entry point with `sizes = 1L`.
+4. Call the internal split entry point with `dimensions = 1L`.
 5. Call `rray_remove_axes()` on `axis` for every split piece.
 6. Set the output list names to the original names on `axis`.
 
@@ -485,7 +487,7 @@ existing broadcast name rules.
 For every nonempty valid split:
 
 ```r
-pieces <- rray_split(x, axis, sizes)
+pieces <- rray_split(x, axis = axis, dimensions = dimensions)
 rray_combine(!!!pieces, .axis = axis)
 ```
 
@@ -531,8 +533,9 @@ Keep one R file per public operation:
 The new wrappers are thin:
 
 ```r
-rray_split <- function(x, axis, sizes) {
-  .Call(ffi_rray_split, x, axis, sizes, environment())
+rray_split <- function(x, ..., axis, dimensions) {
+  check_dots_empty0(...)
+  .Call(ffi_rray_split, x, axis, dimensions, environment())
 }
 
 rray_stack <- function(..., .axis) {
@@ -547,10 +550,8 @@ rray_unstack <- function(x, axis) {
 Do not change the `rray_combine()` wrapper and do not add `.ptype` to any
 public wrapper.
 
-Export and document all four functions. Replace the existing split
-documentation with the new single-axis and sizes behavior. Add stack and
-unstack to the Manipulation section of `_pkgdown.yml` next to combine and
-split.
+Export and document all four functions. Add them to the Manipulation section of
+`_pkgdown.yml`. Combine, split, and stack are there already.
 
 ## Native files and registration
 
@@ -561,23 +562,16 @@ Keep or add these feature pairs and decl headers:
 - `src/stack.c`, `src/stack.h`, `src/decl/stack-decl.h`
 - `src/unstack.c`, `src/unstack.h`, `src/decl/unstack-decl.h`
 
-Update `src/dimensionality.c` and `src/dimensionality.h` with the internal
-expansion helper. Add declarations to a decl header only for static helpers.
+The internal expansion helper lives in `src/dimensionality.c` and
+`src/dimensionality.h`. Add declarations to a decl header only for static
+helpers.
 
-Remove the old split-name feature files after their needed behavior is folded
-into split:
+The old split-name feature files are gone.
 
-- `R/split-names.R`
-- `src/split-names.c`
-- `src/split-names.h`
-- `src/decl/split-names-decl.h`
-- `tests/testthat/test-split-names.R`
-
-Remove `ffi_rray_split_names` from `src/init.c`. Change `ffi_rray_split` to
-arity 4, and add stack and unstack registrations:
+The registrations are:
 
 ```text
-ffi_rray_split(ffi_x, ffi_axis, ffi_sizes, ffi_frame)
+ffi_rray_split(ffi_x, ffi_axis, ffi_dimensions, ffi_frame)
 ffi_rray_stack(ffi_xs, ffi_axis, ffi_frame)
 ffi_rray_unstack(ffi_x, ffi_axis, ffi_frame)
 ```
@@ -591,21 +585,8 @@ decl include stays last. Do not add source comments.
 
 ## Existing split references
 
-The old split API appears in tests, benchmarks, and broader plans. Update each
-reference intentionally.
-
-- Rewrite `tests/testthat/test-split.R` for the new signature and behavior.
-- Remove its old multiple-axis cases.
-- Fold useful single-axis correctness coverage into the new tests.
-- Remove the old split-names tests after moving relevant name cases.
-- Update split calls in `bench/iterator.R` and `bench/stride-zero.R`.
-- Keep leading, middle, and trailing axis benchmarks for uniform size 1.
-- Add representative uniform chunks larger than 1 and explicit unequal
-  chunks.
-- Remove or update multiple-axis split references in
-  `plans/implementation.md`, `plans/n-ary.md`, and `plans/null.md`.
-- Delete `plans/split-optimize.md` after its one-output-at-a-time traversal and
-  benchmark requirements are incorporated into the implementation.
+Done. Tests, benchmarks, and broader plans use the new split signature, and
+`plans/split-optimize.md` is gone.
 
 ## Errors and validation
 
@@ -613,13 +594,13 @@ Use snapshots for error tests.
 
 Split must cover:
 
-- missing `axis` or `sizes`;
+- missing `axis` or `dimensions`;
 - `axis` with length other than 1, missing values, attributes, or a lossy cast;
 - `axis` below 1 or above the input dimensionality;
-- `sizes` with attributes, missing values, or lossy casts;
-- scalar `sizes` equal to or below 0;
-- a scalar size that does not divide the axis dimension;
-- negative explicit sizes;
+- `dimensions` with attributes, missing values, or lossy casts;
+- scalar `dimensions` equal to or below 0;
+- a scalar dimension that does not divide the axis dimension;
+- negative explicit dimensions;
 - an explicit checked sum below or above the axis dimension;
 - an empty explicit vector for a nonempty axis;
 - classed and invalid array inputs.
@@ -655,9 +636,12 @@ combine coverage.
 
 ### Split tests
 
+Done, in `tests/testthat/test-split.R`.
+
 - Split vectors, matrices, and 3D arrays along every axis.
-- Check exact values and dimensions for uniform sizes 1, 2, and the full axis.
-- Check explicit equal, unequal, and zero chunk sizes.
+- Check exact values and dimensions for uniform dimensions 1, 2, and the full
+  axis.
+- Check explicit equal, unequal, and zero chunk dimensions.
 - Check `integer()` against a zero and nonzero axis dimension.
 - Check a zero-dimensional axis in uniform mode.
 - Check zero-size chunks at the beginning, middle, and end.
@@ -671,6 +655,10 @@ combine coverage.
   range of shapes, axes, and chunk plans.
 
 ### Stack tests
+
+Done, in `tests/testthat/test-stack.R`. `stack_slice()` in
+`tests/testthat/helper-stack.R` takes one position on the new axis and removes
+it, so a slice can be compared to an input directly.
 
 - Stack vectors on axes 1 and 2.
 - Stack 2D arrays on axes 1, 2, and 3.
@@ -692,7 +680,7 @@ combine coverage.
 
 ### Dimensionality expansion tests
 
-Exercise the internal helper through stack:
+Done, alongside the stack tests. Exercise the internal helper through stack:
 
 - stack bypasses the helper when the insertion axis is already reachable;
 - one and several appended singleton axes;
@@ -722,7 +710,7 @@ public.
 For each axis of named 2D and 3D arrays, test both families:
 
 ```r
-pieces <- rray_split(x, axis, sizes)
+pieces <- rray_split(x, axis = axis, dimensions = dimensions)
 out <- rray_combine(!!!pieces, .axis = axis)
 expect_identical(out, x)
 
@@ -737,19 +725,21 @@ outputs rather than the original inputs.
 
 ## Work order
 
-1. Rewrite split validation around one `axis` and `sizes`.
-2. Replace its flat multiple-output traversal with one-chunk-at-a-time copying.
-3. Add chunk dimension names and remove the old split-name entry point.
-4. Add and test the internal dimensionality expansion helper.
-5. Implement stack with expansion, axis insertion, and the current combine
-   entry point.
-6. Add dots names to the new stack axis.
+Steps 1 through 6 are done.
+
+1. ~~Rewrite split validation around one `axis` and `dimensions`.~~
+2. ~~Replace its flat multiple-output traversal with one-chunk-at-a-time
+   copying.~~
+3. ~~Add chunk dimension names and remove the old split-name entry point.~~
+4. ~~Add and test the internal dimensionality expansion helper.~~
+5. ~~Implement stack with expansion, axis insertion, and the current combine
+   entry point.~~
+6. ~~Add dots names to the new stack axis.~~
 7. Implement unstack through split and remove-axes.
 8. Add pairwise round-trip tests.
 9. Update registration, documentation, pkgdown, benchmarks, and broader plan
    references.
-10. Delete the obsolete split optimization plan.
-11. Run the protection audit, formatting, documentation checks, focused tests,
+10. Run the protection audit, formatting, documentation checks, focused tests,
     benchmarks, and the full test suite.
 
 ## C protection audit
@@ -804,23 +794,21 @@ Run the full test suite last:
 Rscript -e "devtools::test()"
 ```
 
-Benchmark split on leading, middle, and trailing axes with `sizes = 1L`. Compare
-the result with the current implementation using the round-robin method from
-`plans/split-optimize.md`. Also benchmark a larger uniform chunk size and an
-explicit unequal plan. Correctness does not depend on a fixed timing threshold,
-but the new traversal should remove the severe leading-axis slowdown and keep
-trailing-axis performance in the same range.
+Split benchmarks live in `bench/iterator.R` and cover leading, middle, and
+trailing axes with `dimensions = 1L`, a larger uniform chunk, and an explicit
+unequal plan. Stack adds no new traversal, so it needs no benchmark of its own.
 
 ## Done means
 
 - The four public signatures match this plan.
 - Combine remains unchanged and all of its current tests pass.
-- Split accepts one axis and both forms of `sizes`.
-- Split retains its selected axis and handles zero-size chunks.
-- Uniform split, especially `sizes = 1L`, reuses dimensions and traversal work.
+- Split accepts one axis and both forms of `dimensions`.
+- Split retains its selected axis and handles zero-dimension chunks.
+- Uniform split, especially `dimensions = 1L`, reuses dimensions and traversal
+  work.
 - Stack is implemented through expansion, insertion, and combine.
 - Stack expands inputs only as far as the insertion point requires.
-- Unstack is implemented through size-1 split and remove-axes.
+- Unstack is implemented through dimension-1 split and remove-axes.
 - Split/combine and stack/unstack pass the stated round trips.
 - Public combine and stack do not expose `.ptype`.
 - Internal combine and stack can receive a prototype.
@@ -829,7 +817,6 @@ trailing-axis performance in the same range.
 - Names, zero dimensions, value order, types, and errors match this plan.
 - Old multiple-axis split behavior and split-name registration are gone.
 - Checked-in benchmarks and broader plans use the new split signature.
-- The obsolete split optimization plan is removed after its design is applied.
 - No input is modified.
 - Native routines are registered with the correct arities.
 - `_pkgdown.yml` includes combine, split, stack, and unstack.
