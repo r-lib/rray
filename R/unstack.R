@@ -1,4 +1,4 @@
-#' Unstack an array along an axis
+#' Unstack an array
 #'
 #' @description
 #' `rray_unstack()` returns one array for every position along `axis`. The

@@ -2,7 +2,7 @@
 % Please edit documentation in R/unstack.R
 \name{rray_unstack}
 \alias{rray_unstack}
-\title{Unstack an array along an axis}
+\title{Unstack an array}
 \usage{
 rray_unstack(x, axis)
 }
