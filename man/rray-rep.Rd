@@ -15,10 +15,10 @@ rray_rep_each(x, ..., times, axis)
 
 \item{...}{These dots are for future extensions and must be empty.}
 
-\item{times}{For \code{rray_rep()}, a single whole number greater than or equal
+\item{times}{For \code{rray_rep()}, a single integer greater than or equal
 to 0.
 
-For \code{rray_rep_each()}, a vector of whole numbers greater than or equal to
+For \code{rray_rep_each()}, a vector of integers greater than or equal to
 0. It is recycled to the dimension of \code{x} along \code{axis}.}
 
 \item{axis}{A single integer representing the axis to repeat along.}

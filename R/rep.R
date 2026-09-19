@@ -21,10 +21,10 @@
 #'
 #' @param x An array.
 #'
-#' @param times For `rray_rep()`, a single whole number greater than or equal
+#' @param times For `rray_rep()`, a single integer greater than or equal
 #'   to 0.
 #'
-#'   For `rray_rep_each()`, a vector of whole numbers greater than or equal to
+#'   For `rray_rep_each()`, a vector of integers greater than or equal to
 #'   0. It is recycled to the dimension of `x` along `axis`.
 #'
 #' @param axis A single integer representing the axis to repeat along.
