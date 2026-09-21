@@ -1174,39 +1174,99 @@ and this file as the source of truth for location arrays.
 
 ## Research notes
 
-### NumPy
+### Sources of inspiration
+
+The design should look to NumPy's `take()`, `take_along_axis()`, advanced
+indexing, and NEP 21 as sources of inspiration. Each contributes a different
+part of rray's indexing model:
+
+| Source | Main idea | rray connection |
+|---|---|---|
+| `take()` | One location array replaces one source axis while every other axis remains independent | `rray_index_axis(cross = TRUE)` |
+| `take_along_axis()` | One location array is matched with corresponding one-dimensional data slices | `rray_index_axis(cross = FALSE)` |
+| Advanced indexing | Multiple integer arrays broadcast and are read pointwise | Supplied arrays in `rray_index()` always broadcast and pair pointwise |
+| NEP 21 | Orthogonal and vectorized indexing should have explicit, separate contracts | `rray_slice()` owns Cartesian subscript selection and `rray_index()` owns paired location arrays |
+
+These are conceptual sources rather than APIs to copy exactly. rray uses
+one-based locations, left-aligned broadcasting, stable output placement,
+strict assignment casting, and explicit name rules.
+
+### `take()` and crossed axis indexing
 
 NumPy's `take()` leaves source axes other than `axis` independent. The full
-shape of its index array replaces the selected axis. This matches
-`rray_index_axis(cross = TRUE)` apart from NumPy's zero-based locations and its
-additional out-of-bounds modes.
+shape of its index array replaces the selected axis. This supplies the shape
+model for:
+
+```r
+rray_index_axis(x, locations, axis, cross = TRUE)
+```
+
+The relationship concerns positive locations and result shape. It does not
+make `rray_slice_axis()` an alias for `take()`. Slicing accepts ordinary R
+subscripts, including negative complements, logical masks, and names.
+
+### `take_along_axis()` and identity indexing
 
 NumPy's `take_along_axis()` matches every one-dimensional index slice with the
-corresponding data slice. This matches `rray_index_axis(cross = FALSE)` apart
-from zero-based locations.
+corresponding data slice. This supplies the identity-coordinate model for:
+
+```r
+rray_index_axis(x, locations, axis, cross = FALSE)
+```
+
+Functions such as `rray_locate_min()` and `rray_locate_max()` should return
+locations shaped for this operation. NumPy's `put_along_axis()` also informs
+the corresponding assignment operation:
+
+```r
+rray_index_assign_axis(x, locations, axis, value, cross = FALSE)
+```
+
+### Advanced indexing and general indexing
+
+NumPy advanced indexing broadcasts multiple integer arrays and reads them
+pointwise. This supplies the core model for the location list accepted by:
+
+```r
+rray_index(x, locations, axes, cross)
+```
+
+Supplied location arrays always broadcast and pair pointwise. Singleton
+dimensions on different axes form an explicit open mesh when a Cartesian
+product is wanted.
+
+NumPy changes output-axis placement depending on whether advanced indices are
+adjacent. rray4 should not copy that rule. Crossed indexing always inserts the
+common location block where the first selected source axis occurred.
+
+### NEP 21 and explicit contracts
+
+NEP 21 names NumPy's paired behavior vectorized indexing and proposes a
+separate orthogonal indexing operation. The proposal is deferred, but its main
+design lesson is valuable: paired and Cartesian indexing should not be selected
+implicitly by the types or arrangement of arguments.
+
+rray applies that lesson through separate public families:
+
+- `rray_slice()` and `rray_slice_axis()` accept ordinary subscripts and use
+  Cartesian selection.
+- `rray_index()` and `rray_index_axis()` accept strict location arrays and pair
+  supplied coordinates pointwise.
+- `rray_extract()` gives flat positions and point matrices an explicit
+  one-dimensional result contract.
+
+The `cross` flag adds a choice that is separate from NEP 21's distinction
+between paired and Cartesian indexing. It controls only source axes without
+supplied location arrays. It never changes how supplied arrays relate to each
+other.
 
 Useful sources:
 
 - [`numpy.take()`](https://numpy.org/doc/stable/reference/generated/numpy.take.html)
 - [`numpy.take_along_axis()`](https://numpy.org/doc/stable/reference/generated/numpy.take_along_axis.html)
 - [`numpy.put_along_axis()`](https://numpy.org/doc/stable/reference/generated/numpy.put_along_axis.html)
-
-NumPy's general advanced indexing changes output-axis placement depending on
-whether advanced indices are adjacent. rray4 should not copy that rule. Crossed
-indexing always inserts the common location block where the first selected
-source axis occurred.
-
-### Explicit vectorized and orthogonal indexing
-
-NEP 21 describes NumPy's broadcasted advanced indexing as vectorized indexing
-and proposes explicit vectorized and orthogonal APIs. The proposal is deferred,
-but its separation between paired and Cartesian indexing remains useful.
-
+- [NumPy advanced indexing](https://numpy.org/doc/stable/user/basics.indexing.html#advanced-indexing)
 - [NEP 21: Simplified and explicit advanced indexing](https://numpy.org/neps/nep-0021-advanced-indexing.html)
-
-rray4 expresses Cartesian indexing among supplied locations through explicit
-open-mesh shapes. The `cross` flag has the separate job of controlling
-unspecified source axes.
 
 ### Base R
 
