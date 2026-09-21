@@ -14,26 +14,17 @@ coordinate arrays broadcast to common dimensions and are read pointwise. Source
 axes that are not selected remain in the result and cross with every point in
 the common index space.
 
-Also separate lane slicing from ordinary one-axis slicing:
+This plan starts from the contracts defined in `plans/slice.md`:
 
 ```r
-rray_slice_by_lane(x, i, axis)
-rray_slice_assign_by_lane(x, i, axis, value)
+rray_slice_axis(x, i, axis)
+rray_slice_locations(x, locations, axis)
 ```
 
-`rray_slice_axis()` should accept only an ordinary shared subscript.
-`rray_slice_by_lane()` should accept only a same-dimensionality integer
-coordinate array. This gives both functions one stable input contract,
-including for one-dimensional arrays.
-
-This plan builds on `plans/slice.md`. Where the two plans differ, this plan
-supersedes these parts of `slice.md`:
-
-- Do not dispatch `rray_slice_axis()` between shared and per-lane modes.
-- Do not use the dimensionality of `i` to choose subscript semantics.
-- Do not treat a multidimensional shared index as invalid. It belongs to
-  `rray_gather()` and can add dimensions to the result.
-- Implement per-lane indexing as `rray_slice_by_lane()`.
+`rray_slice_axis()` accepts one ordinary subscript. `rray_slice_locations()`
+accepts a same-dimensionality integer location array. Gather extends the
+location model from one selected source axis to any set of source axes. It does
+not change either slice contract.
 
 The complete indexing family becomes:
 
@@ -41,8 +32,8 @@ The complete indexing family becomes:
 |---|---|---|
 | Orthogonal slice | `rray_slice()` | `rray_slice_assign()` |
 | Shared one-axis slice | `rray_slice_axis()` | `rray_slice_assign_axis()` |
+| Location slice | `rray_slice_locations()` | `rray_slice_assign_locations()` |
 | Vectorized coordinates | `rray_gather()` | `rray_gather_assign()` |
-| Per-lane axis slice | `rray_slice_by_lane()` | `rray_slice_assign_by_lane()` |
 | Flat positions or point matrix | `rray_extract()` | `rray_extract_assign()` |
 
 Do not add replacement functions. Every `_assign()` function returns a modified
@@ -53,6 +44,12 @@ copy of `x`.
 An ordinary subscript describes a set of locations on one axis. Subscripts on
 different axes form a Cartesian product. Negative integers mean complement,
 logical values act as masks, and character values match axis names.
+
+A location array has the stricter contract defined in `slice.md`. Each
+non-missing element is one positive, one-based location on a selected axis. Its
+dimensions connect those locations to output positions.
+`rray_slice_locations()` uses one location array for one source axis while
+keeping identity locations on every other axis.
 
 A gather index has a different job. Each element supplies exactly one
 coordinate on one source axis. Multiple coordinate arrays are broadcast and
@@ -70,9 +67,9 @@ rray_gather(x, list(-1L), axes = 1L)
 ```
 
 This distinction matters most for one-dimensional arrays. A one-dimensional
-integer array can no longer be interpreted as either a shared subscript or a
-per-lane coordinate depending on context. The function name determines the
-rules.
+integer array is an ordinary subscript when passed to `rray_slice_axis()` and a
+strict location array when passed to `rray_slice_locations()`. The function
+name determines the rules.
 
 `gather` is preferable to `slice` for the general operation because index
 dimensions can replace multiple source axes, add dimensions, or reduce
@@ -84,6 +81,11 @@ dimensionality. It does not promise to preserve the shape of `x`.
 
 `indices` is a nonempty list. Each element is a bare integer vector or array.
 Each element supplies coordinates for one selected source axis.
+
+Each coordinate is a location on its selected axis in the sense defined by
+`slice.md`: a positive, one-based integer position, not an ordinary subscript.
+The term coordinate is useful here because one location from each selected
+axis combines into a source point.
 
 ```r
 rray_gather(
@@ -186,7 +188,7 @@ out[j, k] = x[rows[j, k], i[j, k]]
 ```
 
 The row coordinate is now paired with `i` instead of crossing with it. This is
-the basis of lane indexing.
+the basis of location slicing.
 
 Index dimensions never implicitly correspond to source axes just because
 their dimensions happen to match. `axes` says which source coordinate each
@@ -539,9 +541,9 @@ shared[, , 2]
 Each point in `i` selects an entire column because source axis 1 is untouched.
 This is equivalent to a multidimensional shared take along axis 2.
 
-### 5. The same index used by lane
+### 5. The same array used as slice locations
 
-Lane indexing supplies an identity coordinate for every non-selected source
+Location slicing supplies an identity coordinate for every non-selected source
 axis. For the matrix above, the row coordinate is:
 
 ```r
@@ -556,7 +558,7 @@ rows
 The conceptual gather is:
 
 ```r
-lane <- rray_gather(x, list(rows, i))
+sliced <- rray_gather(x, list(rows, i))
 ```
 
 Both source axes are selected. `rows` broadcasts from `c(2L, 1L)` and `i`
@@ -570,52 +572,52 @@ rows after broadcasting:
 
 G = (2, 2)
 S = (1, 2)
-lane dimensions = (2, 2)
+sliced dimensions = (2, 2)
 ```
 
 The general gather calculation is:
 
 ```text
-lane[j, k] = x[rows[j, k], i[j, k]]
+sliced[j, k] = x[rows[j, k], i[j, k]]
 ```
 
-Because `rows[j, k] = j`, the lane calculation is:
+Because `rows[j, k] = j`, the slice calculation is:
 
 ```text
-lane[j, k] = x[j, i[j, k]]
+sliced[j, k] = x[j, i[j, k]]
 ```
 
 The complete calculation is:
 
 ```text
-lane[1, 1] = x[1, i[1, 1]] = x[1, 4] = 40
-lane[2, 1] = x[2, i[2, 1]] = x[2, 1] = 50
-lane[1, 2] = x[1, i[1, 2]] = x[1, 2] = 20
-lane[2, 2] = x[2, i[2, 2]] = x[2, 3] = 70
+sliced[1, 1] = x[1, i[1, 1]] = x[1, 4] = 40
+sliced[2, 1] = x[2, i[2, 1]] = x[2, 1] = 50
+sliced[1, 2] = x[1, i[1, 2]] = x[1, 2] = 20
+sliced[2, 2] = x[2, i[2, 2]] = x[2, 3] = 70
 ```
 
 ```r
-lane
+sliced
 #      [,1] [,2]
 # [1,]   40   20
 # [2,]   50   70
 ```
 
-The public lane call is:
+The public slice call is:
 
 ```r
-rray_slice_by_lane(x, i, axis = 2L)
+rray_slice_locations(x, locations = i, axis = 2L)
 ```
 
-It should not allocate `rows`. The identity coordinate is part of the lane
-plan.
+It should not allocate `rows`. The identity coordinate is part of the location
+slice plan.
 
-The difference between the shared and lane results is structural:
+The difference between the shared gather and location slice is structural:
 
 - Shared gather leaves rows untouched, so rows cross with every point in `i`.
-- Lane indexing supplies row coordinates, so rows pair pointwise with `i`.
+- Location slicing supplies row coordinates, so rows pair pointwise with `i`.
 
-### 6. Lane broadcasting
+### 6. Location broadcasting
 
 ```r
 x <- matrix(
@@ -628,21 +630,22 @@ x <- matrix(
   byrow = TRUE
 )
 
-i <- matrix(c(4L, 1L), nrow = 1)
+locations <- matrix(c(4L, 1L), nrow = 1)
 
 dim(x)
 # [1] 3 4
 
-dim(i)
+dim(locations)
 # [1] 1 2
 
-out <- rray_slice_by_lane(x, i, axis = 2L)
+out <- rray_slice_locations(x, locations, axis = 2L)
 ```
 
-The row dimension of `i` broadcasts from one to three. The broadcast index is:
+The row dimension of `locations` broadcasts from one to three. The broadcast
+location array is:
 
 ```text
-i* =
+locations* =
      [,1] [,2]
 [1,]    4    1
 [2,]    4    1
@@ -652,7 +655,7 @@ i* =
 The general calculation is:
 
 ```text
-out[row, column] = x[row, i*[row, column]]
+out[row, column] = x[row, locations*[row, column]]
 ```
 
 The complete calculation is:
@@ -677,19 +680,19 @@ dim(out)
 # [1] 3 2
 ```
 
-### 7. One-dimensional lane behavior
+### 7. One-dimensional location behavior
 
 ```r
 x <- array(c(10, 20, 30, 40), 4L)
-i <- array(c(4L, 1L), 2L)
+locations <- array(c(4L, 1L), 2L)
 
-out <- rray_slice_by_lane(x, i, axis = 1L)
+out <- rray_slice_locations(x, locations, axis = 1L)
 ```
 
-There are no non-selected axes, so lane indexing is a full gather:
+There are no non-selected axes, so location slicing is a full gather:
 
 ```text
-out[p] = x[i[p]]
+out[p] = x[locations[p]]
 ```
 
 ```text
@@ -708,8 +711,8 @@ dim(out)
 Negative coordinates always error:
 
 ```r
-rray_slice_by_lane(x, -1L, axis = 1L)
-# Error: lane coordinates must be positive
+rray_slice_locations(x, array(-1L, 1L), axis = 1L)
+# Error: locations must be positive
 ```
 
 Ordinary complement selection remains available through the shared subscript
@@ -721,8 +724,8 @@ rray_slice_axis(x, -1L, axis = 1L)
 # dimensions: 3L
 ```
 
-This is why lane indexing must not dispatch from the shape of `i` inside
-`rray_slice_axis()`.
+This preserves the separate contracts from `slice.md` even when the values
+would select the same elements.
 
 ### 8. Assignment with repeated coordinates
 
@@ -844,45 +847,47 @@ operation never changes the type, dimensions, or names of `x`.
 
 An error must occur before `x` is copied or any writes happen.
 
-## `rray_slice_by_lane()`
+## `rray_slice_locations()` as a gather
 
 ```r
-rray_slice_by_lane(x, i, axis)
-rray_slice_assign_by_lane(x, i, axis, value)
+rray_slice_locations(x, locations, axis)
+rray_slice_assign_locations(x, locations, axis, value)
 ```
 
-Lane indexing is a constrained full gather. It preserves the dimensionality of
-`x` and changes only the selected axis dimension.
+Location slicing is a constrained full gather. It preserves the dimensionality
+of `x` and changes only the selected axis dimension. `slice.md` owns its public
+contract. This section explains how gather generalizes it and how the two
+implementations can share lower-level machinery.
 
-### Input contract
+### Contract carried forward from `slice.md`
 
-- `i` must be a bare integer array.
-- `i` must have the same dimensionality as `x`.
-- On `axis`, the dimension of `i` becomes the result dimension.
-- On every other axis, the dimension of `i` must be one or equal the matching
-  dimension of `x`.
-- A dimension of one in `i` broadcasts on a non-selected axis.
-- `i` can never enlarge a non-selected axis, including an axis of `x` whose
-  dimension is one.
-- Coordinates must be positive and in bounds for the selected source axis.
-- Missing coordinates produce missing values when reading and are errors when
+- `locations` is a bare integer array.
+- `locations` has the same dimensionality as `x`.
+- On `axis`, the dimension of `locations` becomes the result dimension.
+- On every other axis, the dimension of `locations` is one or equal the
+  matching dimension of `x`.
+- A dimension of one in `locations` broadcasts on a non-selected axis.
+- `locations` never enlarges a non-selected axis, including an axis of `x`
+  whose dimension is one.
+- Locations are positive and in bounds for the selected source axis.
+- Missing locations produce missing values when reading and are errors when
   assigning.
 
 The result dimensions are:
 
 ```text
 out_dimensions = dimensions(x)
-out_dimensions[axis] = dimensions(i)[axis]
+out_dimensions[axis] = dimensions(locations)[axis]
 ```
 
-### General lane calculation
+### General location calculation
 
-Let `i*` be `i` directionally broadcast to the result dimensions. For an
-output point `p`:
+Let `locations*` be `locations` directionally broadcast to the result
+dimensions. For an output point `p`:
 
 ```text
 source = p
-source[axis] = i*[p]
+source[axis] = locations*[p]
 out[p] = x[source]
 ```
 
@@ -890,18 +895,18 @@ Equivalently:
 
 ```text
 out[p1, ..., pn] =
-  x[p1, ..., p(axis - 1), i*[p1, ..., pn], p(axis + 1), ..., pn]
+  x[p1, ..., p(axis - 1), locations*[p1, ..., pn], p(axis + 1), ..., pn]
 ```
 
 Every non-selected source coordinate equals its output coordinate. Only the
-selected coordinate comes from `i`.
+selected coordinate comes from `locations`.
 
 ### Connection to gather
 
 Conceptually, create one coordinate array per source axis:
 
 ```text
-coordinates[axis] = i
+coordinates[axis] = locations
 ```
 
 For every other axis `a`, create an identity coordinate with the shape:
@@ -917,16 +922,16 @@ rray_gather(x, coordinates)
 ```
 
 The identity coordinates force the common index dimensions to retain every
-non-selected dimension of `x`. `i` supplies the selected dimension. The
-implementation must represent these identity coordinates in the plan and must
-not allocate them as R arrays.
+non-selected dimension of `x`. `locations` supplies the selected dimension.
+The implementation must represent these identity coordinates in the plan and
+must not allocate them as R arrays.
 
-### Lane names
+### Location slice names
 
 The selected axis loses its names because different lanes can select different
 source names. Every non-selected axis keeps the names from `x` because its
-dimension and identity mapping are unchanged. Names on `i` do not supply
-result names.
+dimension and identity mapping are unchanged. Names on `locations` do not
+supply result names.
 
 Assignment returns the original dimensions and names of `x`.
 
@@ -1051,18 +1056,18 @@ If the offset storage becomes material for full gathers, add an on-the-fly
 path later. Do not complicate the first implementation before profiling shows
 the need.
 
-### Lane plan
+### Location slice plan
 
-The lane wrapper should reuse gather coordinate validation and typed cores, but
-it should build a specialized plan:
+The existing location slice wrapper should reuse gather coordinate validation
+and typed cores, but it should keep its specialized plan:
 
 1. Validate equal dimensionality.
 2. Validate directional broadcasting on non-selected axes.
 3. Build the result dimensions by replacing only the selected dimension.
 4. Give `x` its ordinary stride on non-selected axes and stride zero on the
    selected axis.
-5. Give `i` its broadcast stride on every result axis.
-6. At each result point, add `(i_location - 1) * x_axis_stride` to the source
+5. Give `locations` its broadcast stride on every result axis.
+6. At each result point, add `(location - 1) * x_axis_stride` to the source
    base location.
 
 This is the two-location iterator described in `slice.md`. It is the efficient
@@ -1078,8 +1083,9 @@ Gather read and assignment should share one source-location order.
 - Assignment rejects missing coordinates before copying `x`.
 - Assignment writes in column-major gather result order.
 
-The generic gather and lane plans can call the same typed copy helpers once
-they expose the next source location through a small common interface.
+The generic gather and location slice plans can call the same typed copy
+helpers once they expose the next source location through a small common
+interface.
 
 ### Protection review
 
@@ -1103,15 +1109,10 @@ Add:
 - `src/gather.c`
 - `src/gather.h`
 - `src/decl/gather-decl.h`
-- `R/slice-by-lane.R`
-- `src/slice-by-lane.c`
-- `src/slice-by-lane.h`
-- `src/decl/slice-by-lane-decl.h`
 - `tests/testthat/test-gather.R`
-- `tests/testthat/test-slice-by-lane.R`
 
-The gather header declares internal C entry points that lane slicing can reuse.
-FFI declarations remain in `src/init.c`.
+The gather header declares internal C entry points that the existing location
+slice implementation can reuse. FFI declarations remain in `src/init.c`.
 
 Keep each `.c` file in top-down order. Include its declaration header last.
 Do not add comments to C or R source files.
@@ -1185,18 +1186,20 @@ dimensions.
 - Type, dimensions, and names of `x` are unchanged.
 - Reading the selected targets agrees with the assignment target order.
 
-### Lane behavior
+### Location slice integration
 
-- `i` must be a bare integer array with the same dimensionality as `x`.
-- One-dimensional `x` uses strict lane coordinates.
+- `locations` must be a bare integer array with the same dimensionality as
+  `x`.
+- One-dimensional `x` uses strict location semantics.
 - Positive coordinates work and zero or negative coordinates error.
 - Exact non-selected dimensions work.
 - Dimensions of one broadcast on non-selected axes.
-- `i` cannot enlarge a non-selected axis whose source dimension is one.
+- `locations` cannot enlarge a non-selected axis whose source dimension is
+  one.
 - Only the selected result dimension changes.
 - The selected axis loses names and all other axes keep names.
-- Lane results equal generic full gather results built with explicit identity
-  coordinates.
+- Location slice results equal generic full gather results built with explicit
+  identity coordinates.
 - Assignment agrees with the same explicit gather targets.
 
 ### Reference properties
@@ -1219,14 +1222,14 @@ rray_extract(x, points)
 
 must equal a full gather over the columns of `points`.
 
-For lane indexing:
+For location slicing:
 
 ```r
-rray_slice_by_lane(x, i, axis)
+rray_slice_locations(x, locations, axis)
 ```
 
-must equal a full gather over `i` and explicit identity coordinates on every
-other source axis.
+must equal a full gather over `locations` and explicit identity coordinates on
+every other source axis.
 
 For NumPy comparisons, account for one-based coordinates, rray's left-aligned
 broadcasting, and R's column-major display order. Use only cases where the
@@ -1245,15 +1248,7 @@ After each C change:
 
 ## Delivery order
 
-### 1. Correct the slice-axis split
-
-Update `slice.md` and the implementation so `rray_slice_axis()` has only
-ordinary shared subscript semantics. Add `rray_slice_by_lane()` as the strict
-per-lane operation.
-
-This should happen before the old shape dispatch becomes public behavior.
-
-### 2. Implement generic gather
+### 1. Implement generic gather
 
 Implement read-only `rray_gather()` with integer coordinates, common
 broadcasting, untouched axes, result-shape placement, names, and all storage
@@ -1261,22 +1256,22 @@ types.
 
 Use the loop oracle and the fully worked examples above as the first tests.
 
-### 3. Implement gather assignment
+### 2. Implement gather assignment
 
 Add casting, value broadcasting, missing rejection, copying, and deterministic
 last-write-wins behavior.
 
-### 4. Share lower-level machinery
+### 3. Share lower-level machinery
 
 Once all families have tests, share coordinate validation, gather offsets, and
 typed copy helpers where doing so leaves each public contract clear. Keep the
-orthogonal affine fast path and the specialized lane iterator.
+orthogonal affine fast path and the specialized location slice iterator.
 
-### 5. Update the main plans
+### 4. Update the main implementation plan
 
-Update the recommendation, API table, implementation files, tests, and
-delivery order in `plans/slice.md`. Then update the corresponding section of
-`plans/implementation.md`.
+Update the corresponding section of `plans/implementation.md`. Keep
+`plans/slice.md` as the source of truth for ordinary slicing, location slicing,
+and extraction.
 
 ## Research notes
 

@@ -2,10 +2,15 @@
 
 ## Recommendation
 
-Use `slice` for orthogonal, dimension-preserving selection. Use `extract` for
-selection that returns a one-dimensional array. Flat positions and coordinate
-points are two input forms for `rray_extract()`. Fold shared and per-lane axis
-indices into `rray_slice_axis()`, using the dimensionality of `i` to dispatch.
+Use `slice` for dimension-preserving selection. Use `extract` for selection
+that returns a one-dimensional array. Flat positions and coordinate points are
+two input forms for `rray_extract()`.
+
+Keep ordinary subscripts separate from location arrays. A subscript describes
+a set of positions and can use ordinary R forms such as negative integers,
+logical masks, and names. A location array contains one positive, one-based
+integer location or a missing value for each output position. Its shape
+connects each location to the other axes of `x`.
 
 The proposed family is:
 
@@ -13,9 +18,10 @@ The proposed family is:
 |---|---|---|
 | Slice every axis | `rray_slice(x, ...)` | `rray_slice_assign(x, ..., value)` |
 | Slice one axis | `rray_slice_axis(x, i, axis)` | `rray_slice_assign_axis(x, i, axis, value)` |
+| Slice at locations | `rray_slice_locations(x, locations, axis)` | `rray_slice_assign_locations(x, locations, axis, value)` |
 | Extract flat positions or points | `rray_extract(x, i)` | `rray_extract_assign(x, i, value)` |
 
-The two slice rows should be implemented first. Extraction forms the second
+The three slice rows should be implemented first. Extraction forms the second
 layer.
 
 Do not add replacement functions such as `rray_slice<-()`. The `_assign()`
@@ -25,10 +31,32 @@ an array class.
 
 ## The model
 
-There are four different addressing modes. Flat positions and coordinate points
-share `rray_extract()` because both return a one-dimensional array. Shared and
-per-lane axis indices share `rray_slice_axis()` because both preserve
-dimensionality and differ naturally by the dimensionality of `i`.
+There are five addressing modes. Orthogonal and one-axis slicing accept
+ordinary subscripts. Location slicing accepts an integer location array. Flat
+positions and coordinate points share `rray_extract()` because both return a
+one-dimensional array.
+
+The function name determines the input contract. The dimensionality or class
+of an input never changes a subscript into a location array.
+
+### Subscripts and location arrays
+
+| Property | Subscript | Location array |
+|---|---|---|
+| Used by | `rray_slice()`, `rray_slice_axis()` | `rray_slice_locations()` |
+| Meaning | A set of positions on an axis | One position for each output point |
+| Accepted forms | Integer, double, logical, character, missing, `NULL` | Bare integer array |
+| Negative values | Select the complement | Error |
+| Zero | Ignored | Error |
+| Shape | Does not connect positions to other axes | Connects locations to lanes and can broadcast |
+
+A subscript is normalized into a one-dimensional sequence of locations before
+slicing. Its original type expresses how to form that sequence. A location
+array is already normalized in meaning, but not in storage: its elements still
+need bounds and missing-value validation. This distinction lets
+`rray_slice_axis()` keep ordinary R subscript rules while
+`rray_slice_locations()` has one strict contract on arrays of any
+dimensionality.
 
 ### Orthogonal slices
 
@@ -81,22 +109,24 @@ rray_extract(x, x %% 5 == 0)
 This covers base R's single-subscript array indexing and whole-array logical
 masks. The result is one dimensional.
 
-### Per-lane axis slices
+### Location slices
 
-The index array supplies a different axis location for each lane through the
-array.
+The location array supplies a different axis location for each lane through
+the array. A lane is the one-dimensional vector left after every coordinate
+except `axis` has been fixed.
 
 ```r
 x <- array(c(10, 60, 30, 40, 20, 50), c(2, 3))
-i <- array(c(2, 1), c(2, 1))
+locations <- array(c(2L, 1L), c(2L, 1L))
 
-rray_slice_axis(x, i, axis = 2)
+rray_slice_locations(x, locations, axis = 2)
 # dimensions: c(2, 1)
 # values: c(30, 60)
 ```
 
-This mode matches NumPy's `take_along_axis()`. It is useful with functions such
-as `rray_locate_max()` and with per-lane sorting or ranking indices.
+This operation matches NumPy's `take_along_axis()`. It is the direct consumer
+of arrays returned by functions such as `rray_locate_min()` and
+`rray_locate_max()`. It also accepts per-lane sorting or ranking locations.
 
 ## Why these divisions
 
@@ -121,6 +151,8 @@ the addressing modes:
 
 The proposed API makes the common operation `rray_slice()`. `rray_extract()`
 uses the shape of `i` to distinguish flat positions from coordinate points.
+`rray_slice_axis()` always accepts one ordinary subscript. Location arrays have
+the explicit `rray_slice_locations()` entry point.
 
 ## `rray_slice()`
 
@@ -166,49 +198,9 @@ rray_slice_axis(x, i, axis)
 rray_slice_assign_axis(x, i, axis, value)
 ```
 
-`rray_slice_axis()` has two modes. A vector or one-dimensional `i` is one shared
-subscript used by every lane. A multidimensional integer `i` contains a
-different subscript for every lane. A lane is the one-dimensional vector left
-after every coordinate except `axis` has been fixed.
-
-This shape dispatch folds the useful part of NumPy's `take_along_axis()` into
-the ordinary one-axis slicing function.
-
-### Dispatch on `i`
-
-| Form of `i` | Mode |
-|---|---|
-| Missing, `NULL`, or an unshaped atomic vector | Shared |
-| A one-dimensional array | Shared |
-| A bare integer array with dimensionality two or greater | Per-lane |
-| Any other multidimensional object | Error |
-
-A bare array has no class other than the implicit `array` or `matrix` class
-provided by its dimensions. Dispatch chooses a mode before the subscript is
-validated. For example, an unshaped raw vector reaches shared mode and then
-errors because raw vectors are not valid shared subscripts.
-
-A multidimensional integer array always requests per-lane mode. If its
-dimensionality does not equal that of `x`, it is an error rather than a shared
-subscript. Convert it to a vector or one-dimensional array to request shared
-mode.
-
-Per-lane mode accepts integer storage only. Double, logical, and character
-arrays do not activate it. Position-producing functions such as
-`rray_locate_max()` should return integer arrays.
-
-When `x` is one-dimensional, per-lane and shared indexing are the same because
-there is only one lane. A one-dimensional integer array therefore always uses
-shared rules. This preserves negative complements, logical masks, character
-names, and every other ordinary R subscript feature. A multidimensional integer
-`i` still requests per-lane mode and then errors because its dimensionality
-cannot equal that of `x`.
-
-### Shared mode
-
-Shared mode has exactly the same semantics as slicing one axis with
-`rray_slice()`. It uses one subscript for every lane and only changes the
-selected axis.
+`rray_slice_axis()` has exactly the same subscript semantics as slicing one
+axis with `rray_slice()`. It uses one subscript for every lane and only changes
+the selected axis.
 
 ```r
 x <- matrix(
@@ -229,37 +221,49 @@ rray_slice_axis(x, c(4, 1), axis = 2)
 It replaces the need for a padding helper when the selected axis is late in a
 high-dimensional array.
 
-### Per-lane mode
+`i` is always an ordinary subscript. Its dimensions and class do not select a
+different behavior. A shaped object that is not a valid ordinary subscript is
+an error. Use `rray_slice_locations()` to supply one location per lane.
 
-In per-lane mode, `i` must have the same dimensionality as `x`.
+## `rray_slice_locations()`
+
+```r
+rray_slice_locations(x, locations, axis)
+rray_slice_assign_locations(x, locations, axis, value)
+```
+
+`rray_slice_locations()` selects one location on `axis` for each output
+position. `locations` must be a bare integer array with the same dimensionality
+as `x`.
 
 - On `axis`, the dimension of `x` is the range of valid positions and the
-  dimension of `i` becomes the output dimension.
-- On every other axis, the dimension of `i` must be one or equal the matching
-  dimension of `x`.
-- A dimension of one in `i` broadcasts to the matching dimension of `x`.
-- `x` never grows to match `i`. Output dimensions outside `axis` are always
-  identical to those of `x`.
-- Every element of `i` must be a positive, one-based position no greater than
-  the dimension of `x` on `axis`.
-- Zero and negative positions are errors. Each element chooses one position,
+  dimension of `locations` becomes the output dimension.
+- On every other axis, the dimension of `locations` must be one or equal the
+  matching dimension of `x`.
+- A dimension of one in `locations` broadcasts to the matching dimension of
+  `x`.
+- `x` never grows to match `locations`. Output dimensions outside `axis` are
+  always identical to those of `x`.
+- Every element of `locations` must be a positive, one-based integer no greater
+  than the dimension of `x` on `axis`.
+- Zero and negative locations are errors. Each element chooses one position,
   so complement selection has no meaning.
-- Missing positions produce missing values when reading and are errors when
+- Missing locations produce missing values when reading and are errors when
   assigning.
 
 Directional broadcasting keeps the phrase "slice one axis" true and makes
 assignment well-defined. Every selected output position maps back to an
 existing element of `x`.
 
-Using a different index array for each row:
+Using different locations for each row:
 
 ```r
-i <- rbind(
+locations <- rbind(
   c(4L, 1L),
   c(2L, 3L)
 )
 
-rray_slice_axis(x, i, axis = 2)
+rray_slice_locations(x, locations, axis = 2)
 #      [,1] [,2]
 # [1,]   40   10
 # [2,]   60   70
@@ -268,30 +272,31 @@ rray_slice_axis(x, i, axis = 2)
 The calculation is:
 
 ```text
-out[1, 1] = x[1, i[1, 1]] = x[1, 4] = 40
-out[1, 2] = x[1, i[1, 2]] = x[1, 1] = 10
-out[2, 1] = x[2, i[2, 1]] = x[2, 2] = 60
-out[2, 2] = x[2, i[2, 2]] = x[2, 3] = 70
+out[1, 1] = x[1, locations[1, 1]] = x[1, 4] = 40
+out[1, 2] = x[1, locations[1, 2]] = x[1, 1] = 10
+out[2, 1] = x[2, locations[2, 1]] = x[2, 2] = 60
+out[2, 2] = x[2, locations[2, 2]] = x[2, 3] = 70
 ```
 
-Shape is the dispatch signal. Removing the dimensions from the same `i` makes
-it one shared subscript for both rows:
+The same values can be used as an ordinary shared subscript, but that is an
+explicitly different operation:
 
 ```r
-rray_slice_axis(x, as.vector(i), axis = 2)
+rray_slice_axis(x, as.vector(locations), axis = 2)
 #      [,1] [,2] [,3] [,4]
 # [1,]   40   20   10   30
 # [2,]   80   60   50   70
 ```
 
-For assignment, `value` broadcasts to the per-lane selection dimensions. The
+For assignment, `value` broadcasts to the location selection dimensions. The
 returned array keeps the original dimensions of `x`. Repeated positions within
 a lane are repeated assignment targets, with the final value in column-major
 selection order winning.
 
-### Broadcasting `i`
+### Broadcasting locations
 
-A dimension of one in `i` broadcasts across the corresponding lanes of `x`.
+A dimension of one in `locations` broadcasts across the corresponding lanes of
+`x`.
 
 ```r
 x <- matrix(
@@ -304,35 +309,35 @@ x <- matrix(
   byrow = TRUE
 )
 
-i <- matrix(c(4L, 1L), nrow = 1)
+locations <- matrix(c(4L, 1L), nrow = 1)
 
 dim(x)
 # c(3, 4)
 
-dim(i)
+dim(locations)
 # c(1, 2)
 
-rray_slice_axis(x, i, axis = 2)
+rray_slice_locations(x, locations, axis = 2)
 #      [,1] [,2]
 # [1,]   40   10
 # [2,]   80   50
 # [3,]  120   90
 ```
 
-The one row of `i` broadcasts across the three rows of `x`. An `i` with
-dimensions `c(4, 2)` would be an error because its first dimension cannot
-broadcast to the three rows of `x`.
+The one row of `locations` broadcasts across the three rows of `x`. A
+`locations` array with dimensions `c(4, 2)` would be an error because its first
+dimension cannot broadcast to the three rows of `x`.
 
 ### One-dimensional `x`
 
-A one-dimensional `i` always uses shared mode, even when it has a `dim`
-attribute.
+The two functions keep their distinct contracts even when `x` is
+one-dimensional.
 
 ```r
 x <- array(c(10, 20, 30, 40), 4)
-i <- array(c(4L, 1L), 2)
+locations <- array(c(4L, 1L), 2)
 
-rray_slice_axis(x, i, axis = 1)
+rray_slice_locations(x, locations, axis = 1)
 # [1] 40 10
 # dimensions: 2L
 
@@ -341,13 +346,13 @@ rray_slice_axis(x, -1, axis = 1)
 # dimensions: 3L
 ```
 
-Treating this as per-lane mode would produce the same result for positive
-indices but would unnecessarily disable ordinary negative and named
-subscripts.
+`rray_slice_locations()` requires positive integer locations.
+`rray_slice_axis()` retains ordinary negative, logical, and named subscript
+semantics.
 
 ### Assignment with `rray_locate_max()`
 
-`rray_locate_max()` should return one-based positions local to `axis`. It must
+`rray_locate_max()` should return one-based locations local to `axis`. It must
 preserve dimensionality, replacing the located axis with dimension one.
 
 ```r
@@ -357,22 +362,22 @@ x <- rbind(
   c(1, 5, 6)
 )
 
-i <- rray_locate_max(x, axis = 2)
+locations <- rray_locate_max(x, axis = 2)
 
-i
+locations
 #      [,1]
 # [1,]    2
 # [2,]    1
 # [3,]    3
 
-dim(i)
+dim(locations)
 # c(3, 1)
 ```
 
-Because `i` is a matrix, it activates per-lane mode:
+The result is directly accepted by `rray_slice_locations()`:
 
 ```r
-rray_slice_axis(x, i, axis = 2)
+rray_slice_locations(x, locations, axis = 2)
 #      [,1]
 # [1,]    9
 # [2,]    8
@@ -382,7 +387,7 @@ rray_slice_axis(x, i, axis = 2)
 A scalar assignment broadcasts to the three selected maxima:
 
 ```r
-rray_slice_assign_axis(x, i, axis = 2, value = 0)
+rray_slice_assign_locations(x, locations, axis = 2, value = 0)
 #      [,1] [,2] [,3]
 # [1,]    3    0    4
 # [2,]    0    2    7
@@ -394,7 +399,7 @@ A value with the selection dimensions assigns a different value to each lane:
 ```r
 value <- array(c(100, 200, 300), c(3, 1))
 
-rray_slice_assign_axis(x, i, axis = 2, value = value)
+rray_slice_assign_locations(x, locations, axis = 2, value = value)
 #      [,1] [,2] [,3]
 # [1,]    3  100    4
 # [2,]  200    2    7
@@ -414,10 +419,10 @@ For a three-dimensional `x` with dimensions `c(2, 3, 4)`, locating along axis
 2 returns dimensions `c(2, 1, 4)`. The assignment replaces one element in each
 of the eight lanes and returns the original dimensions `c(2, 3, 4)`.
 
-## Shared axis subscript rules
+## Axis subscript rules
 
-`rray_slice()` and shared-mode `rray_slice_axis()` use the same location rules
-as `vctrs::vec_as_location()`:
+`rray_slice()` and `rray_slice_axis()` use the same subscript rules as
+`vctrs::vec_as_location()`:
 
 - A missing argument selects every location.
 - `NULL`, `FALSE`, and `integer()` select no locations.
@@ -486,10 +491,10 @@ the data.
   `NULL` otherwise.
 - Names on the list of axis names stay attached to the same axes.
 
-Shared-mode `rray_slice_axis()` follows the same rules. Per-lane mode drops
+`rray_slice_axis()` follows the same rules. `rray_slice_locations()` drops
 names on the selected axis because each lane can select different source
 locations. Every other axis keeps the names from `x` because its dimension is
-unchanged. Names on `i` never supply output names.
+unchanged. Names on `locations` never supply output names.
 
 Point and flat extraction drop all names. A source axis cannot be identified
 with the one-dimensional output.
@@ -616,8 +621,9 @@ Do not carry these parts of the original API forward:
   programmatic multi-axis slicing.
 - `drop`: rray4 always returns arrays and never drops axes implicitly.
 - `rray_take()`: it would be an alias for `rray_slice_axis()`.
-- `rray_slice_along_axis()` and `rray_take_along_axis()`: multidimensional
-  integer `i` values activate this behavior in `rray_slice_axis()`.
+- `rray_slice_along_axis()`, `rray_take_along_axis()`, and
+  `rray_slice_by_lane()`: `rray_slice_locations()` names the strict location
+  array contract directly.
 - `rray_filter()`: it would be an alias for logical flat extraction.
 
 Do not overload `rray_slice()` with point or flat modes based on the class or
@@ -626,7 +632,7 @@ name and call structure.
 
 ## Implementation design
 
-### Shared index normalization
+### Subscript normalization
 
 Add `src/index.c`, `src/index.h`, and `src/decl/index-decl.h`. This layer owns:
 
@@ -670,32 +676,33 @@ Use two execution paths:
 This keeps common contiguous slices fast without making arbitrary repeated or
 reordered locations a special case in the public API.
 
-### Per-lane axis plan
+### Location slice plan
 
-Build a separate plan when `rray_slice_axis()` receives a multidimensional
-integer `i`.
+Build a dedicated plan for `rray_slice_locations()`.
 
-1. Validate that `i` has the same dimensionality as `x`.
+1. Validate that `locations` is a bare integer array with the same
+   dimensionality as `x`.
 2. Validate directional broadcasting on every non-selected axis.
 3. Copy the dimensions of `x` and replace the selected dimension with the
-   matching dimension of `i`.
+   matching dimension of `locations`.
 4. Give `x` its ordinary source stride on every non-selected axis and stride
    zero on the selected axis.
-5. Give `i` its ordinary stride on the selected axis. On every other axis, use
-   stride zero when its dimension is one and its ordinary stride otherwise.
-6. Walk the output point space once. At every point, read the one-based position
-   from `i` and add `(position - 1) * x_axis_stride` to the base location in
+5. Give `locations` its ordinary stride on the selected axis. On every other
+   axis, use stride zero when its dimension is one and its ordinary stride
+   otherwise.
+6. Walk the output point space once. At every point, read the one-based
+   location and add `(location - 1) * x_axis_stride` to the base location in
    `x`.
 
 The existing two-location strided iterator is a good fit. One location tracks
 the base position in `x`, while the other tracks the possibly broadcast
-position in `i`. Read and assignment cores then differ only in whether they
-copy from or write to the computed source location.
+position in `locations`. Read and assignment cores then differ only in whether
+they copy from or write to the computed source location.
 
-Missing `i` values use a dedicated path that writes the storage type's missing
-value during reads. Assignment validates that no missing position exists before
-copying `x`. Duplicate computed locations are visited in output column-major
-order, so the existing last-write-wins rule applies.
+Missing `locations` values use a dedicated path that writes the storage type's
+missing value during reads. Assignment validates that no missing location
+exists before copying `x`. Duplicate computed locations are visited in output
+column-major order, so the existing last-write-wins rule applies.
 
 ### Typed cores
 
@@ -713,9 +720,8 @@ offset = sum((point[axis] - 1) * stride[axis])
 ```
 
 The flat path already has source offsets after normalization. Both paths share
-the typed extraction and assignment cores. The per-lane path of
-`rray_slice_axis()` uses a separate iterator because `i` can broadcast on the
-non-selected axes.
+the typed extraction and assignment cores. `rray_slice_locations()` uses a
+separate iterator because `locations` can broadcast on the non-selected axes.
 
 ### Files
 
@@ -724,19 +730,21 @@ Keep each public family together with its assignment form:
 - `R/slice.R`, `src/slice.c`, `src/slice.h`, `src/decl/slice-decl.h`
 - `R/slice-axis.R`, `src/slice-axis.c`, `src/slice-axis.h`,
   `src/decl/slice-axis-decl.h`
+- `R/slice-locations.R`, `src/slice-locations.c`, `src/slice-locations.h`,
+  `src/decl/slice-locations-decl.h`
 - `R/extract.R`, `src/extract.c`, `src/extract.h`,
   `src/decl/extract-decl.h`
 - Shared `src/index.c`, `src/index.h`, `src/decl/index-decl.h`
 - An indexed iterator header if the irregular slice path is large enough to
   stand alone
 
-`rray_slice_axis()` needs its own FFI wrapper because it dispatches between
-shared and per-lane plans. Shared mode can still call the same internal slice
-implementation as `rray_slice()`.
+`rray_slice_axis()` can call the same internal slice implementation as
+`rray_slice()`. `rray_slice_locations()` has its own FFI wrapper and location
+plan.
 
 ## Test plan
 
-### Shared behavior
+### Ordinary slicing behavior
 
 - All seven native storage types.
 - Bare vectors normalize to one-dimensional arrays.
@@ -752,23 +760,29 @@ implementation as `rray_slice()`.
 - Long total sizes where practical, with axis dimensions still limited to
   integers.
 
-### Slice axis dispatch
+### Slice axis
 
-- Unshaped integer, double, logical, and character vectors use shared mode.
-- One-dimensional arrays use shared mode.
-- Multidimensional integer arrays use per-lane mode.
-- Multidimensional non-integer arrays error.
-- Multidimensional integer arrays with the wrong dimensionality error rather
-  than falling back to shared mode.
-- One-dimensional negative integer arrays retain complement semantics.
-- Per-lane zero and negative positions error.
+- Integer, double, logical, and character subscripts follow the ordinary
+  subscript rules.
+- Negative integers retain complement semantics.
+- The dimensions of `i` never activate location slicing.
+- Multidimensional objects that are not valid ordinary subscripts error.
+- Selected-axis names follow the normalized subscript.
+
+### Slice locations
+
+- `locations` must be a bare integer array with the same dimensionality as
+  `x`.
+- One-dimensional `x` still uses strict location semantics.
+- Zero and negative locations error.
 - Exact non-axis dimensions and dimensions of one both work.
-- An `i` dimension greater than one cannot expand a dimension-one axis of `x`.
-- Per-lane output dimensions replace only the selected dimension.
-- Shared mode subsets selected-axis names. Per-lane mode drops them and keeps
-  every other axis's names.
-- Hand-built `rray_locate_max()` shaped indices select and assign one position
-  per lane. Add a direct integration test when `rray_locate_max()` lands.
+- A `locations` dimension greater than one cannot expand a dimension-one axis
+  of `x`.
+- Output dimensions replace only the selected dimension.
+- The selected axis loses names and every other axis keeps its names.
+- Hand-built location arrays select and assign one position per lane.
+- Add direct integration tests for `rray_locate_min()` and
+  `rray_locate_max()` when they land.
 
 ### Reference properties
 
@@ -786,7 +800,7 @@ and implicit dropping.
 
 For points, compare against base R's matrix subscript. For flat positions,
 compare against `x[i]` after wrapping the result as a one-dimensional array.
-For per-lane `rray_slice_axis()`, build a small R loop oracle that walks every
+For `rray_slice_locations()`, build a small R loop oracle that walks every
 output point. Cover exact non-axis dimensions and broadcasting dimensions of
 one.
 
@@ -816,13 +830,14 @@ After each C change:
 
 ### 1. Orthogonal slicing
 
-Implement shared axis index normalization, `rray_slice()`,
+Implement axis subscript normalization, `rray_slice()`,
 `rray_slice_assign()`, `rray_slice_axis()`, and
-`rray_slice_assign_axis()`.
+`rray_slice_assign_axis()`. Then implement `rray_slice_locations()` and
+`rray_slice_assign_locations()` with the strict location array contract.
 
-This delivers the common API and proves the shared and per-lane iterators,
-names, assignment rules, and the shaped-index contract needed by
-`rray_locate_max()`.
+This delivers the common API and proves the orthogonal and location iterators,
+names, assignment rules, and the location array contract used by
+`rray_locate_min()` and `rray_locate_max()`.
 
 ### 2. Extraction
 
