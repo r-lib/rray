@@ -84,20 +84,20 @@ test_that("rray_axis_names() errors on classed input", {
   expect_snapshot(rray_axis_names(x, 1), error = TRUE)
 })
 
-test_that("rray_row_names() and rray_col_names() are axis shortcuts", {
+test_that("rray_row_names() and rray_column_names() are axis shortcuts", {
   x <- array(1:6, c(2, 3), dimnames = list(c("r1", "r2"), c("c1", "c2", "c3")))
   expect_identical(rray_row_names(x), rray_axis_names(x, 1))
-  expect_identical(rray_col_names(x), rray_axis_names(x, 2))
+  expect_identical(rray_column_names(x), rray_axis_names(x, 2))
 })
 
-test_that("rray_col_names() errors if `x` doesn't have a second axis", {
-  expect_snapshot(rray_col_names(1:5), error = TRUE)
+test_that("rray_column_names() errors if `x` doesn't have a second axis", {
+  expect_snapshot(rray_column_names(1:5), error = TRUE)
 })
 
-test_that("rray_row_names() and rray_col_names() error on classed input", {
+test_that("rray_row_names() and rray_column_names() error on classed input", {
   x <- structure(array(1:4, c(2, 2)), class = "foo")
   expect_snapshot(rray_row_names(x), error = TRUE)
-  expect_snapshot(rray_col_names(x), error = TRUE)
+  expect_snapshot(rray_column_names(x), error = TRUE)
 })
 
 # ------------------------------------------------------------------------------
@@ -228,20 +228,20 @@ test_that("rray_set_axis_names() errors on classed input", {
   expect_snapshot(rray_set_axis_names(x, 1, NULL), error = TRUE)
 })
 
-test_that("rray_set_row_names() and rray_set_col_names() are axis shortcuts", {
+test_that("rray_set_row_names() and rray_set_column_names() are axis shortcuts", {
   x <- array(1:6, c(2, 3))
   expect_identical(
     rray_set_row_names(x, c("r1", "r2")),
     rray_set_axis_names(x, 1, c("r1", "r2"))
   )
   expect_identical(
-    rray_set_col_names(x, c("c1", "c2", "c3")),
+    rray_set_column_names(x, c("c1", "c2", "c3")),
     rray_set_axis_names(x, 2, c("c1", "c2", "c3"))
   )
 })
 
-test_that("rray_set_row_names() and rray_set_col_names() error on classed input", {
+test_that("rray_set_row_names() and rray_set_column_names() error on classed input", {
   x <- structure(array(1:4, c(2, 2)), class = "foo")
   expect_snapshot(rray_set_row_names(x, NULL), error = TRUE)
-  expect_snapshot(rray_set_col_names(x, NULL), error = TRUE)
+  expect_snapshot(rray_set_column_names(x, NULL), error = TRUE)
 })

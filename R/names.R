@@ -32,7 +32,7 @@ rray_names <- function(x) {
 #' - `rray_axis_names()` returns the names for a single `axis` of an array,
 #'   or `NULL` if that axis has no names.
 #'
-#' - `rray_row_names()` and `rray_col_names()` are shortcuts for
+#' - `rray_row_names()` and `rray_column_names()` are shortcuts for
 #'   `rray_axis_names(x, 1)` and `rray_axis_names(x, 2)`.
 #'
 #' @param x An array.
@@ -50,7 +50,7 @@ rray_names <- function(x) {
 #' rray_axis_names(x, 2)
 #'
 #' rray_row_names(x)
-#' rray_col_names(x)
+#' rray_column_names(x)
 rray_axis_names <- function(x, axis) {
   .Call(ffi_rray_axis_names, x, axis, environment())
 }
@@ -63,8 +63,8 @@ rray_row_names <- function(x) {
 
 #' @rdname rray_axis_names
 #' @export
-rray_col_names <- function(x) {
-  .Call(ffi_rray_col_names, x, environment())
+rray_column_names <- function(x) {
+  .Call(ffi_rray_column_names, x, environment())
 }
 
 #' Set names for every axis of an array
@@ -99,7 +99,7 @@ rray_set_names <- function(x, names) {
 #' - `rray_set_axis_names()` sets the names for a single `axis` of an array,
 #'   leaving every other axis untouched.
 #'
-#' - `rray_set_row_names()` and `rray_set_col_names()` are shortcuts for
+#' - `rray_set_row_names()` and `rray_set_column_names()` are shortcuts for
 #'   `rray_set_axis_names(x, 1, names)` and `rray_set_axis_names(x, 2, names)`.
 #'
 #' @param x An array.
@@ -120,7 +120,7 @@ rray_set_names <- function(x, names) {
 #' rray_set_axis_names(x, 2, c("c1", "c2", "c3"))
 #'
 #' rray_set_row_names(x, c("r1", "r2"))
-#' rray_set_col_names(x, c("c1", "c2", "c3"))
+#' rray_set_column_names(x, c("c1", "c2", "c3"))
 rray_set_axis_names <- function(x, axis, names) {
   .Call(ffi_rray_set_axis_names, x, axis, names, environment())
 }
@@ -133,6 +133,6 @@ rray_set_row_names <- function(x, names) {
 
 #' @rdname rray_set_axis_names
 #' @export
-rray_set_col_names <- function(x, names) {
-  .Call(ffi_rray_set_col_names, x, names, environment())
+rray_set_column_names <- function(x, names) {
+  .Call(ffi_rray_set_column_names, x, names, environment())
 }

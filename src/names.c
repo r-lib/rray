@@ -32,7 +32,7 @@ r_obj* ffi_rray_row_names(r_obj* ffi_x, r_obj* ffi_frame) {
   return rray_axis_names(ffi_x, 1, rray_args.x, error_call);
 }
 
-r_obj* ffi_rray_col_names(r_obj* ffi_x, r_obj* ffi_frame) {
+r_obj* ffi_rray_column_names(r_obj* ffi_x, r_obj* ffi_frame) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
   return rray_axis_names(ffi_x, 2, rray_args.x, error_call);
 }
@@ -132,7 +132,7 @@ r_obj* ffi_rray_set_row_names(
   return rray_set_axis_names(ffi_x, 1, ffi_names, rray_args.x, error_call);
 }
 
-r_obj* ffi_rray_set_col_names(
+r_obj* ffi_rray_set_column_names(
   r_obj* ffi_x,
   r_obj* ffi_names,
   r_obj* ffi_frame

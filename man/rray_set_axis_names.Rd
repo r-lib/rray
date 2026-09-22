@@ -3,14 +3,14 @@
 \name{rray_set_axis_names}
 \alias{rray_set_axis_names}
 \alias{rray_set_row_names}
-\alias{rray_set_col_names}
+\alias{rray_set_column_names}
 \title{Set names for a single axis of an array}
 \usage{
 rray_set_axis_names(x, axis, names)
 
 rray_set_row_names(x, names)
 
-rray_set_col_names(x, names)
+rray_set_column_names(x, names)
 }
 \arguments{
 \item{x}{An array.}
@@ -27,7 +27,7 @@ the dimension of \code{axis}. Can also be \code{NULL} to remove names from \code
 \itemize{
 \item \code{rray_set_axis_names()} sets the names for a single \code{axis} of an array,
 leaving every other axis untouched.
-\item \code{rray_set_row_names()} and \code{rray_set_col_names()} are shortcuts for
+\item \code{rray_set_row_names()} and \code{rray_set_column_names()} are shortcuts for
 \code{rray_set_axis_names(x, 1, names)} and \code{rray_set_axis_names(x, 2, names)}.
 }
 }
@@ -38,5 +38,5 @@ rray_set_axis_names(x, 1, c("r1", "r2"))
 rray_set_axis_names(x, 2, c("c1", "c2", "c3"))
 
 rray_set_row_names(x, c("r1", "r2"))
-rray_set_col_names(x, c("c1", "c2", "c3"))
+rray_set_column_names(x, c("c1", "c2", "c3"))
 }
