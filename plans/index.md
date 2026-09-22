@@ -6,22 +6,17 @@ Add one general location-indexing function and one single-axis convenience
 function:
 
 ```r
-rray_index(x, locations = list(), axes = NULL, cross = FALSE)
-rray_index_assign(
-  x,
-  locations = list(),
-  axes = NULL,
-  value,
-  cross = FALSE
-)
+rray_index(x, ..., cross = FALSE)
+rray_index_assign(x, ..., value, cross = FALSE)
 
 rray_index_axis(x, locations, axis, cross = FALSE)
 rray_index_assign_axis(x, locations, axis, value, cross = FALSE)
 ```
 
-Each supplied location array controls one source axis. Supplied location arrays
-broadcast to common dimensions and are read pointwise. The `cross` argument
-controls only the source axes that do not have a supplied location array:
+Each argument in `...` controls the matching source axis. A missing argument
+leaves that axis unspecified, as does omitting a trailing argument. Supplied
+location arrays broadcast to common dimensions and are read pointwise. The
+`cross` argument controls only the unspecified source axes:
 
 - With `cross = FALSE`, unspecified axes receive implicit identity locations.
   Their source positions pair with matching output positions.
@@ -76,7 +71,7 @@ Let:
 
 - `D` be the source dimensions.
 - `n` be the dimensionality of `x`.
-- `S` be the selected source axes named by `axes`.
+- `S` be the selected source axes with supplied arguments in `...`.
 - `U` be the source axes not in `S`.
 - `L[j]` be the location array for `S[j]`.
 - `G` be the common dimensions of all supplied location arrays.
@@ -93,7 +88,7 @@ broadcasting rules.
 
 ### Location validation
 
-Each element of `locations` must be a bare integer vector or array. Bare
+Each supplied argument in `...` must be a bare integer vector or array. Bare
 vectors normalize to one-dimensional arrays. Factors and other classed integer
 objects are errors.
 
@@ -116,19 +111,22 @@ extraction.
 
 ### Axis selection
 
-`locations` is a list and `axes` identifies the source axis controlled by each
-element.
+The position of each argument in `...` identifies its source axis.
 
-- `axes` must have the same size as `locations`.
-- Explicit axes must be valid, unique, and strictly increasing.
-- With a nonempty `locations` and `axes = NULL`, there must be one location
-  array per source axis. They map to all source axes in order.
-- With `locations = list()` and `axes = NULL`, no source axes are selected.
-  The result is `x`.
-- Selecting only some source axes requires explicit `axes`.
+- A supplied argument selects its matching source axis.
+- A missing argument leaves its matching source axis unspecified.
+- Omitted trailing arguments leave all remaining source axes unspecified.
+- More arguments than the dimensionality of `x` are an error.
+- Arguments in `...` must be unnamed.
+- With no arguments in `...`, no source axes are selected and the result is
+  `x`.
 
-Requiring increasing axes gives every call one canonical representation and
-makes crossed result placement deterministic.
+This is the same positional call structure as `rray_slice()`. For example,
+`rray_index(x, rows, , depths)` selects axes 1 and 3 and leaves axis 2
+unspecified. `rray_index_axis()` remains the convenient form when the one
+selected axis is held in a variable. If a future use case needs explicit
+programmatic selection of several axes, it can be served by a separate
+`rray_index_axes()` function without changing this contract.
 
 ## `cross = FALSE`
 
@@ -311,12 +309,12 @@ When no source axis is selected, there is no supplied-location space to cross.
 Both values return `x`.
 
 The flag still belongs in these calls so a program can forward one indexing
-choice without inspecting `axes` first.
+choice without inspecting the supplied arguments first.
 
 ## `rray_index()`
 
 ```r
-rray_index(x, locations = list(), axes = NULL, cross = FALSE)
+rray_index(x, ..., cross = FALSE)
 ```
 
 `rray_index()` implements the complete model above.
@@ -325,11 +323,19 @@ rray_index(x, locations = list(), axes = NULL, cross = FALSE)
 
 - `x` must be an array or bare vector supported by rray.
 - Bare vectors normalize to one-dimensional arrays.
-- `locations` must be a list.
-- Every location input must be a bare integer vector or array.
-- `axes` follows the selection rules above.
+- Every supplied argument in `...` must be a bare integer vector or array.
+- Arguments in `...` follow the positional selection rules above.
 - `cross` must be one non-missing logical value.
 - The resulting dimensionality must not exceed rray's supported maximum.
+
+Because `cross` follows `...`, a nondefault value must be supplied by name.
+The dots should support dynamic splicing. Spliced location arrays still map to
+source axes by position.
+
+```r
+locations <- list(rows, columns)
+rray_index(x, !!!locations)
+```
 
 The function returns the same storage type as `x`.
 
@@ -379,13 +385,11 @@ rray_index_axis(x, locations, axis, cross = cross)
 is equivalent to:
 
 ```r
-rray_index(
-  x,
-  locations = list(locations),
-  axes = axis,
-  cross = cross
-)
+rray_index(x, , locations, cross = cross)
 ```
+
+for `axis = 2`. The positional call is clearest when the axis is known in the
+call. The axis function is clearest when `axis` is held in a variable.
 
 It does not add another addressing mode or another set of validation rules.
 Errors should use the `locations` and `axis` argument names from the public
@@ -405,10 +409,7 @@ x <- matrix(1:12, nrow = 3)
 rows <- c(1L, 3L, 2L)
 columns <- c(4L, 1L, 3L)
 
-out <- rray_index(
-  x,
-  locations = list(rows, columns)
-)
+out <- rray_index(x, rows, columns)
 
 out
 # [1] 10 3 8
@@ -434,10 +435,7 @@ axes to request a Cartesian product:
 rows <- array(c(3L, 1L), c(2L, 1L))
 columns <- array(c(4L, 2L, 1L), c(1L, 3L))
 
-out <- rray_index(
-  x,
-  locations = list(rows, columns)
-)
+out <- rray_index(x, rows, columns)
 
 dim(out)
 # [1] 2 3
@@ -450,7 +448,7 @@ Ordinary vectors of lengths two and three do not silently form a Cartesian
 product:
 
 ```r
-rray_index(x, list(c(1L, 2L), c(1L, 2L, 3L)))
+rray_index(x, c(1L, 2L), c(1L, 2L, 3L))
 # Error: dimensions 2 and 3 cannot broadcast
 ```
 
@@ -471,12 +469,7 @@ locations <- rbind(
   c(2L, 3L)
 )
 
-out <- rray_index_axis(
-  x,
-  locations,
-  axis = 2L,
-  cross = FALSE
-)
+out <- rray_index(x, , locations, cross = FALSE)
 
 out
 #      [,1] [,2]
@@ -497,12 +490,7 @@ Only the selected column dimension changes.
 Using the same `locations` with `cross = TRUE` gives:
 
 ```r
-out <- rray_index_axis(
-  x,
-  locations,
-  axis = 2L,
-  cross = TRUE
-)
+out <- rray_index(x, , locations, cross = TRUE)
 
 dim(out)
 # [1] 2 2 2
@@ -552,7 +540,7 @@ x <- matrix(
 
 locations <- matrix(c(4L, 1L), nrow = 1)
 
-out <- rray_index_axis(x, locations, axis = 2L)
+out <- rray_index(x, , locations)
 ```
 
 The one row of `locations` broadcasts across the identity row dimension:
@@ -575,6 +563,10 @@ dimension cannot broadcast with the source row dimension three.
 
 Let `x` have dimensions `(A, B, C)` and select axes 1 and 3 with
 `cross = FALSE`. Both supplied location arrays must have dimensionality three:
+
+```r
+rray_index(x, row_locations, , depth_locations)
+```
 
 ```text
 row_locations dimensions   = (J, B or 1, K)
@@ -611,7 +603,7 @@ rray_index_axis(x, locations, axis = 1L, cross = TRUE)
 Negative locations remain invalid. Ordinary complement selection belongs to
 `rray_slice_axis()`.
 
-### 8. Empty location list
+### 8. No location arguments
 
 ```r
 rray_index(x)
@@ -648,20 +640,17 @@ Assignment always returns the original dimensions and names of `x` unchanged.
 ## Assignment
 
 ```r
-rray_index_assign(
-  x,
-  locations = list(),
-  axes = NULL,
-  value,
-  cross = FALSE
-)
+rray_index_assign(x, ..., value, cross = FALSE)
 
 rray_index_assign_axis(x, locations, axis, value, cross = FALSE)
 ```
 
+`value` follows `...`, so it must be supplied by name. A nondefault `cross`
+must also be supplied by name.
+
 Assignment follows the same indexing plan as reading:
 
-1. Normalize and validate `x`, `locations`, `axes`, and `cross`.
+1. Normalize and validate `x`, `...`, and `cross`.
 2. Compute the indexing result dimensions.
 3. Validate every location and reject missing values.
 4. Cast `value` losslessly to the type of `x`.
@@ -699,7 +688,8 @@ columns <- c(2L, 2L, 4L)
 
 out <- rray_index_assign(
   x,
-  locations = list(rows, columns),
+  rows,
+  columns,
   value = c(100, 200, 300)
 )
 
@@ -741,11 +731,9 @@ has the same values and dimensions as:
 ```r
 rray_index(
   x,
-  locations = list(
-    array(normalize(i), c(I, 1L, 1L)),
-    array(normalize(j), c(1L, J, 1L)),
-    array(normalize(k), c(1L, 1L, K))
-  )
+  array(normalize(i), c(I, 1L, 1L)),
+  array(normalize(j), c(1L, J, 1L)),
+  array(normalize(k), c(1L, 1L, K))
 )
 ```
 
@@ -766,7 +754,7 @@ has the same values and dimensions as:
 ```r
 rray_index_axis(
   x,
-  locations = normalize(i),
+  normalize(i),
   axis = axis,
   cross = TRUE
 )
@@ -803,10 +791,7 @@ rray_extract(x, points)
 has the same values and dimensions as:
 
 ```r
-rray_index(
-  x,
-  locations = list(points[, 1], points[, 2])
-)
+rray_index(x, points[, 1], points[, 2])
 ```
 
 Every source axis is selected and every location vector has dimensions `P`, so
@@ -858,7 +843,7 @@ Location-producing functions should return bare integer arrays shaped for
 
 ```r
 locations <- rray_locate_max(x, axis = 2L)
-rray_index_axis(x, locations, axis = 2L)
+rray_index(x, , locations)
 ```
 
 If `x` has dimensions `(A, B, C)`, locating along axis 2 returns dimensions
@@ -868,12 +853,7 @@ maximum per lane.
 Assignment through the same locations updates one position per lane:
 
 ```r
-rray_index_assign_axis(
-  x,
-  locations,
-  axis = 2L,
-  value = 0
-)
+rray_index_assign(x, , locations, value = 0)
 ```
 
 If a lane has tied extrema, the locating function chooses according to its tie
@@ -881,6 +861,23 @@ rule. Replacing every tied value uses a logical mask with
 `rray_extract_assign()` instead.
 
 ## Implementation design
+
+### Positional argument capture
+
+The R wrapper must capture `...` without evaluating missing arguments away.
+The captured representation has one entry per argument position and records
+whether that position is supplied or missing.
+
+The wrapper must:
+
+- Expand dynamically spliced arguments in place.
+- Reject named location arguments.
+- Reject more argument positions than source axes.
+- Distinguish a missing argument from a supplied `NULL`. A missing argument
+  leaves an axis unspecified, while `NULL` is an invalid location array.
+- Treat omitted trailing axes as unspecified without adding public arguments.
+
+The selected-axis mapping is derived only from these positions.
 
 ### Location normalization
 
@@ -1000,13 +997,15 @@ Do not add comments to C or R source files.
 
 ### Validation
 
-- `locations` must be a list for `rray_index()`.
 - Bare integer vectors and arrays work.
 - Doubles, logicals, characters, factors, and other classed inputs error.
-- Nonempty `locations` with `axes = NULL` requires one array per source axis.
-- Empty `locations` with `axes = NULL` selects no axes.
-- Explicit `axes` must have one entry per location array.
-- Axes must be valid, unique, and strictly increasing.
+- Each supplied argument controls its positional source axis.
+- Missing and omitted trailing arguments leave axes unspecified.
+- No location arguments select no axes.
+- More arguments than source axes error.
+- Named arguments in `...` error.
+- Dynamic splicing preserves positional axis mapping.
+- Missing arguments and supplied `NULL` values remain distinct.
 - `cross` must be one non-missing logical value.
 - Zero, negative, and out-of-bounds locations error.
 - Missing locations work for reads and error for assignment.
@@ -1100,13 +1099,11 @@ rray_index_axis(x, locations, axis, cross = cross)
 must equal:
 
 ```r
-rray_index(
-  x,
-  locations = list(locations),
-  axes = axis,
-  cross = cross
-)
+rray_index(x, , locations, cross = cross)
 ```
+
+for the representative case `axis = 2`. Repeat the property for every source
+axis by constructing the corresponding positional call.
 
 Compare values, dimensions, names, missing behavior, assignment results, and
 errors.
@@ -1225,10 +1222,11 @@ rray_index_assign_axis(x, locations, axis, value, cross = FALSE)
 ### Advanced indexing and general indexing
 
 NumPy advanced indexing broadcasts multiple integer arrays and reads them
-pointwise. This supplies the core model for the location list accepted by:
+pointwise. This supplies the core model for the location arguments accepted
+by:
 
 ```r
-rray_index(x, locations, axes, cross)
+rray_index(x, ..., cross = FALSE)
 ```
 
 Supplied location arrays always broadcast and pair pointwise. Singleton

@@ -23,6 +23,18 @@ The proposed family is:
 The two slice rows should be implemented first. Extraction forms the second
 layer.
 
+The general slice and index forms intentionally share positional dots:
+
+```r
+rray_slice(x, ...)
+rray_index(x, ..., cross = FALSE)
+```
+
+In both functions, each argument position maps to the matching source axis.
+For slicing, a missing argument selects the whole axis. For indexing, it leaves
+the axis unspecified, and `cross` controls how that axis joins the supplied
+location arrays. The matching assignment functions use the same structure.
+
 Do not add replacement functions such as `rray_slice<-()`. The `_assign()`
 forms return a modified copy and match the rest of rray4's function API.
 There are no `[` or `[[` methods because rray4 provides functions rather than
@@ -117,7 +129,7 @@ except `axis` has been fixed.
 x <- array(c(10, 60, 30, 40, 20, 50), c(2, 3))
 locations <- array(c(2L, 1L), c(2L, 1L))
 
-rray_index_axis(x, locations, axis = 2)
+rray_index(x, , locations)
 # dimensions: c(2, 1)
 # values: c(30, 60)
 ```
@@ -179,16 +191,18 @@ rray_slice(x)
 Trailing missing arguments have no effect. More subscripts than the
 dimensionality of `x` are an error.
 
-The dots should support dynamic splicing. This gives a programmatic API without
-adding `rray_slice_axes()`.
+The dots should support dynamic splicing for calls that already have one
+subscript position per source axis.
 
 ```r
 indices <- list(1:2, c(3, 1))
 rray_slice(x, !!!indices)
 ```
 
-Subscripts in `...` must be unnamed. This keeps selection positional and leaves
-named axes available as a future extension.
+Subscripts in `...` must be unnamed because selection is positional. Do not add
+`rray_slice_axes()` in the first version. If explicit programmatic selection
+of several axes becomes important, it can be added later without changing the
+positional API.
 
 ## `rray_slice_axis()`
 
@@ -234,10 +248,18 @@ rray_slice_axis(x, i, axis)
 
 rray_index_axis(
   x,
-  locations = normalize(i),
+  normalize(i),
   axis = axis,
   cross = TRUE
 )
+```
+
+When the axis is fixed in the call, the same relationship is visible directly
+in the positional APIs:
+
+```r
+rray_slice(x, , i)
+rray_index(x, , normalize(i), cross = TRUE)
 ```
 
 The source axes other than `axis` cross with the shared location vector.
@@ -248,7 +270,7 @@ Identity-paired location arrays use `cross = FALSE`:
 
 ```r
 locations <- rray_locate_max(x, axis = 2L)
-rray_index_axis(x, locations, axis = 2L)
+rray_index(x, , locations)
 ```
 
 See `plans/index.md` for location broadcasting, identity coordinates, crossed
@@ -451,8 +473,8 @@ Do not carry these parts of the original API forward:
   `rray_extract(x, i)` has exactly one subscript, whose shape determines whether
   it contains flat positions or coordinate points.
 - `rray_yank()`: `rray_extract()` is the clearer name for flat extraction.
-- `pad()`: `rray_slice_axis()` handles late axes, and dynamic splicing handles
-  programmatic multi-axis slicing.
+- `pad()`: positional missing arguments handle fixed calls, and
+  `rray_slice_axis()` handles an axis held in a variable.
 - `drop`: rray4 always returns arrays and never drops axes implicitly.
 - `rray_take()`, `rray_take_along_axis()`, `rray_slice_along_axis()`, and
   `rray_slice_by_lane()`: strict location arrays belong to `rray_index()` and
@@ -462,6 +484,10 @@ Do not carry these parts of the original API forward:
 Do not overload `rray_slice()` with point or flat modes based on the class or
 shape of one subscript. The function's output shape should be clear from its
 name and call structure.
+
+Do not add `rray_slice_axes()` or `rray_index_axes()` in the first version.
+Those names remain available if later use shows a need for explicit
+programmatic selection of several axes.
 
 ## Implementation design
 
