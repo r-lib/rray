@@ -1,77 +1,68 @@
-# Array slicing plan
+# Array slicing and extraction plan
 
 ## Recommendation
 
-Use `slice` for dimension-preserving selection through ordinary R subscripts.
-Use `extract` for selection that returns a one-dimensional array. Flat
-positions and coordinate points are two input forms for `rray_extract()`.
-
-Keep ordinary subscripts separate from location arrays. A subscript describes
-a set of positions and can use ordinary R forms such as negative integers,
-logical masks, and names. A location array contains one positive, one-based
-integer location or a missing value for each output position. Its shape
-connects each location to the other axes of `x`.
-
-The proposed family is:
-
-| Operation | Read | Assign |
-|---|---|---|
-| Slice every axis | `rray_slice(x, ...)` | `rray_slice_assign(x, ..., value)` |
-| Slice one axis | `rray_slice_axis(x, i, axis)` | `rray_slice_assign_axis(x, i, axis, value)` |
-| Extract flat positions or points | `rray_extract(x, i)` | `rray_extract_assign(x, i, value)` |
-
-The two slice rows should be implemented first. Extraction forms the second
-layer.
-
-The general slice and index forms intentionally share positional dots:
+Use ordinary R subscripts for slicing and flat extraction:
 
 ```r
 rray_slice(x, ...)
-rray_index(x, ..., cross = FALSE)
+rray_slice_assign(x, ..., value)
+
+rray_slice_axis(x, i, axis)
+rray_slice_assign_axis(x, i, axis, value)
+
+rray_extract(x, i)
+rray_extract_assign(x, i, value)
 ```
 
-In both functions, each argument position maps to the matching source axis.
-For slicing, a missing argument selects the whole axis. For indexing, it leaves
-the axis unspecified, and `cross` controls how that axis joins the supplied
-location arrays. The matching assignment functions use the same structure.
+`rray_slice()` performs dimension-preserving orthogonal selection across one
+or more axes. `rray_slice_axis()` performs the same operation on one axis held
+in a variable. `rray_extract()` treats `x` as its flat column-major storage and
+always returns a one-dimensional array.
 
-Do not add replacement functions such as `rray_slice<-()`. The `_assign()`
-forms return a modified copy and match the rest of rray4's function API.
-There are no `[` or `[[` methods because rray4 provides functions rather than
-an array class.
+Keep subscripts separate from integer coordinate arrays:
 
-## The model
-
-There are four addressing modes in this plan. Orthogonal and one-axis slicing
-accept ordinary subscripts. Flat positions and coordinate points share
-`rray_extract()` because both return a one-dimensional array. Strict location
-arrays belong to `rray_index()` and `rray_index_axis()` in `plans/index.md`.
-
-The function name determines the input contract. The dimensionality or class
-of an input never changes a subscript into a location array.
-
-### Subscripts and location arrays
-
-| Property | Subscript | Location array |
+| Property | Subscript | Coordinate array |
 |---|---|---|
-| Used by | `rray_slice()`, `rray_slice_axis()` | `rray_index()`, `rray_index_axis()` |
-| Meaning | A set of positions on an axis | One position for each output point |
-| Accepted forms | Integer, double, logical, character, missing, `NULL` | Bare integer vector or array |
+| Used by | `rray_slice()`, `rray_slice_axis()`, `rray_extract()` | `rray_index()`, `rray_index_axis()` |
+| Meaning | A set of positions | One source coordinate per output point |
+| Accepted forms | Integer, double, logical, character where defined, missing, `NULL` | Bare integer vector or array |
 | Negative values | Select the complement | Error |
 | Zero | Ignored | Error |
-| Shape | Does not connect positions to other axes | Connects locations to lanes and can broadcast |
+| Shape | Does not connect positions across axes | Connects coordinates pointwise through broadcasting |
 
-A subscript is normalized into a one-dimensional sequence of locations before
-slicing. Its original type expresses how to form that sequence. A location
-array is already normalized in meaning, but not in storage: its elements still
-need bounds and missing-value validation. This distinction lets
-`rray_slice_axis()` keep ordinary R subscript rules while the indexing family
-has one strict location contract.
+The function name determines the contract. The dimensions of `i` never turn a
+subscript into a coordinate array.
 
-### Orthogonal slices
+Do not add replacement functions. Every `_assign()` function returns a
+modified copy of `x`. There are no `[` or `[[` methods because rray4 provides
+functions rather than an array class.
 
-Each subscript selects locations on one axis. Multiple subscripts form a
-Cartesian product.
+## The indexing family
+
+The complete family has five read operations:
+
+| Operation | Function | Result shape |
+|---|---|---|
+| Orthogonal subscripts | `rray_slice(x, ...)` | One output axis per source axis |
+| One-axis subscript | `rray_slice_axis(x, i, axis)` | Source dimensions with one axis replaced |
+| One-axis coordinate array | `rray_index_axis(x, i, axis)` | Source dimensions with one axis replaced |
+| Full coordinate arrays | `rray_index(x, ...)` | Common coordinate dimensions |
+| Flat subscript | `rray_extract(x, i)` | One dimensional |
+
+`rray_index()` is the general coordinate operation. Every other operation can
+be described by constructing one explicit coordinate array for every source
+axis and then calling `rray_index()`. The public wrappers remain important
+because they accept different inputs, guarantee more specific shapes, retain
+more names, and can use faster implementations.
+
+See `plans/index.md` for strict coordinate arrays and the complete lowering of
+each operation to `rray_index()`.
+
+## Orthogonal slicing
+
+Each subscript controls one source axis. Subscripts are normalized separately,
+then their locations form a Cartesian product.
 
 ```r
 x <- array(1:24, c(2, 3, 4))
@@ -83,87 +74,20 @@ rray_slice_axis(x, c(3, 1), axis = 2)
 # dimensions: c(2, 2, 4)
 ```
 
-This is the ordinary array operation. It is close to base R's
-`x[..., drop = FALSE]` and NumPy's open-mesh indexing. It always preserves
-dimensionality.
+This is close to base R's `x[..., drop = FALSE]`. Slicing never drops axes.
 
-### Coordinate points
+The same Cartesian product can be expressed through full coordinate indexing.
+After normalizing the three subscripts to positive locations, shape them as an
+open mesh:
 
-Each row of `points` identifies one element. Rows are paired coordinates, not a
-Cartesian product.
-
-```r
-points <- rbind(
-  c(1, 1, 1),
-  c(2, 3, 4),
-  c(1, 2, 3)
-)
-
-rray_extract(x, points)
-# dimensions: 3L
-# values: c(1L, 24L, 15L)
+```text
+axis 1 coordinates: (I, 1, 1)
+axis 2 coordinates: (1, J, 1)
+axis 3 coordinates: (1, 1, K)
+common dimensions:  (I, J, K)
 ```
 
-This is base R's matrix indexing and xtensor's `index_view()` model. The result
-is one dimensional because no source axis survives as an output axis.
-
-### Flat positions
-
-The array is treated as its column-major storage vector.
-
-```r
-rray_extract(x, c(1, 4, 24))
-rray_extract(x, x %% 5 == 0)
-```
-
-This covers base R's single-subscript array indexing and whole-array logical
-masks. The result is one dimensional.
-
-### Location indexing
-
-A location array can supply a different axis position for each lane through
-the array. A lane is the one-dimensional vector left after every coordinate
-except `axis` has been fixed.
-
-```r
-x <- array(c(10, 60, 30, 40, 20, 50), c(2, 3))
-locations <- array(c(2L, 1L), c(2L, 1L))
-
-rray_index(x, , locations)
-# dimensions: c(2, 1)
-# values: c(30, 60)
-```
-
-This operation belongs to the indexing family rather than the slicing family.
-It is the direct consumer of arrays returned by functions such as
-`rray_locate_min()` and `rray_locate_max()`. See `plans/index.md` for the full
-location model.
-
-## Why these divisions
-
-Base R gives `[` several unrelated meanings. A single subscript on an array is
-flat, one subscript per axis is orthogonal, and a matrix subscript is pointwise.
-It also drops dimensions by default. The behavior is powerful, but the same
-syntax can return unrelated shapes.
-
-NumPy distinguishes basic and advanced indexing, but multiple integer arrays
-switch to paired advanced indexing. `x[rows, columns]` selects paired points,
-while `x[np.ix_(rows, columns)]` selects the Cartesian product. This is one of
-the easiest indexing rules to misread.
-
-The original rray improved shape stability, but its names did not line up with
-the addressing modes:
-
-- `rray_subset()` performed dimension-preserving orthogonal slicing.
-- `rray_extract()` performed the same orthogonal selection and then flattened
-  it.
-- `rray_yank()` used flat positions.
-- `rray_slice()` was only the one-axis convenience wrapper.
-
-The proposed API makes the common orthogonal operation `rray_slice()`.
-`rray_extract()` uses the shape of `i` to distinguish flat positions from
-coordinate points. `rray_slice_axis()` always accepts one ordinary subscript.
-Location arrays have explicit indexing entry points.
+The shaped coordinate arrays broadcast to the slicing result dimensions.
 
 ## `rray_slice()`
 
@@ -172,10 +96,8 @@ rray_slice(x, ...)
 rray_slice_assign(x, ..., value)
 ```
 
-`value` follows `...`, so it must be supplied by name.
-
-Each element of `...` applies to the matching axis. A missing argument selects
-the whole axis. Unspecified trailing axes also select the whole axis.
+Each element of `...` applies to the matching source axis. A missing argument
+selects the whole axis. Omitted trailing arguments also select whole axes.
 
 ```r
 rray_slice(x, 1)
@@ -188,21 +110,19 @@ rray_slice(x)
 # dimensions: c(2, 3, 4)
 ```
 
-Trailing missing arguments have no effect. More subscripts than the
-dimensionality of `x` are an error.
+More subscripts than the dimensionality of `x` are an error. Subscripts in
+`...` must be unnamed because selection is positional.
 
-The dots should support dynamic splicing for calls that already have one
-subscript position per source axis.
+The dots support dynamic splicing when a caller already has one subscript per
+source axis:
 
 ```r
 indices <- list(1:2, c(3, 1))
 rray_slice(x, !!!indices)
 ```
 
-Subscripts in `...` must be unnamed because selection is positional. Do not add
-`rray_slice_axes()` in the first version. If explicit programmatic selection
-of several axes becomes important, it can be added later without changing the
-positional API.
+`value` follows `...` in `rray_slice_assign()`, so it must be supplied by
+name.
 
 ## `rray_slice_axis()`
 
@@ -211,9 +131,10 @@ rray_slice_axis(x, i, axis)
 rray_slice_assign_axis(x, i, axis, value)
 ```
 
-`rray_slice_axis()` has exactly the same subscript semantics as slicing one
-axis with `rray_slice()`. It uses one subscript for every lane and only changes
-the selected axis.
+`rray_slice_axis()` has exactly the same subscript semantics as supplying `i`
+at the matching position in `rray_slice()`. The same normalized subscript is
+used for every lane through the selected axis. Only the selected axis
+dimension can change.
 
 ```r
 x <- matrix(
@@ -231,58 +152,115 @@ rray_slice_axis(x, c(4, 1), axis = 2)
 # [2,]   80   50
 ```
 
-It replaces the need for a padding helper when the selected axis is late in a
-high-dimensional array.
+The function replaces the need to pad a call with missing arguments when
+`axis` is held in a variable.
 
-`i` is always an ordinary subscript. Its dimensions and class do not select a
-different behavior. A shaped object that is not a valid ordinary subscript is
-an error. Use `rray_index()` or `rray_index_axis()` for strict location arrays.
+`i` is always an ordinary subscript. Its dimensions do not affect the result
+dimensions. A multidimensional object that is not a valid ordinary subscript
+is an error. Use `rray_index_axis()` when an integer array supplies a different
+location for different lanes.
 
-## Connection to location indexing
+### Connection to full coordinate indexing
 
-After `i` is normalized to a one-dimensional positive location vector,
-one-axis slicing has the same values and dimensions as crossed axis indexing:
+Let `x` have dimensions `(A, B, C)`, let `axis = 2`, and let normalized `i`
+have length `J`. The slice can be expressed with these full coordinates:
 
 ```r
-rray_slice_axis(x, i, axis)
+axis1 <- array(seq_len(A), c(A, 1L, 1L))
+axis2 <- array(normalize(i), c(1L, J, 1L))
+axis3 <- array(seq_len(C), c(1L, 1L, C))
 
-rray_index_axis(
-  x,
-  normalize(i),
-  axis = axis,
-  cross = TRUE
+rray_index(x, axis1, axis2, axis3)
+```
+
+The common dimensions are `(A, J, C)`, exactly the dimensions of
+`rray_slice_axis(x, i, axis = 2)`. The public slice function additionally owns
+subscript normalization and selected-axis name selection.
+
+## `rray_extract()`
+
+```r
+rray_extract(x, i)
+rray_extract_assign(x, i, value)
+```
+
+`rray_extract()` performs flat indexing only. It treats `x` as its
+column-major storage vector and always returns a one-dimensional array.
+
+```r
+x <- array(1:24, c(2, 3, 4))
+
+rray_extract(x, c(1, 4, 24))
+rray_extract(x, x %% 5 == 0)
+```
+
+The shape of `i` does not select another addressing mode:
+
+- Integer and double vectors or arrays contain flat positions.
+- Logical vectors or arrays are flat masks.
+- Character subscripts are errors because flat character positions have no
+  stable meaning for a multidimensional array.
+- Factors, data frames, and other classed subscripts are errors.
+
+Numeric `i` follows the ordinary location rules against `rray_size(x)`,
+including negative complements, zero, duplicates, and missing locations.
+Double locations must be whole numbers representable as R integers.
+
+A logical `i` must have size one or `rray_size(x)`. A logical array with the
+same dimensions as `x` is therefore accepted naturally. Arbitrary logical
+recycling is an error.
+
+For numeric input, the result dimension is the number of normalized
+locations. For logical input, it is the number of selected or missing
+locations. The result is one dimensional even when `i` is an array.
+
+### Coordinate point example
+
+Point matrices no longer select a separate `rray_extract()` mode. Their
+columns are already fully specified coordinate arrays:
+
+```r
+points <- rbind(
+  c(1, 1, 1),
+  c(2, 3, 4),
+  c(1, 2, 3)
 )
+
+rray_index(x, points[, 1], points[, 2], points[, 3])
+# dimensions: 3L
+# values: c(1L, 24L, 15L)
 ```
 
-When the axis is fixed in the call, the same relationship is visible directly
-in the positional APIs:
+Rows remain paired because every column has the same one-dimensional shape.
+This is base R's numeric matrix indexing expressed directly through the
+general coordinate operation.
 
-```r
-rray_slice(x, , i)
-rray_index(x, , normalize(i), cross = TRUE)
+### Connection to full coordinate indexing
+
+A normalized flat position can be unravelled into one coordinate for every
+source axis in R's column-major order:
+
+```text
+flat locations
+  -> unravel to one location vector per source axis
+  -> rray_index() over every source axis
 ```
 
-The source axes other than `axis` cross with the shared location vector.
-Slicing remains separate because it owns ordinary subscript normalization and
-selected-axis names.
+Every unravelled coordinate vector has the one-dimensional result size, so
+the common coordinate dimensions are also one dimensional. This gives the
+same values, missing behavior, and duplicate order as `rray_extract()`.
 
-Identity-paired location arrays use `cross = FALSE`:
+The implementation should retain a direct flat path. Materializing one
+coordinate vector per source axis would add work without changing the public
+result.
 
-```r
-locations <- rray_locate_max(x, axis = 2L)
-rray_index(x, , locations)
-```
+## Subscript rules
 
-See `plans/index.md` for location broadcasting, identity coordinates, crossed
-axes, result dimensions, assignment, and the complete connections back to
-slicing and extraction.
+`rray_slice()`, `rray_slice_axis()`, and numeric or logical flat extraction use
+the same normalization rules as `vctrs::vec_as_location()` where those rules
+apply:
 
-## Axis subscript rules
-
-`rray_slice()` and `rray_slice_axis()` use the same subscript rules as
-`vctrs::vec_as_location()`:
-
-- A missing argument selects every location.
+- A missing slice argument selects every location.
 - `NULL`, `FALSE`, and `integer()` select no locations.
 - Positive integers select locations in the supplied order. Duplicates are
   allowed.
@@ -290,36 +268,35 @@ slicing and extraction.
 - Negative integers select the complement. Positive and negative locations
   cannot be mixed, apart from zero. Missing and negative locations cannot be
   mixed.
-- Doubles are accepted only when every non-missing value is a whole number that
-  can be represented as an R integer.
-- A logical subscript must have length one or equal the axis dimension. `TRUE`
-  selects all, `FALSE` selects none, and a scalar `NA` expands to one unknown
-  location per element of the axis.
-- Character subscripts are matched exactly against that axis's names. The
-  first match is used when source names are duplicated.
-- Factors and other classed subscripts are errors. Factors are not silently
-  interpreted through their integer codes.
-- Out-of-bounds integers and unmatched names are errors. Slicing never extends
-  an axis.
+- Doubles are accepted only when every non-missing value is a whole number
+  representable as an R integer.
+- A logical subscript must have length one or equal the indexed size. `TRUE`
+  selects all, `FALSE` selects none, and scalar `NA` expands to one missing
+  location per indexed element.
+- Character slice subscripts match exactly against names on the selected
+  source axis. The first match is used when source names are duplicated.
+- Factors and other classed subscripts are errors.
+- Out-of-bounds integers and unmatched names are errors. Slicing and
+  extraction never extend the source.
 
-These rules are stricter than base R's logical recycling. A logical subscript
+Logical recycling is deliberately stricter than base R. A logical subscript
 of length two does not silently recycle over an axis of dimension three.
 
-Internally, every accepted subscript becomes zero-based locations. Preserve
+Internally, accepted subscripts normalize to zero-based locations. Preserve
 three representations:
 
-1. All locations.
+1. Every location.
 2. An affine sequence with a start, size, and step.
 3. A materialized integer location vector.
 
 The affine form covers contiguous ranges, stepped ranges, and reverse order.
-Users can write ordinary R sequences. There is no need for a public slice-range
-object.
+Users can write ordinary R sequences, so no public slice-range object is
+needed.
 
 ## Missing locations
 
-Read functions allow missing locations. A missing location produces the
-missing value for the storage type:
+Read functions allow missing normalized locations. A missing location produces
+the missing value for the storage type:
 
 | Type | Missing output |
 |---|---|
@@ -331,16 +308,17 @@ missing value for the storage type:
 | raw | `as.raw(0)` |
 | list | `NULL` |
 
-This follows base R and vctrs, including the unavoidable raw and list behavior.
+This follows base R and vctrs, including the unavoidable raw and list
+behavior.
 
 All assignment functions reject missing locations. Base R has special cases
-where assignment through a missing subscript can be skipped or accepted for a
-scalar value. Those cases are hard to explain and should not be copied.
+for assignment through missing subscripts, but they do not provide a clear
+general contract.
 
 ## Names
 
 Orthogonal slicing subsets names with the same normalized locations used for
-the data.
+the data:
 
 - Selecting all of an axis preserves its names without copying them.
 - Reordering or duplicating locations reorders or duplicates their names.
@@ -349,145 +327,74 @@ the data.
   `NULL` otherwise.
 - Names on the list of axis names stay attached to the same axes.
 
-`rray_slice_axis()` follows the same rules. Location-array naming belongs to
-the indexing family described in `plans/index.md`.
+`rray_slice_axis()` follows the same rules. Because one location sequence is
+used for every lane, each output position on the selected axis has one clear
+source name.
 
-Point and flat extraction drop all names. A source axis cannot be identified
-with the one-dimensional output.
+`rray_extract()` drops all names. A flat one-dimensional result cannot retain
+a source-axis identity.
 
-Every assignment function returns the original dimensions and names of the
-normalized `x` unchanged.
+The coordinate family has different guarantees:
+
+- `rray_index_axis()` preserves source names on unselected axes and drops
+  names on the selected axis.
+- `rray_index()` drops all names because no output axis necessarily
+  corresponds to a source axis.
+
+Every assignment function returns the original dimensions and names of `x`
+unchanged.
 
 ## Assignment rules
 
 All assignment functions are pure functions. They return a modified copy of
-`x` and do not change `x` in place from R's point of view.
+`x` and do not modify `x` from R's point of view.
 
 ```r
 out <- rray_slice_assign(x, 1, , value = 0L)
 out <- rray_slice_assign_axis(x, 1, axis = 3, value = 0L)
 ```
 
-Assignment follows these rules:
+Assignment follows these steps:
 
-1. Normalize and fully validate the locations.
+1. Normalize and fully validate the target locations.
 2. Cast `value` losslessly to the type of `x` with `rray_cast()`.
-3. Broadcast the cast value to the dimensions of the selected result.
+3. Broadcast the cast value to the selected result dimensions.
 4. Copy `x`.
-5. Write in column-major output order.
+5. Write in column-major selection order.
 
 The operation cannot change the type, size, dimensions, or names of `x`.
 Broadcasting can repeat a dimension of one, including a one-element value, but
-it cannot recycle an arbitrary size. A zero-sized target accepts values that
-can broadcast to its dimensions.
+cannot recycle an arbitrary size. A zero-sized target accepts values that can
+broadcast to its dimensions.
 
-Repeated target locations are legal. The last value visited in column-major
-selection order wins. The order must be documented and tested rather than left
-as an implementation detail.
-
-The cast and broadcast must be complete before writing. This handles cases
-where `value` is `x`, and it ensures that an error cannot return a partially
-modified result.
+Repeated target locations are legal. The final value visited in column-major
+selection order wins. Casting and broadcasting finish before copying so an
+error cannot return a partially modified result and `value` may safely be
+`x`.
 
 `NULL` is not an array and cannot be an assignment value. To assign `NULL` into
 a list array, use a list array containing `NULL`.
-
-## `rray_extract()`
-
-```r
-rray_extract(x, i)
-rray_extract_assign(x, i, value)
-```
-
-`rray_extract()` always returns a one-dimensional array. The type and shape of
-`i` determine whether it contains flat positions or coordinate points.
-
-### Dispatch rule
-
-- Any bare integer or double matrix is point indexing. It is never flattened
-  into positions. It must have exactly one column per axis of `x`, otherwise it
-  is an error. Double coordinates must be whole numbers.
-- Any bare character matrix is named point indexing. It must also have exactly
-  one column per axis of `x`.
-- An integer or double vector, including a one-dimensional array, contains flat
-  positions.
-- A logical vector or one-dimensional logical array is a flat mask. A logical
-  array with dimensions identical to `x` is also a flat mask.
-- A logical matrix is therefore a mask only when its dimensions are identical
-  to `x`. It is never point indexing.
-- Character vectors are errors. Flat character positions have no consistent
-  meaning for arrays with more than one axis.
-- Numeric arrays with three or more dimensions are errors. Reshape them to a
-  matrix to request points, or to one dimension to request flat positions.
-- Factors, data frames, and other classed subscripts are errors.
-
-The matrix rule is unconditional. If `i` is an integer matrix with the wrong
-number of columns, it is an invalid point matrix rather than a flat subscript.
-This makes the dispatch predictable from `i` alone.
-
-### Flat positions
-
-Flat extraction walks R's column-major storage order. Numeric `i` uses the
-location rules against `rray_size(x)`, including negative complements, zero,
-duplicates, and missing locations.
-
-A logical array with dimensions identical to `x` is accepted as a mask. A
-one-dimensional logical subscript must have length one or `rray_size(x)`.
-
-### Coordinate points
-
-Each row of a point matrix identifies one element. A point matrix has one
-column per axis of `x` and one row per requested point.
-
-Numeric points must be positive and in bounds. Zero and negative coordinates
-are errors because complement selection has no useful meaning for a point.
-Missing coordinates produce missing output for reads and are errors for
-assignment.
-
-Character points are matched exactly against the names of the corresponding
-axis. Every axis must have names. Missing strings produce missing output for
-reads. Empty strings and unmatched strings are errors.
-
-A point result has dimensions `nrow(i)`. A zero-row matrix returns a
-zero-length one-dimensional array. One row selects one element, but the result
-is still a one-dimensional array of length one because rray4 always returns
-arrays. This is the closest rray4 analogue to subset2 extraction.
-
-### Shared result and assignment rules
-
-For flat positions, the result dimension is the number of normalized
-locations. For points, it is `nrow(i)`. Names are dropped in both cases.
-`rray_extract_assign()` broadcasts `value` to this one-dimensional result.
-
-There is no separate `rray_filter()` function. A logical mask is already clear
-in `rray_extract()`, and a second name would not add a new addressing mode.
 
 ## Functions not proposed
 
 Do not carry these parts of the original API forward:
 
-- `rray_subset()`: `rray_slice()` is the clearer name for its operation.
-- The original variadic `rray_extract(x, ...)`: flattening an orthogonal slice
-  is composition, not a new addressing mode. Use `rray_slice()` followed by
-  `rray_set_dimensions()` when it is genuinely needed. The proposed
-  `rray_extract(x, i)` has exactly one subscript, whose shape determines whether
-  it contains flat positions or coordinate points.
+- `rray_subset()`: `rray_slice()` names the orthogonal operation directly.
+- The original variadic `rray_extract(x, ...)`: orthogonal selection belongs
+  to `rray_slice()`. The new `rray_extract(x, i)` is flat-only.
+- Point-matrix dispatch in `rray_extract()`: use one matrix column per argument
+  to `rray_index()`.
 - `rray_yank()`: `rray_extract()` is the clearer name for flat extraction.
-- `pad()`: positional missing arguments handle fixed calls, and
-  `rray_slice_axis()` handles an axis held in a variable.
+- `pad()`: missing arguments handle fixed calls and `rray_slice_axis()` handles
+  an axis held in a variable.
 - `drop`: rray4 always returns arrays and never drops axes implicitly.
-- `rray_take()`, `rray_take_along_axis()`, `rray_slice_along_axis()`, and
-  `rray_slice_by_lane()`: strict location arrays belong to `rray_index()` and
-  `rray_index_axis()`.
-- `rray_filter()`: it would be an alias for logical flat extraction.
+- `rray_take()`, `rray_take_along_axis()`, `rray_shuffle_axis()`, and
+  `rray_slice_by_lane()`: `rray_slice_axis()` and `rray_index_axis()` provide
+  the two distinct one-axis contracts.
+- `rray_filter()`: it would duplicate logical flat extraction.
 
-Do not overload `rray_slice()` with point or flat modes based on the class or
-shape of one subscript. The function's output shape should be clear from its
-name and call structure.
-
-Do not add `rray_slice_axes()` or `rray_index_axes()` in the first version.
-Those names remain available if later use shows a need for explicit
-programmatic selection of several axes.
+Do not overload `rray_slice()` or `rray_extract()` based on the dimensions of a
+subscript. The function name must determine the result model.
 
 ## Implementation design
 
@@ -499,17 +406,16 @@ Add `src/subscript.c`, `src/subscript.h`, and
 - Converting user subscripts to zero-based locations.
 - Exact logical size checks.
 - Positive, negative, zero, missing, and bounds rules.
-- Character matching against axis names.
+- Character matching against axis names for slicing.
 - Detection of all and affine indices.
-- Point matrix validation and conversion.
 - Flat location validation.
 
 Use `r_ssize` for subscript and output sizes. Axis dimensions and stored
 locations remain integers because R's `dim` attribute is integer. Error before
 creating a result whose selected axis would exceed `INT_MAX`.
 
-The public behavior should match `vec_as_location()`, but the hot path should be
-implemented in C rather than calling an R function once per axis.
+The public behavior should match `vec_as_location()`, but the hot path should
+be implemented in C rather than calling an R function once per axis.
 
 ### Orthogonal slice plan
 
@@ -526,37 +432,36 @@ strides. The plan contains:
 Use two execution paths:
 
 1. When every axis is affine, use a strided plan with the selected step folded
-   into each source stride. This handles whole axes, ranges, steps, and reverse
-   order. Hold the source start offset in the slice plan and reuse the existing
-   strided iterator coalescing for dimensions and strides.
-2. When any axis is irregular, use an indexed iterator. Precompute source
+   into each source stride. Hold the source start offset in the plan and reuse
+   the existing strided iterator coalescing.
+2. When an axis is irregular, use an indexed iterator. Precompute source
    offsets for irregular axes. Walk the first axis in an inner run and update
-   later-axis offsets only when their mixed-radix counters carry.
+   later-axis offsets when their mixed-radix counters carry.
 
-This keeps common contiguous slices fast without making arbitrary repeated or
-reordered locations a special case in the public API.
+This keeps contiguous slices fast without changing the public contract for
+repeated or reordered locations.
+
+### Flat extraction plan
+
+Normalize `i` against `rray_size(x)` and convert each positive location to a
+zero-based flat source offset. The dimensions of `i` do not survive. Logical
+masks first become the corresponding flat locations.
+
+The flat path shares typed copy and assignment cores with slicing but does not
+build per-axis coordinate arrays.
 
 ### Typed cores
 
-Follow the existing shell and typed-core layout. The shell validates, builds the
-plan, chooses dimensions and names, and dispatches on storage type. Atomic cores
-write through data pointers. Character and list cores use the write barrier.
+The shell validates, builds the plan, chooses dimensions and names, and
+dispatches on storage type. Atomic cores write through data pointers.
+Character and list cores use the write barrier.
 
-The assignment shell casts and broadcasts before it copies `x`. Read and
-assignment use the same plan, so location order cannot drift between them.
-
-The point path of `rray_extract()` computes a flat source offset for each row:
-
-```text
-offset = sum((point[axis] - 1) * stride[axis])
-```
-
-The flat path already has source offsets after normalization. Both paths share
-the typed extraction and assignment cores.
+The assignment shell casts and broadcasts before copying `x`. Read and
+assignment use the same plan so target order cannot drift.
 
 ### Files
 
-Keep each public family together with its assignment form:
+Keep each public family with its assignment form:
 
 - `R/slice.R`, `src/slice.c`, `src/slice.h`, `src/decl/slice-decl.h`
 - `R/slice-axis.R`, `src/slice-axis.c`, `src/slice-axis.h`,
@@ -565,20 +470,18 @@ Keep each public family together with its assignment form:
   `src/decl/extract-decl.h`
 - Shared `src/subscript.c`, `src/subscript.h`,
   `src/decl/subscript-decl.h`
-- An indexed iterator header if the irregular slice path is large enough to
-  stand alone
 
-`rray_slice_axis()` can call the same internal slice implementation as
+`rray_slice_axis()` can call the same internal implementation as
 `rray_slice()`.
 
 ## Test plan
 
-### Ordinary slicing behavior
+### Ordinary slicing
 
 - All seven native storage types.
 - Bare vectors normalize to one-dimensional arrays.
 - Zero dimensions and empty selections.
-- One through several axes, plus the maximum supported dimensionality.
+- One through several axes, including the maximum supported dimensionality.
 - Positive, negative, zero, logical, character, missing, and `NULL`
   subscripts.
 - Duplicates, reverse order, and stepped sequences.
@@ -586,38 +489,51 @@ Keep each public family together with its assignment form:
   and too-many-axis errors.
 - Named and unnamed axes, including reordered, duplicated, missing, and empty
   names.
-- Long total sizes where practical, with axis dimensions still limited to
-  integers.
 
 ### Slice axis
 
-- Integer, double, logical, and character subscripts follow the ordinary
-  subscript rules.
+- Integer, double, logical, and character inputs follow ordinary subscript
+  rules.
 - Negative integers retain complement semantics.
-- The dimensions of `i` never activate location indexing.
+- The dimensions of `i` never activate coordinate indexing.
 - Multidimensional objects that are not valid ordinary subscripts error.
+- Only the selected axis dimension changes.
 - Selected-axis names follow the normalized subscript.
+
+### Flat extraction
+
+- Integer and double vectors and arrays are always flat positions.
+- Logical vectors and arrays are always flat masks.
+- A logical input must have size one or `rray_size(x)`.
+- Numeric matrix input does not become point indexing.
+- Character and classed inputs error.
+- Results are always one dimensional and unnamed.
+- Column-major order, duplicates, complements, zero, missing, and empty inputs.
 
 ### Reference properties
 
-For fully specified orthogonal indices:
+For fully specified orthogonal subscripts:
 
 ```r
 rray_slice(x, i, j, k)
-identical to
+```
+
+is identical to:
+
+```r
 x[i, j, k, drop = FALSE]
 ```
 
-Compare values, dimensions, and names. Use only the shared semantic subset when
-testing against base R because rray4 intentionally rejects logical recycling
-and implicit dropping.
+on the shared semantic subset. Compare values, dimensions, and names. rray4
+intentionally rejects logical recycling and implicit dropping.
 
-For points, compare against base R's matrix subscript. For flat positions,
-compare against `x[i]` after wrapping the result as a one-dimensional array.
+After subscript normalization, compare `rray_slice()` and
+`rray_slice_axis()` with `rray_index()` over explicit open-mesh coordinates.
+Compare names according to the stronger slice guarantees.
 
-After normalizing a positive one-axis subscript, compare
-`rray_slice_axis()` with `rray_index_axis(cross = TRUE)`. Compare names
-separately because slicing owns source-name selection.
+For flat positions, unravel normalized positions and compare with
+`rray_index()` over one coordinate vector per source axis. Cover missing and
+duplicate positions and column-major order.
 
 ### Assignment
 
@@ -626,7 +542,7 @@ separately because slicing owns source-name selection.
 - Arbitrary recycling fails.
 - Empty targets.
 - Missing targets fail before copying.
-- Duplicate targets use last-write-wins order.
+- Duplicate targets use final-write-wins order.
 - `value` equal to `x` works.
 - Type, size, dimensions, and names of `x` are unchanged.
 - Every assignment result agrees with a read of the same selected locations.
@@ -645,36 +561,34 @@ After each C change:
 
 ### 1. Orthogonal slicing
 
-Implement axis subscript normalization, `rray_slice()`,
-`rray_slice_assign()`, `rray_slice_axis()`, and
-`rray_slice_assign_axis()`.
+Implement subscript normalization, `rray_slice()`, `rray_slice_assign()`,
+`rray_slice_axis()`, and `rray_slice_assign_axis()`.
 
-This delivers the common API and proves the orthogonal iterators, names, and
-assignment rules. Strict location arrays are implemented by the indexing
-family.
+### 2. Flat extraction
 
-### 2. Extraction
+Implement `rray_extract()` and `rray_extract_assign()` on the shared subscript
+normalization and typed copy cores.
 
-Implement `rray_extract()` and `rray_extract_assign()`. The wrapper dispatches
-to point or flat index normalization, then both paths reuse the typed copy
-helpers from the first step.
+### 3. Coordinate indexing
 
-### 3. Update the main implementation plan
+Implement the strict coordinate family from `plans/index.md`, then add the
+reference properties that lower slicing and extraction to fully specified
+coordinates.
 
-Once this design is accepted, replace section 5.6 of
-`plans/implementation.md` with the API and delivery order above. Keep this file
-as the detailed semantic reference.
+### 4. Main implementation plan
+
+Update the corresponding section of `plans/implementation.md`. Keep this file
+as the source of truth for ordinary subscripts and flat extraction, and
+`plans/index.md` as the source of truth for integer coordinate arrays.
 
 ## Research notes
 
 ### Base R
 
 Base R supports flat vector indexing, per-axis indexing, and point indexing by
-a numeric or character matrix. Empty per-axis subscripts select all locations,
-and `drop` controls dimensionality. Logical per-axis subscripts recycle. Point
-matrix rows containing zero are ignored, while rows containing a missing value
-produce missing output. Replacement promotes the left-hand type when needed,
-and repeated locations are assigned sequentially.
+a numeric or character matrix. It drops dimensions by default and recycles
+logical per-axis subscripts. rray4 keeps the useful subscript forms but assigns
+each output model to an explicit function and never drops axes implicitly.
 
 Useful sources:
 
@@ -683,77 +597,21 @@ Useful sources:
 - [R source: `subscript.c`](https://github.com/wch/r-source/blob/trunk/src/main/subscript.c)
 - [R source: `subassign.c`](https://github.com/wch/r-source/blob/trunk/src/main/subassign.c)
 
-The local R source confirms that point matrices are converted to flat
-column-major locations before ordinary vector extraction. Its array assignment
-loops also establish sequential last-write-wins behavior.
-
 ### vctrs
 
 vctrs separates subscript normalization from slicing. `vec_as_location()`
 converts integer, logical, and character subscripts to positive locations. It
-uses strict logical sizes, inverts negative locations, removes zero, and offers
-an explicit missing policy. `vec_assign()` casts the right-hand side to the
-left-hand type and requires a scalar or target-sized value.
-
-Useful sources:
+uses strict logical sizes, inverts negative locations, removes zero, and has an
+explicit missing policy.
 
 - [`vec_as_location()`](https://vctrs.r-lib.org/reference/vec_as_location.html)
-- [`vec_slice()` and `vec_assign()`](https://vctrs.r-lib.org/reference/vec_slice.html)
 
-rray4 should use the same location language, but replace vector recycling with
-array broadcasting for assignment values.
+### Python Array API standard
 
-### NumPy
+The Array API standard separates one-axis `take()` from fully specified
+integer-array indexing. `take()` uses a one-dimensional integer input and
+changes only the selected axis. Its shape model matches
+`rray_slice_axis()` after an R subscript is normalized.
 
-NumPy distinguishes basic slicing, advanced integer or Boolean indexing, flat
-selection, `take()` along one axis, and `take_along_axis()` with indices that
-vary per lane. Basic integer indices drop an axis. Multiple advanced integer
-indices are broadcast and paired, rather than forming a Cartesian product.
-`ix_()` constructs an open mesh when a Cartesian product is wanted.
-
-Useful sources:
-
-- [Indexing on ndarrays](https://numpy.org/doc/stable/user/basics.indexing)
-- [`numpy.take()`](https://numpy.org/doc/stable/reference/generated/numpy.take.html)
-- [`numpy.take_along_axis()`](https://numpy.org/doc/stable/reference/generated/numpy.take_along_axis.html)
-- [`numpy.put_along_axis()`](https://numpy.org/doc/stable/reference/generated/numpy.put_along_axis.html)
-- [`numpy.ix_()`](https://numpy.org/doc/stable/reference/generated/numpy.ix_.html)
-
-The useful idea to copy is the distinction between one shared axis index and an
-index that varies by lane. The advanced-indexing shape switch should not be
-copied.
-
-### xtensor
-
-xtensor separates strided views from dynamic views. Strided views support all,
-ranges, steps, and scalar positions efficiently. Arbitrary keep and drop lists
-require a more general dynamic view. `index_view()` and `filter()` return flat
-one-dimensional views from coordinate points and masks.
-
-Useful sources:
-
-- [xtensor views](https://xtensor.readthedocs.io/en/latest/view.html)
-- [`xindex_view`](https://xtensor.readthedocs.io/en/latest/api/xindex_view.html)
-
-The original rray used exactly this split, choosing a strided view for
-contiguous indices and a dynamic view for arbitrary locations. rray4 should
-keep the optimization in its iterator design without exposing two public
-slicing APIs.
-
-### Original rray
-
-The relevant local files are:
-
-- `/Users/davis/files/r/packages/rray/R/subset.R`
-- `/Users/davis/files/r/packages/rray/R/extract.R`
-- `/Users/davis/files/r/packages/rray/R/yank.R`
-- `/Users/davis/files/r/packages/rray/R/slice.R`
-- `/Users/davis/files/r/packages/rray/src/subset-tools.cpp`
-- `/Users/davis/files/r/packages/rray/src/subset.cpp`
-- `/Users/davis/files/r/packages/rray/src/yank.cpp`
-
-The strongest parts to retain are dimension preservation, strict logical
-sizes, exact name matching, assignment casting toward `x`, assignment
-broadcasting, and the strided fast path. The main change is to align names with
-addressing modes and remove the flattened version of an orthogonal slice from
-the core family.
+- [`take()`](https://data-apis.org/array-api/2024.12/API_specification/generated/array_api.take.html)
+- [Integer array indexing](https://data-apis.org/array-api/2024.12/API_specification/indexing.html#integer-array-indexing)

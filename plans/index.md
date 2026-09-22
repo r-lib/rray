@@ -1,348 +1,153 @@
-# Location indexing plan
+# Integer coordinate indexing plan
 
 ## Recommendation
 
-Add one general location-indexing function and one single-axis convenience
-function:
+Add one fully specified coordinate function and one directional one-axis
+specialization:
 
 ```r
-rray_index(x, ..., cross = FALSE)
-rray_index_assign(x, ..., value, cross = FALSE)
+rray_index(x, ...)
+rray_index_assign(x, ..., value)
 
-rray_index_axis(x, locations, axis, cross = FALSE)
-rray_index_assign_axis(x, locations, axis, value, cross = FALSE)
+rray_index_axis(x, i, axis)
+rray_index_assign_axis(x, i, axis, value)
 ```
 
-Each argument in `...` controls the matching source axis. A missing argument
-leaves that axis unspecified, as does omitting a trailing argument. Supplied
-location arrays broadcast to common dimensions and are read pointwise. The
-`cross` argument controls only the unspecified source axes:
+`rray_index()` requires exactly one integer coordinate array for every source
+axis. The arrays broadcast to common dimensions and are read pointwise. The
+common dimensions are the result dimensions.
 
-- With `cross = FALSE`, unspecified axes receive implicit identity locations.
-  Their source positions pair with matching output positions.
-- With `cross = TRUE`, unspecified axes remain independent. They cross with
-  every point in the common supplied-location space.
+`rray_index_axis()` accepts one integer array for the selected source axis and
+supplies identity coordinates for every other axis. `i` must broadcast to the
+dimensions of `x` outside `axis`. The result has the same dimensionality as
+`x`, every unselected axis keeps its source dimension, and only the selected
+axis can change.
 
-Supplied location arrays always pair through broadcasting. `cross` never
-changes them from paired to Cartesian indexing. Users request a Cartesian
-product among supplied arrays by shaping them as an open mesh.
+Every source coordinate is explicit. Different partial indexing behaviors are
+represented by shaping full coordinate arrays in different ways.
 
-The full indexing family is:
+The complete family is:
 
 | Operation | Read | Assign |
 |---|---|---|
 | Orthogonal subscripts | `rray_slice()` | `rray_slice_assign()` |
 | One-axis subscript | `rray_slice_axis()` | `rray_slice_assign_axis()` |
-| Location arrays | `rray_index()` | `rray_index_assign()` |
-| One-axis location array | `rray_index_axis()` | `rray_index_assign_axis()` |
-| Flat positions or point matrix | `rray_extract()` | `rray_extract_assign()` |
+| One-axis coordinate array | `rray_index_axis()` | `rray_index_assign_axis()` |
+| Full coordinate arrays | `rray_index()` | `rray_index_assign()` |
+| Flat subscript | `rray_extract()` | `rray_extract_assign()` |
 
-Do not add replacement functions. Every `_assign()` function returns a modified
-copy of `x`.
+Do not add replacement functions. Every `_assign()` function returns a
+modified copy of `x`.
 
-## Subscripts and locations
+## Subscripts and coordinates
 
-A subscript describes a set of positions on an axis. It can be negative,
-logical, character, missing, or `NULL`. Subscript normalization produces a
+A subscript describes a set of positions. It can be negative, logical,
+character, missing, or `NULL`. Subscript normalization produces a
 one-dimensional sequence of positive or missing locations. Subscripts on
 different axes form a Cartesian product.
 
-A location array has a narrower meaning. Each non-missing element is one
+A coordinate array has a narrower meaning. Each non-missing element is one
 positive, one-based position on one source axis. Its dimensions connect that
-position to a point in the result. Zero and negative locations cannot mean
-complement because every element must identify one source position.
-
-This gives the public functions stable contracts:
+coordinate to an output point. Coordinates on different source axes broadcast
+and pair pointwise.
 
 ```r
 rray_slice_axis(x, -1L, axis = 2L)
 # Complement selection
 
 rray_index_axis(x, array(-1L, rray_dimensions(x)), axis = 2L)
-# Error: locations must be positive
+# Error: coordinates must be positive
 ```
 
-The shape or class of an argument never changes an ordinary subscript into a
-location array. The function name determines the rules.
+The function name determines the input rules. The shape or class of `i` never
+changes a slice into coordinate indexing.
 
-## The location model
+## Full coordinate model
 
 Let:
 
 - `D` be the source dimensions.
 - `n` be the dimensionality of `x`.
-- `S` be the selected source axes with supplied arguments in `...`.
-- `U` be the source axes not in `S`.
-- `L[j]` be the location array for `S[j]`.
-- `G` be the common dimensions of all supplied location arrays.
+- `L[a]` be the coordinate array supplied for source axis `a`.
+- `G` be the common dimensions of all `L[a]`.
 
-Every supplied array gives one source coordinate at each point in `G`:
+`rray_index()` requires exactly `n` coordinate arrays. At every output point
+`g` in `G`, each broadcast coordinate array supplies one component of the
+source coordinate:
 
 ```text
-source[S[j]] = broadcast(L[j])[g]
+source[a] = broadcast(L[a])[g]
+out[g] = x[source[1], source[2], ..., source[n]]
 ```
 
-The selected coordinates are always paired at the same point `g`. Singleton
-dimensions and missing trailing dimensions follow rray's left-aligned
-broadcasting rules.
+The result dimensions are exactly `G`:
 
-### Location validation
+```text
+out_dimensions = common_dimensions(L[1], ..., L[n])
+```
 
-Each supplied argument in `...` must be a bare integer vector or array. Bare
-vectors normalize to one-dimensional arrays. Factors and other classed integer
-objects are errors.
+The output can have lower, equal, or greater dimensionality than `x`. There is
+no source-axis placement rule because every output axis belongs to the common
+coordinate space.
 
-Every non-missing location must be positive, one based, and no greater than the
-dimension of its source axis.
+Singleton dimensions and missing trailing dimensions follow rray's
+left-aligned broadcasting rules.
 
-- Positive integers identify one position.
+## Coordinate validation
+
+Each argument in `...` and `i` in `rray_index_axis()` must be a bare integer
+vector or array. Bare vectors are one-dimensional arrays. Factors and other
+classed integer objects are errors.
+
+Every non-missing coordinate must be positive, one based, and no greater than
+the dimension of its source axis:
+
+- Positive integers identify one source position.
 - Zero and negative integers are errors.
-- Missing locations produce missing output when reading.
-- Missing locations are errors when assigning.
-- Out-of-bounds locations are errors.
+- Missing coordinates produce missing output when reading.
+- Missing coordinates are errors when assigning.
+- Out-of-bounds coordinates are errors.
 
-Validation happens before allocating or copying the result. Every supplied
-location is validated even when another result axis has dimension zero.
+Logical, character, and double inputs are errors. Logical values are masks,
+character values require name matching, and doubles weaken the strict
+coordinate contract. Those inputs belong to slicing or extraction.
 
-The first version should accept only integer locations. Logical values are
-masks, character values require name matching, and doubles weaken the contract
-without adding addressing power. Those inputs already belong to slicing or
-extraction.
-
-### Axis selection
-
-The position of each argument in `...` identifies its source axis.
-
-- A supplied argument selects its matching source axis.
-- A missing argument leaves its matching source axis unspecified.
-- Omitted trailing arguments leave all remaining source axes unspecified.
-- More arguments than the dimensionality of `x` are an error.
-- Arguments in `...` must be unnamed.
-- With no arguments in `...`, no source axes are selected and the result is
-  `x`.
-
-This is the same positional call structure as `rray_slice()`. For example,
-`rray_index(x, rows, , depths)` selects axes 1 and 3 and leaves axis 2
-unspecified. `rray_index_axis()` remains the convenient form when the one
-selected axis is held in a variable. If a future use case needs explicit
-programmatic selection of several axes, it can be served by a separate
-`rray_index_axes()` function without changing this contract.
-
-## `cross = FALSE`
-
-With `cross = FALSE`, every unspecified source axis receives an implicit
-identity location array. For an unselected axis `a`, its identity dimensions
-are:
-
-```text
-(1, ..., D[a], ..., 1)
-```
-
-and its values are:
-
-```text
-1, 2, ..., D[a]
-```
-
-The implementation represents identity locations in the plan. It does not
-allocate them as R arrays.
-
-The supplied location arrays and all implicit identity arrays broadcast to
-common dimensions `H`. Every source axis then has a coordinate at every point
-in `H`, so the result dimensions are exactly `H`:
-
-```text
-out_dimensions = H
-```
-
-For an output point `h`:
-
-```text
-if a is selected:
-  source[a] = broadcast(L[j])[h]
-else:
-  source[a] = identity[a][h]
-
-out[h] = x[source]
-```
-
-### Shape requirements
-
-When at least one but not every source axis is selected, every supplied
-location array must have the same dimensionality as `x`. Its axes then align
-unambiguously with the source axes that receive identities.
-
-On an unspecified source axis `a`, every supplied location dimension must be
-one or `D[a]`. The identity array forces the result dimension to `D[a]`.
-Therefore:
-
-- The result has the same dimensionality as `x`.
-- Every unspecified axis keeps its source dimension.
-- Selected-axis dimensions come from the common location dimensions.
-- A location array cannot enlarge an unspecified source axis, including an
-  axis of `x` whose dimension is one.
-
-When every source axis is selected, there are no identities to align. Supplied
-location arrays can have any dimensionality and the result dimensions are
-their common dimensions `G`.
-
-When no source axes are selected, every axis is an identity. The result has
-dimensions `D` and values identical to `x`.
-
-### Single-axis invariant
-
-For `rray_index_axis(x, locations, axis, cross = FALSE)`, `locations` must have
-the same dimensionality as `x` unless `x` is one dimensional.
-
-- On `axis`, the dimension of `locations` becomes the result dimension.
-- On every other axis, its dimension must be one or equal the matching source
-  dimension.
-- Dimensions of one broadcast across matching source lanes.
-- The result has the same dimensionality as `x`.
-- Only the selected axis dimension can change.
-
-For source dimensions `(A, B, C)` and `axis = 2`:
-
-```text
-locations dimensions = (A or 1, J, C or 1)
-result dimensions    = (A, J, C)
-```
-
-This is the natural consumer of locations returned by operations such as
-`rray_locate_min()` and `rray_locate_max()`.
-
-## `cross = TRUE`
-
-With `cross = TRUE`, unspecified source axes do not receive coordinates. They
-remain independent and cross with every point in `G`.
-
-Let:
-
-- `p` be the first selected source axis.
-- `U_before` be unselected source axes before `p`.
-- `U_after` be unselected source axes after `p`.
-
-The result dimensions are:
-
-```text
-D[U_before] + G + D[U_after]
-```
-
-In words, remove every selected source axis and insert the common supplied
-location dimensions where the first selected axis occurred. All unselected
-source axes keep their relative order.
-
-Examples:
-
-```text
-D = (A, B, C)
-S = (2)
-G = (J, K)
-out = (A, J, K, C)
-```
-
-```text
-D = (A, B, C, D, E)
-S = (2, 4)
-G = (J, K)
-out = (A, J, K, C, E)
-```
-
-```text
-D = (A, B, C)
-S = (1, 2, 3)
-G = (J, K)
-out = (J, K)
-```
-
-For an output point:
-
-```text
-o = (u_before, g, u_after)
-```
-
-construct one source coordinate for every source axis:
-
-```text
-if a is selected:
-  source[a] = broadcast(L[j])[g]
-else:
-  source[a] = the matching coordinate from u_before or u_after
-```
-
-Then:
-
-```text
-out[o] = x[source]
-```
-
-### Shape requirements
-
-Supplied location arrays can have any dimensionality. Their common dimensions
-replace the selected source axes as one block. The result dimensionality is:
-
-```text
-n - length(S) + dimensionality(G)
-```
-
-This is the central crossed-shape invariant. Unlike `cross = FALSE`, a
-single-axis location array does not need to align with the dimensionality of
-`x`.
-
-For source dimensions `(A, B, C)`, `axis = 2`, and location dimensions
-`(J, K)`:
-
-```text
-result dimensions = (A, J, K, C)
-```
-
-Each point in `(J, K)` selects an entire `(A, C)` combination because those
-source axes remain independent.
-
-## Cases where `cross` has no effect
-
-When every source axis is selected, no axis remains to cross or receive an
-identity. Both values of `cross` return common supplied-location dimensions
-`G`.
-
-When no source axis is selected, there is no supplied-location space to cross.
-Both values return `x`.
-
-The flag still belongs in these calls so a program can forward one indexing
-choice without inspecting the supplied arguments first.
+Validation happens before allocating or copying the result. Every coordinate
+array is validated even when the common result has size zero.
 
 ## `rray_index()`
 
 ```r
-rray_index(x, ..., cross = FALSE)
+rray_index(x, ...)
+rray_index_assign(x, ..., value)
 ```
-
-`rray_index()` implements the complete model above.
 
 ### Argument rules
 
 - `x` must be an array or bare vector supported by rray.
 - Bare vectors normalize to one-dimensional arrays.
-- Every supplied argument in `...` must be a bare integer vector or array.
-- Arguments in `...` follow the positional selection rules above.
-- `cross` must be one non-missing logical value.
+- `...` must contain exactly one coordinate array per source axis.
+- Argument position identifies the source axis.
+- Coordinate arguments must be unnamed.
+- Dynamic splicing is supported.
+- All coordinate arrays broadcast to common dimensions.
+- The result has the same storage type as `x`.
 - The resulting dimensionality must not exceed rray's supported maximum.
 
-Because `cross` follows `...`, a nondefault value must be supplied by name.
-The dots should support dynamic splicing. Spliced location arrays still map to
-source axes by position.
-
 ```r
-locations <- list(rows, columns)
-rray_index(x, !!!locations)
+coordinates <- list(rows, columns)
+rray_index(x, !!!coordinates)
 ```
 
-The function returns the same storage type as `x`.
+Missing arguments, omitted trailing arguments, and `NULL` are errors.
 
-### Missing locations
+`value` follows `...` in `rray_index_assign()`, so it must be supplied by
+name.
 
-If any selected coordinate at an output point is missing, that output value is
-missing. The storage-specific results are:
+### Missing coordinates
+
+If any coordinate at an output point is missing, the result at that point is
+missing:
 
 | Type | Missing output |
 |---|---|
@@ -354,50 +159,84 @@ missing. The storage-specific results are:
 | raw | `as.raw(0)` |
 | list | `NULL` |
 
-With `cross = TRUE`, a missing point in `G` produces missing values across all
-combinations of the independent source axes. With `cross = FALSE`, it affects
-only the matching identity-paired output point.
-
 ### Zero dimensions
 
-Zero dimensions follow the existing common-dimension rules.
+Zero dimensions follow the existing common-dimension rules:
 
 - Equal zero dimensions are compatible.
 - Zero and one combine to zero.
 - Zero and a dimension greater than one are incompatible.
-- A crossed unselected zero dimension makes the result empty.
-- An identity zero dimension also makes the common result dimension zero.
-
-All coordinates are still validated before returning an empty result.
+- Every coordinate is still validated before returning an empty result.
 
 ## `rray_index_axis()`
 
 ```r
-rray_index_axis(x, locations, axis, cross = FALSE)
+rray_index_axis(x, i, axis)
+rray_index_assign_axis(x, i, axis, value)
 ```
 
-The axis function is exactly the one-location-array form of `rray_index()`:
+`rray_index_axis()` supplies coordinates for one source axis while every other
+axis receives an implicit identity coordinate. It is the rray form of a
+directional take-along-axis operation.
+
+`i` must have the same dimensionality as `x`. Let `D` be the source dimensions
+and `I` be the dimensions of `i`. For every unselected axis `a`:
+
+```text
+I[a] must be 1 or D[a]
+```
+
+The selected dimension `I[axis]` can be any valid dimension `J`. The result
+dimensions are:
+
+```text
+out_dimensions = D
+out_dimensions[axis] = J
+```
+
+For source dimensions `(A, B, C)` and `axis = 2`:
+
+```text
+i dimensions      = (A or 1, J, C or 1)
+result dimensions = (A, J, C)
+```
+
+The direction matters. `i` broadcasts to `x` outside the selected axis, but
+`x` never expands to dimensions introduced by `i`. If `D[a]` is one and
+`I[a]` is greater than one on an unselected axis, the call errors. Users can
+explicitly broadcast `x` first or use full coordinate indexing when expansion
+is intended.
+
+At an output point `h`:
+
+```text
+source[axis] = broadcast(i)[h]
+source[a] = h[a] for every unselected axis a
+out[h] = x[source]
+```
+
+Only the selected axis dimension can change. This invariant distinguishes
+`rray_index_axis()` from the unrestricted common dimensions of
+`rray_index()`.
+
+### Connection to full coordinate indexing
+
+For `x` dimensions `(A, B, C)`, `axis = 2`, and `i` dimensions `(1, J, C)`, the
+axis operation is equivalent in values and dimensions to:
 
 ```r
-rray_index_axis(x, locations, axis, cross = cross)
+axis1 <- array(seq_len(A), c(A, 1L, 1L))
+axis2 <- i
+axis3 <- array(seq_len(C), c(1L, 1L, C))
+
+rray_index(x, axis1, axis2, axis3)
 ```
 
-is equivalent to:
+All three arrays broadcast to `(A, J, C)`. The specialized function does not
+need to allocate the identity arrays.
 
-```r
-rray_index(x, , locations, cross = cross)
-```
-
-for `axis = 2`. The positional call is clearest when the axis is known in the
-call. The axis function is clearest when `axis` is held in a variable.
-
-It does not add another addressing mode or another set of validation rules.
-Errors should use the `locations` and `axis` argument names from the public
-axis call.
-
-The implementation can use a specialized iterator for the common
-`cross = FALSE` case. That optimization must preserve exact equivalence with
-the general function.
+Errors from the public axis function should use the argument names `i` and
+`axis`.
 
 ## Worked examples
 
@@ -418,7 +257,7 @@ dim(out)
 # [1] 3
 ```
 
-Both source axes are selected, so `cross` has no effect. The calculation is:
+The calculation is:
 
 ```text
 out[1] = x[rows[1], columns[1]] = x[1, 4] = 10
@@ -426,10 +265,13 @@ out[2] = x[rows[2], columns[2]] = x[3, 1] = 3
 out[3] = x[rows[3], columns[3]] = x[2, 3] = 8
 ```
 
-### 2. Cartesian indexing among supplied arrays
+Every source axis is explicit and the result dimensions are the common
+coordinate dimensions `(3)`.
 
-Supplied arrays always pair through broadcasting. Shape them onto different
-axes to request a Cartesian product:
+### 2. Cartesian indexing through an open mesh
+
+Coordinate arrays always pair through broadcasting. Shape them onto different
+output axes to request a Cartesian product:
 
 ```r
 rows <- array(c(3L, 1L), c(2L, 1L))
@@ -441,8 +283,8 @@ dim(out)
 # [1] 2 3
 ```
 
-The common dimensions are `(2, 3)`. Every row location pairs with every column
-location because their singleton dimensions form an open mesh.
+The common dimensions are `(2, 3)`. Every row coordinate pairs with every
+column coordinate because their singleton dimensions form an open mesh.
 
 Ordinary vectors of lengths two and three do not silently form a Cartesian
 product:
@@ -452,7 +294,7 @@ rray_index(x, c(1L, 2L), c(1L, 2L, 3L))
 # Error: dimensions 2 and 3 cannot broadcast
 ```
 
-### 3. Identity-paired single-axis indexing
+### 3. One-axis coordinate indexing
 
 ```r
 x <- matrix(
@@ -464,12 +306,12 @@ x <- matrix(
   byrow = TRUE
 )
 
-locations <- rbind(
+i <- rbind(
   c(4L, 1L),
   c(2L, 3L)
 )
 
-out <- rray_index(x, , locations, cross = FALSE)
+out <- rray_index_axis(x, i, axis = 2)
 
 out
 #      [,1] [,2]
@@ -477,30 +319,41 @@ out
 # [2,]   60   70
 ```
 
-The row axis receives identity locations:
+The row coordinate is an implicit identity:
 
 ```text
-out[row, column] = x[row, locations[row, column]]
+out[row, column] = x[row, i[row, column]]
 ```
 
-Only the selected column dimension changes.
+Only the selected column dimension can change.
 
-### 4. Crossed single-axis indexing
-
-Using the same `locations` with `cross = TRUE` gives:
+The same operation with full coordinates is:
 
 ```r
-out <- rray_index(x, , locations, cross = TRUE)
+rows <- array(seq_len(2L), c(2L, 1L))
+rray_index(x, rows, i)
+```
+
+### 4. Independent source rows through full coordinates
+
+The same `i` can be crossed with every source row by making the row identity
+an independent output axis:
+
+```r
+rows <- array(seq_len(2L), c(2L, 1L, 1L))
+columns <- array(i, c(1L, 2L, 2L))
+
+out <- rray_index(x, rows, columns)
 
 dim(out)
 # [1] 2 2 2
 ```
 
-The first output axis is the independent source row. The next two axes are the
-location dimensions:
+The first output axis is the source row. The next two axes are the dimensions
+of `i`:
 
 ```text
-out[a, j, k] = x[a, locations[j, k]]
+out[a, j, k] = x[a, i[j, k]]
 ```
 
 For `k = 1`:
@@ -521,11 +374,10 @@ out[, , 2]
 # [2,]   50   70
 ```
 
-The location row `j` is unrelated to the source row `a`. Equal dimensions do
-not establish a connection. Only `cross = FALSE` supplies that identity
-connection.
+Nothing in `rray_index()` decides whether rows align with or cross the column
+coordinates. The explicit shapes decide.
 
-### 5. Identity broadcasting
+### 5. Directional broadcasting
 
 ```r
 x <- matrix(
@@ -538,14 +390,10 @@ x <- matrix(
   byrow = TRUE
 )
 
-locations <- matrix(c(4L, 1L), nrow = 1)
+i <- matrix(c(4L, 1L), nrow = 1)
 
-out <- rray_index(x, , locations)
-```
+out <- rray_index_axis(x, i, axis = 2)
 
-The one row of `locations` broadcasts across the identity row dimension:
-
-```r
 out
 #      [,1] [,2]
 # [1,]   40   10
@@ -556,117 +404,161 @@ dim(out)
 # [1] 3 2
 ```
 
-An array with dimensions `(4, 2)` would be an error because its first
-dimension cannot broadcast with the source row dimension three.
+The one row of `i` broadcasts to the three source rows. An array with
+dimensions `(4, 2)` errors because its first dimension cannot broadcast to the
+source row dimension three.
 
-### 6. Multiple selected axes with identities
+If `x` instead had first dimension one, an `i` dimension greater than one
+would still error. `rray_index_axis()` does not expand unselected source axes.
 
-Let `x` have dimensions `(A, B, C)` and select axes 1 and 3 with
-`cross = FALSE`. Both supplied location arrays must have dimensionality three:
+### 6. Explicit axis 2 coordinates for axes 1 and 3
 
-```r
-rray_index(x, row_locations, , depth_locations)
-```
+Let `x` have dimensions `(A, B, C)` and let row and depth coordinates describe
+an output space `(J, B, K)`. Axis 2 is explicit even though it is an identity:
 
 ```text
-row_locations dimensions   = (J, B or 1, K)
-depth_locations dimensions = (J, B or 1, K)
+row coordinates dimensions   = (J, B or 1, K)
+axis 2 coordinates dimensions = (1, B, 1)
+depth coordinates dimensions = (J, B or 1, K)
+common dimensions            = (J, B, K)
 ```
 
-Axis 2 receives identity locations with dimensions `(1, B, 1)`. The result has
-dimensions `(J, B, K)` and:
+The result is:
 
 ```text
 out[j, b, k] =
-  x[row_locations[j, b, k], b, depth_locations[j, b, k]]
+  x[row_coordinates[j, b, k], b, depth_coordinates[j, b, k]]
 ```
 
-With `cross = TRUE`, axis 2 instead remains independent. If the common supplied
-dimensions are `(J, K)`, the result dimensions are `(J, K, B)` because the
-common block replaces selected axes 1 and 3 at the position of the first
-selected axis.
+The output arrangement can instead put a shared location space `(J, K)` first
+and the independent axis 2 last:
+
+```text
+row coordinates dimensions    = (J, K, 1)
+axis 2 coordinates dimensions = (1, 1, B)
+depth coordinates dimensions  = (J, K, 1)
+common dimensions             = (J, K, B)
+```
+
+These are not two modes of `rray_index()`. They are two explicit coordinate
+layouts.
+
+A concrete example makes the difference visible:
+
+```r
+x <- array(1:24, dim = c(2, 3, 4))
+rows <- c(2L, 1L)
+depths <- c(4L, 2L)
+
+axis1 <- array(rows, c(2L, 1L, 1L))
+axis2 <- array(1:3, c(1L, 3L, 1L))
+axis3 <- array(depths, c(1L, 1L, 2L))
+
+aligned <- rray_index(x, axis1, axis2, axis3)
+dim(aligned)
+# [1] 2 3 2
+```
+
+```r
+axis1 <- array(rows, c(2L, 1L, 1L))
+axis2 <- array(1:3, c(1L, 1L, 3L))
+axis3 <- array(depths, c(1L, 2L, 1L))
+
+independent <- rray_index(x, axis1, axis2, axis3)
+dim(independent)
+# [1] 2 2 3
+```
+
+Both calls provide every source coordinate. Only the coordinate shapes differ.
 
 ### 7. One-dimensional arrays
 
-For one-dimensional `x`, selecting its only axis leaves no unspecified axes.
-The value of `cross` has no effect:
+For one-dimensional `x`, the axis and full forms are directly equivalent:
 
 ```r
 x <- array(c(10, 20, 30, 40), 4L)
-locations <- array(c(4L, 1L), 2L)
+i <- array(c(4L, 1L), 2L)
 
-rray_index_axis(x, locations, axis = 1L, cross = FALSE)
-rray_index_axis(x, locations, axis = 1L, cross = TRUE)
+rray_index_axis(x, i, axis = 1L)
+rray_index(x, i)
 # Both return array(c(40, 10), 2L)
 ```
 
-Negative locations remain invalid. Ordinary complement selection belongs to
+Negative coordinates remain invalid. Ordinary complement selection belongs to
 `rray_slice_axis()`.
 
-### 8. No location arguments
+### 8. Explicit identity indexing
+
+`rray_index()` never infers missing coordinates. To reproduce `x`, provide an
+identity coordinate array for every source axis. For a matrix:
+
+```r
+rows <- array(seq_len(nrow(x)), c(nrow(x), 1L))
+columns <- array(seq_len(ncol(x)), c(1L, ncol(x)))
+
+out <- rray_index(x, rows, columns)
+```
+
+`out` has the same values and dimensions as `x`. It has no names because the
+general coordinate operation drops all names.
 
 ```r
 rray_index(x)
+# Error: one coordinate array is required for every source axis
 ```
-
-No source axes are selected. Both values of `cross` return a normalized copy
-of `x` with the same dimensions and names.
 
 ## Names
 
-Supplied location arrays carry dimension names through the existing common-name
-broadcasting rules.
+### Full coordinate indexing
 
-With `cross = FALSE`:
+`rray_index()` drops all names from the result. No output axis necessarily
+corresponds to one source axis. Even when a particular call uses identity
+coordinates, the general contract does not inspect coordinate values to infer
+axis provenance.
 
-- Implicit identity arrays carry source names on their non-singleton axes.
-- Unspecified source axes therefore keep their names.
-- Selected source axis names are dropped.
-- Supplied location names can name selected result dimensions.
-- Names on broadcast dimensions coalesce with the ordinary broadcasting rules.
+Names on coordinate arrays are also dropped. They may label the coordinate
+space for a particular call, but combining them would add another inference
+rule to the general primitive.
 
-With `cross = TRUE`:
+### One-axis coordinate indexing
 
-- Unselected source axes keep their names and their relative order.
-- The inserted common location dimensions use names coalesced from the supplied
-  arrays.
-- Selected source axis names are dropped.
+`rray_index_axis()` preserves source names on every unselected axis and drops
+names on the selected axis:
 
-When every source axis is selected, result names come only from the common
-supplied-location dimensions.
+- Every unselected result axis is the same size and position as its source
+  axis.
+- The selected coordinate can vary across lanes, so one output position may
+  refer to different source names in different lanes.
+- Names on `i` do not affect the result names.
+
+This is one reason for directional broadcasting. Because `x` cannot expand on
+an unselected axis, every preserved name vector remains valid.
 
 Assignment always returns the original dimensions and names of `x` unchanged.
 
 ## Assignment
 
 ```r
-rray_index_assign(x, ..., value, cross = FALSE)
-
-rray_index_assign_axis(x, locations, axis, value, cross = FALSE)
+rray_index_assign(x, ..., value)
+rray_index_assign_axis(x, i, axis, value)
 ```
 
-`value` follows `...`, so it must be supplied by name. A nondefault `cross`
-must also be supplied by name.
+Assignment follows the same coordinate plan as reading:
 
-Assignment follows the same indexing plan as reading:
-
-1. Normalize and validate `x`, `...`, and `cross`.
+1. Normalize and validate `x` and every coordinate.
 2. Compute the indexing result dimensions.
-3. Validate every location and reject missing values.
+3. Reject missing target coordinates.
 4. Cast `value` losslessly to the type of `x`.
 5. Broadcast the cast value to the indexing result dimensions.
 6. Copy `x`.
-7. Write in column-major indexing-result order.
+7. Write in column-major result order.
 
 The operation cannot change the type, size, dimensions, or names of `x`.
-Broadcasting can repeat dimensions of one but cannot recycle an arbitrary
-size.
+Repeated source coordinates use deterministic final-write-wins behavior. The
+last value visited in column-major result order wins.
 
-Repeated source locations use deterministic last-write-wins behavior. The
-final value visited in column-major result order wins.
-
-An error must occur before `x` is copied or any writes happen. Casting and
-broadcasting `value` before copying also handles `value` equal to `x`.
+An error occurs before copying or writing. Casting and broadcasting `value`
+before copying also handles `value` equal to `x`.
 
 `NULL` is not an array and cannot be an assignment value. To assign `NULL` into
 a list array, use a list array containing `NULL`.
@@ -701,26 +593,24 @@ out
 
 The point `(1, 2)` appears twice. The second value wins.
 
-## Connection to slicing
+## Connections to the full coordinate primitive
 
-Slicing accepts ordinary subscripts and forms a Cartesian product. Indexing
-accepts strict location arrays and reads them pointwise. They are separate
-public contracts, but positive slicing can be expressed through indexing after
-subscript normalization.
+The full coordinate operation is the semantic foundation for the entire
+family. These lowerings are reference properties and testing tools. Public
+functions can use specialized implementations.
 
-### Orthogonal slicing
+### `rray_slice()`
 
-After normalizing one subscript per source axis to positive locations, reshape
-each location vector onto its source axis:
+Normalize one subscript per source axis to positive locations, then shape each
+location vector onto its source axis:
 
 ```text
-axis 1 locations: (I, 1, 1)
-axis 2 locations: (1, J, 1)
-axis 3 locations: (1, 1, K)
+axis 1 coordinates: (I, 1, 1)
+axis 2 coordinates: (1, J, 1)
+axis 3 coordinates: (1, 1, K)
 ```
 
-The arrays broadcast to `(I, J, K)`. Because every source axis is selected,
-`cross` has no effect:
+For example:
 
 ```r
 rray_slice(x, i, j, k)
@@ -737,42 +627,64 @@ rray_index(
 )
 ```
 
-`rray_slice()` remains separate because it accepts richer subscript forms,
-subsets source names, guarantees one result axis per source axis, and can use
-an affine strided fast path.
+`rray_slice()` remains separate because it accepts ordinary subscripts,
+subsets source names, guarantees one output axis per source axis, and can use
+an affine strided path.
 
-### One-axis slicing
+### `rray_slice_axis()`
 
-After normalizing `i` to a one-dimensional location vector:
-
-```r
-rray_slice_axis(x, i, axis)
-```
-
-has the same values and dimensions as:
+After normalizing a one-axis subscript to `J` positive locations, supply it on
+the selected output axis and supply identity coordinates elsewhere. For
+`axis = 2` and source dimensions `(A, B, C)`:
 
 ```r
-rray_index_axis(
+rray_index(
   x,
-  normalize(i),
-  axis = axis,
-  cross = TRUE
+  array(seq_len(A), c(A, 1L, 1L)),
+  array(normalize(i), c(1L, J, 1L)),
+  array(seq_len(C), c(1L, 1L, C))
 )
 ```
 
-The unspecified source axes cross with the shared one-dimensional locations.
-The slice wrapper owns ordinary subscript rules and selected-axis name
-subsetting.
+This has the values and dimensions of `rray_slice_axis(x, i, axis = 2)`.
+Slicing additionally keeps selected source names.
 
-## Connection to extraction
+### `rray_index_axis()`
 
-Extraction always returns a one-dimensional array. Point matrices and flat
-positions both lower to indexing every source axis.
+Broadcast `i` directionally over the unchanged source dimensions and provide
+an identity coordinate array for every unselected axis. For `axis = 2`:
+
+```r
+rray_index(
+  x,
+  array(seq_len(A), c(A, 1L, 1L)),
+  i,
+  array(seq_len(C), c(1L, 1L, C))
+)
+```
+
+The specialized function preserves names on the identity axes and avoids
+allocating them.
+
+### `rray_extract()`
+
+Normalize flat positions, unravel each one into a source coordinate for every
+axis, and pass the coordinate vectors to `rray_index()`. Every coordinate
+vector has the same one-dimensional shape, so the full index result is also
+one dimensional.
+
+```text
+extract = full coordinate indexing after column-major unravelling
+```
+
+Logical masks first become their selected or missing flat positions. The
+implementation keeps a direct flat path rather than allocating all coordinate
+vectors.
 
 ### Point matrices
 
-For a point matrix with one row per requested point and one column per source
-axis:
+A point matrix with one column per source axis already contains full
+coordinates:
 
 ```r
 points <- rbind(
@@ -780,193 +692,153 @@ points <- rbind(
   c(3L, 1L),
   c(2L, 3L)
 )
-```
 
-this:
-
-```r
-rray_extract(x, points)
-```
-
-has the same values and dimensions as:
-
-```r
 rray_index(x, points[, 1], points[, 2])
 ```
 
-Every source axis is selected and every location vector has dimensions `P`, so
-the result has dimensions `P`. Numeric and character point matrices are first
-normalized to integer locations.
+Every column has dimensions `(P)`, so the result has dimensions `(P)` and row
+coordinates remain paired. Numeric and character point-matrix conveniences do
+not need another public addressing mode.
 
-`rray_extract()` retains the matrix representation because it is the ordinary
-R representation of point coordinates and because the function also owns flat
-extraction.
+### One-dimensional `take()`
 
-### Flat positions
+The Array API standard's `take()` accepts a one-dimensional integer input and
+changes only the selected axis. After converting its indexing convention, it
+has the shape of `rray_slice_axis()` and the full-coordinate lowering shown
+above.
 
-A flat position can be unravelled into one coordinate for every source axis in
-R's column-major order:
+The public rray slice remains broader because it accepts ordinary R
+subscripts, including negative complements, logical masks, and names.
 
-```text
-flat locations
-  -> unravel to one location vector per source axis
-  -> rray_index() over every source axis
+### Multidimensional NumPy `take()`
+
+NumPy permits `indices` to have dimensions `(J, K)`. Taking from axis 2 of an
+array with dimensions `(A, B, C)` returns dimensions `(A, J, K, C)`. This is
+also fully specified coordinate indexing:
+
+```r
+axis1 <- array(seq_len(A), c(A, 1L, 1L, 1L))
+axis2 <- array(indices, c(1L, J, K, 1L))
+axis3 <- array(seq_len(C), c(1L, 1L, 1L, C))
+
+rray_index(x, axis1, axis2, axis3)
 ```
 
-This gives the same values, dimensions, missing behavior, and duplicate order
-as flat extraction after the flat subscript has been normalized.
-
-The implementation should keep a direct flat path. Unravelling expands one
-compact location into one coordinate per source axis and adds no value to the
-hot path.
-
-Logical masks follow the same semantic lowering after their selected flat
-positions are found. Negative, zero, and double flat subscripts are normalized
-before unravelling.
-
-### One-dimensional result invariant
-
-Point extraction supplies one one-dimensional coordinate vector per source
-axis. Flat extraction can be converted to the same representation. Therefore:
+The calculation is:
 
 ```text
-extract = full indexing with one-dimensional common locations
+out[a, j, k, c] = x[a, indices[j, k], c]
 ```
 
-This is a semantic and testing relationship. It does not require extraction to
-allocate coordinate arrays internally.
+This operation can increase dimensionality, so it is not
+`rray_slice_axis()`. It needs no separate primitive because full coordinate
+indexing represents it directly.
+
+### `take_along_axis()`
+
+The Array API standard's `take_along_axis()` supplies one coordinate array for
+one source axis while other coordinates are identities. This is the model for
+`rray_index_axis()`.
+
+rray uses a directional rule outside `axis`: `i` may broadcast to the source
+dimensions, but it cannot expand `x`. This is stricter than taking the full
+common dimensions. The restriction guarantees that only the selected axis can
+change and that names on every unselected axis remain valid.
 
 ## Connection to location-producing functions
 
 Location-producing functions should return bare integer arrays shaped for
-`cross = FALSE` indexing.
+`rray_index_axis()`:
 
 ```r
-locations <- rray_locate_max(x, axis = 2L)
-rray_index(x, , locations)
+i <- rray_locate_max(x, axis = 2L)
+rray_index_axis(x, i, axis = 2L)
 ```
 
 If `x` has dimensions `(A, B, C)`, locating along axis 2 returns dimensions
-`(A, 1, C)`. Indexing those locations returns dimensions `(A, 1, C)` and one
+`(A, 1, C)`. Indexing those coordinates returns dimensions `(A, 1, C)` and one
 maximum per lane.
 
-Assignment through the same locations updates one position per lane:
+Assignment through the same coordinates updates one position per lane:
 
 ```r
-rray_index_assign(x, , locations, value = 0)
+rray_index_assign_axis(x, i, axis = 2L, value = 0)
 ```
 
 If a lane has tied extrema, the locating function chooses according to its tie
-rule. Replacing every tied value uses a logical mask with
+rule. Replacing every tied value uses a logical flat mask with
 `rray_extract_assign()` instead.
 
 ## Implementation design
 
-### Positional argument capture
+### Coordinate normalization
 
-The R wrapper must capture `...` without evaluating missing arguments away.
-The captured representation has one entry per argument position and records
-whether that position is supplied or missing.
-
-The wrapper must:
-
-- Expand dynamically spliced arguments in place.
-- Reject named location arguments.
-- Reject more argument positions than source axes.
-- Distinguish a missing argument from a supplied `NULL`. A missing argument
-  leaves an axis unspecified, while `NULL` is an invalid location array.
-- Treat omitted trailing axes as unspecified without adding public arguments.
-
-The selected-axis mapping is derived only from these positions.
-
-### Location normalization
-
-Build location validation on the point-coordinate layer used by extraction,
-not on ordinary subscript normalization.
-
+Build coordinate validation separately from ordinary subscript normalization.
 The normalizer owns:
 
 - Bare integer vector and array validation.
 - One-based bounds checks against a specific source axis.
 - Missing detection.
 - Conversion to zero-based coordinate reads for the iterator.
-- Common dimension and broadcast-stride construction.
-- The conditional dimensionality rule for `cross = FALSE`.
+- Common-dimension and broadcast-stride construction.
+- Directional dimension checks for `rray_index_axis()`.
 
-Do not send locations through ordinary subscript normalization. In particular,
-zero removal and negative complement have no meaning here.
+Do not send coordinates through ordinary subscript normalization. Zero removal
+and negative complement have no meaning for a point coordinate.
 
-### Index plan
+### Full index plan
 
 Build one plan containing:
 
 - Source dimensions and column-major strides.
-- Selected and unselected source axes.
-- Normalized supplied location arrays.
-- Common supplied-location dimensions `G`.
-- Result dimensions.
-- Broadcast strides for every supplied location array.
-- A mapping from source axes to result axes.
-- Identity descriptors for unspecified axes when `cross = FALSE`.
-- Independent-axis descriptors when `cross = TRUE`.
-- Whether any supplied location is missing.
+- One normalized coordinate array per source axis.
+- Common result dimensions `G`.
+- Broadcast strides for every coordinate array over `G`.
+- Whether any coordinate is missing.
 
-The plan exposes one source offset for every result point. Read and assignment
-use the same source-offset order.
+The iterator walks `G` in column-major order. At each output point, it reads
+one broadcast coordinate per source axis and combines them into a flat source
+offset:
 
-### Identity path
+```text
+offset = sum((coordinate[axis] - 1) * source_stride[axis])
+```
 
-For `cross = FALSE`:
+Read and assignment use the same source-offset order.
 
-1. Add one implicit identity descriptor for each unspecified axis.
-2. Merge supplied and identity dimensions into result dimensions `H`.
-3. Give each supplied location array its broadcast strides over `H`.
-4. Give each identity descriptor its source stride on its matching result axis
-   and zero elsewhere.
-5. Walk `H` once and combine every selected location with every identity
-   coordinate into a source offset.
+### Axis index plan
 
-For the single-axis case, the existing two-location strided iterator is a good
-fit. One location tracks the source base from identities while the other tracks
-the possibly broadcast supplied location array.
+The axis shell validates that `i` has the same dimensionality as `x`, checks
+directional compatibility outside `axis`, and replaces the selected source
+dimension with `dim(i)[axis]`.
 
-### Crossed path
+The implementation represents unselected identities in the plan rather than
+allocating coordinate arrays. One iterator component tracks the source base
+from identity axes and another reads the possibly broadcast coordinate from
+`i`.
 
-For `cross = TRUE`:
-
-1. Compute `G` from the supplied location arrays.
-2. Precompute the selected-axis source offset for each point in `G`.
-3. Use a sentinel for a missing supplied coordinate.
-4. Walk the full result dimensions.
-5. Add the precomputed selected offset to the source offset contributed by
-   independent axes.
-
-Precomputing selected offsets avoids rereading every supplied array for each
-combination of independent axes. If the offset storage becomes material, add
-an on-the-fly path only after profiling.
+The axis plan can lower to the general internal iterator initially. A
+specialized iterator can be added without changing public behavior.
 
 ### Typed cores
 
-Read and assignment share one source-location order.
+Read and assignment share one source-location order:
 
 - Atomic cores write through data pointers.
 - Character and list cores use the write barrier.
 - Missing reads write the storage-specific missing value.
-- Assignment rejects missing locations before copying `x`.
-- Assignment writes in column-major indexing-result order.
-
-The identity and crossed plans can call the same typed cores once they expose
-the next source offset through a small common interface.
+- Assignment rejects missing coordinates before copying `x`.
+- Assignment writes in column-major result order.
 
 ### Protection review
 
 Before calling any C change done, perform the explicit protection review from
 `AGENTS.md`. In particular, protect:
 
-- Normalized `x` before normalizing any location array.
-- Every normalized location array stored across later allocations.
-- Common dimensions before building result dimensions.
-- Result dimensions and names across result allocation.
+- Normalized `x` before normalizing coordinate arrays.
+- Every normalized coordinate array stored across later allocations.
+- Common dimensions before allocating the result.
+- Result dimensions across result allocation.
 - Cast assignment values across broadcasting and copying.
 
 Name the next function that receives each touched `r_obj*` and check whether
@@ -995,67 +867,44 @@ Do not add comments to C or R source files.
 
 ## Test plan
 
-### Validation
+### Full index validation
 
 - Bare integer vectors and arrays work.
 - Doubles, logicals, characters, factors, and other classed inputs error.
-- Each supplied argument controls its positional source axis.
-- Missing and omitted trailing arguments leave axes unspecified.
-- No location arguments select no axes.
-- More arguments than source axes error.
-- Named arguments in `...` error.
-- Dynamic splicing preserves positional axis mapping.
-- Missing arguments and supplied `NULL` values remain distinct.
-- `cross` must be one non-missing logical value.
-- Zero, negative, and out-of-bounds locations error.
-- Missing locations work for reads and error for assignment.
+- Exactly one coordinate argument is required per source axis.
+- Missing, omitted, extra, `NULL`, and named coordinate arguments error.
+- Dynamic splicing preserves positional source-axis mapping.
+- Zero, negative, and out-of-bounds coordinates error.
+- Missing coordinates work for reads and error for assignment.
 - Validation still occurs for empty results.
 
-### Supplied-location broadcasting
+### Full coordinate broadcasting
 
 - Equal dimensions pair pointwise.
 - Singleton dimensions broadcast.
 - Singleton dimensions on different axes produce Cartesian products.
-- Missing trailing axes follow rray broadcasting.
+- Missing trailing dimensions follow rray broadcasting.
 - Incompatible dimensions error.
-- Zero dimensions combine according to the existing rules.
-- Location names coalesce with the existing broadcasting rules.
-- `cross` never changes broadcasting among supplied arrays.
+- Zero dimensions combine according to existing rules.
+- The result dimensions are exactly the common coordinate dimensions.
+- Results can have lower, equal, and greater dimensionality than `x`.
 
-### Identity behavior
+### Axis indexing
 
-- Partial selection requires supplied arrays with the dimensionality of `x`.
-- Exact unspecified dimensions work.
-- Dimensions of one broadcast over identity axes.
-- Supplied arrays cannot enlarge an unspecified source axis.
-- Result dimensionality equals that of `x` for partial selection.
-- Unspecified result dimensions equal their source dimensions.
-- Selected result dimensions come from common supplied dimensions.
-- Identity results equal full indexing with explicit identity arrays.
-- One-dimensional `x` has no remaining identity axes.
-
-### Crossed behavior
-
-- Supplied arrays can have any dimensionality.
-- One selected axis replaces that axis with every dimension of `G`.
-- Multiple adjacent selected axes are replaced by one `G` block.
-- Multiple nonadjacent selected axes use the same placement rule.
-- Unselected axes before and after the first selected axis keep their order.
-- Result dimensionality is `n - length(S) + dimensionality(G)`.
-- Every independent source position crosses with every point in `G`.
-- Maximum supported dimensionality errors before allocation.
-
-### Cross-invariant cases
-
-- Selecting every source axis gives identical results for both flag values.
-- Selecting no source axes gives identical normalized copies for both values.
-- The flag can be forwarded without special-casing either situation.
+- `i` must be a bare integer array with the same dimensionality as `x`.
+- On unselected axes, dimensions of one and exact source dimensions work.
+- An `i` dimension cannot expand an unselected source dimension of one.
+- Only the selected result dimension can differ from `x`.
+- Coordinates can vary across every lane.
+- Unselected source names are preserved.
+- Selected source names and all names on `i` are dropped.
+- Axis results equal full indexing with explicit identity arrays.
+- One-dimensional `x` needs no identity coordinates.
 
 ### Values
 
 - All seven native storage types.
-- One through several selected axes.
-- One through several unspecified axes.
+- One through the maximum supported dimensionality.
 - Paired coordinates.
 - Cartesian coordinates formed through broadcasting.
 - Repeated coordinates.
@@ -1063,68 +912,39 @@ Do not add comments to C or R source files.
 - Empty indexing results.
 
 Build a small R oracle that walks every output point, constructs its complete
-source coordinate, and reads `x` through a point matrix. Compare values and
-dimensions.
+source coordinate, and reads `x` through base R. Compare values and dimensions.
 
 ### Names
 
-- Identity axes keep source names.
-- Crossed independent axes keep source names.
-- Selected source axis names are dropped.
-- Location names populate common result dimensions.
-- Broadcast location axes lose names when their dimension changes.
-- Full unnamed indexing has no names.
+- Every full coordinate result is unnamed.
+- Identity-looking full coordinates do not retain source names.
+- Axis indexing keeps every unselected source name vector.
+- Axis indexing always drops the selected source names.
 - Assignment returns the original names of `x`.
 
 ### Assignment
 
 - Lossless casts succeed and lossy casts fail.
-- Scalar and array broadcasting to indexing result dimensions.
+- Scalar and array broadcasting to result dimensions.
 - Arbitrary recycling fails.
-- Repeated targets use last-write-wins order.
+- Repeated targets use final-write-wins order.
 - Missing targets fail before copying.
-- Empty targets validate and return a copy with unchanged contents.
+- Empty targets validate and return an unchanged copy.
 - `value` equal to `x` works.
 - Type, dimensions, and names of `x` are unchanged.
 - Reading selected targets agrees with assignment target order.
 
-### Axis equivalence
+### Family equivalences
 
-For both values of `cross`:
+- Compare positive orthogonal slicing with open-mesh full coordinates.
+- Compare one-axis slicing with normalized coordinates and explicit identities.
+- Compare axis indexing with full coordinates and explicit identities.
+- Compare flat extraction with unravelled full coordinates.
+- Compare point-matrix columns with one-dimensional full coordinates.
+- Compare multidimensional NumPy-style take with expanded full coordinates.
 
-```r
-rray_index_axis(x, locations, axis, cross = cross)
-```
-
-must equal:
-
-```r
-rray_index(x, , locations, cross = cross)
-```
-
-for the representative case `axis = 2`. Repeat the property for every source
-axis by constructing the corresponding positional call.
-
-Compare values, dimensions, names, missing behavior, assignment results, and
-errors.
-
-### Slice properties
-
-For positive integer orthogonal subscripts, compare `rray_slice()` with full
-indexing over open-mesh location arrays. Compare names separately because the
-slice wrapper owns source-name selection.
-
-For positive one-axis subscripts, compare `rray_slice_axis()` with
-`rray_index_axis(cross = TRUE)` after normalizing the subscript to locations.
-
-### Extract properties
-
-For a point matrix, compare `rray_extract()` with full indexing over the point
-matrix columns.
-
-For flat positions, unravel normalized positions to one location vector per
-source axis and compare with full indexing. Cover missing and duplicate
-positions and column-major order.
+Names are compared according to the stronger specialized contracts rather than
+the unnamed general index result.
 
 ### Required checks
 
@@ -1138,138 +958,81 @@ After each C change:
 
 ## Delivery order
 
-### 1. General read path
+### 1. Full coordinate reads
 
-Implement `rray_index()` reads with integer locations, supplied-location
-broadcasting, both `cross` modes, result dimensions, names, missing locations,
-and every storage type.
+Implement `rray_index()` with exact argument counts, strict integer
+coordinates, common broadcasting, missing reads, unnamed results, and every
+storage type.
 
 Use the loop oracle and worked examples as the first tests.
 
-### 2. Axis read path
+### 2. Axis reads
 
-Add `rray_index_axis()` as an exact one-array wrapper. Start by calling the
-general internal path, then add the specialized identity iterator without
-changing behavior.
+Implement `rray_index_axis()` with directional broadcasting, fixed
+unselected dimensions, selected-axis name removal, and unselected-axis name
+preservation.
 
 ### 3. Assignment
 
 Implement both assignment functions with casting, value broadcasting, missing
-rejection, copying, and deterministic last-write-wins behavior.
+rejection, copying, and deterministic final-write-wins behavior.
 
 ### 4. Share lower-level machinery
 
-Share location validation, source-offset iteration, and typed cores with point
-extraction where doing so leaves each public contract clear. Keep slicing's
-affine fast path and flat extraction's compact iterator.
+Share coordinate validation, source-offset iteration, and typed cores with
+flat extraction where doing so leaves each public contract clear. Keep
+slicing's affine path and extraction's compact flat iterator.
 
-### 5. Update the main implementation plan
+### 5. Main implementation plan
 
 Update the corresponding section of `plans/implementation.md`. Keep
-`plans/slice.md` as the source of truth for ordinary subscripts and extraction,
-and this file as the source of truth for location arrays.
+`plans/slice.md` as the source of truth for ordinary subscripts and flat
+extraction, and this file as the source of truth for integer coordinates.
 
 ## Research notes
 
-### Sources of inspiration
+### Python Array API standard
 
-The design should look to NumPy's `take()`, `take_along_axis()`, advanced
-indexing, and NEP 21 as sources of inspiration. Each contributes a different
-part of rray's indexing model:
+The standard requires full coordinate tuples to contain one integer or integer
+array per source axis. The entries broadcast to common dimensions and pair
+pointwise. The result dimensions are the common coordinate dimensions. It
+deliberately leaves mixed slices and integer arrays unspecified.
 
-| Source | Main idea | rray connection |
-|---|---|---|
-| `take()` | One location array replaces one source axis while every other axis remains independent | `rray_index_axis(cross = TRUE)` |
-| `take_along_axis()` | One location array is matched with corresponding one-dimensional data slices | `rray_index_axis(cross = FALSE)` |
-| Advanced indexing | Multiple integer arrays broadcast and are read pointwise | Supplied arrays in `rray_index()` always broadcast and pair pointwise |
-| NEP 21 | Orthogonal and vectorized indexing should have explicit, separate contracts | `rray_slice()` owns Cartesian subscript selection and `rray_index()` owns paired location arrays |
+This is the direct model for `rray_index()`. rray differs by using one-based,
+positive coordinates, left-aligned broadcasting, missing reads, strict bounds
+checks, and unnamed results.
 
-These are conceptual sources rather than APIs to copy exactly. rray uses
-one-based locations, left-aligned broadcasting, stable output placement,
-strict assignment casting, and explicit name rules.
-
-### `take()` and crossed axis indexing
-
-NumPy's `take()` leaves source axes other than `axis` independent. The full
-shape of its index array replaces the selected axis. This supplies the shape
-model for:
-
-```r
-rray_index_axis(x, locations, axis, cross = TRUE)
-```
-
-The relationship concerns positive locations and result shape. It does not
-make `rray_slice_axis()` an alias for `take()`. Slicing accepts ordinary R
-subscripts, including negative complements, logical masks, and names.
-
-### `take_along_axis()` and identity indexing
-
-NumPy's `take_along_axis()` matches every one-dimensional index slice with the
-corresponding data slice. This supplies the identity-coordinate model for:
-
-```r
-rray_index_axis(x, locations, axis, cross = FALSE)
-```
-
-Functions such as `rray_locate_min()` and `rray_locate_max()` should return
-locations shaped for this operation. NumPy's `put_along_axis()` also informs
-the corresponding assignment operation:
-
-```r
-rray_index_assign_axis(x, locations, axis, value, cross = FALSE)
-```
-
-### Advanced indexing and general indexing
-
-NumPy advanced indexing broadcasts multiple integer arrays and reads them
-pointwise. This supplies the core model for the location arguments accepted
-by:
-
-```r
-rray_index(x, ..., cross = FALSE)
-```
-
-Supplied location arrays always broadcast and pair pointwise. Singleton
-dimensions on different axes form an explicit open mesh when a Cartesian
-product is wanted.
-
-NumPy changes output-axis placement depending on whether advanced indices are
-adjacent. rray4 should not copy that rule. Crossed indexing always inserts the
-common location block where the first selected source axis occurred.
-
-### NEP 21 and explicit contracts
-
-NEP 21 names NumPy's paired behavior vectorized indexing and proposes a
-separate orthogonal indexing operation. The proposal is deferred, but its main
-design lesson is valuable: paired and Cartesian indexing should not be selected
-implicitly by the types or arrangement of arguments.
-
-rray applies that lesson through separate public families:
-
-- `rray_slice()` and `rray_slice_axis()` accept ordinary subscripts and use
-  Cartesian selection.
-- `rray_index()` and `rray_index_axis()` accept strict location arrays and pair
-  supplied coordinates pointwise.
-- `rray_extract()` gives flat positions and point matrices an explicit
-  one-dimensional result contract.
-
-The `cross` flag adds a choice that is separate from NEP 21's distinction
-between paired and Cartesian indexing. It controls only source axes without
-supplied location arrays. It never changes how supplied arrays relate to each
-other.
+The standard's `take()` and `take_along_axis()` provide useful specialized
+shape contracts. rray assigns ordinary subscript selection to
+`rray_slice_axis()` and directional per-lane coordinates to
+`rray_index_axis()`.
 
 Useful sources:
 
+- [Integer array indexing](https://data-apis.org/array-api/2024.12/API_specification/indexing.html#integer-array-indexing)
+- [`take()`](https://data-apis.org/array-api/2024.12/API_specification/generated/array_api.take.html)
+- [`take_along_axis()`](https://data-apis.org/array-api/2024.12/API_specification/generated/array_api.take_along_axis.html)
+
+### NumPy
+
+NumPy advanced indexing supplies the pointwise broadcast model. NumPy's
+conditional placement rules are unnecessary here because `rray_index()` has
+no unselected source axes. Every output axis belongs to the common coordinate
+space.
+
+NumPy's multidimensional `take()` demonstrates that replacing one source axis
+with an arbitrary index-array shape is still a full coordinate gather when
+identity coordinates are supplied for the other axes.
+
 - [`numpy.take()`](https://numpy.org/doc/stable/reference/generated/numpy.take.html)
 - [`numpy.take_along_axis()`](https://numpy.org/doc/stable/reference/generated/numpy.take_along_axis.html)
-- [`numpy.put_along_axis()`](https://numpy.org/doc/stable/reference/generated/numpy.put_along_axis.html)
 - [NumPy advanced indexing](https://numpy.org/doc/stable/user/basics.indexing.html#advanced-indexing)
-- [NEP 21: Simplified and explicit advanced indexing](https://numpy.org/neps/nep-0021-advanced-indexing.html)
+- [NEP 21](https://numpy.org/neps/nep-0021-advanced-indexing.html)
 
 ### Base R
 
-Base R point-matrix indexing is the one-dimensional, all-axes-selected case of
-`rray_index()`. Base R does not expose arbitrary broadcast location dimensions
-through a separate function.
+Base R point-matrix indexing is the one-dimensional case of full coordinate
+indexing. Its point-matrix columns can be passed directly as the coordinate
+arguments to `rray_index()` after validation and name matching.
 
 - [Extract or Replace Parts of an Object](https://stat.ethz.ch/R-manual/R-patched/library/base/html/Extract.html)
