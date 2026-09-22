@@ -9,8 +9,8 @@ specialization:
 rray_index(x, ...)
 rray_index_assign(x, ..., value)
 
-rray_index_axis(x, i, axis)
-rray_index_assign_axis(x, i, axis, value)
+rray_index_axis(x, i, ..., axis)
+rray_index_assign_axis(x, i, ..., axis, value)
 ```
 
 `rray_index()` requires exactly one integer coordinate array for every source
@@ -173,13 +173,21 @@ Zero dimensions follow the existing common-dimension rules:
 ## `rray_index_axis()`
 
 ```r
-rray_index_axis(x, i, axis)
-rray_index_assign_axis(x, i, axis, value)
+rray_index_axis(x, i, ..., axis)
+rray_index_assign_axis(x, i, ..., axis, value)
 ```
 
 `rray_index_axis()` supplies coordinates for one source axis while every other
 axis receives an implicit identity coordinate. It is the rray form of a
 directional take-along-axis operation.
+
+The dots are empty and must stay empty. They force `axis` and `value` to be
+supplied by name, exactly as in `rray_slice_axis()`.
+
+```r
+rray_index_axis(x, i, axis = 2)
+rray_index_assign_axis(x, i, axis = 2, value = 0L)
+```
 
 `i` must have the same dimensionality as `x`. Let `D` be the source dimensions
 and `I` be the dimensions of `i`. For every unselected axis `a`:
@@ -542,7 +550,7 @@ Assignment always returns the original dimensions and names of `x` unchanged.
 
 ```r
 rray_index_assign(x, ..., value)
-rray_index_assign_axis(x, i, axis, value)
+rray_index_assign_axis(x, i, ..., axis, value)
 ```
 
 Assignment follows the same coordinate plan as reading:
@@ -907,6 +915,7 @@ Do not add comments to C or R source files.
 - Selected source names and all names on `i` are dropped.
 - Axis results equal full indexing with explicit identity arrays.
 - One-dimensional `x` needs no identity coordinates.
+- A positional third argument lands in the empty dots and errors.
 
 ### Values
 

@@ -8,8 +8,8 @@ Use ordinary R subscripts for slicing and extraction:
 rray_slice(x, ...)
 rray_slice_assign(x, ..., value)
 
-rray_slice_axis(x, i, axis)
-rray_slice_assign_axis(x, i, axis, value)
+rray_slice_axis(x, i, ..., axis)
+rray_slice_assign_axis(x, i, ..., axis, value)
 
 rray_slice_rows(x, i)
 rray_slice_assign_rows(x, i, value)
@@ -54,9 +54,9 @@ The complete family has five read operations:
 | Operation | Function | Result shape |
 |---|---|---|
 | Orthogonal subscripts | `rray_slice(x, ...)` | One output axis per source axis |
-| One-axis subscript | `rray_slice_axis(x, i, axis)` | Source dimensions with one axis replaced |
+| One-axis subscript | `rray_slice_axis(x, i, ..., axis)` | Source dimensions with one axis replaced |
 | First or second axis subscript | `rray_slice_rows(x, i)`, `rray_slice_columns(x, i)` | Source dimensions with one axis replaced |
-| One-axis coordinate array | `rray_index_axis(x, i, axis)` | Source dimensions with one axis replaced |
+| One-axis coordinate array | `rray_index_axis(x, i, ..., axis)` | Source dimensions with one axis replaced |
 | Full coordinate arrays | `rray_index(x, ...)` | Common coordinate dimensions |
 | Flat subscript or point matrix | `rray_extract(x, i)` | One dimensional |
 
@@ -149,8 +149,17 @@ name.
 ## `rray_slice_axis()`
 
 ```r
-rray_slice_axis(x, i, axis)
-rray_slice_assign_axis(x, i, axis, value)
+rray_slice_axis(x, i, ..., axis)
+rray_slice_assign_axis(x, i, ..., axis, value)
+```
+
+The dots are empty and must stay empty. They force `axis` and `value` to be
+supplied by name, so a call always says which axis it means and never reads as
+a second subscript. This matches `rray_rep()` and `rray_split()`.
+
+```r
+rray_slice_axis(x, c(3, 1), axis = 2)
+rray_slice_assign_axis(x, c(3, 1), axis = 2, value = 0L)
 ```
 
 `rray_slice_axis()` has exactly the same subscript semantics as supplying `i`
@@ -220,6 +229,9 @@ rray_slice_columns(x, i) # rray_slice_axis(x, i, axis = 2)
 They are pure sugar and add no subscript rules of their own.
 `rray_slice_columns()` requires a dimensionality of at least two. The names
 match the existing `rray_row_names()` and `rray_column_names()`.
+
+They take no dots. The axis is in the name, so there is nothing to
+disambiguate and `value` can stay positional.
 
 ## `rray_extract()`
 
@@ -595,6 +607,7 @@ need no C code of their own.
 - Multidimensional objects that are not valid ordinary subscripts error.
 - Only the selected axis dimension changes.
 - Selected-axis names follow the normalized subscript.
+- A positional third argument lands in the empty dots and errors.
 - `rray_slice_rows()` and `rray_slice_columns()` agree with `rray_slice_axis()`
   at axes 1 and 2.
 - `rray_slice_columns()` errors on a one-dimensional array.
