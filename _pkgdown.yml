@@ -17,11 +17,11 @@ reference:
   - rray_names
   - rray_axis_names
   - rray_row_names
-  - rray_col_names
+  - rray_column_names
   - rray_set_names
   - rray_set_axis_names
   - rray_set_row_names
-  - rray_set_col_names
+  - rray_set_column_names
 
 - title: Broadcasting
   contents:

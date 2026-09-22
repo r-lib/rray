@@ -3,14 +3,14 @@
 \name{rray_axis_names}
 \alias{rray_axis_names}
 \alias{rray_row_names}
-\alias{rray_col_names}
+\alias{rray_column_names}
 \title{Get names for a single axis of an array}
 \usage{
 rray_axis_names(x, axis)
 
 rray_row_names(x)
 
-rray_col_names(x)
+rray_column_names(x)
 }
 \arguments{
 \item{x}{An array.}
@@ -24,7 +24,7 @@ A character vector of names, or \code{NULL} if that axis has no names.
 \itemize{
 \item \code{rray_axis_names()} returns the names for a single \code{axis} of an array,
 or \code{NULL} if that axis has no names.
-\item \code{rray_row_names()} and \code{rray_col_names()} are shortcuts for
+\item \code{rray_row_names()} and \code{rray_column_names()} are shortcuts for
 \code{rray_axis_names(x, 1)} and \code{rray_axis_names(x, 2)}.
 }
 }
@@ -35,5 +35,5 @@ rray_axis_names(x, 1)
 rray_axis_names(x, 2)
 
 rray_row_names(x)
-rray_col_names(x)
+rray_column_names(x)
 }
