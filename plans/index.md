@@ -32,6 +32,8 @@ The complete family is:
 |---|---|---|
 | Orthogonal subscripts | `rray_slice()` | `rray_slice_assign()` |
 | One-axis subscript | `rray_slice_axis()` | `rray_slice_assign_axis()` |
+| First axis subscript | `rray_slice_rows()` | `rray_slice_assign_rows()` |
+| Second axis subscript | `rray_slice_columns()` | `rray_slice_assign_columns()` |
 | One-axis coordinate array | `rray_index_axis()` | `rray_index_assign_axis()` |
 | Full coordinate arrays | `rray_index()` | `rray_index_assign()` |
 | Flat subscript or point matrix | `rray_extract()` | `rray_extract_assign()` |
