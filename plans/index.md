@@ -34,7 +34,7 @@ The complete family is:
 | One-axis subscript | `rray_slice_axis()` | `rray_slice_assign_axis()` |
 | One-axis coordinate array | `rray_index_axis()` | `rray_index_assign_axis()` |
 | Full coordinate arrays | `rray_index()` | `rray_index_assign()` |
-| Flat subscript | `rray_extract()` | `rray_extract_assign()` |
+| Flat subscript or point matrix | `rray_extract()` | `rray_extract_assign()` |
 
 Do not add replacement functions. Every `_assign()` function returns a
 modified copy of `x`.
@@ -668,10 +668,12 @@ allocating them.
 
 ### `rray_extract()`
 
-Normalize flat positions, unravel each one into a source coordinate for every
-axis, and pass the coordinate vectors to `rray_index()`. Every coordinate
-vector has the same one-dimensional shape, so the full index result is also
-one dimensional.
+`rray_extract()` accepts flat positions or a coordinate point matrix. Both
+forms lower to full coordinate indexing and return a one-dimensional array.
+
+For flat positions, normalize and unravel each position into one source
+coordinate per axis. Every coordinate vector has the same one-dimensional
+shape, so the full index result is also one dimensional.
 
 ```text
 extract = full coordinate indexing after column-major unravelling
@@ -693,12 +695,15 @@ points <- rbind(
   c(2L, 3L)
 )
 
+rray_extract(x, points)
+
 rray_index(x, points[, 1], points[, 2])
 ```
 
-Every column has dimensions `(P)`, so the result has dimensions `(P)` and row
-coordinates remain paired. Numeric and character point-matrix conveniences do
-not need another public addressing mode.
+These calls have the same values and dimensions. Every column has dimensions
+`(P)`, so the result has dimensions `(P)` and row coordinates remain paired.
+Numeric point coordinates are validated directly. Character point coordinates
+are matched against source axis names before lowering to integer coordinates.
 
 ### One-dimensional `take()`
 
@@ -940,7 +945,8 @@ source coordinate, and reads `x` through base R. Compare values and dimensions.
 - Compare one-axis slicing with normalized coordinates and explicit identities.
 - Compare axis indexing with full coordinates and explicit identities.
 - Compare flat extraction with unravelled full coordinates.
-- Compare point-matrix columns with one-dimensional full coordinates.
+- Compare `rray_extract()` point matrices with one-dimensional full
+  coordinates.
 - Compare multidimensional NumPy-style take with expanded full coordinates.
 
 Names are compared according to the stronger specialized contracts rather than
@@ -1032,7 +1038,8 @@ identity coordinates are supplied for the other axes.
 ### Base R
 
 Base R point-matrix indexing is the one-dimensional case of full coordinate
-indexing. Its point-matrix columns can be passed directly as the coordinate
-arguments to `rray_index()` after validation and name matching.
+indexing. `rray_extract()` retains this input form. Its point-matrix columns
+can be passed directly as the coordinate arguments to `rray_index()` after
+validation and name matching.
 
 - [Extract or Replace Parts of an Object](https://stat.ethz.ch/R-manual/R-patched/library/base/html/Extract.html)

@@ -2,7 +2,7 @@
 
 ## Recommendation
 
-Use ordinary R subscripts for slicing and flat extraction:
+Use ordinary R subscripts for slicing and extraction:
 
 ```r
 rray_slice(x, ...)
@@ -17,7 +17,7 @@ rray_extract_assign(x, i, value)
 
 `rray_slice()` performs dimension-preserving orthogonal selection across one
 or more axes. `rray_slice_axis()` performs the same operation on one axis held
-in a variable. `rray_extract()` treats `x` as its flat column-major storage and
+in a variable. `rray_extract()` accepts flat positions or coordinate points and
 always returns a one-dimensional array.
 
 Keep subscripts separate from integer coordinate arrays:
@@ -32,7 +32,8 @@ Keep subscripts separate from integer coordinate arrays:
 | Shape | Does not connect positions across axes | Connects coordinates pointwise through broadcasting |
 
 The function name determines the contract. The dimensions of `i` never turn a
-subscript into a coordinate array.
+slice subscript into a coordinate array. `rray_extract()` has a separate,
+explicit matrix rule for coordinate points.
 
 Do not add replacement functions. Every `_assign()` function returns a
 modified copy of `x`. There are no `[` or `[[` methods because rray4 provides
@@ -48,7 +49,7 @@ The complete family has five read operations:
 | One-axis subscript | `rray_slice_axis(x, i, axis)` | Source dimensions with one axis replaced |
 | One-axis coordinate array | `rray_index_axis(x, i, axis)` | Source dimensions with one axis replaced |
 | Full coordinate arrays | `rray_index(x, ...)` | Common coordinate dimensions |
-| Flat subscript | `rray_extract(x, i)` | One dimensional |
+| Flat subscript or point matrix | `rray_extract(x, i)` | One dimensional |
 
 `rray_index()` is the general coordinate operation. Every other operation can
 be described by constructing one explicit coordinate array for every source
@@ -184,8 +185,9 @@ rray_extract(x, i)
 rray_extract_assign(x, i, value)
 ```
 
-`rray_extract()` performs flat indexing only. It treats `x` as its
-column-major storage vector and always returns a one-dimensional array.
+`rray_extract()` accepts flat positions or coordinate points and always returns
+a one-dimensional array. The type and shape of `i` determine which form it
+contains.
 
 ```r
 x <- array(1:24, c(2, 3, 4))
@@ -194,30 +196,72 @@ rray_extract(x, c(1, 4, 24))
 rray_extract(x, x %% 5 == 0)
 ```
 
-The shape of `i` does not select another addressing mode:
+### Dispatch rule
 
-- Integer and double vectors or arrays contain flat positions.
-- Logical vectors or arrays are flat masks.
-- Character subscripts are errors because flat character positions have no
-  stable meaning for a multidimensional array.
+- A bare integer or double matrix contains coordinate points. It must have one
+  column per source axis. Double coordinates must be whole numbers.
+- A bare character matrix contains named coordinate points. It must also have
+  one column per source axis.
+- An integer or double vector, including a one-dimensional array, contains flat
+  positions.
+- A logical vector or one-dimensional logical array is a flat mask. A logical
+  array with dimensions identical to `x` is also a flat mask.
+- A logical matrix is a mask only when its dimensions are identical to `x`. It
+  is never a point matrix.
+- Character vectors are errors. Flat character positions have no stable
+  meaning for multidimensional arrays.
+- Numeric arrays with three or more dimensions are errors. Reshape them to a
+  matrix for coordinate points or to one dimension for flat positions.
 - Factors, data frames, and other classed subscripts are errors.
 
-Numeric `i` follows the ordinary location rules against `rray_size(x)`,
-including negative complements, zero, duplicates, and missing locations.
-Double locations must be whole numbers representable as R integers.
+The matrix rule is unconditional. An integer matrix with the wrong number of
+columns is an invalid point matrix, not a flat subscript. This makes dispatch
+predictable from `i` alone.
 
-A logical `i` must have size one or `rray_size(x)`. A logical array with the
-same dimensions as `x` is therefore accepted naturally. Arbitrary logical
+### Flat positions
+
+Flat extraction treats `x` as its column-major storage vector. Numeric `i`
+follows ordinary location rules against `rray_size(x)`, including negative
+complements, zero, duplicates, and missing locations. Double locations must be
+whole numbers representable as R integers.
+
+A logical `i` must have length one or `rray_size(x)`. Arbitrary logical
 recycling is an error.
 
-For numeric input, the result dimension is the number of normalized
-locations. For logical input, it is the number of selected or missing
-locations. The result is one dimensional even when `i` is an array.
+### Coordinate points
 
-### Coordinate point example
+Each matrix row identifies one element. A point matrix has one column per
+source axis and one row per requested point.
 
-Point matrices no longer select a separate `rray_extract()` mode. Their
-columns are already fully specified coordinate arrays:
+Numeric coordinates must be positive and in bounds. Zero and negative
+coordinates are errors because complement selection has no useful meaning for
+one point. Missing coordinates produce missing output for reads and are errors
+for assignment.
+
+Character coordinates match exactly against the names of the corresponding
+source axis. Every source axis must have names. Missing strings produce missing
+output for reads. Empty and unmatched strings are errors.
+
+```r
+points <- rbind(
+  c(1, 1, 1),
+  c(2, 3, 4),
+  c(1, 2, 3)
+)
+
+rray_extract(x, points)
+# dimensions: 3L
+# values: c(1L, 24L, 15L)
+```
+
+A point result has dimensions `nrow(i)`. A zero-row matrix returns a
+zero-length one-dimensional array. One row still returns a one-dimensional
+array of length one.
+
+### Connection to full coordinate indexing
+
+Point matrices lower directly to full coordinate indexing. Their columns are
+the coordinate arrays:
 
 ```r
 points <- rbind(
@@ -227,15 +271,11 @@ points <- rbind(
 )
 
 rray_index(x, points[, 1], points[, 2], points[, 3])
-# dimensions: 3L
-# values: c(1L, 24L, 15L)
 ```
 
-Rows remain paired because every column has the same one-dimensional shape.
-This is base R's numeric matrix indexing expressed directly through the
-general coordinate operation.
-
-### Connection to full coordinate indexing
+Every column has dimensions `(P)`, so rows remain paired and the result has
+dimensions `(P)`. Character coordinates are matched to integer coordinates
+before this lowering.
 
 A normalized flat position can be unravelled into one coordinate for every
 source axis in R's column-major order:
@@ -250,9 +290,8 @@ Every unravelled coordinate vector has the one-dimensional result size, so
 the common coordinate dimensions are also one dimensional. This gives the
 same values, missing behavior, and duplicate order as `rray_extract()`.
 
-The implementation should retain a direct flat path. Materializing one
-coordinate vector per source axis would add work without changing the public
-result.
+The implementation should retain direct point and flat paths. Materializing or
+unravelling coordinate vectors adds work without changing the public result.
 
 ## Subscript rules
 
@@ -331,8 +370,8 @@ the data:
 used for every lane, each output position on the selected axis has one clear
 source name.
 
-`rray_extract()` drops all names. A flat one-dimensional result cannot retain
-a source-axis identity.
+`rray_extract()` drops all names. Neither a flat result nor a point result has
+an output axis that corresponds to one source axis.
 
 The coordinate family has different guarantees:
 
@@ -381,9 +420,8 @@ Do not carry these parts of the original API forward:
 
 - `rray_subset()`: `rray_slice()` names the orthogonal operation directly.
 - The original variadic `rray_extract(x, ...)`: orthogonal selection belongs
-  to `rray_slice()`. The new `rray_extract(x, i)` is flat-only.
-- Point-matrix dispatch in `rray_extract()`: use one matrix column per argument
-  to `rray_index()`.
+  to `rray_slice()`. The new `rray_extract(x, i)` has one input containing
+  flat positions or coordinate points.
 - `rray_yank()`: `rray_extract()` is the clearer name for flat extraction.
 - `pad()`: missing arguments handle fixed calls and `rray_slice_axis()` handles
   an axis held in a variable.
@@ -393,8 +431,9 @@ Do not carry these parts of the original API forward:
   the two distinct one-axis contracts.
 - `rray_filter()`: it would duplicate logical flat extraction.
 
-Do not overload `rray_slice()` or `rray_extract()` based on the dimensions of a
-subscript. The function name must determine the result model.
+Do not overload `rray_slice()` based on the dimensions of a subscript.
+`rray_extract()` has exactly two forms under the unconditional matrix dispatch
+rule, and both have the same one-dimensional result contract.
 
 ## Implementation design
 
@@ -409,6 +448,7 @@ Add `src/subscript.c`, `src/subscript.h`, and
 - Character matching against axis names for slicing.
 - Detection of all and affine indices.
 - Flat location validation.
+- Numeric and character point-matrix validation.
 
 Use `r_ssize` for subscript and output sizes. Axis dimensions and stored
 locations remain integers because R's `dim` attribute is integer. Error before
@@ -441,7 +481,7 @@ Use two execution paths:
 This keeps contiguous slices fast without changing the public contract for
 repeated or reordered locations.
 
-### Flat extraction plan
+### Extraction plan
 
 Normalize `i` against `rray_size(x)` and convert each positive location to a
 zero-based flat source offset. The dimensions of `i` do not survive. Logical
@@ -449,6 +489,16 @@ masks first become the corresponding flat locations.
 
 The flat path shares typed copy and assignment cores with slicing but does not
 build per-axis coordinate arrays.
+
+The point path validates one matrix column against each source axis and
+computes a flat source offset for each row:
+
+```text
+offset = sum((point[axis] - 1) * source_stride[axis])
+```
+
+Flat and point extraction share typed read and assignment cores after their
+source offsets have been built.
 
 ### Typed cores
 
@@ -500,15 +550,20 @@ Keep each public family with its assignment form:
 - Only the selected axis dimension changes.
 - Selected-axis names follow the normalized subscript.
 
-### Flat extraction
+### Extraction
 
-- Integer and double vectors and arrays are always flat positions.
+- Integer and double vectors and one-dimensional arrays are flat positions.
 - Logical vectors and arrays are always flat masks.
 - A logical input must have size one or `rray_size(x)`.
-- Numeric matrix input does not become point indexing.
-- Character and classed inputs error.
+- Integer and double matrices with one column per source axis are points.
+- Character matrices match names on every source axis.
+- Point matrices with the wrong column count error.
+- Character vectors and classed inputs error.
 - Results are always one dimensional and unnamed.
-- Column-major order, duplicates, complements, zero, missing, and empty inputs.
+- Flat inputs cover column-major order, duplicates, complements, zero, missing,
+  and empty selections.
+- Point inputs cover paired coordinates, missing coordinates, repeated points,
+  and zero-row matrices.
 
 ### Reference properties
 
@@ -534,6 +589,9 @@ Compare names according to the stronger slice guarantees.
 For flat positions, unravel normalized positions and compare with
 `rray_index()` over one coordinate vector per source axis. Cover missing and
 duplicate positions and column-major order.
+
+For point matrices, compare `rray_extract(x, points)` with `rray_index()` over
+the normalized matrix columns. Cover numeric and character coordinates.
 
 ### Assignment
 
@@ -564,10 +622,11 @@ After each C change:
 Implement subscript normalization, `rray_slice()`, `rray_slice_assign()`,
 `rray_slice_axis()`, and `rray_slice_assign_axis()`.
 
-### 2. Flat extraction
+### 2. Extraction
 
 Implement `rray_extract()` and `rray_extract_assign()` on the shared subscript
-normalization and typed copy cores.
+normalization and typed copy cores. Support both flat positions and coordinate
+point matrices.
 
 ### 3. Coordinate indexing
 
@@ -578,7 +637,7 @@ coordinates.
 ### 4. Main implementation plan
 
 Update the corresponding section of `plans/implementation.md`. Keep this file
-as the source of truth for ordinary subscripts and flat extraction, and
+as the source of truth for ordinary subscripts and extraction, and
 `plans/index.md` as the source of truth for integer coordinate arrays.
 
 ## Research notes
