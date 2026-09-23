@@ -1,4 +1,4 @@
-index_oracle <- function(x, ...) {
+index_base <- function(x, ...) {
   indices <- list(...)
   dimensions <- do.call(rray_dimensions_common, indices)
   indices <- lapply(indices, rray_broadcast, dimensions = dimensions)

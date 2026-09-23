@@ -91,7 +91,7 @@ test_that("broadcasts coordinate arrays", {
   expect_identical(rray_index(x, rows, columns), x)
 })
 
-test_that("matches base R across mixed coordinate shapes", {
+test_that("matches `index_base()` across mixed coordinate shapes", {
   x <- array(seq_len(2L * 3L * 4L * 2L), c(2L, 3L, 4L, 2L))
   axis1 <- array(c(1L, 2L), c(2L, 1L, 1L))
   axis2 <- array(c(3L, NA_integer_, 1L), c(1L, 3L, 1L))
@@ -100,11 +100,11 @@ test_that("matches base R across mixed coordinate shapes", {
 
   expect_identical(
     rray_index(x, axis1, axis2, axis3, axis4),
-    index_oracle(x, axis1, axis2, axis3, axis4)
+    index_base(x, axis1, axis2, axis3, axis4)
   )
 })
 
-test_that("matches base R for pointwise coordinates", {
+test_that("matches `index_base()` for pointwise coordinates", {
   x <- array(seq_len(2L * 3L * 4L), c(2L, 3L, 4L))
   axis1 <- array(c(2L, 1L, NA_integer_, 2L, 1L, 1L), c(2L, 3L))
   axis2 <- array(c(1L, 3L, 2L, 1L, 2L, 3L), c(2L, 3L))
@@ -112,7 +112,7 @@ test_that("matches base R for pointwise coordinates", {
 
   expect_identical(
     rray_index(x, axis1, axis2, axis3),
-    index_oracle(x, axis1, axis2, axis3)
+    index_base(x, axis1, axis2, axis3)
   )
 })
 

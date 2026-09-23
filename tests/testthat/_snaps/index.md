@@ -183,3 +183,4 @@
     Condition
       Error in `rray_index()`:
       ! `x` must be a bare array, not a <foo> object.
+
