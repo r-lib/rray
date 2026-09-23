@@ -394,14 +394,14 @@ struct rray_strided_iterator_n_plan {
   r_ssize v_dimensions[RRAY_MAX_DIMENSIONALITY];
   int dimensionality;
 
-  r_ssize v_strides[RRAY_MAX_DIMENSIONALITY][RRAY_MAX_DIMENSIONALITY];
+  r_ssize v_v_strides[RRAY_MAX_DIMENSIONALITY][RRAY_MAX_DIMENSIONALITY];
   int n;
 };
 
 static inline struct rray_strided_iterator_n_plan rray_strided_iterator_n_plan(
   const int* v_dimensions,
   int dimensionality,
-  const r_ssize (*v_strides)[RRAY_MAX_DIMENSIONALITY],
+  const r_ssize (*v_v_strides)[RRAY_MAX_DIMENSIONALITY],
   int n
 ) {
   check_dimensionality(dimensionality);
@@ -422,7 +422,7 @@ static inline struct rray_strided_iterator_n_plan rray_strided_iterator_n_plan(
     plan.v_dimensions[axis] = (r_ssize) v_dimensions[axis];
 
     for (int i = 0; i < n; ++i) {
-      plan.v_strides[axis][i] = v_strides[axis][i];
+      plan.v_v_strides[axis][i] = v_v_strides[axis][i];
     }
   }
 
@@ -446,7 +446,7 @@ static inline r_ssize rray_strided_iterator_n_plan_run_stride(
   const struct rray_strided_iterator_n_plan* plan,
   int i
 ) {
-  return plan->v_strides[0][i];
+  return plan->v_v_strides[0][i];
 }
 static inline void rray_strided_iterator_n_plan_point_init(
   const struct rray_strided_iterator_n_plan* plan,
@@ -457,7 +457,7 @@ static inline void rray_strided_iterator_n_plan_point_init(
 
 #define RRAY_STRIDED_ITERATOR_NEXTN(V_STARTS, V_POINT, PLAN)                   \
   for (int axis = 0; axis < PLAN->dimensionality; ++axis) {                    \
-    const r_ssize* v_axis_strides = PLAN->v_strides[axis];                     \
+    const r_ssize* v_axis_strides = PLAN->v_v_strides[axis];                   \
     ++V_POINT[axis];                                                           \
     if (V_POINT[axis] < PLAN->v_dimensions[axis]) {                            \
       for (int i = 0; i < PLAN->n; ++i) {                                      \
