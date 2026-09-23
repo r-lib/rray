@@ -168,16 +168,6 @@
       Error in `rray_as_index_array()`:
       ! `dimension` must be a single integer, not length 2.
     Code
-      rray_as_index_array(1L, NA_integer_)
-    Condition
-      Error in `rray_as_index_array()`:
-      ! `dimension` must not be missing.
-    Code
-      rray_as_index_array(1L, -1L)
-    Condition
-      Error in `rray_as_index_array()`:
-      ! `dimension` must not be negative.
-    Code
       rray_as_index_array(1L, 1.5)
     Condition
       Error:

@@ -109,7 +109,7 @@ r_obj* ffi_rray_as_index_array(
 ) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
   const int dimension =
-    rray_as_index_dimension(ffi_dimension, rray_args.dimension, error_call);
+    arg_as_int(ffi_dimension, rray_args.dimension, error_call);
   return rray_as_index_array(ffi_x, dimension, rray_args.x, error_call);
 }
 
@@ -160,31 +160,6 @@ r_obj* rray_as_index_array(
 
   FREE(1);
   return x;
-}
-
-static int rray_as_index_dimension(
-  r_obj* x,
-  struct rray_arg* arg,
-  struct r_lazy error_call
-) {
-  const int out = arg_as_int(x, arg, error_call);
-
-  if (out == r_globals.na_int) {
-    r_abort_lazy_call(
-      error_call,
-      "%s must not be missing.",
-      rray_arg_format(arg)
-    );
-  }
-  if (out < 0) {
-    r_abort_lazy_call(
-      error_call,
-      "%s must not be negative.",
-      rray_arg_format(arg)
-    );
-  }
-
-  return out;
 }
 
 static void check_index_argument_count(

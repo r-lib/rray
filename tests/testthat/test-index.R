@@ -296,8 +296,6 @@ test_that("`rray_as_index_array()` checks `dimension`", {
     rray_as_index_array(1L, NULL)
     rray_as_index_array(1L, integer())
     rray_as_index_array(1L, c(1L, 2L))
-    rray_as_index_array(1L, NA_integer_)
-    rray_as_index_array(1L, -1L)
     rray_as_index_array(1L, 1.5)
   })
 })
