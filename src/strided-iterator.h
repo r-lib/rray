@@ -471,6 +471,8 @@ static inline void rray_strided_iterator_n_plan_point_init(
     }                                                                          \
   }
 
+// --------------------------------------------------------------------------
+
 static inline int rray__strided_iterator_axes_coalesce(
   r_ssize* v_dimensions,
   r_ssize* v_strides,
