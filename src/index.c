@@ -46,6 +46,7 @@ r_obj* rray_index(
 
   r_obj* dimensions =
     KEEP(rray_dimensions_common(indices, r_null, indices_arg, error_call));
+  check_size_from_dimensions(dimensions, error_call);
 
   r_ssize v_x_strides[RRAY_MAX_DIMENSIONALITY];
   rray_fill_strides_from_dimensions(
@@ -56,7 +57,7 @@ r_obj* rray_index(
 
   const int* v_indices[RRAY_MAX_DIMENSIONALITY];
   const struct rray_strided_iterator_n_plan plan =
-    rray_index_iterator_plan(indices, dimensions, v_indices, error_call);
+    rray_index_iterator_plan(indices, dimensions, v_indices);
 
   r_obj* out;
 
@@ -198,14 +199,10 @@ r_obj* rray_as_index_array(
 static struct rray_strided_iterator_n_plan rray_index_iterator_plan(
   r_obj* indices,
   r_obj* dimensions,
-  const int** v_indices,
-  struct r_lazy error_call
+  const int** v_indices
 ) {
   const int* v_dimensions = r_int_cbegin(dimensions);
   const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
-
-  const r_ssize size =
-    rray_size_from_dimensions_checked(v_dimensions, dimensionality, error_call);
 
   r_obj* const* v_index_arrays = r_list_cbegin(indices);
   const int n = (int) r_length(indices);
@@ -236,11 +233,12 @@ static struct rray_strided_iterator_n_plan rray_index_iterator_plan(
     v_indices[i] = r_int_cbegin(index);
   }
 
-  struct rray_strided_iterator_n_plan plan =
-    rray_strided_iterator_n_plan(v_dimensions, dimensionality, v_strides, n);
-  plan.size = size;
-
-  return plan;
+  return rray_strided_iterator_n_plan(
+    v_dimensions,
+    dimensionality,
+    v_strides,
+    n
+  );
 }
 
 static inline r_ssize rray_index_location(

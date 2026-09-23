@@ -6,6 +6,14 @@
       Error in `rray_index()`:
       ! rray can't support arrays with a dimensionality greater than 64. A dimensionality of 65 was requested.
 
+# errors if the result size is too large
+
+    Code
+      rray_index(x, !!!indices)
+    Condition
+      Error in `rray_index()`:
+      ! Size (1.84467e+19) computed from dimensions `(16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16)` is too large.
+
 # requires one coordinate per source axis
 
     Code

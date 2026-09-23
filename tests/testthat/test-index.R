@@ -106,6 +106,18 @@ test_that("errors above the maximum result dimensionality", {
   expect_snapshot(rray_index(42L, index), error = TRUE)
 })
 
+test_that("errors if the result size is too large", {
+  x <- array(1L, rep(1L, 16L))
+
+  indices <- lapply(1:16, function(axis) {
+    dimensions <- rep(1L, 16L)
+    dimensions[[axis]] <- 16L
+    array(1L, dimensions)
+  })
+
+  expect_snapshot(rray_index(x, !!!indices), error = TRUE)
+})
+
 test_that("returns every native storage type", {
   indices <- c(2L, NA_integer_, 1L)
 
