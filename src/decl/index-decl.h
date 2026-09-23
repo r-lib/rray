@@ -1,3 +1,11 @@
+static r_obj* rray_as_index_arrays(
+  r_obj* indices,
+  const int* v_dimensions,
+  int dimensionality,
+  struct rray_arg* indices_arg,
+  struct r_lazy error_call
+);
+
 static struct rray_index_plan rray_index_plan(
   r_obj* x_dimensions,
   r_obj* indices,

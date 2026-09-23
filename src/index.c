@@ -45,47 +45,19 @@ r_obj* rray_index(
     rray_dimensionality_from_dimensions(x_dimensions);
   check_dimensionality(x_dimensionality);
 
-  r_obj* const* v_indices = r_list_cbegin(indices);
-  const r_ssize indices_size = r_length(indices);
+  indices = KEEP(rray_as_index_arrays(
+    indices,
+    v_x_dimensions,
+    x_dimensionality,
+    indices_arg,
+    error_call
+  ));
 
-  if (indices_size != x_dimensionality) {
-    r_abort_lazy_call(
-      error_call,
-      "Must supply exactly %d coordinate array%s to `...`, not %" R_PRI_SSIZE
-      ".",
-      x_dimensionality,
-      x_dimensionality == 1 ? "" : "s",
-      indices_size
-    );
-  }
-
-  if (r_names(indices) != r_null) {
-    r_abort_lazy_call(error_call, "All elements of `...` must be unnamed.");
-  }
-
-  r_obj* indices_normalized = KEEP(r_alloc_list(indices_size));
-
-  r_ssize i = 0;
-  struct rray_arg* index_arg =
-    new_subscript_arg(indices_arg, r_null, indices_size, &i);
-  KEEP(index_arg->shelter);
-
-  for (; i < indices_size; ++i) {
-    r_obj* index = rray_as_index_array(
-      v_indices[i],
-      v_x_dimensions[i],
-      index_arg,
-      error_call
-    );
-    r_list_poke(indices_normalized, i, index);
-  }
-
-  r_obj* dimensions = KEEP(
-    rray_dimensions_common(indices_normalized, r_null, indices_arg, error_call)
-  );
+  r_obj* dimensions =
+    KEEP(rray_dimensions_common(indices, r_null, indices_arg, error_call));
 
   const struct rray_index_plan plan =
-    rray_index_plan(x_dimensions, indices_normalized, dimensions, error_call);
+    rray_index_plan(x_dimensions, indices, dimensions, error_call);
 
   r_obj* out;
 
@@ -118,7 +90,49 @@ r_obj* rray_index(
   KEEP(out);
   r_attrib_poke_dim(out, dimensions);
 
-  FREE(6);
+  FREE(5);
+  return out;
+}
+
+static r_obj* rray_as_index_arrays(
+  r_obj* indices,
+  const int* v_dimensions,
+  int dimensionality,
+  struct rray_arg* indices_arg,
+  struct r_lazy error_call
+) {
+  r_obj* const* v_indices = r_list_cbegin(indices);
+  const r_ssize indices_size = r_length(indices);
+
+  if (indices_size != dimensionality) {
+    r_abort_lazy_call(
+      error_call,
+      "Must supply exactly %d coordinate array%s to `...`, not %" R_PRI_SSIZE
+      ".",
+      dimensionality,
+      dimensionality == 1 ? "" : "s",
+      indices_size
+    );
+  }
+
+  if (r_names(indices) != r_null) {
+    r_abort_lazy_call(error_call, "All elements of `...` must be unnamed.");
+  }
+
+  r_obj* out = KEEP(r_alloc_list(indices_size));
+
+  r_ssize i = 0;
+  struct rray_arg* index_arg =
+    new_subscript_arg(indices_arg, r_null, indices_size, &i);
+  KEEP(index_arg->shelter);
+
+  for (; i < indices_size; ++i) {
+    r_obj* index =
+      rray_as_index_array(v_indices[i], v_dimensions[i], index_arg, error_call);
+    r_list_poke(out, i, index);
+  }
+
+  FREE(2);
   return out;
 }
 
