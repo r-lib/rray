@@ -302,7 +302,9 @@ static inline void rray_index_plan_next(
 }
 
 #define RRAY_INDEX_ATOMIC(RTYPE, CTYPE, CONST_DEREF, DEREF, MISSING)           \
-  r_obj* out = KEEP(r_alloc_vector(RTYPE, plan->size));                        \
+  const r_ssize size = plan->size;                                             \
+                                                                               \
+  r_obj* out = KEEP(r_alloc_vector(RTYPE, size));                              \
   CTYPE* v_out = DEREF(out);                                                   \
                                                                                \
   const CTYPE* v_x = CONST_DEREF(x);                                           \
@@ -311,7 +313,7 @@ static inline void rray_index_plan_next(
                                                                                \
   int v_point[RRAY_MAX_DIMENSIONALITY] = {0};                                  \
                                                                                \
-  for (r_ssize i = 0; i < plan->size; ++i) {                                   \
+  for (r_ssize i = 0; i < size; ++i) {                                         \
     const r_ssize location =                                                   \
       rray_index_plan_location(plan, v_index_locations);                       \
     v_out[i] = location == -1 ? MISSING : v_x[location];                       \
@@ -322,7 +324,9 @@ static inline void rray_index_plan_next(
   return out;
 
 #define RRAY_INDEX_BARRIER(RTYPE, CONST_DEREF, POKE, MISSING)                  \
-  r_obj* out = KEEP(r_alloc_vector(RTYPE, plan->size));                        \
+  const r_ssize size = plan->size;                                             \
+                                                                               \
+  r_obj* out = KEEP(r_alloc_vector(RTYPE, size));                              \
                                                                                \
   r_obj* const* v_x = CONST_DEREF(x);                                          \
                                                                                \
@@ -330,7 +334,7 @@ static inline void rray_index_plan_next(
                                                                                \
   int v_point[RRAY_MAX_DIMENSIONALITY] = {0};                                  \
                                                                                \
-  for (r_ssize i = 0; i < plan->size; ++i) {                                   \
+  for (r_ssize i = 0; i < size; ++i) {                                         \
     const r_ssize location =                                                   \
       rray_index_plan_location(plan, v_index_locations);                       \
     POKE(out, i, location == -1 ? MISSING : v_x[location]);                    \
