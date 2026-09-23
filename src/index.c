@@ -34,6 +34,7 @@ r_obj* rray_index(
     rray_dimensionality_from_dimensions(x_dimensions);
   check_dimensionality(x_dimensionality);
 
+  r_obj* const* v_indices = r_list_cbegin(indices);
   const r_ssize indices_size = r_length(indices);
   check_index_argument_count(indices_size, x_dimensionality, error_call);
 
@@ -42,7 +43,6 @@ r_obj* rray_index(
   }
 
   r_obj* indices_normalized = KEEP(r_alloc_list(indices_size));
-  r_obj* const* v_indices = r_list_cbegin(indices);
   const int* v_x_dimensions = r_int_cbegin(x_dimensions);
 
   r_ssize i = 0;
