@@ -260,14 +260,14 @@ static inline r_ssize rray_index_plan_location(
 ) {
   r_ssize out = 0;
 
-  for (r_ssize axis = 0; axis < plan->indices_size; ++axis) {
-    const int index = plan->v_indices[axis][v_index_locations[axis]];
+  for (r_ssize i = 0; i < plan->indices_size; ++i) {
+    const int index = plan->v_indices[i][v_index_locations[i]];
 
     if (index == r_globals.na_int) {
       return -1;
     }
 
-    out += (r_ssize) (index - 1) * plan->v_x_strides[axis];
+    out += (r_ssize) (index - 1) * plan->v_x_strides[i];
   }
 
   return out;
