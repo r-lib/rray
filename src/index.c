@@ -6,6 +6,16 @@
 #include "strides.h"
 #include "utils.h"
 
+struct rray_index_plan {
+  r_ssize size;
+  int x_dimensionality;
+  int dimensionality;
+  r_ssize v_dimensions[RRAY_MAX_DIMENSIONALITY];
+  r_ssize v_x_strides[RRAY_MAX_DIMENSIONALITY];
+  r_ssize v_index_strides[RRAY_MAX_DIMENSIONALITY][RRAY_MAX_DIMENSIONALITY];
+  const int* v_indices[RRAY_MAX_DIMENSIONALITY];
+};
+
 #include "decl/index-decl.h"
 
 r_obj* ffi_rray_index(r_obj* ffi_x, r_obj* ffi_indices, r_obj* ffi_frame) {
