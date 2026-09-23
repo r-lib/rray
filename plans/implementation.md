@@ -1167,8 +1167,8 @@ the design review.
 
 No `<-` replacement forms, consistent with the names API.
 
-Files: one pair per function, plus a shared `src/index.c` and `src/index.h` for
-turning user supplied subscripts into locations.
+Files: one pair per function, plus shared `src/subscript.c` and
+`src/subscript.h` for turning user supplied subscripts into locations.
 
 ## 5.7 Binding
 
