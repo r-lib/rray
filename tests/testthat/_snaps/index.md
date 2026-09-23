@@ -30,12 +30,12 @@
       rray_index(x, rows = 1L, 1L)
     Condition
       Error in `rray_index()`:
-      ! `rows` must be unnamed.
+      ! All elements of `...` must be unnamed.
     Code
       rray_index(x, 1L, columns = 1L)
     Condition
       Error in `rray_index()`:
-      ! `columns` must be unnamed.
+      ! All elements of `...` must be unnamed.
 
 # validates every coordinate before broadcasting
 

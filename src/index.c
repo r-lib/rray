@@ -37,19 +37,20 @@ r_obj* rray_index(
   const r_ssize indices_size = r_length(indices);
   check_index_argument_count(indices_size, x_dimensionality, error_call);
 
-  r_obj* indices_names = KEEP(r_names(indices));
+  if (r_names(indices) != r_null) {
+    r_abort_lazy_call(error_call, "All elements of `...` must be unnamed.");
+  }
+
   r_obj* normalized = KEEP(r_alloc_list(indices_size));
   r_obj* const* v_indices = r_list_cbegin(indices);
   const int* v_x_dimensions = r_int_cbegin(x_dimensions);
 
   r_ssize i = 0;
   struct rray_arg* index_arg =
-    new_subscript_arg(indices_arg, indices_names, indices_size, &i);
+    new_subscript_arg(indices_arg, r_null, indices_size, &i);
   KEEP(index_arg->shelter);
 
   for (; i < indices_size; ++i) {
-    check_index_argument_name(indices_names, i, index_arg, error_call);
-
     r_obj* index = rray_as_index_array(
       v_indices[i],
       v_x_dimensions[i],
@@ -97,7 +98,7 @@ r_obj* rray_index(
   KEEP(out);
   r_attrib_poke_dim(out, dimensions);
 
-  FREE(7);
+  FREE(6);
   return out;
 }
 
@@ -202,19 +203,6 @@ static void check_index_argument_count(
     dimensionality == 1 ? "" : "s",
     size
   );
-}
-
-static void check_index_argument_name(
-  r_obj* names,
-  r_ssize i,
-  struct rray_arg* arg,
-  struct r_lazy error_call
-) {
-  if (!r_has_name_at(names, i)) {
-    return;
-  }
-
-  r_abort_lazy_call(error_call, "%s must be unnamed.", rray_arg_format(arg));
 }
 
 static struct rray_index_plan rray_index_plan(

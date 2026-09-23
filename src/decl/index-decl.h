@@ -21,13 +21,6 @@ static void check_index_argument_count(
   struct r_lazy error_call
 );
 
-static void check_index_argument_name(
-  r_obj* names,
-  r_ssize i,
-  struct rray_arg* arg,
-  struct r_lazy error_call
-);
-
 static struct rray_index_plan rray_index_plan(
   r_obj* x_dimensions,
   r_obj* indices,
