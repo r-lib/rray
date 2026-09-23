@@ -1,63 +1,5 @@
-test_that("`rray_as_index_array()` normalizes vectors", {
-  x <- c(a = 1L, b = NA_integer_, c = 3L)
-  out <- rray_as_index_array(x, 3L)
-
-  expect_identical(out, array(x, 3L, dimnames = list(names(x))))
-})
-
-test_that("`rray_as_index_array()` is internal", {
-  exports <- getNamespaceExports("rray4")
-
-  expect_identical("rray_as_index_array" %in% exports, FALSE)
-})
-
-test_that("`rray_as_index_array()` preserves arrays", {
-  x <- array(
-    c(1L, NA_integer_, 2L, 1L),
-    c(2L, 2L),
-    dimnames = list(c("a", "b"), c("c", "d"))
-  )
-
-  expect_identical(rray_as_index_array(x, 2L), x)
-})
-
-test_that("`rray_as_index_array()` requires bare integer input", {
-  expect_snapshot(error = TRUE, {
-    rray_as_index_array(NULL, 2L)
-    rray_as_index_array(c(TRUE, FALSE), 2L)
-    rray_as_index_array(c(1, 2), 2L)
-    rray_as_index_array(c("a", "b"), 2L)
-    rray_as_index_array(factor(c("a", "b")), 2L)
-    rray_as_index_array(structure(1:2, class = "foo"), 2L)
-  })
-})
-
-test_that("`rray_as_index_array()` checks coordinates", {
-  expect_snapshot(error = TRUE, {
-    rray_as_index_array(c(0L, 1L), 2L)
-    rray_as_index_array(c(-1L, 1L), 2L)
-    rray_as_index_array(c(1L, 3L), 2L)
-    rray_as_index_array(1L, 0L)
-  })
-
-  expect_identical(
-    rray_as_index_array(NA_integer_, 0L),
-    array(NA_integer_, 1L)
-  )
-})
-
-test_that("`rray_as_index_array()` checks `dimension`", {
-  expect_identical(rray_as_index_array(integer(), 0), array(integer(), 0L))
-
-  expect_snapshot(error = TRUE, {
-    rray_as_index_array(1L, NULL)
-    rray_as_index_array(1L, integer())
-    rray_as_index_array(1L, c(1L, 2L))
-    rray_as_index_array(1L, NA_integer_)
-    rray_as_index_array(1L, -1L)
-    rray_as_index_array(1L, 1.5)
-  })
-})
+# ------------------------------------------------------------------------------
+# rray_index()
 
 test_that("indexes vectors", {
   x <- c(10L, 20L, 30L)
@@ -293,5 +235,69 @@ test_that("errors on unsupported `x` inputs", {
     rray_index(NULL, 1L)
     rray_index(mean, 1L)
     rray_index(structure(1:2, class = "foo"), 1L)
+  })
+})
+
+# ------------------------------------------------------------------------------
+# rray_as_index_array()
+
+test_that("`rray_as_index_array()` normalizes vectors", {
+  x <- c(a = 1L, b = NA_integer_, c = 3L)
+  out <- rray_as_index_array(x, 3L)
+
+  expect_identical(out, array(x, 3L, dimnames = list(names(x))))
+})
+
+test_that("`rray_as_index_array()` is internal", {
+  exports <- getNamespaceExports("rray4")
+
+  expect_identical("rray_as_index_array" %in% exports, FALSE)
+})
+
+test_that("`rray_as_index_array()` preserves arrays", {
+  x <- array(
+    c(1L, NA_integer_, 2L, 1L),
+    c(2L, 2L),
+    dimnames = list(c("a", "b"), c("c", "d"))
+  )
+
+  expect_identical(rray_as_index_array(x, 2L), x)
+})
+
+test_that("`rray_as_index_array()` requires bare integer input", {
+  expect_snapshot(error = TRUE, {
+    rray_as_index_array(NULL, 2L)
+    rray_as_index_array(c(TRUE, FALSE), 2L)
+    rray_as_index_array(c(1, 2), 2L)
+    rray_as_index_array(c("a", "b"), 2L)
+    rray_as_index_array(factor(c("a", "b")), 2L)
+    rray_as_index_array(structure(1:2, class = "foo"), 2L)
+  })
+})
+
+test_that("`rray_as_index_array()` checks coordinates", {
+  expect_snapshot(error = TRUE, {
+    rray_as_index_array(c(0L, 1L), 2L)
+    rray_as_index_array(c(-1L, 1L), 2L)
+    rray_as_index_array(c(1L, 3L), 2L)
+    rray_as_index_array(1L, 0L)
+  })
+
+  expect_identical(
+    rray_as_index_array(NA_integer_, 0L),
+    array(NA_integer_, 1L)
+  )
+})
+
+test_that("`rray_as_index_array()` checks `dimension`", {
+  expect_identical(rray_as_index_array(integer(), 0), array(integer(), 0L))
+
+  expect_snapshot(error = TRUE, {
+    rray_as_index_array(1L, NULL)
+    rray_as_index_array(1L, integer())
+    rray_as_index_array(1L, c(1L, 2L))
+    rray_as_index_array(1L, NA_integer_)
+    rray_as_index_array(1L, -1L)
+    rray_as_index_array(1L, 1.5)
   })
 })

@@ -1,93 +1,3 @@
-# `rray_as_index_array()` requires bare integer input
-
-    Code
-      rray_as_index_array(NULL, 2L)
-    Condition
-      Error in `rray_as_index_array()`:
-      ! `x` must be an integer array, not `NULL`.
-    Code
-      rray_as_index_array(c(TRUE, FALSE), 2L)
-    Condition
-      Error in `rray_as_index_array()`:
-      ! `x` must be an integer array, not a logical vector.
-    Code
-      rray_as_index_array(c(1, 2), 2L)
-    Condition
-      Error in `rray_as_index_array()`:
-      ! `x` must be an integer array, not a double vector.
-    Code
-      rray_as_index_array(c("a", "b"), 2L)
-    Condition
-      Error in `rray_as_index_array()`:
-      ! `x` must be an integer array, not a character vector.
-    Code
-      rray_as_index_array(factor(c("a", "b")), 2L)
-    Condition
-      Error in `rray_as_index_array()`:
-      ! `x` must be a bare array, not a <factor> object.
-    Code
-      rray_as_index_array(structure(1:2, class = "foo"), 2L)
-    Condition
-      Error in `rray_as_index_array()`:
-      ! `x` must be a bare array, not a <foo> object.
-
-# `rray_as_index_array()` checks coordinates
-
-    Code
-      rray_as_index_array(c(0L, 1L), 2L)
-    Condition
-      Error in `rray_as_index_array()`:
-      ! `x` must only contain positive values or missing values.
-    Code
-      rray_as_index_array(c(-1L, 1L), 2L)
-    Condition
-      Error in `rray_as_index_array()`:
-      ! `x` must only contain positive values or missing values.
-    Code
-      rray_as_index_array(c(1L, 3L), 2L)
-    Condition
-      Error in `rray_as_index_array()`:
-      ! `x` must not contain values greater than 2.
-    Code
-      rray_as_index_array(1L, 0L)
-    Condition
-      Error in `rray_as_index_array()`:
-      ! `x` must not contain values greater than 0.
-
-# `rray_as_index_array()` checks `dimension`
-
-    Code
-      rray_as_index_array(1L, NULL)
-    Condition
-      Error in `rray_as_index_array()`:
-      ! `dimension` must be a single integer, not length 0.
-    Code
-      rray_as_index_array(1L, integer())
-    Condition
-      Error in `rray_as_index_array()`:
-      ! `dimension` must be a single integer, not length 0.
-    Code
-      rray_as_index_array(1L, c(1L, 2L))
-    Condition
-      Error in `rray_as_index_array()`:
-      ! `dimension` must be a single integer, not length 2.
-    Code
-      rray_as_index_array(1L, NA_integer_)
-    Condition
-      Error in `rray_as_index_array()`:
-      ! `dimension` must not be missing.
-    Code
-      rray_as_index_array(1L, -1L)
-    Condition
-      Error in `rray_as_index_array()`:
-      ! `dimension` must not be negative.
-    Code
-      rray_as_index_array(1L, 1.5)
-    Condition
-      Error:
-      ! Can't convert from `dimension` <double> to <integer> due to loss of precision.
-      * Locations: 1
-
 # errors above the maximum result dimensionality
 
     Code
@@ -183,4 +93,94 @@
     Condition
       Error in `rray_index()`:
       ! `x` must be a bare array, not a <foo> object.
+
+# `rray_as_index_array()` requires bare integer input
+
+    Code
+      rray_as_index_array(NULL, 2L)
+    Condition
+      Error in `rray_as_index_array()`:
+      ! `x` must be an integer array, not `NULL`.
+    Code
+      rray_as_index_array(c(TRUE, FALSE), 2L)
+    Condition
+      Error in `rray_as_index_array()`:
+      ! `x` must be an integer array, not a logical vector.
+    Code
+      rray_as_index_array(c(1, 2), 2L)
+    Condition
+      Error in `rray_as_index_array()`:
+      ! `x` must be an integer array, not a double vector.
+    Code
+      rray_as_index_array(c("a", "b"), 2L)
+    Condition
+      Error in `rray_as_index_array()`:
+      ! `x` must be an integer array, not a character vector.
+    Code
+      rray_as_index_array(factor(c("a", "b")), 2L)
+    Condition
+      Error in `rray_as_index_array()`:
+      ! `x` must be a bare array, not a <factor> object.
+    Code
+      rray_as_index_array(structure(1:2, class = "foo"), 2L)
+    Condition
+      Error in `rray_as_index_array()`:
+      ! `x` must be a bare array, not a <foo> object.
+
+# `rray_as_index_array()` checks coordinates
+
+    Code
+      rray_as_index_array(c(0L, 1L), 2L)
+    Condition
+      Error in `rray_as_index_array()`:
+      ! `x` must only contain positive values or missing values.
+    Code
+      rray_as_index_array(c(-1L, 1L), 2L)
+    Condition
+      Error in `rray_as_index_array()`:
+      ! `x` must only contain positive values or missing values.
+    Code
+      rray_as_index_array(c(1L, 3L), 2L)
+    Condition
+      Error in `rray_as_index_array()`:
+      ! `x` must not contain values greater than 2.
+    Code
+      rray_as_index_array(1L, 0L)
+    Condition
+      Error in `rray_as_index_array()`:
+      ! `x` must not contain values greater than 0.
+
+# `rray_as_index_array()` checks `dimension`
+
+    Code
+      rray_as_index_array(1L, NULL)
+    Condition
+      Error in `rray_as_index_array()`:
+      ! `dimension` must be a single integer, not length 0.
+    Code
+      rray_as_index_array(1L, integer())
+    Condition
+      Error in `rray_as_index_array()`:
+      ! `dimension` must be a single integer, not length 0.
+    Code
+      rray_as_index_array(1L, c(1L, 2L))
+    Condition
+      Error in `rray_as_index_array()`:
+      ! `dimension` must be a single integer, not length 2.
+    Code
+      rray_as_index_array(1L, NA_integer_)
+    Condition
+      Error in `rray_as_index_array()`:
+      ! `dimension` must not be missing.
+    Code
+      rray_as_index_array(1L, -1L)
+    Condition
+      Error in `rray_as_index_array()`:
+      ! `dimension` must not be negative.
+    Code
+      rray_as_index_array(1L, 1.5)
+    Condition
+      Error:
+      ! Can't convert from `dimension` <double> to <integer> due to loss of precision.
+      * Locations: 1
 
