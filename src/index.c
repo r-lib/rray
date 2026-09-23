@@ -8,12 +8,12 @@
 
 struct rray_index_plan {
   r_ssize size;
-  int x_dimensionality;
   int dimensionality;
   r_ssize v_dimensions[RRAY_MAX_DIMENSIONALITY];
   r_ssize v_x_strides[RRAY_MAX_DIMENSIONALITY];
   r_ssize v_indices_strides[RRAY_MAX_DIMENSIONALITY][RRAY_MAX_DIMENSIONALITY];
   const int* v_indices[RRAY_MAX_DIMENSIONALITY];
+  r_ssize indices_size;
 };
 
 #include "decl/index-decl.h"
@@ -212,7 +212,6 @@ static struct rray_index_plan rray_index_plan(
 
   plan.size =
     rray_size_from_dimensions_checked(v_dimensions, dimensionality, error_call);
-  plan.x_dimensionality = x_dimensionality;
   plan.dimensionality = dimensionality;
 
   rray_fill_strides_from_dimensions(
@@ -227,6 +226,8 @@ static struct rray_index_plan rray_index_plan(
 
   r_obj* const* v_indices = r_list_cbegin(indices);
   const r_ssize indices_size = r_length(indices);
+
+  plan.indices_size = indices_size;
 
   for (r_ssize i = 0; i < indices_size; ++i) {
     r_obj* index = v_indices[i];
@@ -259,7 +260,7 @@ static inline r_ssize rray_index_plan_location(
 ) {
   r_ssize out = 0;
 
-  for (int axis = 0; axis < plan->x_dimensionality; ++axis) {
+  for (r_ssize axis = 0; axis < plan->indices_size; ++axis) {
     const int index = plan->v_indices[axis][v_index_locations[axis]];
 
     if (index == r_globals.na_int) {
@@ -283,7 +284,7 @@ static inline void rray_index_plan_next(
     ++v_point[axis];
 
     if (v_point[axis] < plan->v_dimensions[axis]) {
-      for (int i = 0; i < plan->x_dimensionality; ++i) {
+      for (r_ssize i = 0; i < plan->indices_size; ++i) {
         v_index_locations[i] += v_axis_indices_strides[i];
       }
       break;
@@ -291,7 +292,7 @@ static inline void rray_index_plan_next(
 
     v_point[axis] = 0;
 
-    for (int i = 0; i < plan->x_dimensionality; ++i) {
+    for (r_ssize i = 0; i < plan->indices_size; ++i) {
       v_index_locations[i] -=
         (plan->v_dimensions[axis] - 1) * v_axis_indices_strides[i];
     }
