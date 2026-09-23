@@ -41,7 +41,7 @@ r_obj* rray_index(
     r_abort_lazy_call(error_call, "All elements of `...` must be unnamed.");
   }
 
-  r_obj* normalized = KEEP(r_alloc_list(indices_size));
+  r_obj* indices_normalized = KEEP(r_alloc_list(indices_size));
   r_obj* const* v_indices = r_list_cbegin(indices);
   const int* v_x_dimensions = r_int_cbegin(x_dimensions);
 
@@ -57,15 +57,19 @@ r_obj* rray_index(
       index_arg,
       error_call
     );
-    r_list_poke(normalized, i, index);
+    r_list_poke(indices_normalized, i, index);
   }
 
-  r_obj* dimensions = KEEP(
-    rray_dimensions_common_opts(normalized, NULL, 0, indices_arg, error_call)
-  );
+  r_obj* dimensions = KEEP(rray_dimensions_common_opts(
+    indices_normalized,
+    NULL,
+    0,
+    indices_arg,
+    error_call
+  ));
 
   const struct rray_index_plan plan =
-    rray_index_plan(x_dimensions, normalized, dimensions, error_call);
+    rray_index_plan(x_dimensions, indices_normalized, dimensions, error_call);
 
   r_obj* out;
 
