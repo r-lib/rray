@@ -454,30 +454,22 @@ static inline void rray_strided_iterator_n_plan_point_init(
 ) {
   r_memset(v_point, 0, sizeof(r_ssize) * (size_t) plan->dimensionality);
 }
-static inline void rray_strided_iterator_n_plan_point_next(
-  const struct rray_strided_iterator_n_plan* plan,
-  r_ssize* v_point,
-  r_ssize* v_starts
-) {
-  for (int axis = 0; axis < plan->dimensionality; ++axis) {
-    const r_ssize* v_axis_strides = plan->v_strides[axis];
 
-    ++v_point[axis];
-
-    if (v_point[axis] < plan->v_dimensions[axis]) {
-      for (int i = 0; i < plan->n; ++i) {
-        v_starts[i] += v_axis_strides[i];
-      }
-      break;
-    }
-
-    v_point[axis] = 0;
-
-    for (int i = 0; i < plan->n; ++i) {
-      v_starts[i] -= (plan->v_dimensions[axis] - 1) * v_axis_strides[i];
-    }
+#define RRAY_STRIDED_ITERATOR_NEXTN(V_STARTS, V_POINT, PLAN)                   \
+  for (int axis = 0; axis < PLAN->dimensionality; ++axis) {                    \
+    const r_ssize* v_axis_strides = PLAN->v_strides[axis];                     \
+    ++V_POINT[axis];                                                           \
+    if (V_POINT[axis] < PLAN->v_dimensions[axis]) {                            \
+      for (int i = 0; i < PLAN->n; ++i) {                                      \
+        V_STARTS[i] += v_axis_strides[i];                                      \
+      }                                                                        \
+      break;                                                                   \
+    }                                                                          \
+    V_POINT[axis] = 0;                                                         \
+    for (int i = 0; i < PLAN->n; ++i) {                                        \
+      V_STARTS[i] -= (PLAN->v_dimensions[axis] - 1) * v_axis_strides[i];       \
+    }                                                                          \
   }
-}
 
 static inline int rray__strided_iterator_axes_coalesce(
   r_ssize* v_dimensions,
