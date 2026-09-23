@@ -5,6 +5,12 @@ test_that("`rray_as_index_array()` normalizes vectors", {
   expect_identical(out, array(x, 3L, dimnames = list(names(x))))
 })
 
+test_that("`rray_as_index_array()` is internal", {
+  exports <- getNamespaceExports("rray4")
+
+  expect_identical("rray_as_index_array" %in% exports, FALSE)
+})
+
 test_that("`rray_as_index_array()` preserves arrays", {
   x <- array(
     c(1L, NA_integer_, 2L, 1L),

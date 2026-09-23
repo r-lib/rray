@@ -3,7 +3,6 @@
 export(rray_add)
 export(rray_all_along)
 export(rray_any_along)
-export(rray_as_index_array)
 export(rray_axis_names)
 export(rray_broadcast)
 export(rray_broadcast_common)
