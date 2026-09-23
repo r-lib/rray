@@ -73,6 +73,10 @@ The cases that matter are, in order: a 1-d source with one coordinate array, a
 counts, and the same 2-d case with coordinate arrays reshaped to 10 and 20
 axes.
 
+Include a leading unit axis case. Coordinate arrays shaped `[1, N]` and
+`[1, 1, N]` are the shapes coalescing exists for, and a grid without them will
+make step 3 look pointless. The first version of this plan made that mistake.
+
 Two things to know before trusting any number from it.
 
 Run to run noise on the `ns/elt` rows is within 3%. Noise on the small call
@@ -121,18 +125,37 @@ The run loop is the single largest win, a further 24% to 56% on top of
 specialization. It is also what finally puts us ahead of numpy on everything
 but the one coordinate array case.
 
-Coalescing only helps point spaces whose first axis is short, and this does not
-change once the run loop exists. Compare the last two columns. They are
-identical within noise everywhere except the 10 and 20 axis rows, where
-coalescing is worth 21% and 36%. The reason is mechanical. For coordinate
-arrays shaped `[1024, 1024]` the first axis is already 1024 long, so the run
-loop gets a long inner run with or without coalescing and the carry runs on
-0.1% of elements. For coordinate arrays shaped `[2 x 20]` the first axis is 2,
-the run loop has nothing to chew on, and coalescing is what creates a usable
-run. This is the same mechanism that makes coalescing valuable in broadcast and
-reduce, where dimensions like `[2, 4, 5]` are common and the first axis is
-routinely tiny. Coordinate arrays are usually large and flat, so the
-opportunity is rarer here.
+Coalescing does not speed up ordinary shapes. It removes a pathology. Compare
+the last two columns of the table above. They are identical within noise
+everywhere except the 10 and 20 axis rows. For coordinate arrays shaped
+`[1024, 1024]` the first axis is already 1024 long, so the run loop gets a long
+inner run either way and the carry touches 0.1% of elements. Coalescing has
+nothing left to give.
+
+The pathology it removes is a short or unit first axis, which makes every inner
+run one element long and turns the run loop back into the per element carry it
+was meant to replace. A separate grid covers it, again with the step 2 run loop
+in place:
+
+| Coordinate array shape | coalesce | no coalesce | coalesce wins |
+|---|---|---|---|
+| `[N]` | 2.17 | 2.18 | 0% |
+| `[1, N]` | 2.19 | 3.53 | 38% |
+| `[1, 1, N]` | 2.19 | 4.05 | 46% |
+| `[1, 1024, 1024]` | 2.18 | 3.48 | 37% |
+| `[2, N/2]` | 2.18 | 2.78 | 22% |
+
+Read the first column. Every shape lands at 2.17 to 2.19 ns/elt, identical to
+the flat case. That is the real property coalescing buys: the operation costs
+the same regardless of how the coordinate arrays happen to be shaped. Without
+it, writing coordinates as a row vector rather than a plain vector costs 60%.
+
+This matches the original coalescing work exactly. Its plan, `plan/coalesce.md`
+as of commit `f3f2063`, measured 3.03x to 5.20x and every case it reported had
+a first axis of 1. It closed with the warning not to claim that coalescing
+makes every operation faster, and recorded that cases which could not gain a
+longer first axis run were unchanged. The 3-5x in the `src/strided-iterator.h`
+header comes from those leading unit axis cases, not from general shapes.
 
 Nothing here touches small call overhead, which is a separate problem described
 at the end.
@@ -312,9 +335,11 @@ worth measuring.
 
 ## Step 3: coalesce adjacent axes n ways
 
-Do this third. Be honest in the pull request about what it buys: 21% at 10 axes
-and 36% at 20 axes, and nothing measurable anywhere else, even with the step 2
-run loop in place.
+Do this third. Frame it in the pull request as what it is, which is insurance
+rather than throughput. It makes `rray_index()` cost the same no matter how the
+coordinate arrays are shaped. On ordinary shapes it changes nothing. On a
+leading unit axis it is worth 38% to 46%, and without it step 2 collapses back
+to one element runs on exactly those shapes.
 
 The rule is already factored out as
 `rray__strided_iterator_axes_coalescible()` in `src/strided-iterator.h`, and
@@ -400,11 +425,9 @@ by construction, so it always coalesces.
 
 Coalescing and the step 2 run loop are one optimization, not two. Coalescing
 exists to make the first axis long enough for the run loop to pay for itself.
-When the first axis is already long, which is the normal shape for coordinate
-arrays, there is nothing left to gain. Do not expect it to repeat the 3-5x that
-`src/strided-iterator.h` credits it with in broadcast and reduce, because those
-operations routinely see dimensions like `[2, 4, 5]` where the first axis is
-tiny.
+When the first axis is already long there is nothing left to gain, and when it
+is 1 the run loop does nothing at all without coalescing. Ship them together
+and do not benchmark either one on square coordinate arrays alone.
 
 One limit is permanent and worth stating in the pull request. numpy runs
 `npyiter_find_best_axis_ordering()` before coalescing, sorting axes by stride
@@ -468,7 +491,9 @@ Add these alongside the existing index array tests.
 
 Coalescing needs an equivalence test that pins the reshape invariant directly.
 Identical coordinate data shaped `[1048576]` and `[2 x 20]` must produce
-identical values, because that pair is exactly what coalescing collapses.
+identical values, because that pair is exactly what coalescing collapses. Cover
+a leading unit axis too, `[1, n]` and `[1, 1, n]`, since those take the branch
+that adopts the right hand strides when the left dimension is 1.
 
 The run loop needs both stride paths covered. Identically shaped coordinate
 arrays take the unit stride path, and a Cartesian broadcast of `[n, 1]` against
