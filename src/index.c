@@ -304,9 +304,12 @@ static inline void rray_index_plan_next(
 #define RRAY_INDEX_ATOMIC(RTYPE, CTYPE, CONST_DEREF, DEREF, MISSING)           \
   r_obj* out = KEEP(r_alloc_vector(RTYPE, plan->size));                        \
   CTYPE* v_out = DEREF(out);                                                   \
+                                                                               \
   const CTYPE* v_x = CONST_DEREF(x);                                           \
-  int v_point[RRAY_MAX_DIMENSIONALITY] = {0};                                  \
+                                                                               \
   r_ssize v_index_locations[RRAY_MAX_DIMENSIONALITY] = {0};                    \
+                                                                               \
+  int v_point[RRAY_MAX_DIMENSIONALITY] = {0};                                  \
                                                                                \
   for (r_ssize i = 0; i < plan->size; ++i) {                                   \
     const r_ssize location =                                                   \
@@ -320,9 +323,12 @@ static inline void rray_index_plan_next(
 
 #define RRAY_INDEX_BARRIER(RTYPE, CONST_DEREF, POKE, MISSING)                  \
   r_obj* out = KEEP(r_alloc_vector(RTYPE, plan->size));                        \
+                                                                               \
   r_obj* const* v_x = CONST_DEREF(x);                                          \
-  int v_point[RRAY_MAX_DIMENSIONALITY] = {0};                                  \
+                                                                               \
   r_ssize v_index_locations[RRAY_MAX_DIMENSIONALITY] = {0};                    \
+                                                                               \
+  int v_point[RRAY_MAX_DIMENSIONALITY] = {0};                                  \
                                                                                \
   for (r_ssize i = 0; i < plan->size; ++i) {                                   \
     const r_ssize location =                                                   \
