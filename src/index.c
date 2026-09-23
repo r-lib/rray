@@ -60,13 +60,9 @@ r_obj* rray_index(
     r_list_poke(indices_normalized, i, index);
   }
 
-  r_obj* dimensions = KEEP(rray_dimensions_common_opts(
-    indices_normalized,
-    NULL,
-    0,
-    indices_arg,
-    error_call
-  ));
+  r_obj* dimensions = KEEP(
+    rray_dimensions_common(indices_normalized, r_null, indices_arg, error_call)
+  );
 
   const struct rray_index_plan plan =
     rray_index_plan(x_dimensions, indices_normalized, dimensions, error_call);
