@@ -202,9 +202,10 @@ static struct rray_index_plan rray_index_plan(
   }
 
   r_obj* const* v_indices = r_list_cbegin(indices);
+  const r_ssize indices_size = r_length(indices);
 
-  for (int index_axis = 0; index_axis < x_dimensionality; ++index_axis) {
-    r_obj* index = v_indices[index_axis];
+  for (r_ssize i = 0; i < indices_size; ++i) {
+    r_obj* index = v_indices[i];
     r_obj* index_dimensions = r_dim(index);
     const int* v_index_dimensions = r_int_cbegin(index_dimensions);
     const int index_dimensionality =
@@ -219,10 +220,10 @@ static struct rray_index_plan rray_index_plan(
     );
 
     for (int axis = 0; axis < dimensionality; ++axis) {
-      plan.v_index_strides[axis][index_axis] = v_strides[axis];
+      plan.v_index_strides[axis][i] = v_strides[axis];
     }
 
-    plan.v_indices[index_axis] = r_int_cbegin(index);
+    plan.v_indices[i] = r_int_cbegin(index);
   }
 
   return plan;
@@ -258,20 +259,17 @@ static inline void rray_index_plan_next(
     ++v_point[axis];
 
     if (v_point[axis] < plan->v_dimensions[axis]) {
-      for (int index_axis = 0; index_axis < plan->x_dimensionality;
-           ++index_axis) {
-        v_index_locations[index_axis] +=
-          plan->v_index_strides[axis][index_axis];
+      for (int i = 0; i < plan->x_dimensionality; ++i) {
+        v_index_locations[i] += plan->v_index_strides[axis][i];
       }
       break;
     }
 
     v_point[axis] = 0;
 
-    for (int index_axis = 0; index_axis < plan->x_dimensionality;
-         ++index_axis) {
-      v_index_locations[index_axis] -= (plan->v_dimensions[axis] - 1) *
-        plan->v_index_strides[axis][index_axis];
+    for (int i = 0; i < plan->x_dimensionality; ++i) {
+      v_index_locations[i] -=
+        (plan->v_dimensions[axis] - 1) * plan->v_index_strides[axis][i];
     }
   }
 }
