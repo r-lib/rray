@@ -388,6 +388,97 @@ static inline void rray_strided_iterator2_plan_point_init(
 
 // --------------------------------------------------------------------------
 
+struct rray_strided_iterator_n_plan {
+  r_ssize size;
+
+  r_ssize v_dimensions[RRAY_MAX_DIMENSIONALITY];
+  int dimensionality;
+
+  r_ssize v_strides[RRAY_MAX_DIMENSIONALITY][RRAY_MAX_DIMENSIONALITY];
+  int n;
+};
+
+static inline struct rray_strided_iterator_n_plan rray_strided_iterator_n_plan(
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize (*v_strides)[RRAY_MAX_DIMENSIONALITY],
+  int n
+) {
+  check_dimensionality(dimensionality);
+
+  if (n < 1 || n > RRAY_MAX_DIMENSIONALITY) {
+    r_stop_internal(
+      "`n` (%d) must be between 1 and %d.",
+      n,
+      RRAY_MAX_DIMENSIONALITY
+    );
+  }
+
+  struct rray_strided_iterator_n_plan plan;
+
+  plan.size = rray_size_from_dimensions(v_dimensions, dimensionality);
+
+  for (int axis = 0; axis < dimensionality; ++axis) {
+    plan.v_dimensions[axis] = (r_ssize) v_dimensions[axis];
+
+    for (int i = 0; i < n; ++i) {
+      plan.v_strides[axis][i] = v_strides[axis][i];
+    }
+  }
+
+  plan.dimensionality = dimensionality;
+  plan.n = n;
+
+  return plan;
+}
+
+static inline r_ssize rray_strided_iterator_n_plan_size(
+  const struct rray_strided_iterator_n_plan* plan
+) {
+  return plan->size;
+}
+static inline r_ssize rray_strided_iterator_n_plan_run_size(
+  const struct rray_strided_iterator_n_plan* plan
+) {
+  return plan->v_dimensions[0];
+}
+static inline r_ssize rray_strided_iterator_n_plan_run_stride(
+  const struct rray_strided_iterator_n_plan* plan,
+  int i
+) {
+  return plan->v_strides[0][i];
+}
+static inline void rray_strided_iterator_n_plan_point_init(
+  const struct rray_strided_iterator_n_plan* plan,
+  r_ssize* v_point
+) {
+  r_memset(v_point, 0, sizeof(r_ssize) * (size_t) plan->dimensionality);
+}
+static inline void rray_strided_iterator_n_plan_point_next(
+  const struct rray_strided_iterator_n_plan* plan,
+  r_ssize* v_point,
+  r_ssize* v_starts
+) {
+  for (int axis = 0; axis < plan->dimensionality; ++axis) {
+    const r_ssize* v_axis_strides = plan->v_strides[axis];
+
+    ++v_point[axis];
+
+    if (v_point[axis] < plan->v_dimensions[axis]) {
+      for (int i = 0; i < plan->n; ++i) {
+        v_starts[i] += v_axis_strides[i];
+      }
+      break;
+    }
+
+    v_point[axis] = 0;
+
+    for (int i = 0; i < plan->n; ++i) {
+      v_starts[i] -= (plan->v_dimensions[axis] - 1) * v_axis_strides[i];
+    }
+  }
+}
+
 static inline int rray__strided_iterator_axes_coalesce(
   r_ssize* v_dimensions,
   r_ssize* v_strides,
