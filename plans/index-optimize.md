@@ -7,8 +7,8 @@ already present. Every number in it comes from a throwaway proof of concept
 that was measured and then discarded, so the code sketches below are known to
 compile, pass the full test suite, and produce the stated timings.
 
-The work is split into four steps. Steps 1 and 2 are measured. Steps 3 and 4
-are not, and are written as proposals with an expected direction rather than a
+The work is split into four steps. Steps 1, 2 and 3 are measured. Step 4 is
+not, and is written as a proposal with an expected direction rather than a
 promised number.
 
 ## Why
@@ -33,16 +33,20 @@ gather intrinsics, no blocking, and no parallelism on either side. The gap
 between us is entirely in how much the compiler is allowed to specialize.
 
 Measured on the same machine, source arrays small enough to stay in cache so
-that gather latency does not dominate:
+that gather latency does not dominate. The last column is what the proof of
+concept reached with steps 1 through 3 applied:
 
-| Case | numpy | rray today |
-|---|---|---|
-| 1-d source, 1 coordinate array | 0.94 ns/elt | 3.62 ns/elt |
-| 2-d source, 2 coordinate arrays | 3.38 ns/elt | 4.51 ns/elt |
-| 3-d source, 3 coordinate arrays | 4.22 ns/elt | 6.22 ns/elt |
+| Case | numpy | rray today | after steps 1-3 |
+|---|---|---|---|
+| 1-d source, 1 coordinate array | 0.94 ns/elt | 3.62 ns/elt | 1.85 ns/elt |
+| 2-d source, 2 coordinate arrays | 3.38 ns/elt | 4.51 ns/elt | 2.10 ns/elt |
+| 3-d source, 3 coordinate arrays | 4.22 ns/elt | 6.22 ns/elt | 2.87 ns/elt |
+| 2-d Cartesian broadcast | 2.79 ns/elt | 3.33 ns/elt | 0.94 ns/elt |
 
 numpy's indices are 8 byte `intp` and ours are 4 byte `int`, so we read half
-the index bytes and are still behind.
+the index bytes. After these steps we are ahead of numpy everywhere except the
+single coordinate array case, where their dedicated `mapiter_trivial_get()`
+path still wins by 2x.
 
 ## Measurement harness
 
@@ -84,50 +88,63 @@ with each other if some pass vectors and some pass arrays, so pick one.
 
 ## What the proof of concept measured
 
-Five builds. `specialize` is step 1 limited to 1 and 2 coordinate arrays,
-`specialize 1-4` extends it to 3 and 4. All values are ns/elt except the last
-two rows, which are us/call.
+Seven builds, collapsed here to the five that matter. `specialize` is step 1
+limited to 1 and 2 coordinate arrays. `spec 1-4 + coalesce` is steps 1 and 3
+together. `+ run loop` adds step 2, and the last column removes coalescing
+again to isolate what step 3 is actually contributing. All values are ns/elt
+except the last two rows, which are us/call.
 
-| Case | baseline | coalesce | specialize | both | both, 1-4 |
+| Case | baseline | specialize | spec 1-4 + coalesce | + run loop | run loop, no coalesce |
 |---|---|---|---|---|---|
-| 1d/1 large src | 4.51 | 4.56 | 3.78 | 3.56 | 3.69 |
-| 1d/1 small src | 3.62 | 3.47 | 3.06 | 3.05 | 2.95 |
-| 2d/2 large src | 4.65 | 4.64 | 3.28 | 3.32 | 3.31 |
-| 2d/2 small src | 4.51 | 4.39 | 3.29 | 3.24 | 3.25 |
-| 2d/2 flat coords | 5.30 | 5.15 | 4.13 | 3.86 | 4.01 |
-| 2d/2 cartesian | 3.33 | 3.19 | 2.13 | 2.11 | 2.12 |
-| 3d/3 small src | 6.22 | 5.94 | 6.19 | 5.91 | 3.88 |
-| 4d/4 small src | 7.35 | 7.06 | 7.37 | 7.04 | 4.48 |
-| 2d/2 coords 10 axes | 5.25 | 4.42 | 3.06 | 3.27 | 3.30 |
-| 2d/2 coords 20 axes | 6.77 | 4.40 | 3.46 | 3.29 | 3.24 |
-| small call | 1.52 | 1.60 | 1.63 | 1.44 | 1.50 |
-| small call 2d | 1.78 | 1.78 | 1.79 | 1.73 | 1.81 |
+| 1d/1 large src | 4.51 | 3.78 | 3.69 | 2.57 | 2.59 |
+| 1d/1 small src | 3.62 | 3.06 | 2.95 | 1.85 | 1.69 |
+| 2d/2 large src | 4.65 | 3.28 | 3.31 | 2.12 | 2.16 |
+| 2d/2 small src | 4.51 | 3.29 | 3.25 | 2.10 | 2.07 |
+| 2d/2 flat coords | 5.30 | 4.13 | 4.01 | 3.00 | 2.92 |
+| 2d/2 cartesian | 3.33 | 2.13 | 2.12 | 0.94 | 0.96 |
+| 3d/3 small src | 6.22 | 6.19 | 3.88 | 2.87 | 2.87 |
+| 4d/4 small src | 7.35 | 7.37 | 4.48 | 3.76 | 3.76 |
+| 2d/2 coords 10 axes | 5.25 | 3.06 | 3.30 | 2.10 | 2.66 |
+| 2d/2 coords 20 axes | 6.77 | 3.46 | 3.24 | 2.10 | 3.26 |
+| small call | 1.52 | 1.63 | 1.50 | 1.54 | 1.45 |
+| small call 2d | 1.78 | 1.79 | 1.81 | 1.76 | 1.73 |
 
-Four conclusions come out of this.
+Five conclusions come out of this.
 
-Specialization is the whole story. It is worth 20% to 36% on every case it
-covers, and the cases it does not cover are exactly the ones where the switch
-falls through to the generic path.
+Specialization is worth 20% to 36% on every case it covers, and the cases it
+does not cover are exactly the ones where the switch falls through to the
+generic path. Specializing 3 and 4 coordinate arrays is worth as much as 1 and
+2, since the 3-d case drops 34% and the 4-d case drops 36%, and neither moves
+at all until they are covered.
 
-Coalescing on its own only helps deep point spaces. It is worth 16% at 10 axes
-and 35% at 20 axes, and nothing at all anywhere else. That matches what it
-does, which is shorten the carry chain.
+The run loop is the single largest win, a further 24% to 56% on top of
+specialization. It is also what finally puts us ahead of numpy on everything
+but the one coordinate array case.
 
-Once specialization is in, coalescing adds nothing measurable. The 10 and 20
-axis rows land at about 3.3 ns/elt either way. The carry was expensive because
-its inner loop over the coordinate arrays could not unroll, not because of the
-axis walking itself.
+Coalescing only helps point spaces whose first axis is short, and this does not
+change once the run loop exists. Compare the last two columns. They are
+identical within noise everywhere except the 10 and 20 axis rows, where
+coalescing is worth 21% and 36%. The reason is mechanical. For coordinate
+arrays shaped `[1024, 1024]` the first axis is already 1024 long, so the run
+loop gets a long inner run with or without coalescing and the carry runs on
+0.1% of elements. For coordinate arrays shaped `[2 x 20]` the first axis is 2,
+the run loop has nothing to chew on, and coalescing is what creates a usable
+run. This is the same mechanism that makes coalescing valuable in broadcast and
+reduce, where dimensions like `[2, 4, 5]` are common and the first axis is
+routinely tiny. Coordinate arrays are usually large and flat, so the
+opportunity is rarer here.
 
-Specializing 3 and 4 coordinate arrays is worth as much as 1 and 2. The 3-d
-case drops 34% and the 4-d case drops 36%, and neither moves at all until they
-are covered.
+Nothing here touches small call overhead, which is a separate problem described
+at the end.
 
-Neither change touches small call overhead, which is a separate problem
-described at the end.
+One caveat on attribution. The run loop was only ever measured on top of
+specialization, so the split between steps 1 and 2 is not isolated. The order
+below is the order they were measured in.
 
 ## Step 1: specialize on the coordinate array count
 
-This is the whole win and it does not depend on any other step. Do it first.
+Do this first. It does not depend on any other step, and step 2 builds directly
+on the macro split it introduces.
 
 `rray_index_plan_location()` and `rray_index_plan_next()` both loop over
 `plan->x_dimensionality`, which is a runtime value, so the compiler cannot
@@ -193,10 +210,111 @@ Stop at 4. Each case is a full copy of the loop body for all seven storage
 types across both macros, so the object file grows quickly, and the
 proof of concept shows the returns are already flat by 4.
 
-## Step 2: coalesce adjacent axes n ways
+## Step 2: walk the first axis as a run
 
-Do this second, and be honest in the pull request that the measured benefit
-after step 1 is confined to point spaces with many small axes.
+This is the largest single win and the piece `src/index.c` was missing all
+along. The rest of the package already works this way. `src/strided-iterator.h`
+documents it under "First axis runs" and "Fixed zero stride paths", and index
+was the one operation still carrying the point vector on every element.
+
+Pull the first axis out into an inner run, and only advance the later axes
+between runs. Add a sibling to `rray_index_plan_next()` that skips axis 0:
+
+```c
+static inline void rray_index_plan_next_run(
+  const struct rray_index_plan* plan,
+  int* v_point,
+  r_ssize* v_index_locations,
+  const int x_dimensionality
+) {
+  for (int axis = 1; axis < plan->dimensionality; ++axis) {
+    ++v_point[axis];
+
+    if (v_point[axis] < plan->v_dimensions[axis]) {
+      for (int i = 0; i < x_dimensionality; ++i) {
+        v_index_locations[i] += plan->v_index_strides[axis][i];
+      }
+      break;
+    }
+
+    v_point[axis] = 0;
+
+    for (int i = 0; i < x_dimensionality; ++i) {
+      v_index_locations[i] -=
+        (plan->v_dimensions[axis] - 1) * plan->v_index_strides[axis][i];
+    }
+  }
+}
+```
+
+Inside a run, coordinate array `k` advances by the fixed stride
+`plan->v_index_strides[0][k]`. Emit the run body twice, once with that stride
+and once with a literal 1, exactly as the existing iterators pass a literal 0
+for fixed strides:
+
+```c
+#define RRAY_INDEX_STRIDE_ONE(K) 1
+#define RRAY_INDEX_STRIDE_RUNTIME(K) plan->v_index_strides[0][K]
+
+#define RRAY_INDEX_ATOMIC_RUN(MISSING, X_DIMENSIONALITY, STRIDE)               \
+  for (r_ssize j = 0; j < run_size; ++j) {                                     \
+    r_ssize location = 0;                                                      \
+                                                                               \
+    for (int k = 0; k < X_DIMENSIONALITY; ++k) {                               \
+      const int index =                                                        \
+        plan->v_indices[k][v_index_locations[k] + j * STRIDE(k)];              \
+                                                                               \
+      if (index == r_globals.na_int) {                                         \
+        location = -1;                                                         \
+        break;                                                                 \
+      }                                                                        \
+                                                                               \
+      location += (r_ssize) (index - 1) * plan->v_x_strides[k];                \
+    }                                                                          \
+                                                                               \
+    v_out[i + j] = location == -1 ? MISSING : v_x[location];                   \
+  }
+```
+
+With the literal, `j * STRIDE(k)` collapses to `+ j` and every coordinate array
+read becomes a contiguous walk. Combined with step 1 the whole body is straight
+line code. This pairing is what produces the Cartesian row at 0.94 ns/elt and
+the 2-d row at 2.10 ns/elt.
+
+Store the unit stride test on the plan rather than checking it in the loop:
+
+```c
+  plan.unit_run = true;
+
+  for (int i = 0; i < x_dimensionality; ++i) {
+    if (plan.v_index_strides[0][i] != 1) {
+      plan.unit_run = false;
+      break;
+    }
+  }
+```
+
+Two details that are easy to get wrong.
+
+Guard the run count against an empty result. `run_size` is
+`plan->v_dimensions[0]`, which can be 0, so compute
+`run_size == 0 ? 0 : plan->size / run_size` rather than dividing blindly.
+
+There is no all-zero stride case to specialize, unlike broadcast and reduce.
+The point space here is the common dimensions of the coordinate arrays
+themselves, so every axis has at least one coordinate array with a nonzero
+stride on it. If every coordinate array were dimension 1 on the first axis then
+the common dimension would also be 1 and the run would be a single element. A
+mix of 0 and 1 does occur and that is exactly the Cartesian case, which takes
+the runtime stride path. A dedicated zero stride path could hoist the repeated
+load, but the Cartesian row already matches numpy's best number so it was not
+worth measuring.
+
+## Step 3: coalesce adjacent axes n ways
+
+Do this third. Be honest in the pull request about what it buys: 21% at 10 axes
+and 36% at 20 axes, and nothing measurable anywhere else, even with the step 2
+run loop in place.
 
 The rule is already factored out as
 `rray__strided_iterator_axes_coalescible()` in `src/strided-iterator.h`, and
@@ -280,6 +398,14 @@ invisible to callers.
 The output itself never needs checking. It is contiguous over the point space
 by construction, so it always coalesces.
 
+Coalescing and the step 2 run loop are one optimization, not two. Coalescing
+exists to make the first axis long enough for the run loop to pay for itself.
+When the first axis is already long, which is the normal shape for coordinate
+arrays, there is nothing left to gain. Do not expect it to repeat the 3-5x that
+`src/strided-iterator.h` credits it with in broadcast and reduce, because those
+operations routinely see dimensions like `[2, 4, 5]` where the first axis is
+tiny.
+
 One limit is permanent and worth stating in the pull request. numpy runs
 `npyiter_find_best_axis_ordering()` before coalescing, sorting axes by stride
 so more pairs become adjacent and mergeable. We cannot. numpy allocates the
@@ -287,10 +413,10 @@ result through its iterator and is free to pick any point order, while we write
 into a contiguous result whose dimensions are fixed by the common coordinate
 dimensions. We merge adjacent axes only and lose the non-adjacent cases.
 
-## Step 3: hoist the missing value check
+## Step 4: hoist the missing value check
 
-Not measured. Expected to help most on the 1-d case, which is where the largest
-remaining gap to numpy sits.
+Not measured. Expected to help most on the one coordinate array case, which is
+the only place numpy is still ahead after steps 1 through 3.
 
 `rray_index_plan_location()` returns `-1` when any coordinate is missing, so
 every element carries a data dependent branch per coordinate array plus a
@@ -302,35 +428,25 @@ it can record whether that array contained any `NA` for free. When no
 coordinate array contains one, run a variant of the loop with the check and the
 sentinel removed entirely.
 
-This composes with step 1 rather than replacing it. The specialized cases
-become straight line code with no branches at all.
-
-## Step 4: flat run loop for a single coalesced axis
-
-Not measured. This is what closes the rest of the distance to
-`mapiter_trivial_get()`, which is the path that gives numpy its 0.94 ns/elt.
-
-After step 2, the common case of identically shaped coordinate arrays collapses
-to one axis with every `v_index_strides[0][i]` equal to 1. At that point the
-point vector is dead weight: the location of coordinate array `i` is just the
-output index. A dedicated loop for that case drops `v_point` and
-`v_index_locations` and reads `plan->v_indices[k][i]` directly.
-
-Combined with steps 1 and 3, the one coordinate array case reduces to numpy's
-trivial loop with no iterator state at all:
+This composes with steps 1 and 2 rather than replacing them. With the count
+specialized, the stride a literal 1, and the check gone, the one coordinate
+array run body reduces to numpy's trivial loop with no iterator state left in
+it at all:
 
 ```c
-for (r_ssize i = 0; i < plan->size; ++i) {
-  v_out[i] = v_x[v_index[i] - 1];
+for (r_ssize j = 0; j < run_size; ++j) {
+  v_out[i + j] = v_x[v_index[j] - 1];
 }
 ```
 
-Check the unit stride condition once when building the plan and store it as a
-flag, rather than testing strides inside the loop.
+That is the shape of `mapiter_trivial_get()`, which is where numpy's 0.94
+ns/elt comes from. Steps 1 through 3 land the same case at 1.85 ns/elt, so this
+is the obvious candidate for the rest of that gap, but nothing here proves it
+closes.
 
 ## Out of scope
 
-Small call overhead is a separate problem and neither step above moves it.
+Small call overhead is a separate problem and no step above moves it.
 `rray_index()` on a 10 element coordinate array costs about 1.5 us against
 numpy's 0.10 us. About 0.5 us of that is the floor for any rray R function,
 since `rray_dimensions()` alone costs 0.49 us per call, and
@@ -353,6 +469,11 @@ Add these alongside the existing index array tests.
 Coalescing needs an equivalence test that pins the reshape invariant directly.
 Identical coordinate data shaped `[1048576]` and `[2 x 20]` must produce
 identical values, because that pair is exactly what coalescing collapses.
+
+The run loop needs both stride paths covered. Identically shaped coordinate
+arrays take the unit stride path, and a Cartesian broadcast of `[n, 1]` against
+`[1, n]` takes the runtime stride path, so cover both alongside a result with a
+size of 0 to exercise the empty run count guard.
 
 Both steps need coverage at the edges of the dispatch. Cover 1, 2, 3, 4, and 5
 coordinate arrays so that every specialized case and the generic fallback are
