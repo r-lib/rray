@@ -9,12 +9,6 @@ struct rray_index_plan {
   const int* v_indices[RRAY_MAX_DIMENSIONALITY];
 };
 
-static void check_index_argument_count(
-  r_ssize size,
-  int dimensionality,
-  struct r_lazy error_call
-);
-
 static struct rray_index_plan rray_index_plan(
   r_obj* x_dimensions,
   r_obj* indices,

@@ -37,7 +37,17 @@ r_obj* rray_index(
 
   r_obj* const* v_indices = r_list_cbegin(indices);
   const r_ssize indices_size = r_length(indices);
-  check_index_argument_count(indices_size, x_dimensionality, error_call);
+
+  if (indices_size != x_dimensionality) {
+    r_abort_lazy_call(
+      error_call,
+      "Must supply exactly %d coordinate array%s to `...`, not %" R_PRI_SSIZE
+      ".",
+      x_dimensionality,
+      x_dimensionality == 1 ? "" : "s",
+      indices_size
+    );
+  }
 
   if (r_names(indices) != r_null) {
     r_abort_lazy_call(error_call, "All elements of `...` must be unnamed.");
@@ -160,24 +170,6 @@ r_obj* rray_as_index_array(
 
   FREE(1);
   return x;
-}
-
-static void check_index_argument_count(
-  r_ssize size,
-  int dimensionality,
-  struct r_lazy error_call
-) {
-  if (size == dimensionality) {
-    return;
-  }
-
-  r_abort_lazy_call(
-    error_call,
-    "Must supply exactly %d coordinate array%s to `...`, not %" R_PRI_SSIZE ".",
-    dimensionality,
-    dimensionality == 1 ? "" : "s",
-    size
-  );
 }
 
 static struct rray_index_plan rray_index_plan(
