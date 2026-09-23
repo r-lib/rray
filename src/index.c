@@ -12,7 +12,7 @@ struct rray_index_plan {
   int dimensionality;
   r_ssize v_dimensions[RRAY_MAX_DIMENSIONALITY];
   r_ssize v_x_strides[RRAY_MAX_DIMENSIONALITY];
-  r_ssize v_index_strides[RRAY_MAX_DIMENSIONALITY][RRAY_MAX_DIMENSIONALITY];
+  r_ssize v_indices_strides[RRAY_MAX_DIMENSIONALITY][RRAY_MAX_DIMENSIONALITY];
   const int* v_indices[RRAY_MAX_DIMENSIONALITY];
 };
 
@@ -244,7 +244,7 @@ static struct rray_index_plan rray_index_plan(
     );
 
     for (int axis = 0; axis < dimensionality; ++axis) {
-      plan.v_index_strides[axis][i] = v_strides[axis];
+      plan.v_indices_strides[axis][i] = v_strides[axis];
     }
 
     plan.v_indices[i] = r_int_cbegin(index);
@@ -278,11 +278,13 @@ static inline void rray_index_plan_next(
   r_ssize* v_index_locations
 ) {
   for (int axis = 0; axis < plan->dimensionality; ++axis) {
+    const r_ssize* v_axis_indices_strides = plan->v_indices_strides[axis];
+
     ++v_point[axis];
 
     if (v_point[axis] < plan->v_dimensions[axis]) {
       for (int i = 0; i < plan->x_dimensionality; ++i) {
-        v_index_locations[i] += plan->v_index_strides[axis][i];
+        v_index_locations[i] += v_axis_indices_strides[i];
       }
       break;
     }
@@ -291,7 +293,7 @@ static inline void rray_index_plan_next(
 
     for (int i = 0; i < plan->x_dimensionality; ++i) {
       v_index_locations[i] -=
-        (plan->v_dimensions[axis] - 1) * plan->v_index_strides[axis][i];
+        (plan->v_dimensions[axis] - 1) * v_axis_indices_strides[i];
     }
   }
 }

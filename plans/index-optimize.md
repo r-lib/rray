@@ -292,7 +292,7 @@ static inline void rray_index_plan_next_run(
 
     if (v_point[axis] < plan->v_dimensions[axis]) {
       for (int i = 0; i < x_dimensionality; ++i) {
-        v_index_locations[i] += plan->v_index_strides[axis][i];
+        v_index_locations[i] += plan->v_indices_strides[axis][i];
       }
       break;
     }
@@ -301,20 +301,20 @@ static inline void rray_index_plan_next_run(
 
     for (int i = 0; i < x_dimensionality; ++i) {
       v_index_locations[i] -=
-        (plan->v_dimensions[axis] - 1) * plan->v_index_strides[axis][i];
+        (plan->v_dimensions[axis] - 1) * plan->v_indices_strides[axis][i];
     }
   }
 }
 ```
 
 Inside a run, coordinate array `k` advances by the fixed stride
-`plan->v_index_strides[0][k]`. Emit the run body twice, once with that stride
+`plan->v_indices_strides[0][k]`. Emit the run body twice, once with that stride
 and once with a literal 1, exactly as the existing iterators pass a literal 0
 for fixed strides:
 
 ```c
 #define RRAY_INDEX_STRIDE_ONE(K) 1
-#define RRAY_INDEX_STRIDE_RUNTIME(K) plan->v_index_strides[0][K]
+#define RRAY_INDEX_STRIDE_RUNTIME(K) plan->v_indices_strides[0][K]
 
 #define RRAY_INDEX_ATOMIC_RUN(MISSING, X_DIMENSIONALITY, STRIDE)               \
   for (r_ssize j = 0; j < run_size; ++j) {                                     \
@@ -347,7 +347,7 @@ Store the unit stride test on the plan rather than checking it in the loop:
   plan.unit_run = true;
 
   for (int i = 0; i < x_dimensionality; ++i) {
-    if (plan.v_index_strides[0][i] != 1) {
+    if (plan.v_indices_strides[0][i] != 1) {
       plan.unit_run = false;
       break;
     }
@@ -444,7 +444,7 @@ The call site is one statement at the end of `rray_index_plan()`:
 ```c
   plan.dimensionality = rray__strided_iterator_axes_coalescen(
     plan.v_dimensions,
-    plan.v_index_strides,
+    plan.v_indices_strides,
     dimensionality,
     x_dimensionality
   );
@@ -452,7 +452,7 @@ The call site is one statement at the end of `rray_index_plan()`:
 
 Three things happen to already be right, which is why this drops in cleanly.
 
-`v_index_strides[axis][i]` is indexed point axis first, so each axis is a
+`v_indices_strides[axis][i]` is indexed point axis first, so each axis is a
 contiguous row. Comparing two axes is a row scan and merging is a row copy. No
 layout change is needed.
 
