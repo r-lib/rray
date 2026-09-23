@@ -235,17 +235,19 @@ static struct rray_index_plan rray_index_plan(
     const int* v_index_dimensions = r_int_cbegin(index_dimensions);
     const int index_dimensionality =
       rray_dimensionality_from_dimensions(index_dimensions);
-    r_ssize v_strides[RRAY_MAX_DIMENSIONALITY];
+
+    // Post broadcast strides for a single index
+    r_ssize v_index_strides[RRAY_MAX_DIMENSIONALITY];
 
     rray_fill_broadcast_strides_from_dimensions(
       v_index_dimensions,
       index_dimensionality,
       dimensionality,
-      v_strides
+      v_index_strides
     );
 
     for (int axis = 0; axis < dimensionality; ++axis) {
-      plan.v_indices_strides[axis][i] = v_strides[axis];
+      plan.v_indices_strides[axis][i] = v_index_strides[axis];
     }
 
     plan.v_indices[i] = r_int_cbegin(index);
