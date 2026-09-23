@@ -253,10 +253,9 @@ static struct rray_index_plan rray_index_plan(
   return plan;
 }
 
-static inline bool rray_index_plan_source_location(
+static inline r_ssize rray_index_plan_location(
   const struct rray_index_plan* plan,
-  const r_ssize* v_index_locations,
-  r_ssize* p_source_location
+  const r_ssize* v_index_locations
 ) {
   r_ssize out = 0;
 
@@ -264,14 +263,13 @@ static inline bool rray_index_plan_source_location(
     const int index = plan->v_indices[axis][v_index_locations[axis]];
 
     if (index == r_globals.na_int) {
-      return false;
+      return -1;
     }
 
     out += (r_ssize) (index - 1) * plan->v_x_strides[axis];
   }
 
-  *p_source_location = out;
-  return true;
+  return out;
 }
 
 static inline void rray_index_plan_next(
@@ -306,13 +304,9 @@ static inline void rray_index_plan_next(
   r_ssize v_index_locations[RRAY_MAX_DIMENSIONALITY] = {0};                    \
                                                                                \
   for (r_ssize i = 0; i < plan->size; ++i) {                                   \
-    r_ssize source_location = 0;                                               \
-    const bool found = rray_index_plan_source_location(                        \
-      plan,                                                                    \
-      v_index_locations,                                                       \
-      &source_location                                                         \
-    );                                                                         \
-    v_out[i] = found ? v_x[source_location] : MISSING;                         \
+    const r_ssize location =                                                   \
+      rray_index_plan_location(plan, v_index_locations);                       \
+    v_out[i] = location == -1 ? MISSING : v_x[location];                       \
     rray_index_plan_next(plan, v_point, v_index_locations);                    \
   }                                                                            \
                                                                                \
@@ -326,13 +320,9 @@ static inline void rray_index_plan_next(
   r_ssize v_index_locations[RRAY_MAX_DIMENSIONALITY] = {0};                    \
                                                                                \
   for (r_ssize i = 0; i < plan->size; ++i) {                                   \
-    r_ssize source_location = 0;                                               \
-    const bool found = rray_index_plan_source_location(                        \
-      plan,                                                                    \
-      v_index_locations,                                                       \
-      &source_location                                                         \
-    );                                                                         \
-    POKE(out, i, found ? v_x[source_location] : MISSING);                      \
+    const r_ssize location =                                                   \
+      rray_index_plan_location(plan, v_index_locations);                       \
+    POKE(out, i, location == -1 ? MISSING : v_x[location]);                    \
     rray_index_plan_next(plan, v_point, v_index_locations);                    \
   }                                                                            \
                                                                                \

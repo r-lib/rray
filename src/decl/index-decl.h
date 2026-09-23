@@ -13,10 +13,9 @@ static struct rray_index_plan rray_index_plan(
   struct r_lazy error_call
 );
 
-static inline bool rray_index_plan_source_location(
+static inline r_ssize rray_index_plan_location(
   const struct rray_index_plan* plan,
-  const r_ssize* v_index_locations,
-  r_ssize* p_source_location
+  const r_ssize* v_index_locations
 );
 
 static inline void rray_index_plan_next(
