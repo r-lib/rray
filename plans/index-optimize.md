@@ -73,9 +73,11 @@ The cases that matter are, in order: a 1-d source with one coordinate array, a
 counts, and the same 2-d case with coordinate arrays reshaped to 10 and 20
 axes.
 
-Include a leading unit axis case. Coordinate arrays shaped `[1, N]` and
-`[1, 1, N]` are the shapes coalescing exists for, and a grid without them will
-make step 3 look pointless. The first version of this plan made that mistake.
+Include a leading unit axis case where every coordinate array is shaped `[1, N]`
+or `[1, 1, N]`. That is the only shape coalescing helps, and a grid without it
+will make step 3 look pointless. The first version of this plan made that
+mistake. Include the take-along-axis shapes too, since they are the ones a
+reader will assume benefit and do not.
 
 Two things to know before trusting any number from it.
 
@@ -156,6 +158,41 @@ a first axis of 1. It closed with the warning not to claim that coalescing
 makes every operation faster, and recorded that cases which could not gain a
 longer first axis run were unchanged. The 3-5x in the `src/strided-iterator.h`
 header comes from those leading unit axis cases, not from general shapes.
+
+The condition is strict, and narrower than the table above suggests on its own.
+Every coordinate array must have dimension 1 on the leading axis, which is the
+same as saying the result's leading dimension is 1. The rule keys off the point
+dimension, and the point dimensions are the common dimensions of the coordinate
+arrays, so one array with a leading dimension above 1 is enough to stop the
+merge for all of them:
+
+| Case | coalesce | no coalesce | coalesce wins |
+|---|---|---|---|
+| all coordinate arrays `[1, N]` | 2.23 | 3.55 | 37% |
+| mixed `[2, N/2]` and `[1, N/2]` | 2.53 | 2.49 | 0% |
+| take along axis 2, `[1024, 1]` and `[1, 1024]` | 0.97 | 0.99 | 0% |
+| take along first axis, J = 2 | 1.82 | 1.84 | 0% |
+| take along first axis, J = 8 | 1.17 | 1.20 | 0% |
+
+The take rows matter because `rray_index_axis()` is a planned function and it
+will not benefit. The equivalence in `plans/index.md` spells out its coordinate
+arrays for source dimensions `(A, B, C)` and `axis = 2`:
+
+```r
+axis1 <- array(seq_len(A), c(A, 1L, 1L))
+axis2 <- i
+axis3 <- array(seq_len(C), c(1L, 1L, C))
+```
+
+`axis3` does have a leading unit axis, but `axis1` has a leading dimension of
+`A`, so the point space leads with `A` and the two arrays vary along different
+axes. Crossed strides never coalesce. Note this measures the coordinate array
+equivalent, which is what goes through this machinery. A native
+`rray_index_axis()` implementation could iterate differently.
+
+Take shapes are also already the fastest cases measured, 0.97 to 1.82 ns/elt,
+because one coordinate array is tiny and gets reused across the whole result.
+They do not need help from this step.
 
 Nothing here touches small call overhead, which is a separate problem described
 at the end.
@@ -335,11 +372,19 @@ worth measuring.
 
 ## Step 3: coalesce adjacent axes n ways
 
-Do this third. Frame it in the pull request as what it is, which is insurance
-rather than throughput. It makes `rray_index()` cost the same no matter how the
-coordinate arrays are shaped. On ordinary shapes it changes nothing. On a
-leading unit axis it is worth 38% to 46%, and without it step 2 collapses back
-to one element runs on exactly those shapes.
+Do this third, and treat it as optional. It is the weakest step in this plan.
+
+It buys one thing: a result whose leading dimension is 1 costs the same as the
+equivalent flat result, 38% to 46% rather than falling off a cliff. Every other
+shape measured is unchanged, including both take-along-axis forms and any mix
+where only some coordinate arrays lead with 1.
+
+The case for doing it anyway is that it is about forty lines, it reuses a rule
+that already exists, results stay bit identical, and every other iterator in
+the package coalesces so index not doing it is a surprise to the next reader.
+The case against is that the shape it protects is one a caller has to go out of
+their way to produce. Either answer is defensible. Do not let it block steps 1
+and 2.
 
 The rule is already factored out as
 `rray__strided_iterator_axes_coalescible()` in `src/strided-iterator.h`, and
