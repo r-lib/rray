@@ -9,8 +9,8 @@ static r_obj* rray_as_index_arrays(
 static inline r_ssize rray_index_location(
   const r_ssize* v_x_strides,
   const int* const* v_v_index,
-  r_ssize indices_size,
-  const r_ssize* v_index_locations
+  const r_ssize* v_index_locations,
+  r_ssize indices_size
 );
 
 static r_obj* rray_index_lgl(
