@@ -295,25 +295,18 @@ r_obj* rray_as_index_array(
   return x;
 }
 
-#define RRAY_INDEX_LOOP(POKE, MISSING, INDICES_SIZE, CHECK_MISSING)            \
+#define RRAY_INDEX_LOOP(POKE, INDICES_SIZE)                                    \
   while (run_start != size) {                                                  \
-    for (r_ssize j = 0; j < run_size; ++j) {                                   \
-      r_ssize location = 0;                                                    \
-      bool missing = false;                                                    \
-                                                                               \
-      for (r_ssize i = 0; i < INDICES_SIZE; ++i) {                             \
-        const int index =                                                      \
-          v_v_index[i][v_index_locations[i] + j * v_index_run_strides[i]];     \
-                                                                               \
-        if (CHECK_MISSING && index == r_globals.na_int) {                      \
-          missing = true;                                                      \
-          break;                                                               \
-        }                                                                      \
-                                                                               \
-        location += (r_ssize) (index - 1) * v_x_strides[i];                    \
-      }                                                                        \
-                                                                               \
-      POKE(out, run_start + j, missing ? (MISSING) : v_x[location]);           \
+    for (r_ssize i = 0; i < run_size; ++i) {                                   \
+      const r_ssize location = rray_index_location(                            \
+        v_x_strides,                                                           \
+        v_v_index,                                                             \
+        v_index_locations,                                                     \
+        v_index_run_strides,                                                   \
+        i,                                                                     \
+        INDICES_SIZE                                                           \
+      );                                                                       \
+      POKE(out, run_start + i, v_x[location]);                                 \
     }                                                                          \
                                                                                \
     run_start += run_size;                                                     \
@@ -325,23 +318,27 @@ r_obj* rray_as_index_array(
     );                                                                         \
   }
 
-#define RRAY_INDEX_LOOPS(POKE, MISSING, CHECK_MISSING)                         \
-  switch (indices_size) {                                                      \
-  case 1:                                                                      \
-    RRAY_INDEX_LOOP(POKE, MISSING, 1, CHECK_MISSING);                          \
-    break;                                                                     \
-  case 2:                                                                      \
-    RRAY_INDEX_LOOP(POKE, MISSING, 2, CHECK_MISSING);                          \
-    break;                                                                     \
-  case 3:                                                                      \
-    RRAY_INDEX_LOOP(POKE, MISSING, 3, CHECK_MISSING);                          \
-    break;                                                                     \
-  case 4:                                                                      \
-    RRAY_INDEX_LOOP(POKE, MISSING, 4, CHECK_MISSING);                          \
-    break;                                                                     \
-  default:                                                                     \
-    RRAY_INDEX_LOOP(POKE, MISSING, indices_size, CHECK_MISSING);               \
-    break;                                                                     \
+#define RRAY_INDEX_LOOP_MISSING(POKE, MISSING, INDICES_SIZE)                   \
+  while (run_start != size) {                                                  \
+    for (r_ssize i = 0; i < run_size; ++i) {                                   \
+      const r_ssize location = rray_index_location_missing(                    \
+        v_x_strides,                                                           \
+        v_v_index,                                                             \
+        v_index_locations,                                                     \
+        v_index_run_strides,                                                   \
+        i,                                                                     \
+        INDICES_SIZE                                                           \
+      );                                                                       \
+      POKE(out, run_start + i, location == -1 ? (MISSING) : v_x[location]);    \
+    }                                                                          \
+                                                                               \
+    run_start += run_size;                                                     \
+    RRAY_STRIDED_ITERATOR_NEXT_N(                                              \
+      v_index_locations,                                                       \
+      v_point,                                                                 \
+      plan,                                                                    \
+      INDICES_SIZE                                                             \
+    );                                                                         \
   }
 
 #define RRAY_INDEX_ITERATE(POKE, MISSING)                                      \
@@ -359,9 +356,41 @@ r_obj* rray_as_index_array(
   rray_strided_iterator_n_plan_point_init(plan, v_point);                      \
                                                                                \
   if (any_missing) {                                                           \
-    RRAY_INDEX_LOOPS(POKE, MISSING, true);                                     \
+    switch (indices_size) {                                                    \
+    case 1:                                                                    \
+      RRAY_INDEX_LOOP_MISSING(POKE, MISSING, 1);                               \
+      break;                                                                   \
+    case 2:                                                                    \
+      RRAY_INDEX_LOOP_MISSING(POKE, MISSING, 2);                               \
+      break;                                                                   \
+    case 3:                                                                    \
+      RRAY_INDEX_LOOP_MISSING(POKE, MISSING, 3);                               \
+      break;                                                                   \
+    case 4:                                                                    \
+      RRAY_INDEX_LOOP_MISSING(POKE, MISSING, 4);                               \
+      break;                                                                   \
+    default:                                                                   \
+      RRAY_INDEX_LOOP_MISSING(POKE, MISSING, indices_size);                    \
+      break;                                                                   \
+    }                                                                          \
   } else {                                                                     \
-    RRAY_INDEX_LOOPS(POKE, MISSING, false);                                    \
+    switch (indices_size) {                                                    \
+    case 1:                                                                    \
+      RRAY_INDEX_LOOP(POKE, 1);                                                \
+      break;                                                                   \
+    case 2:                                                                    \
+      RRAY_INDEX_LOOP(POKE, 2);                                                \
+      break;                                                                   \
+    case 3:                                                                    \
+      RRAY_INDEX_LOOP(POKE, 3);                                                \
+      break;                                                                   \
+    case 4:                                                                    \
+      RRAY_INDEX_LOOP(POKE, 4);                                                \
+      break;                                                                   \
+    default:                                                                   \
+      RRAY_INDEX_LOOP(POKE, indices_size);                                     \
+      break;                                                                   \
+    }                                                                          \
   }
 
 #define RRAY_INDEX_ATOMIC_POKE(OUT, I, VALUE) v_out[I] = (VALUE)
@@ -498,8 +527,56 @@ static r_obj* rray_index_list(
 }
 
 #undef RRAY_INDEX_LOOP
-#undef RRAY_INDEX_LOOPS
+#undef RRAY_INDEX_LOOP_MISSING
 #undef RRAY_INDEX_ITERATE
 #undef RRAY_INDEX_ATOMIC_POKE
 #undef RRAY_INDEX_ATOMIC
 #undef RRAY_INDEX_BARRIER
+
+static inline r_ssize rray_index_location(
+  const r_ssize* v_x_strides,
+  const int* const* v_v_index,
+  const r_ssize* v_index_locations,
+  const r_ssize* v_index_run_strides,
+  r_ssize run_i,
+  r_ssize indices_size
+) {
+  r_ssize out = 0;
+
+  for (r_ssize i = 0; i < indices_size; ++i) {
+    const int* v_index = v_v_index[i];
+    const r_ssize index_location =
+      v_index_locations[i] + run_i * v_index_run_strides[i];
+    const int index = v_index[index_location];
+
+    out += (r_ssize) (index - 1) * v_x_strides[i];
+  }
+
+  return out;
+}
+
+static inline r_ssize rray_index_location_missing(
+  const r_ssize* v_x_strides,
+  const int* const* v_v_index,
+  const r_ssize* v_index_locations,
+  const r_ssize* v_index_run_strides,
+  r_ssize run_i,
+  r_ssize indices_size
+) {
+  r_ssize out = 0;
+
+  for (r_ssize i = 0; i < indices_size; ++i) {
+    const int* v_index = v_v_index[i];
+    const r_ssize index_location =
+      v_index_locations[i] + run_i * v_index_run_strides[i];
+    const int index = v_index[index_location];
+
+    if (index == r_globals.na_int) {
+      return -1;
+    }
+
+    out += (r_ssize) (index - 1) * v_x_strides[i];
+  }
+
+  return out;
+}
