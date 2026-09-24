@@ -64,7 +64,6 @@ r_obj* rray_index(
   rray_fill_broadcast_strides_from_arrays(
     v_indices,
     indices_size,
-    v_dimensions,
     dimensionality,
     v_indices_strides
   );
