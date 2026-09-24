@@ -330,9 +330,8 @@ static inline r_ssize rray_index_location(
 
   for (r_ssize i = 0; i < indices_size; ++i) {
     const int* v_index = v_v_index[i];
-    const r_ssize index_location = v_location[i] + run_i * v_run_stride[i];
-    const int index = v_index[index_location];
-
+    const r_ssize location = v_location[i] + run_i * v_run_stride[i];
+    const int index = v_index[location];
     out += (r_ssize) (index - 1) * v_x_strides[i];
   }
 
@@ -351,13 +350,11 @@ static inline r_ssize rray_index_location_missing(
 
   for (r_ssize i = 0; i < indices_size; ++i) {
     const int* v_index = v_v_index[i];
-    const r_ssize index_location = v_location[i] + run_i * v_run_stride[i];
-    const int index = v_index[index_location];
-
+    const r_ssize location = v_location[i] + run_i * v_run_stride[i];
+    const int index = v_index[location];
     if (index == r_globals.na_int) {
       return -1;
     }
-
     out += (r_ssize) (index - 1) * v_x_strides[i];
   }
 
