@@ -6,16 +6,10 @@ static r_obj* rray_as_index_arrays(
   struct r_lazy error_call
 );
 
-static struct rray_strided_iterator_n_plan rray_index_iterator_plan(
-  r_obj* dimensions,
-  const r_ssize* v_index_strides,
-  r_ssize indices_size
-);
-
 static inline r_ssize rray_index_location(
   const r_ssize* v_x_strides,
   const int* const* v_v_indices,
-  const struct rray_strided_iterator_n_plan* plan,
+  r_ssize indices_size,
   const r_ssize* v_index_locations
 );
 

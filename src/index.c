@@ -73,8 +73,12 @@ r_obj* rray_index(
     v_v_indices[i] = r_int_cbegin(v_indices[i]);
   }
 
-  const struct rray_strided_iterator_n_plan plan =
-    rray_index_iterator_plan(dimensions, v_index_strides, indices_size);
+  const struct rray_strided_iterator_n_plan plan = rray_strided_iterator_n_plan(
+    v_dimensions,
+    dimensionality,
+    v_index_strides,
+    indices_size
+  );
 
   r_obj* out;
 
@@ -213,31 +217,15 @@ r_obj* rray_as_index_array(
   return x;
 }
 
-static struct rray_strided_iterator_n_plan rray_index_iterator_plan(
-  r_obj* dimensions,
-  const r_ssize* v_index_strides,
-  r_ssize indices_size
-) {
-  const int* v_dimensions = r_int_cbegin(dimensions);
-  const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
-
-  return rray_strided_iterator_n_plan(
-    v_dimensions,
-    dimensionality,
-    v_index_strides,
-    indices_size
-  );
-}
-
 static inline r_ssize rray_index_location(
   const r_ssize* v_x_strides,
   const int* const* v_v_indices,
-  const struct rray_strided_iterator_n_plan* plan,
+  r_ssize indices_size,
   const r_ssize* v_index_locations
 ) {
   r_ssize out = 0;
 
-  for (r_ssize i = 0; i < plan->n; ++i) {
+  for (r_ssize i = 0; i < indices_size; ++i) {
     const int index = v_v_indices[i][v_index_locations[i]];
 
     if (index == r_globals.na_int) {
@@ -252,6 +240,7 @@ static inline r_ssize rray_index_location(
 
 #define RRAY_INDEX_ATOMIC(RTYPE, CTYPE, CONST_DEREF, DEREF, MISSING)           \
   const r_ssize size = rray_strided_iterator_n_plan_size(plan);                \
+  const r_ssize indices_size = plan->n;                                        \
                                                                                \
   r_obj* out = KEEP(r_alloc_vector(RTYPE, size));                              \
   CTYPE* v_out = DEREF(out);                                                   \
@@ -264,8 +253,12 @@ static inline r_ssize rray_index_location(
   rray_strided_iterator_n_plan_point_init(plan, v_point);                      \
                                                                                \
   for (r_ssize i = 0; i < size; ++i) {                                         \
-    const r_ssize location =                                                   \
-      rray_index_location(v_x_strides, v_v_indices, plan, v_index_locations);  \
+    const r_ssize location = rray_index_location(                              \
+      v_x_strides,                                                             \
+      v_v_indices,                                                             \
+      indices_size,                                                            \
+      v_index_locations                                                        \
+    );                                                                         \
     v_out[i] = location == -1 ? MISSING : v_x[location];                       \
     RRAY_STRIDED_ITERATOR_NEXT_N(v_index_locations, v_point, plan);            \
   }                                                                            \
@@ -275,6 +268,7 @@ static inline r_ssize rray_index_location(
 
 #define RRAY_INDEX_BARRIER(RTYPE, CONST_DEREF, POKE, MISSING)                  \
   const r_ssize size = rray_strided_iterator_n_plan_size(plan);                \
+  const r_ssize indices_size = plan->n;                                        \
                                                                                \
   r_obj* out = KEEP(r_alloc_vector(RTYPE, size));                              \
                                                                                \
@@ -286,8 +280,12 @@ static inline r_ssize rray_index_location(
   rray_strided_iterator_n_plan_point_init(plan, v_point);                      \
                                                                                \
   for (r_ssize i = 0; i < size; ++i) {                                         \
-    const r_ssize location =                                                   \
-      rray_index_location(v_x_strides, v_v_indices, plan, v_index_locations);  \
+    const r_ssize location = rray_index_location(                              \
+      v_x_strides,                                                             \
+      v_v_indices,                                                             \
+      indices_size,                                                            \
+      v_index_locations                                                        \
+    );                                                                         \
     POKE(out, i, location == -1 ? MISSING : v_x[location]);                    \
     RRAY_STRIDED_ITERATOR_NEXT_N(v_index_locations, v_point, plan);            \
   }                                                                            \
