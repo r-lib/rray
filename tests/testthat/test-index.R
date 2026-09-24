@@ -58,6 +58,45 @@ test_that("matches `index_base()` for pointwise coordinates", {
   )
 })
 
+test_that("matches `index_base()` for every coordinate count", {
+  for (count in 1:5) {
+    x <- array(seq_len(3L^count), rep(3L, count))
+    indices <- lapply(seq_len(count), function(i) {
+      array((seq_len(12L) + i) %% 3L + 1L, c(3L, 4L))
+    })
+
+    expect_identical(
+      do.call(rray_index, c(list(x), indices)),
+      do.call(index_base, c(list(x), indices))
+    )
+
+    indices[[count]][[5L]] <- NA_integer_
+
+    expect_identical(
+      do.call(rray_index, c(list(x), indices)),
+      do.call(index_base, c(list(x), indices))
+    )
+  }
+})
+
+test_that("results do not depend on how coordinates are shaped", {
+  x <- array(1:12, c(3L, 4L))
+  rows <- rep(1:3, 8L)
+  columns <- rep(1:4, each = 6L)
+  expected <- rray_index(x, rows, columns)
+
+  for (dimensions in list(
+    c(1L, 24L),
+    c(1L, 1L, 24L),
+    c(2L, 12L),
+    c(2L, 3L, 4L)
+  )) {
+    out <- rray_index(x, array(rows, dimensions), array(columns, dimensions))
+    expect_identical(as.vector(out), as.vector(expected))
+    expect_identical(dim(out), dimensions)
+  }
+})
+
 test_that("supports repeated coordinates", {
   x <- array(1:6, c(2L, 3L))
   rows <- c(2L, 2L, 2L, 1L)
@@ -151,6 +190,37 @@ test_that("returns every native storage type", {
   )
 })
 
+test_that("returns character and list arrays from any number of coordinates", {
+  expect_identical(
+    rray_index(c("a", "b"), c(2L, 1L)),
+    array(c("b", "a"), 2L)
+  )
+  expect_identical(
+    rray_index(list("a", 2L), c(2L, 1L)),
+    array(list(2L, "a"), 2L)
+  )
+
+  x <- array(c("a", "b", "c", "d"), c(2L, 2L))
+  expect_identical(
+    rray_index(x, c(2L, 1L), c(1L, 2L)),
+    array(c("b", "c"), 2L)
+  )
+  expect_identical(
+    rray_index(x, c(2L, NA_integer_), c(1L, 2L)),
+    array(c("b", NA_character_), 2L)
+  )
+
+  x <- array(list("a", 2L, TRUE, 4), c(2L, 2L))
+  expect_identical(
+    rray_index(x, c(2L, 1L), c(1L, 2L)),
+    array(list(2L, TRUE), 2L)
+  )
+  expect_identical(
+    rray_index(x, c(2L, 1L), c(NA_integer_, 2L)),
+    array(list(NULL, TRUE), 2L)
+  )
+})
+
 test_that("missing in any coordinate produces missing output", {
   x <- array(1:4, c(2L, 2L))
   rows <- c(1L, NA_integer_, 1L, 2L)
@@ -159,6 +229,18 @@ test_that("missing in any coordinate produces missing output", {
   expect_identical(
     rray_index(x, rows, columns),
     array(c(NA_integer_, NA_integer_, 3L, 4L), 4L)
+  )
+})
+
+test_that("missing in an early coordinate survives later coordinates", {
+  x <- array(1:8, c(2L, 2L, 2L))
+  axis1 <- c(NA_integer_, 1L, 1L, 2L)
+  axis2 <- c(1L, NA_integer_, 2L, 2L)
+  axis3 <- c(1L, 2L, NA_integer_, 2L)
+
+  expect_identical(
+    rray_index(x, axis1, axis2, axis3),
+    array(c(NA_integer_, NA_integer_, NA_integer_, 8L), 4L)
   )
 })
 
