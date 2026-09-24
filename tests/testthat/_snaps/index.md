@@ -11,7 +11,7 @@
     Code
       rray_index(x, !!!indices)
     Condition
-      Error in `rray_index()`:
+      Error:
       ! Size (1.84467e+19) computed from dimensions `(16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16)` is too large.
 
 # requires one coordinate per source axis

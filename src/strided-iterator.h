@@ -166,7 +166,11 @@ static inline struct rray_strided_iterator_plan rray_strided_iterator_plan(
 
   struct rray_strided_iterator_plan plan;
 
-  plan.size = rray_size_from_dimensions(v_dimensions, dimensionality);
+  plan.size = rray_size_from_dimensions_checked(
+    v_dimensions,
+    dimensionality,
+    r_lazy_null
+  );
 
   for (int i = 0; i < dimensionality; ++i) {
     plan.v_dimensions[i] = (r_ssize) v_dimensions[i];
@@ -277,7 +281,11 @@ static inline struct rray_strided_iterator2_plan rray_strided_iterator2_plan(
 
   struct rray_strided_iterator2_plan plan;
 
-  plan.size = rray_size_from_dimensions(v_dimensions, dimensionality);
+  plan.size = rray_size_from_dimensions_checked(
+    v_dimensions,
+    dimensionality,
+    r_lazy_null
+  );
 
   for (int i = 0; i < dimensionality; ++i) {
     plan.v_dimensions[i] = (r_ssize) v_dimensions[i];
@@ -394,39 +402,37 @@ struct rray_strided_iterator_n_plan {
   r_ssize v_dimensions[RRAY_MAX_DIMENSIONALITY];
   int dimensionality;
 
-  r_ssize v_v_strides[RRAY_MAX_DIMENSIONALITY][RRAY_MAX_DIMENSIONALITY];
-  int n;
+  // Strides for all `n` arrays, laid out axis-major as [dimensionality][n].
+  const r_ssize* v_strides;
+  r_ssize n;
 };
 
 static inline struct rray_strided_iterator_n_plan rray_strided_iterator_n_plan(
   const int* v_dimensions,
   int dimensionality,
-  const r_ssize (*v_v_strides)[RRAY_MAX_DIMENSIONALITY],
-  int n
+  const r_ssize* v_strides,
+  r_ssize n
 ) {
   check_dimensionality(dimensionality);
 
-  if (n < 1 || n > RRAY_MAX_DIMENSIONALITY) {
-    r_stop_internal(
-      "`n` (%d) must be between 1 and %d.",
-      n,
-      RRAY_MAX_DIMENSIONALITY
-    );
+  if (n < 1) {
+    r_stop_internal("`n` (%" R_PRI_SSIZE ") must be at least 1.", n);
   }
 
   struct rray_strided_iterator_n_plan plan;
 
-  plan.size = rray_size_from_dimensions(v_dimensions, dimensionality);
+  plan.size = rray_size_from_dimensions_checked(
+    v_dimensions,
+    dimensionality,
+    r_lazy_null
+  );
 
   for (int axis = 0; axis < dimensionality; ++axis) {
     plan.v_dimensions[axis] = (r_ssize) v_dimensions[axis];
-
-    for (int i = 0; i < n; ++i) {
-      plan.v_v_strides[axis][i] = v_v_strides[axis][i];
-    }
   }
 
   plan.dimensionality = dimensionality;
+  plan.v_strides = v_strides;
   plan.n = n;
 
   return plan;
@@ -444,9 +450,9 @@ static inline r_ssize rray_strided_iterator_n_plan_run_size(
 }
 static inline r_ssize rray_strided_iterator_n_plan_run_stride(
   const struct rray_strided_iterator_n_plan* plan,
-  int i
+  r_ssize i
 ) {
-  return plan->v_v_strides[0][i];
+  return plan->v_strides[i];
 }
 static inline void rray_strided_iterator_n_plan_point_init(
   const struct rray_strided_iterator_n_plan* plan,
@@ -457,16 +463,17 @@ static inline void rray_strided_iterator_n_plan_point_init(
 
 #define RRAY_STRIDED_ITERATOR_NEXTN(V_STARTS, V_POINT, PLAN)                   \
   for (int axis = 0; axis < PLAN->dimensionality; ++axis) {                    \
-    const r_ssize* v_axis_strides = PLAN->v_v_strides[axis];                   \
+    const r_ssize* v_axis_strides =                                            \
+      PLAN->v_strides + (r_ssize) axis * PLAN->n;                              \
     ++V_POINT[axis];                                                           \
     if (V_POINT[axis] < PLAN->v_dimensions[axis]) {                            \
-      for (int i = 0; i < PLAN->n; ++i) {                                      \
+      for (r_ssize i = 0; i < PLAN->n; ++i) {                                  \
         V_STARTS[i] += v_axis_strides[i];                                      \
       }                                                                        \
       break;                                                                   \
     }                                                                          \
     V_POINT[axis] = 0;                                                         \
-    for (int i = 0; i < PLAN->n; ++i) {                                        \
+    for (r_ssize i = 0; i < PLAN->n; ++i) {                                    \
       V_STARTS[i] -= (PLAN->v_dimensions[axis] - 1) * v_axis_strides[i];       \
     }                                                                          \
   }

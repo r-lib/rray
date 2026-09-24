@@ -2,7 +2,6 @@
 
 #include "dimensionality.h"
 #include "dimensions.h"
-#include "size.h"
 #include "strided-iterator.h"
 #include "strides.h"
 #include "utils.h"
@@ -46,7 +45,6 @@ r_obj* rray_index(
 
   r_obj* dimensions =
     KEEP(rray_dimensions_common(indices, r_null, indices_arg, error_call));
-  check_size_from_dimensions(dimensions, error_call);
 
   r_ssize v_x_strides[RRAY_MAX_DIMENSIONALITY];
   rray_fill_strides_from_dimensions(
@@ -56,8 +54,9 @@ r_obj* rray_index(
   );
 
   const int* v_v_indices[RRAY_MAX_DIMENSIONALITY];
+  r_ssize v_index_strides[RRAY_MAX_DIMENSIONALITY * RRAY_MAX_DIMENSIONALITY];
   const struct rray_strided_iterator_n_plan plan =
-    rray_index_iterator_plan(indices, dimensions, v_v_indices);
+    rray_index_iterator_plan(indices, dimensions, v_v_indices, v_index_strides);
 
   r_obj* out;
 
@@ -199,17 +198,16 @@ r_obj* rray_as_index_array(
 static struct rray_strided_iterator_n_plan rray_index_iterator_plan(
   r_obj* indices,
   r_obj* dimensions,
-  const int** v_v_indices
+  const int** v_v_indices,
+  r_ssize* v_index_strides
 ) {
   const int* v_dimensions = r_int_cbegin(dimensions);
   const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
 
   r_obj* const* v_indices = r_list_cbegin(indices);
-  const int n = (int) r_length(indices);
+  const r_ssize n = r_length(indices);
 
-  r_ssize v_v_strides[RRAY_MAX_DIMENSIONALITY][RRAY_MAX_DIMENSIONALITY];
-
-  for (int i = 0; i < n; ++i) {
+  for (r_ssize i = 0; i < n; ++i) {
     r_obj* index = v_indices[i];
     r_obj* index_dimensions = r_dim(index);
     const int* v_index_dimensions = r_int_cbegin(index_dimensions);
@@ -217,17 +215,17 @@ static struct rray_strided_iterator_n_plan rray_index_iterator_plan(
       rray_dimensionality_from_dimensions(index_dimensions);
 
     // Post broadcast strides for a single index
-    r_ssize v_index_strides[RRAY_MAX_DIMENSIONALITY];
+    r_ssize v_broadcast_strides[RRAY_MAX_DIMENSIONALITY];
 
     rray_fill_broadcast_strides_from_dimensions(
       v_index_dimensions,
       index_dimensionality,
       dimensionality,
-      v_index_strides
+      v_broadcast_strides
     );
 
     for (int axis = 0; axis < dimensionality; ++axis) {
-      v_v_strides[axis][i] = v_index_strides[axis];
+      v_index_strides[(r_ssize) axis * n + i] = v_broadcast_strides[axis];
     }
 
     v_v_indices[i] = r_int_cbegin(index);
@@ -236,7 +234,7 @@ static struct rray_strided_iterator_n_plan rray_index_iterator_plan(
   return rray_strided_iterator_n_plan(
     v_dimensions,
     dimensionality,
-    v_v_strides,
+    v_index_strides,
     n
   );
 }
@@ -249,7 +247,7 @@ static inline r_ssize rray_index_location(
 ) {
   r_ssize out = 0;
 
-  for (int i = 0; i < plan->n; ++i) {
+  for (r_ssize i = 0; i < plan->n; ++i) {
     const int index = v_v_indices[i][v_index_locations[i]];
 
     if (index == r_globals.na_int) {

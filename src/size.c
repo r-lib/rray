@@ -2,7 +2,6 @@
 
 #include <stdio.h>
 
-#include "dimensionality.h"
 #include "utils.h"
 
 #include "decl/size-decl.h"
@@ -48,12 +47,6 @@ r_ssize rray_size_from_dimensions_checked(
   }
 
   return out;
-}
-
-void check_size_from_dimensions(r_obj* dimensions, struct r_lazy error_call) {
-  const int* v_dimensions = r_int_cbegin(dimensions);
-  const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
-  rray_size_from_dimensions_checked(v_dimensions, dimensionality, error_call);
 }
 
 static r_no_return void stop_size_too_large(

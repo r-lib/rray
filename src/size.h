@@ -15,6 +15,4 @@ r_ssize rray_size_from_dimensions_checked(
   struct r_lazy error_call
 );
 
-void check_size_from_dimensions(r_obj* dimensions, struct r_lazy error_call);
-
 #endif
