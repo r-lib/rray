@@ -14,6 +14,7 @@ struct rray_args {
   struct rray_arg* empty;
   struct rray_arg* x;
   struct rray_arg* y;
+  struct rray_arg* i;
   struct rray_arg* names;
   struct rray_arg* axis;
   struct rray_arg* dot_axis;
@@ -46,5 +47,7 @@ struct rray_arg* new_subscript_arg(
   r_ssize n,
   r_ssize* p_i
 );
+
+struct rray_arg new_column_arg(struct rray_arg* parent, r_ssize* p_j);
 
 #endif

@@ -4,6 +4,8 @@ struct rray_syms rray_syms;
 
 void rray_init_syms(r_obj* ns) {
   rray_syms.to = r_sym("to");
+  rray_syms.i = r_sym("i");
+  rray_syms.n = r_sym("n");
   rray_syms.arg = r_sym("arg");
   rray_syms.x_arg = r_sym("x_arg");
   rray_syms.y_arg = r_sym("y_arg");

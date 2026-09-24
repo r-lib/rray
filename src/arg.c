@@ -192,6 +192,25 @@ static r_ssize subscript_arg_fill(void* data, char* buf, r_ssize remaining) {
   return len;
 }
 
+struct rray_arg new_column_arg(struct rray_arg* parent, r_ssize* p_j) {
+  struct rray_arg out =
+    {.parent = parent, .fill = &column_arg_fill, .data = p_j};
+  return out;
+}
+
+static r_ssize column_arg_fill(void* data, char* buf, r_ssize remaining) {
+  const r_ssize j = *(r_ssize*) data;
+
+  const int len =
+    snprintf(buf, (size_t) remaining, "[, %" R_PRI_SSIZE "]", j + 1);
+
+  if (len >= remaining) {
+    return -1;
+  }
+
+  return len;
+}
+
 bool rray_arg_is_empty(struct rray_arg* arg) {
   if (arg == NULL) {
     return true;
@@ -217,6 +236,7 @@ void rray_init_args(r_obj* ns) {
   INIT_ARG2(empty, "");
   INIT_ARG(x);
   INIT_ARG(y);
+  INIT_ARG(i);
   INIT_ARG(names);
   INIT_ARG(axis);
   INIT_ARG2(dot_axis, ".axis");

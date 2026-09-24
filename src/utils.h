@@ -64,4 +64,11 @@ r_obj* vec_cast(
   struct rray_arg* to_arg
 );
 
+r_obj* vec_as_location(
+  r_obj* i,
+  r_ssize n,
+  struct rray_arg* arg,
+  struct r_lazy call
+);
+
 #endif
