@@ -463,18 +463,17 @@ static inline void rray_strided_iterator_n_plan_point_init(
 
 #define RRAY_STRIDED_ITERATOR_NEXT_N(V_STARTS, V_POINT, PLAN)                  \
   for (int axis = 0; axis < PLAN->dimensionality; ++axis) {                    \
-    const r_ssize* v_axis_strides =                                            \
-      PLAN->v_strides + (r_ssize) axis * PLAN->n;                              \
+    const r_ssize* v_strides = PLAN->v_strides + (r_ssize) axis * PLAN->n;     \
     ++V_POINT[axis];                                                           \
     if (V_POINT[axis] < PLAN->v_dimensions[axis]) {                            \
       for (r_ssize i = 0; i < PLAN->n; ++i) {                                  \
-        V_STARTS[i] += v_axis_strides[i];                                      \
+        V_STARTS[i] += v_strides[i];                                           \
       }                                                                        \
       break;                                                                   \
     }                                                                          \
     V_POINT[axis] = 0;                                                         \
     for (r_ssize i = 0; i < PLAN->n; ++i) {                                    \
-      V_STARTS[i] -= (PLAN->v_dimensions[axis] - 1) * v_axis_strides[i];       \
+      V_STARTS[i] -= (PLAN->v_dimensions[axis] - 1) * v_strides[i];            \
     }                                                                          \
   }
 
