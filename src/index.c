@@ -243,6 +243,28 @@ r_obj* rray_as_index_array(
   const r_ssize size = r_length(x);
   const int* v_x = r_int_cbegin(x);
 
+  bool any_problems = false;
+
+  for (r_ssize i = 0; i < size; ++i) {
+    const int elt = v_x[i];
+    any_problems |= (elt != r_globals.na_int) & ((elt < 1) | (elt > dimension));
+  }
+
+  if (any_problems) {
+    stop_index_array_problem(v_x, size, dimension, arg, error_call);
+  }
+
+  FREE(1);
+  return x;
+}
+
+static r_no_return void stop_index_array_problem(
+  const int* v_x,
+  r_ssize size,
+  int dimension,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+) {
   for (r_ssize i = 0; i < size; ++i) {
     const int elt = v_x[i];
 
@@ -266,8 +288,7 @@ r_obj* rray_as_index_array(
     }
   }
 
-  FREE(1);
-  return x;
+  r_stop_unreachable();
 }
 
 static bool rray_any_missing_index(
