@@ -61,13 +61,13 @@ r_obj* rray_index(
   const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
 
   // Post broadcast strides for a single index
-  r_ssize v_index_strides[RRAY_MAX_DIMENSIONALITY * RRAY_MAX_DIMENSIONALITY];
+  r_ssize v_indices_strides[RRAY_MAX_DIMENSIONALITY * RRAY_MAX_DIMENSIONALITY];
   rray_fill_broadcast_strides_from_arrays(
     v_indices,
     indices_size,
     v_dimensions,
     dimensionality,
-    v_index_strides
+    v_indices_strides
   );
 
   const int* v_v_indices[RRAY_MAX_DIMENSIONALITY];
@@ -78,7 +78,7 @@ r_obj* rray_index(
   const struct rray_strided_iterator_n_plan plan = rray_strided_iterator_n_plan(
     v_dimensions,
     dimensionality,
-    v_index_strides,
+    v_indices_strides,
     indices_size
   );
 
