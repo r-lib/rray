@@ -28,6 +28,7 @@ void rray_fill_broadcast_strides_from_dimensions(
   }
 }
 
+// For use with strided iterator n plan
 void rray_fill_broadcast_strides_from_arrays(
   r_obj* const* v_froms,
   r_ssize froms_size,
