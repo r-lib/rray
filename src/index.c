@@ -53,10 +53,28 @@ r_obj* rray_index(
     v_x_strides
   );
 
-  const int* v_v_indices[RRAY_MAX_DIMENSIONALITY];
+  r_obj* const* v_indices = r_list_cbegin(indices);
+  const r_ssize indices_size = r_length(indices);
+  const int* v_dimensions = r_int_cbegin(dimensions);
+  const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
+
+  // Post broadcast strides for a single index
   r_ssize v_index_strides[RRAY_MAX_DIMENSIONALITY * RRAY_MAX_DIMENSIONALITY];
+  rray_fill_broadcast_strides_from_arrays(
+    v_indices,
+    indices_size,
+    v_dimensions,
+    dimensionality,
+    v_index_strides
+  );
+
+  const int* v_v_indices[RRAY_MAX_DIMENSIONALITY];
+  for (r_ssize i = 0; i < indices_size; ++i) {
+    v_v_indices[i] = r_int_cbegin(v_indices[i]);
+  }
+
   const struct rray_strided_iterator_n_plan plan =
-    rray_index_iterator_plan(indices, dimensions, v_v_indices, v_index_strides);
+    rray_index_iterator_plan(dimensions, v_index_strides, indices_size);
 
   r_obj* out;
 
@@ -196,46 +214,18 @@ r_obj* rray_as_index_array(
 }
 
 static struct rray_strided_iterator_n_plan rray_index_iterator_plan(
-  r_obj* indices,
   r_obj* dimensions,
-  const int** v_v_indices,
-  r_ssize* v_index_strides
+  const r_ssize* v_index_strides,
+  r_ssize indices_size
 ) {
   const int* v_dimensions = r_int_cbegin(dimensions);
   const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
-
-  r_obj* const* v_indices = r_list_cbegin(indices);
-  const r_ssize n = r_length(indices);
-
-  for (r_ssize i = 0; i < n; ++i) {
-    r_obj* index = v_indices[i];
-    r_obj* index_dimensions = r_dim(index);
-    const int* v_index_dimensions = r_int_cbegin(index_dimensions);
-    const int index_dimensionality =
-      rray_dimensionality_from_dimensions(index_dimensions);
-
-    // Post broadcast strides for a single index
-    r_ssize v_broadcast_strides[RRAY_MAX_DIMENSIONALITY];
-
-    rray_fill_broadcast_strides_from_dimensions(
-      v_index_dimensions,
-      index_dimensionality,
-      dimensionality,
-      v_broadcast_strides
-    );
-
-    for (int axis = 0; axis < dimensionality; ++axis) {
-      v_index_strides[(r_ssize) axis * n + i] = v_broadcast_strides[axis];
-    }
-
-    v_v_indices[i] = r_int_cbegin(index);
-  }
 
   return rray_strided_iterator_n_plan(
     v_dimensions,
     dimensionality,
     v_index_strides,
-    n
+    indices_size
   );
 }
 

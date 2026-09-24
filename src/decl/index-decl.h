@@ -7,10 +7,9 @@ static r_obj* rray_as_index_arrays(
 );
 
 static struct rray_strided_iterator_n_plan rray_index_iterator_plan(
-  r_obj* indices,
   r_obj* dimensions,
-  const int** v_v_indices,
-  r_ssize* v_index_strides
+  const r_ssize* v_index_strides,
+  r_ssize indices_size
 );
 
 static inline r_ssize rray_index_location(
