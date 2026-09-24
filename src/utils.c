@@ -194,40 +194,10 @@ r_obj* vec_cast(
   return out;
 }
 
-r_obj* vec_as_location(
-  r_obj* i,
-  r_ssize n,
-  struct rray_arg* arg,
-  struct r_lazy call
-) {
-  r_obj* n_obj = KEEP(r_len(n));
-  r_obj* arg_chr = KEEP(rray_arg(arg));
-  r_obj* call_obj = KEEP(r_lazy_eval(call));
-
-  r_obj* mask = KEEP(r_alloc_environment(4, r_envs.global));
-
-  r_env_bind(mask, rray_syms.i, i);
-  r_env_bind(mask, rray_syms.n, n_obj);
-  r_env_bind(mask, rray_syms.arg, arg_chr);
-  r_env_bind(mask, rray_syms.call, call_obj);
-
-  r_obj* out = r_eval(vec_as_location_call, mask);
-
-  FREE(4);
-  return out;
-}
-
 r_obj* vec_cast_call = NULL;
-r_obj* vec_as_location_call = NULL;
 
 void rray_init_utils(r_obj* ns) {
   vec_cast_call =
     r_parse("vctrs::vec_cast(x, to, x_arg = x_arg, to_arg = to_arg)");
   r_preserve(vec_cast_call);
-
-  vec_as_location_call = r_parse(
-    "vctrs::vec_as_location(i, n, missing = \"propagate\", "
-    "arg = arg, call = call)"
-  );
-  r_preserve(vec_as_location_call);
 }

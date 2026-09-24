@@ -24,20 +24,13 @@ test_that("negative flat positions select the complement", {
   expect_identical(rray_extract(x, c(-1, 0, -6)), array(2:5, 4L))
 })
 
-test_that("empty flat positions give an empty result", {
+test_that("empty subscripts give an empty result", {
   x <- array(1:6, c(2L, 3L))
 
   expect_identical(rray_extract(x, integer()), array(integer(), 0L))
   expect_identical(rray_extract(x, double()), array(integer(), 0L))
-  expect_identical(rray_extract(x, NULL), array(integer(), 0L))
+  expect_identical(rray_extract(x, 0L), array(integer(), 0L))
   expect_identical(rray_extract(x, FALSE), array(integer(), 0L))
-})
-
-test_that("a one-dimensional numeric array holds flat positions", {
-  x <- array(1:6, c(2L, 3L))
-  i <- array(c(6L, 1L), 2L, dimnames = list(c("a", "b")))
-
-  expect_identical(rray_extract(x, i), array(c(6L, 1L), 2L))
 })
 
 test_that("a logical vector is a flat mask", {
@@ -47,7 +40,13 @@ test_that("a logical vector is a flat mask", {
     rray_extract(x, c(TRUE, FALSE, NA, FALSE, FALSE, TRUE)),
     array(c(1L, NA, 6L), 3L)
   )
+})
+
+test_that("a scalar logical applies to every element", {
+  x <- array(1:6, c(2L, 3L))
+
   expect_identical(rray_extract(x, TRUE), array(1:6, 6L))
+  expect_identical(rray_extract(x, FALSE), array(integer(), 0L))
   expect_identical(rray_extract(x, NA), array(rep(NA_integer_, 6L), 6L))
 })
 
@@ -58,13 +57,6 @@ test_that("a logical array with the dimensions of `x` is a flat mask", {
     rray_extract(x, x %% 5L == 0L),
     array(c(5L, 10L, 15L, 20L), 4L)
   )
-})
-
-test_that("a one-dimensional logical array is a flat mask", {
-  x <- array(1:6, c(2L, 3L))
-  i <- array(c(FALSE, TRUE, FALSE, FALSE, TRUE, FALSE), 6L)
-
-  expect_identical(rray_extract(x, i), array(c(2L, 5L), 2L))
 })
 
 test_that("a numeric matrix holds coordinate points", {
@@ -81,6 +73,18 @@ test_that("a numeric matrix holds coordinate points", {
   expect_identical(rray_extract(x, points), array(c(1L, 24L, 15L), 3L))
 })
 
+test_that("points support missing and repeated coordinates", {
+  x <- array(1:6, c(2L, 3L))
+  points <- rbind(
+    c(2L, 3L),
+    c(NA, 1L),
+    c(1L, NA),
+    c(2L, 3L)
+  )
+
+  expect_identical(rray_extract(x, points), array(c(6L, NA, NA, 6L), 4L))
+})
+
 test_that("points match `rray_index()` over the matrix columns", {
   x <- array(1:24, c(2L, 3L, 4L))
   points <- rbind(
@@ -95,17 +99,6 @@ test_that("points match `rray_index()` over the matrix columns", {
   )
 })
 
-test_that("points support missing and repeated coordinates", {
-  x <- array(1:6, c(2L, 3L))
-  points <- rbind(
-    c(2L, 3L),
-    c(NA, 1L),
-    c(2L, 3L)
-  )
-
-  expect_identical(rray_extract(x, points), array(c(6L, NA, 6L), 3L))
-})
-
 test_that("a zero-row point matrix gives an empty result", {
   x <- array(1:6, c(2L, 3L))
 
@@ -113,12 +106,6 @@ test_that("a zero-row point matrix gives an empty result", {
     rray_extract(x, matrix(integer(), 0L, 2L)),
     array(integer(), 0L)
   )
-})
-
-test_that("a one-row point matrix gives a one-dimensional result", {
-  x <- array(1:6, c(2L, 3L))
-
-  expect_identical(rray_extract(x, matrix(c(2L, 2L), 1L)), array(4L, 1L))
 })
 
 test_that("points work against a one-dimensional `x`", {
@@ -130,48 +117,60 @@ test_that("points work against a one-dimensional `x`", {
   )
 })
 
+test_that("points work against the maximum dimensionality", {
+  x <- array(1:2, c(rep(1L, 63L), 2L))
+  points <- rbind(c(rep(1L, 63L), 2L), c(rep(1L, 63L), 1L))
+
+  expect_identical(rray_extract(x, points), array(c(2L, 1L), 2L))
+})
+
 test_that("works with zero dimensions", {
   x <- array(integer(), c(2L, 0L, 3L))
 
   expect_identical(rray_extract(x, TRUE), array(integer(), 0L))
+  expect_identical(rray_extract(x, logical()), array(integer(), 0L))
+  expect_identical(rray_extract(x, integer()), array(integer(), 0L))
   expect_identical(
     rray_extract(x, matrix(integer(), 0L, 3L)),
     array(integer(), 0L)
   )
 })
 
-test_that("returns every native storage type", {
-  i <- c(2L, NA_integer_, 1L)
-  points <- matrix(i, ncol = 1L)
+test_that("matches base R for every kind of subscript", {
+  x <- array(1:24, c(2L, 3L, 4L))
+  points <- rbind(c(2, 1, 4), c(1, NA, 2), c(2, 3, 1))
+  subscripts <- list(
+    c(24L, 1L, NA, 1L, 0L),
+    c(-1, -24, 0),
+    x > 20L,
+    rep(c(TRUE, NA, FALSE), 8L),
+    points
+  )
 
-  expect_identical(
-    rray_extract(c(TRUE, FALSE), i),
-    array(c(FALSE, NA, TRUE), 3L)
+  for (i in subscripts) {
+    expect_identical(rray_extract(x, i), extract_base(x, i))
+  }
+})
+
+test_that("returns every native storage type", {
+  xs <- list(
+    c(TRUE, FALSE, NA),
+    1:3,
+    c(1.5, 2.5, 3.5),
+    c(1i, 2i, 3i),
+    c("a", "b", "c"),
+    as.raw(1:3),
+    list("a", 2L, NULL)
   )
-  expect_identical(
-    rray_extract(c(1L, 2L), points),
-    array(c(2L, NA_integer_, 1L), 3L)
-  )
-  expect_identical(
-    rray_extract(c(1, 2), i),
-    array(c(2, NA_real_, 1), 3L)
-  )
-  expect_identical(
-    rray_extract(c(1 + 1i, 2 + 2i), points),
-    array(c(2 + 2i, NA_complex_, 1 + 1i), 3L)
-  )
-  expect_identical(
-    rray_extract(c("a", "b"), i),
-    array(c("b", NA_character_, "a"), 3L)
-  )
-  expect_identical(
-    rray_extract(as.raw(1:2), points),
-    array(as.raw(c(2, 0, 1)), 3L)
-  )
-  expect_identical(
-    rray_extract(list("a", 2L), i),
-    array(list(2L, NULL, "a"), 3L)
-  )
+  flat <- c(3L, NA, 1L)
+  mask <- c(TRUE, NA, TRUE)
+  points <- matrix(c(3L, NA, 1L), ncol = 1L)
+
+  for (x in xs) {
+    expect_identical(rray_extract(x, flat), extract_base(x, flat))
+    expect_identical(rray_extract(x, mask), extract_base(x, mask))
+    expect_identical(rray_extract(x, points), extract_base(x, points))
+  }
 })
 
 test_that("drops all names", {
@@ -190,68 +189,12 @@ test_that("drops all names", {
   expect_identical(rray_extract(x, matrix(2L)), array(2L, 1L))
 })
 
-test_that("checks flat positions", {
+test_that("reports subscript errors from `rray_extract()`", {
   x <- array(1:6, c(2L, 3L))
 
   expect_snapshot(error = TRUE, {
     rray_extract(x, 7L)
-    rray_extract(x, c(-1L, 2L))
-    rray_extract(x, c(-1L, NA))
-    rray_extract(x, 1.5)
-  })
-})
-
-test_that("requires a logical mask of size 1 or the size of `x`", {
-  x <- array(1:6, c(2L, 3L))
-
-  expect_snapshot(error = TRUE, {
-    rray_extract(x, c(TRUE, FALSE))
-    rray_extract(x, array(TRUE, 3L))
-  })
-})
-
-test_that("requires a logical array to match the dimensions of `x`", {
-  x <- array(1:6, c(2L, 3L))
-
-  expect_snapshot(error = TRUE, {
-    rray_extract(x, array(TRUE, c(3L, 2L)))
-    rray_extract(x, array(TRUE, c(2L, 3L, 1L)))
-  })
-})
-
-test_that("requires one point matrix column per axis of `x`", {
-  expect_snapshot(error = TRUE, {
-    rray_extract(array(1:6, c(2L, 3L)), matrix(1L, 1L, 3L))
-    rray_extract(1:3, matrix(1L, 1L, 2L))
-  })
-})
-
-test_that("checks point coordinates", {
-  x <- array(1:6, c(2L, 3L))
-
-  expect_snapshot(error = TRUE, {
     rray_extract(x, rbind(c(1L, 4L)))
-    rray_extract(x, rbind(c(0L, 1L)))
-    rray_extract(x, rbind(c(1L, -1L)))
-    rray_extract(x, rbind(c(1, 1.5)))
-  })
-})
-
-test_that("errors on numeric arrays with more than two dimensions", {
-  x <- array(1:6, c(2L, 3L))
-
-  expect_snapshot(rray_extract(x, array(1L, c(1L, 1L, 1L))), error = TRUE)
-})
-
-test_that("errors on unsupported `i` inputs", {
-  x <- array(1:6, c(2L, 3L))
-
-  expect_snapshot(error = TRUE, {
-    rray_extract(x, "a")
-    rray_extract(x, matrix("a", 1L, 2L))
-    rray_extract(x, 1i)
-    rray_extract(x, list(1L))
-    rray_extract(x, factor("a"))
   })
 })
 

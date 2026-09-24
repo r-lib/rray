@@ -48,6 +48,4 @@ struct rray_arg* new_subscript_arg(
   r_ssize* p_i
 );
 
-struct rray_arg new_column_arg(struct rray_arg* parent, r_ssize* p_j);
-
 #endif
