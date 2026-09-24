@@ -53,11 +53,11 @@ r_obj* rray_index(
   r_obj* dimensions =
     KEEP(rray_dimensions_common(indices, r_null, indices_arg, error_call));
 
-  r_obj* const* v_indices = r_list_cbegin(indices);
-  const r_ssize indices_size = r_length(indices);
-
   const int* v_dimensions = r_int_cbegin(dimensions);
   const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
+
+  r_obj* const* v_indices = r_list_cbegin(indices);
+  const r_ssize indices_size = r_length(indices);
 
   // `...` can take up to `RRAY_MAX_DIMENSIONALITY` inputs, bounded by the
   // dimensionality of `x`. Each input can have dimensionality up to
