@@ -223,6 +223,8 @@ r_obj* rray_as_index_array(
   return x;
 }
 
+// Builds a flat location into `x` from the current multidimensional point
+// represented by the indices.
 static inline r_ssize rray_index_location(
   const r_ssize* v_x_strides,
   const int* const* v_v_index,
