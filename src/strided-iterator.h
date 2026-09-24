@@ -468,6 +468,9 @@ static inline void rray_strided_iterator_n_plan_point_init(
   r_memset(v_point, 0, sizeof(r_ssize) * (size_t) plan->dimensionality);
 }
 
+// Templated on `N` so callers can provide literals for common cases of 1, 2, 3,
+// or 4 inputs, which for `rray_index()` corresponds to up-to-4D. This allows
+// the compiler to unroll loops for these specific common cases.
 #define RRAY_STRIDED_ITERATOR_NEXT_N(V_STARTS, V_POINT, PLAN, N)               \
   for (int axis = 1; axis < PLAN->dimensionality; ++axis) {                    \
     const r_ssize* v_strides = PLAN->v_strides + axis * N;                     \
