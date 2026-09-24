@@ -87,25 +87,25 @@ r_obj* rray_index(
 
   switch (r_typeof(x)) {
   case R_TYPE_logical:
-    out = rray_index_lgl(x, v_x_strides, v_v_index, &plan);
+    out = rray_index_lgl(x, v_x_strides, v_v_index, indices_size, &plan);
     break;
   case R_TYPE_integer:
-    out = rray_index_int(x, v_x_strides, v_v_index, &plan);
+    out = rray_index_int(x, v_x_strides, v_v_index, indices_size, &plan);
     break;
   case R_TYPE_double:
-    out = rray_index_dbl(x, v_x_strides, v_v_index, &plan);
+    out = rray_index_dbl(x, v_x_strides, v_v_index, indices_size, &plan);
     break;
   case R_TYPE_complex:
-    out = rray_index_cpl(x, v_x_strides, v_v_index, &plan);
+    out = rray_index_cpl(x, v_x_strides, v_v_index, indices_size, &plan);
     break;
   case R_TYPE_raw:
-    out = rray_index_raw(x, v_x_strides, v_v_index, &plan);
+    out = rray_index_raw(x, v_x_strides, v_v_index, indices_size, &plan);
     break;
   case R_TYPE_character:
-    out = rray_index_chr(x, v_x_strides, v_v_index, &plan);
+    out = rray_index_chr(x, v_x_strides, v_v_index, indices_size, &plan);
     break;
   case R_TYPE_list:
-    out = rray_index_list(x, v_x_strides, v_v_index, &plan);
+    out = rray_index_list(x, v_x_strides, v_v_index, indices_size, &plan);
     break;
   default:
     r_stop_unreachable();
@@ -247,7 +247,6 @@ static inline r_ssize rray_index_location(
 
 #define RRAY_INDEX_ATOMIC(RTYPE, CTYPE, CONST_DEREF, DEREF, MISSING)           \
   const r_ssize size = rray_strided_iterator_n_plan_size(plan);                \
-  const r_ssize indices_size = plan->n;                                        \
                                                                                \
   r_obj* out = KEEP(r_alloc_vector(RTYPE, size));                              \
   CTYPE* v_out = DEREF(out);                                                   \
@@ -275,7 +274,6 @@ static inline r_ssize rray_index_location(
 
 #define RRAY_INDEX_BARRIER(RTYPE, CONST_DEREF, POKE, MISSING)                  \
   const r_ssize size = rray_strided_iterator_n_plan_size(plan);                \
-  const r_ssize indices_size = plan->n;                                        \
                                                                                \
   r_obj* out = KEEP(r_alloc_vector(RTYPE, size));                              \
                                                                                \
@@ -304,6 +302,7 @@ static r_obj* rray_index_lgl(
   r_obj* x,
   const r_ssize* v_x_strides,
   const int* const* v_v_index,
+  r_ssize indices_size,
   const struct rray_strided_iterator_n_plan* plan
 ) {
   RRAY_INDEX_ATOMIC(
@@ -319,6 +318,7 @@ static r_obj* rray_index_int(
   r_obj* x,
   const r_ssize* v_x_strides,
   const int* const* v_v_index,
+  r_ssize indices_size,
   const struct rray_strided_iterator_n_plan* plan
 ) {
   RRAY_INDEX_ATOMIC(
@@ -334,6 +334,7 @@ static r_obj* rray_index_dbl(
   r_obj* x,
   const r_ssize* v_x_strides,
   const int* const* v_v_index,
+  r_ssize indices_size,
   const struct rray_strided_iterator_n_plan* plan
 ) {
   RRAY_INDEX_ATOMIC(
@@ -349,6 +350,7 @@ static r_obj* rray_index_cpl(
   r_obj* x,
   const r_ssize* v_x_strides,
   const int* const* v_v_index,
+  r_ssize indices_size,
   const struct rray_strided_iterator_n_plan* plan
 ) {
   RRAY_INDEX_ATOMIC(
@@ -364,6 +366,7 @@ static r_obj* rray_index_raw(
   r_obj* x,
   const r_ssize* v_x_strides,
   const int* const* v_v_index,
+  r_ssize indices_size,
   const struct rray_strided_iterator_n_plan* plan
 ) {
   RRAY_INDEX_ATOMIC(R_TYPE_raw, Rbyte, r_raw_cbegin, r_raw_begin, 0);
@@ -373,6 +376,7 @@ static r_obj* rray_index_chr(
   r_obj* x,
   const r_ssize* v_x_strides,
   const int* const* v_v_index,
+  r_ssize indices_size,
   const struct rray_strided_iterator_n_plan* plan
 ) {
   RRAY_INDEX_BARRIER(
@@ -387,6 +391,7 @@ static r_obj* rray_index_list(
   r_obj* x,
   const r_ssize* v_x_strides,
   const int* const* v_v_index,
+  r_ssize indices_size,
   const struct rray_strided_iterator_n_plan* plan
 ) {
   RRAY_INDEX_BARRIER(R_TYPE_list, r_list_cbegin, r_list_poke, r_null);
