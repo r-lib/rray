@@ -60,7 +60,9 @@ r_obj* rray_index(
   const int* v_dimensions = r_int_cbegin(dimensions);
   const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
 
-  // Post broadcast strides for a single index
+  // `...` can take up to `RRAY_MAX_DIMENSIONALITY` inputs, bounded by the
+  // dimensionality of `x`. Each input can have dimensionality up to
+  // `RRAY_MAX_DIMENSIONALITY`, so the maximum size is known.
   r_ssize v_indices_strides[RRAY_MAX_DIMENSIONALITY * RRAY_MAX_DIMENSIONALITY];
   rray_fill_broadcast_strides_from_arrays(
     v_indices,
