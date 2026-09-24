@@ -329,7 +329,7 @@ r_obj* rray_as_index_array(
         i,                                                                     \
         INDICES_SIZE                                                           \
       );                                                                       \
-      POKE(out, run_start + i, location == -1 ? (MISSING) : v_x[location]);    \
+      POKE(out, run_start + i, location == -1 ? MISSING : v_x[location]);      \
     }                                                                          \
                                                                                \
     run_start += run_size;                                                     \
