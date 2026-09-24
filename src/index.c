@@ -277,7 +277,7 @@ static inline r_ssize rray_index_location(
     const r_ssize location =                                                   \
       rray_index_location(v_x_strides, v_v_indices, plan, v_index_locations);  \
     v_out[i] = location == -1 ? MISSING : v_x[location];                       \
-    RRAY_STRIDED_ITERATOR_NEXTN(v_index_locations, v_point, plan);             \
+    RRAY_STRIDED_ITERATOR_NEXT_N(v_index_locations, v_point, plan);            \
   }                                                                            \
                                                                                \
   FREE(1);                                                                     \
@@ -299,7 +299,7 @@ static inline r_ssize rray_index_location(
     const r_ssize location =                                                   \
       rray_index_location(v_x_strides, v_v_indices, plan, v_index_locations);  \
     POKE(out, i, location == -1 ? MISSING : v_x[location]);                    \
-    RRAY_STRIDED_ITERATOR_NEXTN(v_index_locations, v_point, plan);             \
+    RRAY_STRIDED_ITERATOR_NEXT_N(v_index_locations, v_point, plan);            \
   }                                                                            \
                                                                                \
   FREE(1);                                                                     \

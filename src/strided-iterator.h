@@ -461,7 +461,7 @@ static inline void rray_strided_iterator_n_plan_point_init(
   r_memset(v_point, 0, sizeof(r_ssize) * (size_t) plan->dimensionality);
 }
 
-#define RRAY_STRIDED_ITERATOR_NEXTN(V_STARTS, V_POINT, PLAN)                   \
+#define RRAY_STRIDED_ITERATOR_NEXT_N(V_STARTS, V_POINT, PLAN)                  \
   for (int axis = 0; axis < PLAN->dimensionality; ++axis) {                    \
     const r_ssize* v_axis_strides =                                            \
       PLAN->v_strides + (r_ssize) axis * PLAN->n;                              \
