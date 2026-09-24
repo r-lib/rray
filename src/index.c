@@ -72,6 +72,8 @@ r_obj* rray_index(
     v_indices_strides
   );
 
+  // `...` can have up to `RRAY_MAX_DIMENSIONALITY` inputs, bounded by the
+  // dimensionality of `x`.
   const int* v_v_index[RRAY_MAX_DIMENSIONALITY];
   for (r_ssize i = 0; i < indices_size; ++i) {
     v_v_index[i] = r_int_cbegin(v_indices[i]);
