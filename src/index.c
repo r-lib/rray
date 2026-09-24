@@ -70,9 +70,9 @@ r_obj* rray_index(
     v_indices_strides
   );
 
-  const int* v_v_indices[RRAY_MAX_DIMENSIONALITY];
+  const int* v_v_index[RRAY_MAX_DIMENSIONALITY];
   for (r_ssize i = 0; i < indices_size; ++i) {
-    v_v_indices[i] = r_int_cbegin(v_indices[i]);
+    v_v_index[i] = r_int_cbegin(v_indices[i]);
   }
 
   const struct rray_strided_iterator_n_plan plan = rray_strided_iterator_n_plan(
@@ -86,25 +86,25 @@ r_obj* rray_index(
 
   switch (r_typeof(x)) {
   case R_TYPE_logical:
-    out = rray_index_lgl(x, v_x_strides, v_v_indices, &plan);
+    out = rray_index_lgl(x, v_x_strides, v_v_index, &plan);
     break;
   case R_TYPE_integer:
-    out = rray_index_int(x, v_x_strides, v_v_indices, &plan);
+    out = rray_index_int(x, v_x_strides, v_v_index, &plan);
     break;
   case R_TYPE_double:
-    out = rray_index_dbl(x, v_x_strides, v_v_indices, &plan);
+    out = rray_index_dbl(x, v_x_strides, v_v_index, &plan);
     break;
   case R_TYPE_complex:
-    out = rray_index_cpl(x, v_x_strides, v_v_indices, &plan);
+    out = rray_index_cpl(x, v_x_strides, v_v_index, &plan);
     break;
   case R_TYPE_raw:
-    out = rray_index_raw(x, v_x_strides, v_v_indices, &plan);
+    out = rray_index_raw(x, v_x_strides, v_v_index, &plan);
     break;
   case R_TYPE_character:
-    out = rray_index_chr(x, v_x_strides, v_v_indices, &plan);
+    out = rray_index_chr(x, v_x_strides, v_v_index, &plan);
     break;
   case R_TYPE_list:
-    out = rray_index_list(x, v_x_strides, v_v_indices, &plan);
+    out = rray_index_list(x, v_x_strides, v_v_index, &plan);
     break;
   default:
     r_stop_unreachable();
@@ -221,14 +221,14 @@ r_obj* rray_as_index_array(
 
 static inline r_ssize rray_index_location(
   const r_ssize* v_x_strides,
-  const int* const* v_v_indices,
+  const int* const* v_v_index,
   r_ssize indices_size,
   const r_ssize* v_index_locations
 ) {
   r_ssize out = 0;
 
   for (r_ssize i = 0; i < indices_size; ++i) {
-    const int index = v_v_indices[i][v_index_locations[i]];
+    const int index = v_v_index[i][v_index_locations[i]];
 
     if (index == r_globals.na_int) {
       return -1;
@@ -257,7 +257,7 @@ static inline r_ssize rray_index_location(
   for (r_ssize i = 0; i < size; ++i) {                                         \
     const r_ssize location = rray_index_location(                              \
       v_x_strides,                                                             \
-      v_v_indices,                                                             \
+      v_v_index,                                                               \
       indices_size,                                                            \
       v_index_locations                                                        \
     );                                                                         \
@@ -284,7 +284,7 @@ static inline r_ssize rray_index_location(
   for (r_ssize i = 0; i < size; ++i) {                                         \
     const r_ssize location = rray_index_location(                              \
       v_x_strides,                                                             \
-      v_v_indices,                                                             \
+      v_v_index,                                                               \
       indices_size,                                                            \
       v_index_locations                                                        \
     );                                                                         \
@@ -298,7 +298,7 @@ static inline r_ssize rray_index_location(
 static r_obj* rray_index_lgl(
   r_obj* x,
   const r_ssize* v_x_strides,
-  const int* const* v_v_indices,
+  const int* const* v_v_index,
   const struct rray_strided_iterator_n_plan* plan
 ) {
   RRAY_INDEX_ATOMIC(
@@ -313,7 +313,7 @@ static r_obj* rray_index_lgl(
 static r_obj* rray_index_int(
   r_obj* x,
   const r_ssize* v_x_strides,
-  const int* const* v_v_indices,
+  const int* const* v_v_index,
   const struct rray_strided_iterator_n_plan* plan
 ) {
   RRAY_INDEX_ATOMIC(
@@ -328,7 +328,7 @@ static r_obj* rray_index_int(
 static r_obj* rray_index_dbl(
   r_obj* x,
   const r_ssize* v_x_strides,
-  const int* const* v_v_indices,
+  const int* const* v_v_index,
   const struct rray_strided_iterator_n_plan* plan
 ) {
   RRAY_INDEX_ATOMIC(
@@ -343,7 +343,7 @@ static r_obj* rray_index_dbl(
 static r_obj* rray_index_cpl(
   r_obj* x,
   const r_ssize* v_x_strides,
-  const int* const* v_v_indices,
+  const int* const* v_v_index,
   const struct rray_strided_iterator_n_plan* plan
 ) {
   RRAY_INDEX_ATOMIC(
@@ -358,7 +358,7 @@ static r_obj* rray_index_cpl(
 static r_obj* rray_index_raw(
   r_obj* x,
   const r_ssize* v_x_strides,
-  const int* const* v_v_indices,
+  const int* const* v_v_index,
   const struct rray_strided_iterator_n_plan* plan
 ) {
   RRAY_INDEX_ATOMIC(R_TYPE_raw, Rbyte, r_raw_cbegin, r_raw_begin, 0);
@@ -367,7 +367,7 @@ static r_obj* rray_index_raw(
 static r_obj* rray_index_chr(
   r_obj* x,
   const r_ssize* v_x_strides,
-  const int* const* v_v_indices,
+  const int* const* v_v_index,
   const struct rray_strided_iterator_n_plan* plan
 ) {
   RRAY_INDEX_BARRIER(
@@ -381,7 +381,7 @@ static r_obj* rray_index_chr(
 static r_obj* rray_index_list(
   r_obj* x,
   const r_ssize* v_x_strides,
-  const int* const* v_v_indices,
+  const int* const* v_v_index,
   const struct rray_strided_iterator_n_plan* plan
 ) {
   RRAY_INDEX_BARRIER(R_TYPE_list, r_list_cbegin, r_list_poke, r_null);
