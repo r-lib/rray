@@ -228,7 +228,9 @@ static inline r_ssize rray_index_location(
   r_ssize out = 0;
 
   for (r_ssize i = 0; i < indices_size; ++i) {
-    const int index = v_v_index[i][v_index_locations[i]];
+    const int* v_index = v_v_index[i];
+    const r_ssize index_location = v_index_locations[i];
+    const int index = v_index[index_location];
 
     if (index == r_globals.na_int) {
       return -1;
