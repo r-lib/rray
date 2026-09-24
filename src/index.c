@@ -46,6 +46,9 @@ r_obj* rray_index(
   r_obj* dimensions =
     KEEP(rray_dimensions_common(indices, r_null, indices_arg, error_call));
 
+  r_obj* const* v_indices = r_list_cbegin(indices);
+  const r_ssize indices_size = r_length(indices);
+
   r_ssize v_x_strides[RRAY_MAX_DIMENSIONALITY];
   rray_fill_strides_from_dimensions(
     v_x_dimensions,
@@ -53,8 +56,6 @@ r_obj* rray_index(
     v_x_strides
   );
 
-  r_obj* const* v_indices = r_list_cbegin(indices);
-  const r_ssize indices_size = r_length(indices);
   const int* v_dimensions = r_int_cbegin(dimensions);
   const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
 
