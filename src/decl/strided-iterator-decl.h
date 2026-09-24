@@ -14,8 +14,8 @@ static inline int rray__strided_iterator_axes_coalesce2(
 static inline int rray__strided_iterator_axes_coalesce_n(
   r_ssize* v_dimensions,
   r_ssize* v_strides,
-  int dimensionality,
-  r_ssize n
+  r_ssize n,
+  int dimensionality
 );
 
 static inline bool rray__strided_iterator_axes_coalescible(
