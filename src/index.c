@@ -245,6 +245,8 @@ r_obj* rray_as_index_array(
 
   bool any_problems = false;
 
+  // It's 50% faster to do a branchless check for any problems, then fall back
+  // to the slow loop if we actually need to locate and report the problem
   for (r_ssize i = 0; i < size; ++i) {
     const int elt = v_x[i];
     any_problems |= (elt != r_globals.na_int) & ((elt < 1) | (elt > dimension));
