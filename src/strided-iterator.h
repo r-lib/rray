@@ -411,7 +411,7 @@ struct rray_strided_iterator_n_plan {
 static inline struct rray_strided_iterator_n_plan rray_strided_iterator_n_plan(
   const int* v_dimensions,
   int dimensionality,
-  const r_ssize* v_strides,
+  r_ssize* v_strides,
   r_ssize n
 ) {
   check_dimensionality(dimensionality);
@@ -432,7 +432,13 @@ static inline struct rray_strided_iterator_n_plan rray_strided_iterator_n_plan(
     plan.v_dimensions[axis] = (r_ssize) v_dimensions[axis];
   }
 
-  plan.dimensionality = dimensionality;
+  plan.dimensionality = rray__strided_iterator_axes_coalesce_n(
+    plan.v_dimensions,
+    v_strides,
+    n,
+    dimensionality
+  );
+
   plan.v_strides = v_strides;
   plan.n = n;
 
@@ -462,22 +468,24 @@ static inline void rray_strided_iterator_n_plan_point_init(
   r_memset(v_point, 0, sizeof(r_ssize) * (size_t) plan->dimensionality);
 }
 
-#define RRAY_STRIDED_ITERATOR_NEXT_N(V_STARTS, V_POINT, PLAN)                  \
-  const r_ssize* v_strides = PLAN->v_strides;                                  \
-  for (int axis = 0; axis < PLAN->dimensionality; ++axis) {                    \
+// Templated on `N` so callers can provide literals for common cases of 1, 2, 3,
+// or 4 inputs, which for `rray_index()` corresponds to up-to-4D. This allows
+// the compiler to unroll loops for these specific common cases.
+#define RRAY_STRIDED_ITERATOR_NEXT_N(V_STARTS, V_POINT, PLAN, N)               \
+  for (int axis = 1; axis < PLAN->dimensionality; ++axis) {                    \
+    const r_ssize* v_strides = PLAN->v_strides + axis * N;                     \
     const r_ssize dimension = PLAN->v_dimensions[axis];                        \
     ++V_POINT[axis];                                                           \
     if (V_POINT[axis] < dimension) {                                           \
-      for (r_ssize i = 0; i < PLAN->n; ++i) {                                  \
+      for (r_ssize i = 0; i < N; ++i) {                                        \
         V_STARTS[i] += v_strides[i];                                           \
       }                                                                        \
       break;                                                                   \
     }                                                                          \
     V_POINT[axis] = 0;                                                         \
-    for (r_ssize i = 0; i < PLAN->n; ++i) {                                    \
+    for (r_ssize i = 0; i < N; ++i) {                                          \
       V_STARTS[i] -= (dimension - 1) * v_strides[i];                           \
     }                                                                          \
-    v_strides += PLAN->n;                                                      \
   }
 
 // --------------------------------------------------------------------------
@@ -557,6 +565,54 @@ static inline int rray__strided_iterator_axes_coalesce2(
       v_dimensions[out_axis] = right_dimension;
       v_strides1[out_axis] = right_stride1;
       v_strides2[out_axis] = right_stride2;
+    }
+  }
+
+  return out_axis + 1;
+}
+
+static inline int rray__strided_iterator_axes_coalesce_n(
+  r_ssize* v_dimensions,
+  r_ssize* v_strides,
+  r_ssize n,
+  int dimensionality
+) {
+  int out_axis = 0;
+
+  for (int axis = 1; axis < dimensionality; ++axis) {
+    const r_ssize left_dimension = v_dimensions[out_axis];
+    r_ssize* v_left_strides = v_strides + out_axis * n;
+    const r_ssize right_dimension = v_dimensions[axis];
+    const r_ssize* v_right_strides = v_strides + axis * n;
+
+    bool coalescible = true;
+
+    for (r_ssize i = 0; i < n; ++i) {
+      if (!rray__strided_iterator_axes_coalescible(
+            left_dimension,
+            v_left_strides[i],
+            right_dimension,
+            v_right_strides[i]
+          )) {
+        coalescible = false;
+        break;
+      }
+    }
+
+    if (coalescible) {
+      if (left_dimension == 1) {
+        for (r_ssize i = 0; i < n; ++i) {
+          v_left_strides[i] = v_right_strides[i];
+        }
+      }
+      v_dimensions[out_axis] = left_dimension * right_dimension;
+    } else {
+      ++out_axis;
+      v_dimensions[out_axis] = right_dimension;
+      r_ssize* v_out_strides = v_strides + out_axis * n;
+      for (r_ssize i = 0; i < n; ++i) {
+        v_out_strides[i] = v_right_strides[i];
+      }
     }
   }
 
