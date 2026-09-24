@@ -1,3 +1,6 @@
+# TODO!: Rewrite these docs with better descriptions and worked examples when
+# back on a computer.
+
 #' Index an array by coordinates
 #'
 #' `rray_index()` selects values from `x` with one coordinate array for each
