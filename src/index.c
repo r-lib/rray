@@ -314,6 +314,56 @@ static bool rray_any_missing_index(
   return out;
 }
 
+// Builds a flat location into `x` from the current multidimensional point
+// represented by the indices.
+static inline r_ssize rray_index_location(
+  const r_ssize* v_x_strides,
+  const int* const* v_v_index,
+  const r_ssize* v_index_locations,
+  const r_ssize* v_index_run_strides,
+  r_ssize run_i,
+  r_ssize indices_size
+) {
+  r_ssize out = 0;
+
+  for (r_ssize i = 0; i < indices_size; ++i) {
+    const int* v_index = v_v_index[i];
+    const r_ssize index_location =
+      v_index_locations[i] + run_i * v_index_run_strides[i];
+    const int index = v_index[index_location];
+
+    out += (r_ssize) (index - 1) * v_x_strides[i];
+  }
+
+  return out;
+}
+
+static inline r_ssize rray_index_location_missing(
+  const r_ssize* v_x_strides,
+  const int* const* v_v_index,
+  const r_ssize* v_index_locations,
+  const r_ssize* v_index_run_strides,
+  r_ssize run_i,
+  r_ssize indices_size
+) {
+  r_ssize out = 0;
+
+  for (r_ssize i = 0; i < indices_size; ++i) {
+    const int* v_index = v_v_index[i];
+    const r_ssize index_location =
+      v_index_locations[i] + run_i * v_index_run_strides[i];
+    const int index = v_index[index_location];
+
+    if (index == r_globals.na_int) {
+      return -1;
+    }
+
+    out += (r_ssize) (index - 1) * v_x_strides[i];
+  }
+
+  return out;
+}
+
 #define RRAY_INDEX_LOOP(POKE, INDICES_SIZE)                                    \
   while (run_start != size) {                                                  \
     for (r_ssize i = 0; i < run_size; ++i) {                                   \
@@ -551,51 +601,3 @@ static r_obj* rray_index_list(
 #undef RRAY_INDEX_ATOMIC_POKE
 #undef RRAY_INDEX_ATOMIC
 #undef RRAY_INDEX_BARRIER
-
-static inline r_ssize rray_index_location(
-  const r_ssize* v_x_strides,
-  const int* const* v_v_index,
-  const r_ssize* v_index_locations,
-  const r_ssize* v_index_run_strides,
-  r_ssize run_i,
-  r_ssize indices_size
-) {
-  r_ssize out = 0;
-
-  for (r_ssize i = 0; i < indices_size; ++i) {
-    const int* v_index = v_v_index[i];
-    const r_ssize index_location =
-      v_index_locations[i] + run_i * v_index_run_strides[i];
-    const int index = v_index[index_location];
-
-    out += (r_ssize) (index - 1) * v_x_strides[i];
-  }
-
-  return out;
-}
-
-static inline r_ssize rray_index_location_missing(
-  const r_ssize* v_x_strides,
-  const int* const* v_v_index,
-  const r_ssize* v_index_locations,
-  const r_ssize* v_index_run_strides,
-  r_ssize run_i,
-  r_ssize indices_size
-) {
-  r_ssize out = 0;
-
-  for (r_ssize i = 0; i < indices_size; ++i) {
-    const int* v_index = v_v_index[i];
-    const r_ssize index_location =
-      v_index_locations[i] + run_i * v_index_run_strides[i];
-    const int index = v_index[index_location];
-
-    if (index == r_globals.na_int) {
-      return -1;
-    }
-
-    out += (r_ssize) (index - 1) * v_x_strides[i];
-  }
-
-  return out;
-}
