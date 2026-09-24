@@ -401,10 +401,11 @@ struct rray_strided_iterator_n_plan {
 
   r_ssize v_dimensions[RRAY_MAX_DIMENSIONALITY];
   int dimensionality;
-  r_ssize n;
 
-  // Strides for all `n` arrays, laid out axis-major as [dimensionality][n].
+  // Strides for all `n` arrays, laid out axis-major in a flat array as
+  // [dimensionality][n], allowing contiguous access when doing "next" calls.
   const r_ssize* v_strides;
+  r_ssize n;
 };
 
 static inline struct rray_strided_iterator_n_plan rray_strided_iterator_n_plan(
