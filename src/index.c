@@ -223,31 +223,6 @@ r_obj* rray_as_index_array(
   return x;
 }
 
-// Builds a flat location into `x` from the current multidimensional point
-// represented by the indices.
-static inline r_ssize rray_index_location(
-  const r_ssize* v_x_strides,
-  const int* const* v_v_index,
-  r_ssize indices_size,
-  const r_ssize* v_index_locations
-) {
-  r_ssize out = 0;
-
-  for (r_ssize i = 0; i < indices_size; ++i) {
-    const int* v_index = v_v_index[i];
-    const r_ssize index_location = v_index_locations[i];
-    const int index = v_index[index_location];
-
-    if (index == r_globals.na_int) {
-      return -1;
-    }
-
-    out += (r_ssize) (index - 1) * v_x_strides[i];
-  }
-
-  return out;
-}
-
 #define RRAY_INDEX_ATOMIC(RTYPE, CTYPE, CONST_DEREF, DEREF, MISSING)           \
   const r_ssize size = rray_strided_iterator_n_plan_size(plan);                \
   const r_ssize indices_size = plan->n;                                        \
@@ -397,3 +372,28 @@ static r_obj* rray_index_list(
 
 #undef RRAY_INDEX_ATOMIC
 #undef RRAY_INDEX_BARRIER
+
+// Builds a flat location into `x` from the current multidimensional point
+// represented by the indices.
+static inline r_ssize rray_index_location(
+  const r_ssize* v_x_strides,
+  const int* const* v_v_index,
+  r_ssize indices_size,
+  const r_ssize* v_index_locations
+) {
+  r_ssize out = 0;
+
+  for (r_ssize i = 0; i < indices_size; ++i) {
+    const int* v_index = v_v_index[i];
+    const r_ssize index_location = v_index_locations[i];
+    const int index = v_index[index_location];
+
+    if (index == r_globals.na_int) {
+      return -1;
+    }
+
+    out += (r_ssize) (index - 1) * v_x_strides[i];
+  }
+
+  return out;
+}
