@@ -470,7 +470,7 @@ static inline void rray_strided_iterator_n_plan_point_init(
 
 #define RRAY_STRIDED_ITERATOR_NEXT_N(V_STARTS, V_POINT, PLAN, N)               \
   for (int axis = 1; axis < PLAN->dimensionality; ++axis) {                    \
-    const r_ssize* v_strides = PLAN->v_strides + axis * PLAN->n;               \
+    const r_ssize* v_strides = PLAN->v_strides + axis * N;                     \
     const r_ssize dimension = PLAN->v_dimensions[axis];                        \
     ++V_POINT[axis];                                                           \
     if (V_POINT[axis] < dimension) {                                           \
