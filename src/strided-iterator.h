@@ -432,7 +432,7 @@ static inline struct rray_strided_iterator_n_plan rray_strided_iterator_n_plan(
     plan.v_dimensions[axis] = (r_ssize) v_dimensions[axis];
   }
 
-  plan.dimensionality = rray__strided_iterator_axes_coalescen(
+  plan.dimensionality = rray__strided_iterator_axes_coalesce_n(
     plan.v_dimensions,
     v_strides,
     dimensionality,
@@ -568,7 +568,7 @@ static inline int rray__strided_iterator_axes_coalesce2(
   return out_axis + 1;
 }
 
-static inline int rray__strided_iterator_axes_coalescen(
+static inline int rray__strided_iterator_axes_coalesce_n(
   r_ssize* v_dimensions,
   r_ssize* v_strides,
   int dimensionality,
