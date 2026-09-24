@@ -16,7 +16,6 @@ r_obj* rray_index(
 r_obj* rray_as_index_array(
   r_obj* x,
   int dimension,
-  bool* p_any_missing,
   struct rray_arg* arg,
   struct r_lazy error_call
 );

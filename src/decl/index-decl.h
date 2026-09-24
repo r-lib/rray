@@ -2,9 +2,13 @@ static r_obj* rray_as_index_arrays(
   r_obj* indices,
   const int* v_dimensions,
   int dimensionality,
-  bool* p_any_missing,
   struct rray_arg* indices_arg,
   struct r_lazy error_call
+);
+
+static bool rray_any_missing_index(
+  r_obj* const* v_indices,
+  r_ssize indices_size
 );
 
 static r_obj* rray_index_lgl(

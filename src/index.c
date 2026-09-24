@@ -42,17 +42,17 @@ r_obj* rray_index(
     v_x_strides
   );
 
-  bool any_missing;
   indices = KEEP(rray_as_index_arrays(
     indices,
     v_x_dimensions,
     x_dimensionality,
-    &any_missing,
     indices_arg,
     error_call
   ));
   r_obj* const* v_indices = r_list_cbegin(indices);
   const r_ssize indices_size = r_length(indices);
+
+  const bool any_missing = rray_any_missing_index(v_indices, indices_size);
 
   r_obj* dimensions =
     KEEP(rray_dimensions_common(indices, r_null, indices_arg, error_call));
@@ -172,7 +172,6 @@ static r_obj* rray_as_index_arrays(
   r_obj* indices,
   const int* v_dimensions,
   int dimensionality,
-  bool* p_any_missing,
   struct rray_arg* indices_arg,
   struct r_lazy error_call
 ) {
@@ -201,22 +200,11 @@ static r_obj* rray_as_index_arrays(
     new_subscript_arg(indices_arg, r_null, indices_size, &i);
   KEEP(index_arg->shelter);
 
-  bool any_missing = false;
-
   for (; i < indices_size; ++i) {
-    bool index_any_missing;
-    r_obj* index = rray_as_index_array(
-      v_indices[i],
-      v_dimensions[i],
-      &index_any_missing,
-      index_arg,
-      error_call
-    );
+    r_obj* index =
+      rray_as_index_array(v_indices[i], v_dimensions[i], index_arg, error_call);
     r_list_poke(out, i, index);
-    any_missing = any_missing || index_any_missing;
   }
-
-  *p_any_missing = any_missing;
 
   FREE(2);
   return out;
@@ -230,20 +218,12 @@ r_obj* ffi_rray_as_index_array(
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
   const int dimension =
     arg_as_int(ffi_dimension, rray_args.dimension, error_call);
-  bool any_missing;
-  return rray_as_index_array(
-    ffi_x,
-    dimension,
-    &any_missing,
-    rray_args.x,
-    error_call
-  );
+  return rray_as_index_array(ffi_x, dimension, rray_args.x, error_call);
 }
 
 r_obj* rray_as_index_array(
   r_obj* x,
   int dimension,
-  bool* p_any_missing,
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
@@ -263,13 +243,10 @@ r_obj* rray_as_index_array(
   const r_ssize size = r_length(x);
   const int* v_x = r_int_cbegin(x);
 
-  bool any_missing = false;
-
   for (r_ssize i = 0; i < size; ++i) {
     const int elt = v_x[i];
 
     if (elt == r_globals.na_int) {
-      any_missing = true;
       continue;
     }
     if (elt < 1) {
@@ -289,10 +266,31 @@ r_obj* rray_as_index_array(
     }
   }
 
-  *p_any_missing = any_missing;
-
   FREE(1);
   return x;
+}
+
+static bool rray_any_missing_index(
+  r_obj* const* v_indices,
+  r_ssize indices_size
+) {
+  bool out = false;
+
+  for (r_ssize i = 0; i < indices_size; ++i) {
+    r_obj* index = v_indices[i];
+    const r_ssize size = r_length(index);
+    const int* v_index = r_int_cbegin(index);
+
+    for (r_ssize j = 0; j < size; ++j) {
+      out |= v_index[j] == r_globals.na_int;
+    }
+
+    if (out) {
+      break;
+    }
+  }
+
+  return out;
 }
 
 #define RRAY_INDEX_LOOP(POKE, INDICES_SIZE)                                    \
