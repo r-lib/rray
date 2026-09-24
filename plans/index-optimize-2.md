@@ -6,7 +6,7 @@ This branch implements steps 1 through 4 of `plans/index-optimize.md`:
 
 1. Specialize the loop on 1, 2, 3 and 4 coordinate arrays.
 
-2. Walk the first axis as a run, with a literal stride 1 path.
+2. Walk the first axis as a run.
 
 3. Merge (coalesce) adjacent axes across all coordinate arrays.
 
@@ -159,13 +159,40 @@ Only code size. It needs no per-count specialization, and only the final pass de
 
 - **Short runs are sensitive to how run strides are read.** Reading each run stride through `rray_strided_iterator_n_plan_run_stride()` on every element was 6% to 7% slower on the mixed and J = 2 take shapes, where every run is 2 elements long. Copying the run strides into a local array before the loop removed the difference.
 
-- **A literal stride 1 path did little for the per-array algorithm.** It was worth about 3%, close to noise. Steps 1-4 keep theirs, as the earlier plan describes, but its share of the step 2 gain was not measured separately.
+- **A literal stride 1 path is not worth it.** The earlier plan called for a copy of the run loop with every run stride fixed at 1. It only applies when no coordinate array is broadcast along the first merged axis, and it measured within noise for both algorithms. See below.
+
+## Dropping the literal stride 1 path
+
+The "this branch" column above was measured with a copy of the run loop where every run stride was the literal `1`. It was taken when every coordinate array had run stride 1, that is, when none was broadcast along the first merged axis. That is 18 of the 23 cases. The other 5 (Cartesian, mixed, both take first axis cases, take 3d axis 2) never take it.
+
+We compared that build against the same code with the copy removed, 3 interleaved rounds each, keeping the faster run. Results were identical on all 23 cases.
+
+| Case | with | without | change |
+|---|---|---|---|
+| 1d/1 small src | 1.077 | 1.084 | +0.7% |
+| 1d/1 large src | 1.375 | 1.376 | +0.1% |
+| 2d/2 small src | 1.850 | 1.894 | +2.4% |
+| 2d/2 large src | 2.002 | 2.006 | +0.2% |
+| 4d/4 small src | 3.442 | 3.533 | +2.6% |
+| 2d/2 `[1, N]` | 1.847 | 1.898 | +2.8% |
+| 2d/2 small src, character | 4.450 | 4.461 | +0.2% |
+| take first axis, J = 8 (never takes it) | 0.885 | 0.907 | +2.5% |
+
+The other same shape cases sat at +2.0% to +2.4%. It is noise, not a gain:
+
+- **The control moved as much.** Take first axis J = 8 never takes the path and still moved 2.5%, likely from code layout.
+
+- **It was not consistent.** In the first round most cases were within 1% either way. The largest run to run spread was 7%.
+
+- **One coordinate array gained nothing**, where the path should matter most.
+
+It doubled every specialized loop, so it was removed.
 
 ## What changed in this branch
 
 - **`src/strided-iterator.h`**: `rray_strided_iterator_n_plan()` now merges adjacent axes through a new `rray__strided_iterator_axes_coalescen()`, the N operand sibling of `rray__strided_iterator_axes_coalesce2()`. The plan still points at caller owned strides, so N stays unbounded. The builder takes `r_ssize* v_strides` and merges the axes in place. `RRAY_STRIDED_ITERATOR_NEXT_N()` now starts at axis 1 like the other iterators, since the caller owns the first axis run, and takes the array count as a parameter so it can be a literal.
 
-- **`src/index.c`**: the loop walks the first axis as a run, with a literal stride 1 path. It is specialized on 1 to 4 coordinate arrays, with a general fallback. When validation saw no `NA`, it runs a copy with no missing value check.
+- **`src/index.c`**: the loop walks the first axis as a run. It is specialized on 1 to 4 coordinate arrays, with a general fallback. When validation saw no `NA`, it runs a copy with no missing value check.
 
 - **`rray_as_index_array()`**: takes a `bool* p_any_missing` and reports whether it saw an `NA`, at no extra cost since it already visits every value.
 
