@@ -28,6 +28,10 @@ reference:
   - rray_broadcast
   - rray_broadcast_common
 
+- title: Indexing
+  contents:
+  - rray_index
+
 - title: Combining and Splitting
   contents:
   - rray_combine

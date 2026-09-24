@@ -13,6 +13,16 @@ extern r_obj* ffi_rray_broadcast_common(
   r_obj* ffi_dimensions,
   r_obj* ffi_frame
 );
+extern r_obj* ffi_rray_index(
+  r_obj* ffi_x,
+  r_obj* ffi_indices,
+  r_obj* ffi_frame
+);
+extern r_obj* ffi_rray_as_index_array(
+  r_obj* ffi_x,
+  r_obj* ffi_dimension,
+  r_obj* ffi_frame
+);
 extern r_obj* ffi_rray_size(r_obj* ffi_x, r_obj* ffi_frame);
 extern r_obj* ffi_rray_dimensionality(r_obj* ffi_x, r_obj* ffi_frame);
 extern r_obj* ffi_rray_dimensions(r_obj* ffi_x, r_obj* ffi_frame);
@@ -207,6 +217,8 @@ r_obj* ffi_rray4_init_library(r_obj* ffi_ns);
 static const R_CallMethodDef CallEntries[] = {
   {"ffi_rray_broadcast", (DL_FUNC) &ffi_rray_broadcast, 3},
   {"ffi_rray_broadcast_common", (DL_FUNC) &ffi_rray_broadcast_common, 3},
+  {"ffi_rray_index", (DL_FUNC) &ffi_rray_index, 3},
+  {"ffi_rray_as_index_array", (DL_FUNC) &ffi_rray_as_index_array, 3},
   {"ffi_rray_size", (DL_FUNC) &ffi_rray_size, 2},
   {"ffi_rray_dimensions", (DL_FUNC) &ffi_rray_dimensions, 2},
   {"ffi_rray_dimensions_common", (DL_FUNC) &ffi_rray_dimensions_common, 3},

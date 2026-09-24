@@ -166,7 +166,11 @@ static inline struct rray_strided_iterator_plan rray_strided_iterator_plan(
 
   struct rray_strided_iterator_plan plan;
 
-  plan.size = rray_size_from_dimensions(v_dimensions, dimensionality);
+  plan.size = rray_size_from_dimensions_checked(
+    v_dimensions,
+    dimensionality,
+    r_lazy_null
+  );
 
   for (int i = 0; i < dimensionality; ++i) {
     plan.v_dimensions[i] = (r_ssize) v_dimensions[i];
@@ -277,7 +281,11 @@ static inline struct rray_strided_iterator2_plan rray_strided_iterator2_plan(
 
   struct rray_strided_iterator2_plan plan;
 
-  plan.size = rray_size_from_dimensions(v_dimensions, dimensionality);
+  plan.size = rray_size_from_dimensions_checked(
+    v_dimensions,
+    dimensionality,
+    r_lazy_null
+  );
 
   for (int i = 0; i < dimensionality; ++i) {
     plan.v_dimensions[i] = (r_ssize) v_dimensions[i];
@@ -384,6 +392,92 @@ static inline void rray_strided_iterator2_plan_point_init(
     V_POINT[axis] = 0;                                                         \
     START1 -= (PLAN->v_dimensions[axis] - 1) * PLAN->v_strides1[axis];         \
     START2 -= (PLAN->v_dimensions[axis] - 1) * PLAN->v_strides2[axis];         \
+  }
+
+// --------------------------------------------------------------------------
+
+struct rray_strided_iterator_n_plan {
+  r_ssize size;
+
+  r_ssize v_dimensions[RRAY_MAX_DIMENSIONALITY];
+  int dimensionality;
+
+  // Strides for all `n` arrays, laid out axis-major in a flat array as
+  // [dimensionality][n], allowing contiguous access when doing "next" calls.
+  const r_ssize* v_strides;
+  r_ssize n;
+};
+
+static inline struct rray_strided_iterator_n_plan rray_strided_iterator_n_plan(
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_strides,
+  r_ssize n
+) {
+  check_dimensionality(dimensionality);
+
+  if (n < 1) {
+    r_stop_internal("`n` (%" R_PRI_SSIZE ") must be at least 1.", n);
+  }
+
+  struct rray_strided_iterator_n_plan plan;
+
+  plan.size = rray_size_from_dimensions_checked(
+    v_dimensions,
+    dimensionality,
+    r_lazy_null
+  );
+
+  for (int axis = 0; axis < dimensionality; ++axis) {
+    plan.v_dimensions[axis] = (r_ssize) v_dimensions[axis];
+  }
+
+  plan.dimensionality = dimensionality;
+  plan.v_strides = v_strides;
+  plan.n = n;
+
+  return plan;
+}
+
+static inline r_ssize rray_strided_iterator_n_plan_size(
+  const struct rray_strided_iterator_n_plan* plan
+) {
+  return plan->size;
+}
+static inline r_ssize rray_strided_iterator_n_plan_run_size(
+  const struct rray_strided_iterator_n_plan* plan
+) {
+  return plan->v_dimensions[0];
+}
+static inline r_ssize rray_strided_iterator_n_plan_run_stride(
+  const struct rray_strided_iterator_n_plan* plan,
+  r_ssize i
+) {
+  return plan->v_strides[i];
+}
+static inline void rray_strided_iterator_n_plan_point_init(
+  const struct rray_strided_iterator_n_plan* plan,
+  r_ssize* v_point
+) {
+  r_memset(v_point, 0, sizeof(r_ssize) * (size_t) plan->dimensionality);
+}
+
+#define RRAY_STRIDED_ITERATOR_NEXT_N(V_STARTS, V_POINT, PLAN)                  \
+  const r_ssize* v_strides = PLAN->v_strides;                                  \
+  for (int axis = 0; axis < PLAN->dimensionality; ++axis) {                    \
+    const r_ssize dimension = PLAN->v_dimensions[axis];                        \
+    ++V_POINT[axis];                                                           \
+    if (V_POINT[axis] < dimension) {                                           \
+      for (r_ssize i = 0; i < PLAN->n; ++i) {                                  \
+        V_STARTS[i] += v_strides[i];                                           \
+      }                                                                        \
+      break;                                                                   \
+    }                                                                          \
+    V_POINT[axis] = 0;                                                         \
+    for (r_ssize i = 0; i < PLAN->n; ++i) {                                    \
+      V_STARTS[i] -= (dimension - 1) * v_strides[i];                           \
+    }                                                                          \
+    v_strides += PLAN->n;                                                      \
   }
 
 // --------------------------------------------------------------------------

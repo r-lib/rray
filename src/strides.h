@@ -16,4 +16,11 @@ void rray_fill_broadcast_strides_from_dimensions(
   r_ssize* v_out
 );
 
+void rray_fill_broadcast_strides_from_arrays(
+  r_obj* const* v_froms,
+  r_ssize froms_size,
+  int to_dimensionality,
+  r_ssize* v_out
+);
+
 #endif
