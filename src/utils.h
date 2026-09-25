@@ -27,6 +27,13 @@ static inline r_complex rray_c99_to_cpl(double _Complex x) {
   return out;
 }
 
+// In tight loops, the compiler can often vectorize a bitwise `|` better than
+// `||`. Writing `f(x) | g(y)` directly on two `bool` calls triggers clang's
+// `-Wbitwise-instead-of-logical`, so we route it through this helper instead.
+static inline bool bool_bitwise_or(bool x, bool y) {
+  return (int) x | (int) y;
+}
+
 void check_unclassed(r_obj* x, struct rray_arg* arg, struct r_lazy error_call);
 
 r_no_return void stop_scalar_input(
