@@ -233,7 +233,7 @@ static struct rray_extract_subscript rray_as_extract_points(
   struct r_lazy error_call
 ) {
   const int* v_index_dimensions = r_int_cbegin(r_dim(index));
-  const r_ssize size = v_index_dimensions[0];
+  const r_ssize rows = v_index_dimensions[0];
   const int columns = v_index_dimensions[1];
 
   if (columns != dimensionality) {
@@ -251,7 +251,7 @@ static struct rray_extract_subscript rray_as_extract_points(
   for (int axis = 0; axis < columns; ++axis) {
     const int dimension = v_dimensions[axis];
     const struct rray_subscript_summary summary =
-      rray_subscript_summarise(index, axis * size, size);
+      rray_subscript_summarise(index, axis * rows, rows);
 
     if (summary.any_fractional) {
       stop_subscript_fractional(index_arg, error_call);
@@ -281,7 +281,7 @@ static struct rray_extract_subscript rray_as_extract_points(
     .kind = r_typeof(index) == R_TYPE_integer
       ? RRAY_EXTRACT_SUBSCRIPT_KIND_points_int
       : RRAY_EXTRACT_SUBSCRIPT_KIND_points_dbl,
-    .size = size
+    .size = rows
   };
 }
 
