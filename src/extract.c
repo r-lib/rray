@@ -101,13 +101,13 @@ r_obj* rray_extract(
     const r_ssize index_step = r_length(subscript.index) == 1 ? 0 : 1;         \
                                                                                \
     r_ssize i = 0;                                                             \
-    r_ssize offset = 0;                                                        \
+    r_ssize location = 0;                                                      \
                                                                                \
     while (i < subscript.size) {                                               \
-      const int elt = v_index[offset * index_step];                            \
-      POKE(out, i, elt == r_globals.na_lgl ? MISSING : v_x[offset]);           \
+      const int elt = v_index[location * index_step];                          \
+      POKE(out, i, elt == r_globals.na_lgl ? MISSING : v_x[location]);         \
       i += elt != 0;                                                           \
-      ++offset;                                                                \
+      ++location;                                                              \
     }                                                                          \
   } while (0)
 
