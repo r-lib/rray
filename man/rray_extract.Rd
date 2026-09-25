@@ -32,8 +32,8 @@ have the same dimensions as \code{x}, so \code{rray_extract(x, x > 5)} works. Wh
 \code{TRUE}, the corresponding value in \code{x} is returned.
 \item An integer or double matrix holds coordinate points. Each row selects one
 element, and there must be one column per axis of \code{x}. Coordinates must be
-positive and within the dimension of their axis. \code{NA} gives a missing
-value.
+positive and within the dimension of their axis. \code{NA} at any position
+within the row generates a missing value.
 }
 
 For raw arrays the missing value is \code{as.raw(0)}, and for list arrays it is
