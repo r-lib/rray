@@ -142,7 +142,21 @@ static inline r_ssize rray_point_offset_dbl(
     }                                                                          \
   } while (0)
 
-#define RRAY_EXTRACT_MASK_LOOP(POKE, MISSING)                                  \
+#define RRAY_EXTRACT_ATOMIC_MASK_LOOP(POKE, MISSING)                           \
+  do {                                                                         \
+    const int* v_i = r_lgl_cbegin(subscript.i);                                \
+    const r_ssize i_step = r_length(subscript.i) == 1 ? 0 : 1;                 \
+                                                                               \
+    r_ssize j = 0;                                                             \
+                                                                               \
+    for (r_ssize offset = 0; j < subscript.size; ++offset) {                   \
+      const int elt = v_i[offset * i_step];                                    \
+      POKE(out, j, elt == r_globals.na_lgl ? MISSING : v_x[offset]);           \
+      j += elt != 0;                                                           \
+    }                                                                          \
+  } while (0)
+
+#define RRAY_EXTRACT_BARRIER_MASK_LOOP(POKE, MISSING)                          \
   do {                                                                         \
     const int* v_i = r_lgl_cbegin(subscript.i);                                \
     const r_ssize i_step = r_length(subscript.i) == 1 ? 0 : 1;                 \
@@ -179,7 +193,7 @@ static inline r_ssize rray_point_offset_dbl(
     }                                                                          \
   } while (0)
 
-#define RRAY_EXTRACT_ITERATE(POKE, MISSING)                                    \
+#define RRAY_EXTRACT_ITERATE(POKE, MISSING, MASK_LOOP)                         \
   switch (subscript.kind) {                                                    \
   case RRAY_EXTRACT_SUBSCRIPT_KIND_positions_int:                              \
     RRAY_EXTRACT_POSITIONS_LOOP(                                               \
@@ -200,7 +214,7 @@ static inline r_ssize rray_point_offset_dbl(
     );                                                                         \
     break;                                                                     \
   case RRAY_EXTRACT_SUBSCRIPT_KIND_mask:                                       \
-    RRAY_EXTRACT_MASK_LOOP(POKE, MISSING);                                     \
+    MASK_LOOP(POKE, MISSING);                                                  \
     break;                                                                     \
   case RRAY_EXTRACT_SUBSCRIPT_KIND_points_int:                                 \
     RRAY_EXTRACT_POINTS_LOOP(                                                  \
@@ -230,7 +244,11 @@ static inline r_ssize rray_point_offset_dbl(
                                                                                \
   const CTYPE* v_x = CONST_DEREF(x);                                           \
                                                                                \
-  RRAY_EXTRACT_ITERATE(RRAY_EXTRACT_ATOMIC_POKE, MISSING);                     \
+  RRAY_EXTRACT_ITERATE(                                                        \
+    RRAY_EXTRACT_ATOMIC_POKE,                                                  \
+    MISSING,                                                                   \
+    RRAY_EXTRACT_ATOMIC_MASK_LOOP                                              \
+  );                                                                           \
                                                                                \
   FREE(1);                                                                     \
   return out;
@@ -240,7 +258,7 @@ static inline r_ssize rray_point_offset_dbl(
                                                                                \
   r_obj* const* v_x = CONST_DEREF(x);                                          \
                                                                                \
-  RRAY_EXTRACT_ITERATE(POKE, MISSING);                                         \
+  RRAY_EXTRACT_ITERATE(POKE, MISSING, RRAY_EXTRACT_BARRIER_MASK_LOOP);         \
                                                                                \
   FREE(1);                                                                     \
   return out;
@@ -338,7 +356,8 @@ static r_obj* rray_extract_list(
 }
 
 #undef RRAY_EXTRACT_POSITIONS_LOOP
-#undef RRAY_EXTRACT_MASK_LOOP
+#undef RRAY_EXTRACT_ATOMIC_MASK_LOOP
+#undef RRAY_EXTRACT_BARRIER_MASK_LOOP
 #undef RRAY_EXTRACT_POINTS_LOOP
 #undef RRAY_EXTRACT_ITERATE
 #undef RRAY_EXTRACT_ATOMIC_POKE
