@@ -78,14 +78,18 @@ r_obj* rray_extract(
   MISSING,                                                                     \
   INDEX_CTYPE,                                                                 \
   INDEX_CONST_DEREF,                                                           \
-  OFFSET                                                                       \
+  IS_MISSING                                                                   \
 )                                                                              \
   do {                                                                         \
     const INDEX_CTYPE* v_index = INDEX_CONST_DEREF(subscript.index);           \
                                                                                \
     for (r_ssize i = 0; i < subscript.size; ++i) {                             \
-      const r_ssize offset = OFFSET(v_index[i]);                               \
-      POKE(out, i, offset == -1 ? MISSING : v_x[offset]);                      \
+      const INDEX_CTYPE location = v_index[i];                                 \
+      POKE(                                                                    \
+        out,                                                                   \
+        i,                                                                     \
+        IS_MISSING(location) ? MISSING : v_x[(r_ssize) location - 1]           \
+      );                                                                       \
     }                                                                          \
   } while (0)
 
@@ -159,7 +163,7 @@ r_obj* rray_extract(
       MISSING,                                                                 \
       int,                                                                     \
       r_int_cbegin,                                                            \
-      rray_location_offset_int                                                 \
+      rray_location_is_missing_int                                             \
     );                                                                         \
     break;                                                                     \
   case RRAY_EXTRACT_SUBSCRIPT_KIND_locations_dbl:                              \
@@ -168,7 +172,7 @@ r_obj* rray_extract(
       MISSING,                                                                 \
       double,                                                                  \
       r_dbl_cbegin,                                                            \
-      rray_location_offset_dbl                                                 \
+      rray_location_is_missing_dbl                                             \
     );                                                                         \
     break;                                                                     \
   case RRAY_EXTRACT_SUBSCRIPT_KIND_mask:                                       \
@@ -322,12 +326,12 @@ static r_obj* rray_extract_list(
 #undef RRAY_EXTRACT_ATOMIC
 #undef RRAY_EXTRACT_BARRIER
 
-static inline r_ssize rray_location_offset_int(int location) {
-  return location == r_globals.na_int ? -1 : (r_ssize) location - 1;
+static inline bool rray_location_is_missing_int(int location) {
+  return location == r_globals.na_int;
 }
 
-static inline r_ssize rray_location_offset_dbl(double location) {
-  return isnan(location) ? -1 : (r_ssize) location - 1;
+static inline bool rray_location_is_missing_dbl(double location) {
+  return isnan(location);
 }
 
 static inline r_ssize rray_point_offset_int(
