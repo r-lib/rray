@@ -2,6 +2,7 @@
 
 #include <math.h>
 
+#include "dimensionality.h"
 #include "dimensions.h"
 #include "size.h"
 #include "utils.h"
@@ -29,7 +30,7 @@ r_obj* ffi_rray_as_extract_subscript(
   const struct rray_extract_subscript subscript = rray_as_extract_subscript(
     ffi_i,
     r_int_cbegin(dimensions),
-    (int) r_length(dimensions),
+    rray_dimensionality_from_dimensions(dimensions),
     rray_args.i,
     error_call
   );
@@ -73,8 +74,9 @@ struct rray_extract_subscript rray_as_extract_subscript(
   case R_TYPE_integer:
   case R_TYPE_double: {
     r_obj* i_dimensions = r_dim(i);
-    const r_ssize i_dimensionality =
-      i_dimensions == r_null ? 1 : r_length(i_dimensions);
+    const int i_dimensionality = i_dimensions == r_null
+      ? 1
+      : rray_dimensionality_from_dimensions(i_dimensions);
 
     switch (i_dimensionality) {
     case 1:
@@ -91,7 +93,7 @@ struct rray_extract_subscript rray_as_extract_subscript(
       r_abort_lazy_call(
         error_call,
         "Numeric %s must be a vector or a matrix, not an array with "
-        "%" R_PRI_SSIZE " dimensions.",
+        "%d dimensions.",
         rray_arg_format(i_arg),
         i_dimensionality
       );
@@ -116,11 +118,14 @@ static struct rray_extract_subscript rray_as_extract_mask(
   struct r_lazy error_call
 ) {
   r_obj* i_dimensions = r_dim(i);
+  const int i_dimensionality = i_dimensions == r_null
+    ? 1
+    : rray_dimensionality_from_dimensions(i_dimensions);
 
-  if (i_dimensions != r_null && r_length(i_dimensions) != 1) {
+  if (i_dimensionality != 1) {
     const bool equal = rray_dimensions_are_equal(
       r_int_cbegin(i_dimensions),
-      (int) r_length(i_dimensions),
+      i_dimensionality,
       v_dimensions,
       dimensionality
     );

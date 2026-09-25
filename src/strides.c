@@ -1,5 +1,7 @@
 #include "strides.h"
 
+#include "dimensionality.h"
+
 void rray_fill_strides_from_dimensions(
   const int* v_dimensions,
   int dimensionality,
@@ -38,7 +40,8 @@ void rray_fill_broadcast_strides_from_arrays(
   for (r_ssize i = 0; i < froms_size; ++i) {
     r_obj* from_dimensions = r_dim(v_froms[i]);
     const int* v_from_dimensions = r_int_cbegin(from_dimensions);
-    const int from_dimensionality = r_length(from_dimensions);
+    const int from_dimensionality =
+      rray_dimensionality_from_dimensions(from_dimensions);
 
     r_ssize stride = 1;
 
