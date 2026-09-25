@@ -1,5 +1,5 @@
-new_extract_subscript <- function(i, kind, size) {
-  list(i = i, kind = kind, size = size)
+new_extract_subscript <- function(index, kind, size) {
+  list(index = index, kind = kind, size = size)
 }
 
 extract_base <- function(x, i) {

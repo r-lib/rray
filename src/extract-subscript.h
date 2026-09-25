@@ -14,16 +14,16 @@ enum rray_extract_subscript_kind {
 };
 
 struct rray_extract_subscript {
-  r_obj* i;
+  r_obj* index;
   enum rray_extract_subscript_kind kind;
   r_ssize size;
 };
 
 struct rray_extract_subscript rray_as_extract_subscript(
-  r_obj* i,
+  r_obj* index,
   const int* v_dimensions,
   int dimensionality,
-  struct rray_arg* i_arg,
+  struct rray_arg* index_arg,
   struct r_lazy error_call
 );
 

@@ -36,7 +36,7 @@ r_obj* rray_extract(
     i_arg,
     error_call
   );
-  KEEP(subscript.i);
+  KEEP(subscript.index);
 
   r_obj* out;
 
@@ -126,62 +126,62 @@ static inline r_ssize rray_point_offset_dbl(
 #define RRAY_EXTRACT_LOCATIONS_LOOP(                                           \
   POKE,                                                                        \
   MISSING,                                                                     \
-  I_CTYPE,                                                                     \
-  I_CONST_DEREF,                                                               \
+  INDEX_CTYPE,                                                                 \
+  INDEX_CONST_DEREF,                                                           \
   OFFSET                                                                       \
 )                                                                              \
   do {                                                                         \
-    const I_CTYPE* v_i = I_CONST_DEREF(subscript.i);                           \
+    const INDEX_CTYPE* v_index = INDEX_CONST_DEREF(subscript.index);           \
                                                                                \
-    for (r_ssize j = 0; j < subscript.size; ++j) {                             \
-      const r_ssize offset = OFFSET(v_i[j]);                                   \
-      POKE(out, j, offset == -1 ? MISSING : v_x[offset]);                      \
+    for (r_ssize i = 0; i < subscript.size; ++i) {                             \
+      const r_ssize offset = OFFSET(v_index[i]);                               \
+      POKE(out, i, offset == -1 ? MISSING : v_x[offset]);                      \
     }                                                                          \
   } while (0)
 
 #define RRAY_EXTRACT_ATOMIC_MASK_LOOP(POKE, MISSING)                           \
   do {                                                                         \
-    const int* v_i = r_lgl_cbegin(subscript.i);                                \
-    const r_ssize i_step = r_length(subscript.i) == 1 ? 0 : 1;                 \
+    const int* v_index = r_lgl_cbegin(subscript.index);                        \
+    const r_ssize index_step = r_length(subscript.index) == 1 ? 0 : 1;         \
                                                                                \
-    r_ssize j = 0;                                                             \
+    r_ssize i = 0;                                                             \
                                                                                \
-    for (r_ssize offset = 0; j < subscript.size; ++offset) {                   \
-      const int elt = v_i[offset * i_step];                                    \
-      POKE(out, j, elt == r_globals.na_lgl ? MISSING : v_x[offset]);           \
-      j += elt != 0;                                                           \
+    for (r_ssize offset = 0; i < subscript.size; ++offset) {                   \
+      const int elt = v_index[offset * index_step];                            \
+      POKE(out, i, elt == r_globals.na_lgl ? MISSING : v_x[offset]);           \
+      i += elt != 0;                                                           \
     }                                                                          \
   } while (0)
 
 #define RRAY_EXTRACT_BARRIER_MASK_LOOP(POKE, MISSING)                          \
   do {                                                                         \
-    const int* v_i = r_lgl_cbegin(subscript.i);                                \
-    const r_ssize i_step = r_length(subscript.i) == 1 ? 0 : 1;                 \
+    const int* v_index = r_lgl_cbegin(subscript.index);                        \
+    const r_ssize index_step = r_length(subscript.index) == 1 ? 0 : 1;         \
     const r_ssize x_size = r_length(x);                                        \
                                                                                \
-    r_ssize j = 0;                                                             \
+    r_ssize i = 0;                                                             \
                                                                                \
     for (r_ssize offset = 0; offset < x_size; ++offset) {                      \
-      const int elt = v_i[offset * i_step];                                    \
+      const int elt = v_index[offset * index_step];                            \
                                                                                \
       if (elt == 0) {                                                          \
         continue;                                                              \
       }                                                                        \
                                                                                \
-      POKE(out, j, elt == r_globals.na_lgl ? MISSING : v_x[offset]);           \
-      ++j;                                                                     \
+      POKE(out, i, elt == r_globals.na_lgl ? MISSING : v_x[offset]);           \
+      ++i;                                                                     \
     }                                                                          \
   } while (0)
 
 #define RRAY_EXTRACT_POINTS_LOOP(                                              \
   POKE,                                                                        \
   MISSING,                                                                     \
-  I_CTYPE,                                                                     \
-  I_CONST_DEREF,                                                               \
+  INDEX_CTYPE,                                                                 \
+  INDEX_CONST_DEREF,                                                           \
   OFFSET                                                                       \
 )                                                                              \
   do {                                                                         \
-    const I_CTYPE* v_i = I_CONST_DEREF(subscript.i);                           \
+    const INDEX_CTYPE* v_index = INDEX_CONST_DEREF(subscript.index);           \
                                                                                \
     r_ssize v_strides[RRAY_MAX_DIMENSIONALITY];                                \
     rray_fill_strides_from_dimensions(                                         \
@@ -190,10 +190,10 @@ static inline r_ssize rray_point_offset_dbl(
       v_strides                                                                \
     );                                                                         \
                                                                                \
-    for (r_ssize j = 0; j < subscript.size; ++j) {                             \
+    for (r_ssize i = 0; i < subscript.size; ++i) {                             \
       const r_ssize offset =                                                   \
-        OFFSET(v_i + j, subscript.size, v_strides, dimensionality);            \
-      POKE(out, j, offset == -1 ? MISSING : v_x[offset]);                      \
+        OFFSET(v_index + i, subscript.size, v_strides, dimensionality);        \
+      POKE(out, i, offset == -1 ? MISSING : v_x[offset]);                      \
     }                                                                          \
   } while (0)
 
