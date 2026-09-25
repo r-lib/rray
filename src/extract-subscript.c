@@ -122,7 +122,19 @@ static struct rray_extract_subscript rray_as_extract_mask(
     ? 1
     : rray_dimensionality_from_dimensions(i_dimensions);
 
-  if (i_dimensionality != 1) {
+  if (i_dimensionality == 1) {
+    const r_ssize i_size = r_length(i);
+
+    if (i_size != 1 && i_size != size) {
+      r_abort_lazy_call(
+        error_call,
+        "Logical %s must be size 1 or %" R_PRI_SSIZE ", not %" R_PRI_SSIZE ".",
+        rray_arg_format(i_arg),
+        size,
+        i_size
+      );
+    }
+  } else {
     // If a logical array is provided, it must match `x` dimensions exactly. In
     // theory it could broadcast but likely not worth it.
     const bool equal = rray_dimensions_are_equal(
@@ -139,18 +151,6 @@ static struct rray_extract_subscript rray_as_extract_mask(
         rray_arg_format(i_arg)
       );
     }
-  }
-
-  const r_ssize i_size = r_length(i);
-
-  if (i_size != 1 && i_size != size) {
-    r_abort_lazy_call(
-      error_call,
-      "Logical %s must be size 1 or %" R_PRI_SSIZE ", not %" R_PRI_SSIZE ".",
-      rray_arg_format(i_arg),
-      size,
-      i_size
-    );
   }
 
   return (struct rray_extract_subscript){
