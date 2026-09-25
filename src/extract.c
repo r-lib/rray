@@ -89,6 +89,8 @@ r_obj* rray_extract(
     }                                                                          \
   } while (0)
 
+// Branchless in the atomic case for better performance in general. Not in the
+// barrier case because the repeated `POKE`s are more expensive there.
 #define RRAY_EXTRACT_ATOMIC_MASK_LOOP(POKE, MISSING)                           \
   do {                                                                         \
     const int* v_index = r_lgl_cbegin(subscript.index);                        \
