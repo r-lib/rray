@@ -119,14 +119,14 @@ r_obj* rray_extract(
                                                                                \
     r_ssize i = 0;                                                             \
                                                                                \
-    for (r_ssize offset = 0; offset < x_size; ++offset) {                      \
-      const int elt = v_index[offset * index_step];                            \
+    for (r_ssize location = 0; location < x_size; ++location) {                \
+      const int elt = v_index[location * index_step];                          \
                                                                                \
       if (elt == 0) {                                                          \
         continue;                                                              \
       }                                                                        \
                                                                                \
-      POKE(out, i, elt == r_globals.na_lgl ? MISSING : v_x[offset]);           \
+      POKE(out, i, elt == r_globals.na_lgl ? MISSING : v_x[location]);         \
       ++i;                                                                     \
     }                                                                          \
   } while (0)
