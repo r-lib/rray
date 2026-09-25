@@ -26,8 +26,8 @@
 #'
 #' @param x A bare array or vector.
 #'
-#' @param i A numeric vector of flat positions, a logical mask, or a numeric
-#'   matrix of coordinate points.
+#' @param i A numeric vector of locations, a logical vector, a logical array
+#'   with the same dimensions as `x`, or a numeric matrix of coordinate points.
 #'
 #' @returns
 #' A one-dimensional array with the same storage type as `x`.
