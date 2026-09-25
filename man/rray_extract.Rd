@@ -22,9 +22,9 @@ point. The result is always a 1D array.
 \details{
 The type and shape of \code{i} decide how it is used:
 \itemize{
-\item An integer or double vector holds flat positions. \code{x} is treated as its
-column-major storage vector, so position \code{4} in a 2 x 3 matrix is row 2,
-column 2. Positions follow the usual R rules: negative values drop
+\item An integer or double vector holds 1D locations. \code{x} is treated as its
+equivalent flattened array, so location \code{4} in a 2 x 3 matrix is row 2,
+column 2. Locations follow the usual R rules: negative values drop
 elements, zero is ignored, duplicates repeat elements, and \code{NA} gives a
 missing value.
 \item A logical vector is a flat mask. It must be size 1 or the size of \code{x}. A

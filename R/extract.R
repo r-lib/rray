@@ -6,9 +6,9 @@
 #' @details
 #' The type and shape of `i` decide how it is used:
 #'
-#' - An integer or double vector holds flat positions. `x` is treated as its
-#'   column-major storage vector, so position `4` in a 2 x 3 matrix is row 2,
-#'   column 2. Positions follow the usual R rules: negative values drop
+#' - An integer or double vector holds 1D locations. `x` is treated as its
+#'   equivalent flattened array, so location `4` in a 2 x 3 matrix is row 2,
+#'   column 2. Locations follow the usual R rules: negative values drop
 #'   elements, zero is ignored, duplicates repeat elements, and `NA` gives a
 #'   missing value.
 #'
