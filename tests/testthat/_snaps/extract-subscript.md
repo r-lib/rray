@@ -84,17 +84,17 @@
       rray_as_extract_subscript(array(TRUE, c(3L, 2L)), c(2L, 3L))
     Condition
       Error in `rray_as_extract_subscript()`:
-      ! Logical `i` must be a vector or have the same dimensions as `x`.
+      ! Logical array `i` must have the same dimensions as `x`.
     Code
       rray_as_extract_subscript(array(TRUE, c(2L, 3L, 1L)), c(2L, 3L))
     Condition
       Error in `rray_as_extract_subscript()`:
-      ! Logical `i` must be a vector or have the same dimensions as `x`.
+      ! Logical array `i` must have the same dimensions as `x`.
     Code
       rray_as_extract_subscript(array(TRUE, c(6L, 1L)), 6L)
     Condition
       Error in `rray_as_extract_subscript()`:
-      ! Logical `i` must be a vector or have the same dimensions as `x`.
+      ! Logical array `i` must have the same dimensions as `x`.
 
 # requires one point matrix column per axis
 

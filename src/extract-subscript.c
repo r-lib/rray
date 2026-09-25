@@ -133,7 +133,7 @@ static struct rray_extract_subscript rray_as_extract_mask(
     if (!equal) {
       r_abort_lazy_call(
         error_call,
-        "Logical %s must be a vector or have the same dimensions as `x`.",
+        "Logical array %s must have the same dimensions as `x`.",
         rray_arg_format(i_arg)
       );
     }
