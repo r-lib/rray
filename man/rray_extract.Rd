@@ -16,8 +16,8 @@ matrix of coordinate points.}
 A one-dimensional array with the same storage type as \code{x}.
 }
 \description{
-\code{rray_extract()} selects values from \code{x} by flat position or by coordinate
-points. The result is always a one-dimensional array with no names.
+\code{rray_extract()} selects values from \code{x} by 1D location or by coordinate
+point. The result is always a 1D array.
 }
 \details{
 The type and shape of \code{i} decide how it is used.

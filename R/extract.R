@@ -1,7 +1,7 @@
 #' Extract values from an array
 #'
-#' `rray_extract()` selects values from `x` by flat position or by coordinate
-#' points. The result is always a one-dimensional array with no names.
+#' `rray_extract()` selects values from `x` by 1D location or by coordinate
+#' point. The result is always a 1D array.
 #'
 #' @details
 #' The type and shape of `i` decide how it is used.
