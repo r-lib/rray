@@ -411,8 +411,8 @@ static r_ssize rray_mask_size(r_obj* mask, r_ssize size) {
 
   r_ssize out = 0;
 
-  for (r_ssize j = 0; j < size; ++j) {
-    out += v_mask[j * mask_step] != 0;
+  for (r_ssize i = 0; i < size; ++i) {
+    out += v_mask[i * mask_step] != 0;
   }
 
   return out;
