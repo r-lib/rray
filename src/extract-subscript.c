@@ -71,39 +71,38 @@ struct rray_extract_subscript rray_as_extract_subscript(
       error_call
     );
   case R_TYPE_integer:
-  case R_TYPE_double:
-    break;
+  case R_TYPE_double: {
+    r_obj* i_dimensions = r_dim(i);
+    const r_ssize i_dimensionality =
+      i_dimensions == r_null ? 1 : r_length(i_dimensions);
+
+    switch (i_dimensionality) {
+    case 1:
+      return rray_as_extract_positions(i, size, i_arg, error_call);
+    case 2:
+      return rray_as_extract_points(
+        i,
+        v_dimensions,
+        dimensionality,
+        i_arg,
+        error_call
+      );
+    default:
+      r_abort_lazy_call(
+        error_call,
+        "Numeric %s must be a vector or a matrix, not an array with "
+        "%" R_PRI_SSIZE " dimensions.",
+        rray_arg_format(i_arg),
+        i_dimensionality
+      );
+    }
+  }
   default:
     r_abort_lazy_call(
       error_call,
       "%s must be logical, integer, or double, not %s.",
       rray_arg_format(i_arg),
       r_obj_type_friendly(i)
-    );
-  }
-
-  r_obj* i_dimensions = r_dim(i);
-  const r_ssize i_dimensionality =
-    i_dimensions == r_null ? 1 : r_length(i_dimensions);
-
-  switch (i_dimensionality) {
-  case 1:
-    return rray_as_extract_positions(i, size, i_arg, error_call);
-  case 2:
-    return rray_as_extract_points(
-      i,
-      v_dimensions,
-      dimensionality,
-      i_arg,
-      error_call
-    );
-  default:
-    r_abort_lazy_call(
-      error_call,
-      "Numeric %s must be a vector or a matrix, not an array with "
-      "%" R_PRI_SSIZE " dimensions.",
-      rray_arg_format(i_arg),
-      i_dimensionality
     );
   }
 }
