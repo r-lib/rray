@@ -38,32 +38,29 @@ r_obj* rray_extract(
   );
   KEEP(subscript.i);
 
-  r_ssize v_strides[RRAY_MAX_DIMENSIONALITY];
-  rray_fill_strides_from_dimensions(v_dimensions, dimensionality, v_strides);
-
   r_obj* out;
 
   switch (r_typeof(x)) {
   case R_TYPE_logical:
-    out = rray_extract_lgl(x, subscript, v_strides, dimensionality);
+    out = rray_extract_lgl(x, subscript, v_dimensions, dimensionality);
     break;
   case R_TYPE_integer:
-    out = rray_extract_int(x, subscript, v_strides, dimensionality);
+    out = rray_extract_int(x, subscript, v_dimensions, dimensionality);
     break;
   case R_TYPE_double:
-    out = rray_extract_dbl(x, subscript, v_strides, dimensionality);
+    out = rray_extract_dbl(x, subscript, v_dimensions, dimensionality);
     break;
   case R_TYPE_complex:
-    out = rray_extract_cpl(x, subscript, v_strides, dimensionality);
+    out = rray_extract_cpl(x, subscript, v_dimensions, dimensionality);
     break;
   case R_TYPE_raw:
-    out = rray_extract_raw(x, subscript, v_strides, dimensionality);
+    out = rray_extract_raw(x, subscript, v_dimensions, dimensionality);
     break;
   case R_TYPE_character:
-    out = rray_extract_chr(x, subscript, v_strides, dimensionality);
+    out = rray_extract_chr(x, subscript, v_dimensions, dimensionality);
     break;
   case R_TYPE_list:
-    out = rray_extract_list(x, subscript, v_strides, dimensionality);
+    out = rray_extract_list(x, subscript, v_dimensions, dimensionality);
     break;
   default:
     r_stop_unreachable();
@@ -186,6 +183,13 @@ static inline r_ssize rray_point_offset_dbl(
   do {                                                                         \
     const I_CTYPE* v_i = I_CONST_DEREF(subscript.i);                           \
                                                                                \
+    r_ssize v_strides[RRAY_MAX_DIMENSIONALITY];                                \
+    rray_fill_strides_from_dimensions(                                         \
+      v_dimensions,                                                            \
+      dimensionality,                                                          \
+      v_strides                                                                \
+    );                                                                         \
+                                                                               \
     for (r_ssize j = 0; j < subscript.size; ++j) {                             \
       const r_ssize offset =                                                   \
         OFFSET(v_i + j, subscript.size, v_strides, dimensionality);            \
@@ -266,7 +270,7 @@ static inline r_ssize rray_point_offset_dbl(
 static r_obj* rray_extract_lgl(
   r_obj* x,
   struct rray_extract_subscript subscript,
-  const r_ssize* v_strides,
+  const int* v_dimensions,
   int dimensionality
 ) {
   RRAY_EXTRACT_ATOMIC(
@@ -281,7 +285,7 @@ static r_obj* rray_extract_lgl(
 static r_obj* rray_extract_int(
   r_obj* x,
   struct rray_extract_subscript subscript,
-  const r_ssize* v_strides,
+  const int* v_dimensions,
   int dimensionality
 ) {
   RRAY_EXTRACT_ATOMIC(
@@ -296,7 +300,7 @@ static r_obj* rray_extract_int(
 static r_obj* rray_extract_dbl(
   r_obj* x,
   struct rray_extract_subscript subscript,
-  const r_ssize* v_strides,
+  const int* v_dimensions,
   int dimensionality
 ) {
   RRAY_EXTRACT_ATOMIC(
@@ -311,7 +315,7 @@ static r_obj* rray_extract_dbl(
 static r_obj* rray_extract_cpl(
   r_obj* x,
   struct rray_extract_subscript subscript,
-  const r_ssize* v_strides,
+  const int* v_dimensions,
   int dimensionality
 ) {
   RRAY_EXTRACT_ATOMIC(
@@ -326,7 +330,7 @@ static r_obj* rray_extract_cpl(
 static r_obj* rray_extract_raw(
   r_obj* x,
   struct rray_extract_subscript subscript,
-  const r_ssize* v_strides,
+  const int* v_dimensions,
   int dimensionality
 ) {
   RRAY_EXTRACT_ATOMIC(R_TYPE_raw, Rbyte, r_raw_cbegin, r_raw_begin, 0);
@@ -335,7 +339,7 @@ static r_obj* rray_extract_raw(
 static r_obj* rray_extract_chr(
   r_obj* x,
   struct rray_extract_subscript subscript,
-  const r_ssize* v_strides,
+  const int* v_dimensions,
   int dimensionality
 ) {
   RRAY_EXTRACT_BARRIER(
@@ -349,7 +353,7 @@ static r_obj* rray_extract_chr(
 static r_obj* rray_extract_list(
   r_obj* x,
   struct rray_extract_subscript subscript,
-  const r_ssize* v_strides,
+  const int* v_dimensions,
   int dimensionality
 ) {
   RRAY_EXTRACT_BARRIER(R_TYPE_list, r_list_cbegin, r_list_poke, r_null);
