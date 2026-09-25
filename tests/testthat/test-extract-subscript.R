@@ -1,6 +1,3 @@
-# ------------------------------------------------------------------------------
-# rray_as_extract_subscript()
-
 test_that("returns integer locations unchanged", {
   expect_identical(
     rray_as_extract_subscript(c(3L, 1L, 3L), 3L),

@@ -1,6 +1,3 @@
-# ------------------------------------------------------------------------------
-# rray_extract()
-
 test_that("extracts 1D locations in column-major order", {
   x <- array(1:24, c(2L, 3L, 4L))
 
