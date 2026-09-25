@@ -555,38 +555,50 @@ static r_obj* rray_equality_cpl_cpl(
 #undef RRAY_EQUALITY
 
 static inline int rray_equal_int_one(int x, int y) {
-  const bool missing = rray_int_is_missing(x) | rray_int_is_missing(y);
+  const bool x_missing = rray_int_is_missing(x);
+  const bool y_missing = rray_int_is_missing(y);
+  const bool missing = x_missing | y_missing;
   const int elt = x == y;
   return missing ? r_globals.na_lgl : elt;
 }
 
 static inline int rray_not_equal_int_one(int x, int y) {
-  const bool missing = rray_int_is_missing(x) | rray_int_is_missing(y);
+  const bool x_missing = rray_int_is_missing(x);
+  const bool y_missing = rray_int_is_missing(y);
+  const bool missing = x_missing | y_missing;
   const int elt = x != y;
   return missing ? r_globals.na_lgl : elt;
 }
 
 static inline int rray_equal_dbl_one(double x, double y) {
-  const bool missing = rray_dbl_is_missing(x) | rray_dbl_is_missing(y);
+  const bool x_missing = rray_dbl_is_missing(x);
+  const bool y_missing = rray_dbl_is_missing(y);
+  const bool missing = x_missing | y_missing;
   const int elt = x == y;
   return missing ? r_globals.na_lgl : elt;
 }
 
 static inline int rray_not_equal_dbl_one(double x, double y) {
-  const bool missing = rray_dbl_is_missing(x) | rray_dbl_is_missing(y);
+  const bool x_missing = rray_dbl_is_missing(x);
+  const bool y_missing = rray_dbl_is_missing(y);
+  const bool missing = x_missing | y_missing;
   const int elt = x != y;
   return missing ? r_globals.na_lgl : elt;
 }
 
 // Purposeful usage of bitwise operators to encourage loop vectorization
 static inline int rray_equal_cpl_one(r_complex x, r_complex y) {
-  const bool missing = rray_cpl_is_missing(x) | rray_cpl_is_missing(y);
+  const bool x_missing = rray_cpl_is_missing(x);
+  const bool y_missing = rray_cpl_is_missing(y);
+  const bool missing = x_missing | y_missing;
   const int elt = (x.r == y.r) & (x.i == y.i);
   return missing ? r_globals.na_lgl : elt;
 }
 
 static inline int rray_not_equal_cpl_one(r_complex x, r_complex y) {
-  const bool missing = rray_cpl_is_missing(x) | rray_cpl_is_missing(y);
+  const bool x_missing = rray_cpl_is_missing(x);
+  const bool y_missing = rray_cpl_is_missing(y);
+  const bool missing = x_missing | y_missing;
   const int elt = (x.r != y.r) | (x.i != y.i);
   return missing ? r_globals.na_lgl : elt;
 }
