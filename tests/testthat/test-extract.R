@@ -141,6 +141,7 @@ test_that("matches base R for every kind of subscript", {
   points <- rbind(c(2, 1, 4), c(1, NA, 2), c(2, 3, 1))
   subscripts <- list(
     c(24L, 1L, NA, 1L, 0L),
+    c(24, 1, NA, 1, 0),
     c(-1, -24, 0),
     x > 20L,
     rep(c(TRUE, NA, FALSE), 8L),

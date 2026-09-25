@@ -1,4 +1,4 @@
-static r_obj* rray_as_extract_mask(
+static struct rray_extract_subscript rray_as_extract_mask(
   r_obj* i,
   const int* v_dimensions,
   int dimensionality,
@@ -7,14 +7,14 @@ static r_obj* rray_as_extract_mask(
   struct r_lazy error_call
 );
 
-static r_obj* rray_as_extract_positions(
+static struct rray_extract_subscript rray_as_extract_positions(
   r_obj* i,
   r_ssize size,
   struct rray_arg* i_arg,
   struct r_lazy error_call
 );
 
-static r_obj* rray_as_extract_points(
+static struct rray_extract_subscript rray_as_extract_points(
   r_obj* i,
   const int* v_dimensions,
   int dimensionality,
@@ -22,18 +22,39 @@ static r_obj* rray_as_extract_points(
   struct r_lazy error_call
 );
 
-static r_obj* rray_as_extract_integer(
+static struct rray_extract_subscript rray_as_extract_complement(
   r_obj* i,
-  struct rray_arg* i_arg,
-  struct r_lazy error_call
-);
-
-static r_obj* rray_as_extract_complement(
-  const int* v_i,
-  r_ssize i_size,
   r_ssize size
 );
 
-static r_obj* rray_as_extract_nonzero(const int* v_i, r_ssize i_size);
+static struct rray_extract_subscript rray_as_extract_nonzero(
+  r_obj* i,
+  r_ssize size
+);
 
-static r_obj* vec_bare(r_obj* x);
+static r_ssize rray_mask_size(r_obj* mask, r_ssize size);
+
+static struct rray_subscript_summary rray_subscript_summarise(
+  r_obj* i,
+  r_ssize start,
+  r_ssize size
+);
+
+static struct rray_subscript_summary rray_subscript_summarise_int(
+  const int* v_i,
+  r_ssize size
+);
+
+static struct rray_subscript_summary rray_subscript_summarise_dbl(
+  const double* v_i,
+  r_ssize size
+);
+
+static r_no_return void stop_subscript_fractional(
+  struct rray_arg* i_arg,
+  struct r_lazy error_call
+);
+
+static const char* rray_extract_subscript_kind_name(
+  enum rray_extract_subscript_kind kind
+);

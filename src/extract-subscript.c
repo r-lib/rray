@@ -1,12 +1,18 @@
 #include "extract-subscript.h"
 
-#include <limits.h>
 #include <math.h>
 
 #include "dimensions.h"
 #include "size.h"
 #include "utils.h"
-#include "wrapper.h"
+
+struct rray_subscript_summary {
+  double min;
+  double max;
+  r_ssize zeros;
+  bool any_missing;
+  bool any_fractional;
+};
 
 #include "decl/extract-subscript-decl.h"
 
@@ -20,19 +26,30 @@ r_obj* ffi_rray_as_extract_subscript(
   r_obj* dimensions =
     KEEP(arg_as_dimensions(ffi_dimensions, rray_args.dimensions, error_call));
 
-  r_obj* out = rray_as_extract_subscript(
+  const struct rray_extract_subscript subscript = rray_as_extract_subscript(
     ffi_i,
     r_int_cbegin(dimensions),
     (int) r_length(dimensions),
     rray_args.i,
     error_call
   );
+  KEEP(subscript.i);
 
-  FREE(1);
+  const char* v_names[] = {"i", "kind", "size"};
+  r_obj* names = KEEP(r_chr_n(v_names, 3));
+
+  r_obj* out = KEEP(r_alloc_list(3));
+  r_attrib_poke_names(out, names);
+
+  r_list_poke(out, 0, subscript.i);
+  r_list_poke(out, 1, r_chr(rray_extract_subscript_kind_name(subscript.kind)));
+  r_list_poke(out, 2, r_int(r_ssize_as_integer(subscript.size)));
+
+  FREE(4);
   return out;
 }
 
-r_obj* rray_as_extract_subscript(
+struct rray_extract_subscript rray_as_extract_subscript(
   r_obj* i,
   const int* v_dimensions,
   int dimensionality,
@@ -91,7 +108,7 @@ r_obj* rray_as_extract_subscript(
   }
 }
 
-static r_obj* rray_as_extract_mask(
+static struct rray_extract_subscript rray_as_extract_mask(
   r_obj* i,
   const int* v_dimensions,
   int dimensionality,
@@ -130,62 +147,53 @@ static r_obj* rray_as_extract_mask(
     );
   }
 
-  return vec_bare(i);
+  return (struct rray_extract_subscript){
+    .i = i,
+    .kind = RRAY_EXTRACT_SUBSCRIPT_KIND_mask,
+    .size = rray_mask_size(i, size)
+  };
 }
 
-static r_obj* rray_as_extract_positions(
+static struct rray_extract_subscript rray_as_extract_positions(
   r_obj* i,
   r_ssize size,
   struct rray_arg* i_arg,
   struct r_lazy error_call
 ) {
-  i = KEEP(rray_as_extract_integer(i, i_arg, error_call));
-
   const r_ssize i_size = r_length(i);
-  const int* v_i = r_int_cbegin(i);
+  const struct rray_subscript_summary summary =
+    rray_subscript_summarise(i, 0, i_size);
 
-  bool any_positive = false;
-  bool any_negative = false;
-  bool any_zero = false;
-  bool any_missing = false;
-
-  for (r_ssize j = 0; j < i_size; ++j) {
-    const int elt = v_i[j];
-
-    if (elt == r_globals.na_int) {
-      any_missing = true;
-      continue;
-    }
-    if (elt > size) {
-      r_abort_lazy_call(
-        error_call,
-        "%s must not contain values greater than %" R_PRI_SSIZE ".",
-        rray_arg_format(i_arg),
-        size
-      );
-    }
-    if (elt < -size) {
-      r_abort_lazy_call(
-        error_call,
-        "%s must not contain values less than -%" R_PRI_SSIZE ".",
-        rray_arg_format(i_arg),
-        size
-      );
-    }
-
-    any_positive |= elt > 0;
-    any_negative |= elt < 0;
-    any_zero |= elt == 0;
+  if (summary.any_fractional) {
+    stop_subscript_fractional(i_arg, error_call);
+  }
+  if (summary.max > size) {
+    r_abort_lazy_call(
+      error_call,
+      "%s must not contain values greater than %" R_PRI_SSIZE ".",
+      rray_arg_format(i_arg),
+      size
+    );
+  }
+  if (summary.min < -size) {
+    r_abort_lazy_call(
+      error_call,
+      "%s must not contain values less than -%" R_PRI_SSIZE ".",
+      rray_arg_format(i_arg),
+      size
+    );
   }
 
-  if (any_positive && any_negative) {
+  const bool any_negative = summary.min < 0;
+
+  if (any_negative && summary.max > 0) {
     r_abort_lazy_call(
       error_call,
       "%s can't mix positive and negative values.",
       rray_arg_format(i_arg)
     );
   }
-  if (any_negative && any_missing) {
+  if (any_negative && summary.any_missing) {
     r_abort_lazy_call(
       error_call,
       "%s can't mix negative and missing values.",
@@ -193,27 +201,30 @@ static r_obj* rray_as_extract_positions(
     );
   }
 
-  r_obj* out = i;
-
   if (any_negative) {
-    out = rray_as_extract_complement(v_i, i_size, size);
-  } else if (any_zero) {
-    out = rray_as_extract_nonzero(v_i, i_size);
+    return rray_as_extract_complement(i, size);
+  }
+  if (summary.zeros != 0) {
+    return rray_as_extract_nonzero(i, i_size - summary.zeros);
   }
 
-  FREE(1);
-  return out;
+  return (struct rray_extract_subscript){
+    .i = i,
+    .kind = r_typeof(i) == R_TYPE_integer
+      ? RRAY_EXTRACT_SUBSCRIPT_KIND_positions_int
+      : RRAY_EXTRACT_SUBSCRIPT_KIND_positions_dbl,
+    .size = i_size
+  };
 }
 
-static r_obj* rray_as_extract_points(
+static struct rray_extract_subscript rray_as_extract_points(
   r_obj* i,
   const int* v_dimensions,
   int dimensionality,
   struct rray_arg* i_arg,
   struct r_lazy error_call
 ) {
-  r_obj* i_dimensions = r_dim(i);
-  const int* v_i_dimensions = r_int_cbegin(i_dimensions);
+  const int* v_i_dimensions = r_int_cbegin(r_dim(i));
   const r_ssize size = v_i_dimensions[0];
   const int columns = v_i_dimensions[1];
 
@@ -229,89 +240,49 @@ static r_obj* rray_as_extract_points(
     );
   }
 
-  r_obj* out = KEEP(rray_as_extract_integer(i, i_arg, error_call));
-  r_attrib_poke_dim(out, i_dimensions);
-
-  const int* v_out = r_int_cbegin(out);
-
   for (int axis = 0; axis < columns; ++axis) {
     const int dimension = v_dimensions[axis];
-    const int* v_column = v_out + axis * size;
+    const struct rray_subscript_summary summary =
+      rray_subscript_summarise(i, axis * size, size);
 
-    for (r_ssize j = 0; j < size; ++j) {
-      const int elt = v_column[j];
-
-      if (elt == r_globals.na_int) {
-        continue;
-      }
-      if (elt < 1) {
-        r_abort_lazy_call(
-          error_call,
-          "Column %d of %s must only contain positive values or missing "
-          "values.",
-          axis + 1,
-          rray_arg_format(i_arg)
-        );
-      }
-      if (elt > dimension) {
-        r_abort_lazy_call(
-          error_call,
-          "Column %d of %s must not contain values greater than %d.",
-          axis + 1,
-          rray_arg_format(i_arg),
-          dimension
-        );
-      }
+    if (summary.any_fractional) {
+      stop_subscript_fractional(i_arg, error_call);
     }
-  }
-
-  FREE(1);
-  return out;
-}
-
-static r_obj* rray_as_extract_integer(
-  r_obj* i,
-  struct rray_arg* i_arg,
-  struct r_lazy error_call
-) {
-  if (r_typeof(i) == R_TYPE_integer) {
-    return vec_bare(i);
-  }
-
-  const r_ssize size = r_length(i);
-  const double* v_i = r_dbl_cbegin(i);
-
-  r_obj* out = KEEP(r_alloc_integer(size));
-  int* v_out = r_int_begin(out);
-
-  for (r_ssize j = 0; j < size; ++j) {
-    const double elt = v_i[j];
-
-    if (isnan(elt)) {
-      v_out[j] = r_globals.na_int;
-      continue;
-    }
-    if (elt != trunc(elt) || elt > INT_MAX || elt < -INT_MAX) {
+    if (summary.min < 1) {
       r_abort_lazy_call(
         error_call,
-        "Can't convert from %s <double> to <integer> due to loss of "
-        "precision.",
+        "Column %d of %s must only contain positive values or missing "
+        "values.",
+        axis + 1,
         rray_arg_format(i_arg)
       );
     }
-
-    v_out[j] = (int) elt;
+    if (summary.max > dimension) {
+      r_abort_lazy_call(
+        error_call,
+        "Column %d of %s must not contain values greater than %d.",
+        axis + 1,
+        rray_arg_format(i_arg),
+        dimension
+      );
+    }
   }
 
-  FREE(1);
-  return out;
+  return (struct rray_extract_subscript){
+    .i = i,
+    .kind = r_typeof(i) == R_TYPE_integer
+      ? RRAY_EXTRACT_SUBSCRIPT_KIND_points_int
+      : RRAY_EXTRACT_SUBSCRIPT_KIND_points_dbl,
+    .size = size
+  };
 }
 
-static r_obj* rray_as_extract_complement(
-  const int* v_i,
-  r_ssize i_size,
+static struct rray_extract_subscript rray_as_extract_complement(
+  r_obj* i,
   r_ssize size
 ) {
+  const r_ssize i_size = r_length(i);
+
   r_obj* out = r_alloc_logical(size);
   int* v_out = r_lgl_begin(out);
 
@@ -319,49 +290,213 @@ static r_obj* rray_as_extract_complement(
     v_out[j] = 1;
   }
 
-  for (r_ssize j = 0; j < i_size; ++j) {
-    const int elt = v_i[j];
+  switch (r_typeof(i)) {
+  case R_TYPE_integer: {
+    const int* v_i = r_int_cbegin(i);
 
-    if (elt != 0) {
-      v_out[-elt - 1] = 0;
+    for (r_ssize j = 0; j < i_size; ++j) {
+      const int elt = v_i[j];
+
+      if (elt != 0) {
+        v_out[-(r_ssize) elt - 1] = 0;
+      }
     }
+
+    break;
+  }
+  case R_TYPE_double: {
+    const double* v_i = r_dbl_cbegin(i);
+
+    for (r_ssize j = 0; j < i_size; ++j) {
+      const double elt = v_i[j];
+
+      if (elt != 0) {
+        v_out[-(r_ssize) elt - 1] = 0;
+      }
+    }
+
+    break;
+  }
+  default:
+    r_stop_unreachable();
+  }
+
+  return (struct rray_extract_subscript){
+    .i = out,
+    .kind = RRAY_EXTRACT_SUBSCRIPT_KIND_mask,
+    .size = rray_mask_size(out, size)
+  };
+}
+
+static struct rray_extract_subscript rray_as_extract_nonzero(
+  r_obj* i,
+  r_ssize size
+) {
+  const r_ssize i_size = r_length(i);
+
+  switch (r_typeof(i)) {
+  case R_TYPE_integer: {
+    const int* v_i = r_int_cbegin(i);
+
+    r_obj* out = r_alloc_integer(size);
+    int* v_out = r_int_begin(out);
+
+    r_ssize k = 0;
+
+    for (r_ssize j = 0; j < i_size; ++j) {
+      const int elt = v_i[j];
+
+      if (elt != 0) {
+        v_out[k] = elt;
+        ++k;
+      }
+    }
+
+    return (struct rray_extract_subscript){
+      .i = out,
+      .kind = RRAY_EXTRACT_SUBSCRIPT_KIND_positions_int,
+      .size = size
+    };
+  }
+  case R_TYPE_double: {
+    const double* v_i = r_dbl_cbegin(i);
+
+    r_obj* out = r_alloc_double(size);
+    double* v_out = r_dbl_begin(out);
+
+    r_ssize k = 0;
+
+    for (r_ssize j = 0; j < i_size; ++j) {
+      const double elt = v_i[j];
+
+      if (elt != 0) {
+        v_out[k] = elt;
+        ++k;
+      }
+    }
+
+    return (struct rray_extract_subscript){
+      .i = out,
+      .kind = RRAY_EXTRACT_SUBSCRIPT_KIND_positions_dbl,
+      .size = size
+    };
+  }
+  default:
+    r_stop_unreachable();
+  }
+}
+
+static r_ssize rray_mask_size(r_obj* mask, r_ssize size) {
+  const int* v_mask = r_lgl_cbegin(mask);
+  const r_ssize mask_step = r_length(mask) == 1 ? 0 : 1;
+
+  r_ssize out = 0;
+
+  for (r_ssize j = 0; j < size; ++j) {
+    out += v_mask[j * mask_step] != 0;
   }
 
   return out;
 }
 
-static r_obj* rray_as_extract_nonzero(const int* v_i, r_ssize i_size) {
-  r_ssize size = 0;
-
-  for (r_ssize j = 0; j < i_size; ++j) {
-    size += v_i[j] != 0;
+static struct rray_subscript_summary rray_subscript_summarise(
+  r_obj* i,
+  r_ssize start,
+  r_ssize size
+) {
+  switch (r_typeof(i)) {
+  case R_TYPE_integer:
+    return rray_subscript_summarise_int(r_int_cbegin(i) + start, size);
+  case R_TYPE_double:
+    return rray_subscript_summarise_dbl(r_dbl_cbegin(i) + start, size);
+  default:
+    r_stop_unreachable();
   }
+}
 
-  r_obj* out = r_alloc_integer(size);
-  int* v_out = r_int_begin(out);
+static struct rray_subscript_summary rray_subscript_summarise_int(
+  const int* v_i,
+  r_ssize size
+) {
+  struct rray_subscript_summary out = {
+    .min = INFINITY,
+    .max = -INFINITY,
+    .zeros = 0,
+    .any_missing = false,
+    .any_fractional = false
+  };
 
-  r_ssize k = 0;
-
-  for (r_ssize j = 0; j < i_size; ++j) {
+  for (r_ssize j = 0; j < size; ++j) {
     const int elt = v_i[j];
 
-    if (elt != 0) {
-      v_out[k] = elt;
-      ++k;
+    if (elt == r_globals.na_int) {
+      out.any_missing = true;
+      continue;
     }
+
+    out.min = fmin(out.min, elt);
+    out.max = fmax(out.max, elt);
+    out.zeros += elt == 0;
   }
 
   return out;
 }
 
-static r_obj* vec_bare(r_obj* x) {
-  if (!r_attrib_has_any(x)) {
-    return x;
+static struct rray_subscript_summary rray_subscript_summarise_dbl(
+  const double* v_i,
+  r_ssize size
+) {
+  struct rray_subscript_summary out = {
+    .min = INFINITY,
+    .max = -INFINITY,
+    .zeros = 0,
+    .any_missing = false,
+    .any_fractional = false
+  };
+
+  for (r_ssize j = 0; j < size; ++j) {
+    const double elt = v_i[j];
+
+    if (isnan(elt)) {
+      out.any_missing = true;
+      continue;
+    }
+
+    out.min = fmin(out.min, elt);
+    out.max = fmax(out.max, elt);
+    out.zeros += elt == 0;
+    out.any_fractional |= elt != trunc(elt);
   }
 
-  r_obj* out = KEEP(r_wrap(x));
-  r_attrib_zap_all(out);
-
-  FREE(1);
   return out;
+}
+
+static r_no_return void stop_subscript_fractional(
+  struct rray_arg* i_arg,
+  struct r_lazy error_call
+) {
+  r_abort_lazy_call(
+    error_call,
+    "Can't convert from %s <double> to <integer> due to loss of precision.",
+    rray_arg_format(i_arg)
+  );
+}
+
+static const char* rray_extract_subscript_kind_name(
+  enum rray_extract_subscript_kind kind
+) {
+  switch (kind) {
+  case RRAY_EXTRACT_SUBSCRIPT_KIND_positions_int:
+    return "positions_int";
+  case RRAY_EXTRACT_SUBSCRIPT_KIND_positions_dbl:
+    return "positions_dbl";
+  case RRAY_EXTRACT_SUBSCRIPT_KIND_mask:
+    return "mask";
+  case RRAY_EXTRACT_SUBSCRIPT_KIND_points_int:
+    return "points_int";
+  case RRAY_EXTRACT_SUBSCRIPT_KIND_points_dbl:
+    return "points_dbl";
+  }
+
+  r_stop_unreachable();
 }

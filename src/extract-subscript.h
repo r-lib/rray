@@ -5,7 +5,21 @@
 
 #include "arg.h"
 
-r_obj* rray_as_extract_subscript(
+enum rray_extract_subscript_kind {
+  RRAY_EXTRACT_SUBSCRIPT_KIND_positions_int,
+  RRAY_EXTRACT_SUBSCRIPT_KIND_positions_dbl,
+  RRAY_EXTRACT_SUBSCRIPT_KIND_mask,
+  RRAY_EXTRACT_SUBSCRIPT_KIND_points_int,
+  RRAY_EXTRACT_SUBSCRIPT_KIND_points_dbl
+};
+
+struct rray_extract_subscript {
+  r_obj* i;
+  enum rray_extract_subscript_kind kind;
+  r_ssize size;
+};
+
+struct rray_extract_subscript rray_as_extract_subscript(
   r_obj* i,
   const int* v_dimensions,
   int dimensionality,

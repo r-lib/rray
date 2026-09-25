@@ -41,21 +41,24 @@
     Condition
       Error in `rray_as_extract_subscript()`:
       ! Can't convert from `i` <double> to <integer> due to loss of precision.
+
+# checks huge double positions against the size of `dimensions`
+
     Code
       rray_as_extract_subscript(1e+10, 3L)
     Condition
       Error in `rray_as_extract_subscript()`:
-      ! Can't convert from `i` <double> to <integer> due to loss of precision.
+      ! `i` must not contain values greater than 3.
     Code
       rray_as_extract_subscript(Inf, 3L)
     Condition
       Error in `rray_as_extract_subscript()`:
-      ! Can't convert from `i` <double> to <integer> due to loss of precision.
+      ! `i` must not contain values greater than 3.
     Code
       rray_as_extract_subscript(-Inf, 3L)
     Condition
       Error in `rray_as_extract_subscript()`:
-      ! Can't convert from `i` <double> to <integer> due to loss of precision.
+      ! `i` must not contain values less than -3.
 
 # checks the size of a logical mask
 
