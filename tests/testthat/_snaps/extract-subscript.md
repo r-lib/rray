@@ -1,4 +1,4 @@
-# checks positions against the size of `dimensions`
+# checks locations against the size of `dimensions`
 
     Code
       rray_as_extract_subscript(7L, c(2L, 3L))
@@ -16,7 +16,7 @@
       Error in `rray_as_extract_subscript()`:
       ! `i` must not contain values greater than 0.
 
-# checks position signs
+# checks location signs
 
     Code
       rray_as_extract_subscript(c(-1L, 2L), 3L)
@@ -29,7 +29,7 @@
       Error in `rray_as_extract_subscript()`:
       ! `i` can't mix negative and missing values.
 
-# checks double positions are whole integers
+# checks double locations are whole integers
 
     Code
       rray_as_extract_subscript(1.5, 3L)
@@ -42,7 +42,7 @@
       Error in `rray_as_extract_subscript()`:
       ! Can't convert from `i` <double> to <integer> due to loss of precision.
 
-# checks huge double positions against the size of `dimensions`
+# checks huge double locations against the size of `dimensions`
 
     Code
       rray_as_extract_subscript(1e+10, 3L)

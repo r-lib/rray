@@ -7,7 +7,7 @@ static struct rray_extract_subscript rray_as_extract_mask(
   struct r_lazy error_call
 );
 
-static struct rray_extract_subscript rray_as_extract_positions(
+static struct rray_extract_subscript rray_as_extract_locations(
   r_obj* i,
   r_ssize size,
   struct rray_arg* i_arg,

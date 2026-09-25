@@ -6,8 +6,8 @@
 #include "arg.h"
 
 enum rray_extract_subscript_kind {
-  RRAY_EXTRACT_SUBSCRIPT_KIND_positions_int,
-  RRAY_EXTRACT_SUBSCRIPT_KIND_positions_dbl,
+  RRAY_EXTRACT_SUBSCRIPT_KIND_locations_int,
+  RRAY_EXTRACT_SUBSCRIPT_KIND_locations_dbl,
   RRAY_EXTRACT_SUBSCRIPT_KIND_mask,
   RRAY_EXTRACT_SUBSCRIPT_KIND_points_int,
   RRAY_EXTRACT_SUBSCRIPT_KIND_points_dbl

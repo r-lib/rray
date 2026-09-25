@@ -73,12 +73,12 @@ r_obj* rray_extract(
   return out;
 }
 
-static inline r_ssize rray_position_offset_int(int position) {
-  return position == r_globals.na_int ? -1 : (r_ssize) position - 1;
+static inline r_ssize rray_location_offset_int(int location) {
+  return location == r_globals.na_int ? -1 : (r_ssize) location - 1;
 }
 
-static inline r_ssize rray_position_offset_dbl(double position) {
-  return isnan(position) ? -1 : (r_ssize) position - 1;
+static inline r_ssize rray_location_offset_dbl(double location) {
+  return isnan(location) ? -1 : (r_ssize) location - 1;
 }
 
 static inline r_ssize rray_point_offset_int(
@@ -123,7 +123,7 @@ static inline r_ssize rray_point_offset_dbl(
   return out;
 }
 
-#define RRAY_EXTRACT_POSITIONS_LOOP(                                           \
+#define RRAY_EXTRACT_LOCATIONS_LOOP(                                           \
   POKE,                                                                        \
   MISSING,                                                                     \
   I_CTYPE,                                                                     \
@@ -199,22 +199,22 @@ static inline r_ssize rray_point_offset_dbl(
 
 #define RRAY_EXTRACT_ITERATE(POKE, MISSING, MASK_LOOP)                         \
   switch (subscript.kind) {                                                    \
-  case RRAY_EXTRACT_SUBSCRIPT_KIND_positions_int:                              \
-    RRAY_EXTRACT_POSITIONS_LOOP(                                               \
+  case RRAY_EXTRACT_SUBSCRIPT_KIND_locations_int:                              \
+    RRAY_EXTRACT_LOCATIONS_LOOP(                                               \
       POKE,                                                                    \
       MISSING,                                                                 \
       int,                                                                     \
       r_int_cbegin,                                                            \
-      rray_position_offset_int                                                 \
+      rray_location_offset_int                                                 \
     );                                                                         \
     break;                                                                     \
-  case RRAY_EXTRACT_SUBSCRIPT_KIND_positions_dbl:                              \
-    RRAY_EXTRACT_POSITIONS_LOOP(                                               \
+  case RRAY_EXTRACT_SUBSCRIPT_KIND_locations_dbl:                              \
+    RRAY_EXTRACT_LOCATIONS_LOOP(                                               \
       POKE,                                                                    \
       MISSING,                                                                 \
       double,                                                                  \
       r_dbl_cbegin,                                                            \
-      rray_position_offset_dbl                                                 \
+      rray_location_offset_dbl                                                 \
     );                                                                         \
     break;                                                                     \
   case RRAY_EXTRACT_SUBSCRIPT_KIND_mask:                                       \
@@ -359,7 +359,7 @@ static r_obj* rray_extract_list(
   RRAY_EXTRACT_BARRIER(R_TYPE_list, r_list_cbegin, r_list_poke, r_null);
 }
 
-#undef RRAY_EXTRACT_POSITIONS_LOOP
+#undef RRAY_EXTRACT_LOCATIONS_LOOP
 #undef RRAY_EXTRACT_ATOMIC_MASK_LOOP
 #undef RRAY_EXTRACT_BARRIER_MASK_LOOP
 #undef RRAY_EXTRACT_POINTS_LOOP

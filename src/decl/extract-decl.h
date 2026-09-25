@@ -41,8 +41,8 @@ static r_obj* rray_extract_list(
   int dimensionality
 );
 
-static inline r_ssize rray_position_offset_int(int position);
-static inline r_ssize rray_position_offset_dbl(double position);
+static inline r_ssize rray_location_offset_int(int location);
+static inline r_ssize rray_location_offset_dbl(double location);
 
 static inline r_ssize rray_point_offset_int(
   const int* v_point,

@@ -1,14 +1,14 @@
 # ------------------------------------------------------------------------------
 # rray_extract()
 
-test_that("extracts flat positions in column-major order", {
+test_that("extracts 1D locations in column-major order", {
   x <- array(1:24, c(2L, 3L, 4L))
 
   expect_identical(rray_extract(x, c(1L, 4L, 24L)), array(c(1L, 4L, 24L), 3L))
   expect_identical(rray_extract(x, c(24, 1)), array(c(24L, 1L), 2L))
 })
 
-test_that("flat positions support duplicates, zero, and missing values", {
+test_that("1D locations support duplicates, zero, and missing values", {
   x <- array(1:6, c(2L, 3L))
 
   expect_identical(
@@ -17,7 +17,7 @@ test_that("flat positions support duplicates, zero, and missing values", {
   )
 })
 
-test_that("negative flat positions select the complement", {
+test_that("negative 1D locations select the complement", {
   x <- array(1:6, c(2L, 3L))
 
   expect_identical(rray_extract(x, -(1:4)), array(5:6, 2L))
@@ -163,12 +163,12 @@ test_that("returns every native storage type", {
     as.raw(1:3),
     list("a", 2L, NULL)
   )
-  flat <- c(3L, NA, 1L)
+  locations <- c(3L, NA, 1L)
   mask <- c(TRUE, NA, TRUE)
   points <- matrix(c(3L, NA, 1L), ncol = 1L)
 
   for (x in xs) {
-    expect_identical(rray_extract(x, flat), extract_base(x, flat))
+    expect_identical(rray_extract(x, locations), extract_base(x, locations))
     expect_identical(rray_extract(x, mask), extract_base(x, mask))
     expect_identical(rray_extract(x, points), extract_base(x, points))
   }

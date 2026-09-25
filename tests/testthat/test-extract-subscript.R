@@ -1,64 +1,64 @@
 # ------------------------------------------------------------------------------
 # rray_as_extract_subscript()
 
-test_that("returns integer positions unchanged", {
+test_that("returns integer locations unchanged", {
   expect_identical(
     rray_as_extract_subscript(c(3L, 1L, 3L), 3L),
-    new_extract_subscript(c(3L, 1L, 3L), "positions_int", 3L)
+    new_extract_subscript(c(3L, 1L, 3L), "locations_int", 3L)
   )
   expect_identical(
     rray_as_extract_subscript(integer(), 3L),
-    new_extract_subscript(integer(), "positions_int", 0L)
+    new_extract_subscript(integer(), "locations_int", 0L)
   )
 })
 
-test_that("returns double positions unchanged", {
+test_that("returns double locations unchanged", {
   expect_identical(
     rray_as_extract_subscript(c(3, 1), 3L),
-    new_extract_subscript(c(3, 1), "positions_dbl", 2L)
+    new_extract_subscript(c(3, 1), "locations_dbl", 2L)
   )
   expect_identical(
     rray_as_extract_subscript(c(NA, NaN), 3L),
-    new_extract_subscript(c(NA, NaN), "positions_dbl", 2L)
+    new_extract_subscript(c(NA, NaN), "locations_dbl", 2L)
   )
   expect_identical(
     rray_as_extract_subscript(double(), 3L),
-    new_extract_subscript(double(), "positions_dbl", 0L)
+    new_extract_subscript(double(), "locations_dbl", 0L)
   )
 })
 
-test_that("keeps attributes on positions", {
+test_that("keeps attributes on locations", {
   i <- array(c(2L, 1L), 2L, dimnames = list(c("a", "b")))
 
   expect_identical(
     rray_as_extract_subscript(i, 3L),
-    new_extract_subscript(i, "positions_int", 2L)
+    new_extract_subscript(i, "locations_int", 2L)
   )
 })
 
-test_that("keeps missing positions", {
+test_that("keeps missing locations", {
   expect_identical(
     rray_as_extract_subscript(c(NA, 2L, NA), 3L),
-    new_extract_subscript(c(NA, 2L, NA), "positions_int", 3L)
+    new_extract_subscript(c(NA, 2L, NA), "locations_int", 3L)
   )
 })
 
-test_that("drops zero positions", {
+test_that("drops zero locations", {
   expect_identical(
     rray_as_extract_subscript(c(0L, 2L, 0L, NA), 3L),
-    new_extract_subscript(c(2L, NA), "positions_int", 2L)
+    new_extract_subscript(c(2L, NA), "locations_int", 2L)
   )
   expect_identical(
     rray_as_extract_subscript(c(0L, 0L), 3L),
-    new_extract_subscript(integer(), "positions_int", 0L)
+    new_extract_subscript(integer(), "locations_int", 0L)
   )
   expect_identical(
     rray_as_extract_subscript(c(3, 0, NA), 3L),
-    new_extract_subscript(c(3, NA), "positions_dbl", 2L)
+    new_extract_subscript(c(3, NA), "locations_dbl", 2L)
   )
 })
 
-test_that("turns negative positions into a complement mask", {
+test_that("turns negative locations into a complement mask", {
   expect_identical(
     rray_as_extract_subscript(c(-1L, -3L), 4L),
     new_extract_subscript(c(FALSE, TRUE, FALSE, TRUE), "mask", 2L)
@@ -73,10 +73,10 @@ test_that("turns negative positions into a complement mask", {
   )
 })
 
-test_that("checks positions against the size of `dimensions`", {
+test_that("checks locations against the size of `dimensions`", {
   expect_identical(
     rray_as_extract_subscript(6L, c(2L, 3L)),
-    new_extract_subscript(6L, "positions_int", 1L)
+    new_extract_subscript(6L, "locations_int", 1L)
   )
   expect_identical(
     rray_as_extract_subscript(-6L, c(2L, 3L)),
@@ -90,21 +90,21 @@ test_that("checks positions against the size of `dimensions`", {
   })
 })
 
-test_that("checks position signs", {
+test_that("checks location signs", {
   expect_snapshot(error = TRUE, {
     rray_as_extract_subscript(c(-1L, 2L), 3L)
     rray_as_extract_subscript(c(-1L, NA), 3L)
   })
 })
 
-test_that("checks double positions are whole integers", {
+test_that("checks double locations are whole integers", {
   expect_snapshot(error = TRUE, {
     rray_as_extract_subscript(1.5, 3L)
     rray_as_extract_subscript(-1.5, 3L)
   })
 })
 
-test_that("checks huge double positions against the size of `dimensions`", {
+test_that("checks huge double locations against the size of `dimensions`", {
   expect_snapshot(error = TRUE, {
     rray_as_extract_subscript(1e10, 3L)
     rray_as_extract_subscript(Inf, 3L)

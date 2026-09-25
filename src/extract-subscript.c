@@ -80,7 +80,7 @@ struct rray_extract_subscript rray_as_extract_subscript(
 
     switch (i_dimensionality) {
     case 1:
-      return rray_as_extract_positions(i, size, i_arg, error_call);
+      return rray_as_extract_locations(i, size, i_arg, error_call);
     case 2:
       return rray_as_extract_points(
         i,
@@ -158,7 +158,7 @@ static struct rray_extract_subscript rray_as_extract_mask(
   };
 }
 
-static struct rray_extract_subscript rray_as_extract_positions(
+static struct rray_extract_subscript rray_as_extract_locations(
   r_obj* i,
   r_ssize size,
   struct rray_arg* i_arg,
@@ -215,8 +215,8 @@ static struct rray_extract_subscript rray_as_extract_positions(
   return (struct rray_extract_subscript){
     .i = i,
     .kind = r_typeof(i) == R_TYPE_integer
-      ? RRAY_EXTRACT_SUBSCRIPT_KIND_positions_int
-      : RRAY_EXTRACT_SUBSCRIPT_KIND_positions_dbl,
+      ? RRAY_EXTRACT_SUBSCRIPT_KIND_locations_int
+      : RRAY_EXTRACT_SUBSCRIPT_KIND_locations_dbl,
     .size = i_size
   };
 }
@@ -361,7 +361,7 @@ static struct rray_extract_subscript rray_as_extract_nonzero(
 
     const struct rray_extract_subscript subscript = {
       .i = out,
-      .kind = RRAY_EXTRACT_SUBSCRIPT_KIND_positions_int,
+      .kind = RRAY_EXTRACT_SUBSCRIPT_KIND_locations_int,
       .size = size
     };
 
@@ -387,7 +387,7 @@ static struct rray_extract_subscript rray_as_extract_nonzero(
 
     const struct rray_extract_subscript subscript = {
       .i = out,
-      .kind = RRAY_EXTRACT_SUBSCRIPT_KIND_positions_dbl,
+      .kind = RRAY_EXTRACT_SUBSCRIPT_KIND_locations_dbl,
       .size = size
     };
 
@@ -499,10 +499,10 @@ static const char* rray_extract_subscript_kind_name(
   enum rray_extract_subscript_kind kind
 ) {
   switch (kind) {
-  case RRAY_EXTRACT_SUBSCRIPT_KIND_positions_int:
-    return "positions_int";
-  case RRAY_EXTRACT_SUBSCRIPT_KIND_positions_dbl:
-    return "positions_dbl";
+  case RRAY_EXTRACT_SUBSCRIPT_KIND_locations_int:
+    return "locations_int";
+  case RRAY_EXTRACT_SUBSCRIPT_KIND_locations_dbl:
+    return "locations_dbl";
   case RRAY_EXTRACT_SUBSCRIPT_KIND_mask:
     return "mask";
   case RRAY_EXTRACT_SUBSCRIPT_KIND_points_int:
