@@ -24,7 +24,7 @@
 #' For raw arrays the missing value is `as.raw(0)`, and for list arrays it is
 #' `NULL`.
 #'
-#' @param x A bare array or vector.
+#' @param x An array.
 #'
 #' @param i A numeric vector of locations, a logical vector, a logical array
 #'   with the same dimensions as `x`, or a numeric matrix of coordinate points.

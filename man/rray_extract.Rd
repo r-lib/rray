@@ -7,7 +7,7 @@
 rray_extract(x, i)
 }
 \arguments{
-\item{x}{A bare array or vector.}
+\item{x}{An array.}
 
 \item{i}{A numeric vector of locations, a logical vector, a logical array
 with the same dimensions as \code{x}, or a numeric matrix of coordinate points.}
