@@ -248,10 +248,10 @@ static struct rray_extract_subscript rray_as_extract_points(
     );
   }
 
-  for (int axis = 0; axis < columns; ++axis) {
-    const int dimension = v_dimensions[axis];
+  for (int column = 0; column < columns; ++column) {
+    const int dimension = v_dimensions[column];
     const struct rray_subscript_summary summary =
-      rray_subscript_summarise(index, axis * rows, rows);
+      rray_subscript_summarise(index, column * rows, rows);
 
     if (summary.any_fractional) {
       stop_subscript_fractional(index_arg, error_call);
@@ -261,7 +261,7 @@ static struct rray_extract_subscript rray_as_extract_points(
         error_call,
         "Column %d of %s must only contain positive values or missing "
         "values.",
-        axis + 1,
+        column + 1,
         rray_arg_format(index_arg)
       );
     }
@@ -269,7 +269,7 @@ static struct rray_extract_subscript rray_as_extract_points(
       r_abort_lazy_call(
         error_call,
         "Column %d of %s must not contain values greater than %d.",
-        axis + 1,
+        column + 1,
         rray_arg_format(index_arg),
         dimension
       );
