@@ -161,7 +161,7 @@ static r_obj* rray_combine_names(
 
   if (axis_names != r_null) {
     if (out == r_null) {
-      out = r_alloc_list(r_length(dimensions));
+      out = r_alloc_list(rray_dimensionality_from_dimensions(dimensions));
       KEEP_AT(out, out_loc);
     }
     r_list_poke(out, axis - 1, axis_names);
