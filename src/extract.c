@@ -136,7 +136,7 @@ r_obj* rray_extract(
   MISSING,                                                                     \
   INDEX_CTYPE,                                                                 \
   INDEX_CONST_DEREF,                                                           \
-  OFFSET                                                                       \
+  POINT_TO_LOCATION                                                            \
 )                                                                              \
   do {                                                                         \
     const INDEX_CTYPE* v_index = INDEX_CONST_DEREF(subscript.index);           \
@@ -149,9 +149,14 @@ r_obj* rray_extract(
     );                                                                         \
                                                                                \
     for (r_ssize i = 0; i < subscript.size; ++i) {                             \
-      const r_ssize offset =                                                   \
-        OFFSET(v_index, i, subscript.size, v_strides, dimensionality);         \
-      POKE(out, i, offset == -1 ? MISSING : v_x[offset]);                      \
+      const r_ssize location = POINT_TO_LOCATION(                              \
+        v_index,                                                               \
+        i,                                                                     \
+        subscript.size,                                                        \
+        v_strides,                                                             \
+        dimensionality                                                         \
+      );                                                                       \
+      POKE(out, i, location == -1 ? MISSING : v_x[location]);                  \
     }                                                                          \
   } while (0)
 
