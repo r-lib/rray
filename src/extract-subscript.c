@@ -287,7 +287,7 @@ static struct rray_extract_subscript rray_as_extract_complement(
 ) {
   const r_ssize i_size = r_length(i);
 
-  r_obj* out = r_alloc_logical(size);
+  r_obj* out = KEEP(r_alloc_logical(size));
   int* v_out = r_lgl_begin(out);
 
   for (r_ssize j = 0; j < size; ++j) {
@@ -325,11 +325,14 @@ static struct rray_extract_subscript rray_as_extract_complement(
     r_stop_unreachable();
   }
 
-  return (struct rray_extract_subscript){
+  const struct rray_extract_subscript subscript = {
     .i = out,
     .kind = RRAY_EXTRACT_SUBSCRIPT_KIND_mask,
     .size = rray_mask_size(out, size)
   };
+
+  FREE(1);
+  return subscript;
 }
 
 static struct rray_extract_subscript rray_as_extract_nonzero(
@@ -342,7 +345,7 @@ static struct rray_extract_subscript rray_as_extract_nonzero(
   case R_TYPE_integer: {
     const int* v_i = r_int_cbegin(i);
 
-    r_obj* out = r_alloc_integer(size);
+    r_obj* out = KEEP(r_alloc_integer(size));
     int* v_out = r_int_begin(out);
 
     r_ssize k = 0;
@@ -356,16 +359,19 @@ static struct rray_extract_subscript rray_as_extract_nonzero(
       }
     }
 
-    return (struct rray_extract_subscript){
+    const struct rray_extract_subscript subscript = {
       .i = out,
       .kind = RRAY_EXTRACT_SUBSCRIPT_KIND_positions_int,
       .size = size
     };
+
+    FREE(1);
+    return subscript;
   }
   case R_TYPE_double: {
     const double* v_i = r_dbl_cbegin(i);
 
-    r_obj* out = r_alloc_double(size);
+    r_obj* out = KEEP(r_alloc_double(size));
     double* v_out = r_dbl_begin(out);
 
     r_ssize k = 0;
@@ -379,11 +385,14 @@ static struct rray_extract_subscript rray_as_extract_nonzero(
       }
     }
 
-    return (struct rray_extract_subscript){
+    const struct rray_extract_subscript subscript = {
       .i = out,
       .kind = RRAY_EXTRACT_SUBSCRIPT_KIND_positions_dbl,
       .size = size
     };
+
+    FREE(1);
+    return subscript;
   }
   default:
     r_stop_unreachable();
