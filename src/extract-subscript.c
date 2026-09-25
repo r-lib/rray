@@ -403,6 +403,8 @@ static struct rray_extract_subscript rray_as_extract_nonzero(
   }
 }
 
+// Computes number of used values in `x`. Includes both `TRUE` and `NA` logical
+// values!
 static r_ssize rray_mask_size(r_obj* mask, r_ssize size) {
   const int* v_mask = r_lgl_cbegin(mask);
   const r_ssize mask_step = r_length(mask) == 1 ? 0 : 1;
