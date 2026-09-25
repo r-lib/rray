@@ -73,56 +73,6 @@ r_obj* rray_extract(
   return out;
 }
 
-static inline r_ssize rray_location_offset_int(int location) {
-  return location == r_globals.na_int ? -1 : (r_ssize) location - 1;
-}
-
-static inline r_ssize rray_location_offset_dbl(double location) {
-  return isnan(location) ? -1 : (r_ssize) location - 1;
-}
-
-static inline r_ssize rray_point_offset_int(
-  const int* v_point,
-  r_ssize size,
-  const r_ssize* v_strides,
-  int dimensionality
-) {
-  r_ssize out = 0;
-
-  for (int axis = 0; axis < dimensionality; ++axis) {
-    const int coordinate = v_point[axis * size];
-
-    if (coordinate == r_globals.na_int) {
-      return -1;
-    }
-
-    out += (r_ssize) (coordinate - 1) * v_strides[axis];
-  }
-
-  return out;
-}
-
-static inline r_ssize rray_point_offset_dbl(
-  const double* v_point,
-  r_ssize size,
-  const r_ssize* v_strides,
-  int dimensionality
-) {
-  r_ssize out = 0;
-
-  for (int axis = 0; axis < dimensionality; ++axis) {
-    const double coordinate = v_point[axis * size];
-
-    if (isnan(coordinate)) {
-      return -1;
-    }
-
-    out += ((r_ssize) coordinate - 1) * v_strides[axis];
-  }
-
-  return out;
-}
-
 #define RRAY_EXTRACT_LOCATIONS_LOOP(                                           \
   POKE,                                                                        \
   MISSING,                                                                     \
@@ -367,3 +317,53 @@ static r_obj* rray_extract_list(
 #undef RRAY_EXTRACT_ATOMIC_POKE
 #undef RRAY_EXTRACT_ATOMIC
 #undef RRAY_EXTRACT_BARRIER
+
+static inline r_ssize rray_location_offset_int(int location) {
+  return location == r_globals.na_int ? -1 : (r_ssize) location - 1;
+}
+
+static inline r_ssize rray_location_offset_dbl(double location) {
+  return isnan(location) ? -1 : (r_ssize) location - 1;
+}
+
+static inline r_ssize rray_point_offset_int(
+  const int* v_point,
+  r_ssize size,
+  const r_ssize* v_strides,
+  int dimensionality
+) {
+  r_ssize out = 0;
+
+  for (int axis = 0; axis < dimensionality; ++axis) {
+    const int coordinate = v_point[axis * size];
+
+    if (coordinate == r_globals.na_int) {
+      return -1;
+    }
+
+    out += (r_ssize) (coordinate - 1) * v_strides[axis];
+  }
+
+  return out;
+}
+
+static inline r_ssize rray_point_offset_dbl(
+  const double* v_point,
+  r_ssize size,
+  const r_ssize* v_strides,
+  int dimensionality
+) {
+  r_ssize out = 0;
+
+  for (int axis = 0; axis < dimensionality; ++axis) {
+    const double coordinate = v_point[axis * size];
+
+    if (isnan(coordinate)) {
+      return -1;
+    }
+
+    out += ((r_ssize) coordinate - 1) * v_strides[axis];
+  }
+
+  return out;
+}
