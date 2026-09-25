@@ -30,7 +30,7 @@
 #'   with the same dimensions as `x`, or a numeric matrix of coordinate points.
 #'
 #' @returns
-#' A one-dimensional array with the same storage type as `x`.
+#' A one-dimensional array. Names are always dropped.
 #'
 #' @export
 #' @examples

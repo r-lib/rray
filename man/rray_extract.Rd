@@ -13,7 +13,7 @@ rray_extract(x, i)
 with the same dimensions as \code{x}, or a numeric matrix of coordinate points.}
 }
 \value{
-A one-dimensional array with the same storage type as \code{x}.
+A one-dimensional array. Names are always dropped.
 }
 \description{
 \code{rray_extract()} selects values from \code{x} by 1D location or by coordinate
