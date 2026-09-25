@@ -123,6 +123,8 @@ static struct rray_extract_subscript rray_as_extract_mask(
     : rray_dimensionality_from_dimensions(i_dimensions);
 
   if (i_dimensionality == 1) {
+    // Check for size 1 or size `size`. Note we don't expand a single `TRUE`, we
+    // have native support for that.
     const r_ssize i_size = r_length(i);
 
     if (i_size != 1 && i_size != size) {
