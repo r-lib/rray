@@ -123,6 +123,8 @@ static struct rray_extract_subscript rray_as_extract_mask(
     : rray_dimensionality_from_dimensions(i_dimensions);
 
   if (i_dimensionality != 1) {
+    // If a logical array is provided, it must match `x` dimensions exactly. In
+    // theory it could broadcast but likely not worth it.
     const bool equal = rray_dimensions_are_equal(
       r_int_cbegin(i_dimensions),
       i_dimensionality,
