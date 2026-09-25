@@ -42,10 +42,10 @@ For raw arrays the missing value is \code{as.raw(0)}, and for list arrays it is
 \examples{
 x <- array(1:24, c(2L, 3L, 4L))
 
-# Flat positions, in column-major order
+# 1D locations
 rray_extract(x, c(1, 4, 24))
 
-# Negative positions drop elements
+# Negative locations drop elements
 rray_extract(x, -(1:20))
 
 # A logical mask with the same dimensions as `x`
