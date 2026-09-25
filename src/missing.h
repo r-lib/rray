@@ -13,9 +13,7 @@ static inline bool rray_dbl_is_missing(double x) {
 
 static inline bool rray_cpl_is_missing(r_complex x) {
   // Purposefully bitwise, can help compiler perform vectorization
-  const bool real_missing = ISNAN(x.r);
-  const bool imaginary_missing = ISNAN(x.i);
-  return real_missing | imaginary_missing;
+  return (int) ISNAN(x.r) | (int) ISNAN(x.i);
 }
 
 #endif

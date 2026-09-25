@@ -554,9 +554,7 @@ static r_obj* rray_compare_dbl_dbl(
 #undef RRAY_COMPARE
 
 #define RRAY_COMPARE_ONE(X_IS_MISSING, Y_IS_MISSING, OPERATOR)                 \
-  const bool x_missing = X_IS_MISSING(x);                                      \
-  const bool y_missing = Y_IS_MISSING(y);                                      \
-  const bool missing = x_missing | y_missing;                                  \
+  const bool missing = (int) X_IS_MISSING(x) | (int) Y_IS_MISSING(y);          \
   const int elt = x OPERATOR y;                                                \
   return missing ? r_globals.na_lgl : elt;
 
