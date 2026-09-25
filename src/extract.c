@@ -189,7 +189,7 @@ r_obj* rray_extract(
       MISSING,                                                                 \
       int,                                                                     \
       r_int_cbegin,                                                            \
-      rray_point_offset_int                                                    \
+      rray_point_to_location_int                                               \
     );                                                                         \
     break;                                                                     \
   case RRAY_EXTRACT_SUBSCRIPT_KIND_points_dbl:                                 \
@@ -198,7 +198,7 @@ r_obj* rray_extract(
       MISSING,                                                                 \
       double,                                                                  \
       r_dbl_cbegin,                                                            \
-      rray_point_offset_dbl                                                    \
+      rray_point_to_location_dbl                                               \
     );                                                                         \
     break;                                                                     \
   }
@@ -339,7 +339,7 @@ static inline bool rray_location_is_missing_dbl(double location) {
   return isnan(location);
 }
 
-static inline r_ssize rray_point_offset_int(
+static inline r_ssize rray_point_to_location_int(
   const int* v_index,
   r_ssize row,
   r_ssize rows,
@@ -361,7 +361,7 @@ static inline r_ssize rray_point_offset_int(
   return out;
 }
 
-static inline r_ssize rray_point_offset_dbl(
+static inline r_ssize rray_point_to_location_dbl(
   const double* v_index,
   r_ssize row,
   r_ssize rows,
