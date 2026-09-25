@@ -4,7 +4,7 @@
 #' point. The result is always a 1D array.
 #'
 #' @details
-#' The type and shape of `i` decide how it is used.
+#' The type and shape of `i` decide how it is used:
 #'
 #' - An integer or double vector holds flat positions. `x` is treated as its
 #'   column-major storage vector, so position `4` in a 2 x 3 matrix is row 2,

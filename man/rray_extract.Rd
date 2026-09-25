@@ -20,7 +20,7 @@ A one-dimensional array with the same storage type as \code{x}.
 point. The result is always a 1D array.
 }
 \details{
-The type and shape of \code{i} decide how it is used.
+The type and shape of \code{i} decide how it is used:
 \itemize{
 \item An integer or double vector holds flat positions. \code{x} is treated as its
 column-major storage vector, so position \code{4} in a 2 x 3 matrix is row 2,
