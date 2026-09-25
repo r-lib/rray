@@ -12,9 +12,9 @@
 #'   elements, zero is ignored, duplicates repeat elements, and `NA` gives a
 #'   missing value.
 #'
-#' - A logical vector is a flat mask. It must be size 1 or the size of `x`. A
-#'   logical array is also a mask if it has the same dimensions as `x`, so
-#'   `rray_extract(x, x > 5)` works.
+#' - A logical vector must be size 1 or the size of `x`. A logical array must
+#'   have the same dimensions as `x`, so `rray_extract(x, x > 5)` works. When
+#'   `TRUE`, the corresponding value in `x` is returned.
 #'
 #' - An integer or double matrix holds coordinate points. Each row selects one
 #'   element, and there must be one column per axis of `x`. Coordinates must be

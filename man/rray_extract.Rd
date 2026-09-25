@@ -27,9 +27,9 @@ equivalent flattened array, so location \code{4} in a 2 x 3 matrix is row 2,
 column 2. Locations follow the usual R rules: negative values drop
 elements, zero is ignored, duplicates repeat elements, and \code{NA} gives a
 missing value.
-\item A logical vector is a flat mask. It must be size 1 or the size of \code{x}. A
-logical array is also a mask if it has the same dimensions as \code{x}, so
-\code{rray_extract(x, x > 5)} works.
+\item A logical vector must be size 1 or the size of \code{x}. A logical array must
+have the same dimensions as \code{x}, so \code{rray_extract(x, x > 5)} works. When
+\code{TRUE}, the corresponding value in \code{x} is returned.
 \item An integer or double matrix holds coordinate points. Each row selects one
 element, and there must be one column per axis of \code{x}. Coordinates must be
 positive and within the dimension of their axis. \code{NA} gives a missing
