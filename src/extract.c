@@ -146,7 +146,7 @@ r_obj* rray_extract(
                                                                                \
     for (r_ssize i = 0; i < subscript.size; ++i) {                             \
       const r_ssize offset =                                                   \
-        OFFSET(v_index + i, subscript.size, v_strides, dimensionality);        \
+        OFFSET(v_index, i, subscript.size, v_strides, dimensionality);         \
       POKE(out, i, offset == -1 ? MISSING : v_x[offset]);                      \
     }                                                                          \
   } while (0)
@@ -331,42 +331,44 @@ static inline r_ssize rray_location_offset_dbl(double location) {
 }
 
 static inline r_ssize rray_point_offset_int(
-  const int* v_point,
-  r_ssize size,
+  const int* v_index,
+  r_ssize row,
+  r_ssize rows,
   const r_ssize* v_strides,
-  int dimensionality
+  int columns
 ) {
   r_ssize out = 0;
 
-  for (int axis = 0; axis < dimensionality; ++axis) {
-    const int coordinate = v_point[axis * size];
+  for (int column = 0; column < columns; ++column) {
+    const int coordinate = v_index[row + column * rows];
 
     if (coordinate == r_globals.na_int) {
       return -1;
     }
 
-    out += (r_ssize) (coordinate - 1) * v_strides[axis];
+    out += (r_ssize) (coordinate - 1) * v_strides[column];
   }
 
   return out;
 }
 
 static inline r_ssize rray_point_offset_dbl(
-  const double* v_point,
-  r_ssize size,
+  const double* v_index,
+  r_ssize row,
+  r_ssize rows,
   const r_ssize* v_strides,
-  int dimensionality
+  int columns
 ) {
   r_ssize out = 0;
 
-  for (int axis = 0; axis < dimensionality; ++axis) {
-    const double coordinate = v_point[axis * size];
+  for (int column = 0; column < columns; ++column) {
+    const double coordinate = v_index[row + column * rows];
 
     if (isnan(coordinate)) {
       return -1;
     }
 
-    out += ((r_ssize) coordinate - 1) * v_strides[axis];
+    out += ((r_ssize) coordinate - 1) * v_strides[column];
   }
 
   return out;

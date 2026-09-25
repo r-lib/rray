@@ -45,14 +45,16 @@ static inline r_ssize rray_location_offset_int(int location);
 static inline r_ssize rray_location_offset_dbl(double location);
 
 static inline r_ssize rray_point_offset_int(
-  const int* v_point,
-  r_ssize size,
+  const int* v_index,
+  r_ssize row,
+  r_ssize rows,
   const r_ssize* v_strides,
-  int dimensionality
+  int columns
 );
 static inline r_ssize rray_point_offset_dbl(
-  const double* v_point,
-  r_ssize size,
+  const double* v_index,
+  r_ssize row,
+  r_ssize rows,
   const r_ssize* v_strides,
-  int dimensionality
+  int columns
 );
