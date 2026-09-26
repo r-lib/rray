@@ -94,12 +94,12 @@ r_obj* rray_slice(
   const r_ssize size =
     rray_size_from_dimensions_checked(v_dimensions, dimensionality, error_call);
 
-  bool v_identity[RRAY_MAX_DIMENSIONALITY];
   r_ssize locations_size = 0;
+  bool v_identity[RRAY_MAX_DIMENSIONALITY];
+
   for (int i = 0; i < dimensionality; ++i) {
     const bool identity = r_is_true(v_indices[i]);
     v_identity[i] = identity;
-
     if (!identity) {
       locations_size += v_dimensions[i];
     }
