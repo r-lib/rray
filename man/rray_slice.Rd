@@ -35,9 +35,15 @@ has the same dimensionality as \code{x}.
 missing value is \code{as.raw(0)}, and for list arrays it is \code{NULL}.
 
 Unlike \code{[}, an empty argument does not select a whole axis. Use \code{TRUE}
-instead:
+instead, so that every axis is provided explicitly:
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_slice(x, 1, TRUE)
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{x <- array(1:24, c(2L, 3L, 4L))
+
+# Base R
+x[1, , , drop = FALSE]
+
+# rray
+rray_slice(x, 1, TRUE, TRUE)
 }\if{html}{\out{</div>}}
 }
 \examples{

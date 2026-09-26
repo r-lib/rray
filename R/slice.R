@@ -9,10 +9,16 @@
 #' missing value is `as.raw(0)`, and for list arrays it is `NULL`.
 #'
 #' Unlike `[`, an empty argument does not select a whole axis. Use `TRUE`
-#' instead:
+#' instead, so that every axis is provided explicitly:
 #'
 #' ```r
-#' rray_slice(x, 1, TRUE)
+#' x <- array(1:24, c(2L, 3L, 4L))
+#'
+#' # Base R
+#' x[1, , , drop = FALSE]
+#'
+#' # rray
+#' rray_slice(x, 1, TRUE, TRUE)
 #' ```
 #'
 #' @param x An array.
