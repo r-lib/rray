@@ -218,6 +218,7 @@ test_that("an empty selection has no names", {
     rray_slice(x, NULL, 2L),
     array(integer(), c(0L, 1L), dimnames = list(NULL, "d"))
   )
+  expect_identical(rray_slice(x, numeric(), TRUE), slice_base(x, numeric(), ))
 })
 
 test_that("subscripts can be spliced into `...`", {
