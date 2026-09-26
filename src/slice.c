@@ -10,7 +10,7 @@
 #define RRAY_SLICE_MISSING R_SSIZE_MIN
 
 struct rray_slice_axis {
-  r_ssize* offsets;
+  r_ssize* v_offsets;
   r_ssize stride;
   bool identity;
 };
@@ -113,10 +113,10 @@ r_obj* rray_slice(
   for (int i = 0; i < dimensionality; ++i) {
     if (v_identity[i]) {
       v_axes[i].identity = true;
-      v_axes[i].offsets = NULL;
+      v_axes[i].v_offsets = NULL;
     } else {
       v_axes[i].identity = false;
-      v_axes[i].offsets = v_locations;
+      v_axes[i].v_offsets = v_locations;
       rray_slice_fill_locations(v_subscripts[i], v_locations);
       v_locations += v_dimensions[i];
     }
@@ -146,7 +146,7 @@ r_obj* rray_slice(
 
     if (!v_axes[i].identity) {
       any_missing |= rray_slice_locations_as_offsets(
-        v_axes[i].offsets,
+        v_axes[i].v_offsets,
         v_dimensions[i],
         v_x_strides[i]
       );
@@ -321,7 +321,7 @@ static r_obj* rray_slice_names(
     r_obj* axis_names = rray_slice_axis_names(
       x_axis_names,
       v_x_dimensions[axis],
-      v_axes[axis].offsets,
+      v_axes[axis].v_offsets,
       v_dimensions[axis]
     );
     r_list_poke(out, axis, axis_names);
@@ -411,7 +411,7 @@ static inline r_ssize rray_slice_start(
 
   for (int axis = 1; axis < dimensionality; ++axis) {
     if (!v_axes[axis].identity) {
-      out += v_axes[axis].offsets[0];
+      out += v_axes[axis].v_offsets[0];
     }
   }
 
@@ -424,7 +424,7 @@ static inline r_ssize rray_slice_offset(
   r_ssize point
 ) {
   const struct rray_slice_axis* p_axis = &v_axes[axis];
-  return p_axis->identity ? point * p_axis->stride : p_axis->offsets[point];
+  return p_axis->identity ? point * p_axis->stride : p_axis->v_offsets[point];
 }
 
 #define RRAY_SLICE_NEXT(START, V_POINT)                                        \
@@ -461,7 +461,7 @@ static inline r_ssize rray_slice_offset(
   }
 
 #define RRAY_SLICE_ITERATE(POKE, MISSING)                                      \
-  const r_ssize* v_run_offsets = v_axes[0].offsets;                            \
+  const r_ssize* v_run_offsets = v_axes[0].v_offsets;                          \
   const r_ssize run_size = v_dimensions[0];                                    \
   r_ssize run_start = 0;                                                       \
                                                                                \
