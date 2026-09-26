@@ -31,14 +31,6 @@
 #' `rray_extract_assign()` selects values with the same rules, with one
 #' exception: `i` can't contain missing values.
 #'
-#' @section Assignment:
-#' When a value is selected more than once, the last assignment wins:
-#'
-#' ```r
-#' rray_extract_assign(1:3, c(2, 2), c(10L, 20L))
-#' #> [1]  1 20  3
-#' ```
-#'
 #' @param x An array.
 #'
 #' @param i A numeric vector of locations, a logical vector, a logical array

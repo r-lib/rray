@@ -56,15 +56,6 @@ For raw arrays the missing value is \code{as.raw(0)}, and for list arrays it is
 \code{rray_extract_assign()} selects values with the same rules, with one
 exception: \code{i} can't contain missing values.
 }
-\section{Assignment}{
-
-When a value is selected more than once, the last assignment wins:
-
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_extract_assign(1:3, c(2, 2), c(10L, 20L))
-#> [1]  1 20  3
-}\if{html}{\out{</div>}}
-}
-
 \examples{
 x <- array(1:24, c(2L, 3L, 4L))
 
