@@ -1,8 +1,6 @@
 #ifndef RRAY_SUBSCRIPT_H
 #define RRAY_SUBSCRIPT_H
 
-#include <math.h>
-
 #include "rlang.h"
 
 #include "arg.h"
@@ -57,13 +55,5 @@ r_no_return void stop_subscript_fractional(
 );
 
 r_obj* rray_subscript_as_list(struct rray_subscript subscript);
-
-static inline bool rray_location_is_missing_int(int location) {
-  return location == r_globals.na_int;
-}
-
-static inline bool rray_location_is_missing_dbl(double location) {
-  return isnan(location);
-}
 
 #endif

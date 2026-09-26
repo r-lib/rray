@@ -1,6 +1,7 @@
 #include "slice.h"
 
 #include "dimensionality.h"
+#include "missing.h"
 #include "size.h"
 #include "slice-subscript.h"
 #include "strides.h"
@@ -269,9 +270,8 @@ static void rray_slice_fill_locations(
 
     for (r_ssize i = 0; i < subscript.size; ++i) {
       const int location = v_index[i];
-      v_locations[i] = rray_location_is_missing_int(location)
-        ? RRAY_SLICE_MISSING
-        : (r_ssize) location - 1;
+      v_locations[i] = rray_int_is_missing(location) ? RRAY_SLICE_MISSING
+                                                     : (r_ssize) location - 1;
     }
 
     break;
@@ -281,9 +281,8 @@ static void rray_slice_fill_locations(
 
     for (r_ssize i = 0; i < subscript.size; ++i) {
       const double location = v_index[i];
-      v_locations[i] = rray_location_is_missing_dbl(location)
-        ? RRAY_SLICE_MISSING
-        : (r_ssize) location - 1;
+      v_locations[i] = rray_dbl_is_missing(location) ? RRAY_SLICE_MISSING
+                                                     : (r_ssize) location - 1;
     }
 
     break;

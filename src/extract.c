@@ -1,9 +1,8 @@
 #include "extract.h"
 
-#include <math.h>
-
 #include "dimensionality.h"
 #include "extract-subscript.h"
+#include "missing.h"
 #include "strides.h"
 #include "utils.h"
 
@@ -168,7 +167,7 @@ r_obj* rray_extract(
       MISSING,                                                                 \
       int,                                                                     \
       r_int_cbegin,                                                            \
-      rray_location_is_missing_int                                             \
+      rray_int_is_missing                                                      \
     );                                                                         \
     break;                                                                     \
   case RRAY_SUBSCRIPT_KIND_locations_dbl:                                      \
@@ -177,7 +176,7 @@ r_obj* rray_extract(
       MISSING,                                                                 \
       double,                                                                  \
       r_dbl_cbegin,                                                            \
-      rray_location_is_missing_dbl                                             \
+      rray_dbl_is_missing                                                      \
     );                                                                         \
     break;                                                                     \
   case RRAY_SUBSCRIPT_KIND_mask:                                               \
