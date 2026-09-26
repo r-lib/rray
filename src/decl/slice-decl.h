@@ -1,9 +1,3 @@
-static void check_slice_indices(
-  r_obj* indices,
-  int dimensionality,
-  struct r_lazy error_call
-);
-
 static void rray_slice_fill_locations(
   struct rray_subscript subscript,
   r_ssize* v_locations

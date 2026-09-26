@@ -45,8 +45,22 @@ r_obj* rray_slice(
 
   r_obj* x_names = r_dim_names(x);
 
-  check_slice_indices(indices, dimensionality, error_call);
   r_obj* const* v_indices = r_list_cbegin(indices);
+  const r_ssize indices_size = r_length(indices);
+
+  if (indices_size != dimensionality) {
+    r_abort_lazy_call(
+      error_call,
+      "Must supply exactly %d subscript%s to `...`, not %" R_PRI_SSIZE ".",
+      dimensionality,
+      dimensionality == 1 ? "" : "s",
+      indices_size
+    );
+  }
+
+  if (r_names(indices) != r_null) {
+    r_abort_lazy_call(error_call, "All elements of `...` must be unnamed.");
+  }
 
   struct rray_subscript v_subscripts[RRAY_MAX_DIMENSIONALITY];
   r_obj* subscripts_shelter = KEEP(r_alloc_list(dimensionality));
@@ -221,28 +235,6 @@ r_obj* rray_slice(
 
   FREE(7);
   return out;
-}
-
-static void check_slice_indices(
-  r_obj* indices,
-  int dimensionality,
-  struct r_lazy error_call
-) {
-  const r_ssize indices_size = r_length(indices);
-
-  if (indices_size != dimensionality) {
-    r_abort_lazy_call(
-      error_call,
-      "Must supply exactly %d subscript%s to `...`, not %" R_PRI_SSIZE ".",
-      dimensionality,
-      dimensionality == 1 ? "" : "s",
-      indices_size
-    );
-  }
-
-  if (r_names(indices) != r_null) {
-    r_abort_lazy_call(error_call, "All elements of `...` must be unnamed.");
-  }
 }
 
 static void rray_slice_fill_locations(
