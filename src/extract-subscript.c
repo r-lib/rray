@@ -74,8 +74,8 @@ struct rray_subscript rray_as_extract_subscript(
     default:
       r_abort_lazy_call(
         error_call,
-        "Numeric %s must be a vector or a matrix, not an array with "
-        "%d dimensions.",
+        "Numeric %s must be a vector or a matrix, not an array with a "
+        "dimensionality of %d.",
         rray_arg_format(index_arg),
         index_dimensionality
       );

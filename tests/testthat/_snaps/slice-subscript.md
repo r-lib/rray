@@ -74,17 +74,17 @@
       rray_as_slice_subscript(matrix(1L), 3L)
     Condition
       Error in `rray_as_slice_subscript()`:
-      ! `i` must be a vector or a 1D array, not an array with 2 dimensions.
+      ! `i` must be a vector or a 1D array, not an array with a dimensionality of 2.
     Code
       rray_as_slice_subscript(array(TRUE, c(1L, 1L, 1L)), 3L)
     Condition
       Error in `rray_as_slice_subscript()`:
-      ! `i` must be a vector or a 1D array, not an array with 3 dimensions.
+      ! `i` must be a vector or a 1D array, not an array with a dimensionality of 3.
     Code
       rray_as_slice_subscript(matrix("a"), 3L, c("a", "b", "c"))
     Condition
       Error in `rray_as_slice_subscript()`:
-      ! `i` must be a vector or a 1D array, not an array with 2 dimensions.
+      ! `i` must be a vector or a 1D array, not an array with a dimensionality of 2.
 
 # errors on unsupported types
 

@@ -49,7 +49,8 @@ struct rray_subscript rray_as_slice_subscript(
     if (index_dimensionality != 1) {
       r_abort_lazy_call(
         error_call,
-        "%s must be a vector or a 1D array, not an array with %d dimensions.",
+        "%s must be a vector or a 1D array, not an array with a "
+        "dimensionality of %d.",
         rray_arg_format(index_arg),
         index_dimensionality
       );

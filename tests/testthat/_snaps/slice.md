@@ -68,7 +68,7 @@
       rray_slice(x, matrix(1L), 1L)
     Condition
       Error in `rray_slice()`:
-      ! `..1` must be a vector or a 1D array, not an array with 2 dimensions.
+      ! `..1` must be a vector or a 1D array, not an array with a dimensionality of 2.
 
 # errors on unsupported `x` inputs
 
