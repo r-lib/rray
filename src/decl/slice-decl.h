@@ -14,7 +14,7 @@ static r_obj* rray_slice_names(
   const int* v_x_dimensions,
   const int* v_dimensions,
   int dimensionality,
-  r_ssize* const* v_v_locations
+  const struct rray_slice_axis* v_axes
 );
 
 static r_obj* rray_slice_axis_names(
@@ -37,14 +37,20 @@ static bool rray_slice_locations_as_offsets(
 );
 
 static inline r_ssize rray_slice_start(
-  r_ssize* const* v_v_offsets,
+  const struct rray_slice_axis* v_axes,
   int dimensionality,
   r_ssize size
 );
 
+static inline r_ssize rray_slice_offset(
+  const struct rray_slice_axis* v_axes,
+  int axis,
+  r_ssize point
+);
+
 static r_obj* rray_slice_lgl(
   r_obj* x,
-  r_ssize* const* v_v_offsets,
+  const struct rray_slice_axis* v_axes,
   const int* v_dimensions,
   int dimensionality,
   r_ssize size,
@@ -52,7 +58,7 @@ static r_obj* rray_slice_lgl(
 );
 static r_obj* rray_slice_int(
   r_obj* x,
-  r_ssize* const* v_v_offsets,
+  const struct rray_slice_axis* v_axes,
   const int* v_dimensions,
   int dimensionality,
   r_ssize size,
@@ -60,7 +66,7 @@ static r_obj* rray_slice_int(
 );
 static r_obj* rray_slice_dbl(
   r_obj* x,
-  r_ssize* const* v_v_offsets,
+  const struct rray_slice_axis* v_axes,
   const int* v_dimensions,
   int dimensionality,
   r_ssize size,
@@ -68,7 +74,7 @@ static r_obj* rray_slice_dbl(
 );
 static r_obj* rray_slice_cpl(
   r_obj* x,
-  r_ssize* const* v_v_offsets,
+  const struct rray_slice_axis* v_axes,
   const int* v_dimensions,
   int dimensionality,
   r_ssize size,
@@ -76,7 +82,7 @@ static r_obj* rray_slice_cpl(
 );
 static r_obj* rray_slice_raw(
   r_obj* x,
-  r_ssize* const* v_v_offsets,
+  const struct rray_slice_axis* v_axes,
   const int* v_dimensions,
   int dimensionality,
   r_ssize size,
@@ -84,7 +90,7 @@ static r_obj* rray_slice_raw(
 );
 static r_obj* rray_slice_chr(
   r_obj* x,
-  r_ssize* const* v_v_offsets,
+  const struct rray_slice_axis* v_axes,
   const int* v_dimensions,
   int dimensionality,
   r_ssize size,
@@ -92,7 +98,7 @@ static r_obj* rray_slice_chr(
 );
 static r_obj* rray_slice_list(
   r_obj* x,
-  r_ssize* const* v_v_offsets,
+  const struct rray_slice_axis* v_axes,
   const int* v_dimensions,
   int dimensionality,
   r_ssize size,

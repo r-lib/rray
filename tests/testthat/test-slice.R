@@ -15,6 +15,28 @@ test_that("`TRUE` selects a whole axis", {
   expect_identical(rray_slice(x, TRUE, TRUE, TRUE), x)
 })
 
+test_that("scalar `TRUE` works on each axis with other subscripts", {
+  x <- array(
+    1:24,
+    c(2L, 3L, 4L),
+    dimnames = list(letters[1:2], letters[3:5], letters[6:9])
+  )
+  whole <- TRUE
+
+  expect_identical(
+    rray_slice(x, whole, c(3L, 1L), whole),
+    slice_base(x, , c(3L, 1L), )
+  )
+  expect_identical(
+    rray_slice(x, c(NA_integer_, 2L), whole, c(4L, 1L)),
+    slice_base(x, c(NA_integer_, 2L), , c(4L, 1L))
+  )
+  expect_identical(
+    rray_slice(x, array(TRUE, 1L), whole, 2L),
+    slice_base(x, , , 2L)
+  )
+})
+
 test_that("matches base R for every kind of subscript", {
   x <- array(1:60, c(3L, 4L, 5L))
   subscripts <- list(
