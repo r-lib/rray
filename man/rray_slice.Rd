@@ -17,8 +17,8 @@ axis is the number of positions selected on it. The names of each axis are
 selected along with the values.
 }
 \description{
-\code{rray_slice()} selects positions along each axis of \code{x} and returns every
-combination of them. The result always has the same dimensionality as \code{x}.
+\code{rray_slice()} selects positions along each axis of \code{x}. The result always
+has the same dimensionality as \code{x}.
 }
 \details{
 Supply exactly one subscript per axis of \code{x} in \code{...}, in axis order. Each

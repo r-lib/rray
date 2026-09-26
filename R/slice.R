@@ -1,8 +1,8 @@
 #' Slice an array
 #'
 #' @description
-#' `rray_slice()` selects positions along each axis of `x` and returns every
-#' combination of them. The result always has the same dimensionality as `x`.
+#' `rray_slice()` selects positions along each axis of `x`. The result always
+#' has the same dimensionality as `x`.
 #'
 #' @details
 #' Supply exactly one subscript per axis of `x` in `...`, in axis order. Each
