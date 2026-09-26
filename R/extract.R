@@ -1,7 +1,11 @@
 #' Extract values from an array
 #'
+#' @description
 #' `rray_extract()` selects values from `x` by 1D location or by coordinate
 #' point. The result is always a 1D array.
+#'
+#' `rray_extract_assign()` replaces the selected values with `value` and returns
+#' a modified copy of `x`.
 #'
 #' @details
 #' The type and shape of `i` decide how it is used:
@@ -24,13 +28,25 @@
 #' For raw arrays the missing value is `as.raw(0)`, and for list arrays it is
 #' `NULL`.
 #'
+#' For assignment, a missing entry in `i` leaves `x` unchanged at that
+#' position but uses one element of `value`. This also applies to a point row
+#' with a missing coordinate. Zero locations use no element of `value`.
+#' Negative locations can't be combined with missing values.
+#'
 #' @param x An array.
 #'
 #' @param i A numeric vector of locations, a logical vector, a logical array
 #'   with the same dimensions as `x`, or a numeric matrix of coordinate points.
 #'
+#' @param value A 1D array to assign to the selected values. It is cast to the
+#'   type of `x`, then broadcast to the number of selected or missing
+#'   positions. It must be size 1 or have one element per position.
+#'
 #' @returns
-#' A one-dimensional array. Names are always dropped.
+#' - `rray_extract()` returns a one-dimensional array. Names are always dropped.
+#'
+#' - `rray_extract_assign()` returns `x` with the selected values replaced. The
+#'   type, dimensions, and names of `x` are kept.
 #'
 #' @export
 #' @examples
@@ -52,6 +68,18 @@
 #'   c(1, 2, 3)
 #' )
 #' rray_extract(x, points)
+#'
+#' # Assign one value to every selected element
+#' rray_extract_assign(x, x %% 5 == 0, 0L)
+#'
+#' # Or one value per selected element
+#' rray_extract_assign(x, points, c(100L, 200L, 300L))
 rray_extract <- function(x, i) {
   .Call(ffi_rray_extract, x, i, environment())
+}
+
+#' @rdname rray_extract
+#' @export
+rray_extract_assign <- function(x, i, value) {
+  .Call(ffi_rray_extract_assign, x, i, value, environment())
 }

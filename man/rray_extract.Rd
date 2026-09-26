@@ -2,22 +2,36 @@
 % Please edit documentation in R/extract.R
 \name{rray_extract}
 \alias{rray_extract}
+\alias{rray_extract_assign}
 \title{Extract values from an array}
 \usage{
 rray_extract(x, i)
+
+rray_extract_assign(x, i, value)
 }
 \arguments{
 \item{x}{An array.}
 
 \item{i}{A numeric vector of locations, a logical vector, a logical array
 with the same dimensions as \code{x}, or a numeric matrix of coordinate points.}
+
+\item{value}{A 1D array to assign to the selected values. It is cast to the
+type of \code{x}, then broadcast to the number of selected or missing
+positions. It must be size 1 or have one element per position.}
 }
 \value{
-A one-dimensional array. Names are always dropped.
+\itemize{
+\item \code{rray_extract()} returns a one-dimensional array. Names are always dropped.
+\item \code{rray_extract_assign()} returns \code{x} with the selected values replaced. The
+type, dimensions, and names of \code{x} are kept.
+}
 }
 \description{
 \code{rray_extract()} selects values from \code{x} by 1D location or by coordinate
 point. The result is always a 1D array.
+
+\code{rray_extract_assign()} replaces the selected values with \code{value} and returns
+a modified copy of \code{x}.
 }
 \details{
 The type and shape of \code{i} decide how it is used:
@@ -38,6 +52,11 @@ within the row generates a missing value.
 
 For raw arrays the missing value is \code{as.raw(0)}, and for list arrays it is
 \code{NULL}.
+
+For assignment, a missing entry in \code{i} leaves \code{x} unchanged at that
+position but uses one element of \code{value}. This also applies to a point row
+with a missing coordinate. Zero locations use no element of \code{value}.
+Negative locations can't be combined with missing values.
 }
 \examples{
 x <- array(1:24, c(2L, 3L, 4L))
@@ -58,4 +77,10 @@ points <- rbind(
   c(1, 2, 3)
 )
 rray_extract(x, points)
+
+# Assign one value to every selected element
+rray_extract_assign(x, x \%\% 5 == 0, 0L)
+
+# Or one value per selected element
+rray_extract_assign(x, points, c(100L, 200L, 300L))
 }
