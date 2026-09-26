@@ -240,12 +240,8 @@ static void check_slice_indices(
     );
   }
 
-  r_obj* names = r_names(indices);
-
-  for (r_ssize i = 0; i < indices_size; ++i) {
-    if (r_has_name_at(names, i)) {
-      r_abort_lazy_call(error_call, "All elements of `...` must be unnamed.");
-    }
+  if (r_names(indices) != r_null) {
+    r_abort_lazy_call(error_call, "All elements of `...` must be unnamed.");
   }
 }
 
