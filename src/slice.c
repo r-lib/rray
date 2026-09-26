@@ -62,31 +62,31 @@ r_obj* rray_slice(
 
   const int* v_v_locations[RRAY_MAX_DIMENSIONALITY];
 
-  r_ssize axis = 0;
+  r_ssize i = 0;
   struct rray_arg* index_arg =
-    new_subscript_arg(indices_arg, r_null, dimensionality, &axis);
+    new_subscript_arg(indices_arg, r_null, dimensionality, &i);
   KEEP_N(index_arg->shelter, &n_prot);
 
-  for (; axis < dimensionality; ++axis) {
-    r_obj* index = v_indices[axis];
-    r_obj* x_axis_names = v_x_names == NULL ? r_null : v_x_names[axis];
+  for (; i < dimensionality; ++i) {
+    r_obj* index = v_indices[i];
+    r_obj* x_axis_names = v_x_names == NULL ? r_null : v_x_names[i];
 
     const struct rray_subscript subscript = rray_as_slice_subscript(
       index,
-      v_x_dimensions[axis],
+      v_x_dimensions[i],
       x_axis_names,
       index_arg,
       error_call
     );
     KEEP_N(subscript.index, &n_prot);
 
-    v_dimensions[axis] = r_ssize_as_integer(subscript.size);
+    v_dimensions[i] = r_ssize_as_integer(subscript.size);
 
     if (r_is_true(index)) {
-      v_v_locations[axis] = NULL;
+      v_v_locations[i] = NULL;
     } else {
       r_obj* locations = KEEP_N(rray_slice_as_locations(subscript), &n_prot);
-      v_v_locations[axis] = r_int_cbegin(locations);
+      v_v_locations[i] = r_int_cbegin(locations);
     }
   }
 
