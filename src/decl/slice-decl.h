@@ -18,8 +18,9 @@ static r_obj* rray_slice_axis_names(
 );
 
 static bool rray_slice_locations_any_missing(
-  const r_ssize* v_locations,
-  int dimension
+  const struct rray_slice_axis* v_axes,
+  const int* v_dimensions,
+  int dimensionality
 );
 
 static void rray_slice_locations_as_offsets(
