@@ -97,9 +97,7 @@ r_obj* rray_slice(
   bool v_identity[RRAY_MAX_DIMENSIONALITY];
   r_ssize locations_size = 0;
   for (int i = 0; i < dimensionality; ++i) {
-    r_obj* index = v_indices[i];
-    const bool identity = r_typeof(index) == R_TYPE_logical &&
-      r_length(index) == 1 && r_lgl_get(index, 0) == 1;
+    const bool identity = r_is_true(v_indices[i]);
     v_identity[i] = identity;
 
     if (!identity) {
