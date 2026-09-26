@@ -116,8 +116,7 @@ static inline r_obj* wrapper_writable(r_obj* x) {
   return data;
 }
 
-// Shallow duplicates only the data, not its attributes,
-// since we don't ever pull them from the wrapped object
+// Shallow duplicates only the data, not the attributes
 r_obj* r_clone_data(r_obj* x) {
   switch (r_typeof(x)) {
   case R_TYPE_logical: {
