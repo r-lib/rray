@@ -27,11 +27,11 @@ type, dimensions, and names of \code{x} are kept.
 \description{
 \code{rray_extract()} selects values from \code{x} by 1D location or by coordinate
 point. The result is always a 1D array.
-}
-\details{
+
 \code{rray_extract_assign()} replaces the selected values with \code{value} and returns
 a modified copy of \code{x}.
-
+}
+\details{
 The type and shape of \code{i} decide how it is used:
 \itemize{
 \item An integer or double vector holds 1D locations. \code{x} is treated as its
