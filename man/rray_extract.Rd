@@ -15,7 +15,7 @@ rray_extract_assign(x, i, value)
 \item{i}{A numeric vector of locations, a logical vector, a logical array
 with the same dimensions as \code{x}, or a numeric matrix of coordinate points.}
 
-\item{value}{An array to assign to the selected values. It is cast to the
+\item{value}{A 1D array to assign to the selected values. It is cast to the
 type of \code{x}, then broadcast to the number of selected values. It must be
 size 1 or have one element per selected value.}
 }

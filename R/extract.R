@@ -36,7 +36,7 @@
 #' @param i A numeric vector of locations, a logical vector, a logical array
 #'   with the same dimensions as `x`, or a numeric matrix of coordinate points.
 #'
-#' @param value An array to assign to the selected values. It is cast to the
+#' @param value A 1D array to assign to the selected values. It is cast to the
 #'   type of `x`, then broadcast to the number of selected values. It must be
 #'   size 1 or have one element per selected value.
 #'
