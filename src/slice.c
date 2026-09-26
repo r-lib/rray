@@ -250,17 +250,14 @@ static r_obj* rray_slice_as_locations(struct rray_subscript subscript) {
       }
     } else {
       r_ssize i = 0;
+      r_ssize location = 0;
 
-      for (r_ssize location = 0; i < subscript.size; ++location) {
+      while (i < subscript.size) {
         const int elt = v_index[location];
-
-        if (elt == 0) {
-          continue;
-        }
-
         v_out[i] =
           elt == r_globals.na_lgl ? r_globals.na_int : (int) location + 1;
-        ++i;
+        i += elt != 0;
+        ++location;
       }
     }
 
