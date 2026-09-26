@@ -41,6 +41,7 @@ struct rray_extract_subscript rray_as_extract_subscript(
   struct r_lazy error_call
 );
 
+// Convert 1 row worth of point coordinates into the corresponding 1D location
 static inline r_ssize rray_point_to_location_int(
   const int* v_index,
   r_ssize row,
