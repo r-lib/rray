@@ -230,23 +230,38 @@ static r_obj* rray_slice_as_locations(struct rray_subscript subscript) {
   }
   case RRAY_SUBSCRIPT_KIND_mask: {
     const int* v_index = r_lgl_cbegin(subscript.index);
-    const r_ssize index_step = r_length(subscript.index) == 1 ? 0 : 1;
 
     r_obj* out = KEEP(r_alloc_integer(subscript.size));
     int* v_out = r_int_begin(out);
 
-    r_ssize i = 0;
+    if (r_length(subscript.index) == 1) {
+      const int elt = v_index[0];
 
-    for (r_ssize location = 0; i < subscript.size; ++location) {
-      const int elt = v_index[location * index_step];
-
-      if (elt == 0) {
-        continue;
+      if (elt == 1) {
+        r_stop_internal("A scalar `TRUE` should have been handled already.");
+      } else if (elt == 0) {
+        // Nothing to do
+      } else if (elt == r_globals.na_lgl) {
+        for (r_ssize i = 0; i < subscript.size; ++i) {
+          v_out[i] = r_globals.na_int;
+        }
+      } else {
+        r_stop_unreachable();
       }
+    } else {
+      r_ssize i = 0;
 
-      v_out[i] =
-        elt == r_globals.na_lgl ? r_globals.na_int : (int) location + 1;
-      ++i;
+      for (r_ssize location = 0; i < subscript.size; ++location) {
+        const int elt = v_index[location];
+
+        if (elt == 0) {
+          continue;
+        }
+
+        v_out[i] =
+          elt == r_globals.na_lgl ? r_globals.na_int : (int) location + 1;
+        ++i;
+      }
     }
 
     FREE(1);
