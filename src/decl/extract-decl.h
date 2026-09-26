@@ -40,6 +40,3 @@ static r_obj* rray_extract_list(
   const int* v_dimensions,
   int dimensionality
 );
-
-static inline bool rray_location_is_missing_int(int location);
-static inline bool rray_location_is_missing_dbl(double location);

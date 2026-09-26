@@ -64,8 +64,6 @@ bool r_has_name_at(r_obj* names, r_ssize i);
 
 int int_add_checked(int x, int y);
 
-bool rray_lgl_any_missing(r_obj* x);
-
 r_obj* vec_cast(
   r_obj* x,
   r_obj* to,

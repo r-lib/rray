@@ -33,7 +33,6 @@ extern r_obj* ffi_rray_extract_assign(
 extern r_obj* ffi_rray_as_extract_subscript(
   r_obj* ffi_i,
   r_obj* ffi_dimensions,
-  r_obj* ffi_missing,
   r_obj* ffi_frame
 );
 extern r_obj* ffi_rray_size(r_obj* ffi_x, r_obj* ffi_frame);
@@ -236,7 +235,7 @@ static const R_CallMethodDef CallEntries[] = {
   {"ffi_rray_extract_assign", (DL_FUNC) &ffi_rray_extract_assign, 4},
   {"ffi_rray_as_extract_subscript",
    (DL_FUNC) &ffi_rray_as_extract_subscript,
-   4},
+   3},
   {"ffi_rray_size", (DL_FUNC) &ffi_rray_size, 2},
   {"ffi_rray_dimensions", (DL_FUNC) &ffi_rray_dimensions, 2},
   {"ffi_rray_dimensions_common", (DL_FUNC) &ffi_rray_dimensions_common, 3},

@@ -172,19 +172,6 @@ int int_add_checked(int x, int y) {
   return x + y;
 }
 
-bool rray_lgl_any_missing(r_obj* x) {
-  const int* v_x = r_lgl_cbegin(x);
-  const r_ssize size = r_length(x);
-
-  for (r_ssize i = 0; i < size; ++i) {
-    if (v_x[i] == r_globals.na_lgl) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
 r_obj* vec_cast(
   r_obj* x,
   r_obj* to,

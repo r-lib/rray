@@ -33,7 +33,6 @@ r_obj* rray_extract(
     i,
     v_dimensions,
     dimensionality,
-    RRAY_SUBSCRIPT_MISSING_propagate,
     i_arg,
     error_call
   );
@@ -331,11 +330,3 @@ static r_obj* rray_extract_list(
 #undef RRAY_EXTRACT_ATOMIC_POKE
 #undef RRAY_EXTRACT_ATOMIC
 #undef RRAY_EXTRACT_BARRIER
-
-static inline bool rray_location_is_missing_int(int location) {
-  return location == r_globals.na_int;
-}
-
-static inline bool rray_location_is_missing_dbl(double location) {
-  return isnan(location);
-}

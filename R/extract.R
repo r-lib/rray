@@ -28,8 +28,10 @@
 #' For raw arrays the missing value is `as.raw(0)`, and for list arrays it is
 #' `NULL`.
 #'
-#' `rray_extract_assign()` selects values with the same rules, with one
-#' exception: `i` can't contain missing values.
+#' For assignment, a missing entry in `i` leaves `x` unchanged at that
+#' position but uses one element of `value`. This also applies to a point row
+#' with a missing coordinate. Zero locations use no element of `value`.
+#' Negative locations can't be combined with missing values.
 #'
 #' @param x An array.
 #'
@@ -37,8 +39,8 @@
 #'   with the same dimensions as `x`, or a numeric matrix of coordinate points.
 #'
 #' @param value A 1D array to assign to the selected values. It is cast to the
-#'   type of `x`, then broadcast to the number of selected values. It must be
-#'   size 1 or have one element per selected value.
+#'   type of `x`, then broadcast to the number of selected or missing
+#'   positions. It must be size 1 or have one element per position.
 #'
 #' @returns
 #' - `rray_extract()` returns a one-dimensional array. Names are always dropped.

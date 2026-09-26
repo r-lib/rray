@@ -405,9 +405,8 @@ the missing value for the storage type:
 This follows base R and vctrs, including the unavoidable raw and list
 behavior.
 
-All assignment functions reject missing locations. Base R has special cases
-for assignment through missing subscripts, but they do not provide a clear
-general contract.
+`rray_extract_assign()` skips a missing location while using its replacement
+value. The other assignment functions reject missing locations.
 
 ## Names
 

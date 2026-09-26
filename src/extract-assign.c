@@ -49,7 +49,6 @@ r_obj* rray_extract_assign(
     i,
     v_dimensions,
     dimensionality,
-    RRAY_SUBSCRIPT_MISSING_error,
     i_arg,
     error_call
   );
@@ -115,14 +114,21 @@ r_obj* rray_extract_assign(
 #define RRAY_EXTRACT_ASSIGN_LOCATIONS_LOOP(                                    \
   POKE,                                                                        \
   INDEX_CTYPE,                                                                 \
-  INDEX_CONST_DEREF                                                            \
+  INDEX_CONST_DEREF,                                                           \
+  IS_MISSING                                                                   \
 )                                                                              \
   do {                                                                         \
     const INDEX_CTYPE* v_index = INDEX_CONST_DEREF(subscript.index);           \
     const r_ssize value_step = r_length(value) == 1 ? 0 : 1;                   \
                                                                                \
     for (r_ssize i = 0; i < subscript.size; ++i) {                             \
-      POKE(out, (r_ssize) v_index[i] - 1, v_value[i * value_step]);            \
+      const INDEX_CTYPE location = v_index[i];                                 \
+                                                                               \
+      if (IS_MISSING(location)) {                                              \
+        continue;                                                              \
+      }                                                                        \
+                                                                               \
+      POKE(out, (r_ssize) location - 1, v_value[i * value_step]);              \
     }                                                                          \
   } while (0)
 
@@ -136,8 +142,12 @@ r_obj* rray_extract_assign(
     r_ssize location = 0;                                                      \
                                                                                \
     while (i < subscript.size) {                                               \
-      if (v_index[location * index_step] != 0) {                               \
-        POKE(out, location, v_value[i * value_step]);                          \
+      const int elt = v_index[location * index_step];                          \
+                                                                               \
+      if (elt != 0) {                                                          \
+        if (elt != r_globals.na_lgl) {                                         \
+          POKE(out, location, v_value[i * value_step]);                        \
+        }                                                                      \
         ++i;                                                                   \
       }                                                                        \
       ++location;                                                              \
@@ -174,17 +184,29 @@ r_obj* rray_extract_assign(
         v_strides,                                                             \
         dimensionality                                                         \
       );                                                                       \
-      POKE(out, location, v_value[i * value_step]);                            \
+      if (location != -1) {                                                    \
+        POKE(out, location, v_value[i * value_step]);                          \
+      }                                                                        \
     }                                                                          \
   } while (0)
 
 #define RRAY_EXTRACT_ASSIGN_ITERATE(POKE)                                      \
   switch (subscript.kind) {                                                    \
   case RRAY_EXTRACT_SUBSCRIPT_KIND_locations_int:                              \
-    RRAY_EXTRACT_ASSIGN_LOCATIONS_LOOP(POKE, int, r_int_cbegin);               \
+    RRAY_EXTRACT_ASSIGN_LOCATIONS_LOOP(                                        \
+      POKE,                                                                    \
+      int,                                                                     \
+      r_int_cbegin,                                                            \
+      rray_location_is_missing_int                                             \
+    );                                                                         \
     break;                                                                     \
   case RRAY_EXTRACT_SUBSCRIPT_KIND_locations_dbl:                              \
-    RRAY_EXTRACT_ASSIGN_LOCATIONS_LOOP(POKE, double, r_dbl_cbegin);            \
+    RRAY_EXTRACT_ASSIGN_LOCATIONS_LOOP(                                        \
+      POKE,                                                                    \
+      double,                                                                  \
+      r_dbl_cbegin,                                                            \
+      rray_location_is_missing_dbl                                             \
+    );                                                                         \
     break;                                                                     \
   case RRAY_EXTRACT_SUBSCRIPT_KIND_mask:                                       \
     RRAY_EXTRACT_ASSIGN_MASK_LOOP(POKE);                                       \

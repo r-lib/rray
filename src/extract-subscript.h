@@ -7,11 +7,6 @@
 
 #include "arg.h"
 
-enum rray_subscript_missing {
-  RRAY_SUBSCRIPT_MISSING_propagate,
-  RRAY_SUBSCRIPT_MISSING_error
-};
-
 enum rray_extract_subscript_kind {
   RRAY_EXTRACT_SUBSCRIPT_KIND_locations_int,
   RRAY_EXTRACT_SUBSCRIPT_KIND_locations_dbl,
@@ -36,10 +31,17 @@ struct rray_extract_subscript rray_as_extract_subscript(
   r_obj* index,
   const int* v_dimensions,
   int dimensionality,
-  enum rray_subscript_missing missing,
   struct rray_arg* index_arg,
   struct r_lazy error_call
 );
+
+static inline bool rray_location_is_missing_int(int location) {
+  return location == r_globals.na_int;
+}
+
+static inline bool rray_location_is_missing_dbl(double location) {
+  return isnan(location);
+}
 
 // Convert 1 row worth of point coordinates into the corresponding 1D location
 static inline r_ssize rray_point_to_location_int(

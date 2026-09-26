@@ -16,8 +16,8 @@ rray_extract_assign(x, i, value)
 with the same dimensions as \code{x}, or a numeric matrix of coordinate points.}
 
 \item{value}{A 1D array to assign to the selected values. It is cast to the
-type of \code{x}, then broadcast to the number of selected values. It must be
-size 1 or have one element per selected value.}
+type of \code{x}, then broadcast to the number of selected or missing
+positions. It must be size 1 or have one element per position.}
 }
 \value{
 \itemize{
@@ -53,8 +53,10 @@ within the row generates a missing value.
 For raw arrays the missing value is \code{as.raw(0)}, and for list arrays it is
 \code{NULL}.
 
-\code{rray_extract_assign()} selects values with the same rules, with one
-exception: \code{i} can't contain missing values.
+For assignment, a missing entry in \code{i} leaves \code{x} unchanged at that
+position but uses one element of \code{value}. This also applies to a point row
+with a missing coordinate. Zero locations use no element of \code{value}.
+Negative locations can't be combined with missing values.
 }
 \examples{
 x <- array(1:24, c(2L, 3L, 4L))

@@ -1,7 +1,6 @@
 #include "extract-subscript.h"
 
 #include <math.h>
-#include <string.h>
 
 #include "dimensionality.h"
 #include "dimensions.h"
@@ -21,7 +20,6 @@ struct rray_subscript_summary {
 r_obj* ffi_rray_as_extract_subscript(
   r_obj* ffi_i,
   r_obj* ffi_dimensions,
-  r_obj* ffi_missing,
   r_obj* ffi_frame
 ) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
@@ -33,7 +31,6 @@ r_obj* ffi_rray_as_extract_subscript(
     ffi_i,
     r_int_cbegin(dimensions),
     rray_dimensionality_from_dimensions(dimensions),
-    parse_subscript_missing(ffi_missing),
     rray_args.i,
     error_call
   );
@@ -57,7 +54,6 @@ struct rray_extract_subscript rray_as_extract_subscript(
   r_obj* index,
   const int* v_dimensions,
   int dimensionality,
-  enum rray_subscript_missing missing,
   struct rray_arg* index_arg,
   struct r_lazy error_call
 ) {
@@ -72,7 +68,6 @@ struct rray_extract_subscript rray_as_extract_subscript(
       v_dimensions,
       dimensionality,
       size,
-      missing,
       index_arg,
       error_call
     );
@@ -85,19 +80,12 @@ struct rray_extract_subscript rray_as_extract_subscript(
 
     switch (index_dimensionality) {
     case 1:
-      return rray_as_extract_locations(
-        index,
-        size,
-        missing,
-        index_arg,
-        error_call
-      );
+      return rray_as_extract_locations(index, size, index_arg, error_call);
     case 2:
       return rray_as_extract_points(
         index,
         v_dimensions,
         dimensionality,
-        missing,
         index_arg,
         error_call
       );
@@ -126,7 +114,6 @@ static struct rray_extract_subscript rray_as_extract_mask(
   const int* v_dimensions,
   int dimensionality,
   r_ssize size,
-  enum rray_subscript_missing missing,
   struct rray_arg* index_arg,
   struct r_lazy error_call
 ) {
@@ -168,10 +155,6 @@ static struct rray_extract_subscript rray_as_extract_mask(
     }
   }
 
-  if (missing == RRAY_SUBSCRIPT_MISSING_error && rray_lgl_any_missing(index)) {
-    stop_subscript_missing(index_arg, error_call);
-  }
-
   return (struct rray_extract_subscript){
     .index = index,
     .kind = RRAY_EXTRACT_SUBSCRIPT_KIND_mask,
@@ -182,7 +165,6 @@ static struct rray_extract_subscript rray_as_extract_mask(
 static struct rray_extract_subscript rray_as_extract_locations(
   r_obj* index,
   r_ssize size,
-  enum rray_subscript_missing missing,
   struct rray_arg* index_arg,
   struct r_lazy error_call
 ) {
@@ -192,9 +174,6 @@ static struct rray_extract_subscript rray_as_extract_locations(
 
   if (summary.any_fractional) {
     stop_subscript_fractional(index_arg, error_call);
-  }
-  if (missing == RRAY_SUBSCRIPT_MISSING_error && summary.any_missing) {
-    stop_subscript_missing(index_arg, error_call);
   }
   if (summary.max > size) {
     r_abort_lazy_call(
@@ -250,7 +229,6 @@ static struct rray_extract_subscript rray_as_extract_points(
   r_obj* index,
   const int* v_dimensions,
   int dimensionality,
-  enum rray_subscript_missing missing,
   struct rray_arg* index_arg,
   struct r_lazy error_call
 ) {
@@ -278,21 +256,13 @@ static struct rray_extract_subscript rray_as_extract_points(
     if (summary.any_fractional) {
       stop_subscript_fractional(index_arg, error_call);
     }
-    if (missing == RRAY_SUBSCRIPT_MISSING_error && summary.any_missing) {
-      r_abort_lazy_call(
-        error_call,
-        "Column %d of %s can't contain missing values.",
-        column + 1,
-        rray_arg_format(index_arg)
-      );
-    }
     if (summary.min < 1) {
       r_abort_lazy_call(
         error_call,
-        "Column %d of %s must only contain positive values%s.",
+        "Column %d of %s must only contain positive values or missing "
+        "values.",
         column + 1,
-        rray_arg_format(index_arg),
-        missing == RRAY_SUBSCRIPT_MISSING_propagate ? " or missing values" : ""
+        rray_arg_format(index_arg)
       );
     }
     if (summary.max > dimension) {
@@ -529,30 +499,6 @@ static r_no_return void stop_subscript_fractional(
     "Can't convert from %s <double> to <integer> due to loss of precision.",
     rray_arg_format(index_arg)
   );
-}
-
-static r_no_return void stop_subscript_missing(
-  struct rray_arg* index_arg,
-  struct r_lazy error_call
-) {
-  r_abort_lazy_call(
-    error_call,
-    "%s can't contain missing values.",
-    rray_arg_format(index_arg)
-  );
-}
-
-static enum rray_subscript_missing parse_subscript_missing(r_obj* x) {
-  const char* string = r_chr_get_c_string(x, 0);
-
-  if (strcmp(string, "propagate") == 0) {
-    return RRAY_SUBSCRIPT_MISSING_propagate;
-  }
-  if (strcmp(string, "error") == 0) {
-    return RRAY_SUBSCRIPT_MISSING_error;
-  }
-
-  r_stop_unreachable();
 }
 
 static const char* rray_extract_subscript_kind_name(

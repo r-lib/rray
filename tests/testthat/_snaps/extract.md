@@ -69,29 +69,16 @@
     Condition
       Error in `rray_extract_assign()`:
       ! Can't broadcast `value` from dimensionality 2 to 1. Can't decrease dimensionality.
-
-# rejects missing locations
-
     Code
-      rray_extract_assign(x, c(1L, NA), 0L)
+      rray_extract_assign(x, c(1L, NA_integer_, 6L), c(10L, 60L))
     Condition
       Error in `rray_extract_assign()`:
-      ! `i` can't contain missing values.
+      ! Can't broadcast axis 1 of `value` from dimension 2 to 3.
     Code
-      rray_extract_assign(x, NA, 0L)
+      rray_extract_assign(x, rep(NA, 6L), 1:2)
     Condition
       Error in `rray_extract_assign()`:
-      ! `i` can't contain missing values.
-    Code
-      rray_extract_assign(x, x > NA, 0L)
-    Condition
-      Error in `rray_extract_assign()`:
-      ! `i` can't contain missing values.
-    Code
-      rray_extract_assign(x, rbind(c(1L, NA)), 0L)
-    Condition
-      Error in `rray_extract_assign()`:
-      ! Column 2 of `i` can't contain missing values.
+      ! Can't broadcast axis 1 of `value` from dimension 2 to 6.
 
 # reports subscript errors from `rray_extract_assign()`
 
@@ -104,7 +91,12 @@
       rray_extract_assign(x, rbind(c(0L, 1L)), 0L)
     Condition
       Error in `rray_extract_assign()`:
-      ! Column 1 of `i` must only contain positive values.
+      ! Column 1 of `i` must only contain positive values or missing values.
+    Code
+      rray_extract_assign(x, rbind(c(NA_integer_, 4L)), 0L)
+    Condition
+      Error in `rray_extract_assign()`:
+      ! Column 2 of `i` must not contain values greater than 3.
     Code
       rray_extract_assign(x, "a", 0L)
     Condition

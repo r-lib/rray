@@ -230,6 +230,40 @@ test_that("assigns 1D locations in column-major order", {
   )
 })
 
+test_that("missing 1D locations use a value slot without assigning", {
+  x <- array(1:6, c(2L, 3L))
+  expected <- array(c(10L, 2:5, 60L), c(2L, 3L))
+
+  expect_identical(
+    rray_extract_assign(x, c(1L, NA_integer_, 6L), c(10L, 20L, 60L)),
+    expected
+  )
+  expect_identical(
+    rray_extract_assign(x, c(1, NA_real_, 6), c(10L, 20L, 60L)),
+    expected
+  )
+  expect_identical(
+    rray_extract_assign(x, c(1, NaN, 6), c(10L, 20L, 60L)),
+    expected
+  )
+  expect_identical(
+    rray_extract_assign(x, c(0L, 1L, NA_integer_, 0L, 6L), c(10L, 20L, 60L)),
+    expected
+  )
+  expect_identical(
+    rray_extract_assign(x, c(1L, NA_integer_, 6L), 0L),
+    array(c(0L, 2:5, 0L), c(2L, 3L))
+  )
+  expect_identical(
+    rray_extract_assign(x, c(NA_integer_, NA_integer_), c(10L, 20L)),
+    x
+  )
+  expect_identical(
+    rray_extract_assign(x, c(2L, NA_integer_, 2L), c(10L, 20L, 30L)),
+    array(c(1L, 30L, 3:6), c(2L, 3L))
+  )
+})
+
 test_that("negative 1D locations assign to the complement", {
   x <- array(1:6, c(2L, 3L))
 
@@ -268,6 +302,24 @@ test_that("assigns through a logical mask", {
   expect_identical(rray_extract_assign(x, FALSE, 0L), x)
 })
 
+test_that("missing mask entries use a value slot without assigning", {
+  x <- array(1:6, c(2L, 3L))
+  mask <- c(TRUE, NA, FALSE, FALSE, FALSE, TRUE)
+  expected <- array(c(10L, 2:5, 60L), c(2L, 3L))
+
+  expect_identical(
+    rray_extract_assign(x, mask, c(10L, 20L, 60L)),
+    expected
+  )
+  expect_identical(
+    rray_extract_assign(x, array(mask, dim(x)), c(10L, 20L, 60L)),
+    expected
+  )
+  expect_identical(rray_extract_assign(x, NA, 0L), x)
+  expect_identical(rray_extract_assign(x, NA, 10:15), x)
+  expect_identical(rray_extract_assign(x, array(NA, dim(x)), 0L), x)
+})
+
 test_that("assigns through coordinate points", {
   x <- array(1:24, c(2L, 3L, 4L))
   points <- rbind(
@@ -282,6 +334,30 @@ test_that("assigns through coordinate points", {
 
   storage.mode(points) <- "double"
   expect_identical(rray_extract_assign(x, points, c(100L, 200L)), expect)
+})
+
+test_that("missing point rows use a value slot without assigning", {
+  x <- array(1:6, c(2L, 3L))
+  expected <- array(c(10L, 2:5, 60L), c(2L, 3L))
+  points <- rbind(
+    c(1L, 1L),
+    c(NA_integer_, 2L),
+    c(1L, NA_integer_),
+    c(2L, 3L)
+  )
+
+  expect_identical(
+    rray_extract_assign(x, points, c(10L, 20L, 30L, 60L)),
+    expected
+  )
+
+  storage.mode(points) <- "double"
+  points[2L, 1L] <- NaN
+
+  expect_identical(
+    rray_extract_assign(x, points, c(10L, 20L, 30L, 60L)),
+    expected
+  )
 })
 
 test_that("assigns points against the maximum dimensionality", {
@@ -351,6 +427,22 @@ test_that("assigns every native storage type", {
     expect_identical(rray_extract_assign(x, locations, value), expect)
     expect_identical(rray_extract_assign(x, mask, rev(value)), expect)
     expect_identical(rray_extract_assign(x, points, value), expect)
+    expect_identical(
+      rray_extract_assign(x, c(3L, NA_integer_, 1L), x[c(2L, 1L, 2L)]),
+      expect
+    )
+    expect_identical(
+      rray_extract_assign(x, c(TRUE, NA, TRUE), x[c(2L, 1L, 2L)]),
+      expect
+    )
+    expect_identical(
+      rray_extract_assign(
+        x,
+        matrix(c(3L, NA_integer_, 1L), ncol = 1L),
+        x[c(2L, 1L, 2L)]
+      ),
+      expect
+    )
   }
 })
 
@@ -364,6 +456,7 @@ test_that("empty targets accept a value of size 0 or 1", {
 
   x <- array(integer(), c(2L, 0L, 3L))
   expect_identical(rray_extract_assign(x, TRUE, 0L), x)
+  expect_identical(rray_extract_assign(x, NA, integer()), x)
   expect_identical(rray_extract_assign(x, logical(), integer()), x)
 })
 
@@ -377,6 +470,14 @@ test_that("keeps the type, dimensions, and names of `x`", {
 
   expect_identical(
     rray_extract_assign(x, c(a = 4L, b = 1L), value),
+    array(
+      c(0, 2, 3, 1),
+      c(2L, 2L),
+      dimnames = list(c("r1", "r2"), c("c1", "c2"))
+    )
+  )
+  expect_identical(
+    rray_extract_assign(x, c(4L, NA_integer_, 1L), c(TRUE, NA, FALSE)),
     array(
       c(0, 2, 3, 1),
       c(2L, 2L),
@@ -419,11 +520,15 @@ test_that("does not modify `x` or `value`", {
     original <- rlang::duplicate(x)
     value <- x[6:1]
     original_value <- rlang::duplicate(value)
+    missing_value <- x[c(6L, 1L, 1L)]
+    original_missing_value <- rlang::duplicate(missing_value)
 
     rray_extract_assign(x, TRUE, value)
+    rray_extract_assign(x, c(6L, NA_integer_, 1L), missing_value)
 
     expect_identical(x, original)
     expect_identical(value, original_value)
+    expect_identical(missing_value, original_missing_value)
   }
 })
 
@@ -459,17 +564,8 @@ test_that("broadcasts `value` to the number of selected values", {
     rray_extract_assign(x, 1:4, 1:2)
     rray_extract_assign(x, 1L, integer())
     rray_extract_assign(x, 1L, matrix(0L))
-  })
-})
-
-test_that("rejects missing locations", {
-  x <- array(1:6, c(2L, 3L))
-
-  expect_snapshot(error = TRUE, {
-    rray_extract_assign(x, c(1L, NA), 0L)
-    rray_extract_assign(x, NA, 0L)
-    rray_extract_assign(x, x > NA, 0L)
-    rray_extract_assign(x, rbind(c(1L, NA)), 0L)
+    rray_extract_assign(x, c(1L, NA_integer_, 6L), c(10L, 60L))
+    rray_extract_assign(x, rep(NA, 6L), 1:2)
   })
 })
 
@@ -479,6 +575,7 @@ test_that("reports subscript errors from `rray_extract_assign()`", {
   expect_snapshot(error = TRUE, {
     rray_extract_assign(x, 7L, 0L)
     rray_extract_assign(x, rbind(c(0L, 1L)), 0L)
+    rray_extract_assign(x, rbind(c(NA_integer_, 4L)), 0L)
     rray_extract_assign(x, "a", 0L)
   })
 })
