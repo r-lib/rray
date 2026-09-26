@@ -76,11 +76,12 @@ r_obj* rray_slice(
 
   for (; i < dimensionality; ++i) {
     r_obj* index = v_indices[i];
+    const int x_dimension = v_x_dimensions[i];
     r_obj* x_axis_names = v_x_names == NULL ? r_null : v_x_names[i];
 
     const struct rray_subscript subscript = rray_as_slice_subscript(
       index,
-      v_x_dimensions[i],
+      x_dimension,
       x_axis_names,
       index_arg,
       error_call
