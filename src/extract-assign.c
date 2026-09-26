@@ -119,6 +119,7 @@ r_obj* rray_extract_assign(
 )                                                                              \
   do {                                                                         \
     const INDEX_CTYPE* v_index = INDEX_CONST_DEREF(subscript.index);           \
+    const r_ssize value_step = r_length(value) == 1 ? 0 : 1;                   \
                                                                                \
     for (r_ssize i = 0; i < subscript.size; ++i) {                             \
       POKE(out, (r_ssize) v_index[i] - 1, v_value[i * value_step]);            \
@@ -129,6 +130,7 @@ r_obj* rray_extract_assign(
   do {                                                                         \
     const int* v_index = r_lgl_cbegin(subscript.index);                        \
     const r_ssize index_step = r_length(subscript.index) == 1 ? 0 : 1;         \
+    const r_ssize value_step = r_length(value) == 1 ? 0 : 1;                   \
                                                                                \
     r_ssize i = 0;                                                             \
     r_ssize location = 0;                                                      \
@@ -150,6 +152,7 @@ r_obj* rray_extract_assign(
 )                                                                              \
   do {                                                                         \
     const INDEX_CTYPE* v_index = INDEX_CONST_DEREF(subscript.index);           \
+    const r_ssize value_step = r_length(value) == 1 ? 0 : 1;                   \
                                                                                \
     r_obj* dimensions = r_dim(out);                                            \
     const int* v_dimensions = r_int_cbegin(dimensions);                        \
@@ -176,8 +179,6 @@ r_obj* rray_extract_assign(
   } while (0)
 
 #define RRAY_EXTRACT_ASSIGN_ITERATE(POKE)                                      \
-  const r_ssize value_step = r_length(value) == 1 ? 0 : 1;                     \
-                                                                               \
   switch (subscript.kind) {                                                    \
   case RRAY_EXTRACT_SUBSCRIPT_KIND_locations_int:                              \
     RRAY_EXTRACT_ASSIGN_LOCATIONS_LOOP(POKE, int, r_int_cbegin);               \
