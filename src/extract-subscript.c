@@ -520,19 +520,6 @@ static struct rray_subscript_summary rray_subscript_summarise_dbl(
   return out;
 }
 
-static bool rray_lgl_any_missing(r_obj* x) {
-  const int* v_x = r_lgl_cbegin(x);
-  const r_ssize size = r_length(x);
-
-  for (r_ssize i = 0; i < size; ++i) {
-    if (v_x[i] == r_globals.na_lgl) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
 static r_no_return void stop_subscript_fractional(
   struct rray_arg* index_arg,
   struct r_lazy error_call

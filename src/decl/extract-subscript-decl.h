@@ -53,8 +53,6 @@ static struct rray_subscript_summary rray_subscript_summarise_dbl(
   r_ssize size
 );
 
-static bool rray_lgl_any_missing(r_obj* x);
-
 static r_no_return void stop_subscript_fractional(
   struct rray_arg* index_arg,
   struct r_lazy error_call
