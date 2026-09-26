@@ -100,11 +100,6 @@ r_obj* rray_slice(
   const r_ssize size =
     rray_size_from_dimensions_checked(v_dimensions, dimensionality, error_call);
 
-  r_obj* names = KEEP_N(
-    rray_slice_names(v_x_names, v_dimensions, dimensionality, v_v_locations),
-    &n_prot
-  );
-
   const bool any_missing = rray_slice_locations_any_missing(
     v_v_locations,
     v_dimensions,
@@ -197,6 +192,11 @@ r_obj* rray_slice(
 
   KEEP_N(out, &n_prot);
   r_attrib_poke_dim(out, dimensions);
+
+  r_obj* names = KEEP_N(
+    rray_slice_names(v_x_names, v_dimensions, dimensionality, v_v_locations),
+    &n_prot
+  );
 
   if (names != r_null) {
     r_attrib_poke_dim_names(out, names);
