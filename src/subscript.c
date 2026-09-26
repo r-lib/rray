@@ -4,7 +4,7 @@
 
 #include "decl/subscript-decl.h"
 
-struct rray_subscript rray_as_locations_subscript(
+struct rray_subscript rray_as_subscript_locations(
   r_obj* index,
   r_ssize size,
   struct rray_arg* index_arg,
@@ -52,10 +52,10 @@ struct rray_subscript rray_as_locations_subscript(
   }
 
   if (any_negative) {
-    return rray_as_complement_subscript(index, size);
+    return rray_as_subscript_complement(index, size);
   }
   if (summary.zeros != 0) {
-    return rray_as_nonzero_subscript(index, index_size - summary.zeros);
+    return rray_as_subscript_nonzero(index, index_size - summary.zeros);
   }
 
   return (struct rray_subscript){
@@ -67,7 +67,7 @@ struct rray_subscript rray_as_locations_subscript(
   };
 }
 
-static struct rray_subscript rray_as_complement_subscript(
+static struct rray_subscript rray_as_subscript_complement(
   r_obj* index,
   r_ssize size
 ) {
@@ -121,7 +121,7 @@ static struct rray_subscript rray_as_complement_subscript(
   return subscript;
 }
 
-static struct rray_subscript rray_as_nonzero_subscript(
+static struct rray_subscript rray_as_subscript_nonzero(
   r_obj* index,
   r_ssize size
 ) {
@@ -179,7 +179,7 @@ static struct rray_subscript rray_as_nonzero_subscript(
   }
 }
 
-struct rray_subscript rray_as_mask_subscript(
+struct rray_subscript rray_as_subscript_mask(
   r_obj* index,
   r_ssize size,
   struct rray_arg* index_arg,

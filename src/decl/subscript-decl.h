@@ -1,9 +1,9 @@
-static struct rray_subscript rray_as_complement_subscript(
+static struct rray_subscript rray_as_subscript_complement(
   r_obj* index,
   r_ssize size
 );
 
-static struct rray_subscript rray_as_nonzero_subscript(
+static struct rray_subscript rray_as_subscript_nonzero(
   r_obj* index,
   r_ssize size
 );

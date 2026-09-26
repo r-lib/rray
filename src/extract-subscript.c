@@ -62,7 +62,7 @@ struct rray_subscript rray_as_extract_subscript(
 
     switch (index_dimensionality) {
     case 1:
-      return rray_as_locations_subscript(index, size, index_arg, error_call);
+      return rray_as_subscript_locations(index, size, index_arg, error_call);
     case 2:
       return rray_as_extract_points(
         index,
@@ -105,7 +105,7 @@ static struct rray_subscript rray_as_extract_mask(
     : rray_dimensionality_from_dimensions(index_dimensions);
 
   if (index_dimensionality == 1) {
-    return rray_as_mask_subscript(index, size, index_arg, error_call);
+    return rray_as_subscript_mask(index, size, index_arg, error_call);
   }
 
   // If a logical array is provided, it must match `x` dimensions exactly. In

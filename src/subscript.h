@@ -27,14 +27,14 @@ struct rray_subscript_summary {
   bool any_fractional;
 };
 
-struct rray_subscript rray_as_locations_subscript(
+struct rray_subscript rray_as_subscript_locations(
   r_obj* index,
   r_ssize size,
   struct rray_arg* index_arg,
   struct r_lazy error_call
 );
 
-struct rray_subscript rray_as_mask_subscript(
+struct rray_subscript rray_as_subscript_mask(
   r_obj* index,
   r_ssize size,
   struct rray_arg* index_arg,

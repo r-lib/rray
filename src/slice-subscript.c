@@ -64,12 +64,12 @@ struct rray_subscript rray_as_slice_subscript(
       .size = 0
     };
   case R_TYPE_logical:
-    return rray_as_mask_subscript(index, dimension, index_arg, error_call);
+    return rray_as_subscript_mask(index, dimension, index_arg, error_call);
   case R_TYPE_integer:
   case R_TYPE_double:
-    return rray_as_locations_subscript(index, dimension, index_arg, error_call);
+    return rray_as_subscript_locations(index, dimension, index_arg, error_call);
   case R_TYPE_character:
-    return rray_as_names_subscript(index, names, index_arg, error_call);
+    return rray_as_subscript_names(index, names, index_arg, error_call);
   default:
     r_abort_lazy_call(
       error_call,
@@ -80,7 +80,7 @@ struct rray_subscript rray_as_slice_subscript(
   }
 }
 
-static struct rray_subscript rray_as_names_subscript(
+static struct rray_subscript rray_as_subscript_names(
   r_obj* index,
   r_obj* names,
   struct rray_arg* index_arg,

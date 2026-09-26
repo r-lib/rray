@@ -1,4 +1,4 @@
-static struct rray_subscript rray_as_names_subscript(
+static struct rray_subscript rray_as_subscript_names(
   r_obj* index,
   r_obj* names,
   struct rray_arg* index_arg,
