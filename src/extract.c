@@ -29,7 +29,7 @@ r_obj* rray_extract(
   const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
   check_dimensionality(dimensionality);
 
-  const struct rray_extract_subscript subscript = rray_as_extract_subscript(
+  const struct rray_subscript subscript = rray_as_extract_subscript(
     i,
     v_dimensions,
     dimensionality,
@@ -162,7 +162,7 @@ r_obj* rray_extract(
 
 #define RRAY_EXTRACT_ITERATE(POKE, MISSING, MASK_LOOP)                         \
   switch (subscript.kind) {                                                    \
-  case RRAY_EXTRACT_SUBSCRIPT_KIND_locations_int:                              \
+  case RRAY_SUBSCRIPT_KIND_locations_int:                                      \
     RRAY_EXTRACT_LOCATIONS_LOOP(                                               \
       POKE,                                                                    \
       MISSING,                                                                 \
@@ -171,7 +171,7 @@ r_obj* rray_extract(
       rray_location_is_missing_int                                             \
     );                                                                         \
     break;                                                                     \
-  case RRAY_EXTRACT_SUBSCRIPT_KIND_locations_dbl:                              \
+  case RRAY_SUBSCRIPT_KIND_locations_dbl:                                      \
     RRAY_EXTRACT_LOCATIONS_LOOP(                                               \
       POKE,                                                                    \
       MISSING,                                                                 \
@@ -180,10 +180,10 @@ r_obj* rray_extract(
       rray_location_is_missing_dbl                                             \
     );                                                                         \
     break;                                                                     \
-  case RRAY_EXTRACT_SUBSCRIPT_KIND_mask:                                       \
+  case RRAY_SUBSCRIPT_KIND_mask:                                               \
     MASK_LOOP(POKE, MISSING);                                                  \
     break;                                                                     \
-  case RRAY_EXTRACT_SUBSCRIPT_KIND_points_int:                                 \
+  case RRAY_SUBSCRIPT_KIND_points_int:                                         \
     RRAY_EXTRACT_POINTS_LOOP(                                                  \
       POKE,                                                                    \
       MISSING,                                                                 \
@@ -192,7 +192,7 @@ r_obj* rray_extract(
       rray_point_to_location_int                                               \
     );                                                                         \
     break;                                                                     \
-  case RRAY_EXTRACT_SUBSCRIPT_KIND_points_dbl:                                 \
+  case RRAY_SUBSCRIPT_KIND_points_dbl:                                         \
     RRAY_EXTRACT_POINTS_LOOP(                                                  \
       POKE,                                                                    \
       MISSING,                                                                 \
@@ -232,7 +232,7 @@ r_obj* rray_extract(
 
 static r_obj* rray_extract_lgl(
   r_obj* x,
-  struct rray_extract_subscript subscript,
+  struct rray_subscript subscript,
   const int* v_dimensions,
   int dimensionality
 ) {
@@ -247,7 +247,7 @@ static r_obj* rray_extract_lgl(
 
 static r_obj* rray_extract_int(
   r_obj* x,
-  struct rray_extract_subscript subscript,
+  struct rray_subscript subscript,
   const int* v_dimensions,
   int dimensionality
 ) {
@@ -262,7 +262,7 @@ static r_obj* rray_extract_int(
 
 static r_obj* rray_extract_dbl(
   r_obj* x,
-  struct rray_extract_subscript subscript,
+  struct rray_subscript subscript,
   const int* v_dimensions,
   int dimensionality
 ) {
@@ -277,7 +277,7 @@ static r_obj* rray_extract_dbl(
 
 static r_obj* rray_extract_cpl(
   r_obj* x,
-  struct rray_extract_subscript subscript,
+  struct rray_subscript subscript,
   const int* v_dimensions,
   int dimensionality
 ) {
@@ -292,7 +292,7 @@ static r_obj* rray_extract_cpl(
 
 static r_obj* rray_extract_raw(
   r_obj* x,
-  struct rray_extract_subscript subscript,
+  struct rray_subscript subscript,
   const int* v_dimensions,
   int dimensionality
 ) {
@@ -301,7 +301,7 @@ static r_obj* rray_extract_raw(
 
 static r_obj* rray_extract_chr(
   r_obj* x,
-  struct rray_extract_subscript subscript,
+  struct rray_subscript subscript,
   const int* v_dimensions,
   int dimensionality
 ) {
@@ -315,7 +315,7 @@ static r_obj* rray_extract_chr(
 
 static r_obj* rray_extract_list(
   r_obj* x,
-  struct rray_extract_subscript subscript,
+  struct rray_subscript subscript,
   const int* v_dimensions,
   int dimensionality
 ) {

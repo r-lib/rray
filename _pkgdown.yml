@@ -30,6 +30,7 @@ reference:
 
 - title: Indexing
   contents:
+  - rray_slice
   - rray_index
   - rray_extract
 

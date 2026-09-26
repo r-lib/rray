@@ -6,20 +6,7 @@
 #include "rlang.h"
 
 #include "arg.h"
-
-enum rray_extract_subscript_kind {
-  RRAY_EXTRACT_SUBSCRIPT_KIND_locations_int,
-  RRAY_EXTRACT_SUBSCRIPT_KIND_locations_dbl,
-  RRAY_EXTRACT_SUBSCRIPT_KIND_mask,
-  RRAY_EXTRACT_SUBSCRIPT_KIND_points_int,
-  RRAY_EXTRACT_SUBSCRIPT_KIND_points_dbl
-};
-
-struct rray_extract_subscript {
-  r_obj* index;
-  enum rray_extract_subscript_kind kind;
-  r_ssize size;
-};
+#include "subscript.h"
 
 // Validates and categorizes `index` as an extract subscript
 //
@@ -27,21 +14,13 @@ struct rray_extract_subscript {
 // This typically does not involve an allocation, but if `index` is a location
 // vector containing negative or zero values, then it will allocate to compute
 // the complement or drop zeros so the native C loops can be simpler.
-struct rray_extract_subscript rray_as_extract_subscript(
+struct rray_subscript rray_as_extract_subscript(
   r_obj* index,
   const int* v_dimensions,
   int dimensionality,
   struct rray_arg* index_arg,
   struct r_lazy error_call
 );
-
-static inline bool rray_location_is_missing_int(int location) {
-  return location == r_globals.na_int;
-}
-
-static inline bool rray_location_is_missing_dbl(double location) {
-  return isnan(location);
-}
 
 // Convert 1 row worth of point coordinates into the corresponding 1D location
 static inline r_ssize rray_point_to_location_int(
