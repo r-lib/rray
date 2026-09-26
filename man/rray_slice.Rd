@@ -42,7 +42,7 @@ Empty arguments are not allowed. Use \code{TRUE} to select a whole axis:
 \examples{
 x <- array(1:24, c(2L, 3L, 4L))
 
-# The first row of every column and layer
+# The first row
 rray_slice(x, 1, TRUE, TRUE)
 
 # Reorder and repeat positions
