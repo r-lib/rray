@@ -57,6 +57,13 @@ test_that("a logical array with the dimensions of `x` is a flat mask", {
     rray_extract(x, x %% 5L == 0L),
     array(c(5L, 10L, 15L, 20L), 4L)
   )
+
+  mask <- x %% 5L == 0L
+  mask[2L] <- NA
+  expect_identical(
+    rray_extract(x, mask),
+    array(c(NA, 5L, 10L, 15L, 20L), 5L)
+  )
 })
 
 test_that("a numeric matrix holds coordinate points", {
