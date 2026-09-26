@@ -91,6 +91,8 @@ r_obj* rray_slice(
     v_dimensions[i] = r_ssize_as_integer(subscript.size);
 
     if (r_is_true(index)) {
+      // Optimization! No allocation for `TRUE`, which replaces a base R
+      // missing arg.
       v_v_locations[i] = NULL;
     } else {
       r_obj* locations = KEEP_N(rray_slice_as_locations(subscript), &n_prot);
