@@ -50,11 +50,11 @@ within the row generates a missing value.
 
 For raw arrays the missing value is \code{as.raw(0)}, and for list arrays it is
 \code{NULL}.
-}
-\section{Assignment}{
 
 \code{rray_extract_assign()} selects values with the same rules, with one
 exception: \code{i} can't contain missing values.
+}
+\section{Assignment}{
 
 \code{value} is cast to the type of \code{x}, then broadcast to the number of selected
 values. It must be size 1 or have one element per selected value.

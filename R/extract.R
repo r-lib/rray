@@ -28,10 +28,10 @@
 #' For raw arrays the missing value is `as.raw(0)`, and for list arrays it is
 #' `NULL`.
 #'
-#' @section Assignment:
 #' `rray_extract_assign()` selects values with the same rules, with one
 #' exception: `i` can't contain missing values.
 #'
+#' @section Assignment:
 #' `value` is cast to the type of `x`, then broadcast to the number of selected
 #' values. It must be size 1 or have one element per selected value.
 #'
