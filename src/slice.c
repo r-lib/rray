@@ -381,16 +381,13 @@ static void rray_slice_locations_as_offsets(
   if (any_missing) {
     for (int i = 0; i < dimension; ++i) {
       const r_ssize location = v_locations[i];
-
-      if (location == RRAY_SLICE_MISSING) {
-        continue;
-      }
-
-      v_locations[i] = location * stride;
+      v_locations[i] =
+        location == RRAY_SLICE_MISSING ? location : location * stride;
     }
   } else {
     for (int i = 0; i < dimension; ++i) {
-      v_locations[i] = v_locations[i] * stride;
+      const r_ssize location = v_locations[i];
+      v_locations[i] = location * stride;
     }
   }
 }
