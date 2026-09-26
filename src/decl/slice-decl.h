@@ -4,7 +4,7 @@ static void rray_slice_fill_locations(
 );
 
 static r_obj* rray_slice_names(
-  r_obj* x_names,
+  r_obj* const* v_x_names,
   const int* v_x_dimensions,
   const int* v_dimensions,
   int dimensionality,

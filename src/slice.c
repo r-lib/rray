@@ -46,6 +46,7 @@ r_obj* rray_slice(
   check_dimensionality(dimensionality);
 
   r_obj* x_names = r_dim_names(x);
+  r_obj* const* v_x_names = x_names == r_null ? NULL : r_list_cbegin(x_names);
 
   r_obj* const* v_indices = r_list_cbegin(indices);
   const r_ssize indices_size = r_length(indices);
@@ -75,8 +76,7 @@ r_obj* rray_slice(
   KEEP_N(index_arg->shelter, &n_prot);
 
   for (; axis < dimensionality; ++axis) {
-    r_obj* x_axis_names =
-      x_names == r_null ? r_null : r_list_get(x_names, axis);
+    r_obj* x_axis_names = v_x_names == NULL ? r_null : v_x_names[axis];
 
     const struct rray_subscript subscript = rray_as_slice_subscript(
       v_indices[axis],
@@ -125,7 +125,7 @@ r_obj* rray_slice(
 
   r_obj* names = KEEP_N(
     rray_slice_names(
-      x_names,
+      v_x_names,
       v_x_dimensions,
       v_dimensions,
       dimensionality,
@@ -295,17 +295,15 @@ static void rray_slice_fill_locations(
 }
 
 static r_obj* rray_slice_names(
-  r_obj* x_names,
+  r_obj* const* v_x_names,
   const int* v_x_dimensions,
   const int* v_dimensions,
   int dimensionality,
   const struct rray_slice_axis* v_axes
 ) {
-  if (x_names == r_null) {
+  if (v_x_names == NULL) {
     return r_null;
   }
-
-  r_obj* const* v_x_names = r_list_cbegin(x_names);
 
   r_obj* out = KEEP(r_alloc_list(dimensionality));
 
