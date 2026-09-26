@@ -1,16 +1,3 @@
-# errors on empty arguments
-
-    Code
-      rray_slice(x, , 1L)
-    Condition
-      Error in `rray_slice()`:
-      ! `...` must not contain empty arguments. Use `TRUE` to select a whole axis.
-    Code
-      rray_slice(x, 1L, )
-    Condition
-      Error in `rray_slice()`:
-      ! `...` must not contain empty arguments. Use `TRUE` to select a whole axis.
-
 # requires one subscript per axis
 
     Code

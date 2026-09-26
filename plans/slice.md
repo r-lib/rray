@@ -120,15 +120,18 @@ rray_slice(x, TRUE, TRUE, TRUE)
 # dimensions: c(2, 3, 4)
 ```
 
-Empty arguments are an error. Base R writes a whole axis as a gap between two
-commas, which is easy to miscount and invisible on screen, so `rray_slice()`
-asks for a value instead. The error should point at `TRUE` and at
-`rray_slice_axis()`.
+An empty argument does not select a whole axis. Base R writes a whole axis as
+a gap between two commas, which is easy to miscount and invisible on screen, so
+`rray_slice()` asks for `TRUE` instead. Empty arguments get no special error,
+`list2()` handles them like it does everywhere else: a trailing one is dropped,
+and any other is an error.
 
 ```r
 rray_slice(x, , , 1:2)
-# Error: `...` must not contain empty arguments.
-# Use `TRUE` to select a whole axis, or `rray_slice_axis()` for a single axis.
+# Error in `list2()`: Argument 1 can't be empty.
+
+rray_slice(x, 1, TRUE, TRUE, )
+# Same as `rray_slice(x, 1, TRUE, TRUE)`
 ```
 
 Too few and too many subscripts are the same error. Subscripts in `...` must
@@ -611,7 +614,8 @@ need no C code of their own.
 - `TRUE` selects a whole axis, including a zero dimension.
 - Duplicates, reverse order, and stepped sequences.
 - Out-of-bounds, mixed-sign, fractional, recycled logical, classed subscript,
-  empty argument, and wrong-number-of-axes errors.
+  and wrong-number-of-axes errors.
+- A trailing empty argument is ignored.
 - Named and unnamed axes, including reordered, duplicated, missing, and empty
   names.
 

@@ -206,13 +206,10 @@ test_that("subscripts can be spliced into `...`", {
   expect_identical(rray_slice(x, !!!indices), slice_base(x, , 2L, c(4L, 1L)))
 })
 
-test_that("errors on empty arguments", {
+test_that("ignores a trailing empty argument", {
   x <- array(1:6, c(2L, 3L))
 
-  expect_snapshot(error = TRUE, {
-    rray_slice(x, , 1L)
-    rray_slice(x, 1L, )
-  })
+  expect_identical(rray_slice(x, 1L, TRUE, ), rray_slice(x, 1L, TRUE))
 })
 
 test_that("requires one subscript per axis", {

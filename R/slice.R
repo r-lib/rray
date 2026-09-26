@@ -8,7 +8,8 @@
 #' `NA` in a subscript gives missing values in the result. For raw arrays the
 #' missing value is `as.raw(0)`, and for list arrays it is `NULL`.
 #'
-#' Empty arguments are not allowed. Use `TRUE` to select a whole axis:
+#' Unlike `[`, an empty argument does not select a whole axis. Use `TRUE`
+#' instead:
 #'
 #' ```r
 #' rray_slice(x, 1, TRUE)
@@ -58,6 +59,5 @@
 #' subscripts[[3]] <- c(4, 1)
 #' rray_slice(x, !!!subscripts)
 rray_slice <- function(x, ...) {
-  indices <- dots_list(..., .ignore_empty = "none", .preserve_empty = TRUE)
-  .Call(ffi_rray_slice, x, indices, environment())
+  .Call(ffi_rray_slice, x, list2(...), environment())
 }

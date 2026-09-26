@@ -34,7 +34,8 @@ has the same dimensionality as \code{x}.
 \code{NA} in a subscript gives missing values in the result. For raw arrays the
 missing value is \code{as.raw(0)}, and for list arrays it is \code{NULL}.
 
-Empty arguments are not allowed. Use \code{TRUE} to select a whole axis:
+Unlike \code{[}, an empty argument does not select a whole axis. Use \code{TRUE}
+instead:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_slice(x, 1, TRUE)
 }\if{html}{\out{</div>}}

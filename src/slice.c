@@ -228,18 +228,7 @@ static void check_slice_indices(
   int dimensionality,
   struct r_lazy error_call
 ) {
-  r_obj* const* v_indices = r_list_cbegin(indices);
   const r_ssize indices_size = r_length(indices);
-
-  for (r_ssize i = 0; i < indices_size; ++i) {
-    if (v_indices[i] == r_missing_arg) {
-      r_abort_lazy_call(
-        error_call,
-        "`...` must not contain empty arguments. Use `TRUE` to select a whole "
-        "axis."
-      );
-    }
-  }
 
   if (indices_size != dimensionality) {
     r_abort_lazy_call(
