@@ -1,7 +1,4 @@
-static void rray_slice_fill_locations(
-  struct rray_subscript subscript,
-  int* v_locations
-);
+static r_obj* rray_slice_as_locations(struct rray_subscript subscript);
 
 static r_obj* rray_slice_names(
   r_obj* const* v_x_names,

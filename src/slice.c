@@ -57,10 +57,10 @@ r_obj* rray_slice(
     r_abort_lazy_call(error_call, "All elements of `...` must be unnamed.");
   }
 
-  struct rray_subscript v_subscripts[RRAY_MAX_DIMENSIONALITY];
-
   r_obj* dimensions = KEEP_N(r_alloc_integer(dimensionality), &n_prot);
   int* v_dimensions = r_int_begin(dimensions);
+
+  const int* v_v_locations[RRAY_MAX_DIMENSIONALITY];
 
   r_ssize axis = 0;
   struct rray_arg* index_arg =
@@ -68,10 +68,11 @@ r_obj* rray_slice(
   KEEP_N(index_arg->shelter, &n_prot);
 
   for (; axis < dimensionality; ++axis) {
+    r_obj* index = v_indices[axis];
     r_obj* x_axis_names = v_x_names == NULL ? r_null : v_x_names[axis];
 
     const struct rray_subscript subscript = rray_as_slice_subscript(
-      v_indices[axis],
+      index,
       v_x_dimensions[axis],
       x_axis_names,
       index_arg,
@@ -79,8 +80,14 @@ r_obj* rray_slice(
     );
     KEEP_N(subscript.index, &n_prot);
 
-    v_subscripts[axis] = subscript;
     v_dimensions[axis] = r_ssize_as_integer(subscript.size);
+
+    if (r_is_true(index)) {
+      v_v_locations[axis] = NULL;
+    } else {
+      r_obj* locations = KEEP_N(rray_slice_as_locations(subscript), &n_prot);
+      v_v_locations[axis] = r_int_cbegin(locations);
+    }
   }
 
   const r_ssize size =
@@ -92,36 +99,6 @@ r_obj* rray_slice(
     dimensionality,
     v_x_strides
   );
-
-  r_ssize locations_size = 0;
-
-  for (int i = 0; i < dimensionality; ++i) {
-    if (
-      !r_is_true(v_indices[i]) &&
-      v_subscripts[i].kind != RRAY_SUBSCRIPT_KIND_locations_int
-    ) {
-      locations_size += v_dimensions[i];
-    }
-  }
-
-  r_obj* locations = KEEP_N(r_alloc_integer(locations_size), &n_prot);
-  int* v_locations = r_int_begin(locations);
-
-  const int* v_v_locations[RRAY_MAX_DIMENSIONALITY];
-
-  for (int i = 0; i < dimensionality; ++i) {
-    if (r_is_true(v_indices[i])) {
-      v_v_locations[i] = NULL;
-    } else if (v_subscripts[i].kind == RRAY_SUBSCRIPT_KIND_locations_int) {
-      v_v_locations[i] = r_int_cbegin(v_subscripts[i].index);
-    } else {
-      v_v_locations[i] = v_locations;
-      rray_slice_fill_locations(v_subscripts[i], v_locations);
-      if (v_dimensions[i] != 0) {
-        v_locations += v_dimensions[i];
-      }
-    }
-  }
 
   r_obj* names = KEEP_N(
     rray_slice_names(v_x_names, v_dimensions, dimensionality, v_v_locations),
@@ -229,25 +206,31 @@ r_obj* rray_slice(
   return out;
 }
 
-static void rray_slice_fill_locations(
-  struct rray_subscript subscript,
-  int* v_locations
-) {
+static r_obj* rray_slice_as_locations(struct rray_subscript subscript) {
   switch (subscript.kind) {
+  case RRAY_SUBSCRIPT_KIND_locations_int:
+    return subscript.index;
   case RRAY_SUBSCRIPT_KIND_locations_dbl: {
     const double* v_index = r_dbl_cbegin(subscript.index);
 
+    r_obj* out = KEEP(r_alloc_integer(subscript.size));
+    int* v_out = r_int_begin(out);
+
     for (r_ssize i = 0; i < subscript.size; ++i) {
       const double location = v_index[i];
-      v_locations[i] =
+      v_out[i] =
         rray_dbl_is_missing(location) ? r_globals.na_int : (int) location;
     }
 
-    break;
+    FREE(1);
+    return out;
   }
   case RRAY_SUBSCRIPT_KIND_mask: {
     const int* v_index = r_lgl_cbegin(subscript.index);
     const r_ssize index_step = r_length(subscript.index) == 1 ? 0 : 1;
+
+    r_obj* out = KEEP(r_alloc_integer(subscript.size));
+    int* v_out = r_int_begin(out);
 
     r_ssize i = 0;
 
@@ -258,18 +241,20 @@ static void rray_slice_fill_locations(
         continue;
       }
 
-      v_locations[i] =
+      v_out[i] =
         elt == r_globals.na_lgl ? r_globals.na_int : (int) location + 1;
       ++i;
     }
 
-    break;
+    FREE(1);
+    return out;
   }
-  case RRAY_SUBSCRIPT_KIND_locations_int:
   case RRAY_SUBSCRIPT_KIND_points_int:
   case RRAY_SUBSCRIPT_KIND_points_dbl:
     r_stop_unreachable();
   }
+
+  r_stop_unreachable();
 }
 
 static r_obj* rray_slice_names(
