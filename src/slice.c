@@ -111,10 +111,11 @@ r_obj* rray_slice(
 
   struct rray_slice_axis v_axes[RRAY_MAX_DIMENSIONALITY];
   for (int i = 0; i < dimensionality; ++i) {
-    v_axes[i].identity = v_identity[i];
-    v_axes[i].offsets = NULL;
-
-    if (!v_identity[i]) {
+    if (v_identity[i]) {
+      v_axes[i].identity = true;
+      v_axes[i].offsets = NULL;
+    } else {
+      v_axes[i].identity = false;
       v_axes[i].offsets = v_locations;
       rray_slice_fill_locations(v_subscripts[i], v_locations);
       v_locations += v_dimensions[i];
