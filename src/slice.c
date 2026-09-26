@@ -40,6 +40,13 @@ r_obj* rray_slice(
   r_obj* x_names = r_dim_names(x);
   r_obj* const* v_x_names = x_names == r_null ? NULL : r_list_cbegin(x_names);
 
+  r_ssize v_x_strides[RRAY_MAX_DIMENSIONALITY];
+  rray_fill_strides_from_dimensions(
+    v_x_dimensions,
+    dimensionality,
+    v_x_strides
+  );
+
   r_obj* const* v_indices = r_list_cbegin(indices);
   const r_ssize indices_size = r_length(indices);
 
@@ -92,13 +99,6 @@ r_obj* rray_slice(
 
   const r_ssize size =
     rray_size_from_dimensions_checked(v_dimensions, dimensionality, error_call);
-
-  r_ssize v_x_strides[RRAY_MAX_DIMENSIONALITY];
-  rray_fill_strides_from_dimensions(
-    v_x_dimensions,
-    dimensionality,
-    v_x_strides
-  );
 
   r_obj* names = KEEP_N(
     rray_slice_names(v_x_names, v_dimensions, dimensionality, v_v_locations),
