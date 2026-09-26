@@ -5,21 +5,6 @@
 #' has the same dimensionality as `x`.
 #'
 #' @details
-#' Supply exactly one subscript per axis of `x` in `...`, in axis order. Each
-#' subscript is one of:
-#'
-#' - `TRUE`, to select the whole axis.
-#'
-#' - A logical vector the size of the axis. `TRUE` selects a position.
-#'
-#' - An integer or double vector of locations. Negative values drop positions,
-#'   zero is ignored, and duplicates repeat positions.
-#'
-#' - A character vector of names, matched against the names of the axis. The
-#'   first match is used when names are duplicated.
-#'
-#' - `NULL`, to select nothing.
-#'
 #' `NA` in a subscript gives missing values in the result. For raw arrays the
 #' missing value is `as.raw(0)`, and for list arrays it is `NULL`.
 #'
@@ -31,7 +16,20 @@
 #'
 #' @param x An array.
 #'
-#' @param ... One unnamed subscript for each axis of `x`.
+#' @param ... One unnamed subscript for each axis of `x`, in axis order. Each
+#'   subscript is one of:
+#'
+#'   - `TRUE`, to select the whole axis.
+#'
+#'   - A logical vector the size of the axis. `TRUE` selects a position.
+#'
+#'   - An integer or double vector of locations. Negative values drop
+#'     positions, zero is ignored, and duplicates repeat positions.
+#'
+#'   - A character vector of names, matched against the names of the axis. The
+#'     first match is used when names are duplicated.
+#'
+#'   - `NULL`, to select nothing.
 #'
 #' @returns
 #' An array with the same type and dimensionality as `x`. The dimension of each

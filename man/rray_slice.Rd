@@ -9,7 +9,17 @@ rray_slice(x, ...)
 \arguments{
 \item{x}{An array.}
 
-\item{...}{One unnamed subscript for each axis of \code{x}.}
+\item{...}{One unnamed subscript for each axis of \code{x}, in axis order. Each
+subscript is one of:
+\itemize{
+\item \code{TRUE}, to select the whole axis.
+\item A logical vector the size of the axis. \code{TRUE} selects a position.
+\item An integer or double vector of locations. Negative values drop
+positions, zero is ignored, and duplicates repeat positions.
+\item A character vector of names, matched against the names of the axis. The
+first match is used when names are duplicated.
+\item \code{NULL}, to select nothing.
+}}
 }
 \value{
 An array with the same type and dimensionality as \code{x}. The dimension of each
@@ -21,18 +31,6 @@ selected along with the values.
 has the same dimensionality as \code{x}.
 }
 \details{
-Supply exactly one subscript per axis of \code{x} in \code{...}, in axis order. Each
-subscript is one of:
-\itemize{
-\item \code{TRUE}, to select the whole axis.
-\item A logical vector the size of the axis. \code{TRUE} selects a position.
-\item An integer or double vector of locations. Negative values drop positions,
-zero is ignored, and duplicates repeat positions.
-\item A character vector of names, matched against the names of the axis. The
-first match is used when names are duplicated.
-\item \code{NULL}, to select nothing.
-}
-
 \code{NA} in a subscript gives missing values in the result. For raw arrays the
 missing value is \code{as.raw(0)}, and for list arrays it is \code{NULL}.
 
