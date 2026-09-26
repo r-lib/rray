@@ -32,7 +32,8 @@ has the same dimensionality as \code{x}.
 }
 \details{
 \code{NA} in a subscript gives missing values in the result. For raw arrays the
-missing value is \code{as.raw(0)}, and for list arrays it is \code{NULL}.
+missing value is \code{as.raw(0)}, and for list arrays it is \code{NULL}. If the axis
+has names, the name of a missing value is \code{""}.
 
 Unlike \code{[}, an empty argument does not select a whole axis. Use \code{TRUE}
 instead, so that every axis is provided explicitly:

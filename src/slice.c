@@ -341,8 +341,7 @@ static r_obj* rray_slice_axis_names(
     r_chr_poke(
       out,
       i,
-      location == RRAY_SLICE_MISSING ? r_globals.na_str
-                                     : v_x_axis_names[location]
+      location == RRAY_SLICE_MISSING ? r_strs.empty : v_x_axis_names[location]
     );
   }
 

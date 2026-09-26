@@ -27,9 +27,11 @@ test_that("scalar `TRUE` works on each axis with other subscripts", {
     rray_slice(x, whole, c(3L, 1L), whole),
     slice_base(x, , c(3L, 1L), )
   )
+  expected <- slice_base(x, c(NA_integer_, 2L), , c(4L, 1L))
+  dimnames(expected)[[1]] <- c("", "b")
   expect_identical(
     rray_slice(x, c(NA_integer_, 2L), whole, c(4L, 1L)),
-    slice_base(x, c(NA_integer_, 2L), , c(4L, 1L))
+    expected
   )
   expect_identical(
     rray_slice(x, array(TRUE, 1L), whole, 2L),
@@ -169,16 +171,25 @@ test_that("selects names along with the values", {
     rray_slice(x, c(2L, 1L, 2L), c("e", "c"), 1L),
     slice_base(x, c(2L, 1L, 2L), c("e", "c"), 1L)
   )
-  expect_identical(
-    rray_slice(x, c(1L, NA), -2L, TRUE),
-    slice_base(x, c(1L, NA), -2L, )
+})
+
+test_that("a missing location has an empty name", {
+  x <- array(
+    1:24,
+    c(2L, 3L, 4L),
+    dimnames = list(c("a", "b"), c("c", "d", "e"), NULL)
   )
+
+  expected <- slice_base(x, c(1L, NA), -2L, )
+  dimnames(expected)[[1]] <- c("a", "")
+  expect_identical(rray_slice(x, c(1L, NA), -2L, TRUE), expected)
+
   expect_identical(
     rray_slice(x, c(TRUE, FALSE), c(NA, "d"), 4L),
     array(
       c(NA, 21L),
       c(1L, 2L, 1L),
-      dimnames = list("a", c(NA, "d"), NULL)
+      dimnames = list("a", c("", "d"), NULL)
     )
   )
 })
