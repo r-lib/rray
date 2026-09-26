@@ -1,4 +1,4 @@
-#' Extract or assign values in an array
+#' Extract values from an array
 #'
 #' @description
 #' `rray_extract()` selects values from `x` by 1D location or by coordinate

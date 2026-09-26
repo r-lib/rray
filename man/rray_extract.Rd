@@ -3,7 +3,7 @@
 \name{rray_extract}
 \alias{rray_extract}
 \alias{rray_extract_assign}
-\title{Extract or assign values in an array}
+\title{Extract values from an array}
 \usage{
 rray_extract(x, i)
 
