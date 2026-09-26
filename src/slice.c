@@ -35,8 +35,10 @@ r_obj* rray_slice(
   struct rray_arg* indices_arg,
   struct r_lazy error_call
 ) {
+  int n_prot = 0;
+
   check_unclassed(x, x_arg, error_call);
-  x = KEEP(arg_as_array(x, x_arg, error_call));
+  x = KEEP_N(arg_as_array(x, x_arg, error_call), &n_prot);
 
   r_obj* x_dimensions = r_dim(x);
   const int* v_x_dimensions = r_int_cbegin(x_dimensions);
@@ -63,15 +65,14 @@ r_obj* rray_slice(
   }
 
   struct rray_subscript v_subscripts[RRAY_MAX_DIMENSIONALITY];
-  r_obj* subscripts_shelter = KEEP(r_alloc_list(dimensionality));
 
-  r_obj* dimensions = KEEP(r_alloc_integer(dimensionality));
+  r_obj* dimensions = KEEP_N(r_alloc_integer(dimensionality), &n_prot);
   int* v_dimensions = r_int_begin(dimensions);
 
   r_ssize axis = 0;
   struct rray_arg* index_arg =
     new_subscript_arg(indices_arg, r_null, dimensionality, &axis);
-  KEEP(index_arg->shelter);
+  KEEP_N(index_arg->shelter, &n_prot);
 
   for (; axis < dimensionality; ++axis) {
     r_obj* x_axis_names =
@@ -84,7 +85,7 @@ r_obj* rray_slice(
       index_arg,
       error_call
     );
-    r_list_poke(subscripts_shelter, axis, subscript.index);
+    KEEP_N(subscript.index, &n_prot);
 
     v_subscripts[axis] = subscript;
     v_dimensions[axis] = r_ssize_as_integer(subscript.size);
@@ -106,7 +107,8 @@ r_obj* rray_slice(
     }
   }
 
-  r_obj* locations = KEEP(r_alloc_raw(sizeof(r_ssize) * locations_size));
+  r_obj* locations =
+    KEEP_N(r_alloc_raw(sizeof(r_ssize) * locations_size), &n_prot);
   r_ssize* v_locations = (r_ssize*) r_raw_begin(locations);
 
   struct rray_slice_axis v_axes[RRAY_MAX_DIMENSIONALITY];
@@ -121,13 +123,16 @@ r_obj* rray_slice(
     }
   }
 
-  r_obj* names = KEEP(rray_slice_names(
-    x_names,
-    v_x_dimensions,
-    v_dimensions,
-    dimensionality,
-    v_axes
-  ));
+  r_obj* names = KEEP_N(
+    rray_slice_names(
+      x_names,
+      v_x_dimensions,
+      v_dimensions,
+      dimensionality,
+      v_axes
+    ),
+    &n_prot
+  );
 
   r_ssize v_x_strides[RRAY_MAX_DIMENSIONALITY];
   rray_fill_strides_from_dimensions(
@@ -226,14 +231,14 @@ r_obj* rray_slice(
     r_stop_unreachable();
   }
 
-  KEEP(out);
+  KEEP_N(out, &n_prot);
   r_attrib_poke_dim(out, dimensions);
 
   if (names != r_null) {
     r_attrib_poke_dim_names(out, names);
   }
 
-  FREE(7);
+  FREE(n_prot);
   return out;
 }
 
