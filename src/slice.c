@@ -468,10 +468,12 @@ static inline r_ssize rray_slice_offset(
     } else {                                                                   \
       RRAY_SLICE_LOOP(POKE, i);                                                \
     }                                                                          \
-  } else if (any_missing) {                                                    \
-    RRAY_SLICE_LOOP_MISSING(POKE, MISSING, v_run_offsets[i]);                  \
   } else {                                                                     \
-    RRAY_SLICE_LOOP(POKE, v_run_offsets[i]);                                   \
+    if (any_missing) {                                                         \
+      RRAY_SLICE_LOOP_MISSING(POKE, MISSING, v_run_offsets[i]);                \
+    } else {                                                                   \
+      RRAY_SLICE_LOOP(POKE, v_run_offsets[i]);                                 \
+    }                                                                          \
   }
 
 #define RRAY_SLICE_ATOMIC_POKE(OUT, I, VALUE) v_out[I] = (VALUE)
