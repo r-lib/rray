@@ -6,6 +6,7 @@
 #include "extract-subscript.h"
 #include "strides.h"
 #include "utils.h"
+#include "wrapper.h"
 
 #include "decl/extract-assign-decl.h"
 
@@ -67,7 +68,14 @@ r_obj* rray_extract_assign(
     error_call
   );
 
-  r_obj* out = KEEP(r_clone(x));
+  r_obj* out = KEEP(r_clone_data(x));
+  r_attrib_poke_dim(out, dimensions);
+
+  r_obj* names = r_dim_names(x);
+
+  if (names != r_null) {
+    r_attrib_poke_dim_names(out, names);
+  }
 
   switch (r_typeof(out)) {
   case R_TYPE_logical:

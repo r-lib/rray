@@ -378,6 +378,20 @@ test_that("keeps the type, dimensions, and names of `x`", {
   )
 })
 
+test_that("drops every other attribute of `x`", {
+  x <- array(1:4, c(2L, 2L), dimnames = list(c("r1", "r2"), NULL))
+  names(x) <- c("a", "b", "c", "d")
+  attr(x, "foo") <- "bar"
+
+  expect_identical(
+    rray_extract_assign(x, 1L, 0L),
+    array(c(0L, 2:4), c(2L, 2L), dimnames = list(c("r1", "r2"), NULL))
+  )
+
+  x <- structure(1:2, foo = "bar")
+  expect_identical(rray_extract_assign(x, 1L, 0L), array(c(0L, 2L)))
+})
+
 test_that("a bare vector `x` becomes a 1D array", {
   expect_identical(rray_extract_assign(1:3, 2L, 0L), array(c(1L, 0L, 3L)))
   expect_identical(

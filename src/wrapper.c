@@ -118,7 +118,7 @@ static inline r_obj* wrapper_writable(r_obj* x) {
 
 // Shallow duplicates only the data, not its attributes,
 // since we don't ever pull them from the wrapped object
-static inline r_obj* r_clone_data(r_obj* x) {
+r_obj* r_clone_data(r_obj* x) {
   switch (r_typeof(x)) {
   case R_TYPE_logical: {
     const int* v_x = r_lgl_cbegin(x);
