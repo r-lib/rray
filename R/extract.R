@@ -32,9 +32,6 @@
 #' exception: `i` can't contain missing values.
 #'
 #' @section Assignment:
-#' `value` is cast to the type of `x`, then broadcast to the number of selected
-#' values. It must be size 1 or have one element per selected value.
-#'
 #' When a value is selected more than once, the last assignment wins:
 #'
 #' ```r
@@ -47,7 +44,9 @@
 #' @param i A numeric vector of locations, a logical vector, a logical array
 #'   with the same dimensions as `x`, or a numeric matrix of coordinate points.
 #'
-#' @param value An array to assign to the selected values.
+#' @param value An array to assign to the selected values. It is cast to the
+#'   type of `x`, then broadcast to the number of selected values. It must be
+#'   size 1 or have one element per selected value.
 #'
 #' @returns
 #' - `rray_extract()` returns a one-dimensional array. Names are always dropped.

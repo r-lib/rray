@@ -15,7 +15,9 @@ rray_extract_assign(x, i, value)
 \item{i}{A numeric vector of locations, a logical vector, a logical array
 with the same dimensions as \code{x}, or a numeric matrix of coordinate points.}
 
-\item{value}{An array to assign to the selected values.}
+\item{value}{An array to assign to the selected values. It is cast to the
+type of \code{x}, then broadcast to the number of selected values. It must be
+size 1 or have one element per selected value.}
 }
 \value{
 \itemize{
@@ -55,9 +57,6 @@ For raw arrays the missing value is \code{as.raw(0)}, and for list arrays it is
 exception: \code{i} can't contain missing values.
 }
 \section{Assignment}{
-
-\code{value} is cast to the type of \code{x}, then broadcast to the number of selected
-values. It must be size 1 or have one element per selected value.
 
 When a value is selected more than once, the last assignment wins:
 
