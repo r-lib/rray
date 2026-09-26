@@ -2,24 +2,36 @@
 % Please edit documentation in R/extract.R
 \name{rray_extract}
 \alias{rray_extract}
-\title{Extract values from an array}
+\alias{rray_extract_assign}
+\title{Extract or assign values in an array}
 \usage{
 rray_extract(x, i)
+
+rray_extract_assign(x, i, value)
 }
 \arguments{
 \item{x}{An array.}
 
 \item{i}{A numeric vector of locations, a logical vector, a logical array
 with the same dimensions as \code{x}, or a numeric matrix of coordinate points.}
+
+\item{value}{An array to assign to the selected values.}
 }
 \value{
-A one-dimensional array. Names are always dropped.
+\itemize{
+\item \code{rray_extract()} returns a one-dimensional array. Names are always dropped.
+\item \code{rray_extract_assign()} returns \code{x} with the selected values replaced. The
+type, dimensions, and names of \code{x} are kept.
+}
 }
 \description{
 \code{rray_extract()} selects values from \code{x} by 1D location or by coordinate
 point. The result is always a 1D array.
 }
 \details{
+\code{rray_extract_assign()} replaces the selected values with \code{value} and returns
+a modified copy of \code{x}.
+
 The type and shape of \code{i} decide how it is used:
 \itemize{
 \item An integer or double vector holds 1D locations. \code{x} is treated as its
@@ -39,6 +51,21 @@ within the row generates a missing value.
 For raw arrays the missing value is \code{as.raw(0)}, and for list arrays it is
 \code{NULL}.
 }
+\section{Assignment}{
+
+\code{rray_extract_assign()} selects values with the same rules, with one
+exception: \code{i} can't contain missing values.
+
+\code{value} is cast to the type of \code{x}, then broadcast to the number of selected
+values. It must be size 1 or have one element per selected value.
+
+When a value is selected more than once, the last assignment wins:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_extract_assign(1:3, c(2, 2), c(10L, 20L))
+#> [1]  1 20  3
+}\if{html}{\out{</div>}}
+}
+
 \examples{
 x <- array(1:24, c(2L, 3L, 4L))
 
@@ -58,4 +85,10 @@ points <- rbind(
   c(1, 2, 3)
 )
 rray_extract(x, points)
+
+# Assign one value to every selected element
+rray_extract_assign(x, x \%\% 5 == 0, 0L)
+
+# Or one value per selected element
+rray_extract_assign(x, points, c(100L, 200L, 300L))
 }

@@ -40,6 +40,25 @@ test_that("keeps missing locations", {
   )
 })
 
+test_that("`missing = \"error\"` rejects missing locations", {
+  expect_snapshot(error = TRUE, {
+    rray_as_extract_subscript(c(1L, NA), 3L, missing = "error")
+    rray_as_extract_subscript(c(1, NaN), 3L, missing = "error")
+    rray_as_extract_subscript(c(-1L, NA), 3L, missing = "error")
+  })
+})
+
+test_that("`missing = \"error\"` keeps locations without missing values", {
+  expect_identical(
+    rray_as_extract_subscript(c(3L, 0L, 1L), 3L, missing = "error"),
+    new_extract_subscript(c(3L, 1L), "locations_int", 2L)
+  )
+  expect_identical(
+    rray_as_extract_subscript(-2, 3L, missing = "error"),
+    new_extract_subscript(c(TRUE, FALSE, TRUE), "mask", 2L)
+  )
+})
+
 test_that("drops zero locations", {
   expect_identical(
     rray_as_extract_subscript(c(0L, 2L, 0L, NA), 3L),
@@ -143,6 +162,23 @@ test_that("keeps a scalar logical mask at size 1", {
   )
 })
 
+test_that("`missing = \"error\"` rejects a mask with missing values", {
+  expect_identical(
+    rray_as_extract_subscript(c(TRUE, FALSE), 2L, missing = "error"),
+    new_extract_subscript(c(TRUE, FALSE), "mask", 1L)
+  )
+
+  expect_snapshot(error = TRUE, {
+    rray_as_extract_subscript(c(TRUE, NA), 2L, missing = "error")
+    rray_as_extract_subscript(NA, 2L, missing = "error")
+    rray_as_extract_subscript(
+      array(NA, c(1L, 2L)),
+      c(1L, 2L),
+      missing = "error"
+    )
+  })
+})
+
 test_that("accepts a logical array with the dimensions of `x`", {
   i <- array(c(TRUE, FALSE), 2L)
   expect_identical(
@@ -238,6 +274,21 @@ test_that("checks point coordinates against each axis", {
     rray_as_extract_subscript(rbind(c(0L, 1L)), c(2L, 3L))
     rray_as_extract_subscript(rbind(c(1L, -1L)), c(2L, 3L))
     rray_as_extract_subscript(rbind(c(1L, 1L)), c(2L, 0L))
+  })
+})
+
+test_that("`missing = \"error\"` rejects missing point coordinates", {
+  points <- rbind(c(2L, 3L), c(1L, 1L))
+
+  expect_identical(
+    rray_as_extract_subscript(points, c(2L, 3L), missing = "error"),
+    new_extract_subscript(points, "points_int", 2L)
+  )
+
+  expect_snapshot(error = TRUE, {
+    rray_as_extract_subscript(rbind(c(1L, NA)), c(2L, 3L), missing = "error")
+    rray_as_extract_subscript(rbind(c(NaN, 1)), c(2L, 3L), missing = "error")
+    rray_as_extract_subscript(rbind(c(0L, 1L)), c(2L, 3L), missing = "error")
   })
 })
 

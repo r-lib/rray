@@ -1,3 +1,21 @@
+# `missing = "error"` rejects missing locations
+
+    Code
+      rray_as_extract_subscript(c(1L, NA), 3L, missing = "error")
+    Condition
+      Error in `rray_as_extract_subscript()`:
+      ! `i` can't contain missing values.
+    Code
+      rray_as_extract_subscript(c(1, NaN), 3L, missing = "error")
+    Condition
+      Error in `rray_as_extract_subscript()`:
+      ! `i` can't contain missing values.
+    Code
+      rray_as_extract_subscript(c(-1L, NA), 3L, missing = "error")
+    Condition
+      Error in `rray_as_extract_subscript()`:
+      ! `i` can't contain missing values.
+
 # checks locations against the size of `dimensions`
 
     Code
@@ -59,6 +77,24 @@
     Condition
       Error in `rray_as_extract_subscript()`:
       ! `i` must not contain values less than -3.
+
+# `missing = "error"` rejects a mask with missing values
+
+    Code
+      rray_as_extract_subscript(c(TRUE, NA), 2L, missing = "error")
+    Condition
+      Error in `rray_as_extract_subscript()`:
+      ! `i` can't contain missing values.
+    Code
+      rray_as_extract_subscript(NA, 2L, missing = "error")
+    Condition
+      Error in `rray_as_extract_subscript()`:
+      ! `i` can't contain missing values.
+    Code
+      rray_as_extract_subscript(array(NA, c(1L, 2L)), c(1L, 2L), missing = "error")
+    Condition
+      Error in `rray_as_extract_subscript()`:
+      ! `i` can't contain missing values.
 
 # checks the size of a logical mask
 
@@ -136,6 +172,24 @@
     Condition
       Error in `rray_as_extract_subscript()`:
       ! Column 2 of `i` must not contain values greater than 0.
+
+# `missing = "error"` rejects missing point coordinates
+
+    Code
+      rray_as_extract_subscript(rbind(c(1L, NA)), c(2L, 3L), missing = "error")
+    Condition
+      Error in `rray_as_extract_subscript()`:
+      ! Column 2 of `i` can't contain missing values.
+    Code
+      rray_as_extract_subscript(rbind(c(NaN, 1)), c(2L, 3L), missing = "error")
+    Condition
+      Error in `rray_as_extract_subscript()`:
+      ! Column 1 of `i` can't contain missing values.
+    Code
+      rray_as_extract_subscript(rbind(c(0L, 1L)), c(2L, 3L), missing = "error")
+    Condition
+      Error in `rray_as_extract_subscript()`:
+      ! Column 1 of `i` must only contain positive values.
 
 # checks double point coordinates are whole integers
 
