@@ -123,13 +123,7 @@ r_obj* rray_slice(
   }
 
   r_obj* names = KEEP_N(
-    rray_slice_names(
-      v_x_names,
-      v_x_dimensions,
-      v_dimensions,
-      dimensionality,
-      v_axes
-    ),
+    rray_slice_names(v_x_names, v_dimensions, dimensionality, v_axes),
     &n_prot
   );
 
@@ -145,11 +139,17 @@ r_obj* rray_slice(
     v_axes[i].stride = v_x_strides[i];
 
     if (!v_axes[i].identity) {
-      any_missing |= rray_slice_locations_as_offsets(
+      const bool axis_any_missing =
+        rray_slice_locations_any_missing(v_axes[i].v_offsets, v_dimensions[i]);
+
+      rray_slice_locations_as_offsets(
         v_axes[i].v_offsets,
         v_dimensions[i],
-        v_x_strides[i]
+        v_x_strides[i],
+        axis_any_missing
       );
+
+      any_missing |= axis_any_missing;
     }
   }
 
@@ -295,7 +295,6 @@ static void rray_slice_fill_locations(
 
 static r_obj* rray_slice_names(
   r_obj* const* v_x_names,
-  const int* v_x_dimensions,
   const int* v_dimensions,
   int dimensionality,
   const struct rray_slice_axis* v_axes
@@ -313,14 +312,9 @@ static r_obj* rray_slice_names(
       continue;
     }
 
-    if (v_axes[axis].identity) {
-      r_list_poke(out, axis, x_axis_names);
-      continue;
-    }
-
     r_obj* axis_names = rray_slice_axis_names(
       x_axis_names,
-      v_x_dimensions[axis],
+      v_axes[axis].identity,
       v_axes[axis].v_offsets,
       v_dimensions[axis]
     );
@@ -333,11 +327,11 @@ static r_obj* rray_slice_names(
 
 static r_obj* rray_slice_axis_names(
   r_obj* x_axis_names,
-  int x_dimension,
+  bool identity,
   const r_ssize* v_locations,
   int dimension
 ) {
-  if (rray_slice_locations_are_identity(v_locations, dimension, x_dimension)) {
+  if (identity) {
     return x_axis_names;
   }
 
@@ -359,43 +353,40 @@ static r_obj* rray_slice_axis_names(
   return out;
 }
 
-static bool rray_slice_locations_are_identity(
+static bool rray_slice_locations_any_missing(
   const r_ssize* v_locations,
-  int dimension,
-  int x_dimension
+  int dimension
 ) {
-  if (dimension != x_dimension) {
-    return false;
-  }
-
   for (int i = 0; i < dimension; ++i) {
-    if (v_locations[i] != i) {
-      return false;
+    if (v_locations[i] == RRAY_SLICE_MISSING) {
+      return true;
     }
   }
 
-  return true;
+  return false;
 }
 
-static bool rray_slice_locations_as_offsets(
+static void rray_slice_locations_as_offsets(
   r_ssize* v_locations,
   int dimension,
-  r_ssize stride
+  r_ssize stride,
+  bool any_missing
 ) {
-  bool any_missing = false;
+  if (any_missing) {
+    for (int i = 0; i < dimension; ++i) {
+      const r_ssize location = v_locations[i];
 
-  for (int i = 0; i < dimension; ++i) {
-    const r_ssize location = v_locations[i];
+      if (location == RRAY_SLICE_MISSING) {
+        continue;
+      }
 
-    if (location == RRAY_SLICE_MISSING) {
-      any_missing = true;
-      continue;
+      v_locations[i] = location * stride;
     }
-
-    v_locations[i] = location * stride;
+  } else {
+    for (int i = 0; i < dimension; ++i) {
+      v_locations[i] = v_locations[i] * stride;
+    }
   }
-
-  return any_missing;
 }
 
 static inline r_ssize rray_slice_start(
