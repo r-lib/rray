@@ -1,6 +1,6 @@
 static void rray_slice_fill_locations(
   struct rray_subscript subscript,
-  r_ssize* v_locations
+  int* v_locations
 );
 
 static r_obj* rray_slice_names(
@@ -13,7 +13,7 @@ static r_obj* rray_slice_names(
 static r_obj* rray_slice_axis_names(
   r_obj* x_axis_names,
   bool identity,
-  const r_ssize* v_locations,
+  const int* v_locations,
   int dimension
 );
 
@@ -23,23 +23,18 @@ static bool rray_slice_locations_any_missing(
   int dimensionality
 );
 
-static void rray_slice_locations_as_offsets(
-  r_ssize* v_locations,
-  int dimension,
-  r_ssize stride,
-  bool any_missing
-);
-
 static inline r_ssize rray_slice_start(
   const struct rray_slice_axis* v_axes,
+  const int* v_point,
   int dimensionality,
-  r_ssize size
+  r_ssize size,
+  bool any_missing
 );
 
 static inline r_ssize rray_slice_offset(
   const struct rray_slice_axis* v_axes,
   int axis,
-  r_ssize point
+  int point
 );
 
 static r_obj* rray_slice_lgl(

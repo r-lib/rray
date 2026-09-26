@@ -97,6 +97,15 @@ test_that("a missing location on any axis gives a missing value", {
   )
 })
 
+test_that("integer locations work with converted subscripts and missing axes", {
+  x <- array(1:24, c(2L, 3L, 4L))
+
+  expect_identical(
+    rray_slice(x, c(NA_integer_, 2L), c(3, NA_real_), c(TRUE, FALSE, NA, TRUE)),
+    slice_base(x, c(NA_integer_, 2L), c(3, NA_real_), c(TRUE, FALSE, NA, TRUE))
+  )
+})
+
 test_that("works with a bare vector", {
   expect_identical(rray_slice(1:5, c(5L, 1L)), array(c(5L, 1L), 2L))
   expect_identical(
@@ -131,6 +140,7 @@ test_that("empty selections give a dimension of zero", {
   expect_identical(rray_slice(x, NULL, TRUE), array(integer(), c(0L, 3L)))
   expect_identical(rray_slice(x, 1L, FALSE), array(integer(), c(1L, 0L)))
   expect_identical(rray_slice(x, 0L, 0L), array(integer(), c(0L, 0L)))
+  expect_identical(rray_slice(x, numeric(), TRUE), array(integer(), c(0L, 3L)))
 })
 
 test_that("works with the maximum dimensionality", {

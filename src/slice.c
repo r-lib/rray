@@ -7,10 +7,8 @@
 #include "strides.h"
 #include "utils.h"
 
-#define RRAY_SLICE_MISSING R_SSIZE_MIN
-
 struct rray_slice_axis {
-  r_ssize* v_offsets;
+  const int* v_locations;
   r_ssize stride;
   bool identity;
 };
@@ -94,31 +92,44 @@ r_obj* rray_slice(
   const r_ssize size =
     rray_size_from_dimensions_checked(v_dimensions, dimensionality, error_call);
 
+  r_ssize v_x_strides[RRAY_MAX_DIMENSIONALITY];
+  rray_fill_strides_from_dimensions(
+    v_x_dimensions,
+    dimensionality,
+    v_x_strides
+  );
+
   r_ssize locations_size = 0;
-  bool v_identity[RRAY_MAX_DIMENSIONALITY];
+  struct rray_slice_axis v_axes[RRAY_MAX_DIMENSIONALITY];
 
   for (int i = 0; i < dimensionality; ++i) {
     const bool identity = r_is_true(v_indices[i]);
-    v_identity[i] = identity;
-    if (!identity) {
+    v_axes[i].identity = identity;
+    v_axes[i].stride = v_x_strides[i];
+    if (
+      !identity && v_subscripts[i].kind != RRAY_SUBSCRIPT_KIND_locations_int
+    ) {
       locations_size += v_dimensions[i];
     }
   }
 
-  r_obj* locations =
-    KEEP_N(r_alloc_raw(sizeof(r_ssize) * locations_size), &n_prot);
-  r_ssize* v_locations = (r_ssize*) r_raw_begin(locations);
+  int* v_locations = NULL;
+  if (locations_size != 0) {
+    r_obj* locations = KEEP_N(r_alloc_integer(locations_size), &n_prot);
+    v_locations = r_int_begin(locations);
+  }
 
-  struct rray_slice_axis v_axes[RRAY_MAX_DIMENSIONALITY];
   for (int i = 0; i < dimensionality; ++i) {
-    if (v_identity[i]) {
-      v_axes[i].identity = true;
-      v_axes[i].v_offsets = NULL;
+    if (v_axes[i].identity) {
+      v_axes[i].v_locations = NULL;
+    } else if (v_subscripts[i].kind == RRAY_SUBSCRIPT_KIND_locations_int) {
+      v_axes[i].v_locations = r_int_cbegin(v_subscripts[i].index);
     } else {
-      v_axes[i].identity = false;
-      v_axes[i].v_offsets = v_locations;
+      v_axes[i].v_locations = v_locations;
       rray_slice_fill_locations(v_subscripts[i], v_locations);
-      v_locations += v_dimensions[i];
+      if (v_dimensions[i] != 0) {
+        v_locations += v_dimensions[i];
+      }
     }
   }
 
@@ -127,28 +138,8 @@ r_obj* rray_slice(
     &n_prot
   );
 
-  r_ssize v_x_strides[RRAY_MAX_DIMENSIONALITY];
-  rray_fill_strides_from_dimensions(
-    v_x_dimensions,
-    dimensionality,
-    v_x_strides
-  );
-
   const bool any_missing =
     rray_slice_locations_any_missing(v_axes, v_dimensions, dimensionality);
-
-  for (int i = 0; i < dimensionality; ++i) {
-    v_axes[i].stride = v_x_strides[i];
-
-    if (!v_axes[i].identity) {
-      rray_slice_locations_as_offsets(
-        v_axes[i].v_offsets,
-        v_dimensions[i],
-        v_x_strides[i],
-        any_missing
-      );
-    }
-  }
 
   r_obj* out;
 
@@ -240,27 +231,16 @@ r_obj* rray_slice(
 
 static void rray_slice_fill_locations(
   struct rray_subscript subscript,
-  r_ssize* v_locations
+  int* v_locations
 ) {
   switch (subscript.kind) {
-  case RRAY_SUBSCRIPT_KIND_locations_int: {
-    const int* v_index = r_int_cbegin(subscript.index);
-
-    for (r_ssize i = 0; i < subscript.size; ++i) {
-      const int location = v_index[i];
-      v_locations[i] = rray_int_is_missing(location) ? RRAY_SLICE_MISSING
-                                                     : (r_ssize) location - 1;
-    }
-
-    break;
-  }
   case RRAY_SUBSCRIPT_KIND_locations_dbl: {
     const double* v_index = r_dbl_cbegin(subscript.index);
 
     for (r_ssize i = 0; i < subscript.size; ++i) {
       const double location = v_index[i];
-      v_locations[i] = rray_dbl_is_missing(location) ? RRAY_SLICE_MISSING
-                                                     : (r_ssize) location - 1;
+      v_locations[i] =
+        rray_dbl_is_missing(location) ? r_globals.na_int : (int) location;
     }
 
     break;
@@ -278,12 +258,14 @@ static void rray_slice_fill_locations(
         continue;
       }
 
-      v_locations[i] = elt == r_globals.na_lgl ? RRAY_SLICE_MISSING : location;
+      v_locations[i] =
+        elt == r_globals.na_lgl ? r_globals.na_int : (int) location + 1;
       ++i;
     }
 
     break;
   }
+  case RRAY_SUBSCRIPT_KIND_locations_int:
   case RRAY_SUBSCRIPT_KIND_points_int:
   case RRAY_SUBSCRIPT_KIND_points_dbl:
     r_stop_unreachable();
@@ -312,7 +294,7 @@ static r_obj* rray_slice_names(
     r_obj* axis_names = rray_slice_axis_names(
       x_axis_names,
       v_axes[axis].identity,
-      v_axes[axis].v_offsets,
+      v_axes[axis].v_locations,
       v_dimensions[axis]
     );
     r_list_poke(out, axis, axis_names);
@@ -325,7 +307,7 @@ static r_obj* rray_slice_names(
 static r_obj* rray_slice_axis_names(
   r_obj* x_axis_names,
   bool identity,
-  const r_ssize* v_locations,
+  const int* v_locations,
   int dimension
 ) {
   if (identity) {
@@ -337,11 +319,11 @@ static r_obj* rray_slice_axis_names(
   r_obj* out = KEEP(r_alloc_character(dimension));
 
   for (int i = 0; i < dimension; ++i) {
-    const r_ssize location = v_locations[i];
+    const int location = v_locations[i];
     r_chr_poke(
       out,
       i,
-      location == RRAY_SLICE_MISSING ? r_strs.empty : v_x_axis_names[location]
+      location == r_globals.na_int ? r_strs.empty : v_x_axis_names[location - 1]
     );
   }
 
@@ -359,11 +341,11 @@ static bool rray_slice_locations_any_missing(
       continue;
     }
 
-    const r_ssize* v_locations = v_axes[axis].v_offsets;
+    const int* v_locations = v_axes[axis].v_locations;
     const int dimension = v_dimensions[axis];
 
     for (int i = 0; i < dimension; ++i) {
-      if (v_locations[i] == RRAY_SLICE_MISSING) {
+      if (v_locations[i] == r_globals.na_int) {
         return true;
       }
     }
@@ -372,30 +354,12 @@ static bool rray_slice_locations_any_missing(
   return false;
 }
 
-static void rray_slice_locations_as_offsets(
-  r_ssize* v_locations,
-  int dimension,
-  r_ssize stride,
-  bool any_missing
-) {
-  if (any_missing) {
-    for (int i = 0; i < dimension; ++i) {
-      const r_ssize location = v_locations[i];
-      v_locations[i] =
-        location == RRAY_SLICE_MISSING ? location : location * stride;
-    }
-  } else {
-    for (int i = 0; i < dimension; ++i) {
-      const r_ssize location = v_locations[i];
-      v_locations[i] = location * stride;
-    }
-  }
-}
-
 static inline r_ssize rray_slice_start(
   const struct rray_slice_axis* v_axes,
+  const int* v_point,
   int dimensionality,
-  r_ssize size
+  r_ssize size,
+  bool any_missing
 ) {
   if (size == 0) {
     return 0;
@@ -404,9 +368,13 @@ static inline r_ssize rray_slice_start(
   r_ssize out = 0;
 
   for (int axis = 1; axis < dimensionality; ++axis) {
-    if (!v_axes[axis].identity) {
-      out += v_axes[axis].v_offsets[0];
+    const struct rray_slice_axis* p_axis = &v_axes[axis];
+    const int location =
+      p_axis->identity ? v_point[axis] + 1 : p_axis->v_locations[v_point[axis]];
+    if (any_missing && location == r_globals.na_int) {
+      return -1;
     }
+    out += ((r_ssize) location - 1) * p_axis->stride;
   }
 
   return out;
@@ -415,10 +383,12 @@ static inline r_ssize rray_slice_start(
 static inline r_ssize rray_slice_offset(
   const struct rray_slice_axis* v_axes,
   int axis,
-  r_ssize point
+  int point
 ) {
   const struct rray_slice_axis* p_axis = &v_axes[axis];
-  return p_axis->identity ? point * p_axis->stride : p_axis->v_offsets[point];
+  return p_axis->identity
+    ? (r_ssize) point * p_axis->stride
+    : ((r_ssize) p_axis->v_locations[point] - 1) * p_axis->stride;
 }
 
 #define RRAY_SLICE_NEXT(START, V_POINT)                                        \
@@ -433,46 +403,65 @@ static inline r_ssize rray_slice_offset(
     START += rray_slice_offset(v_axes, axis, 0);                               \
   }
 
-#define RRAY_SLICE_LOOP(POKE, OFFSET)                                          \
+#define RRAY_SLICE_NEXT_POINT(V_POINT)                                         \
+  for (int axis = 1; axis < dimensionality; ++axis) {                          \
+    ++V_POINT[axis];                                                           \
+    if (V_POINT[axis] < v_dimensions[axis]) {                                  \
+      break;                                                                   \
+    }                                                                          \
+    V_POINT[axis] = 0;                                                         \
+  }
+
+#define RRAY_SLICE_LOOP(POKE, LOCATION)                                        \
+  r_ssize start =                                                              \
+    rray_slice_start(v_axes, v_point, dimensionality, size, false);            \
   while (run_start != size) {                                                  \
     for (r_ssize i = 0; i < run_size; ++i) {                                   \
-      POKE(out, run_start + i, v_x[start + (OFFSET)]);                         \
+      const int location = (LOCATION);                                         \
+      POKE(out, run_start + i, v_x[start + ((r_ssize) location - 1)]);         \
     }                                                                          \
                                                                                \
     run_start += run_size;                                                     \
     RRAY_SLICE_NEXT(start, v_point);                                           \
   }
 
-#define RRAY_SLICE_LOOP_MISSING(POKE, MISSING, OFFSET)                         \
+#define RRAY_SLICE_LOOP_MISSING(POKE, MISSING, LOCATION)                       \
   while (run_start != size) {                                                  \
+    const r_ssize start =                                                      \
+      rray_slice_start(v_axes, v_point, dimensionality, size, true);           \
     for (r_ssize i = 0; i < run_size; ++i) {                                   \
-      const r_ssize location = start + (OFFSET);                               \
-      POKE(out, run_start + i, location < 0 ? MISSING : v_x[location]);        \
+      const int location = (LOCATION);                                         \
+      POKE(                                                                    \
+        out,                                                                   \
+        run_start + i,                                                         \
+        start < 0 || location == r_globals.na_int                              \
+          ? MISSING                                                            \
+          : v_x[start + ((r_ssize) location - 1)]                              \
+      );                                                                       \
     }                                                                          \
                                                                                \
     run_start += run_size;                                                     \
-    RRAY_SLICE_NEXT(start, v_point);                                           \
+    RRAY_SLICE_NEXT_POINT(v_point);                                            \
   }
 
 #define RRAY_SLICE_ITERATE(POKE, MISSING)                                      \
-  const r_ssize* v_run_offsets = v_axes[0].v_offsets;                          \
+  const int* v_run_locations = v_axes[0].v_locations;                          \
   const r_ssize run_size = v_dimensions[0];                                    \
   r_ssize run_start = 0;                                                       \
                                                                                \
-  r_ssize start = rray_slice_start(v_axes, dimensionality, size);              \
-  r_ssize v_point[RRAY_MAX_DIMENSIONALITY] = {0};                              \
+  int v_point[RRAY_MAX_DIMENSIONALITY] = {0};                                  \
                                                                                \
   if (v_axes[0].identity) {                                                    \
     if (any_missing) {                                                         \
-      RRAY_SLICE_LOOP_MISSING(POKE, MISSING, i);                               \
+      RRAY_SLICE_LOOP_MISSING(POKE, MISSING, i + 1);                           \
     } else {                                                                   \
-      RRAY_SLICE_LOOP(POKE, i);                                                \
+      RRAY_SLICE_LOOP(POKE, i + 1);                                            \
     }                                                                          \
   } else {                                                                     \
     if (any_missing) {                                                         \
-      RRAY_SLICE_LOOP_MISSING(POKE, MISSING, v_run_offsets[i]);                \
+      RRAY_SLICE_LOOP_MISSING(POKE, MISSING, v_run_locations[i]);              \
     } else {                                                                   \
-      RRAY_SLICE_LOOP(POKE, v_run_offsets[i]);                                 \
+      RRAY_SLICE_LOOP(POKE, v_run_locations[i]);                               \
     }                                                                          \
   }
 
@@ -606,6 +595,7 @@ static r_obj* rray_slice_list(
 }
 
 #undef RRAY_SLICE_NEXT
+#undef RRAY_SLICE_NEXT_POINT
 #undef RRAY_SLICE_LOOP
 #undef RRAY_SLICE_LOOP_MISSING
 #undef RRAY_SLICE_ITERATE
