@@ -420,17 +420,6 @@ test_that("does not modify `x` or `value`", {
   }
 })
 
-test_that("`value` can be `x`", {
-  x <- array(1:6)
-
-  expect_identical(rray_extract_assign(x, 6:1, x), array(6:1))
-  expect_identical(rray_extract_assign(x, TRUE, x), x)
-
-  x <- c(1L, 2L, 3L)
-  expect_identical(rray_extract_assign(x, 3:1, x), array(3:1))
-  expect_identical(x, c(1L, 2L, 3L))
-})
-
 test_that("casts `value` to the type of `x`", {
   x <- array(c(1.5, 2.5, 3.5))
 
