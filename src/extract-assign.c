@@ -41,12 +41,13 @@ r_obj* rray_extract_assign(
   x = KEEP(arg_as_array(x, x_arg, error_call));
 
   r_obj* dimensions = r_dim(x);
+  const int* v_dimensions = r_int_cbegin(dimensions);
   const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
   check_dimensionality(dimensionality);
 
   const struct rray_extract_subscript subscript = rray_as_extract_subscript(
     i,
-    r_int_cbegin(dimensions),
+    v_dimensions,
     dimensionality,
     RRAY_SUBSCRIPT_MISSING_error,
     i_arg,
@@ -57,11 +58,15 @@ r_obj* rray_extract_assign(
   value = KEEP(rray_cast(value, x, value_arg, x_arg, error_call));
 
   r_obj* value_dimensions = r_dim(value);
+  const int* v_value_dimensions = r_int_cbegin(value_dimensions);
+  const int value_dimensionality =
+    rray_dimensionality_from_dimensions(value_dimensions);
+
   const int size = r_ssize_as_integer(subscript.size);
 
   check_broadcastable(
-    r_int_cbegin(value_dimensions),
-    rray_dimensionality_from_dimensions(value_dimensions),
+    v_value_dimensions,
+    value_dimensionality,
     &size,
     1,
     value_arg,
@@ -147,12 +152,13 @@ r_obj* rray_extract_assign(
     const INDEX_CTYPE* v_index = INDEX_CONST_DEREF(subscript.index);           \
                                                                                \
     r_obj* dimensions = r_dim(out);                                            \
+    const int* v_dimensions = r_int_cbegin(dimensions);                        \
     const int dimensionality =                                                 \
       rray_dimensionality_from_dimensions(dimensions);                         \
                                                                                \
     r_ssize v_strides[RRAY_MAX_DIMENSIONALITY];                                \
     rray_fill_strides_from_dimensions(                                         \
-      r_int_cbegin(dimensions),                                                \
+      v_dimensions,                                                            \
       dimensionality,                                                          \
       v_strides                                                                \
     );                                                                         \
