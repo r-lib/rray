@@ -5,6 +5,10 @@
 
 #include "utils.h"
 
+static inline bool rray_lgl_is_missing(int x) {
+  return x == r_globals.na_lgl;
+}
+
 static inline bool rray_int_is_missing(int x) {
   return x == r_globals.na_int;
 }

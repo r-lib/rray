@@ -265,6 +265,9 @@ extern r_obj* ffi_rray_less_than_or_equal(
   r_obj* ffi_y,
   r_obj* ffi_frame
 );
+extern r_obj* ffi_rray_and(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame);
+extern r_obj* ffi_rray_or(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame);
+extern r_obj* ffi_rray_xor(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame);
 
 extern r_obj* ffi_test_wrap(r_obj* ffi_x);
 extern r_obj* ffi_test_wrapper_readonly(r_obj* ffi_x);
@@ -349,6 +352,9 @@ static const R_CallMethodDef CallEntries[] = {
    3},
   {"ffi_rray_less_than", (DL_FUNC) &ffi_rray_less_than, 3},
   {"ffi_rray_less_than_or_equal", (DL_FUNC) &ffi_rray_less_than_or_equal, 3},
+  {"ffi_rray_and", (DL_FUNC) &ffi_rray_and, 3},
+  {"ffi_rray_or", (DL_FUNC) &ffi_rray_or, 3},
+  {"ffi_rray_xor", (DL_FUNC) &ffi_rray_xor, 3},
   {"ffi_test_wrap", (DL_FUNC) &ffi_test_wrap, 1},
   {"ffi_test_wrapper_readonly", (DL_FUNC) &ffi_test_wrapper_readonly, 1},
   {"ffi_test_wrapper_writable", (DL_FUNC) &ffi_test_wrapper_writable, 1},

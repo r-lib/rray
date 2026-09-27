@@ -1011,6 +1011,7 @@ Logical operators take logical input and return a logical array.
 |---|---|
 | `rray_and(x, y)` | `&` |
 | `rray_or(x, y)` | `\|` |
+| `rray_xor(x, y)` | `xor()` |
 
 There is no negation. `!x` already works on a bare array, so a function for it
 would add nothing.

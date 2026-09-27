@@ -1,8 +1,7 @@
 #include "reduce-logical.h"
 
+#include "logical.h"
 #include "reduce.h"
-#include "type.h"
-#include "utils.h"
 
 #include "decl/reduce-logical-decl.h"
 
@@ -54,23 +53,8 @@ static rray_reduce_fn rray_all_along_switch(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  switch (rray_typeof(x)) {
-  case RRAY_TYPE_logical:
-    return na_rm ? rray_all_along_lgl_na_rm : rray_all_along_lgl;
-
-  case RRAY_TYPE_integer:
-  case RRAY_TYPE_double:
-  case RRAY_TYPE_complex:
-  case RRAY_TYPE_character:
-  case RRAY_TYPE_raw:
-  case RRAY_TYPE_list:
-    stop_non_logical_reduce(x, arg, error_call);
-
-  case RRAY_TYPE_scalar:
-    stop_scalar_input(x, arg, error_call);
-  }
-
-  r_stop_unreachable();
+  check_logical(x, arg, error_call);
+  return na_rm ? rray_all_along_lgl_na_rm : rray_all_along_lgl;
 }
 
 static rray_reduce_fn rray_any_along_switch(
@@ -79,23 +63,8 @@ static rray_reduce_fn rray_any_along_switch(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  switch (rray_typeof(x)) {
-  case RRAY_TYPE_logical:
-    return na_rm ? rray_any_along_lgl_na_rm : rray_any_along_lgl;
-
-  case RRAY_TYPE_integer:
-  case RRAY_TYPE_double:
-  case RRAY_TYPE_complex:
-  case RRAY_TYPE_character:
-  case RRAY_TYPE_raw:
-  case RRAY_TYPE_list:
-    stop_non_logical_reduce(x, arg, error_call);
-
-  case RRAY_TYPE_scalar:
-    stop_scalar_input(x, arg, error_call);
-  }
-
-  r_stop_unreachable();
+  check_logical(x, arg, error_call);
+  return na_rm ? rray_any_along_lgl_na_rm : rray_any_along_lgl;
 }
 
 static r_obj* rray_all_along_lgl(
@@ -110,7 +79,7 @@ static r_obj* rray_all_along_lgl(
     int,
     r_lgl_begin,
     1,
-    rray_all_along_lgl_one
+    rray_and_lgl_one
   );
 }
 
@@ -142,7 +111,7 @@ static r_obj* rray_any_along_lgl(
     int,
     r_lgl_begin,
     0,
-    rray_any_along_lgl_one
+    rray_or_lgl_one
   );
 }
 
@@ -162,35 +131,10 @@ static r_obj* rray_any_along_lgl_na_rm(
   );
 }
 
-static inline int rray_all_along_lgl_one(int out, int x) {
-  const bool any_false = !out || !x;
-  const bool equal = out == x;
-  return !any_false * (equal * out + !equal * r_globals.na_lgl);
-}
-
 static inline int rray_all_along_lgl_one_na_rm(int out, int x) {
   return out && x;
 }
 
-static inline int rray_any_along_lgl_one(int out, int x) {
-  const bool any_true = (out == 1) || (x == 1);
-  const bool equal = out == x;
-  return any_true + !any_true * (equal * out + !equal * r_globals.na_lgl);
-}
-
 static inline int rray_any_along_lgl_one_na_rm(int out, int x) {
   return out || (x == 1);
-}
-
-static r_no_return void stop_non_logical_reduce(
-  r_obj* x,
-  struct rray_arg* arg,
-  struct r_lazy error_call
-) {
-  r_abort_lazy_call(
-    error_call,
-    "%s must be a logical array, not %s.",
-    rray_arg_format_input(arg),
-    r_obj_type_friendly(x)
-  );
 }
