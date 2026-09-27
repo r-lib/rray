@@ -58,6 +58,7 @@ reference:
   - extremum
   - equal
   - compare
+  - rray-logical
 
 - title: Reducers
   contents:

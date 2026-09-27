@@ -27,6 +27,10 @@ r_no_return void stop_lossy_cast(
 // --------------------------------------------------------------------------
 // Lossless
 
+static inline int rray_cast_lgl_to_lgl_one(int x) {
+  return x;
+}
+
 static inline int rray_cast_int_to_int_one(int x) {
   return x;
 }
