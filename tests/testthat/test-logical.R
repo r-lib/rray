@@ -89,7 +89,7 @@ test_that("errors on incompatible dimensions", {
 
 test_that("errors on non-logical input", {
   expect_snapshot(rray_and(1L, TRUE), error = TRUE)
-  expect_snapshot(rray_or(TRUE, 1), error = TRUE)
+  expect_snapshot(rray_or(TRUE, c(1, 2)), error = TRUE)
   expect_snapshot(rray_xor(array("a", c(2L, 2L)), TRUE), error = TRUE)
 })
 

@@ -71,11 +71,11 @@ static r_obj* rray_logical(
   check_unclassed(x, x_arg, error_call);
   check_unclassed(y, y_arg, error_call);
 
-  x = KEEP(arg_as_array(x, x_arg, error_call));
-  y = KEEP(arg_as_array(y, y_arg, error_call));
-
   check_logical(x, x_arg, error_call);
   check_logical(y, y_arg, error_call);
+
+  x = KEEP(arg_as_array(x, x_arg, error_call));
+  y = KEEP(arg_as_array(y, y_arg, error_call));
 
   r_obj* x_dimensions = r_dim(x);
   r_obj* y_dimensions = r_dim(y);

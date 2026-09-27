@@ -27,15 +27,15 @@
       rray_and(1L, TRUE)
     Condition
       Error in `rray_and()`:
-      ! `x` must be a logical array, not an integer 1D array.
+      ! `x` must be a logical array, not the number 1.
 
 ---
 
     Code
-      rray_or(TRUE, 1)
+      rray_or(TRUE, c(1, 2))
     Condition
       Error in `rray_or()`:
-      ! `y` must be a logical array, not a double 1D array.
+      ! `y` must be a logical array, not a double vector.
 
 ---
 
@@ -51,7 +51,7 @@
       rray_and(1L, 1)
     Condition
       Error in `rray_and()`:
-      ! `x` must be a logical array, not an integer 1D array.
+      ! `x` must be a logical array, not the number 1.
 
 # a type error beats a dimension error
 
@@ -67,7 +67,7 @@
       rray_and(NULL, TRUE)
     Condition
       Error in `rray_and()`:
-      ! `x` must be an array, not `NULL`.
+      ! `x` must be a logical array, not `NULL`.
 
 ---
 
@@ -75,7 +75,7 @@
       rray_or(TRUE, NULL)
     Condition
       Error in `rray_or()`:
-      ! `y` must be an array, not `NULL`.
+      ! `y` must be a logical array, not `NULL`.
 
 ---
 
