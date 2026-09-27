@@ -94,6 +94,10 @@ x[1, , , drop = FALSE]
 
 # rray
 rray_slice(x, 1, TRUE, TRUE)
+
+# Or, more simply
+rray_slice_axis(x, 1, axis = 1)
+rray_slice_rows(x, 1)
 }\if{html}{\out{</div>}}
 }
 \examples{
