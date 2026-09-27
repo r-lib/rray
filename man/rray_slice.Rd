@@ -30,8 +30,8 @@ rray_slice_assign_columns(x, i, value)
 \arguments{
 \item{x}{An array.}
 
-\item{...}{For \code{rray_slice()} and \code{rray_slice_assign()}, one unnamed
-subscript for each axis of \code{x}, in axis order. Each subscript is one of:
+\item{...}{One unnamed subscript for each axis of \code{x}, in axis order. Each
+subscript is one of:
 \itemize{
 \item \code{TRUE}, to select the whole axis.
 \item A logical vector the size of the axis. \code{TRUE} selects a position.

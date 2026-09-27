@@ -37,8 +37,8 @@
 #'
 #' @param x An array.
 #'
-#' @param ... For `rray_slice()` and `rray_slice_assign()`, one unnamed
-#'   subscript for each axis of `x`, in axis order. Each subscript is one of:
+#' @param ... One unnamed subscript for each axis of `x`, in axis order. Each
+#'   subscript is one of:
 #'
 #'   - `TRUE`, to select the whole axis.
 #'
