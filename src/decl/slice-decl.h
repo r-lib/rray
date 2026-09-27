@@ -24,7 +24,6 @@ static inline r_ssize rray_slice_start(
   const r_ssize* v_x_strides,
   const int* v_point,
   int dimensionality,
-  r_ssize size,
   bool any_missing
 );
 
