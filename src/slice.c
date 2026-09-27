@@ -11,6 +11,10 @@
 
 r_obj* ffi_rray_slice(r_obj* ffi_x, r_obj* ffi_indices, r_obj* ffi_frame) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
+  // Checked at the FFI boundary to disallow names from the R side, but on the C
+  // side we allow them so that `rray_slice_axis()` and friends throw good error
+  // messages for `i`
+  check_slice_indices_unnamed(ffi_indices, error_call);
   return rray_slice(
     ffi_x,
     ffi_indices,
@@ -47,8 +51,9 @@ r_obj* rray_slice(
     v_x_strides
   );
 
-  check_slice_indices(indices, dimensionality, error_call);
+  check_slice_indices_size(indices, dimensionality, error_call);
   r_obj* const* v_indices = r_list_cbegin(indices);
+  r_obj* indices_names = r_names(indices);
 
   r_obj* dimensions = KEEP_N(r_alloc_integer(dimensionality), &n_prot);
   int* v_dimensions = r_int_begin(dimensions);
@@ -58,7 +63,7 @@ r_obj* rray_slice(
 
   r_ssize i = 0;
   struct rray_arg* index_arg =
-    new_subscript_arg(indices_arg, r_null, dimensionality, &i);
+    new_subscript_arg(indices_arg, indices_names, dimensionality, &i);
   KEEP_N(index_arg->shelter, &n_prot);
 
   for (; i < dimensionality; ++i) {

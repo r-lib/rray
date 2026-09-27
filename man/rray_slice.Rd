@@ -2,12 +2,30 @@
 % Please edit documentation in R/slice.R
 \name{rray_slice}
 \alias{rray_slice}
+\alias{rray_slice_axis}
+\alias{rray_slice_rows}
+\alias{rray_slice_columns}
 \alias{rray_slice_assign}
+\alias{rray_slice_assign_axis}
+\alias{rray_slice_assign_rows}
+\alias{rray_slice_assign_columns}
 \title{Slice an array}
 \usage{
 rray_slice(x, ...)
 
+rray_slice_axis(x, i, ..., axis)
+
+rray_slice_rows(x, i)
+
+rray_slice_columns(x, i)
+
 rray_slice_assign(x, ..., value)
+
+rray_slice_assign_axis(x, i, ..., axis, value)
+
+rray_slice_assign_rows(x, i, value)
+
+rray_slice_assign_columns(x, i, value)
 }
 \arguments{
 \item{x}{An array.}
@@ -22,18 +40,27 @@ positions, zero is ignored, and duplicates repeat positions.
 \item A character vector of names, matched against the names of the axis. The
 first match is used when names are duplicated.
 \item \code{NULL}, to select nothing.
-}}
+}
+
+For \code{rray_slice_axis()} and \code{rray_slice_assign_axis()}, these dots must be
+empty.}
+
+\item{i}{A subscript for the selected axis. It takes any of the forms
+allowed in \code{...}.}
+
+\item{axis}{A single integer. The axis to slice along.}
 
 \item{value}{An array to assign to the selected positions. It is cast to
-the type of \code{x}, then broadcast to the dimensions of the selection, which
-are the dimensions of \code{rray_slice(x, ...)}.}
+the type of \code{x}, then broadcast to the dimensions of the selection.}
 }
 \value{
 \itemize{
-\item \code{rray_slice()} returns an array with the same type and dimensionality as
-\code{x}. The dimension of each axis is the number of positions selected on
-it. The names of each axis are selected along with the values.
-\item \code{rray_slice_assign()} returns \code{x} with the selected positions replaced.
+\item \code{rray_slice()}, \code{rray_slice_axis()}, \code{rray_slice_rows()}, and
+\code{rray_slice_columns()} return an array with the same type and
+dimensionality as \code{x}. The dimension of each axis is the number of
+positions selected on it. The names of each axis are selected along with
+the values.
+\item The \verb{_assign} versions return \code{x} with the selected positions replaced.
 The type, dimensions, and names of \code{x} are kept.
 }
 }
@@ -41,8 +68,12 @@ The type, dimensions, and names of \code{x} are kept.
 \code{rray_slice()} selects positions along each axis of \code{x}. The result always
 has the same dimensionality as \code{x}.
 
-\code{rray_slice_assign()} replaces the selected positions with \code{value} and
-returns a modified copy of \code{x}.
+\code{rray_slice_axis()} is \code{rray_slice()} restricted to a single axis, which can
+be more ergonomic to write. \code{rray_slice_rows()} and \code{rray_slice_columns()}
+are shortcuts for \code{axis = 1} and \code{axis = 2}.
+
+The \verb{_assign} versions replace the selected positions with \code{value} and
+return a modified copy of \code{x}.
 }
 \details{
 \code{NA} in a subscript gives missing values in the result. For raw arrays the
@@ -61,6 +92,10 @@ x[1, , , drop = FALSE]
 
 # rray
 rray_slice(x, 1, TRUE, TRUE)
+
+# Or, more simply
+rray_slice_axis(x, 1, axis = 1)
+rray_slice_rows(x, 1)
 }\if{html}{\out{</div>}}
 }
 \examples{
@@ -84,10 +119,19 @@ subscripts <- rep(list(TRUE), rray_dimensionality(x))
 subscripts[[3]] <- c(4, 1)
 rray_slice(x, !!!subscripts)
 
+# Slice a single axis
+rray_slice_axis(x, c(4, 1), axis = 3)
+rray_slice_rows(y, c("b", "a"))
+rray_slice_columns(x, -2)
+
 # Assign one value to every first row
 rray_slice_assign(x, 1, TRUE, TRUE, value = 0L)
+rray_slice_assign_rows(x, 1, 0L)
 
 # Or broadcast `value` to the dimensions of the selection
 value <- array(c(100L, 200L), c(1L, 2L))
 rray_slice_assign(x, TRUE, c(1, 3), 1, value = value)
+
+value <- array(c(100L, 200L), c(2L, 1L))
+rray_slice_assign_axis(x, 3, axis = 2, value = value)
 }

@@ -46,6 +46,37 @@ extern r_obj* ffi_rray_slice_assign(
   r_obj* ffi_value,
   r_obj* ffi_frame
 );
+extern r_obj* ffi_rray_slice_axis(
+  r_obj* ffi_x,
+  r_obj* ffi_i,
+  r_obj* ffi_axis,
+  r_obj* ffi_frame
+);
+extern r_obj* ffi_rray_slice_rows(r_obj* ffi_x, r_obj* ffi_i, r_obj* ffi_frame);
+extern r_obj* ffi_rray_slice_columns(
+  r_obj* ffi_x,
+  r_obj* ffi_i,
+  r_obj* ffi_frame
+);
+extern r_obj* ffi_rray_slice_assign_axis(
+  r_obj* ffi_x,
+  r_obj* ffi_i,
+  r_obj* ffi_axis,
+  r_obj* ffi_value,
+  r_obj* ffi_frame
+);
+extern r_obj* ffi_rray_slice_assign_rows(
+  r_obj* ffi_x,
+  r_obj* ffi_i,
+  r_obj* ffi_value,
+  r_obj* ffi_frame
+);
+extern r_obj* ffi_rray_slice_assign_columns(
+  r_obj* ffi_x,
+  r_obj* ffi_i,
+  r_obj* ffi_value,
+  r_obj* ffi_frame
+);
 extern r_obj* ffi_rray_as_slice_subscript(
   r_obj* ffi_i,
   r_obj* ffi_dimension,
@@ -255,6 +286,14 @@ static const R_CallMethodDef CallEntries[] = {
    3},
   {"ffi_rray_slice", (DL_FUNC) &ffi_rray_slice, 3},
   {"ffi_rray_slice_assign", (DL_FUNC) &ffi_rray_slice_assign, 4},
+  {"ffi_rray_slice_axis", (DL_FUNC) &ffi_rray_slice_axis, 4},
+  {"ffi_rray_slice_rows", (DL_FUNC) &ffi_rray_slice_rows, 3},
+  {"ffi_rray_slice_columns", (DL_FUNC) &ffi_rray_slice_columns, 3},
+  {"ffi_rray_slice_assign_axis", (DL_FUNC) &ffi_rray_slice_assign_axis, 5},
+  {"ffi_rray_slice_assign_rows", (DL_FUNC) &ffi_rray_slice_assign_rows, 4},
+  {"ffi_rray_slice_assign_columns",
+   (DL_FUNC) &ffi_rray_slice_assign_columns,
+   4},
   {"ffi_rray_as_slice_subscript", (DL_FUNC) &ffi_rray_as_slice_subscript, 4},
   {"ffi_rray_size", (DL_FUNC) &ffi_rray_size, 2},
   {"ffi_rray_dimensions", (DL_FUNC) &ffi_rray_dimensions, 2},

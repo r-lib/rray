@@ -19,6 +19,10 @@ r_obj* ffi_rray_slice_assign(
   r_obj* ffi_frame
 ) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
+  // Checked at the FFI boundary to disallow names from the R side, but on the C
+  // side we allow them so that `rray_slice_assign_axis()` and friends throw
+  // good error messages for `i`
+  check_slice_indices_unnamed(ffi_indices, error_call);
   return rray_slice_assign(
     ffi_x,
     ffi_indices,
@@ -59,15 +63,16 @@ r_obj* rray_slice_assign(
     v_x_strides
   );
 
-  check_slice_indices(indices, dimensionality, error_call);
+  check_slice_indices_size(indices, dimensionality, error_call);
   r_obj* const* v_indices = r_list_cbegin(indices);
+  r_obj* indices_names = r_names(indices);
 
   int v_dimensions[RRAY_MAX_DIMENSIONALITY];
   const int* v_v_locations[RRAY_MAX_DIMENSIONALITY];
 
   r_ssize i = 0;
   struct rray_arg* index_arg =
-    new_subscript_arg(indices_arg, r_null, dimensionality, &i);
+    new_subscript_arg(indices_arg, indices_names, dimensionality, &i);
   KEEP_N(index_arg->shelter, &n_prot);
 
   for (; i < dimensionality; ++i) {

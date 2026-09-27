@@ -133,7 +133,13 @@ static struct rray_subscript rray_as_subscript_names(
   return subscript;
 }
 
-void check_slice_indices(
+void check_slice_indices_unnamed(r_obj* indices, struct r_lazy error_call) {
+  if (r_names(indices) != r_null) {
+    r_abort_lazy_call(error_call, "All elements of `...` must be unnamed.");
+  }
+}
+
+void check_slice_indices_size(
   r_obj* indices,
   int dimensionality,
   struct r_lazy error_call
@@ -148,10 +154,6 @@ void check_slice_indices(
       dimensionality == 1 ? "" : "s",
       indices_size
     );
-  }
-
-  if (r_names(indices) != r_null) {
-    r_abort_lazy_call(error_call, "All elements of `...` must be unnamed.");
   }
 }
 
