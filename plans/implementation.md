@@ -1001,33 +1001,7 @@ Signature: `rray_full_like(x, value)`, `rray_ones_like(x)`, `rray_zeros_like(x)`
 
 Files: `R/full-like.R`, `src/full-like.c`, `src/full-like.h`.
 
-## 5.4 Logical
-
-Names: coalesce. Type: fixed, logical output.
-
-Logical operators take logical input and return a logical array.
-
-| function | meaning |
-|---|---|
-| `rray_and(x, y)` | `&` |
-| `rray_or(x, y)` | `\|` |
-| `rray_xor(x, y)` | `xor()` |
-
-There is no negation. `!x` already works on a bare array, so a function for it
-would add nothing.
-
-Edge cases worth testing, from the original's documentation:
-
-```r
-x <- array(TRUE, c(1, 2))
-rray_and(logical(), x)                        # common dimensions (0, 2)
-rray_and(x, array(logical(), c(0, 1, 2)))     # common dimensions (0, 2, 2)
-try(rray_and(x, array(logical(), c(1, 0))))   # 2 and 0 do not broadcast
-```
-
-Files: `R/logical.R`, `src/logical.c`, `src/logical.h`.
-
-## 5.5 Reductions
+## 5.4 Reductions
 
 All use the reduction iterator. All keep dimensionality, with reduced axes
 collapsed to a dimension of 1. There is no `keep_dimensions` argument.
@@ -1084,7 +1058,7 @@ shape. They need their own file and topic, `R/max-pos.R`, with its own C pair.
 Whether any part of `rray_reduce()` can be shared with them is a design question
 for whoever picks them up.
 
-## 5.6 Indexing
+## 5.5 Indexing
 
 **A human should design review this whole section before any of it is
 implemented.** It was the most confusing part of the original rray, and it
@@ -1171,7 +1145,7 @@ No `<-` replacement forms, consistent with the names API.
 Files: one pair per function, plus shared `src/subscript.c` and
 `src/subscript.h` for turning user supplied subscripts into locations.
 
-## 5.7 Binding
+## 5.6 Binding
 
 **A human should design review this before implementation.** The axis semantics
 in the original were subtle, particularly how binding "up" into a new axis
