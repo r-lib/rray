@@ -31,6 +31,7 @@ reference:
 - title: Indexing
   contents:
   - rray_slice
+  - rray_slice_axis
   - rray_index
   - rray_extract
 

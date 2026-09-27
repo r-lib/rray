@@ -14,7 +14,9 @@ struct rray_subscript rray_as_slice_subscript(
   struct r_lazy error_call
 );
 
-void check_slice_indices(
+void check_slice_indices_unnamed(r_obj* indices, struct r_lazy error_call);
+
+void check_slice_indices_size(
   r_obj* indices,
   int dimensionality,
   struct r_lazy error_call
