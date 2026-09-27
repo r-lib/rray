@@ -19,6 +19,9 @@ r_obj* ffi_rray_slice_assign(
   r_obj* ffi_frame
 ) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
+  // Checked at the FFI boundary to disallow names from the R side, but on the C
+  // side we allow them so that `rray_slice_assign_axis()` and friends throw
+  // good error messages for `i`
   check_slice_indices_unnamed(ffi_indices, error_call);
   return rray_slice_assign(
     ffi_x,
