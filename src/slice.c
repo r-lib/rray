@@ -393,6 +393,7 @@ static inline r_ssize rray_slice_start(
   while (run_start != size) {                                                  \
     const r_ssize start =                                                      \
       rray_slice_start(v_v_locations, v_x_strides, v_point, N, size, false);   \
+                                                                               \
     for (r_ssize i = 0; i < run_size; ++i) {                                   \
       const int location = (LOCATION);                                         \
       POKE(out, run_start + i, v_x[start + ((r_ssize) location - 1)]);         \
@@ -406,6 +407,7 @@ static inline r_ssize rray_slice_start(
   while (run_start != size) {                                                  \
     const r_ssize start =                                                      \
       rray_slice_start(v_v_locations, v_x_strides, v_point, N, size, true);    \
+                                                                               \
     for (r_ssize i = 0; i < run_size; ++i) {                                   \
       const int location = (LOCATION);                                         \
       POKE(                                                                    \
