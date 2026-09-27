@@ -65,10 +65,18 @@ static inline int rray_and_lgl_one(int x, int y) {
   return !any_false * (equal * x + !equal * r_globals.na_lgl);
 }
 
+static inline int rray_and_lgl_one_na_rm(int x, int y) {
+  return x && y;
+}
+
 static inline int rray_or_lgl_one(int x, int y) {
   const bool any_true = (x == 1) || (y == 1);
   const bool equal = x == y;
   return any_true + !any_true * (equal * x + !equal * r_globals.na_lgl);
+}
+
+static inline int rray_or_lgl_one_na_rm(int x, int y) {
+  return (x == 1) || (y == 1);
 }
 
 static inline int rray_xor_lgl_one(int x, int y) {

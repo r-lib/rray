@@ -31,6 +31,3 @@ static r_obj* rray_any_along_lgl_na_rm(
   r_ssize out_size,
   const struct rray_strided_iterator_plan* plan
 );
-
-static inline int rray_all_along_lgl_one_na_rm(int out, int x);
-static inline int rray_any_along_lgl_one_na_rm(int out, int x);

@@ -95,7 +95,7 @@ static r_obj* rray_all_along_lgl_na_rm(
     int,
     r_lgl_begin,
     1,
-    rray_all_along_lgl_one_na_rm
+    rray_and_lgl_one_na_rm
   );
 }
 
@@ -127,14 +127,6 @@ static r_obj* rray_any_along_lgl_na_rm(
     int,
     r_lgl_begin,
     0,
-    rray_any_along_lgl_one_na_rm
+    rray_or_lgl_one_na_rm
   );
-}
-
-static inline int rray_all_along_lgl_one_na_rm(int out, int x) {
-  return out && x;
-}
-
-static inline int rray_any_along_lgl_one_na_rm(int out, int x) {
-  return out || (x == 1);
 }
