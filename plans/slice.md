@@ -120,15 +120,18 @@ rray_slice(x, TRUE, TRUE, TRUE)
 # dimensions: c(2, 3, 4)
 ```
 
-Empty arguments are an error. Base R writes a whole axis as a gap between two
-commas, which is easy to miscount and invisible on screen, so `rray_slice()`
-asks for a value instead. The error should point at `TRUE` and at
-`rray_slice_axis()`.
+An empty argument does not select a whole axis. Base R writes a whole axis as
+a gap between two commas, which is easy to miscount and invisible on screen, so
+`rray_slice()` asks for `TRUE` instead. Empty arguments get no special error,
+`list2()` handles them like it does everywhere else: a trailing one is dropped,
+and any other is an error.
 
 ```r
 rray_slice(x, , , 1:2)
-# Error: `...` must not contain empty arguments.
-# Use `TRUE` to select a whole axis, or `rray_slice_axis()` for a single axis.
+# Error in `list2()`: Argument 1 can't be empty.
+
+rray_slice(x, 1, TRUE, TRUE, )
+# Same as `rray_slice(x, 1, TRUE, TRUE)`
 ```
 
 Too few and too many subscripts are the same error. Subscripts in `...` must
@@ -376,16 +379,12 @@ apply:
 Logical recycling is deliberately stricter than base R. A logical subscript
 of length two does not silently recycle over an axis of dimension three.
 
-Internally, accepted subscripts normalize to zero-based locations. Preserve
-three representations:
+A slice subscript must be a vector or a one-dimensional array. A matrix or
+higher dimensional array is an error, as in vctrs.
 
-1. Every location.
-2. An affine sequence with a start, size, and step.
-3. A materialized integer location vector.
-
-The affine form covers contiguous ranges, stepped ranges, and reverse order.
-Users can write ordinary R sequences, so no public slice-range object is
-needed.
+Character `NA` selects a missing location, as in vctrs. The empty string, a
+name that is not on the axis, and a character subscript against an axis
+without names are errors.
 
 ## Missing locations
 
@@ -416,8 +415,8 @@ the data:
 - Selecting all of an axis preserves its names without copying them.
 - Reordering or duplicating locations reorders or duplicates their names.
 - A missing location gets an `NA` name.
-- An empty selection gives `character()` if the source axis had names, and
-  `NULL` otherwise.
+- An empty selection gives `NULL`, because R stores zero length axis names as
+  `NULL`.
 - Names on the list of axis names stay attached to the same axes.
 
 `rray_slice_axis()` follows the same rules. Because one location sequence is
@@ -493,47 +492,65 @@ rule, and both have the same one-dimensional result contract.
 
 ### Subscript normalization
 
-Add `src/subscript.c`, `src/subscript.h`, and
-`src/decl/subscript-decl.h`. This layer owns:
+A subscript normalizes to a `struct rray_subscript`:
 
-- Converting user subscripts to zero-based locations.
-- Exact logical size checks.
-- Positive, negative, zero, missing, and bounds rules.
-- Character matching against axis names for slicing.
-- Detection of all and affine indices.
-- Flat location validation.
-- Numeric and character point-matrix validation.
+```c
+struct rray_subscript {
+  r_obj* index;
+  enum rray_subscript_kind kind;
+  r_ssize size;
+};
+```
 
-Use `r_ssize` for subscript and output sizes. Axis dimensions and stored
-locations remain integers because R's `dim` attribute is integer. Error before
-creating a result whose selected axis would exceed `INT_MAX`.
+`kind` is one of `locations_int`, `locations_dbl`, `mask`, `points_int`, or
+`points_dbl`. `size` is the number of selected positions, including missing
+ones.
 
-The public behavior should match `vec_as_location()`, but the hot path should
-be implemented in C rather than calling an R function once per axis.
+`src/subscript.c` owns the rules shared by extraction and slicing:
 
-### Orthogonal slice plan
+- Numeric locations checked against a size. Negative locations become a
+  complement mask and zeros are dropped. Both allocate. Every other numeric
+  subscript is returned as is.
+- A logical mask of size one or the checked size, returned as is.
+- The numeric summary, fractional error, and kind names used by both.
 
-Build one slice plan from normalized indices, source dimensions, and source
-strides. The plan contains:
+`src/extract-subscript.c` adds point matrices and logical arrays with the
+dimensions of `x`, checked against `rray_size(x)`.
 
-- Output dimensions.
-- Source start offset.
-- One index descriptor per axis.
-- Source strides in R's column-major order.
-- Whether every axis is affine.
-- Whether any location is missing.
+`src/slice-subscript.c` adds the rules for one axis, checked against the axis
+dimension:
 
-Use two execution paths:
+| Input | Result | Allocates |
+|---|---|---|
+| `NULL` | Empty `locations_int` | No |
+| Logical | `mask` | No |
+| Integer or double | `locations_int` or `locations_dbl` | Only for negatives and zeros |
+| Character | `locations_int` matched with `Rf_match()` | Yes |
 
-1. When every axis is affine, use a strided plan with the selected step folded
-   into each source stride. Hold the source start offset in the plan and reuse
-   the existing strided iterator coalescing.
-2. When an axis is irregular, use an indexed iterator. Precompute source
-   offsets for irregular axes. Walk the first axis in an inner run and update
-   later-axis offsets when their mixed-radix counters carry.
+### Orthogonal slice core
 
-This keeps contiguous slices fast without changing the public contract for
-repeated or reordered locations.
+1. Normalize every subscript. The output dimensions are the subscript sizes.
+
+2. Allocate one `r_ssize` table with `sum(output dimensions)` entries, one block
+   per axis. Fill each block with zero-based source locations, using
+   `R_SSIZE_MIN` for a missing location. This is the only place that switches
+   on `kind`.
+
+3. Subset the names of each axis with its block. A block of
+   `0, 1, ..., dimension - 1` keeps the source names without copying.
+
+4. Multiply each location by the source stride of its axis, in place. The
+   largest real offset sum is below `R_XLEN_T_MAX`, so any sum that includes
+   `R_SSIZE_MIN` is negative.
+
+5. Walk the output in column-major order. The inner run reads
+   `v_x[start + v_offsets[i]]` along the first axis. Between runs, `start` is
+   updated from the later axes. A second loop checks for negative locations
+   and only runs when a location is missing.
+
+The table costs one allocation proportional to the sum of the output
+dimensions, and each element costs constant work. A fast path for a contiguous
+first axis is added only if benchmarks against base R show a real gap.
 
 ### Extraction plan
 
@@ -568,10 +585,14 @@ assignment use the same plan so target order cannot drift.
 Keep each public family with its assignment form:
 
 - `R/slice.R`, `src/slice.c`, `src/slice.h`, `src/decl/slice-decl.h`
+- `R/slice-subscript.R`, `src/slice-subscript.c`, `src/slice-subscript.h`,
+  `src/decl/slice-subscript-decl.h`
 - `R/slice-axis.R`, `src/slice-axis.c`, `src/slice-axis.h`,
   `src/decl/slice-axis-decl.h`
 - `R/extract.R`, `src/extract.c`, `src/extract.h`,
   `src/decl/extract-decl.h`
+- `R/extract-subscript.R`, `src/extract-subscript.c`,
+  `src/extract-subscript.h`, `src/decl/extract-subscript-decl.h`
 - Shared `src/subscript.c`, `src/subscript.h`,
   `src/decl/subscript-decl.h`
 
@@ -593,7 +614,8 @@ need no C code of their own.
 - `TRUE` selects a whole axis, including a zero dimension.
 - Duplicates, reverse order, and stepped sequences.
 - Out-of-bounds, mixed-sign, fractional, recycled logical, classed subscript,
-  empty argument, and wrong-number-of-axes errors.
+  and wrong-number-of-axes errors.
+- A trailing empty argument is ignored.
 - Named and unnamed axes, including reordered, duplicated, missing, and empty
   names.
 

@@ -1,4 +1,4 @@
-static struct rray_extract_subscript rray_as_extract_mask(
+static struct rray_subscript rray_as_extract_mask(
   r_obj* index,
   const int* v_dimensions,
   int dimensionality,
@@ -7,54 +7,10 @@ static struct rray_extract_subscript rray_as_extract_mask(
   struct r_lazy error_call
 );
 
-static struct rray_extract_subscript rray_as_extract_locations(
-  r_obj* index,
-  r_ssize size,
-  struct rray_arg* index_arg,
-  struct r_lazy error_call
-);
-
-static struct rray_extract_subscript rray_as_extract_points(
+static struct rray_subscript rray_as_extract_points(
   r_obj* index,
   const int* v_dimensions,
   int dimensionality,
   struct rray_arg* index_arg,
   struct r_lazy error_call
-);
-
-static struct rray_extract_subscript rray_as_extract_complement(
-  r_obj* index,
-  r_ssize size
-);
-
-static struct rray_extract_subscript rray_as_extract_nonzero(
-  r_obj* index,
-  r_ssize size
-);
-
-static r_ssize rray_mask_size(r_obj* mask, r_ssize size);
-
-static struct rray_subscript_summary rray_subscript_summarise(
-  r_obj* index,
-  r_ssize start,
-  r_ssize size
-);
-
-static struct rray_subscript_summary rray_subscript_summarise_int(
-  const int* v_index,
-  r_ssize size
-);
-
-static struct rray_subscript_summary rray_subscript_summarise_dbl(
-  const double* v_index,
-  r_ssize size
-);
-
-static r_no_return void stop_subscript_fractional(
-  struct rray_arg* index_arg,
-  struct r_lazy error_call
-);
-
-static const char* rray_extract_subscript_kind_name(
-  enum rray_extract_subscript_kind kind
 );

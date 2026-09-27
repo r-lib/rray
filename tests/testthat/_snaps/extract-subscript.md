@@ -151,12 +151,12 @@
       rray_as_extract_subscript(array(1L, c(1L, 1L, 1L)), c(1L, 1L, 1L))
     Condition
       Error in `rray_as_extract_subscript()`:
-      ! Numeric `i` must be a vector or a matrix, not an array with 3 dimensions.
+      ! Numeric `i` must be a vector or a matrix, not an array with a dimensionality of 3.
     Code
       rray_as_extract_subscript(array(1, c(1L, 1L, 1L, 1L)), 1L)
     Condition
       Error in `rray_as_extract_subscript()`:
-      ! Numeric `i` must be a vector or a matrix, not an array with 4 dimensions.
+      ! Numeric `i` must be a vector or a matrix, not an array with a dimensionality of 4.
 
 # errors on unsupported types
 

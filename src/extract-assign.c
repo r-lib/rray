@@ -5,6 +5,7 @@
 #include "clone.h"
 #include "dimensionality.h"
 #include "extract-subscript.h"
+#include "missing.h"
 #include "strides.h"
 #include "utils.h"
 
@@ -45,7 +46,7 @@ r_obj* rray_extract_assign(
   const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
   check_dimensionality(dimensionality);
 
-  const struct rray_extract_subscript subscript = rray_as_extract_subscript(
+  const struct rray_subscript subscript = rray_as_extract_subscript(
     i,
     v_dimensions,
     dimensionality,
@@ -192,26 +193,26 @@ r_obj* rray_extract_assign(
 
 #define RRAY_EXTRACT_ASSIGN_ITERATE(POKE)                                      \
   switch (subscript.kind) {                                                    \
-  case RRAY_EXTRACT_SUBSCRIPT_KIND_locations_int:                              \
+  case RRAY_SUBSCRIPT_KIND_locations_int:                                      \
     RRAY_EXTRACT_ASSIGN_LOCATIONS_LOOP(                                        \
       POKE,                                                                    \
       int,                                                                     \
       r_int_cbegin,                                                            \
-      rray_location_is_missing_int                                             \
+      rray_int_is_missing                                                      \
     );                                                                         \
     break;                                                                     \
-  case RRAY_EXTRACT_SUBSCRIPT_KIND_locations_dbl:                              \
+  case RRAY_SUBSCRIPT_KIND_locations_dbl:                                      \
     RRAY_EXTRACT_ASSIGN_LOCATIONS_LOOP(                                        \
       POKE,                                                                    \
       double,                                                                  \
       r_dbl_cbegin,                                                            \
-      rray_location_is_missing_dbl                                             \
+      rray_dbl_is_missing                                                      \
     );                                                                         \
     break;                                                                     \
-  case RRAY_EXTRACT_SUBSCRIPT_KIND_mask:                                       \
+  case RRAY_SUBSCRIPT_KIND_mask:                                               \
     RRAY_EXTRACT_ASSIGN_MASK_LOOP(POKE);                                       \
     break;                                                                     \
-  case RRAY_EXTRACT_SUBSCRIPT_KIND_points_int:                                 \
+  case RRAY_SUBSCRIPT_KIND_points_int:                                         \
     RRAY_EXTRACT_ASSIGN_POINTS_LOOP(                                           \
       POKE,                                                                    \
       int,                                                                     \
@@ -219,7 +220,7 @@ r_obj* rray_extract_assign(
       rray_point_to_location_int                                               \
     );                                                                         \
     break;                                                                     \
-  case RRAY_EXTRACT_SUBSCRIPT_KIND_points_dbl:                                 \
+  case RRAY_SUBSCRIPT_KIND_points_dbl:                                         \
     RRAY_EXTRACT_ASSIGN_POINTS_LOOP(                                           \
       POKE,                                                                    \
       double,                                                                  \
@@ -245,7 +246,7 @@ r_obj* rray_extract_assign(
 
 static void rray_extract_assign_lgl(
   r_obj* out,
-  struct rray_extract_subscript subscript,
+  struct rray_subscript subscript,
   r_obj* value
 ) {
   RRAY_EXTRACT_ASSIGN_ATOMIC(int, r_lgl_cbegin, r_lgl_begin);
@@ -253,7 +254,7 @@ static void rray_extract_assign_lgl(
 
 static void rray_extract_assign_int(
   r_obj* out,
-  struct rray_extract_subscript subscript,
+  struct rray_subscript subscript,
   r_obj* value
 ) {
   RRAY_EXTRACT_ASSIGN_ATOMIC(int, r_int_cbegin, r_int_begin);
@@ -261,7 +262,7 @@ static void rray_extract_assign_int(
 
 static void rray_extract_assign_dbl(
   r_obj* out,
-  struct rray_extract_subscript subscript,
+  struct rray_subscript subscript,
   r_obj* value
 ) {
   RRAY_EXTRACT_ASSIGN_ATOMIC(double, r_dbl_cbegin, r_dbl_begin);
@@ -269,7 +270,7 @@ static void rray_extract_assign_dbl(
 
 static void rray_extract_assign_cpl(
   r_obj* out,
-  struct rray_extract_subscript subscript,
+  struct rray_subscript subscript,
   r_obj* value
 ) {
   RRAY_EXTRACT_ASSIGN_ATOMIC(r_complex, r_cpl_cbegin, r_cpl_begin);
@@ -277,7 +278,7 @@ static void rray_extract_assign_cpl(
 
 static void rray_extract_assign_raw(
   r_obj* out,
-  struct rray_extract_subscript subscript,
+  struct rray_subscript subscript,
   r_obj* value
 ) {
   RRAY_EXTRACT_ASSIGN_ATOMIC(Rbyte, r_raw_cbegin, r_raw_begin);
@@ -285,7 +286,7 @@ static void rray_extract_assign_raw(
 
 static void rray_extract_assign_chr(
   r_obj* out,
-  struct rray_extract_subscript subscript,
+  struct rray_subscript subscript,
   r_obj* value
 ) {
   RRAY_EXTRACT_ASSIGN_BARRIER(r_chr_cbegin, r_chr_poke);
@@ -293,7 +294,7 @@ static void rray_extract_assign_chr(
 
 static void rray_extract_assign_list(
   r_obj* out,
-  struct rray_extract_subscript subscript,
+  struct rray_subscript subscript,
   r_obj* value
 ) {
   RRAY_EXTRACT_ASSIGN_BARRIER(r_list_cbegin, r_list_poke);

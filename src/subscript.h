@@ -1,0 +1,59 @@
+#ifndef RRAY_SUBSCRIPT_H
+#define RRAY_SUBSCRIPT_H
+
+#include "rlang.h"
+
+#include "arg.h"
+
+enum rray_subscript_kind {
+  RRAY_SUBSCRIPT_KIND_locations_int,
+  RRAY_SUBSCRIPT_KIND_locations_dbl,
+  RRAY_SUBSCRIPT_KIND_mask,
+  RRAY_SUBSCRIPT_KIND_points_int,
+  RRAY_SUBSCRIPT_KIND_points_dbl
+};
+
+struct rray_subscript {
+  r_obj* index;
+  enum rray_subscript_kind kind;
+  r_ssize size;
+};
+
+struct rray_subscript_summary {
+  double min;
+  double max;
+  r_ssize zeros;
+  bool any_missing;
+  bool any_fractional;
+};
+
+struct rray_subscript rray_as_subscript_locations(
+  r_obj* index,
+  r_ssize size,
+  struct rray_arg* index_arg,
+  struct r_lazy error_call
+);
+
+struct rray_subscript rray_as_subscript_mask(
+  r_obj* index,
+  r_ssize size,
+  struct rray_arg* index_arg,
+  struct r_lazy error_call
+);
+
+r_ssize rray_mask_size(r_obj* mask, r_ssize size);
+
+struct rray_subscript_summary rray_subscript_summarise(
+  r_obj* index,
+  r_ssize start,
+  r_ssize size
+);
+
+r_no_return void stop_subscript_fractional(
+  struct rray_arg* index_arg,
+  struct r_lazy error_call
+);
+
+r_obj* rray_subscript_as_list(struct rray_subscript subscript);
+
+#endif
