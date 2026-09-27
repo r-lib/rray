@@ -408,7 +408,7 @@ static inline r_ssize rray_slice_start(
       POKE(                                                                    \
         out,                                                                   \
         run_start + i,                                                         \
-        start < 0 || location == r_globals.na_int                              \
+        start == -1 || location == r_globals.na_int                            \
           ? MISSING                                                            \
           : v_x[start + ((r_ssize) location - 1)]                              \
       );                                                                       \
