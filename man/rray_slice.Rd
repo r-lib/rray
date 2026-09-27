@@ -2,9 +2,12 @@
 % Please edit documentation in R/slice.R
 \name{rray_slice}
 \alias{rray_slice}
+\alias{rray_slice_assign}
 \title{Slice an array}
 \usage{
 rray_slice(x, ...)
+
+rray_slice_assign(x, ..., value)
 }
 \arguments{
 \item{x}{An array.}
@@ -20,20 +23,33 @@ positions, zero is ignored, and duplicates repeat positions.
 first match is used when names are duplicated.
 \item \code{NULL}, to select nothing.
 }}
+
+\item{value}{An array to assign to the selected positions. It is cast to
+the type of \code{x}, then broadcast to the dimensions of the selection, which
+are the dimensions of \code{rray_slice(x, ...)}.}
 }
 \value{
-An array with the same type and dimensionality as \code{x}. The dimension of each
-axis is the number of positions selected on it. The names of each axis are
-selected along with the values.
+\itemize{
+\item \code{rray_slice()} returns an array with the same type and dimensionality as
+\code{x}. The dimension of each axis is the number of positions selected on
+it. The names of each axis are selected along with the values.
+\item \code{rray_slice_assign()} returns \code{x} with the selected positions replaced.
+The type, dimensions, and names of \code{x} are kept.
+}
 }
 \description{
 \code{rray_slice()} selects positions along each axis of \code{x}. The result always
 has the same dimensionality as \code{x}.
+
+\code{rray_slice_assign()} replaces the selected positions with \code{value} and
+returns a modified copy of \code{x}.
 }
 \details{
 \code{NA} in a subscript gives missing values in the result. For raw arrays the
 missing value is \code{as.raw(0)}, and for list arrays it is \code{NULL}. If the axis
-has names, the name of a missing value is \code{""}.
+has names, the name of a missing value is \code{""}. For assignment, \code{NA} in a
+subscript leaves \code{x} unchanged at that position but uses one element of
+\code{value}.
 
 Unlike \code{[}, an empty argument does not select a whole axis. Use \code{TRUE}
 instead, so that every axis is provided explicitly:
@@ -67,4 +83,11 @@ rray_slice(y, "b", c("e", "c"))
 subscripts <- rep(list(TRUE), rray_dimensionality(x))
 subscripts[[3]] <- c(4, 1)
 rray_slice(x, !!!subscripts)
+
+# Assign one value to every first row
+rray_slice_assign(x, 1, TRUE, TRUE, value = 0L)
+
+# Or broadcast `value` to the dimensions of the selection
+value <- array(c(100L, 200L), c(1L, 2L))
+rray_slice_assign(x, TRUE, c(1, 3), 1, value = value)
 }
