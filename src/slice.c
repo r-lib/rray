@@ -67,6 +67,7 @@ r_obj* rray_slice(
   r_obj* dimensions = KEEP_N(r_alloc_integer(dimensionality), &n_prot);
   int* v_dimensions = r_int_begin(dimensions);
 
+  // `...` is capped by the dimensionality of `x`
   const int* v_v_locations[RRAY_MAX_DIMENSIONALITY];
 
   r_ssize i = 0;
@@ -418,6 +419,8 @@ static inline r_ssize rray_slice_start(
     RRAY_SLICE_NEXT_POINT(v_point, N);                                         \
   }
 
+// Specialization up to 4D allows the compiler to unroll loops in the next
+// point computation, which runs around 30% faster in total for those cases
 #define RRAY_SLICE_LOOPS(POKE, MISSING, LOCATION)                              \
   switch (dimensionality) {                                                    \
   case 1: {                                                                    \
