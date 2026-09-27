@@ -95,14 +95,6 @@ x[1, , , drop = FALSE]
 # rray
 rray_slice(x, 1, TRUE, TRUE)
 }\if{html}{\out{</div>}}
-
-When the axis is held in a variable, use \code{rray_slice_axis()} rather than
-padding a call to \code{rray_slice()} with \code{TRUE}:
-
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{# These are the same
-rray_slice(x, TRUE, TRUE, c(4, 1))
-rray_slice_axis(x, c(4, 1), axis = 3)
-}\if{html}{\out{</div>}}
 }
 \examples{
 x <- array(1:24, c(2L, 3L, 4L))

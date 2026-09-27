@@ -31,15 +31,6 @@
 #' rray_slice(x, 1, TRUE, TRUE)
 #' ```
 #'
-#' When the axis is held in a variable, use `rray_slice_axis()` rather than
-#' padding a call to `rray_slice()` with `TRUE`:
-#'
-#' ```r
-#' # These are the same
-#' rray_slice(x, TRUE, TRUE, c(4, 1))
-#' rray_slice_axis(x, c(4, 1), axis = 3)
-#' ```
-#'
 #' @param x An array.
 #'
 #' @param ... For `rray_slice()` and `rray_slice_assign()`, one unnamed
