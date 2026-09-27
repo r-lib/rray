@@ -5,6 +5,7 @@
 
 #include "arg.h"
 #include "missing.h"
+#include "type.h"
 #include "utils.h"
 
 r_obj* rray_and(
@@ -31,7 +32,32 @@ r_obj* rray_xor(
   struct r_lazy error_call
 );
 
-void check_logical(r_obj* x, struct rray_arg* arg, struct r_lazy error_call);
+static inline void check_logical(
+  r_obj* x,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+) {
+  switch (rray_typeof(x)) {
+  case RRAY_TYPE_logical:
+    return;
+
+  case RRAY_TYPE_integer:
+  case RRAY_TYPE_double:
+  case RRAY_TYPE_complex:
+  case RRAY_TYPE_character:
+  case RRAY_TYPE_raw:
+  case RRAY_TYPE_list:
+  case RRAY_TYPE_scalar:
+    r_abort_lazy_call(
+      error_call,
+      "%s must be a logical array, not %s.",
+      rray_arg_format_input(arg),
+      r_obj_type_friendly(x)
+    );
+  }
+
+  r_stop_unreachable();
+}
 
 static inline int rray_and_lgl_one(int x, int y) {
   const bool any_false = !x || !y;

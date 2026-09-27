@@ -7,12 +7,6 @@ static r_obj* rray_logical(
   struct r_lazy error_call
 );
 
-static r_no_return void stop_non_logical(
-  r_obj* x,
-  struct rray_arg* arg,
-  struct r_lazy error_call
-);
-
 static r_obj* rray_logical_lgl_lgl(
   r_obj* x,
   r_obj* y,

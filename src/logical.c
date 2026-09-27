@@ -6,7 +6,6 @@
 #include "dimensionality.h"
 #include "dimensions.h"
 #include "strided-iterator.h"
-#include "type.h"
 
 enum rray_logical_op {
   RRAY_LOGICAL_and,
@@ -121,39 +120,6 @@ static r_obj* rray_logical(
 
   FREE(5);
   return out;
-}
-
-void check_logical(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
-  switch (rray_typeof(x)) {
-  case RRAY_TYPE_logical:
-    return;
-
-  case RRAY_TYPE_integer:
-  case RRAY_TYPE_double:
-  case RRAY_TYPE_complex:
-  case RRAY_TYPE_character:
-  case RRAY_TYPE_raw:
-  case RRAY_TYPE_list:
-    stop_non_logical(x, arg, error_call);
-
-  case RRAY_TYPE_scalar:
-    stop_scalar_input(x, arg, error_call);
-  }
-
-  r_stop_unreachable();
-}
-
-static r_no_return void stop_non_logical(
-  r_obj* x,
-  struct rray_arg* arg,
-  struct r_lazy error_call
-) {
-  r_abort_lazy_call(
-    error_call,
-    "%s must be a logical array, not %s.",
-    rray_arg_format_input(arg),
-    r_obj_type_friendly(x)
-  );
 }
 
 static r_obj* rray_logical_lgl_lgl(
