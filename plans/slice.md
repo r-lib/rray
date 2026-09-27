@@ -404,8 +404,10 @@ the missing value for the storage type:
 This follows base R and vctrs, including the unavoidable raw and list
 behavior.
 
-`rray_extract_assign()` skips a missing location while using its replacement
-value. The other assignment functions reject missing locations.
+Assignment functions skip a missing location while using its replacement
+value. `value` is broadcast to the selection dimensions, which count missing
+locations, so a missing location leaves `x` unchanged but still uses one
+element of `value`.
 
 ## Names
 
@@ -692,7 +694,7 @@ the normalized matrix columns. Cover numeric and character coordinates.
 - Scalar and per-axis broadcasting.
 - Arbitrary recycling fails.
 - Empty targets.
-- Missing targets fail before copying.
+- Missing targets use an element of `value` without assigning.
 - Duplicate targets use final-write-wins order.
 - `value` equal to `x` works.
 - Type, size, dimensions, and names of `x` are unchanged.

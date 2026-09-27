@@ -1,6 +1,7 @@
 #include "slice-subscript.h"
 
 #include "dimensionality.h"
+#include "missing.h"
 #include "utils.h"
 
 #include "decl/slice-subscript-decl.h"
@@ -130,4 +131,112 @@ static struct rray_subscript rray_as_subscript_names(
 
   FREE(1);
   return subscript;
+}
+
+void check_slice_indices(
+  r_obj* indices,
+  int dimensionality,
+  struct r_lazy error_call
+) {
+  const r_ssize indices_size = r_length(indices);
+
+  if (indices_size != dimensionality) {
+    r_abort_lazy_call(
+      error_call,
+      "Must supply exactly %d subscript%s to `...`, not %" R_PRI_SSIZE ".",
+      dimensionality,
+      dimensionality == 1 ? "" : "s",
+      indices_size
+    );
+  }
+
+  if (r_names(indices) != r_null) {
+    r_abort_lazy_call(error_call, "All elements of `...` must be unnamed.");
+  }
+}
+
+r_obj* rray_slice_as_locations(struct rray_subscript subscript) {
+  switch (subscript.kind) {
+  case RRAY_SUBSCRIPT_KIND_locations_int:
+    return subscript.index;
+  case RRAY_SUBSCRIPT_KIND_locations_dbl: {
+    const double* v_index = r_dbl_cbegin(subscript.index);
+
+    r_obj* out = KEEP(r_alloc_integer(subscript.size));
+    int* v_out = r_int_begin(out);
+
+    for (r_ssize i = 0; i < subscript.size; ++i) {
+      const double location = v_index[i];
+      v_out[i] =
+        rray_dbl_is_missing(location) ? r_globals.na_int : (int) location;
+    }
+
+    FREE(1);
+    return out;
+  }
+  case RRAY_SUBSCRIPT_KIND_mask: {
+    const int* v_index = r_lgl_cbegin(subscript.index);
+
+    r_obj* out = KEEP(r_alloc_integer(subscript.size));
+    int* v_out = r_int_begin(out);
+
+    if (r_length(subscript.index) == 1) {
+      const int elt = v_index[0];
+
+      if (elt == 1) {
+        r_stop_internal("A scalar `TRUE` should have been handled already.");
+      } else if (elt == 0) {
+        // Nothing to do
+      } else if (elt == r_globals.na_lgl) {
+        for (r_ssize i = 0; i < subscript.size; ++i) {
+          v_out[i] = r_globals.na_int;
+        }
+      } else {
+        r_stop_unreachable();
+      }
+    } else {
+      r_ssize i = 0;
+      r_ssize location = 0;
+
+      while (i < subscript.size) {
+        const int elt = v_index[location];
+        v_out[i] =
+          elt == r_globals.na_lgl ? r_globals.na_int : (int) location + 1;
+        i += elt != 0;
+        ++location;
+      }
+    }
+
+    FREE(1);
+    return out;
+  }
+  case RRAY_SUBSCRIPT_KIND_points_int:
+  case RRAY_SUBSCRIPT_KIND_points_dbl:
+    r_stop_unreachable();
+  }
+
+  r_stop_unreachable();
+}
+
+bool rray_slice_locations_any_missing(
+  const int* const* v_v_locations,
+  const int* v_dimensions,
+  int dimensionality
+) {
+  for (int axis = 0; axis < dimensionality; ++axis) {
+    const int* v_locations = v_v_locations[axis];
+    if (v_locations == NULL) {
+      continue;
+    }
+
+    const int dimension = v_dimensions[axis];
+
+    for (int i = 0; i < dimension; ++i) {
+      if (v_locations[i] == r_globals.na_int) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
