@@ -254,6 +254,8 @@ static r_obj* rray_slice_axis_names(
   return out;
 }
 
+// The literal `true` / `false` values for `ANY_MISSING` allow the compiler to
+// remove those checks when none are missing
 #define RRAY_SLICE_RUN(LOCATION, N, ANY_MISSING, POKE, MISSING)                \
   for (r_ssize i = 0; i < run_size; ++i) {                                     \
     const int location = (LOCATION);                                           \
