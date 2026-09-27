@@ -10,11 +10,9 @@
 #' @details
 #' `NA` in a subscript gives missing values in the result. For raw arrays the
 #' missing value is `as.raw(0)`, and for list arrays it is `NULL`. If the axis
-#' has names, the name of a missing value is `""`.
-#'
-#' For assignment, `NA` in a subscript leaves `x` unchanged at that position
-#' but uses one element of `value`. Negative locations can't be combined with
-#' missing values.
+#' has names, the name of a missing value is `""`. For assignment, `NA` in a
+#' subscript leaves `x` unchanged at that position but uses one element of
+#' `value`.
 #'
 #' Unlike `[`, an empty argument does not select a whole axis. Use `TRUE`
 #' instead, so that every axis is provided explicitly:

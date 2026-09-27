@@ -47,11 +47,9 @@ returns a modified copy of \code{x}.
 \details{
 \code{NA} in a subscript gives missing values in the result. For raw arrays the
 missing value is \code{as.raw(0)}, and for list arrays it is \code{NULL}. If the axis
-has names, the name of a missing value is \code{""}.
-
-For assignment, \code{NA} in a subscript leaves \code{x} unchanged at that position
-but uses one element of \code{value}. Negative locations can't be combined with
-missing values.
+has names, the name of a missing value is \code{""}. For assignment, \code{NA} in a
+subscript leaves \code{x} unchanged at that position but uses one element of
+\code{value}.
 
 Unlike \code{[}, an empty argument does not select a whole axis. Use \code{TRUE}
 instead, so that every axis is provided explicitly:
