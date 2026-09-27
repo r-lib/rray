@@ -70,9 +70,9 @@ The type, dimensions, and names of \code{x} are kept.
 \code{rray_slice()} selects positions along each axis of \code{x}. The result always
 has the same dimensionality as \code{x}.
 
-\code{rray_slice_axis()} selects positions along a single \code{axis} of \code{x}. Every
-other axis is kept whole. \code{rray_slice_rows()} and \code{rray_slice_columns()} are
-shortcuts for \code{axis = 1} and \code{axis = 2}.
+\code{rray_slice_axis()} is \code{rray_slice()} restricted to a single axis, which can
+be more ergonomic to write. \code{rray_slice_rows()} and \code{rray_slice_columns()}
+are shortcuts for \code{axis = 1} and \code{axis = 2}.
 
 The \verb{_assign} versions replace the selected positions with \code{value} and
 return a modified copy of \code{x}.

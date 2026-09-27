@@ -4,9 +4,9 @@
 #' `rray_slice()` selects positions along each axis of `x`. The result always
 #' has the same dimensionality as `x`.
 #'
-#' `rray_slice_axis()` selects positions along a single `axis` of `x`. Every
-#' other axis is kept whole. `rray_slice_rows()` and `rray_slice_columns()` are
-#' shortcuts for `axis = 1` and `axis = 2`.
+#' `rray_slice_axis()` is `rray_slice()` restricted to a single axis, which can
+#' be more ergonomic to write. `rray_slice_rows()` and `rray_slice_columns()`
+#' are shortcuts for `axis = 1` and `axis = 2`.
 #'
 #' The `_assign` versions replace the selected positions with `value` and
 #' return a modified copy of `x`.
