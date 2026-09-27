@@ -2,10 +2,10 @@
 % Please edit documentation in R/slice.R
 \name{rray_slice}
 \alias{rray_slice}
-\alias{rray_slice_assign}
 \alias{rray_slice_axis}
 \alias{rray_slice_rows}
 \alias{rray_slice_columns}
+\alias{rray_slice_assign}
 \alias{rray_slice_assign_axis}
 \alias{rray_slice_assign_rows}
 \alias{rray_slice_assign_columns}
@@ -13,13 +13,13 @@
 \usage{
 rray_slice(x, ...)
 
-rray_slice_assign(x, ..., value)
-
 rray_slice_axis(x, i, ..., axis)
 
 rray_slice_rows(x, i)
 
 rray_slice_columns(x, i)
+
+rray_slice_assign(x, ..., value)
 
 rray_slice_assign_axis(x, i, ..., axis, value)
 
@@ -45,13 +45,13 @@ first match is used when names are duplicated.
 For \code{rray_slice_axis()} and \code{rray_slice_assign_axis()}, these dots must be
 empty.}
 
-\item{value}{An array to assign to the selected positions. It is cast to
-the type of \code{x}, then broadcast to the dimensions of the selection.}
-
 \item{i}{A subscript for the selected axis. It takes any of the forms
 allowed in \code{...}.}
 
 \item{axis}{A single integer. The axis to slice along.}
+
+\item{value}{An array to assign to the selected positions. It is cast to
+the type of \code{x}, then broadcast to the dimensions of the selection.}
 }
 \value{
 \itemize{

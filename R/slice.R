@@ -116,12 +116,6 @@ rray_slice <- function(x, ...) {
 
 #' @rdname rray_slice
 #' @export
-rray_slice_assign <- function(x, ..., value) {
-  .Call(ffi_rray_slice_assign, x, list2(...), value, environment())
-}
-
-#' @rdname rray_slice
-#' @export
 rray_slice_axis <- function(x, i, ..., axis) {
   check_dots_empty0(...)
   .Call(ffi_rray_slice_axis, x, i, axis, environment())
@@ -137,6 +131,12 @@ rray_slice_rows <- function(x, i) {
 #' @export
 rray_slice_columns <- function(x, i) {
   .Call(ffi_rray_slice_columns, x, i, environment())
+}
+
+#' @rdname rray_slice
+#' @export
+rray_slice_assign <- function(x, ..., value) {
+  .Call(ffi_rray_slice_assign, x, list2(...), value, environment())
 }
 
 #' @rdname rray_slice
