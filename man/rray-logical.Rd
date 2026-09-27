@@ -14,9 +14,7 @@ rray_or(x, y)
 rray_xor(x, y)
 }
 \arguments{
-\item{x}{A logical array.}
-
-\item{y}{A logical array.}
+\item{x, y}{Logical arrays.}
 }
 \value{
 A logical array with the common dimensions of \code{x} and \code{y}.

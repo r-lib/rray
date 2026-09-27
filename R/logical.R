@@ -13,9 +13,7 @@
 #'
 #' Missing values are handled the same way as `&`, `|`, and [xor()].
 #'
-#' @param x A logical array.
-#'
-#' @param y A logical array.
+#' @param x,y Logical arrays.
 #'
 #' @returns
 #' A logical array with the common dimensions of `x` and `y`.
