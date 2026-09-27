@@ -78,7 +78,7 @@
 #' subscripts[[3]] <- c(4, 1)
 #' rray_slice(x, !!!subscripts)
 #'
-#' # Assign one value to every selected position
+#' # Assign one value to every first row
 #' rray_slice_assign(x, 1, TRUE, TRUE, value = 0L)
 #'
 #' # Or broadcast `value` to the dimensions of the selection
