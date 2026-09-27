@@ -380,31 +380,8 @@ static inline r_ssize rray_slice_start(
   return out;
 }
 
-static inline r_ssize rray_slice_offset(
-  const int* v_locations,
-  r_ssize stride,
-  int point
-) {
-  return v_locations == NULL ? (r_ssize) point * stride
-                             : ((r_ssize) v_locations[point] - 1) * stride;
-}
-
-#define RRAY_SLICE_NEXT(START, V_POINT)                                        \
-  for (int axis = 1; axis < dimensionality; ++axis) {                          \
-    const int* v_locations = v_v_locations[axis];                              \
-    const r_ssize stride = v_x_strides[axis];                                  \
-    START -= rray_slice_offset(v_locations, stride, V_POINT[axis]);            \
-    ++V_POINT[axis];                                                           \
-    if (V_POINT[axis] < v_dimensions[axis]) {                                  \
-      START += rray_slice_offset(v_locations, stride, V_POINT[axis]);          \
-      break;                                                                   \
-    }                                                                          \
-    V_POINT[axis] = 0;                                                         \
-    START += rray_slice_offset(v_locations, stride, 0);                        \
-  }
-
-#define RRAY_SLICE_NEXT_POINT(V_POINT)                                         \
-  for (int axis = 1; axis < dimensionality; ++axis) {                          \
+#define RRAY_SLICE_NEXT_POINT(V_POINT, N)                                      \
+  for (int axis = 1; axis < N; ++axis) {                                       \
     ++V_POINT[axis];                                                           \
     if (V_POINT[axis] < v_dimensions[axis]) {                                  \
       break;                                                                   \
@@ -412,35 +389,23 @@ static inline r_ssize rray_slice_offset(
     V_POINT[axis] = 0;                                                         \
   }
 
-#define RRAY_SLICE_LOOP(POKE, LOCATION)                                        \
-  r_ssize start = rray_slice_start(                                            \
-    v_v_locations,                                                             \
-    v_x_strides,                                                               \
-    v_point,                                                                   \
-    dimensionality,                                                            \
-    size,                                                                      \
-    false                                                                      \
-  );                                                                           \
+#define RRAY_SLICE_LOOP(POKE, LOCATION, N)                                     \
   while (run_start != size) {                                                  \
+    const r_ssize start =                                                      \
+      rray_slice_start(v_v_locations, v_x_strides, v_point, N, size, false);   \
     for (r_ssize i = 0; i < run_size; ++i) {                                   \
       const int location = (LOCATION);                                         \
       POKE(out, run_start + i, v_x[start + ((r_ssize) location - 1)]);         \
     }                                                                          \
                                                                                \
     run_start += run_size;                                                     \
-    RRAY_SLICE_NEXT(start, v_point);                                           \
+    RRAY_SLICE_NEXT_POINT(v_point, N);                                         \
   }
 
-#define RRAY_SLICE_LOOP_MISSING(POKE, MISSING, LOCATION)                       \
+#define RRAY_SLICE_LOOP_MISSING(POKE, MISSING, LOCATION, N)                    \
   while (run_start != size) {                                                  \
-    const r_ssize start = rray_slice_start(                                    \
-      v_v_locations,                                                           \
-      v_x_strides,                                                             \
-      v_point,                                                                 \
-      dimensionality,                                                          \
-      size,                                                                    \
-      true                                                                     \
-    );                                                                         \
+    const r_ssize start =                                                      \
+      rray_slice_start(v_v_locations, v_x_strides, v_point, N, size, true);    \
     for (r_ssize i = 0; i < run_size; ++i) {                                   \
       const int location = (LOCATION);                                         \
       POKE(                                                                    \
@@ -453,7 +418,51 @@ static inline r_ssize rray_slice_offset(
     }                                                                          \
                                                                                \
     run_start += run_size;                                                     \
-    RRAY_SLICE_NEXT_POINT(v_point);                                            \
+    RRAY_SLICE_NEXT_POINT(v_point, N);                                         \
+  }
+
+#define RRAY_SLICE_LOOPS(POKE, MISSING, LOCATION)                              \
+  switch (dimensionality) {                                                    \
+  case 1: {                                                                    \
+    if (any_missing) {                                                         \
+      RRAY_SLICE_LOOP_MISSING(POKE, MISSING, LOCATION, 1);                     \
+    } else {                                                                   \
+      RRAY_SLICE_LOOP(POKE, LOCATION, 1);                                      \
+    }                                                                          \
+    break;                                                                     \
+  }                                                                            \
+  case 2: {                                                                    \
+    if (any_missing) {                                                         \
+      RRAY_SLICE_LOOP_MISSING(POKE, MISSING, LOCATION, 2);                     \
+    } else {                                                                   \
+      RRAY_SLICE_LOOP(POKE, LOCATION, 2);                                      \
+    }                                                                          \
+    break;                                                                     \
+  }                                                                            \
+  case 3: {                                                                    \
+    if (any_missing) {                                                         \
+      RRAY_SLICE_LOOP_MISSING(POKE, MISSING, LOCATION, 3);                     \
+    } else {                                                                   \
+      RRAY_SLICE_LOOP(POKE, LOCATION, 3);                                      \
+    }                                                                          \
+    break;                                                                     \
+  }                                                                            \
+  case 4: {                                                                    \
+    if (any_missing) {                                                         \
+      RRAY_SLICE_LOOP_MISSING(POKE, MISSING, LOCATION, 4);                     \
+    } else {                                                                   \
+      RRAY_SLICE_LOOP(POKE, LOCATION, 4);                                      \
+    }                                                                          \
+    break;                                                                     \
+  }                                                                            \
+  default: {                                                                   \
+    if (any_missing) {                                                         \
+      RRAY_SLICE_LOOP_MISSING(POKE, MISSING, LOCATION, dimensionality);        \
+    } else {                                                                   \
+      RRAY_SLICE_LOOP(POKE, LOCATION, dimensionality);                         \
+    }                                                                          \
+    break;                                                                     \
+  }                                                                            \
   }
 
 #define RRAY_SLICE_ITERATE(POKE, MISSING)                                      \
@@ -464,17 +473,9 @@ static inline r_ssize rray_slice_offset(
   int v_point[RRAY_MAX_DIMENSIONALITY] = {0};                                  \
                                                                                \
   if (v_run_locations == NULL) {                                               \
-    if (any_missing) {                                                         \
-      RRAY_SLICE_LOOP_MISSING(POKE, MISSING, i + 1);                           \
-    } else {                                                                   \
-      RRAY_SLICE_LOOP(POKE, i + 1);                                            \
-    }                                                                          \
+    RRAY_SLICE_LOOPS(POKE, MISSING, i + 1);                                    \
   } else {                                                                     \
-    if (any_missing) {                                                         \
-      RRAY_SLICE_LOOP_MISSING(POKE, MISSING, v_run_locations[i]);              \
-    } else {                                                                   \
-      RRAY_SLICE_LOOP(POKE, v_run_locations[i]);                               \
-    }                                                                          \
+    RRAY_SLICE_LOOPS(POKE, MISSING, v_run_locations[i]);                       \
   }
 
 #define RRAY_SLICE_ATOMIC_POKE(OUT, I, VALUE) v_out[I] = (VALUE)
@@ -613,10 +614,10 @@ static r_obj* rray_slice_list(
   RRAY_SLICE_BARRIER(R_TYPE_list, r_list_cbegin, r_list_poke, r_null);
 }
 
-#undef RRAY_SLICE_NEXT
 #undef RRAY_SLICE_NEXT_POINT
 #undef RRAY_SLICE_LOOP
 #undef RRAY_SLICE_LOOP_MISSING
+#undef RRAY_SLICE_LOOPS
 #undef RRAY_SLICE_ITERATE
 #undef RRAY_SLICE_ATOMIC_POKE
 #undef RRAY_SLICE_ATOMIC

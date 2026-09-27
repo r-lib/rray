@@ -28,12 +28,6 @@ static inline r_ssize rray_slice_start(
   bool any_missing
 );
 
-static inline r_ssize rray_slice_offset(
-  const int* v_locations,
-  r_ssize stride,
-  int point
-);
-
 static r_obj* rray_slice_lgl(
   r_obj* x,
   const int* const* v_v_locations,

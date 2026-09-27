@@ -119,6 +119,10 @@ test_that("works with one dimension", {
 
   expect_identical(rray_slice(x, c(3L, 1L)), array(c(3L, 1L), 2L))
   expect_identical(rray_slice(x, TRUE), x)
+  expect_identical(
+    rray_slice(x, c(NA_integer_, 2L)),
+    array(c(NA_integer_, 2L), 2L)
+  )
 })
 
 test_that("works with zero dimensions", {
@@ -150,6 +154,36 @@ test_that("works with the maximum dimensionality", {
   expect_identical(
     rray_slice(x, !!!indices),
     array(c(4L, 2L), c(rep(1L, 62L), 1L, 2L))
+  )
+})
+
+test_that("slices four dimensions and falls back for higher dimensions", {
+  x4 <- array(seq_len(120L), c(2L, 3L, 4L, 5L))
+
+  expect_identical(
+    rray_slice(x4, TRUE, c(3L, 1L), c(4L, 2L), c(5L, 1L)),
+    x4[, c(3L, 1L), c(4L, 2L), c(5L, 1L), drop = FALSE]
+  )
+  expect_identical(
+    rray_slice(x4, TRUE, c(NA_integer_, 1L), c(4L, 2L), c(5L, 1L)),
+    x4[, c(NA_integer_, 1L), c(4L, 2L), c(5L, 1L), drop = FALSE]
+  )
+
+  x5 <- array(seq_len(240L), c(2L, 3L, 4L, 5L, 2L))
+
+  expect_identical(
+    rray_slice(x5, TRUE, c(3L, 1L), c(4L, 2L), c(5L, 1L), c(2L, 1L)),
+    x5[, c(3L, 1L), c(4L, 2L), c(5L, 1L), c(2L, 1L), drop = FALSE]
+  )
+  expect_identical(
+    rray_slice(x5, TRUE, c(NA_integer_, 1L), c(4L, 2L), c(5L, 1L), c(2L, 1L)),
+    x5[,
+      c(NA_integer_, 1L),
+      c(4L, 2L),
+      c(5L, 1L),
+      c(2L, 1L),
+      drop = FALSE
+    ]
   )
 })
 
