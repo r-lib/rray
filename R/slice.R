@@ -61,9 +61,7 @@
 #' @param axis A single integer. The axis to slice along.
 #'
 #' @param value An array to assign to the selected positions. It is cast to
-#'   the type of `x`, then broadcast to the dimensions of the selection. Those
-#'   are the dimensions of the matching read, like `rray_slice(x, ...)` for
-#'   `rray_slice_assign()`.
+#'   the type of `x`, then broadcast to the dimensions of the selection.
 #'
 #' @returns
 #' - `rray_slice()`, `rray_slice_axis()`, `rray_slice_rows()`, and

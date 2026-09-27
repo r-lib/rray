@@ -46,9 +46,7 @@ For \code{rray_slice_axis()} and \code{rray_slice_assign_axis()}, these dots mus
 empty.}
 
 \item{value}{An array to assign to the selected positions. It is cast to
-the type of \code{x}, then broadcast to the dimensions of the selection. Those
-are the dimensions of the matching read, like \code{rray_slice(x, ...)} for
-\code{rray_slice_assign()}.}
+the type of \code{x}, then broadcast to the dimensions of the selection.}
 
 \item{i}{A subscript for the selected axis. It takes any of the forms
 allowed in \code{...}.}
