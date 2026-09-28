@@ -75,9 +75,8 @@ r_obj* rray_roll_each(
       dimensionality
     );
 
-    r_obj* normalized_n =
-      KEEP(rray_roll_each_normalize(n, &plan, axis_dimension));
-    const int* v_normalized_n = r_int_cbegin(normalized_n);
+    n = KEEP(rray_roll_each_normalize(n, &plan, axis_dimension));
+    const int* v_n = r_int_cbegin(n);
 
     r_ssize block_size = 1;
     for (int i = 0; i < axis - 1; ++i) {
@@ -89,14 +88,7 @@ r_obj* rray_roll_each(
       n_groups *= v_x_dimensions[i];
     }
 
-    rray_roll_each_fill(
-      x,
-      out,
-      v_normalized_n,
-      block_size,
-      axis_dimension,
-      n_groups
-    );
+    rray_roll_each_fill(x, out, v_n, block_size, axis_dimension, n_groups);
 
     FREE(1);
   }
