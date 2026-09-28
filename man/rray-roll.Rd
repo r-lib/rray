@@ -34,13 +34,13 @@ Names on a rolled axis move with the data. Every other axis keeps its names
 untouched.
 }
 \examples{
-# Positive shifts move elements toward the end
+# Positive `n` moves elements toward the end
 rray_roll(1:5, n = 2, axes = 1)
 
-# Negative shifts move them toward the start
+# Negative `n` moves them toward the start
 rray_roll(1:5, n = -1, axes = 1)
 
-# Shifts wrap around
+# Large `n` circles around
 rray_roll(1:5, n = 7, axes = 1)
 
 x <- matrix(1:6, nrow = 2, dimnames = list(c("r1", "r2"), c("a", "b", "c")))
@@ -51,9 +51,9 @@ rray_roll(x, n = 1, axes = 2)
 # Roll the rows
 rray_roll(x, n = 1, axes = 1)
 
-# Roll both axes by the same shift
+# Roll both axes by the same `n`
 rray_roll(x, n = 1, axes = c(1, 2))
 
-# Or by one shift per axis
+# Or by one `n` per axis
 rray_roll(x, n = c(1, -1), axes = c(1, 2))
 }
