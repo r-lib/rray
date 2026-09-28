@@ -227,7 +227,8 @@ Row 1 of sheet 1 moves 1, row 2 of sheet 1 moves 2, and so on. Row 1 of
 sheet 3 has an \code{n} of 5 on a dimension of 5, a full circle, so it doesn't
 move. Row 2 of sheet 3 has an \code{n} of 6, which circles around to 1.
 
-You only need a real dimension in \code{n} where the roll actually changes:
+Broadcasting allows you to provide a smaller \code{n} array when either all of the
+rows or all of the sheets roll by the same amount:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{# One `n` per row, the same on every sheet
 rray_roll_each(x, n = array(c(1, 2), c(2, 1, 1)), axis = 2)

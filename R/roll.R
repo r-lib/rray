@@ -202,7 +202,8 @@
 #' sheet 3 has an `n` of 5 on a dimension of 5, a full circle, so it doesn't
 #' move. Row 2 of sheet 3 has an `n` of 6, which circles around to 1.
 #'
-#' You only need a real dimension in `n` where the roll actually changes:
+#' Broadcasting allows you to provide a smaller `n` array when either all of the
+#' rows or all of the sheets roll by the same amount:
 #'
 #' ```r
 #' # One `n` per row, the same on every sheet
