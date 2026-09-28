@@ -123,8 +123,9 @@
 #'
 #' ## Three dimensions
 #'
-#' Three dimensions get a bit more complicated. Think of an array with
-#' dimensions `c(2, 5, 3)` as 3 sheets, each with 2 rows and 5 columns:
+#' Three dimensions get a bit more complicated, but demonstrate why `n` must be
+#' an array. Think of an array with dimensions `c(2, 5, 3)` as 3 tables, each
+#' with 2 rows and 5 columns:
 #'
 #' ```r
 #' x <- array(1:30, c(2, 5, 3))

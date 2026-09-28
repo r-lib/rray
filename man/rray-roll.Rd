@@ -150,8 +150,9 @@ doesn't move.
 
 \subsection{Three dimensions}{
 
-Three dimensions get a bit more complicated. Think of an array with
-dimensions \code{c(2, 5, 3)} as 3 sheets, each with 2 rows and 5 columns:
+Three dimensions get a bit more complicated, but demonstrate why \code{n} must be
+an array. Think of an array with dimensions \code{c(2, 5, 3)} as 3 tables, each
+with 2 rows and 5 columns:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{x <- array(1:30, c(2, 5, 3))
 
