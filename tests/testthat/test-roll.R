@@ -289,7 +289,7 @@ test_that("rolls a three dimensional array by one `n` for everything", {
 
   out <- rray_roll_each(x, n = 1, axis = 2)
 
-  expect_identical(out, x[, c(5, 1:4), ])
+  expect_identical(out, rray_slice_axis(x, c(5, 1:4), axis = 2))
 })
 
 test_that("rolls a three dimensional array by one `n` per row", {
@@ -297,8 +297,14 @@ test_that("rolls a three dimensional array by one `n` per row", {
 
   out <- rray_roll_each(x, n = c(1, 2), axis = 2)
 
-  expect_identical(out[1, , ], x[1, c(5, 1:4), ])
-  expect_identical(out[2, , ], x[2, c(4:5, 1:3), ])
+  expect_identical(
+    rray_slice_axis(out, 1, axis = 1),
+    rray_slice(x, 1, c(5, 1:4), TRUE)
+  )
+  expect_identical(
+    rray_slice_axis(out, 2, axis = 1),
+    rray_slice(x, 2, c(4:5, 1:3), TRUE)
+  )
 })
 
 test_that("rolls a three dimensional array by one `n` per sheet", {
@@ -306,9 +312,18 @@ test_that("rolls a three dimensional array by one `n` per sheet", {
 
   out <- rray_roll_each(x, n = array(c(0, 1, 2), c(1, 1, 3)), axis = 2)
 
-  expect_identical(out[,, 1], x[,, 1])
-  expect_identical(out[,, 2], x[, c(5, 1:4), 2])
-  expect_identical(out[,, 3], x[, c(4:5, 1:3), 3])
+  expect_identical(
+    rray_slice_axis(out, 1, axis = 3),
+    rray_slice_axis(x, 1, axis = 3)
+  )
+  expect_identical(
+    rray_slice_axis(out, 2, axis = 3),
+    rray_slice(x, TRUE, c(5, 1:4), 2)
+  )
+  expect_identical(
+    rray_slice_axis(out, 3, axis = 3),
+    rray_slice(x, TRUE, c(4:5, 1:3), 3)
+  )
 })
 
 test_that("rolls a three dimensional array by one `n` per row and sheet", {
@@ -317,10 +332,10 @@ test_that("rolls a three dimensional array by one `n` per row and sheet", {
 
   out <- rray_roll_each(x, n = n, axis = 2)
 
-  expect_identical(out, expected_roll_each(x, n, axis = 2))
+  expect_identical(out, base_roll_each(x, n, axis = 2))
   expect_identical(
-    out[,, 3],
-    matrix(c(21L, 30L, 23L, 22L, 25L, 24L, 27L, 26L, 29L, 28L), nrow = 2)
+    rray_slice_axis(out, 3, axis = 3),
+    array(c(21L, 30L, 23L, 22L, 25L, 24L, 27L, 26L, 29L, 28L), c(2, 5, 1))
   )
 })
 
@@ -352,7 +367,7 @@ test_that("matches the expected roll along every axis", {
     for (n in ns[[axis]]) {
       expect_identical(
         rray_roll_each(x, n = n, axis = axis),
-        expected_roll_each(x, n, axis)
+        base_roll_each(x, n, axis)
       )
     }
   }
@@ -399,11 +414,11 @@ test_that("rolls every type", {
     x <- array(input, c(2, 3))
     expect_identical(
       rray_roll_each(x, n = c(1, 2), axis = 2),
-      expected_roll_each(x, c(1, 2), axis = 2)
+      base_roll_each(x, c(1, 2), axis = 2)
     )
     expect_identical(
       rray_roll_each(x, n = matrix(c(1, 0, 1), nrow = 1), axis = 1),
-      expected_roll_each(x, matrix(c(1, 0, 1), nrow = 1), axis = 1)
+      base_roll_each(x, matrix(c(1, 0, 1), nrow = 1), axis = 1)
     )
   }
 })

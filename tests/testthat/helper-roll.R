@@ -1,4 +1,4 @@
-expected_roll_each <- function(x, n, axis) {
+base_roll_each <- function(x, n, axis) {
   dimensions <- dim(x)
   dimensionality <- length(dimensions)
   dimension <- dimensions[[axis]]
