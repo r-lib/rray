@@ -93,6 +93,8 @@ r_obj* rray_roll_each(
     FREE(1);
   }
 
+  // Using `rray_reduce_names()` is an easy way to clear the `axis` names, which
+  // likely no longer make sense
   r_obj* axes = KEEP(r_int(axis));
   r_obj* out_names = KEEP(rray_reduce_names(x, axes));
 
