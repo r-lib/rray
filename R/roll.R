@@ -108,7 +108,7 @@
 #' third row moves 1 toward the start.
 #'
 #' Rolling along the rows, `axis = 1`, moves elements within each column. Now
-#' `n` is broadcast to `c(1, 4)`, so it must be a one row matrix.
+#' `n` is broadcast to `c(1, 4)`, so it must be a one row matrix:
 #'
 #' ```r
 #' rray_roll_each(x, n = matrix(c(0L, 1L, 2L, 3L), nrow = 1), axis = 1)
