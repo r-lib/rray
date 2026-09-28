@@ -178,9 +178,9 @@ x
 
 Rolling along the columns, \code{axis = 2}, moves elements within each row. There
 are 2 rows on each of 3 sheets, so there are 6 separate rows that can each
-roll by their own amount. A vector can't hold one \code{n} for each of them, but
-an array can. \code{n} is broadcast to \code{c(2, 1, 3)}, which is one \code{n} for each row
-on each sheet:
+roll by their own \code{n}. A vector can't hold one \code{n} for each of them, but an
+array can. \code{n} is broadcast to \code{c(2, 1, 3)}, which is one \code{n} for each row on
+each sheet:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{n <- array(1:6, c(2, 1, 3))
 

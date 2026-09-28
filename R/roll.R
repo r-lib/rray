@@ -152,9 +152,9 @@
 #'
 #' Rolling along the columns, `axis = 2`, moves elements within each row. There
 #' are 2 rows on each of 3 sheets, so there are 6 separate rows that can each
-#' roll by their own amount. A vector can't hold one `n` for each of them, but
-#' an array can. `n` is broadcast to `c(2, 1, 3)`, which is one `n` for each row
-#' on each sheet:
+#' roll by their own `n`. A vector can't hold one `n` for each of them, but an
+#' array can. `n` is broadcast to `c(2, 1, 3)`, which is one `n` for each row on
+#' each sheet:
 #'
 #' ```r
 #' n <- array(1:6, c(2, 1, 3))
