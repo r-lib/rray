@@ -25,7 +25,7 @@
 #' x <- c(a = 1L, b = 2L, c = 3L, d = 4L, e = 5L)
 #'
 #' n <- 2L
-#' d <- 5L
+#' d <- length(x)
 #' i <- seq_len(d)
 #'
 #' (i - 1L - n) %% d + 1L
