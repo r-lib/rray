@@ -84,11 +84,13 @@ A shift of `0`, or any multiple of `d`, leaves the axis unchanged.
 
 ### Values of `n`
 
-- Integers, and doubles holding whole numbers. Doubles are cast with the
-  existing lossless casts, so `1.5` is an error.
+- Integers, and anything that casts losslessly to integer. Doubles holding
+  whole numbers work and `1.5` is an error. Logicals work too, with `TRUE` as
+  `1`, the same as `axes` and `times` accept them today.
 
-- Any sign and any magnitude within the R integer range. A double outside that
-  range fails the cast.
+- Any sign and any magnitude within the R integer range, which is
+  `-2147483647` to `2147483647`. `-2147483648` is reserved for `NA`, and a
+  double outside the range fails the cast.
 
 - No missing values.
 
@@ -798,14 +800,14 @@ one path. There is no early exit, and the result is always a new array.
 
 ```text
 check_unclassed(x)
-x = arg_as_array(x)
+x = KEEP(arg_as_array(x))
 dimensionality = rray_dimensionality(x)
 
-axes = arg_as_axes_unsorted(axes, dimensionality, rray_args.axes)
+axes = KEEP(arg_as_axes_unsorted(axes, dimensionality, rray_args.axes))
 
-n = arg_as_roll_n(n, r_length(axes), rray_args.n)
+n = KEEP(arg_as_roll_n(n, r_length(axes), rray_args.n))
 
-indices = list of `dimensionality` elements, each `TRUE`
+indices = KEEP(list of `dimensionality` elements, each `TRUE`)
 
 for each i in axes:
   axis      = v_axes[i]
@@ -819,6 +821,11 @@ return rray_slice(x, indices, x_arg, rray_args.empty, error_call)
 
 `indices` needs no names. Every location is in bounds, so `rray_slice()` never
 reports an error about an index.
+
+A rolled axis always gets its full location vector, even when `x` is empty
+because of a zero dimension on another axis. Its names still have to roll, and
+`rray_slice()` builds them from those locations. The cost is one integer per
+position on the axis, the same as the names themselves.
 
 `rray_roll_locations()` allocates the one-based locations for one axis:
 
@@ -866,19 +873,21 @@ can be read with that flat index directly.
 
 ```text
 check_unclassed(x)
-x = arg_as_array(x)
+x = KEEP(arg_as_array(x))
 check_dimensionality()
 check_axis(axis, dimensionality)
 
-n = arg_as_roll_each_n(n, rray_args.n)
+n = KEEP(arg_as_roll_each_n(n, rray_args.n))
 
 lane_dimensions = copy of dim(x) with axis set to 1
-n = rray_broadcast(n, lane_dimensions, rray_args.n)
+check_broadcastable(dim(n), lane_dimensions, rray_args.n)
 
 out = r_alloc_vector(r_typeof(x), size)
 poke r_dim(x) onto out
 
 if size > 0:
+  compute block_size, n_groups, and n_lanes
+  n = rray_broadcast(n, lane_dimensions, rray_args.n)
   shifts = r_alloc_integer(n_lanes)
   shifts[l] = rray_roll_shift(v_n[l], axis_dimension) for every lane l
   rray_roll_each_fill(x, out, v_shifts, block_size, axis_dimension, n_groups)
@@ -889,8 +898,21 @@ poke names onto out if not NULL
 
 Notes:
 
-- `n` is fully validated, including the broadcast, before the size check. So a
-  bad `n` errors even when `x` is empty.
+- `n` is fully validated before the size check, with `check_broadcastable()`
+  from `src/broadcast.h`. It checks the dimensions without allocating and gives
+  the same messages as `rray_broadcast()`. So a bad `n` errors even when `x` is
+  empty.
+
+- Nothing proportional to the lane count is allocated for an empty `x`. When
+  the rolled axis has dimension 0, the lane dimensions can still be huge, for
+  example `(100000, 1, 100000)` for `x` with dimensions `(100000, 0, 100000)`.
+  Broadcasting `n` there would allocate ten billion integers for an empty
+  result.
+
+- `block_size`, `n_groups`, and `n_lanes` are computed only when `size > 0`.
+  Each is then a product of factors of `size`, so none can overflow. With a
+  zero dimension elsewhere, a product of the other dimensions could overflow
+  `r_ssize`.
 
 - `rray_broadcast()` returns its input unchanged when the dimensions already
   match. That input can be the caller's own `n`, so never write into it. The
@@ -979,6 +1001,10 @@ last.
 Do this as a separate pass over the diff before calling the C done. Points
 specific to this plan:
 
+- In both functions, keep `x` right after `arg_as_array()`. For a bare vector
+  it returns a new array, and every later step allocates before `x` is last
+  used.
+
 - In `rray_roll()`, `axes` and `n` from `arg_as_axes_unsorted()` and
   `arg_as_roll_n()` can be fresh allocations from a cast. Keep both across the
   loop, which allocates.
@@ -992,8 +1018,9 @@ specific to this plan:
   `rray_cast()`.
 
 - In `rray_roll_each()`, keep `n` after `arg_as_roll_each_n()` and after
-  `rray_broadcast()`. Keep `lane_dimensions` across `rray_broadcast()`, which
-  allocates before it reads it.
+  `rray_broadcast()`. Keep `lane_dimensions` from its allocation until
+  `rray_broadcast()` returns. `check_broadcastable()` does not allocate, but
+  `rray_broadcast()` and the allocation of `out` in between do.
 
 - Keep `out` across the allocation of `shifts` and across
   `rray_reduce_names()`. Keep `shifts` until the fill returns.
@@ -1064,9 +1091,14 @@ with base R only:
   dimension, empty `axes`, and a zero dimension.
 
 - Zero size arrays with a zero dimension on the rolled axis and on another
-  axis.
+  axis. With the zero on another axis, names on the rolled axis still roll.
 
-- Integer-ish doubles for `n` and `axes`.
+- Integer-ish doubles and logicals for `n` and `axes`.
+
+- `n = integer()` works with `axes = integer()` and is a size error with
+  nonempty `axes`.
+
+- Shifts of `2147483647` and `-2147483647`.
 
 - Errors, snapshotted: repeated axis, out of range axis, `n` size mismatch for
   one and several axes, missing `n`, fractional `n`, character `n`, named
@@ -1102,6 +1134,12 @@ with base R only:
 
 - Zero size arrays, including a zero dimension on the rolled axis, where `n`
   is still validated.
+
+- A zero rolled dimension with huge lane dimensions, such as `x` with
+  dimensions `c(100000, 0, 100000)` and `n = 1`, returns quickly without
+  broadcasting `n`.
+
+- Shifts of `2147483647` and `-2147483647`.
 
 - `x` is not modified, and `n` is not modified when it already has the lane
   dimensions.
