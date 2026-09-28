@@ -82,9 +82,7 @@ untouched.
 \code{rray_roll_each()} rolls along a single \code{axis}, but each row, column, and so
 on can move by its own amount. That is why \code{n} is an array rather than a
 vector. It is broadcast to the dimensions of \code{x} with \code{axis} set to 1, so it
-holds one \code{n} for every row, column, and so on that gets rolled. A dimension
-of 1 in \code{n} means "the same \code{n} for all of these", and a single \code{n} rolls
-everything by the same amount.
+holds one \code{n} for every row, column, and so on that gets rolled.
 
 Rolling each is the same as indexing with \code{\link[=rray_index]{rray_index()}}. Along \code{axis}, the
 coordinates come from the same \code{(i - 1 - n) \%\% d + 1} formula as

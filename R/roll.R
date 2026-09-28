@@ -51,9 +51,7 @@
 #' `rray_roll_each()` rolls along a single `axis`, but each row, column, and so
 #' on can move by its own amount. That is why `n` is an array rather than a
 #' vector. It is broadcast to the dimensions of `x` with `axis` set to 1, so it
-#' holds one `n` for every row, column, and so on that gets rolled. A dimension
-#' of 1 in `n` means "the same `n` for all of these", and a single `n` rolls
-#' everything by the same amount.
+#' holds one `n` for every row, column, and so on that gets rolled.
 #'
 #' Rolling each is the same as indexing with [rray_index()]. Along `axis`, the
 #' coordinates come from the same `(i - 1 - n) %% d + 1` formula as
