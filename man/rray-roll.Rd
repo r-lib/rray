@@ -84,10 +84,11 @@ on can move by its own amount. That is why \code{n} is an array rather than a
 vector. It is broadcast to the dimensions of \code{x} with \code{axis} set to 1, so it
 holds one \code{n} for every row, column, and so on that gets rolled.
 
-Rolling each is the same as indexing with \code{\link[=rray_index]{rray_index()}}. Along \code{axis}, the
-coordinates come from the same \code{(i - 1 - n) \%\% d + 1} formula as
-\code{rray_roll()}, with a different \code{n} for each row, column, and so on. Along
-every other axis, the coordinates are just the positions themselves.
+Variable rolling can be mimicked with the more flexible indexing of
+\code{\link[=rray_index]{rray_index()}}. Along \code{axis}, the coordinates come from the same
+\code{(i - 1 - n) \%\% d + 1} formula as \code{rray_roll()}, with a different \code{n} for
+each row, column, and so on. Along every other axis, the coordinates are
+just the positions themselves.
 
 \code{rray_index()} drops all names. \code{rray_roll_each()} keeps the names on every
 axis other than \code{axis}, since those positions still mean the same thing. It

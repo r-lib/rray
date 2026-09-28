@@ -53,10 +53,11 @@
 #' vector. It is broadcast to the dimensions of `x` with `axis` set to 1, so it
 #' holds one `n` for every row, column, and so on that gets rolled.
 #'
-#' Rolling each is the same as indexing with [rray_index()]. Along `axis`, the
-#' coordinates come from the same `(i - 1 - n) %% d + 1` formula as
-#' `rray_roll()`, with a different `n` for each row, column, and so on. Along
-#' every other axis, the coordinates are just the positions themselves.
+#' Variable rolling can be mimicked with the more flexible indexing of
+#' [rray_index()]. Along `axis`, the coordinates come from the same
+#' `(i - 1 - n) %% d + 1` formula as `rray_roll()`, with a different `n` for
+#' each row, column, and so on. Along every other axis, the coordinates are
+#' just the positions themselves.
 #'
 #' `rray_index()` drops all names. `rray_roll_each()` keeps the names on every
 #' axis other than `axis`, since those positions still mean the same thing. It
