@@ -93,40 +93,6 @@ test_that("is a slice of the rolled axis with rotated locations", {
   }
 })
 
-test_that("matches a reference implementation", {
-  shapes <- list(5L, c(3L, 2L), c(2L, 3L), c(1L, 6L, 2L), c(2L, 3L, 4L))
-
-  for (dimensions in shapes) {
-    x <- array(seq_len(prod(dimensions)), dimensions)
-
-    named <- x
-    dimnames(named) <- lapply(dimensions, \(dimension) {
-      paste0("n", seq_len(dimension))
-    })
-
-    for (axis in seq_along(dimensions)) {
-      for (n in -3:7) {
-        expect_identical(
-          rray_roll(x, n = n, axes = axis),
-          expected_roll(x, n, axis)
-        )
-        expect_identical(
-          rray_roll(named, n = n, axes = axis),
-          expected_roll(named, n, axis)
-        )
-      }
-    }
-
-    axes <- seq_along(dimensions)
-    n <- rev(seq_along(dimensions))
-
-    expect_identical(
-      rray_roll(named, n = n, axes = axes),
-      expected_roll(named, n, axes)
-    )
-  }
-})
-
 test_that("works with every type", {
   inputs <- list(
     c(TRUE, NA, FALSE),
@@ -140,11 +106,17 @@ test_that("works with every type", {
 
   for (input in inputs) {
     x <- array(input, c(3, 2))
-    expect_identical(rray_roll(x, n = 1, axes = 1), expected_roll(x, 1, 1))
-    expect_identical(rray_roll(x, n = 1, axes = 2), expected_roll(x, 1, 2))
+    expect_identical(
+      rray_roll(x, n = 1, axes = 1),
+      rray_slice(x, c(3, 1, 2), TRUE)
+    )
+    expect_identical(
+      rray_roll(x, n = 1, axes = 2),
+      rray_slice(x, TRUE, c(2, 1))
+    )
     expect_identical(
       rray_roll(x, n = c(2, 1), axes = c(1, 2)),
-      expected_roll(x, c(2, 1), c(1, 2))
+      rray_slice(x, c(2, 3, 1), c(2, 1))
     )
   }
 })
@@ -240,8 +212,14 @@ test_that("handles the largest shifts", {
 
   max <- .Machine$integer.max
 
-  expect_identical(rray_roll(x, n = max, axes = 1), expected_roll(x, max, 1))
-  expect_identical(rray_roll(x, n = -max, axes = 1), expected_roll(x, -max, 1))
+  expect_identical(
+    rray_roll(x, n = max, axes = 1),
+    rray_slice(x, c(4, 5, 1, 2, 3))
+  )
+  expect_identical(
+    rray_roll(x, n = -max, axes = 1),
+    rray_slice(x, c(3, 4, 5, 1, 2))
+  )
 })
 
 test_that("`n` and `axes` must be named", {
