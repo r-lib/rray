@@ -17,22 +17,22 @@ test_that("rolls along every axis", {
 
   expect_identical(
     rray_roll(x, n = 1, axes = 1),
-    x[c(2, 1), , , drop = FALSE]
+    rray_slice_axis(x, c(2, 1), axis = 1)
   )
   expect_identical(
     rray_roll(x, n = 1, axes = 2),
-    x[, c(3, 1, 2), , drop = FALSE]
+    rray_slice_axis(x, c(3, 1, 2), axis = 2)
   )
   expect_identical(
     rray_roll(x, n = 1, axes = 3),
-    x[,, c(4, 1, 2, 3), drop = FALSE]
+    rray_slice_axis(x, c(4, 1, 2, 3), axis = 3)
   )
 })
 
 test_that("rolls several axes at once", {
   x <- matrix(1:6, nrow = 2, dimnames = list(c("r1", "r2"), c("a", "b", "c")))
 
-  expect <- x[c(2, 1), c(3, 1, 2), drop = FALSE]
+  expect <- rray_slice(x, c(2, 1), c(3, 1, 2))
 
   expect_identical(rray_roll(x, n = 1, axes = c(1, 2)), expect)
   expect_identical(rray_roll(x, n = c(1, 1), axes = c(1, 2)), expect)
@@ -43,8 +43,11 @@ test_that("`n[[i]]` is the shift for `axes[[i]]`", {
 
   out <- rray_roll(x, n = c(-1, 1), axes = c(1, 3))
 
-  expect_identical(out, x[c(2, 1), , c(4, 1, 2, 3), drop = FALSE])
-  expect_identical(out[,, 1], x[c(2, 1), , 4])
+  expect_identical(out, rray_slice(x, c(2, 1), TRUE, c(4, 1, 2, 3)))
+  expect_identical(
+    rray_slice_axis(out, 1, axis = 3),
+    rray_slice(x, c(2, 1), TRUE, 4)
+  )
 })
 
 test_that("rolling several axes is rolling them one at a time", {
