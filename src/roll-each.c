@@ -43,11 +43,11 @@ r_obj* rray_roll_each(
   n = KEEP(arg_as_roll_each_n(n, rray_args.n, error_call));
   n = KEEP(rray_roll_each_normalize(n, axis_dimension));
 
-  r_obj* lane_dimensions = KEEP(r_clone(x_dimensions));
-  int* v_lane_dimensions = r_int_begin(lane_dimensions);
-  v_lane_dimensions[axis - 1] = 1;
+  r_obj* n_broadcast_dimensions = KEEP(r_clone(x_dimensions));
+  int* v_n_broadcast_dimensions = r_int_begin(n_broadcast_dimensions);
+  v_n_broadcast_dimensions[axis - 1] = 1;
 
-  n = KEEP(rray_broadcast(n, lane_dimensions, rray_args.n, error_call));
+  n = KEEP(rray_broadcast(n, n_broadcast_dimensions, rray_args.n, error_call));
   const int* v_n = r_int_cbegin(n);
 
   const r_ssize size =
