@@ -228,5 +228,6 @@ void rray_init_args(r_obj* ns) {
   INIT_ARG2(dot_dimensions, ".dimensions");
   INIT_ARG(dimension);
   INIT_ARG(times);
+  INIT_ARG(n);
   INIT_ARG(value);
 }

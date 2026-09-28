@@ -1,0 +1,279 @@
+test_that("positive shifts move toward the end, negative toward the start", {
+  x <- array(1:5, 5)
+
+  expect_identical(rray_roll(x, n = 2, axes = 1), array(c(4:5, 1:3), 5))
+  expect_identical(rray_roll(x, n = -1, axes = 1), array(c(2:5, 1L), 5))
+})
+
+test_that("shifts wrap around the dimension", {
+  x <- array(1:5, 5)
+
+  expect_identical(rray_roll(x, n = 7, axes = 1), array(c(4:5, 1:3), 5))
+  expect_identical(rray_roll(x, n = -6, axes = 1), array(c(2:5, 1L), 5))
+})
+
+test_that("rolls along every axis", {
+  x <- array(1:24, c(2, 3, 4))
+
+  expect_identical(
+    rray_roll(x, n = 1, axes = 1),
+    x[c(2, 1), , , drop = FALSE]
+  )
+  expect_identical(
+    rray_roll(x, n = 1, axes = 2),
+    x[, c(3, 1, 2), , drop = FALSE]
+  )
+  expect_identical(
+    rray_roll(x, n = 1, axes = 3),
+    x[,, c(4, 1, 2, 3), drop = FALSE]
+  )
+})
+
+test_that("rolls several axes at once", {
+  x <- matrix(1:6, nrow = 2, dimnames = list(c("r1", "r2"), c("a", "b", "c")))
+
+  expect <- x[c(2, 1), c(3, 1, 2), drop = FALSE]
+
+  expect_identical(rray_roll(x, n = 1, axes = c(1, 2)), expect)
+  expect_identical(rray_roll(x, n = c(1, 1), axes = c(1, 2)), expect)
+})
+
+test_that("`n` pairs with `axes` in the order given", {
+  x <- array(1:24, c(2, 3, 4))
+
+  out <- rray_roll(x, n = c(1, -1), axes = c(3, 1))
+
+  expect_identical(out, x[c(2, 1), , c(4, 1, 2, 3), drop = FALSE])
+  expect_identical(out[,, 1], x[c(2, 1), , 4])
+})
+
+test_that("rolling several axes is rolling them one at a time", {
+  x <- array(1:60, c(3, 4, 5))
+
+  expect <- rray_roll(x, n = c(1, 2), axes = c(1, 3))
+
+  expect_identical(
+    rray_roll(rray_roll(x, n = 1, axes = 1), n = 2, axes = 3),
+    expect
+  )
+  expect_identical(
+    rray_roll(rray_roll(x, n = 2, axes = 3), n = 1, axes = 1),
+    expect
+  )
+})
+
+test_that("rolling by `n` then `-n` gives back `x`", {
+  x <- array(1:60, c(3, 4, 5))
+  dimnames(x) <- list(letters[1:3], letters[4:7], letters[8:12])
+
+  for (n in c(-7L, -1L, 0L, 1L, 2L, 9L)) {
+    for (axis in 1:3) {
+      out <- rray_roll(x, n = n, axes = axis)
+      expect_identical(rray_roll(out, n = -n, axes = axis), x)
+    }
+  }
+})
+
+test_that("is a slice of the rolled axis with rotated locations", {
+  x <- array(1:60, c(3, 4, 5))
+  dimnames(x) <- list(letters[1:3], NULL, letters[8:12])
+
+  for (axis in 1:3) {
+    d <- dim(x)[[axis]]
+
+    for (k in seq_len(d - 1L)) {
+      expect_identical(
+        rray_roll(x, n = k, axes = axis),
+        rray_slice_axis(x, c((d - k + 1):d, seq_len(d - k)), axis = axis)
+      )
+    }
+  }
+})
+
+test_that("matches a reference implementation", {
+  shapes <- list(5L, c(3L, 2L), c(2L, 3L), c(1L, 6L, 2L), c(2L, 3L, 4L))
+
+  for (dimensions in shapes) {
+    x <- array(seq_len(prod(dimensions)), dimensions)
+
+    named <- x
+    dimnames(named) <- lapply(dimensions, \(dimension) {
+      paste0("n", seq_len(dimension))
+    })
+
+    for (axis in seq_along(dimensions)) {
+      for (n in -3:7) {
+        expect_identical(
+          rray_roll(x, n = n, axes = axis),
+          expected_roll(x, n, axis)
+        )
+        expect_identical(
+          rray_roll(named, n = n, axes = axis),
+          expected_roll(named, n, axis)
+        )
+      }
+    }
+
+    axes <- rev(seq_along(dimensions))
+    n <- seq_along(dimensions)
+
+    expect_identical(
+      rray_roll(named, n = n, axes = axes),
+      expected_roll(named, n, axes)
+    )
+  }
+})
+
+test_that("works with every type", {
+  inputs <- list(
+    c(TRUE, NA, FALSE),
+    c(1L, NA, 3L),
+    c(1.5, NA, 3.5),
+    c(1 + 1i, NA, 3 + 3i),
+    as.raw(1:3),
+    c("a", NA, "c"),
+    list(1, "a", NULL)
+  )
+
+  for (input in inputs) {
+    x <- array(input, c(3, 2))
+    expect_identical(rray_roll(x, n = 1, axes = 1), expected_roll(x, 1, 1))
+    expect_identical(rray_roll(x, n = 1, axes = 2), expected_roll(x, 1, 2))
+    expect_identical(
+      rray_roll(x, n = c(2, 1), axes = c(1, 2)),
+      expected_roll(x, c(2, 1), c(1, 2))
+    )
+  }
+})
+
+test_that("works with bare vectors", {
+  expect_identical(rray_roll(1:5, n = 2, axes = 1), array(c(4:5, 1:3), 5))
+
+  expect_identical(
+    rray_roll(c(a = 1L, b = 2L, c = 3L, d = 4L), n = 1, axes = 1),
+    array(c(4L, 1:3), 4, dimnames = list(c("d", "a", "b", "c")))
+  )
+})
+
+test_that("names roll on rolled axes and are untouched elsewhere", {
+  x <- matrix(1:6, nrow = 2, dimnames = list(c("r1", "r2"), c("a", "b", "c")))
+
+  expect_identical(
+    dimnames(rray_roll(x, n = 1, axes = 2)),
+    list(c("r1", "r2"), c("c", "a", "b"))
+  )
+  expect_identical(
+    dimnames(rray_roll(x, n = 1, axes = 1)),
+    list(c("r2", "r1"), c("a", "b", "c"))
+  )
+  expect_identical(
+    dimnames(rray_roll(x, n = 1, axes = c(1, 2))),
+    list(c("r2", "r1"), c("c", "a", "b"))
+  )
+})
+
+test_that("partial and missing dimension names are handled", {
+  x <- matrix(1:6, nrow = 2, dimnames = list(NULL, c("a", "b", "c")))
+
+  expect_identical(
+    dimnames(rray_roll(x, n = 1, axes = 1)),
+    list(NULL, c("a", "b", "c"))
+  )
+  expect_identical(
+    dimnames(rray_roll(x, n = 1, axes = 2)),
+    list(NULL, c("c", "a", "b"))
+  )
+
+  expect_null(dimnames(rray_roll(matrix(1:6, nrow = 2), n = 1, axes = 1)))
+})
+
+test_that("returns `x` when nothing moves", {
+  x <- matrix(1:6, nrow = 2, dimnames = list(c("r1", "r2"), c("a", "b", "c")))
+
+  expect_identical(rray_roll(x, n = 0, axes = 2), x)
+  expect_identical(rray_roll(x, n = 3, axes = 2), x)
+  expect_identical(rray_roll(x, n = -6, axes = 2), x)
+  expect_identical(rray_roll(x, n = 1, axes = integer()), x)
+})
+
+test_that("works with a zero dimension on the rolled axis", {
+  x <- array(integer(), c(2, 0))
+  expect_identical(rray_roll(x, n = 1, axes = 2), x)
+  expect_identical(rray_roll(x, n = -1, axes = c(1, 2)), x)
+
+  x <- array(integer(), 0)
+  expect_identical(rray_roll(x, n = 5, axes = 1), x)
+})
+
+test_that("names still roll with a zero dimension on another axis", {
+  x <- array(integer(), c(3, 0), dimnames = list(c("a", "b", "c"), NULL))
+
+  expect_identical(
+    rray_roll(x, n = 1, axes = 1),
+    array(integer(), c(3, 0), dimnames = list(c("c", "a", "b"), NULL))
+  )
+})
+
+test_that("`n` and `axes` can be integerish doubles or logicals", {
+  x <- array(1:24, c(2, 3, 4))
+
+  expect_identical(
+    rray_roll(x, n = c(1, 2), axes = c(2, 3)),
+    rray_roll(x, n = c(1L, 2L), axes = c(2L, 3L))
+  )
+  expect_identical(
+    rray_roll(x, n = TRUE, axes = TRUE),
+    rray_roll(x, n = 1L, axes = 1L)
+  )
+})
+
+test_that("`n` can be empty when `axes` is empty", {
+  x <- array(1:6, c(2, 3))
+  expect_identical(rray_roll(x, n = integer(), axes = integer()), x)
+})
+
+test_that("handles the largest shifts", {
+  x <- array(1:5, 5)
+
+  max <- .Machine$integer.max
+
+  expect_identical(rray_roll(x, n = max, axes = 1), expected_roll(x, max, 1))
+  expect_identical(rray_roll(x, n = -max, axes = 1), expected_roll(x, -max, 1))
+})
+
+test_that("`n` and `axes` must be named", {
+  x <- array(1:6, c(2, 3))
+
+  expect_snapshot(error = TRUE, {
+    rray_roll(x, 1, 2)
+    rray_roll(x, 1, axes = 2)
+  })
+})
+
+test_that("`axes` is validated", {
+  x <- array(1:6, c(2, 3))
+  expect_snapshot(rray_roll(x, n = 1, axes = c(1, 1)), error = TRUE)
+  expect_snapshot(rray_roll(x, n = 1, axes = 3), error = TRUE)
+  expect_snapshot(rray_roll(x, n = 1, axes = 0), error = TRUE)
+  expect_snapshot(rray_roll(x, n = 1, axes = NA), error = TRUE)
+})
+
+test_that("`n` is validated", {
+  x <- array(1:6, c(2, 3))
+  expect_snapshot(rray_roll(x, n = c(1, 2, 3), axes = c(1, 2)), error = TRUE)
+  expect_snapshot(rray_roll(x, n = c(1, 2), axes = 1), error = TRUE)
+  expect_snapshot(rray_roll(x, n = integer(), axes = 1), error = TRUE)
+  expect_snapshot(rray_roll(x, n = NA, axes = 1), error = TRUE)
+  expect_snapshot(rray_roll(x, n = c(1L, NA), axes = c(1, 2)), error = TRUE)
+  expect_snapshot(rray_roll(x, n = 1.5, axes = 1), error = TRUE)
+  expect_snapshot(rray_roll(x, n = "a", axes = 1), error = TRUE)
+  expect_snapshot(rray_roll(x, n = c(a = 1L), axes = 1), error = TRUE)
+  expect_snapshot(rray_roll(x, n = matrix(1L), axes = 1), error = TRUE)
+})
+
+test_that("errors on invalid input", {
+  expect_snapshot(rray_roll(NULL, n = 1, axes = 1), error = TRUE)
+
+  x <- structure(array(1:4, c(2, 2)), class = "foo")
+  expect_snapshot(rray_roll(x, n = 1, axes = 1), error = TRUE)
+})

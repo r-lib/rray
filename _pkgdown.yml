@@ -45,6 +45,10 @@ reference:
   contents:
   - rray-rep
 
+- title: Rolling
+  contents:
+  - rray-roll
+
 - title: Axes
   contents:
   - rray_permute_axes
