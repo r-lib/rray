@@ -16,19 +16,222 @@
 #' axis with dimension 5 is the same as an `n` of 2. An `n` of 0, or any
 #' multiple of the dimension, leaves the axis unchanged.
 #'
-#' For `rray_roll_each()`, `n` is broadcast to the dimensions of `x` with
-#' `axis` set to 1. For a 3 x 4 matrix, that is:
+#' @section Roll:
+#' `rray_roll()` rolls every axis in `axes`. A size 1 `n` is used for every
+#' axis, otherwise `n[[i]]` is the roll for `axes[[i]]`.
 #'
-#' - `axis = 2` gives 3 x 1, so `n` can be a vector of 3, one per row.
+#' Rolling an axis is the same as slicing it with [rray_slice()]. Along an axis
+#' with dimension `d`, position `j` of the result comes from position
+#' `(j - 1 - n) %% d + 1` of `x`:
 #'
-#' - `axis = 1` gives 1 x 4, so `n` can be a 1 x 4 matrix, one per column.
+#' ```r
+#' x <- c(a = 1L, b = 2L, c = 3L, d = 4L, e = 5L)
 #'
-#' A single `n` works in both cases, and rolls everything by the same amount.
+#' n <- 2L
+#' d <- 5L
+#' j <- seq_len(d)
 #'
-#' For `rray_roll()`, names on a rolled axis move with the data. For
-#' `rray_roll_each()`, names on `axis` are always dropped, since each row or
-#' column can move by a different amount. In both, every other axis keeps its
-#' names untouched.
+#' (j - 1L - n) %% d + 1L
+#' #> [1] 4 5 1 2 3
+#'
+#' rray_roll(x, n = n, axes = 1)
+#' #> d e a b c
+#' #> 4 5 1 2 3
+#'
+#' rray_slice_axis(x, c(4, 5, 1, 2, 3), axis = 1)
+#' #> d e a b c
+#' #> 4 5 1 2 3
+#' ```
+#'
+#' Rolling several axes at once is one `rray_slice()`, with these locations on
+#' each rolled axis and `TRUE` on the rest.
+#'
+#' Since a roll is a slice, names on a rolled axis move with the data, just
+#' like they do in `rray_slice()`. Every other axis keeps its names untouched.
+#'
+#' @section Roll each:
+#' `rray_roll_each()` rolls along a single `axis`, but each row, column, and so
+#' on can move by its own amount. That is why `n` is an array rather than a
+#' vector. It is broadcast to the dimensions of `x` with `axis` set to 1, so it
+#' holds one `n` for every row, column, and so on that gets rolled. A dimension
+#' of 1 in `n` means "the same `n` for all of these", and a single `n` rolls
+#' everything by the same amount.
+#'
+#' Rolling each is the same as indexing with [rray_index()]. Along `axis`, the
+#' coordinates come from the same `(j - 1 - n) %% d + 1` formula as
+#' `rray_roll()`, with a different `n` for each row, column, and so on. Along
+#' every other axis, the coordinates are just the positions themselves.
+#'
+#' `rray_index()` drops all names. `rray_roll_each()` keeps the names on every
+#' axis other than `axis`, since those positions still mean the same thing. It
+#' always drops the names on `axis`, even for a single `n`. When rows move by
+#' different amounts, column 1 can hold data from column `c` in one row and
+#' from column `b` in another, so no single name fits:
+#'
+#' ```r
+#' x <- matrix(1:6, nrow = 2, dimnames = list(c("r1", "r2"), c("a", "b", "c")))
+#'
+#' rray_roll_each(x, n = c(1, 2), axis = 2)
+#' #>    [,1] [,2] [,3]
+#' #> r1    5    1    3
+#' #> r2    4    6    2
+#' ```
+#'
+#' ## Two dimensions
+#'
+#' Start with a matrix:
+#'
+#' ```r
+#' x <- matrix(1:12, nrow = 3, byrow = TRUE)
+#'
+#' x
+#' #>      [,1] [,2] [,3] [,4]
+#' #> [1,]    1    2    3    4
+#' #> [2,]    5    6    7    8
+#' #> [3,]    9   10   11   12
+#' ```
+#'
+#' Rolling along the columns, `axis = 2`, moves elements within each row. `x`
+#' has dimensions `c(3, 4)`, so `n` is broadcast to `c(3, 1)`, one `n` per row.
+#' A plain vector of 3 fits:
+#'
+#' ```r
+#' n <- c(1L, 0L, -1L)
+#'
+#' rray_roll_each(x, n = n, axis = 2)
+#' #>      [,1] [,2] [,3] [,4]
+#' #> [1,]    4    1    2    3
+#' #> [2,]    5    6    7    8
+#' #> [3,]   10   11   12    9
+#' ```
+#'
+#' The first row moves 1 toward the end, the second row stays put, and the
+#' third row moves 1 toward the start.
+#'
+#' The same result with `rray_index()`. Each row gets its own column
+#' coordinates from the formula, and the row coordinates are just `1:3`:
+#'
+#' ```r
+#' rows <- array(1:3, c(3, 1))
+#' columns <- outer(n, 1:4, \(n, j) (j - 1L - n) %% 4L + 1L)
+#'
+#' columns
+#' #>      [,1] [,2] [,3] [,4]
+#' #> [1,]    4    1    2    3
+#' #> [2,]    1    2    3    4
+#' #> [3,]    2    3    4    1
+#'
+#' rray_index(x, rows, columns)
+#' #>      [,1] [,2] [,3] [,4]
+#' #> [1,]    4    1    2    3
+#' #> [2,]    5    6    7    8
+#' #> [3,]   10   11   12    9
+#' ```
+#'
+#' Rolling along the rows, `axis = 1`, moves elements within each column. Now
+#' `n` is broadcast to `c(1, 4)`, so one `n` per column must be a one row
+#' matrix. A plain vector of 4 has dimensions `c(4)`, which doesn't fit.
+#'
+#' ```r
+#' rray_roll_each(x, n = matrix(c(0L, 1L, 2L, 3L), nrow = 1), axis = 1)
+#' #>      [,1] [,2] [,3] [,4]
+#' #> [1,]    1   10    7    4
+#' #> [2,]    5    2   11    8
+#' #> [3,]    9    6    3   12
+#' ```
+#'
+#' The last column has an `n` of 3 on a dimension of 3, a full circle, so it
+#' doesn't move.
+#'
+#' ## Three dimensions
+#'
+#' Three dimensions get a bit more complicated. Think of an array with
+#' dimensions `c(2, 5, 3)` as 3 sheets, each with 2 rows and 5 columns:
+#'
+#' ```r
+#' x <- array(1:30, c(2, 5, 3))
+#'
+#' x
+#' #> , , 1
+#' #>
+#' #>      [,1] [,2] [,3] [,4] [,5]
+#' #> [1,]    1    3    5    7    9
+#' #> [2,]    2    4    6    8   10
+#' #>
+#' #> , , 2
+#' #>
+#' #>      [,1] [,2] [,3] [,4] [,5]
+#' #> [1,]   11   13   15   17   19
+#' #> [2,]   12   14   16   18   20
+#' #>
+#' #> , , 3
+#' #>
+#' #>      [,1] [,2] [,3] [,4] [,5]
+#' #> [1,]   21   23   25   27   29
+#' #> [2,]   22   24   26   28   30
+#' ```
+#'
+#' Rolling along the columns, `axis = 2`, moves elements within each row. There
+#' are 2 rows on each of 3 sheets, so there are 6 separate rows that can each
+#' roll by their own amount. A vector can't hold one `n` for each of them, but
+#' an array can. `n` is broadcast to `c(2, 1, 3)`, which is one `n` for each row
+#' on each sheet:
+#'
+#' ```r
+#' n <- array(1:6, c(2, 1, 3))
+#'
+#' n
+#' #> , , 1
+#' #>
+#' #>      [,1]
+#' #> [1,]    1
+#' #> [2,]    2
+#' #>
+#' #> , , 2
+#' #>
+#' #>      [,1]
+#' #> [1,]    3
+#' #> [2,]    4
+#' #>
+#' #> , , 3
+#' #>
+#' #>      [,1]
+#' #> [1,]    5
+#' #> [2,]    6
+#'
+#' rray_roll_each(x, n = n, axis = 2)
+#' #> , , 1
+#' #>
+#' #>      [,1] [,2] [,3] [,4] [,5]
+#' #> [1,]    9    1    3    5    7
+#' #> [2,]    8   10    2    4    6
+#' #>
+#' #> , , 2
+#' #>
+#' #>      [,1] [,2] [,3] [,4] [,5]
+#' #> [1,]   15   17   19   11   13
+#' #> [2,]   14   16   18   20   12
+#' #>
+#' #> , , 3
+#' #>
+#' #>      [,1] [,2] [,3] [,4] [,5]
+#' #> [1,]   21   23   25   27   29
+#' #> [2,]   30   22   24   26   28
+#' ```
+#'
+#' Row 1 of sheet 1 moves 1, row 2 of sheet 1 moves 2, and so on. Row 1 of
+#' sheet 3 has an `n` of 5 on a dimension of 5, a full circle, so it doesn't
+#' move. Row 2 of sheet 3 has an `n` of 6, which circles around to 1.
+#'
+#' You only need a real dimension in `n` where the roll actually changes:
+#'
+#' ```r
+#' # One `n` per row, the same on every sheet
+#' rray_roll_each(x, n = c(1, 2), axis = 2)
+#'
+#' # One `n` per sheet, the same for both rows
+#' rray_roll_each(x, n = array(c(0, 1, 2), c(1, 1, 3)), axis = 2)
+#' ```
 #'
 #' @inheritParams rlang::args_dots_empty
 #'
