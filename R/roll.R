@@ -59,11 +59,10 @@
 #' each row, column, and so on. Along every other axis, the coordinates are
 #' just the positions themselves.
 #'
-#' `rray_index()` drops all names. `rray_roll_each()` keeps the names on every
-#' axis other than `axis`, since those positions still mean the same thing. It
-#' always drops the names on `axis`, even for a single `n`. When rows move by
-#' different amounts, column 1 can hold data from column `c` in one row and
-#' from column `b` in another, so no single name fits:
+#' `rray_roll_each()` drops names along `axis`, but keeps all other names. When
+#' rows move by different amounts, the output's column 1 can hold data from
+#' column `c` in one row and from column `b` in another, so the original column
+#' names are unlikely to make sense:
 #'
 #' ```r
 #' x <- matrix(1:6, nrow = 2, dimnames = list(c("r1", "r2"), c("a", "b", "c")))

@@ -90,11 +90,10 @@ Variable rolling can be mimicked with the more flexible indexing of
 each row, column, and so on. Along every other axis, the coordinates are
 just the positions themselves.
 
-\code{rray_index()} drops all names. \code{rray_roll_each()} keeps the names on every
-axis other than \code{axis}, since those positions still mean the same thing. It
-always drops the names on \code{axis}, even for a single \code{n}. When rows move by
-different amounts, column 1 can hold data from column \code{c} in one row and
-from column \code{b} in another, so no single name fits:
+\code{rray_roll_each()} drops names along \code{axis}, but keeps all other names. When
+rows move by different amounts, the output's column 1 can hold data from
+column \code{c} in one row and from column \code{b} in another, so the original column
+names are unlikely to make sense:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{x <- matrix(1:6, nrow = 2, dimnames = list(c("r1", "r2"), c("a", "b", "c")))
 
