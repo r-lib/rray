@@ -3,36 +3,243 @@
 \name{rray-roll}
 \alias{rray-roll}
 \alias{rray_roll}
+\alias{rray_roll_each}
 \title{Roll an array}
 \usage{
 rray_roll(x, ..., n, axes)
+
+rray_roll_each(x, ..., n, axis)
 }
 \arguments{
 \item{x}{An array.}
 
 \item{...}{These dots are for future extensions and must be empty.}
 
-\item{n}{An integer vector indicating the amount to roll, either size 1 or
-the size of \code{axes}.}
+\item{n}{For \code{rray_roll()}, an integer vector indicating the amount to roll,
+either size 1 or the size of \code{axes}.
+
+For \code{rray_roll_each()}, an integer array indicating the amount to roll for
+each row, column, etc., as determined by \code{axis}. It is broadcast to the
+dimensions of \code{x} with \code{axis} set to 1.}
 
 \item{axes}{An integer vector of axes to roll along.}
+
+\item{axis}{A single integer representing the axis to roll along.}
 }
 \value{
 An array with the same type and dimensions as \code{x}.
 }
 \description{
-\code{rray_roll()} rolls the elements of \code{x} along one or more axes, with one
-roll per axis. An element pushed off one end circles back on the other.
+\itemize{
+\item \code{rray_roll()} rolls the elements of \code{x} along one or more \code{axes}, with one
+roll per axis. Everything along an axis moves by the same amount.
+\item \code{rray_roll_each()} rolls the elements of \code{x} along a single \code{axis}, with
+a separate roll for each row, column, and so on. For example, with a
+matrix and \code{axis = 2}, each row can move by a different amount.
+}
+
+An element pushed off one end circles back on the other.
 }
 \details{
 A positive \code{n} moves elements toward the end of the axis, and a negative \code{n}
 moves them toward the start. Rolls circle around, so an \code{n} of 7 along an
 axis with dimension 5 is the same as an \code{n} of 2. An \code{n} of 0, or any
 multiple of the dimension, leaves the axis unchanged.
+}
+\section{Roll}{
 
-Names on a rolled axis move with the data. Every other axis keeps its names
+Rolling an axis with a uniform \code{n} can be thought of as a carefully crafted
+\code{\link[=rray_slice]{rray_slice()}}. Along an axis with dimension \code{d}, position \code{i} of the result
+comes from position \code{(i - 1 - n) \%\% d + 1} of \code{x}:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{x <- c(a = 1L, b = 2L, c = 3L, d = 4L, e = 5L)
+
+n <- 2L
+d <- length(x)
+i <- seq_len(d)
+
+(i - 1L - n) \%\% d + 1L
+#> [1] 4 5 1 2 3
+
+rray_roll(x, n = n, axes = 1)
+#> d e a b c
+#> 4 5 1 2 3
+
+rray_slice_axis(x, c(4, 5, 1, 2, 3), axis = 1)
+#> d e a b c
+#> 4 5 1 2 3
+}\if{html}{\out{</div>}}
+
+Rolling several axes at once is one \code{rray_slice()}, with these locations on
+each rolled axis and \code{TRUE} on the rest.
+
+Since a uniform roll is a slice, names on a rolled axis move with the data,
+just like they do in \code{rray_slice()}. Every other axis keeps its names
 untouched.
 }
+
+\section{Roll each}{
+
+\code{rray_roll_each()} rolls along a single \code{axis}, but each row, column, and so
+on can move by its own amount. That is why \code{n} is an array rather than a
+vector. It is broadcast to the dimensions of \code{x} with \code{axis} set to 1, so it
+holds one \code{n} for every row, column, and so on that gets rolled.
+
+Variable rolling can be mimicked with the more flexible indexing of
+\code{\link[=rray_index]{rray_index()}}. Along \code{axis}, the coordinates come from the same
+\code{(i - 1 - n) \%\% d + 1} formula as \code{rray_roll()}, with a different \code{n} for
+each row, column, and so on. Along every other axis, the coordinates are
+just the positions themselves.
+
+\code{rray_roll_each()} drops names along \code{axis}, but keeps all other names. When
+rows move by different amounts, the output's column 1 can hold data from
+column \code{c} in one row and from column \code{b} in another, so the original column
+names are unlikely to make sense:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{x <- matrix(1:6, nrow = 2, dimnames = list(c("r1", "r2"), c("a", "b", "c")))
+
+rray_roll_each(x, n = matrix(c(1, 2), ncol = 1), axis = 2)
+#>    [,1] [,2] [,3]
+#> r1    5    1    3
+#> r2    4    6    2
+}\if{html}{\out{</div>}}
+
+Because variable rolling can be a bit complicated the first time you see it,
+we'll work through 2D and 3D examples below.
+\subsection{Two dimensions}{
+
+Start with a matrix:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{x <- matrix(1:12, nrow = 3, byrow = TRUE)
+
+x
+#>      [,1] [,2] [,3] [,4]
+#> [1,]    1    2    3    4
+#> [2,]    5    6    7    8
+#> [3,]    9   10   11   12
+}\if{html}{\out{</div>}}
+
+Rolling along the columns, \code{axis = 2}, moves elements within each row. \code{x}
+has dimensions \code{c(3, 4)}, so \code{n} is broadcast to \code{c(3, 1)}, a one column
+matrix with one \code{n} per row:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{n <- matrix(c(1L, 0L, -1L), ncol = 1)
+
+rray_roll_each(x, n = n, axis = 2)
+#>      [,1] [,2] [,3] [,4]
+#> [1,]    4    1    2    3
+#> [2,]    5    6    7    8
+#> [3,]   10   11   12    9
+}\if{html}{\out{</div>}}
+
+The first row moves 1 toward the end, the second row stays put, and the
+third row moves 1 toward the start.
+
+Rolling along the rows, \code{axis = 1}, moves elements within each column. Now
+\code{n} is broadcast to \code{c(1, 4)}, so it must be a one row matrix:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_roll_each(x, n = matrix(c(0L, 1L, 2L, 3L), nrow = 1), axis = 1)
+#>      [,1] [,2] [,3] [,4]
+#> [1,]    1   10    7    4
+#> [2,]    5    2   11    8
+#> [3,]    9    6    3   12
+}\if{html}{\out{</div>}}
+
+The last column has an \code{n} of 3 on a dimension of 3, a full circle, so it
+doesn't move.
+}
+
+\subsection{Three dimensions}{
+
+Three dimensions get a bit more complicated, but demonstrate why \code{n} must be
+an array. Think of an array with dimensions \code{c(2, 5, 3)} as 3 tables, each
+with 2 rows and 5 columns:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{x <- array(1:30, c(2, 5, 3))
+
+x
+#> , , 1
+#>
+#>      [,1] [,2] [,3] [,4] [,5]
+#> [1,]    1    3    5    7    9
+#> [2,]    2    4    6    8   10
+#>
+#> , , 2
+#>
+#>      [,1] [,2] [,3] [,4] [,5]
+#> [1,]   11   13   15   17   19
+#> [2,]   12   14   16   18   20
+#>
+#> , , 3
+#>
+#>      [,1] [,2] [,3] [,4] [,5]
+#> [1,]   21   23   25   27   29
+#> [2,]   22   24   26   28   30
+}\if{html}{\out{</div>}}
+
+Rolling along the columns, \code{axis = 2}, moves elements within each row. There
+are 2 rows on each of 3 tables, so there are 6 separate rows that can each
+roll by their own \code{n}. A vector can't hold one \code{n} for each of them, but an
+array can. \code{n} is broadcast to \code{c(2, 1, 3)}, which is one \code{n} for each row on
+each table:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{n <- array(1:6, c(2, 1, 3))
+
+n
+#> , , 1
+#>
+#>      [,1]
+#> [1,]    1
+#> [2,]    2
+#>
+#> , , 2
+#>
+#>      [,1]
+#> [1,]    3
+#> [2,]    4
+#>
+#> , , 3
+#>
+#>      [,1]
+#> [1,]    5
+#> [2,]    6
+
+rray_roll_each(x, n = n, axis = 2)
+#> , , 1
+#>
+#>      [,1] [,2] [,3] [,4] [,5]
+#> [1,]    9    1    3    5    7
+#> [2,]    8   10    2    4    6
+#>
+#> , , 2
+#>
+#>      [,1] [,2] [,3] [,4] [,5]
+#> [1,]   15   17   19   11   13
+#> [2,]   14   16   18   20   12
+#>
+#> , , 3
+#>
+#>      [,1] [,2] [,3] [,4] [,5]
+#> [1,]   21   23   25   27   29
+#> [2,]   30   22   24   26   28
+}\if{html}{\out{</div>}}
+
+Row 1 of table 1 moves 1, row 2 of table 1 moves 2, and so on. Row 1 of table
+3 has an \code{n} of 5 on a dimension of 5, a full circle, so it doesn't move. Row
+2 of table 3 has an \code{n} of 6, which circles around to 1.
+
+Broadcasting allows you to provide a smaller \code{n} array when either all of the
+rows or all of the tables roll by the same amount:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{# One `n` per row, the same on every table
+rray_roll_each(x, n = array(c(1, 2), c(2, 1, 1)), axis = 2)
+
+# One `n` per table, the same for both rows
+rray_roll_each(x, n = array(c(0, 1, 2), c(1, 1, 3)), axis = 2)
+}\if{html}{\out{</div>}}
+}
+}
+
 \examples{
 # Positive `n` moves elements toward the end
 rray_roll(1:5, n = 2, axes = 1)
@@ -56,4 +263,15 @@ rray_roll(x, n = 1, axes = c(1, 2))
 
 # Or by one `n` per axis
 rray_roll(x, n = c(1, -1), axes = c(1, 2))
+
+y <- matrix(1:12, nrow = 3, byrow = TRUE)
+
+# Roll each row by its own `n`, given as a one column matrix
+rray_roll_each(y, n = matrix(c(1, 0, -1), ncol = 1), axis = 2)
+
+# Roll each column by its own `n`, given as a one row matrix
+rray_roll_each(y, n = matrix(c(0, 1, 2, 3), nrow = 1), axis = 1)
+
+# Names on `axis` are dropped, since no single name fits each position
+rray_roll_each(x, n = matrix(c(1, 2), ncol = 1), axis = 2)
 }

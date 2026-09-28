@@ -115,7 +115,7 @@ static r_obj* rray_roll_locations(int dimension, int n) {
   return out;
 }
 
-static void check_roll_n_not_missing(
+void check_roll_n_not_missing(
   r_obj* n,
   struct rray_arg* arg,
   struct r_lazy error_call
@@ -132,19 +132,4 @@ static void check_roll_n_not_missing(
       );
     }
   }
-}
-
-// Bound `n` between `[0, dimension]`
-static inline int rray_roll_normalize(int n, int dimension) {
-  if (dimension == 0) {
-    return 0;
-  }
-
-  int out = n % dimension;
-
-  if (out < 0) {
-    out += dimension;
-  }
-
-  return out;
 }
