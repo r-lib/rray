@@ -48,16 +48,16 @@ multiple of the dimension, leaves the axis unchanged.
 \section{Roll}{
 
 Rolling an axis with a uniform \code{n} can be thought of as a carefully crafted
-\code{\link[=rray_slice]{rray_slice()}}. Along an axis with dimension \code{d}, position \code{j} of the result
-comes from position \code{(j - 1 - n) \%\% d + 1} of \code{x}:
+\code{\link[=rray_slice]{rray_slice()}}. Along an axis with dimension \code{d}, position \code{i} of the result
+comes from position \code{(i - 1 - n) \%\% d + 1} of \code{x}:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{x <- c(a = 1L, b = 2L, c = 3L, d = 4L, e = 5L)
 
 n <- 2L
 d <- 5L
-j <- seq_len(d)
+i <- seq_len(d)
 
-(j - 1L - n) \%\% d + 1L
+(i - 1L - n) \%\% d + 1L
 #> [1] 4 5 1 2 3
 
 rray_roll(x, n = n, axes = 1)
@@ -86,7 +86,7 @@ of 1 in \code{n} means "the same \code{n} for all of these", and a single \code{
 everything by the same amount.
 
 Rolling each is the same as indexing with \code{\link[=rray_index]{rray_index()}}. Along \code{axis}, the
-coordinates come from the same \code{(j - 1 - n) \%\% d + 1} formula as
+coordinates come from the same \code{(i - 1 - n) \%\% d + 1} formula as
 \code{rray_roll()}, with a different \code{n} for each row, column, and so on. Along
 every other axis, the coordinates are just the positions themselves.
 
@@ -136,7 +136,7 @@ The same result with \code{rray_index()}. Each row gets its own column
 coordinates from the formula, and the row coordinates are just \code{1:3}:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{rows <- array(1:3, c(3, 1))
-columns <- outer(n, 1:4, \\(n, j) (j - 1L - n) \%\% 4L + 1L)
+columns <- outer(n, 1:4, \\(n, i) (i - 1L - n) \%\% 4L + 1L)
 
 columns
 #>      [,1] [,2] [,3] [,4]

@@ -18,17 +18,17 @@
 #'
 #' @section Roll:
 #' Rolling an axis with a uniform `n` can be thought of as a carefully crafted
-#' [rray_slice()]. Along an axis with dimension `d`, position `j` of the result
-#' comes from position `(j - 1 - n) %% d + 1` of `x`:
+#' [rray_slice()]. Along an axis with dimension `d`, position `i` of the result
+#' comes from position `(i - 1 - n) %% d + 1` of `x`:
 #'
 #' ```r
 #' x <- c(a = 1L, b = 2L, c = 3L, d = 4L, e = 5L)
 #'
 #' n <- 2L
 #' d <- 5L
-#' j <- seq_len(d)
+#' i <- seq_len(d)
 #'
-#' (j - 1L - n) %% d + 1L
+#' (i - 1L - n) %% d + 1L
 #' #> [1] 4 5 1 2 3
 #'
 #' rray_roll(x, n = n, axes = 1)
@@ -55,7 +55,7 @@
 #' everything by the same amount.
 #'
 #' Rolling each is the same as indexing with [rray_index()]. Along `axis`, the
-#' coordinates come from the same `(j - 1 - n) %% d + 1` formula as
+#' coordinates come from the same `(i - 1 - n) %% d + 1` formula as
 #' `rray_roll()`, with a different `n` for each row, column, and so on. Along
 #' every other axis, the coordinates are just the positions themselves.
 #'
@@ -110,7 +110,7 @@
 #'
 #' ```r
 #' rows <- array(1:3, c(3, 1))
-#' columns <- outer(n, 1:4, \(n, j) (j - 1L - n) %% 4L + 1L)
+#' columns <- outer(n, 1:4, \(n, i) (i - 1L - n) %% 4L + 1L)
 #'
 #' columns
 #' #>      [,1] [,2] [,3] [,4]
