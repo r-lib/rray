@@ -47,6 +47,8 @@ r_obj* rray_roll_each(
   int* v_n_broadcast_dimensions = r_int_begin(n_broadcast_dimensions);
   v_n_broadcast_dimensions[axis - 1] = 1;
 
+  // Nicely simplifies the loop to explicitly broadcast `n`. Cost is fairly
+  // cheap, since one dimension of `x` is set to 1.
   n = KEEP(rray_broadcast(n, n_broadcast_dimensions, rray_args.n, error_call));
   const int* v_n = r_int_cbegin(n);
 
