@@ -331,9 +331,8 @@ out_size = rray_size_from_dimensions_checked(v_out_dimensions, dimensionality)
 out = KEEP(r_alloc_vector(r_typeof(x), out_size))
 poke out_dimensions onto out
 
-if out_size > 0:
-  rray_rep_fill(x, out, v_dimensions, dimensionality, v_axes, axes_size,
-                v_times, times_size)
+rray_rep_fill(x, out, v_dimensions, dimensionality, v_axes, axes_size,
+              v_times, times_size)
 
 names = KEEP(rray_rep_names(r_dim_names(x), v_axes, axes_size, v_times,
                             times_size))
@@ -347,10 +346,9 @@ Notes:
 
 - `arg_as_axes_unsorted()` calls `check_dimensionality()` itself.
 
-- The fill is skipped when `out_size` is 0. That covers every zero `times` and
-  every zero dimension in `x`. When `out_size` is positive, every dimension of
-  every intermediate array is between 1 and the matching output dimension, so
-  no block or group product in the fill can overflow `r_ssize`.
+- The fill needs no special case for an empty `out`, the same way the fills in
+  `src/rep.c` don't today. A zero `times` or a zero dimension in `x` leaves a
+  block count, group count, or block size of 0, and every loop falls through.
 
 ### `arg_as_rep_times()`
 
@@ -648,7 +646,7 @@ are replaced with the `axes` errors below. Then add:
 - A zero dimension on an axis not in `axes`, with a huge output on the others,
   such as `x` with dimensions `c(0, 100000, 100000)`, `times = 2`, and
   `axes = c(2, 3)`. It returns quickly with dimensions
-  `c(0, 200000, 200000)`, which checks that the fill is skipped.
+  `c(0, 200000, 200000)`, which checks that the fill does no work.
 
 - All seven types with two axes, so every expand core runs.
 
