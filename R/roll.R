@@ -17,9 +17,6 @@
 #' multiple of the dimension, leaves the axis unchanged.
 #'
 #' @section Roll:
-#' `rray_roll()` rolls every axis in `axes`. A size 1 `n` is used for every
-#' axis, otherwise `n[[i]]` is the roll for `axes[[i]]`.
-#'
 #' Rolling an axis is the same as slicing it with [rray_slice()]. Along an axis
 #' with dimension `d`, position `j` of the result comes from position
 #' `(j - 1 - n) %% d + 1` of `x`:

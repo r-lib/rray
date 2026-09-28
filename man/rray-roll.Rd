@@ -47,9 +47,6 @@ multiple of the dimension, leaves the axis unchanged.
 }
 \section{Roll}{
 
-\code{rray_roll()} rolls every axis in \code{axes}. A size 1 \code{n} is used for every
-axis, otherwise \code{n[[i]]} is the roll for \code{axes[[i]]}.
-
 Rolling an axis is the same as slicing it with \code{\link[=rray_slice]{rray_slice()}}. Along an axis
 with dimension \code{d}, position \code{j} of the result comes from position
 \code{(j - 1 - n) \%\% d + 1} of \code{x}:
