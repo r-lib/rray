@@ -206,7 +206,7 @@
 #'
 #' ```r
 #' # One `n` per row, the same on every sheet
-#' rray_roll_each(x, n = c(1, 2), axis = 2)
+#' rray_roll_each(x, n = array(c(1, 2), c(2, 1, 1)), axis = 2)
 #'
 #' # One `n` per sheet, the same for both rows
 #' rray_roll_each(x, n = array(c(0, 1, 2), c(1, 1, 3)), axis = 2)

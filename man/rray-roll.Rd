@@ -230,7 +230,7 @@ move. Row 2 of sheet 3 has an \code{n} of 6, which circles around to 1.
 You only need a real dimension in \code{n} where the roll actually changes:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{# One `n` per row, the same on every sheet
-rray_roll_each(x, n = c(1, 2), axis = 2)
+rray_roll_each(x, n = array(c(1, 2), c(2, 1, 1)), axis = 2)
 
 # One `n` per sheet, the same for both rows
 rray_roll_each(x, n = array(c(0, 1, 2), c(1, 1, 3)), axis = 2)
