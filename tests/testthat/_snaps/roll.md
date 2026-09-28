@@ -147,3 +147,151 @@
       Error in `rray_roll()`:
       ! `x` must be a bare array, not a <foo> object.
 
+# `n` and `axis` must be named
+
+    Code
+      rray_roll_each(x, 1, 2)
+    Condition
+      Error in `rray_roll_each()`:
+      ! `...` must be empty.
+      x Problematic arguments:
+      * ..1 = 1
+      * ..2 = 2
+      i Did you forget to name an argument?
+    Code
+      rray_roll_each(x, 1, axis = 2)
+    Condition
+      Error in `rray_roll_each()`:
+      ! `...` must be empty.
+      x Problematic argument:
+      * ..1 = 1
+      i Did you forget to name an argument?
+
+# `axis` is validated
+
+    Code
+      rray_roll_each(x, n = 1, axis = c(1, 2))
+    Condition
+      Error in `rray_roll_each()`:
+      ! `axis` must be a single integer, not length 2.
+
+---
+
+    Code
+      rray_roll_each(x, n = 1, axis = 3)
+    Condition
+      Error in `rray_roll_each()`:
+      ! `axis` must be less than or equal to the dimensionality of 2, not 3.
+
+---
+
+    Code
+      rray_roll_each(x, n = 1, axis = 0)
+    Condition
+      Error in `rray_roll_each()`:
+      ! `axis` must be greater than or equal to 1, not 0.
+
+---
+
+    Code
+      rray_roll_each(x, n = 1, axis = NA_integer_)
+    Condition
+      Error in `rray_roll_each()`:
+      ! `axis` must not be missing.
+
+# `n` must broadcast to `x` with `axis` set to 1
+
+    Code
+      rray_roll_each(x, n = c(0, 1, 2, 3), axis = 1)
+    Condition
+      Error in `rray_roll_each()`:
+      ! Can't broadcast axis 1 of `n` from dimension 4 to 1.
+
+---
+
+    Code
+      rray_roll_each(x, n = c(1, 2), axis = 2)
+    Condition
+      Error in `rray_roll_each()`:
+      ! Can't broadcast axis 1 of `n` from dimension 2 to 3.
+
+---
+
+    Code
+      rray_roll_each(x, n = array(1L, c(1, 1, 2)), axis = 1)
+    Condition
+      Error in `rray_roll_each()`:
+      ! Can't broadcast `n` from dimensionality 3 to 2. Can't decrease dimensionality.
+
+---
+
+    Code
+      rray_roll_each(x, n = c(1, 2, 3), axis = 2)
+    Condition
+      Error in `rray_roll_each()`:
+      ! Can't broadcast axis 1 of `n` from dimension 3 to 2.
+
+# `n` must be an integer array with no missing values
+
+    Code
+      rray_roll_each(x, n = NA, axis = 1)
+    Condition
+      Error in `rray_roll_each()`:
+      ! `n` must not contain missing values.
+
+---
+
+    Code
+      rray_roll_each(x, n = c(1L, NA, 3L), axis = 2)
+    Condition
+      Error in `rray_roll_each()`:
+      ! `n` must not contain missing values.
+
+---
+
+    Code
+      rray_roll_each(x, n = 1.5, axis = 1)
+    Condition
+      Error in `rray_roll_each()`:
+      ! Can't convert from `n` <double> to <integer> due to loss of precision at location 1.
+
+---
+
+    Code
+      rray_roll_each(x, n = "a", axis = 1)
+    Condition
+      Error in `rray_roll_each()`:
+      ! Can't convert from `n` <character> to <integer>.
+
+---
+
+    Code
+      rray_roll_each(x, n = factor("a"), axis = 1)
+    Condition
+      Error in `rray_roll_each()`:
+      ! `n` must be a bare array, not a <factor> object.
+
+---
+
+    Code
+      rray_roll_each(x, n = NULL, axis = 1)
+    Condition
+      Error in `rray_roll_each()`:
+      ! `n` must be an array, not `NULL`.
+
+# `x` must be a bare array
+
+    Code
+      rray_roll_each(NULL, n = 1, axis = 1)
+    Condition
+      Error in `rray_roll_each()`:
+      ! `x` must be an array, not `NULL`.
+
+---
+
+    Code
+      rray_roll_each(x, n = 1, axis = 1)
+    Condition
+      Error in `rray_roll_each()`:
+      ! `x` must be a bare array, not a <foo> object.
+
