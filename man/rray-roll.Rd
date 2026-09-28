@@ -134,25 +134,6 @@ rray_roll_each(x, n = n, axis = 2)
 The first row moves 1 toward the end, the second row stays put, and the
 third row moves 1 toward the start.
 
-The same result with \code{rray_index()}. Each row gets its own column
-coordinates from the formula, and the row coordinates are just \code{1:3}:
-
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{rows <- array(1:3, c(3, 1))
-columns <- outer(c(n), 1:4, \\(n, i) (i - 1L - n) \%\% 4L + 1L)
-
-columns
-#>      [,1] [,2] [,3] [,4]
-#> [1,]    4    1    2    3
-#> [2,]    1    2    3    4
-#> [3,]    2    3    4    1
-
-rray_index(x, rows, columns)
-#>      [,1] [,2] [,3] [,4]
-#> [1,]    4    1    2    3
-#> [2,]    5    6    7    8
-#> [3,]   10   11   12    9
-}\if{html}{\out{</div>}}
-
 Rolling along the rows, \code{axis = 1}, moves elements within each column. Now
 \code{n} is broadcast to \code{c(1, 4)}, so one \code{n} per column must be a one row
 matrix. A plain vector of 4 has dimensions \code{c(4)}, which doesn't fit.
