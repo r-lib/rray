@@ -12,9 +12,8 @@ rray_roll(x, ..., n, axes)
 
 \item{...}{These dots are for future extensions and must be empty.}
 
-\item{n}{An integer vector of shifts, either size 1 or the size of \code{axes}.
-A single shift is used for every axis in \code{axes}. Otherwise \code{n[[i]]} is the
-shift for \code{axes[[i]]}.}
+\item{n}{An integer vector indicating the amount to roll, either size 1 or
+the size of \code{axes}.}
 
 \item{axes}{An integer vector of axes to roll along.}
 }

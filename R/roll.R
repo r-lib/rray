@@ -17,9 +17,8 @@
 #'
 #' @param x An array.
 #'
-#' @param n An integer vector of shifts, either size 1 or the size of `axes`.
-#'   A single shift is used for every axis in `axes`. Otherwise `n[[i]]` is the
-#'   shift for `axes[[i]]`.
+#' @param n An integer vector indicating the amount to roll, either size 1 or
+#'   the size of `axes`.
 #'
 #' @param axes An integer vector of axes to roll along.
 #'
