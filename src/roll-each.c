@@ -41,24 +41,14 @@ r_obj* rray_roll_each(
   const int axis_dimension = v_x_dimensions[axis - 1];
 
   n = KEEP(arg_as_roll_each_n(n, rray_args.n, error_call));
-
-  r_obj* n_dimensions = r_dim(n);
-  const int* v_n_dimensions = r_int_cbegin(n_dimensions);
-  const int n_dimensionality =
-    rray_dimensionality_from_dimensions(n_dimensions);
+  n = KEEP(rray_roll_each_normalize(n, axis_dimension));
 
   r_obj* lane_dimensions = KEEP(r_clone(x_dimensions));
   int* v_lane_dimensions = r_int_begin(lane_dimensions);
   v_lane_dimensions[axis - 1] = 1;
 
-  check_broadcastable(
-    v_n_dimensions,
-    n_dimensionality,
-    v_lane_dimensions,
-    dimensionality,
-    rray_args.n,
-    error_call
-  );
+  n = KEEP(rray_broadcast(n, lane_dimensions, rray_args.n, error_call));
+  const int* v_n = r_int_cbegin(n);
 
   const r_ssize size =
     rray_size_from_dimensions(v_x_dimensions, dimensionality);
@@ -66,25 +56,17 @@ r_obj* rray_roll_each(
   r_obj* out = KEEP(r_alloc_vector(r_typeof(x), size));
   r_attrib_poke_dim(out, x_dimensions);
 
-  if (size != 0) {
-    n = KEEP(rray_roll_each_normalize(n, axis_dimension));
-    n = KEEP(rray_broadcast(n, lane_dimensions, rray_args.n, error_call));
-    const int* v_n = r_int_cbegin(n);
-
-    r_ssize block_size = 1;
-    for (int i = 0; i < axis - 1; ++i) {
-      block_size *= v_x_dimensions[i];
-    }
-
-    r_ssize n_groups = 1;
-    for (int i = axis; i < dimensionality; ++i) {
-      n_groups *= v_x_dimensions[i];
-    }
-
-    rray_roll_each_fill(x, out, v_n, block_size, axis_dimension, n_groups);
-
-    FREE(2);
+  r_ssize block_size = 1;
+  for (int i = 0; i < axis - 1; ++i) {
+    block_size *= v_x_dimensions[i];
   }
+
+  r_ssize n_groups = 1;
+  for (int i = axis; i < dimensionality; ++i) {
+    n_groups *= v_x_dimensions[i];
+  }
+
+  rray_roll_each_fill(x, out, v_n, block_size, axis_dimension, n_groups);
 
   // Using `rray_reduce_names()` is an easy way to clear the `axis` names, which
   // likely no longer make sense
@@ -95,7 +77,7 @@ r_obj* rray_roll_each(
     r_attrib_poke_dim_names(out, out_names);
   }
 
-  FREE(6);
+  FREE(8);
   return out;
 }
 

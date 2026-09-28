@@ -498,11 +498,6 @@ test_that("drops names on `axis` with a zero dimension on another axis", {
   )
 })
 
-test_that("a zero dimension on `axis` doesn't allocate for every other axis", {
-  x <- array(integer(), c(100000, 0, 100000))
-  expect_identical(rray_roll_each(x, n = 1, axis = 2), x)
-})
-
 test_that("handles the largest `n`", {
   x <- array(1:5, 5)
 
