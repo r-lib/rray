@@ -49,8 +49,8 @@ r_obj* rray_roll(
   for (r_ssize i = 0; i < axes_size; ++i) {
     const int axis = v_axes[i];
     const int dimension = v_x_dimensions[axis - 1];
-    const int shift = rray_roll_shift(v_n[n_size == 1 ? 0 : i], dimension);
-    r_list_poke(indices, axis - 1, rray_roll_locations(dimension, shift));
+    const int n = rray_roll_normalize(v_n[n_size == 1 ? 0 : i], dimension);
+    r_list_poke(indices, axis - 1, rray_roll_locations(dimension, n));
   }
 
   r_obj* out = rray_slice(x, indices, x_arg, rray_args.empty, error_call);
@@ -134,7 +134,8 @@ static void check_roll_n_not_missing(
   }
 }
 
-static inline int rray_roll_shift(int n, int dimension) {
+// Bound `n` between `[0, dimension]`
+static inline int rray_roll_normalize(int n, int dimension) {
   if (dimension == 0) {
     return 0;
   }

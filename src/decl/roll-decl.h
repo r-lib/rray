@@ -20,4 +20,4 @@ static void check_roll_n_not_missing(
   struct r_lazy error_call
 );
 
-static inline int rray_roll_shift(int n, int dimension);
+static inline int rray_roll_normalize(int n, int dimension);
