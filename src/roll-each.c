@@ -6,6 +6,7 @@
 #include "dimensionality.h"
 #include "reduce-names.h"
 #include "roll.h"
+#include "size.h"
 #include "strided-iterator.h"
 #include "utils.h"
 
@@ -60,7 +61,8 @@ r_obj* rray_roll_each(
     error_call
   );
 
-  const r_ssize size = r_length(x);
+  const r_ssize size =
+    rray_size_from_dimensions(v_x_dimensions, dimensionality);
 
   r_obj* out = KEEP(r_alloc_vector(r_typeof(x), size));
   r_attrib_poke_dim(out, x_dimensions);
