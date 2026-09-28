@@ -56,10 +56,10 @@ and there is no ordering question.
   or the size of `axes`. Validated with `arg_as_non_negative_bare_integer()`, as
   today.
 
-- `axes`: a bare integer vector of axes. Required, with no default. Any order.
-  An axis can't appear twice. `integer()` is allowed and repeats nothing.
-  Validated with `arg_as_axes_unsorted()`, like `from` and `to` in
-  `rray_move_axes()` and `axes` in `rray_roll()`.
+- `axes`: a bare integer vector of axes. Required, with no default. Must be in
+  strictly increasing order, since the order does not change the result.
+  `integer()` is allowed and repeats nothing. Validated with `arg_as_axes()`,
+  like `axes` in `rray_roll()`, `rray_remove_axes()`, and the reducers.
 
 The result has the type and dimensionality of `x`. Each axis in `axes` has its
 dimension multiplied by its `times`. Every other axis keeps its dimension.
@@ -95,12 +95,10 @@ rray_rep(x, times = 2, axes = c(1, 2))
 # r2 2 4 2 4
 ```
 
-One `times` per axis. `times` pairs with `axes` in the order given, so these two
-are identical:
+One `times` per axis, with `times[[i]]` used for `axes[[i]]`:
 
 ```r
 rray_rep(x, times = c(2, 3), axes = c(1, 2))
-rray_rep(x, times = c(3, 2), axes = c(2, 1))
 #    a b a b a b
 # r1 1 3 1 3 1 3
 # r2 2 4 2 4 2 4
@@ -188,7 +186,11 @@ x <- matrix(1:6, nrow = 2)
 
 rray_rep(x, times = 2, axes = c(1, 1))
 # Error in `rray_rep()`:
-# ! `axes` must not contain 1 more than once.
+# ! `axes` must be in strictly increasing order.
+
+rray_rep(x, times = 2, axes = c(2, 1))
+# Error in `rray_rep()`:
+# ! `axes` must be in strictly increasing order.
 
 rray_rep(x, times = 2, axes = 3)
 # Error in `rray_rep()`:
@@ -313,8 +315,9 @@ r_obj* rray_rep(
 check_unclassed(x)
 x = KEEP(arg_as_array(x))
 dimensions, dimensionality
+check_dimensionality(dimensionality)
 
-axes = KEEP(arg_as_axes_unsorted(axes, dimensionality, rray_args.axes))
+axes = KEEP(arg_as_axes(axes, dimensionality, rray_args.axes))
 axes_size = r_length(axes)
 
 times = KEEP(arg_as_rep_times(times, axes_size, rray_args.times))
@@ -344,7 +347,9 @@ Notes:
 - Everything is validated before `out` is allocated, so every error fires for
   an empty `x` too.
 
-- `arg_as_axes_unsorted()` calls `check_dimensionality()` itself.
+- `arg_as_axes()` does not call `check_dimensionality()`, so `rray_rep()` calls
+  it first, as `rray_roll()` does. The fill's stack array of current dimensions
+  relies on it.
 
 - The fill needs no special case for an empty `out`, the same way the fills in
   `src/rep.c` don't today. A zero `times` or a zero dimension in `x` leaves a
@@ -570,7 +575,7 @@ specific to this plan:
 - Keep `x` right after `arg_as_array()`. For a bare vector it returns a new
   array, and every later step allocates before `x` is last used.
 
-- `axes` from `arg_as_axes_unsorted()` and `times` from `arg_as_rep_times()`
+- `axes` from `arg_as_axes()` and `times` from `arg_as_rep_times()`
   can be fresh allocations from a cast. Keep both until the names are built,
   since `v_axes` and `v_times` are read there, after `out` and
   `out_dimensions` are allocated.
@@ -596,8 +601,8 @@ Update the `rray-rep` topic in `R/rep.R`:
 - `@param times` keeps a paragraph per function. For `rray_rep()`: integers
   greater than or equal to 0, size 1 or the size of `axes`.
 
-- A new `@param axes` for `rray_rep()`: the axes to repeat along, in any order,
-  with no axis twice.
+- A new `@param axes` for `rray_rep()`: the axes to repeat along, in strictly
+  increasing order.
 
 - `@param axis` now reads "For `rray_rep_each()`, ...".
 
@@ -630,7 +635,7 @@ are replaced with the `axes` errors below. Then add:
 
 - Several axes with a size 1 `times`, and with one `times` per axis.
 
-- `times` pairs with `axes` in the order given, including unsorted `axes`.
+- `times[[i]]` pairs with `axes[[i]]`.
 
 - Repeating several axes equals repeating them one at a time, in both orders.
 
@@ -654,12 +659,11 @@ are replaced with the `axes` errors below. Then add:
   and on none.
 
 - The reference loop over the existing shapes, extended to every subset of
-  axes in both orders, with `times` of size 1 and one per axis, for named and
-  unnamed `x`.
+  axes, with `times` of size 1 and one per axis, for named and unnamed `x`.
 
 - `x` is not modified.
 
-- Errors, snapshotted: a repeated axis, an axis of 0, an axis past the
+- Errors, snapshotted: a repeated axis, axes out of order, an axis of 0, an axis past the
   dimensionality, a missing axis, `times` of the wrong size for one axis and
   for several, a nonempty `axes` with `times = integer()`, a dimension that is
   too large, a total size that is too large, and `axis = 1` passed by its old
