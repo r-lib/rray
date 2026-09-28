@@ -72,8 +72,9 @@ rray_slice_axis(x, c(4, 5, 1, 2, 3), axis = 1)
 Rolling several axes at once is one \code{rray_slice()}, with these locations on
 each rolled axis and \code{TRUE} on the rest.
 
-Since a roll is a slice, names on a rolled axis move with the data, just
-like they do in \code{rray_slice()}. Every other axis keeps its names untouched.
+Since a uniform roll is a slice, names on a rolled axis move with the data,
+just like they do in \code{rray_slice()}. Every other axis keeps its names
+untouched.
 }
 
 \section{Roll each}{

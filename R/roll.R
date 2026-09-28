@@ -43,8 +43,9 @@
 #' Rolling several axes at once is one `rray_slice()`, with these locations on
 #' each rolled axis and `TRUE` on the rest.
 #'
-#' Since a roll is a slice, names on a rolled axis move with the data, just
-#' like they do in `rray_slice()`. Every other axis keeps its names untouched.
+#' Since a uniform roll is a slice, names on a rolled axis move with the data,
+#' just like they do in `rray_slice()`. Every other axis keeps its names
+#' untouched.
 #'
 #' @section Roll each:
 #' `rray_roll_each()` rolls along a single `axis`, but each row, column, and so
