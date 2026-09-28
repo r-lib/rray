@@ -178,10 +178,10 @@ x
 }\if{html}{\out{</div>}}
 
 Rolling along the columns, \code{axis = 2}, moves elements within each row. There
-are 2 rows on each of 3 sheets, so there are 6 separate rows that can each
+are 2 rows on each of 3 tables, so there are 6 separate rows that can each
 roll by their own \code{n}. A vector can't hold one \code{n} for each of them, but an
 array can. \code{n} is broadcast to \code{c(2, 1, 3)}, which is one \code{n} for each row on
-each sheet:
+each table:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{n <- array(1:6, c(2, 1, 3))
 
@@ -224,17 +224,17 @@ rray_roll_each(x, n = n, axis = 2)
 #> [2,]   30   22   24   26   28
 }\if{html}{\out{</div>}}
 
-Row 1 of sheet 1 moves 1, row 2 of sheet 1 moves 2, and so on. Row 1 of
-sheet 3 has an \code{n} of 5 on a dimension of 5, a full circle, so it doesn't
-move. Row 2 of sheet 3 has an \code{n} of 6, which circles around to 1.
+Row 1 of table 1 moves 1, row 2 of table 1 moves 2, and so on. Row 1 of table
+3 has an \code{n} of 5 on a dimension of 5, a full circle, so it doesn't move. Row
+2 of table 3 has an \code{n} of 6, which circles around to 1.
 
 Broadcasting allows you to provide a smaller \code{n} array when either all of the
-rows or all of the sheets roll by the same amount:
+rows or all of the tables roll by the same amount:
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{# One `n` per row, the same on every sheet
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{# One `n` per row, the same on every table
 rray_roll_each(x, n = array(c(1, 2), c(2, 1, 1)), axis = 2)
 
-# One `n` per sheet, the same for both rows
+# One `n` per table, the same for both rows
 rray_roll_each(x, n = array(c(0, 1, 2), c(1, 1, 3)), axis = 2)
 }\if{html}{\out{</div>}}
 }
