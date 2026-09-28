@@ -654,7 +654,7 @@ rray_roll_each(x, 1, 2)
 ```
 
 Only the missing value error is new text. The broadcast errors come from
-`rray_broadcast()`, the cast error from `rray_cast()`, and the rest from
+`check_broadcastable()`, the cast error from `rray_cast()`, and the rest from
 existing helpers.
 
 ## Equivalences
@@ -879,17 +879,17 @@ check_axis(axis, dimensionality)
 
 n = KEEP(arg_as_roll_each_n(n, rray_args.n))
 
-lane_dimensions = copy of dim(x) with axis set to 1
-check_broadcastable(dim(n), lane_dimensions, rray_args.n)
+int v_lane_dimensions[RRAY_MAX_DIMENSIONALITY]
+copy dim(x) into v_lane_dimensions, with axis set to 1
+check_broadcastable(dim(n), v_lane_dimensions, rray_args.n)
 
 out = r_alloc_vector(r_typeof(x), size)
 poke r_dim(x) onto out
 
 if size > 0:
-  compute block_size, n_groups, and n_lanes
-  n = rray_broadcast(n, lane_dimensions, rray_args.n)
-  shifts = r_alloc_integer(n_lanes)
-  shifts[l] = rray_roll_shift(v_n[l], axis_dimension) for every lane l
+  compute block_size and n_groups
+  plan = rray_broadcast_iterator_plan(dim(n), v_lane_dimensions)
+  shifts = rray_roll_each_shifts(n, &plan, axis_dimension)
   rray_roll_each_fill(x, out, v_shifts, block_size, axis_dimension, n_groups)
 
 names = rray_reduce_names(x, r_int(axis))
@@ -903,31 +903,84 @@ Notes:
   the same messages as `rray_broadcast()`. So a bad `n` errors even when `x` is
   empty.
 
+- The lane dimensions are a stack array, since nothing needs them as an R
+  object.
+
 - Nothing proportional to the lane count is allocated for an empty `x`. When
   the rolled axis has dimension 0, the lane dimensions can still be huge, for
   example `(100000, 1, 100000)` for `x` with dimensions `(100000, 0, 100000)`.
-  Broadcasting `n` there would allocate ten billion integers for an empty
-  result.
+  The `shifts` table there would be ten billion integers for an empty result.
+  This is the only reason for the size check.
 
-- `block_size`, `n_groups`, and `n_lanes` are computed only when `size > 0`.
-  Each is then a product of factors of `size`, so none can overflow. With a
-  zero dimension elsewhere, a product of the other dimensions could overflow
-  `r_ssize`.
-
-- `rray_broadcast()` returns its input unchanged when the dimensions already
-  match. That input can be the caller's own `n`, so never write into it. The
-  reduced shifts go into a separate `shifts` table.
+- `n` is never broadcast into an R object. Its dimensions only drive the
+  iterator plan, and `n` itself is only read. So there is no copy of `n` the
+  size of the lane count, only the `shifts` table.
 
 - `shifts` has `size / axis_dimension` elements, which is at most the size of
   `x` and usually much smaller. Reducing once per lane keeps `%` out of the main
   loop.
 
-- Skipping the fill when `size` is 0 also avoids reducing by an
-  `axis_dimension` of 0.
-
 - `rray_reduce_names()` drops names on the given axes and keeps the rest. It
   returns `NULL` when nothing survives. Its meaning here is exactly the names
   rule for `rray_roll_each()`.
+
+#### The shifts
+
+`rray_roll_each_shifts()` walks the lane dimensions with the broadcast
+iterator, reads each lane's value from `n`, and writes its reduced shift. It
+follows the loop in `RRAY_BROADCAST_ATOMIC` in `src/broadcast.c`, including the
+fixed path for a zero run stride, which reduces a shift once per run instead of
+once per lane:
+
+```c
+static r_obj* rray_roll_each_shifts(
+  r_obj* n,
+  const struct rray_strided_iterator_plan* plan,
+  int axis_dimension
+) {
+  const r_ssize size = rray_strided_iterator_plan_size(plan);
+
+  r_obj* out = KEEP(r_alloc_integer(size));
+  int* v_out = r_int_begin(out);
+
+  const int* v_n = r_int_cbegin(n);
+
+  r_ssize run_start = 0;
+  const r_ssize run_size = rray_strided_iterator_plan_run_size(plan);
+
+  r_ssize n_start = 0;
+  const r_ssize n_run_stride = rray_strided_iterator_plan_run_stride(plan);
+
+  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];
+  rray_strided_iterator_plan_point_init(plan, v_point);
+
+  while (run_start != size) {
+    const r_ssize run_end = run_start + run_size;
+    r_ssize n_loc = n_start;
+
+    if (n_run_stride == 0) {
+      const int shift = rray_roll_shift(v_n[n_loc], axis_dimension);
+      for (r_ssize i = run_start; i < run_end; ++i) {
+        v_out[i] = shift;
+      }
+    } else {
+      for (r_ssize i = run_start; i < run_end; ++i) {
+        v_out[i] = rray_roll_shift(v_n[n_loc], axis_dimension);
+        n_loc += n_run_stride;
+      }
+    }
+
+    run_start = run_end;
+    RRAY_STRIDED_ITERATOR_NEXT(n_start, v_point, plan);
+  }
+
+  FREE(1);
+  return out;
+}
+```
+
+For a size 1 `n`, the plan coalesces to one run with stride 0, so there is one
+`%` for the whole table.
 
 #### The fill
 
@@ -985,9 +1038,11 @@ Following the C conventions in `CLAUDE.md`, `src/roll.c` reads top down:
 
 5. `arg_as_roll_each_n()`
 
-6. `rray_roll_each_fill()`, then its seven cores and macros
+6. `rray_roll_each_shifts()`
 
-7. `check_roll_n_not_missing()` and `rray_roll_shift()`, last, since both
+7. `rray_roll_each_fill()`, then its seven cores and macros
+
+8. `check_roll_n_not_missing()` and `rray_roll_shift()`, last, since both
    halves use them. Declare `rray_roll_shift()` in the decl header as a
    `static inline`, like `axis_is_reduced()` in
    `src/decl/reduce-names-decl.h`.
@@ -1017,12 +1072,12 @@ specific to this plan:
 - In `arg_as_roll_each_n()`, keep `n` after each of `arg_as_array()` and
   `rray_cast()`.
 
-- In `rray_roll_each()`, keep `n` after `arg_as_roll_each_n()` and after
-  `rray_broadcast()`. Keep `lane_dimensions` from its allocation until
-  `rray_broadcast()` returns. `check_broadcastable()` does not allocate, but
-  `rray_broadcast()` and the allocation of `out` in between do.
+- In `rray_roll_each()`, keep `n` after `arg_as_roll_each_n()`, since the
+  allocation of `out` comes before `rray_roll_each_shifts()` reads it.
+  `check_broadcastable()` and `rray_broadcast_iterator_plan()` do not
+  allocate.
 
-- Keep `out` across the allocation of `shifts` and across
+- Keep `out` across `rray_roll_each_shifts()` and across
   `rray_reduce_names()`. Keep `shifts` until the fill returns.
 
 - `r_int(axis)` passed to `rray_reduce_names()` must be kept, since
@@ -1137,7 +1192,7 @@ with base R only:
 
 - A zero rolled dimension with huge lane dimensions, such as `x` with
   dimensions `c(100000, 0, 100000)` and `n = 1`, returns quickly without
-  broadcasting `n`.
+  allocating the `shifts` table.
 
 - Shifts of `2147483647` and `-2147483647`.
 
