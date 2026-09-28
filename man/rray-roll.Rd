@@ -135,8 +135,7 @@ The first row moves 1 toward the end, the second row stays put, and the
 third row moves 1 toward the start.
 
 Rolling along the rows, \code{axis = 1}, moves elements within each column. Now
-\code{n} is broadcast to \code{c(1, 4)}, so one \code{n} per column must be a one row
-matrix. A plain vector of 4 has dimensions \code{c(4)}, which doesn't fit.
+\code{n} is broadcast to \code{c(1, 4)}, so it must be a one row matrix.
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_roll_each(x, n = matrix(c(0L, 1L, 2L, 3L), nrow = 1), axis = 1)
 #>      [,1] [,2] [,3] [,4]
