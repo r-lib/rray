@@ -30,10 +30,9 @@ r_obj* rray_roll(
   r_obj* x_dimensions = r_dim(x);
   const int* v_x_dimensions = r_int_cbegin(x_dimensions);
   const int dimensionality = rray_dimensionality_from_dimensions(x_dimensions);
+  check_dimensionality(dimensionality);
 
-  axes = KEEP(
-    arg_as_axes_unsorted(axes, dimensionality, rray_args.axes, error_call)
-  );
+  axes = KEEP(arg_as_axes(axes, dimensionality, rray_args.axes, error_call));
   const int* v_axes = r_int_cbegin(axes);
   const r_ssize axes_size = r_length(axes);
 

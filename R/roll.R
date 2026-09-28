@@ -21,8 +21,7 @@
 #'   A single shift is used for every axis in `axes`. Otherwise `n[[i]]` is the
 #'   shift for `axes[[i]]`.
 #'
-#' @param axes An integer vector of axes to roll along, in any order. Each axis
-#'   can appear at most once.
+#' @param axes An integer vector of axes to roll along.
 #'
 #' @returns
 #' An array with the same type and dimensions as `x`.

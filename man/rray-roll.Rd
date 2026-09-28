@@ -16,8 +16,7 @@ rray_roll(x, ..., n, axes)
 A single shift is used for every axis in \code{axes}. Otherwise \code{n[[i]]} is the
 shift for \code{axes[[i]]}.}
 
-\item{axes}{An integer vector of axes to roll along, in any order. Each axis
-can appear at most once.}
+\item{axes}{An integer vector of axes to roll along.}
 }
 \value{
 An array with the same type and dimensions as \code{x}.

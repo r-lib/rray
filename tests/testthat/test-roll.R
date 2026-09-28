@@ -38,10 +38,10 @@ test_that("rolls several axes at once", {
   expect_identical(rray_roll(x, n = c(1, 1), axes = c(1, 2)), expect)
 })
 
-test_that("`n` pairs with `axes` in the order given", {
+test_that("`n[[i]]` is the shift for `axes[[i]]`", {
   x <- array(1:24, c(2, 3, 4))
 
-  out <- rray_roll(x, n = c(1, -1), axes = c(3, 1))
+  out <- rray_roll(x, n = c(-1, 1), axes = c(1, 3))
 
   expect_identical(out, x[c(2, 1), , c(4, 1, 2, 3), drop = FALSE])
   expect_identical(out[,, 1], x[c(2, 1), , 4])
@@ -114,8 +114,8 @@ test_that("matches a reference implementation", {
       }
     }
 
-    axes <- rev(seq_along(dimensions))
-    n <- seq_along(dimensions)
+    axes <- seq_along(dimensions)
+    n <- rev(seq_along(dimensions))
 
     expect_identical(
       rray_roll(named, n = n, axes = axes),
@@ -253,6 +253,7 @@ test_that("`n` and `axes` must be named", {
 test_that("`axes` is validated", {
   x <- array(1:6, c(2, 3))
   expect_snapshot(rray_roll(x, n = 1, axes = c(1, 1)), error = TRUE)
+  expect_snapshot(rray_roll(x, n = 1, axes = c(2, 1)), error = TRUE)
   expect_snapshot(rray_roll(x, n = 1, axes = 3), error = TRUE)
   expect_snapshot(rray_roll(x, n = 1, axes = 0), error = TRUE)
   expect_snapshot(rray_roll(x, n = 1, axes = NA), error = TRUE)

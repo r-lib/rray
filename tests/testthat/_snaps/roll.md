@@ -24,7 +24,15 @@
       rray_roll(x, n = 1, axes = c(1, 1))
     Condition
       Error in `rray_roll()`:
-      ! `axes` must not contain 1 more than once.
+      ! `axes` must be in strictly increasing order.
+
+---
+
+    Code
+      rray_roll(x, n = 1, axes = c(2, 1))
+    Condition
+      Error in `rray_roll()`:
+      ! `axes` must be in strictly increasing order.
 
 ---
 

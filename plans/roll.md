@@ -126,8 +126,9 @@ rray_roll(x, ..., n, axes)
   dimensions, and classes are all errors. Arrays of per-lane shifts belong to
   `rray_roll_each()`.
 
-- `axes`: a bare integer vector of axes. Required, with no default. Any order.
-  An axis can't appear twice. `integer()` is allowed and rolls nothing.
+- `axes`: a bare integer vector of axes. Required, with no default. Strictly
+  increasing, like every other multi-axis argument in the package.
+  `integer()` is allowed and rolls nothing.
 
 The result has the type, dimensions, and dimensionality of `x`.
 
@@ -203,15 +204,15 @@ rray_roll(x, n = c(1, 1), axes = c(1, 2))
 # r1 5 1 3
 ```
 
-#### `n` pairs with `axes` in the order given
+#### `n[[i]]` is the shift for `axes[[i]]`
 
 ```r
 x <- array(1:24, c(2, 3, 4))
 
-out <- rray_roll(x, n = c(1, -1), axes = c(3, 1))
+out <- rray_roll(x, n = c(-1, 1), axes = c(1, 3))
 ```
 
-This rolls axis 3 by `1` and axis 1 by `-1`. The first sheet of the result is
+This rolls axis 1 by `-1` and axis 3 by `1`. The first sheet of the result is
 the last sheet of `x` with its two rows swapped:
 
 ```r
@@ -269,10 +270,12 @@ the same locations.
 | `np.roll(x, (1, 2), axis=(0, 1))` | `rray_roll(x, n = c(1, 2), axes = c(1, 2))` |
 | `np.roll(x, 1, axis=(0, 1))` | `rray_roll(x, n = 1, axes = c(1, 2))` |
 | `np.roll(x, (1, 2), axis=(0, 0))` | Error. Write `rray_roll(x, n = 3, axes = 1)` |
+| `np.roll(x, (1, 2), axis=(1, 0))` | Error. Write `rray_roll(x, n = c(2, 1), axes = c(1, 2))` |
 | `np.roll(x, 1)` | Not supported. `axes` is required |
 
-NumPy adds up shifts on a repeated axis. rray4 treats a repeated axis as a
-mistake.
+NumPy accepts axes in any order and adds up shifts on a repeated axis. rray4
+requires strictly increasing axes, which rules both out. Order never changes
+the result of a roll, so nothing is lost: reorder `n` to match.
 
 ### Errors
 
@@ -281,7 +284,11 @@ x <- matrix(1:6, nrow = 2)
 
 rray_roll(x, n = 1, axes = c(1, 1))
 # Error in `rray_roll()`:
-# ! `axes` must not contain 1 more than once.
+# ! `axes` must be in strictly increasing order.
+
+rray_roll(x, n = 1, axes = c(2, 1))
+# Error in `rray_roll()`:
+# ! `axes` must be in strictly increasing order.
 
 rray_roll(x, n = c(1, 2, 3), axes = c(1, 2))
 # Error in `rray_roll()`:
@@ -312,7 +319,7 @@ rray_roll(x, 1, 2)
 # Error from `check_dots_empty0()`
 ```
 
-The axes errors come from `arg_as_axes_unsorted()`, and the cast and
+The axes errors come from `arg_as_axes()`, and the cast and
 attribute errors from `arg_as_bare_integer()`. Only the two size errors and
 the missing value error are new text. The exact first lines of messages
 from existing helpers are whatever those helpers print today. Snapshot them
@@ -772,9 +779,9 @@ arg_as_roll_each_n(n, arg, error_call):
   return n
 ```
 
-`arg_as_roll_n()` validates `n` the way `arg_as_axes_unsorted()` validates
-`axes`, through `arg_as_bare_integer()`, so both arguments of `rray_roll()`
-follow the same rules.
+`arg_as_roll_n()` validates `n` the way `arg_as_axes()` validates `axes`,
+through `arg_as_bare_integer()`, so both arguments of `rray_roll()` follow the
+same rules.
 
 `arg_as_roll_each_n()` returns an integer array. `rray_cast()` keeps
 dimensions, so a matrix of doubles becomes a matrix of integers.
@@ -802,8 +809,9 @@ one path. There is no early exit, and the result is always a new array.
 check_unclassed(x)
 x = KEEP(arg_as_array(x))
 dimensionality = rray_dimensionality(x)
+check_dimensionality(dimensionality)
 
-axes = KEEP(arg_as_axes_unsorted(axes, dimensionality, rray_args.axes))
+axes = KEEP(arg_as_axes(axes, dimensionality, rray_args.axes))
 
 n = KEEP(arg_as_roll_n(n, r_length(axes), rray_args.n))
 
@@ -1060,9 +1068,9 @@ specific to this plan:
   it returns a new array, and every later step allocates before `x` is last
   used.
 
-- In `rray_roll()`, `axes` and `n` from `arg_as_axes_unsorted()` and
-  `arg_as_roll_n()` can be fresh allocations from a cast. Keep both across the
-  loop, which allocates.
+- In `rray_roll()`, `axes` and `n` from `arg_as_axes()` and `arg_as_roll_n()`
+  can be fresh allocations from a cast. Keep both across the loop, which
+  allocates.
 
 - Keep `indices` from its allocation until `rray_slice()` returns.
 
@@ -1127,7 +1135,7 @@ with base R only:
 
 - Several axes at once, with a size 1 `n` and with one shift per axis.
 
-- `n` pairs with `axes` in the order given, including unsorted `axes`.
+- `n[[i]]` is the shift for `axes[[i]]`.
 
 - Rolling several axes equals rolling them one at a time.
 
@@ -1155,9 +1163,10 @@ with base R only:
 
 - Shifts of `2147483647` and `-2147483647`.
 
-- Errors, snapshotted: repeated axis, out of range axis, `n` size mismatch for
-  one and several axes, missing `n`, fractional `n`, character `n`, named
-  `n`, matrix `n`, classed `x`, and a positional argument in the dots.
+- Errors, snapshotted: repeated axis, out of order axes, out of range axis, `n`
+  size mismatch for one and several axes, missing `n`, fractional `n`,
+  character `n`, named `n`, matrix `n`, classed `x`, and a positional argument
+  in the dots.
 
 ### `rray_roll_each()`
 
