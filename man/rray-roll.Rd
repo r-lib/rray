@@ -97,7 +97,7 @@ names are unlikely to make sense:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{x <- matrix(1:6, nrow = 2, dimnames = list(c("r1", "r2"), c("a", "b", "c")))
 
-rray_roll_each(x, n = c(1, 2), axis = 2)
+rray_roll_each(x, n = matrix(c(1, 2), ncol = 1), axis = 2)
 #>    [,1] [,2] [,3]
 #> r1    5    1    3
 #> r2    4    6    2
@@ -116,10 +116,10 @@ x
 }\if{html}{\out{</div>}}
 
 Rolling along the columns, \code{axis = 2}, moves elements within each row. \code{x}
-has dimensions \code{c(3, 4)}, so \code{n} is broadcast to \code{c(3, 1)}, one \code{n} per row.
-A plain vector of 3 fits:
+has dimensions \code{c(3, 4)}, so \code{n} is broadcast to \code{c(3, 1)}, a one column
+matrix with one \code{n} per row:
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{n <- c(1L, 0L, -1L)
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{n <- matrix(c(1L, 0L, -1L), ncol = 1)
 
 rray_roll_each(x, n = n, axis = 2)
 #>      [,1] [,2] [,3] [,4]
@@ -135,7 +135,7 @@ The same result with \code{rray_index()}. Each row gets its own column
 coordinates from the formula, and the row coordinates are just \code{1:3}:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{rows <- array(1:3, c(3, 1))
-columns <- outer(n, 1:4, \\(n, i) (i - 1L - n) \%\% 4L + 1L)
+columns <- outer(c(n), 1:4, \\(n, i) (i - 1L - n) \%\% 4L + 1L)
 
 columns
 #>      [,1] [,2] [,3] [,4]
@@ -280,12 +280,12 @@ rray_roll(x, n = c(1, -1), axes = c(1, 2))
 
 y <- matrix(1:12, nrow = 3, byrow = TRUE)
 
-# Roll each row by its own `n`
-rray_roll_each(y, n = c(1, 0, -1), axis = 2)
+# Roll each row by its own `n`, given as a one column matrix
+rray_roll_each(y, n = matrix(c(1, 0, -1), ncol = 1), axis = 2)
 
 # Roll each column by its own `n`, given as a one row matrix
 rray_roll_each(y, n = matrix(c(0, 1, 2, 3), nrow = 1), axis = 1)
 
 # Names on `axis` are dropped, since no single name fits each position
-rray_roll_each(x, n = c(1, 2), axis = 2)
+rray_roll_each(x, n = matrix(c(1, 2), ncol = 1), axis = 2)
 }
