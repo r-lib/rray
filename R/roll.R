@@ -73,6 +73,9 @@
 #' #> r2    4    6    2
 #' ```
 #'
+#' Because variable rolling can be a bit complicated the first time you see it,
+#' we'll work through 2D and 3D examples below.
+#'
 #' ## Two dimensions
 #'
 #' Start with a matrix:

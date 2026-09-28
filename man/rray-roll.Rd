@@ -102,6 +102,9 @@ rray_roll_each(x, n = matrix(c(1, 2), ncol = 1), axis = 2)
 #> r1    5    1    3
 #> r2    4    6    2
 }\if{html}{\out{</div>}}
+
+Because variable rolling can be a bit complicated the first time you see it,
+we'll work through 2D and 3D examples below.
 \subsection{Two dimensions}{
 
 Start with a matrix:
