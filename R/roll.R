@@ -220,8 +220,9 @@
 #' @param n For `rray_roll()`, an integer vector indicating the amount to roll,
 #'   either size 1 or the size of `axes`.
 #'
-#'   For `rray_roll_each()`, an integer array indicating the amount to roll,
-#'   broadcastable to the dimensions of `x` with `axis` set to 1.
+#'   For `rray_roll_each()`, an integer array indicating the amount to roll for
+#'   each row, column, etc., as determined by `axis`. It is broadcast to the
+#'   dimensions of `x` with `axis` set to 1.
 #'
 #' @param axes An integer vector of axes to roll along.
 #'

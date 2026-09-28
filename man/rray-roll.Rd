@@ -18,8 +18,9 @@ rray_roll_each(x, ..., n, axis)
 \item{n}{For \code{rray_roll()}, an integer vector indicating the amount to roll,
 either size 1 or the size of \code{axes}.
 
-For \code{rray_roll_each()}, an integer array indicating the amount to roll,
-broadcastable to the dimensions of \code{x} with \code{axis} set to 1.}
+For \code{rray_roll_each()}, an integer array indicating the amount to roll for
+each row, column, etc., as determined by \code{axis}. It is broadcast to the
+dimensions of \code{x} with \code{axis} set to 1.}
 
 \item{axes}{An integer vector of axes to roll along.}
 
