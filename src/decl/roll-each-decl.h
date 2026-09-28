@@ -4,9 +4,11 @@ static r_obj* arg_as_roll_each_n(
   struct r_lazy error_call
 );
 
-static r_obj* rray_roll_each_normalize(
-  r_obj* n,
-  const struct rray_strided_iterator_plan* plan,
+static r_obj* rray_roll_each_normalize(r_obj* n, int axis_dimension);
+
+static bool rray_roll_each_is_normalized(
+  const int* v_n,
+  r_ssize size,
   int axis_dimension
 );
 

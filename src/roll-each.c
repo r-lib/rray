@@ -7,7 +7,6 @@
 #include "reduce-names.h"
 #include "roll.h"
 #include "size.h"
-#include "strided-iterator.h"
 #include "utils.h"
 
 #include "decl/roll-each-decl.h"
@@ -48,8 +47,8 @@ r_obj* rray_roll_each(
   const int n_dimensionality =
     rray_dimensionality_from_dimensions(n_dimensions);
 
-  int v_lane_dimensions[RRAY_MAX_DIMENSIONALITY];
-  r_memcpy(v_lane_dimensions, v_x_dimensions, sizeof(int) * dimensionality);
+  r_obj* lane_dimensions = KEEP(r_clone(x_dimensions));
+  int* v_lane_dimensions = r_int_begin(lane_dimensions);
   v_lane_dimensions[axis - 1] = 1;
 
   check_broadcastable(
@@ -68,14 +67,8 @@ r_obj* rray_roll_each(
   r_attrib_poke_dim(out, x_dimensions);
 
   if (size != 0) {
-    const struct rray_strided_iterator_plan plan = rray_broadcast_iterator_plan(
-      v_n_dimensions,
-      n_dimensionality,
-      v_lane_dimensions,
-      dimensionality
-    );
-
-    n = KEEP(rray_roll_each_normalize(n, &plan, axis_dimension));
+    n = KEEP(rray_roll_each_normalize(n, axis_dimension));
+    n = KEEP(rray_broadcast(n, lane_dimensions, rray_args.n, error_call));
     const int* v_n = r_int_cbegin(n);
 
     r_ssize block_size = 1;
@@ -90,7 +83,7 @@ r_obj* rray_roll_each(
 
     rray_roll_each_fill(x, out, v_n, block_size, axis_dimension, n_groups);
 
-    FREE(1);
+    FREE(2);
   }
 
   // Using `rray_reduce_names()` is an easy way to clear the `axis` names, which
@@ -102,7 +95,7 @@ r_obj* rray_roll_each(
     r_attrib_poke_dim_names(out, out_names);
   }
 
-  FREE(5);
+  FREE(6);
   return out;
 }
 
@@ -117,49 +110,39 @@ static r_obj* arg_as_roll_each_n(
   return n;
 }
 
-static r_obj* rray_roll_each_normalize(
-  r_obj* n,
-  const struct rray_strided_iterator_plan* plan,
-  int axis_dimension
-) {
-  const r_ssize size = rray_strided_iterator_plan_size(plan);
+static r_obj* rray_roll_each_normalize(r_obj* n, int axis_dimension) {
+  const r_ssize size = r_length(n);
+  const int* v_n = r_int_cbegin(n);
+
+  if (rray_roll_each_is_normalized(v_n, size, axis_dimension)) {
+    return n;
+  }
 
   r_obj* out = KEEP(r_alloc_integer(size));
   int* v_out = r_int_begin(out);
 
-  const int* v_n = r_int_cbegin(n);
-
-  r_ssize run_start = 0;
-  const r_ssize run_size = rray_strided_iterator_plan_run_size(plan);
-
-  r_ssize n_start = 0;
-  const r_ssize n_run_stride = rray_strided_iterator_plan_run_stride(plan);
-
-  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];
-  rray_strided_iterator_plan_point_init(plan, v_point);
-
-  while (run_start != size) {
-    const r_ssize run_end = run_start + run_size;
-    r_ssize n_loc = n_start;
-
-    if (n_run_stride == 0) {
-      const int n_elt = rray_roll_normalize(v_n[n_loc], axis_dimension);
-      for (r_ssize i = run_start; i < run_end; ++i) {
-        v_out[i] = n_elt;
-      }
-    } else {
-      for (r_ssize i = run_start; i < run_end; ++i) {
-        v_out[i] = rray_roll_normalize(v_n[n_loc], axis_dimension);
-        n_loc += n_run_stride;
-      }
-    }
-
-    run_start = run_end;
-    RRAY_STRIDED_ITERATOR_NEXT(n_start, v_point, plan);
+  for (r_ssize i = 0; i < size; ++i) {
+    v_out[i] = rray_roll_normalize(v_n[i], axis_dimension);
   }
+
+  r_attrib_poke_dim(out, r_dim(n));
 
   FREE(1);
   return out;
+}
+
+static bool rray_roll_each_is_normalized(
+  const int* v_n,
+  r_ssize size,
+  int axis_dimension
+) {
+  for (r_ssize i = 0; i < size; ++i) {
+    if (rray_roll_normalize(v_n[i], axis_dimension) != v_n[i]) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 static void rray_roll_each_fill(
