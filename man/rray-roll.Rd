@@ -47,9 +47,9 @@ multiple of the dimension, leaves the axis unchanged.
 }
 \section{Roll}{
 
-Rolling an axis is the same as slicing it with \code{\link[=rray_slice]{rray_slice()}}. Along an axis
-with dimension \code{d}, position \code{j} of the result comes from position
-\code{(j - 1 - n) \%\% d + 1} of \code{x}:
+Rolling an axis with a uniform \code{n} can be thought of as a carefully crafted
+\code{\link[=rray_slice]{rray_slice()}}. Along an axis with dimension \code{d}, position \code{j} of the result
+comes from position \code{(j - 1 - n) \%\% d + 1} of \code{x}:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{x <- c(a = 1L, b = 2L, c = 3L, d = 4L, e = 5L)
 

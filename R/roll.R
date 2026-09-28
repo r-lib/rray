@@ -17,9 +17,9 @@
 #' multiple of the dimension, leaves the axis unchanged.
 #'
 #' @section Roll:
-#' Rolling an axis is the same as slicing it with [rray_slice()]. Along an axis
-#' with dimension `d`, position `j` of the result comes from position
-#' `(j - 1 - n) %% d + 1` of `x`:
+#' Rolling an axis with a uniform `n` can be thought of as a carefully crafted
+#' [rray_slice()]. Along an axis with dimension `d`, position `j` of the result
+#' comes from position `(j - 1 - n) %% d + 1` of `x`:
 #'
 #' ```r
 #' x <- c(a = 1L, b = 2L, c = 3L, d = 4L, e = 5L)
