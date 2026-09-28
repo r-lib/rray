@@ -25,6 +25,7 @@ struct rray_args {
   struct rray_arg* dot_dimensions;
   struct rray_arg* dimension;
   struct rray_arg* times;
+  struct rray_arg* n;
   struct rray_arg* value;
 };
 
