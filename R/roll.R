@@ -1,13 +1,13 @@
 #' Roll an array
 #'
 #' @description
-#' `rray_roll()` shifts the elements of `x` along one or more axes, with one
-#' shift per axis. An element pushed off one end comes back on the other.
+#' `rray_roll()` rolls the elements of `x` along one or more axes, with one
+#' roll per axis. An element pushed off one end circles back on the other.
 #'
 #' @details
-#' A positive shift moves elements toward the end of the axis, and a negative
-#' shift moves them toward the start. Shifts wrap around, so a shift of 7 along
-#' an axis with dimension 5 is the same as a shift of 2. A shift of 0, or any
+#' A positive `n` moves elements toward the end of the axis, and a negative `n`
+#' moves them toward the start. Rolls circle around, so an `n` of 7 along an
+#' axis with dimension 5 is the same as an `n` of 2. An `n` of 0, or any
 #' multiple of the dimension, leaves the axis unchanged.
 #'
 #' Names on a rolled axis move with the data. Every other axis keeps its names
