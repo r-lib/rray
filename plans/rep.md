@@ -18,7 +18,7 @@ rray_rep_each(x, ..., times, axis)
 - `rray_rep_each()` repeats each position along one axis. `times` is size 1 or
   the dimension of `axis`.
 
-This makes the rep pair match the roll pair in `plans/roll.md` exactly:
+This makes the rep pair match the roll pair exactly:
 
 | Every lane together | Each position on its own |
 |---|---|
@@ -240,8 +240,8 @@ Julia's `repeat(x; inner = (2, 2))` does allow a uniform count per axis. The one
 common use is upsampling, like turning each pixel into a 2x2 block. Two calls to
 `rray_rep_each()` do the same thing.
 
-Its C code does change shape, since it no longer shares an implementation with
-`rray_rep()`. See below.
+Its C code moves to its own `src/rep-each.c`, like `rray_roll_each()`, since it
+no longer shares a body with `rray_rep()`. See below.
 
 ## Equivalences
 
@@ -268,9 +268,11 @@ rray_slice_axis(x, rep(seq_len(d), times = t), axis = a)
 
 - `R/rep.R`: rename `axis` to `axes` in `rray_rep()`, and update the topic.
 
-- `src/rep.c`, `src/rep.h`, `src/decl/rep-decl.h`: split the shared
-  `rray_rep_impl()` into separate `rray_rep()` and `rray_rep_each()` bodies, and
-  add the in-place expand.
+- `src/rep.c`, `src/rep.h`, `src/decl/rep-decl.h`: `rray_rep()` with its own
+  body, and the in-place expand. `rray_rep_impl()` is removed.
+
+- `src/rep-each.c`, `src/rep-each.h`, `src/decl/rep-each-decl.h`: new.
+  `rray_rep_each()` and its helpers, moved out of `src/rep.c`.
 
 - `src/init.c`: rename the `ffi_axis` parameter of the `ffi_rray_rep()` extern
   to `ffi_axes`. The registration keeps 4 arguments.
@@ -280,8 +282,9 @@ rray_slice_axis(x, rep(seq_len(d), times = t), axis = a)
 
 - `man/rray-rep.Rd`, regenerated.
 
-No new files, and no new argument tags. `rray_args.axes` and `rray_args.times`
-already exist.
+The R code, tests, and topic stay shared in `rep` files, like `R/roll.R` and
+`tests/testthat/test-roll.R`. No new argument tags. `rray_args.axes` and
+`rray_args.times` already exist.
 
 ### R wrapper
 
@@ -378,12 +381,14 @@ With `axes = integer()`, a size 0 or size 1 `times` is accepted and ignored.
 Today's `rray_rep_dimension()` handles both a single `times` and a vector. Split
 it:
 
-- `rray_rep_dimension(int dimension, int times, error_call)` multiplies with
-  the overflow check. Both functions use it.
+- `rray_rep_dimension(int dimension, int times, error_call)` in `src/rep.c`
+  multiplies with the overflow check.
 
-- `rray_rep_each_dimension(axis_dimension, v_times, times_size, error_call)`
-  calls `rray_rep_dimension()` for a size 1 `times`, and otherwise sums with the
-  overflow check, as today.
+- `rray_rep_each_dimension()` in `src/rep-each.c`. See below.
+
+`stop_dimension_too_large()` is renamed `stop_rep_dimension_too_large()` and
+declared in `src/rep.h`, so both files throw the same error. This is the only
+thing the two files share, like `check_roll_n_not_missing()` in `src/roll.h`.
 
 ### The fill
 
@@ -513,9 +518,6 @@ rray_rep_names(names, v_axes, axes_size, v_times, times_size):
 `rray_rep_axis_names()` is today's non-each branch of the axis names helper: the
 whole axis names, `times` times over.
 
-`rray_rep_each_names()` and `rray_rep_each_axis_names()` are today's helpers
-with the non-each branches removed and the `each` argument dropped.
-
 ### `rray_rep_each()`
 
 Its body is today's `rray_rep_impl()` with `each` fixed to `true` and the
@@ -527,15 +529,33 @@ set:
 - `stop_times_size()` becomes `stop_rep_each_times_size()`, with the same two
   messages as today.
 
-- `rray_rep_each_dimension()`, from the split above.
+On its own, `rray_rep_each()` no longer needs separate code paths for a size 1
+`times` and a varying `times`. Every helper reads its count the way
+`rray_roll()` reads `n`:
 
-- `rray_rep_fill_uniform()` for a size 1 `times`, with
-  `n_blocks = n_groups * axis_dimension`, and `rray_rep_fill_varying()`
-  otherwise, as today.
+```c
+const int times = v_times[times_size == 1 ? 0 : i];
+```
 
-- `rray_rep_each_names()` and `rray_rep_each_axis_names()`.
+That gives three simplifications:
 
-`rray_rep_impl()` is removed.
+- `rray_rep_each_dimension(axis_dimension, v_times, times_size, error_call)`
+  is one loop that sums the counts with the overflow check. A size 1 `times`
+  no longer takes a separate multiply.
+
+- `rray_rep_each_fill()` replaces both `rray_rep_fill_uniform()` and
+  `rray_rep_fill_varying()`. It is today's varying fill, reading its count with
+  the line above, so `rray_rep_each()` has one fill with seven cores instead of
+  two with fourteen. `n_blocks_per_group` is renamed `axis_dimension`, which is
+  what it always was here. `rray_rep_fill_uniform()` stays in `src/rep.c` for
+  step 1 of `rray_rep()`.
+
+- `rray_rep_each_names()` and `rray_rep_each_axis_names()` are today's helpers
+  with the non-each branch and the `each` argument dropped. The two each
+  branches of the axis names loop become one, the same way.
+
+The count lookup happens once per block, not once per element, so the fill
+costs nothing extra for a size 1 `times`.
 
 ### File order
 
@@ -545,27 +565,30 @@ set:
 
 2. `arg_as_rep_times()`, `stop_rep_times_size()`
 
-3. `rray_rep_fill()`, `rray_rep_expand()`, then its seven cores and macros
+3. `rray_rep_dimension()`, `stop_rep_dimension_too_large()`
 
-4. `rray_rep_names()`, `rray_rep_axis_names()`
+4. `rray_rep_fill()`, `rray_rep_expand()`, then its seven cores and macros
 
-5. `ffi_rray_rep_each()`, `rray_rep_each()`
+5. `rray_rep_fill_uniform()`, then its seven cores and macros
 
-6. `arg_as_rep_each_times()`, `stop_rep_each_times_size()`
+6. `rray_rep_names()`, `rray_rep_axis_names()`
 
-7. `rray_rep_each_dimension()`
+`src/rep-each.c` reads top down:
 
-8. `rray_rep_fill_varying()`, then its seven cores and macros
+1. `ffi_rray_rep_each()`, `rray_rep_each()`
 
-9. `rray_rep_each_names()`, `rray_rep_each_axis_names()`
+2. `arg_as_rep_each_times()`, `stop_rep_each_times_size()`
 
-10. Last, since both halves use them: `rray_rep_dimension()`,
-    `stop_dimension_too_large()`, and `rray_rep_fill_uniform()` with its seven
-    cores and macros
+3. `rray_rep_each_dimension()`
 
-`src/rep.h` declares `rray_rep()` with the new signature and `rray_rep_each()`
-unchanged. `src/decl/rep-decl.h` declares every static helper and core, in the
-same order, and drops `rray_rep_impl()`.
+4. `rray_rep_each_fill()`, then its seven cores and macros
+
+5. `rray_rep_each_names()`, `rray_rep_each_axis_names()`
+
+`src/rep.h` declares `rray_rep()` with the new signature and
+`stop_rep_dimension_too_large()`. `src/rep-each.h` declares `rray_rep_each()`,
+unchanged. Each decl header declares its file's static helpers and cores, in
+file order. `src/rep-each.c` includes `rep.h` for the shared error.
 
 ### Protection review
 
@@ -590,6 +613,9 @@ specific to this plan:
   allocation in between.
 
 - The fill does not allocate.
+
+- `rray_rep_each()` keeps today's protection. Only its helpers change, and
+  `rray_rep_each_dimension()` and `rray_rep_each_fill()` don't allocate.
 
 ### Documentation
 
@@ -672,7 +698,12 @@ are replaced with the `axes` errors below. Then add:
 ### `rray_rep_each()`
 
 Existing tests, unchanged apart from the helper rename. The snapshots must not
-change. That confirms the split kept its behavior.
+change. That confirms the split and the single fill kept its behavior. The
+overflow snapshot for a size 1 `times` now goes through the summing loop, so
+it matters most here.
+
+Add a varying `times` to the every type test, alongside the size 1 `times`, so
+both ways of reading the count run through every core.
 
 ### Required checks
 
@@ -693,9 +724,7 @@ After each C change:
 
 ## Delivery
 
-One pull request, on its own branch from `main`, merged before the first roll
-pull request. It is independent of roll, but landing it first makes the pairs
-table in `plans/roll.md` true when roll arrives.
+One pull request, on its own branch from `main`.
 
 ## Research notes
 
