@@ -180,37 +180,13 @@ static void rray_roll_each_fill(
   }
 }
 
-#define RRAY_ROLL_EACH_FILL_ATOMIC(CTYPE, CONST_DEREF, DEREF)                  \
-  const CTYPE* v_x = CONST_DEREF(x);                                           \
-  CTYPE* v_out = DEREF(out);                                                   \
-                                                                               \
+#define RRAY_ROLL_EACH_FILL_LOOP(CTYPE, POKE)                                  \
   const r_ssize group_size = block_size * axis_dimension;                      \
                                                                                \
   r_ssize out_i = 0;                                                           \
                                                                                \
   for (r_ssize group = 0; group < n_groups; ++group) {                         \
-    const CTYPE* v_x_group = v_x + group * group_size;                         \
-    const int* v_n_group = v_n + group * block_size;                           \
-                                                                               \
-    for (int j = 0; j < axis_dimension; ++j) {                                 \
-      for (r_ssize i = 0; i < block_size; ++i) {                               \
-        const int n = v_n_group[i];                                            \
-        const int source = (j >= n) ? j - n : j - n + axis_dimension;          \
-        v_out[out_i] = v_x_group[source * block_size + i];                     \
-        ++out_i;                                                               \
-      }                                                                        \
-    }                                                                          \
-  }
-
-#define RRAY_ROLL_EACH_FILL_BARRIER(CONST_DEREF, POKE)                         \
-  r_obj* const* v_x = CONST_DEREF(x);                                          \
-                                                                               \
-  const r_ssize group_size = block_size * axis_dimension;                      \
-                                                                               \
-  r_ssize out_i = 0;                                                           \
-                                                                               \
-  for (r_ssize group = 0; group < n_groups; ++group) {                         \
-    r_obj* const* v_x_group = v_x + group * group_size;                        \
+    CTYPE const* v_x_group = v_x + group * group_size;                         \
     const int* v_n_group = v_n + group * block_size;                           \
                                                                                \
     for (int j = 0; j < axis_dimension; ++j) {                                 \
@@ -222,6 +198,19 @@ static void rray_roll_each_fill(
       }                                                                        \
     }                                                                          \
   }
+
+#define RRAY_ROLL_EACH_FILL_ATOMIC_POKE(OUT, I, VALUE) v_out[I] = (VALUE)
+
+#define RRAY_ROLL_EACH_FILL_ATOMIC(CTYPE, CONST_DEREF, DEREF)                  \
+  const CTYPE* v_x = CONST_DEREF(x);                                           \
+  CTYPE* v_out = DEREF(out);                                                   \
+                                                                               \
+  RRAY_ROLL_EACH_FILL_LOOP(CTYPE, RRAY_ROLL_EACH_FILL_ATOMIC_POKE);
+
+#define RRAY_ROLL_EACH_FILL_BARRIER(CONST_DEREF, POKE)                         \
+  r_obj* const* v_x = CONST_DEREF(x);                                          \
+                                                                               \
+  RRAY_ROLL_EACH_FILL_LOOP(r_obj*, POKE);
 
 static void rray_roll_each_fill_lgl(
   r_obj* x,
@@ -300,5 +289,7 @@ static void rray_roll_each_fill_list(
   RRAY_ROLL_EACH_FILL_BARRIER(r_list_cbegin, r_list_poke);
 }
 
+#undef RRAY_ROLL_EACH_FILL_LOOP
+#undef RRAY_ROLL_EACH_FILL_ATOMIC_POKE
 #undef RRAY_ROLL_EACH_FILL_ATOMIC
 #undef RRAY_ROLL_EACH_FILL_BARRIER
