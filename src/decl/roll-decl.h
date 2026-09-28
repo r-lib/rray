@@ -12,7 +12,7 @@ static r_no_return void stop_roll_n_size(
   struct r_lazy error_call
 );
 
-static r_obj* rray_roll_locations(int dimension, int shift);
+static r_obj* rray_roll_locations(int dimension, int n);
 
 static void check_roll_n_not_missing(
   r_obj* n,

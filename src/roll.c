@@ -103,12 +103,12 @@ static r_no_return void stop_roll_n_size(
   }
 }
 
-static r_obj* rray_roll_locations(int dimension, int shift) {
+static r_obj* rray_roll_locations(int dimension, int n) {
   r_obj* out = KEEP(r_alloc_integer(dimension));
   int* v_out = r_int_begin(out);
 
   for (int i = 0; i < dimension; ++i) {
-    v_out[i] = (i >= shift) ? i - shift + 1 : i - shift + dimension + 1;
+    v_out[i] = (i >= n) ? i - n + 1 : i - n + dimension + 1;
   }
 
   FREE(1);
