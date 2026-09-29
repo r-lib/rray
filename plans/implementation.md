@@ -817,30 +817,6 @@ dropped.
 
 ## 4.1 Shape
 
-### `rray_flatten()`
-
-Collapse to one dimension.
-
-```r
-rray_flatten(array(1:10, c(5, 2)))     # (5, 2) -> (10)
-```
-
-Names: follow the axis. Type: preserved. So names survive only when the first
-axis' dimension is unchanged.
-
-```r
-y <- array(1:2, 2, dimnames = list(c("a", "b")))
-rray_flatten(y)                                   # (2) -> (2), names kept
-rray_flatten(array(1:2, c(2, 1), dimnames = list(c("a", "b"), NULL)))
-                                                  # (2, 1) -> (2), names kept
-rray_flatten(array(1:2, c(1, 2), dimnames = list(NULL, c("a", "b"))))
-                                                  # (1, 2) -> (2), names dropped
-```
-
-Signature: `rray_flatten(x)`. Attributes only.
-
-Files: `R/flatten.R`, `src/flatten.c`, `src/flatten.h`.
-
 ### `rray_flip()`
 
 Reverse the order along an axis.
