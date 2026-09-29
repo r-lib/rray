@@ -5,7 +5,6 @@
 #include "axes.h"
 #include "dimensionality.h"
 #include "rep.h"
-#include "size.h"
 #include "slice.h"
 #include "utils.h"
 
@@ -48,16 +47,6 @@ r_obj* rray_rep_each(
 
   const int out_dimension =
     rray_rep_each_dimension(axis_dimension, v_times, times_size, error_call);
-
-  int v_out_dimensions[RRAY_MAX_DIMENSIONALITY];
-  r_memcpy(v_out_dimensions, v_x_dimensions, sizeof(int) * dimensionality);
-  v_out_dimensions[axis - 1] = out_dimension;
-
-  rray_size_from_dimensions_checked(
-    v_out_dimensions,
-    dimensionality,
-    error_call
-  );
 
   r_obj* indices = KEEP(r_alloc_list(dimensionality));
 
