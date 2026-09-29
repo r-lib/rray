@@ -200,7 +200,7 @@ extern r_obj* ffi_rray_sum(
   r_obj* ffi_na_rm,
   r_obj* ffi_frame
 );
-extern r_obj* ffi_rray_product_along(
+extern r_obj* ffi_rray_prod(
   r_obj* ffi_x,
   r_obj* ffi_axes,
   r_obj* ffi_na_rm,
@@ -342,7 +342,7 @@ static const R_CallMethodDef CallEntries[] = {
   {"ffi_rray_permute_axes", (DL_FUNC) &ffi_rray_permute_axes, 3},
   {"ffi_rray_move_axes", (DL_FUNC) &ffi_rray_move_axes, 4},
   {"ffi_rray_sum", (DL_FUNC) &ffi_rray_sum, 4},
-  {"ffi_rray_product_along", (DL_FUNC) &ffi_rray_product_along, 4},
+  {"ffi_rray_prod", (DL_FUNC) &ffi_rray_prod, 4},
   {"ffi_rray_mean_along", (DL_FUNC) &ffi_rray_mean_along, 4},
   {"ffi_rray_all_along", (DL_FUNC) &ffi_rray_all_along, 4},
   {"ffi_rray_any_along", (DL_FUNC) &ffi_rray_any_along, 4},

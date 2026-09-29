@@ -3,7 +3,7 @@
 #' @description
 #' - `rray_sum()` computes the sum along the specified `axes`.
 #'
-#' - `rray_product_along()` computes the product along the specified `axes`.
+#' - `rray_prod()` computes the product along the specified `axes`.
 #'
 #' - `rray_mean_along()` computes the mean along the specified `axes`.
 #'
@@ -22,7 +22,7 @@
 #' @section Casting:
 #' Certain inputs are upcast, changing the return type:
 #'
-#' - `rray_product_along()`: logicals and integers are cast to double.
+#' - `rray_prod()`: logicals and integers are cast to double.
 #'
 #' - `rray_mean_along()`: logicals and integers are cast to double.
 #'
@@ -53,7 +53,7 @@
 #' rray_sum(x, c(1L, 2L))
 #'
 #' # Product along rows
-#' rray_product_along(x, 1L)
+#' rray_prod(x, 1L)
 #'
 #' # Mean along rows
 #' rray_mean_along(x, 1L)
@@ -73,9 +73,9 @@ rray_sum <- function(x, axes, ..., na_rm = FALSE) {
 
 #' @rdname reduce
 #' @export
-rray_product_along <- function(x, axes, ..., na_rm = FALSE) {
+rray_prod <- function(x, axes, ..., na_rm = FALSE) {
   check_dots_empty0(...)
-  .Call(ffi_rray_product_along, x, axes, na_rm, environment())
+  .Call(ffi_rray_prod, x, axes, na_rm, environment())
 }
 
 #' @rdname reduce
