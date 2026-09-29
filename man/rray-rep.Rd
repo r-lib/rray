@@ -21,11 +21,9 @@ to 0, either size 1 or the size of \code{axes}.
 For \code{rray_rep_each()}, a vector of integers greater than or equal to
 0. It is recycled to the dimension of \code{x} along \code{axis}.}
 
-\item{axes}{For \code{rray_rep()}, an integer vector of axes to repeat along, in
-strictly increasing order.}
+\item{axes}{An integer vector of axes to repeat along.}
 
-\item{axis}{For \code{rray_rep_each()}, a single integer representing the axis to
-repeat along.}
+\item{axis}{A single integer representing the axis to repeat along.}
 }
 \value{
 An array with the same dimensions as \code{x}, except along the repeated axes.

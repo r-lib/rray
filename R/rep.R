@@ -28,11 +28,9 @@
 #'   For `rray_rep_each()`, a vector of integers greater than or equal to
 #'   0. It is recycled to the dimension of `x` along `axis`.
 #'
-#' @param axes For `rray_rep()`, an integer vector of axes to repeat along, in
-#'   strictly increasing order.
+#' @param axes An integer vector of axes to repeat along.
 #'
-#' @param axis For `rray_rep_each()`, a single integer representing the axis to
-#'   repeat along.
+#' @param axis A single integer representing the axis to repeat along.
 #'
 #' @returns
 #' An array with the same dimensions as `x`, except along the repeated axes.
