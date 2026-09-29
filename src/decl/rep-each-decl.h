@@ -19,81 +19,8 @@ static int rray_rep_each_dimension(
   struct r_lazy error_call
 );
 
-static void rray_rep_each_fill(
-  r_obj* x,
-  r_obj* out,
-  const int* v_times,
-  r_ssize times_size,
-  r_ssize block_size,
-  int axis_dimension
-);
-static void rray_rep_each_fill_lgl(
-  r_obj* x,
-  r_obj* out,
-  const int* v_times,
-  r_ssize times_size,
-  r_ssize block_size,
-  int axis_dimension
-);
-static void rray_rep_each_fill_int(
-  r_obj* x,
-  r_obj* out,
-  const int* v_times,
-  r_ssize times_size,
-  r_ssize block_size,
-  int axis_dimension
-);
-static void rray_rep_each_fill_dbl(
-  r_obj* x,
-  r_obj* out,
-  const int* v_times,
-  r_ssize times_size,
-  r_ssize block_size,
-  int axis_dimension
-);
-static void rray_rep_each_fill_cpl(
-  r_obj* x,
-  r_obj* out,
-  const int* v_times,
-  r_ssize times_size,
-  r_ssize block_size,
-  int axis_dimension
-);
-static void rray_rep_each_fill_raw(
-  r_obj* x,
-  r_obj* out,
-  const int* v_times,
-  r_ssize times_size,
-  r_ssize block_size,
-  int axis_dimension
-);
-static void rray_rep_each_fill_chr(
-  r_obj* x,
-  r_obj* out,
-  const int* v_times,
-  r_ssize times_size,
-  r_ssize block_size,
-  int axis_dimension
-);
-static void rray_rep_each_fill_list(
-  r_obj* x,
-  r_obj* out,
-  const int* v_times,
-  r_ssize times_size,
-  r_ssize block_size,
-  int axis_dimension
-);
-
-static r_obj* rray_rep_each_names(
-  r_obj* names,
-  int axis,
-  int out_dimension,
-  const int* v_times,
-  r_ssize times_size
-);
-
-static r_obj* rray_rep_each_axis_names(
-  r_obj* axis_names,
+static r_obj* rray_rep_each_locations(
+  int axis_dimension,
   int out_dimension,
   const int* v_times,
   r_ssize times_size

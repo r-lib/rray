@@ -6,6 +6,7 @@
 #include "dimensionality.h"
 #include "rep.h"
 #include "size.h"
+#include "slice.h"
 #include "utils.h"
 
 #include "decl/rep-each-decl.h"
@@ -48,39 +49,31 @@ r_obj* rray_rep_each(
   const int out_dimension =
     rray_rep_each_dimension(axis_dimension, v_times, times_size, error_call);
 
-  r_obj* out_dimensions = KEEP(r_alloc_integer(dimensionality));
-  int* v_out_dimensions = r_int_begin(out_dimensions);
+  int v_out_dimensions[RRAY_MAX_DIMENSIONALITY];
   r_memcpy(v_out_dimensions, v_x_dimensions, sizeof(int) * dimensionality);
   v_out_dimensions[axis - 1] = out_dimension;
 
-  const r_ssize out_size = rray_size_from_dimensions_checked(
+  rray_size_from_dimensions_checked(
     v_out_dimensions,
     dimensionality,
     error_call
   );
 
-  r_obj* out = KEEP(r_alloc_vector(r_typeof(x), out_size));
-  r_attrib_poke_dim(out, out_dimensions);
+  r_obj* indices = KEEP(r_alloc_list(dimensionality));
 
-  r_ssize block_size = 1;
-  for (int i = 0; i < axis - 1; ++i) {
-    block_size *= v_x_dimensions[i];
+  for (int i = 0; i < dimensionality; ++i) {
+    r_list_poke(indices, i, r_true);
   }
 
-  rray_rep_each_fill(x, out, v_times, times_size, block_size, axis_dimension);
+  r_list_poke(
+    indices,
+    axis - 1,
+    rray_rep_each_locations(axis_dimension, out_dimension, v_times, times_size)
+  );
 
-  r_obj* out_names = KEEP(rray_rep_each_names(
-    r_dim_names(x),
-    axis,
-    out_dimension,
-    v_times,
-    times_size
-  ));
-  if (out_names != r_null) {
-    r_attrib_poke_dim_names(out, out_names);
-  }
+  r_obj* out = rray_slice(x, indices, x_arg, rray_args.empty, error_call);
 
-  FREE(5);
+  FREE(3);
   return out;
 }
 
@@ -148,259 +141,22 @@ static int rray_rep_each_dimension(
   return out;
 }
 
-static void rray_rep_each_fill(
-  r_obj* x,
-  r_obj* out,
-  const int* v_times,
-  r_ssize times_size,
-  r_ssize block_size,
-  int axis_dimension
-) {
-  switch (r_typeof(x)) {
-  case R_TYPE_logical:
-    rray_rep_each_fill_lgl(
-      x,
-      out,
-      v_times,
-      times_size,
-      block_size,
-      axis_dimension
-    );
-    break;
-  case R_TYPE_integer:
-    rray_rep_each_fill_int(
-      x,
-      out,
-      v_times,
-      times_size,
-      block_size,
-      axis_dimension
-    );
-    break;
-  case R_TYPE_double:
-    rray_rep_each_fill_dbl(
-      x,
-      out,
-      v_times,
-      times_size,
-      block_size,
-      axis_dimension
-    );
-    break;
-  case R_TYPE_complex:
-    rray_rep_each_fill_cpl(
-      x,
-      out,
-      v_times,
-      times_size,
-      block_size,
-      axis_dimension
-    );
-    break;
-  case R_TYPE_raw:
-    rray_rep_each_fill_raw(
-      x,
-      out,
-      v_times,
-      times_size,
-      block_size,
-      axis_dimension
-    );
-    break;
-  case R_TYPE_character:
-    rray_rep_each_fill_chr(
-      x,
-      out,
-      v_times,
-      times_size,
-      block_size,
-      axis_dimension
-    );
-    break;
-  case R_TYPE_list:
-    rray_rep_each_fill_list(
-      x,
-      out,
-      v_times,
-      times_size,
-      block_size,
-      axis_dimension
-    );
-    break;
-  default:
-    r_stop_unreachable();
-  }
-}
-
-#define RRAY_REP_EACH_FILL_LOOP(CTYPE, POKE)                                   \
-  const r_ssize out_size = r_length(out);                                      \
-                                                                               \
-  CTYPE const* v_x_block = v_x;                                                \
-                                                                               \
-  r_ssize out_i = 0;                                                           \
-                                                                               \
-  while (out_i != out_size) {                                                  \
-    for (int j = 0; j < axis_dimension; ++j) {                                 \
-      const int times = v_times[times_size == 1 ? 0 : j];                      \
-                                                                               \
-      for (int time = 0; time < times; ++time) {                               \
-        for (r_ssize i = 0; i < block_size; ++i) {                             \
-          POKE(out, out_i, v_x_block[i]);                                      \
-          ++out_i;                                                             \
-        }                                                                      \
-      }                                                                        \
-                                                                               \
-      v_x_block += block_size;                                                 \
-    }                                                                          \
-  }
-
-#define RRAY_REP_EACH_FILL_ATOMIC_POKE(OUT, I, VALUE) v_out[I] = (VALUE)
-
-#define RRAY_REP_EACH_FILL_ATOMIC(CTYPE, CONST_DEREF, DEREF)                   \
-  const CTYPE* v_x = CONST_DEREF(x);                                           \
-  CTYPE* v_out = DEREF(out);                                                   \
-                                                                               \
-  RRAY_REP_EACH_FILL_LOOP(CTYPE, RRAY_REP_EACH_FILL_ATOMIC_POKE);
-
-#define RRAY_REP_EACH_FILL_BARRIER(CONST_DEREF, POKE)                          \
-  r_obj* const* v_x = CONST_DEREF(x);                                          \
-                                                                               \
-  RRAY_REP_EACH_FILL_LOOP(r_obj*, POKE);
-
-static void rray_rep_each_fill_lgl(
-  r_obj* x,
-  r_obj* out,
-  const int* v_times,
-  r_ssize times_size,
-  r_ssize block_size,
-  int axis_dimension
-) {
-  RRAY_REP_EACH_FILL_ATOMIC(int, r_lgl_cbegin, r_lgl_begin);
-}
-
-static void rray_rep_each_fill_int(
-  r_obj* x,
-  r_obj* out,
-  const int* v_times,
-  r_ssize times_size,
-  r_ssize block_size,
-  int axis_dimension
-) {
-  RRAY_REP_EACH_FILL_ATOMIC(int, r_int_cbegin, r_int_begin);
-}
-
-static void rray_rep_each_fill_dbl(
-  r_obj* x,
-  r_obj* out,
-  const int* v_times,
-  r_ssize times_size,
-  r_ssize block_size,
-  int axis_dimension
-) {
-  RRAY_REP_EACH_FILL_ATOMIC(double, r_dbl_cbegin, r_dbl_begin);
-}
-
-static void rray_rep_each_fill_cpl(
-  r_obj* x,
-  r_obj* out,
-  const int* v_times,
-  r_ssize times_size,
-  r_ssize block_size,
-  int axis_dimension
-) {
-  RRAY_REP_EACH_FILL_ATOMIC(r_complex, r_cpl_cbegin, r_cpl_begin);
-}
-
-static void rray_rep_each_fill_raw(
-  r_obj* x,
-  r_obj* out,
-  const int* v_times,
-  r_ssize times_size,
-  r_ssize block_size,
-  int axis_dimension
-) {
-  RRAY_REP_EACH_FILL_ATOMIC(Rbyte, r_raw_cbegin, r_raw_begin);
-}
-
-static void rray_rep_each_fill_chr(
-  r_obj* x,
-  r_obj* out,
-  const int* v_times,
-  r_ssize times_size,
-  r_ssize block_size,
-  int axis_dimension
-) {
-  RRAY_REP_EACH_FILL_BARRIER(r_chr_cbegin, r_chr_poke);
-}
-
-static void rray_rep_each_fill_list(
-  r_obj* x,
-  r_obj* out,
-  const int* v_times,
-  r_ssize times_size,
-  r_ssize block_size,
-  int axis_dimension
-) {
-  RRAY_REP_EACH_FILL_BARRIER(r_list_cbegin, r_list_poke);
-}
-
-#undef RRAY_REP_EACH_FILL_LOOP
-#undef RRAY_REP_EACH_FILL_ATOMIC_POKE
-#undef RRAY_REP_EACH_FILL_ATOMIC
-#undef RRAY_REP_EACH_FILL_BARRIER
-
-static r_obj* rray_rep_each_names(
-  r_obj* names,
-  int axis,
+static r_obj* rray_rep_each_locations(
+  int axis_dimension,
   int out_dimension,
   const int* v_times,
   r_ssize times_size
 ) {
-  if (names == r_null) {
-    return r_null;
-  }
+  r_obj* out = KEEP(r_alloc_integer(out_dimension));
+  int* v_out = r_int_begin(out);
 
-  const r_ssize names_size = r_length(names);
-  r_obj* const* v_names = r_list_cbegin(names);
+  int out_i = 0;
 
-  r_obj* out = KEEP(r_alloc_list(names_size));
-
-  for (r_ssize i = 0; i < names_size; ++i) {
-    r_list_poke(out, i, v_names[i]);
-  }
-
-  r_obj* axis_names = v_names[axis - 1];
-
-  if (axis_names != r_null) {
-    r_list_poke(
-      out,
-      axis - 1,
-      rray_rep_each_axis_names(axis_names, out_dimension, v_times, times_size)
-    );
-  }
-
-  FREE(1);
-  return out;
-}
-
-static r_obj* rray_rep_each_axis_names(
-  r_obj* axis_names,
-  int out_dimension,
-  const int* v_times,
-  r_ssize times_size
-) {
-  const r_ssize axis_dimension = r_length(axis_names);
-  r_obj* const* v_axis_names = r_chr_cbegin(axis_names);
-
-  r_obj* out = KEEP(r_alloc_character(out_dimension));
-
-  r_ssize out_i = 0;
-
-  for (r_ssize i = 0; i < axis_dimension; ++i) {
+  for (int i = 0; i < axis_dimension; ++i) {
     const int times = v_times[times_size == 1 ? 0 : i];
 
     for (int time = 0; time < times; ++time) {
-      r_chr_poke(out, out_i, v_axis_names[i]);
+      v_out[out_i] = i + 1;
       ++out_i;
     }
   }
