@@ -695,7 +695,7 @@ allocates the output at the one fixed type.
 
 - Comparison (`rray_equal()` and friends) returns a logical array.
 
-- `rray_all_along()` and `rray_any_along()` take logical and return a logical
+- `rray_all()` and `rray_any()` take logical and return a logical
   array.
 
 - `rray_max_pos()` and `rray_min_pos()` return an integer array.

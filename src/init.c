@@ -212,13 +212,13 @@ extern r_obj* ffi_rray_mean(
   r_obj* ffi_na_rm,
   r_obj* ffi_frame
 );
-extern r_obj* ffi_rray_all_along(
+extern r_obj* ffi_rray_all(
   r_obj* ffi_x,
   r_obj* ffi_axes,
   r_obj* ffi_na_rm,
   r_obj* ffi_frame
 );
-extern r_obj* ffi_rray_any_along(
+extern r_obj* ffi_rray_any(
   r_obj* ffi_x,
   r_obj* ffi_axes,
   r_obj* ffi_na_rm,
@@ -344,8 +344,8 @@ static const R_CallMethodDef CallEntries[] = {
   {"ffi_rray_sum", (DL_FUNC) &ffi_rray_sum, 4},
   {"ffi_rray_prod", (DL_FUNC) &ffi_rray_prod, 4},
   {"ffi_rray_mean", (DL_FUNC) &ffi_rray_mean, 4},
-  {"ffi_rray_all_along", (DL_FUNC) &ffi_rray_all_along, 4},
-  {"ffi_rray_any_along", (DL_FUNC) &ffi_rray_any_along, 4},
+  {"ffi_rray_all", (DL_FUNC) &ffi_rray_all, 4},
+  {"ffi_rray_any", (DL_FUNC) &ffi_rray_any, 4},
   {"ffi_rray_ptype", (DL_FUNC) &ffi_rray_ptype, 2},
   {"ffi_rray_ptype2", (DL_FUNC) &ffi_rray_ptype2, 3},
   {"ffi_rray_ptype_common", (DL_FUNC) &ffi_rray_ptype_common, 3},

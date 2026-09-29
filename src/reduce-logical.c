@@ -5,7 +5,7 @@
 
 #include "decl/reduce-logical-decl.h"
 
-r_obj* ffi_rray_all_along(
+r_obj* ffi_rray_all(
   r_obj* ffi_x,
   r_obj* ffi_axes,
   r_obj* ffi_na_rm,
@@ -13,10 +13,10 @@ r_obj* ffi_rray_all_along(
 ) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
   const bool na_rm = r_arg_as_bool(ffi_na_rm, "na_rm");
-  return rray_all_along(ffi_x, ffi_axes, na_rm, rray_args.x, error_call);
+  return rray_all(ffi_x, ffi_axes, na_rm, rray_args.x, error_call);
 }
 
-r_obj* ffi_rray_any_along(
+r_obj* ffi_rray_any(
   r_obj* ffi_x,
   r_obj* ffi_axes,
   r_obj* ffi_na_rm,
@@ -24,50 +24,50 @@ r_obj* ffi_rray_any_along(
 ) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
   const bool na_rm = r_arg_as_bool(ffi_na_rm, "na_rm");
-  return rray_any_along(ffi_x, ffi_axes, na_rm, rray_args.x, error_call);
+  return rray_any(ffi_x, ffi_axes, na_rm, rray_args.x, error_call);
 }
 
-r_obj* rray_all_along(
+r_obj* rray_all(
   r_obj* x,
   r_obj* axes,
   bool na_rm,
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  return rray_reduce(x, axes, na_rm, rray_all_along_switch, arg, error_call);
+  return rray_reduce(x, axes, na_rm, rray_all_switch, arg, error_call);
 }
 
-r_obj* rray_any_along(
+r_obj* rray_any(
   r_obj* x,
   r_obj* axes,
   bool na_rm,
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  return rray_reduce(x, axes, na_rm, rray_any_along_switch, arg, error_call);
+  return rray_reduce(x, axes, na_rm, rray_any_switch, arg, error_call);
 }
 
-static rray_reduce_fn rray_all_along_switch(
+static rray_reduce_fn rray_all_switch(
   r_obj* x,
   bool na_rm,
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
   check_logical(x, arg, error_call);
-  return na_rm ? rray_all_along_lgl_na_rm : rray_all_along_lgl;
+  return na_rm ? rray_all_lgl_na_rm : rray_all_lgl;
 }
 
-static rray_reduce_fn rray_any_along_switch(
+static rray_reduce_fn rray_any_switch(
   r_obj* x,
   bool na_rm,
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
   check_logical(x, arg, error_call);
-  return na_rm ? rray_any_along_lgl_na_rm : rray_any_along_lgl;
+  return na_rm ? rray_any_lgl_na_rm : rray_any_lgl;
 }
 
-static r_obj* rray_all_along_lgl(
+static r_obj* rray_all_lgl(
   r_obj* x,
   r_ssize out_size,
   const struct rray_strided_iterator_plan* plan
@@ -83,7 +83,7 @@ static r_obj* rray_all_along_lgl(
   );
 }
 
-static r_obj* rray_all_along_lgl_na_rm(
+static r_obj* rray_all_lgl_na_rm(
   r_obj* x,
   r_ssize out_size,
   const struct rray_strided_iterator_plan* plan
@@ -99,7 +99,7 @@ static r_obj* rray_all_along_lgl_na_rm(
   );
 }
 
-static r_obj* rray_any_along_lgl(
+static r_obj* rray_any_lgl(
   r_obj* x,
   r_ssize out_size,
   const struct rray_strided_iterator_plan* plan
@@ -115,7 +115,7 @@ static r_obj* rray_any_along_lgl(
   );
 }
 
-static r_obj* rray_any_along_lgl_na_rm(
+static r_obj* rray_any_lgl_na_rm(
   r_obj* x,
   r_ssize out_size,
   const struct rray_strided_iterator_plan* plan

@@ -7,11 +7,9 @@
 #'
 #' - `rray_mean()` computes the mean along the specified `axes`.
 #'
-#' - `rray_all_along()` checks if all values are `TRUE` along the specified
-#'   `axes`.
+#' - `rray_all()` checks if all values are `TRUE` along the specified `axes`.
 #'
-#' - `rray_any_along()` checks if any value is `TRUE` along the specified
-#'   `axes`.
+#' - `rray_any()` checks if any value is `TRUE` along the specified `axes`.
 #'
 #' @details
 #' The dimensionality of `x` is retained in the result, with the reduced axes
@@ -60,8 +58,8 @@
 #'
 #' y <- array(c(TRUE, TRUE, FALSE, TRUE), c(2L, 2L))
 #'
-#' rray_all_along(y, 1L)
-#' rray_any_along(y, 1L)
+#' rray_all(y, 1L)
+#' rray_any(y, 1L)
 NULL
 
 #' @rdname reduce
@@ -87,14 +85,14 @@ rray_mean <- function(x, axes, ..., na_rm = FALSE) {
 
 #' @rdname reduce
 #' @export
-rray_all_along <- function(x, axes, ..., na_rm = FALSE) {
+rray_all <- function(x, axes, ..., na_rm = FALSE) {
   check_dots_empty0(...)
-  .Call(ffi_rray_all_along, x, axes, na_rm, environment())
+  .Call(ffi_rray_all, x, axes, na_rm, environment())
 }
 
 #' @rdname reduce
 #' @export
-rray_any_along <- function(x, axes, ..., na_rm = FALSE) {
+rray_any <- function(x, axes, ..., na_rm = FALSE) {
   check_dots_empty0(...)
-  .Call(ffi_rray_any_along, x, axes, na_rm, environment())
+  .Call(ffi_rray_any, x, axes, na_rm, environment())
 }

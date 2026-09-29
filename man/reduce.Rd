@@ -5,8 +5,8 @@
 \alias{rray_sum}
 \alias{rray_prod}
 \alias{rray_mean}
-\alias{rray_all_along}
-\alias{rray_any_along}
+\alias{rray_all}
+\alias{rray_any}
 \title{Reduce an array along axes}
 \usage{
 rray_sum(x, axes, ..., na_rm = FALSE)
@@ -15,9 +15,9 @@ rray_prod(x, axes, ..., na_rm = FALSE)
 
 rray_mean(x, axes, ..., na_rm = FALSE)
 
-rray_all_along(x, axes, ..., na_rm = FALSE)
+rray_all(x, axes, ..., na_rm = FALSE)
 
-rray_any_along(x, axes, ..., na_rm = FALSE)
+rray_any(x, axes, ..., na_rm = FALSE)
 }
 \arguments{
 \item{x}{An array.}
@@ -38,10 +38,8 @@ An array with the same dimensionality as \code{x}, but with the dimensions along
 \item \code{rray_sum()} computes the sum along the specified \code{axes}.
 \item \code{rray_prod()} computes the product along the specified \code{axes}.
 \item \code{rray_mean()} computes the mean along the specified \code{axes}.
-\item \code{rray_all_along()} checks if all values are \code{TRUE} along the specified
-\code{axes}.
-\item \code{rray_any_along()} checks if any value is \code{TRUE} along the specified
-\code{axes}.
+\item \code{rray_all()} checks if all values are \code{TRUE} along the specified \code{axes}.
+\item \code{rray_any()} checks if any value is \code{TRUE} along the specified \code{axes}.
 }
 }
 \details{
@@ -79,6 +77,6 @@ rray_mean(x, 1L)
 
 y <- array(c(TRUE, TRUE, FALSE, TRUE), c(2L, 2L))
 
-rray_all_along(y, 1L)
-rray_any_along(y, 1L)
+rray_all(y, 1L)
+rray_any(y, 1L)
 }
