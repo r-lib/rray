@@ -4,7 +4,6 @@
 
 #include "axes.h"
 #include "dimensionality.h"
-#include "size.h"
 #include "slice.h"
 #include "utils.h"
 
@@ -43,22 +42,6 @@ r_obj* rray_rep(
   const int* v_times = r_int_cbegin(times);
   const r_ssize times_size = r_length(times);
 
-  int v_out_dimensions[RRAY_MAX_DIMENSIONALITY];
-  r_memcpy(v_out_dimensions, v_x_dimensions, sizeof(int) * dimensionality);
-
-  for (r_ssize i = 0; i < axes_size; ++i) {
-    const int axis = v_axes[i];
-    const int times = v_times[times_size == 1 ? 0 : i];
-    v_out_dimensions[axis - 1] =
-      rray_rep_dimension(v_x_dimensions[axis - 1], times, error_call);
-  }
-
-  rray_size_from_dimensions_checked(
-    v_out_dimensions,
-    dimensionality,
-    error_call
-  );
-
   r_obj* indices = KEEP(r_alloc_list(dimensionality));
 
   for (int i = 0; i < dimensionality; ++i) {
@@ -68,10 +51,12 @@ r_obj* rray_rep(
   for (r_ssize i = 0; i < axes_size; ++i) {
     const int axis = v_axes[i];
     const int times = v_times[times_size == 1 ? 0 : i];
+    const int dimension = v_x_dimensions[axis - 1];
+    const int out_dimension = rray_rep_dimension(dimension, times, error_call);
     r_list_poke(
       indices,
       axis - 1,
-      rray_rep_locations(v_x_dimensions[axis - 1], times)
+      rray_rep_locations(dimension, out_dimension, times)
     );
   }
 
@@ -143,8 +128,8 @@ r_no_return void stop_rep_dimension_too_large(struct r_lazy error_call) {
   );
 }
 
-static r_obj* rray_rep_locations(int dimension, int times) {
-  r_obj* out = KEEP(r_alloc_integer(dimension * times));
+static r_obj* rray_rep_locations(int dimension, int out_dimension, int times) {
+  r_obj* out = KEEP(r_alloc_integer(out_dimension));
   int* v_out = r_int_begin(out);
 
   int out_i = 0;

@@ -18,4 +18,4 @@ static int rray_rep_dimension(
   struct r_lazy error_call
 );
 
-static r_obj* rray_rep_locations(int dimension, int times);
+static r_obj* rray_rep_locations(int dimension, int out_dimension, int times);
