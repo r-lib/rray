@@ -12,16 +12,15 @@ classes in is deliberately deferred, and is written up separately in
 `plans/extensions.md`.
 
 This document is the guide for agents working on rray4 across many sessions.
-Part 4 is the ordered list of pull requests. Part 5 is the catalogue of
-functions to work through after the foundations land.
+Part 4 is the catalogue of functions still to build.
 
 ## How to use this plan
 
 Read Part 1 and Part 2 before starting any pull request. They are short on
 purpose.
 
-Then find your pull request in Part 4, or your function in Part 5. Each entry
-says what to build, which files to touch, and what "done" means.
+Then find your function in Part 4. Each entry says what to build, which files
+to touch, and what "done" means.
 
 One pull request per entry. Keep them small.
 
@@ -93,7 +92,7 @@ case RRAY_TYPE_double:
 ```
 
 So there is one core per type per variant, the flag stays off the core's
-parameter list, and the loop is written once. `rray_mean()`, `rray_max_along()`, and
+parameter list, and the loop is written once. `rray_max_along()` and
 `rray_min_along()` want the same shape when they land, sharing `rray_reduce()`'s
 shell. `rray_max_pos()` and `rray_min_pos()` take a single `axis` rather than
 `axes` and return positions rather than reduced values, so whether they fit this
@@ -288,7 +287,7 @@ support makes something genuinely hard, drop it and say so in the pull request.
 
 ## 2.3 Names
 
-There are five rules. Every function in Part 5 declares which one it follows.
+There are five rules. Every function in Part 4 declares which one it follows.
 
 **Follow the axis.** An axis keeps its names if its dimension is unchanged, and
 loses them if its dimension changed. Whatever it keeps travels with it to
@@ -405,7 +404,7 @@ with a run of `if` checks before it gets to work.
 
 The internal type rules exist because three kinds of function need them:
 
-- `rray_bind()` needs a common type across many inputs.
+- `rray_combine()` needs a common type across many inputs.
 
 - `rray_add()` needs a common type across two inputs, plus a promotion that
   depends on the operator.
@@ -605,8 +604,8 @@ matching `.dimensions` elsewhere. It takes a prototype object, so
 
 Note that `NA` is logical, so it sits at the bottom of the numeric tower and
 `rray_add(x, NA)` works with no special handling. vctrs needs an unspecified
-type for this. We do not, at least until `rray_bind()` wants
-`rray_bind(chr_array, NA)` to work. See Part 7.
+type for this. We do not, at least until `rray_combine()` wants
+`rray_combine(chr_array, NA)` to work. See Part 6.
 
 ### Operator promotion
 
@@ -795,27 +794,7 @@ Mechanics:
 
 ---
 
-# Part 4: The pull requests
-
-What exists today: the argument tags, the argument checking helpers, the names
-API, the coalesce rule as the `rray_broadcast_names()` family, the dimension and
-shape helpers, the type rules as the `rray_ptype2()` and `rray_cast()` families,
-the scalar casts as `static inline` functions in `src/cast.h`, and
-`rray_broadcast()`, `rray_broadcast_common()`, `rray_split()`,
-`rray_sum_along()`,
-`rray_add()`, `rray_multiply()`, `rray_subtract()`, `rray_divide()` and
-`rray_exponentiate()`. The array functions all follow the shell and core
-pattern in Part 1, and no templates are left in `src/`.
-
-`rray_modulo()` and `rray_integer_divide()` (`%%` and `%/%`) are deferred. See
-`plans/mod-and-idiv.md`.
-
-Every pull request that was tracked here has landed. Work through Part 5 next,
-in any order that respects the dependencies noted there.
-
----
-
-# Part 5: Function reference
+# Part 4: Function reference
 
 Each entry gives what the function does, what the original rray did, the
 proposed signature, the files it touches, and two rules.
@@ -836,7 +815,7 @@ dropped.
 
 - *Fixed.* Output type is fixed regardless of input.
 
-## 5.1 Shape
+## 4.1 Shape
 
 ### `rray_flatten()`
 
@@ -882,33 +861,7 @@ Signature: `rray_flip(x, axis)`. Single axis.
 
 Files: `R/flip.R`, `src/flip.c`, `src/flip.h`.
 
-## 5.2 Elementwise arithmetic
-
-Names: coalesce. Type: promoted.
-
-All binary, all sharing the loop and the pipeline from 2.4: pick a core from the
-type pair, find common dimensions, loop with an `rray_iterator2` converting as
-you go.
-
-| function | op |
-|---|---|
-| `rray_add(x, y)` | `+` |
-| `rray_subtract(x, y)` | `-` |
-| `rray_multiply(x, y)` | `*` |
-| `rray_divide(x, y)` | `/` |
-| `rray_exponentiate(x, y)` | `^` |
-
-There is no unary negation. `-x` already works on a bare array, so a function
-for it would add nothing.
-
-Match R's own semantics for missing values, `NaN`, and division by zero. Check
-`/Users/davis/files/r/r-svn` when a case is unclear rather than guessing.
-
-Files: one `src/arithmetic-{op}.c` per operator, over the shared
-`src/arithmetic.c` and `src/arithmetic.h`. All the R bindings share
-`R/arithmetic.R` and one documentation page.
-
-## 5.3 Other elementwise numeric
+## 4.2 Other elementwise numeric
 
 ### `rray_clip()`
 
@@ -1001,7 +954,7 @@ Signature: `rray_full_like(x, value)`, `rray_ones_like(x)`, `rray_zeros_like(x)`
 
 Files: `R/full-like.R`, `src/full-like.c`, `src/full-like.h`.
 
-## 5.4 Reductions
+## 4.3 Reductions
 
 All use the reduction iterator. All keep dimensionality, with reduced axes
 collapsed to a dimension of 1. There is no `keep_dimensions` argument.
@@ -1013,13 +966,8 @@ Names: reduce.
 
 | function | op | type rule |
 |---|---|---|
-| `rray_sum_along(x, axes, ..., na_rm = FALSE)` | `sum` | promoted, exists |
-| `rray_product_along(x, axes, ..., na_rm = FALSE)` | `prod` | promoted, int to dbl |
-| `rray_mean_along(x, axes, ..., na_rm = FALSE)` | `mean` | promoted, lgl and int to dbl, exists |
 | `rray_max_along(x, axes, ..., na_rm = FALSE)` | `max` | preserved, errors on cpl |
 | `rray_min_along(x, axes, ..., na_rm = FALSE)` | `min` | preserved, errors on cpl |
-| `rray_all_along(x, axes, ..., na_rm = FALSE)` | `all` | fixed, logical in, logical out, exists |
-| `rray_any_along(x, axes, ..., na_rm = FALSE)` | `any` | fixed, logical in, logical out, exists |
 
 `rray_max_pos(x, axis)` and `rray_min_pos(x, axis)` give the position of the
 maximum or minimum along a single axis. Type: fixed, integer output.
@@ -1030,27 +978,10 @@ rray_max_pos(x, 1)     # position of the max along the rows
 rray_max_pos(x, 2)     # along the columns
 ```
 
-`rray_sum_along()` already exists, documented under the shared `reduce` topic in
-`R/reduce.R`, with its C in `src/reduce-sum.c` on top of the `rray_reduce()`
-shell in `src/reduce.c`/`src/reduce.h` (see 2.1).
-
-`rray_product_along()`, `rray_mean_along()`, `rray_max_along()`, and
-`rray_min_along()` share
-`rray_sum_along()`'s
+`rray_max_along()` and `rray_min_along()` share `rray_sum_along()`'s
 `(x, axes, ..., na_rm = FALSE)` shape, so they add `@rdname reduce` entries to
-`R/reduce.R` and their own `src/reduce-{name}.c` beside it.
-
-`rray_mean_along()` needs numerical state per output element, so it uses the
-`rray_reduce_nested()` shell rather than `rray_reduce()`. That shell walks the
-retained axes and the reduced axes with two immutable plans, which lets the
-mean core make several passes over one reduced slice before moving on.
-
-`rray_all_along()` and `rray_any_along()` share that shape too, so they are
-`@rdname reduce` entries as well. They are the one place two reducers share a C
-pair, `src/reduce-logical.c` and `src/reduce-logical.h`, because each supports
-only logical input and so is small. Their `na_rm = FALSE` behaviour follows
-`all()` and `any()`: a missing value only reaches the result when it could
-change the answer, so `all(c(FALSE, NA))` is `FALSE` and not `NA`.
+`R/reduce.R` and their own `src/reduce-{name}.c` beside it, on top of the
+`rray_reduce()` shell in `src/reduce.c`/`src/reduce.h`.
 
 `rray_max_pos()` and `rray_min_pos()` take `axis` rather than `axes` and return
 positions rather than reduced values, so they do not match `rray_reduce()`'s
@@ -1058,129 +989,9 @@ shape. They need their own file and topic, `R/max-pos.R`, with its own C pair.
 Whether any part of `rray_reduce()` can be shared with them is a design question
 for whoever picks them up.
 
-## 5.5 Indexing
-
-**A human should design review this whole section before any of it is
-implemented.** It was the most confusing part of the original rray, and it
-deserves a fresh look rather than a port. What follows documents what rray did,
-so the review has something concrete to react to.
-
-Three ways to pull data out, distinguished by what happens to dimensionality.
-
-Type: preserved throughout.
-
-### `rray_subset()`, by index, keeps dimensionality
-
-Never drops dimensions. Ignores trailing commas, so `x[1]` and `x[1, ]` agree.
-Missing arguments select a whole axis.
-
-```r
-x <- array(1:8, c(2, 2, 2))
-
-rray_subset(x, 1)        # first row, still (1, 2, 2)
-rray_subset(x, , 1)      # all rows, first column, still (2, 1, 2)
-```
-
-Base R cannot do the second one without fully specifying every axis and passing
-`drop = FALSE`.
-
-Index types: integer-ish selects elements, logical must be length 1 or the
-dimension, character requires names on that axis, `NULL` means 0.
-
-Names: subset.
-
-### `rray_extract()`, by index, always drops
-
-Always returns a one dimensional result, and never keeps names.
-
-```r
-x <- array(1:16, c(2, 4, 2), dimnames = list(c("r1", "r2"), NULL, NULL))
-
-rray_extract(x, 1)          # first row, flattened
-rray_extract(x, 1, 1:2)     # first row, first two columns, flattened
-```
-
-Like `x[[i, j, ...]]` but each subscript may have length greater than 1.
-
-Names: dropped.
-
-### `rray_yank()`, by position, always flattens
-
-Pulls elements out by their position in the flat array, ignoring dimensions
-entirely. Always one dimensional.
-
-```r
-x <- array(10:17, c(2, 2, 2))
-
-rray_yank(x, 1:3)
-rray_yank(x, FALSE)
-```
-
-`i` is an integer vector of positions, a logical of length 1 or `rray_size(x)`,
-or a logical with exactly `x`'s dimensions.
-
-Names: dropped.
-
-### `rray_slice()`
-
-Subset a single axis by index, keeping dimensionality.
-
-```r
-rray_slice(x, i, axis)
-```
-
-Names: subset.
-
-### The assignment forms
-
-`rray_subset_assign()`, `rray_extract_assign()`, `rray_yank_assign()`,
-`rray_slice_assign()`.
-
-The original cast `value` to `x` rather than the other way round, and broadcast
-`value` to the shape of the selection. Both decisions are worth re-examining in
-the design review.
-
-No `<-` replacement forms, consistent with the names API.
-
-Files: one pair per function, plus shared `src/subscript.c` and
-`src/subscript.h` for turning user supplied subscripts into locations.
-
-## 5.6 Binding
-
-**A human should design review this before implementation.** The axis semantics
-in the original were subtle, particularly how binding "up" into a new axis
-interacts with broadcasting and with names.
-
-```r
-a <- matrix(1:4, ncol = 2)
-b <- matrix(5:6, ncol = 1)
-
-rray_bind(a, b, .axis = 2)    # bind along columns
-rray_bind(a, b, .axis = 1)    # bind along rows, broadcasting automatically
-rray_bind(a, b, .axis = 3)    # bind up into a new third axis
-```
-
-The second one is not possible with `rbind()`, because `a` and `b` have
-different column counts and `b` has to broadcast.
-
-Names: coalesce on the axes that are not bound. The bound axis concatenates its
-names, which needs its own rule worked out in the design review.
-
-`rray_broadcast_names_common()` handles the unbound axes as is: on the bound
-axis every input's dimension differs from the output's, so it is skipped for
-every input and bind pokes the concatenation in afterwards.
-
-Type: common. This is the main consumer of `rray_ptype_common()`, so it takes a
-`.ptype` argument for an override, matching `.dimensions` elsewhere.
-
-Signatures: `rray_bind(..., .axis, .ptype = NULL)`, `rray_rbind(..., .ptype =
-NULL)`, `rray_cbind(..., .ptype = NULL)`.
-
-Files: `R/bind.R`, `src/bind.c`, `src/bind.h`.
-
 ---
 
-# Part 6: Out of scope
+# Part 5: Out of scope
 
 Deliberately not ported from the original rray.
 
@@ -1215,6 +1026,9 @@ Deliberately not ported from the original rray.
 
 Deferred rather than dropped:
 
+- **`rray_modulo()` and `rray_integer_divide()`** (`%%` and `%/%`). See
+  `plans/mod-and-idiv.md`.
+
 - **Support for classed arrays**, through a proxy and restore system and a
   generic type system. Written up in full in `plans/extensions.md`, including
   why it is deferred and the cases that must shape its design.
@@ -1228,7 +1042,7 @@ Deferred rather than dropped:
 
 ---
 
-# Part 7: Possible improvements for later
+# Part 6: Possible improvements for later
 
 Not now. Revisit once the foundations are in place and there is a working
 version to measure against.
@@ -1265,11 +1079,11 @@ See `plans/null.md`.
 ## An unspecified type
 
 `NA` is logical, so it sits at the bottom of the numeric tower and needs no
-special handling for arithmetic. But `rray_bind(chr_array, NA)` fails, because
+special handling for arithmetic. But `rray_combine(chr_array, NA)` fails, because
 `rray_ptype2(chr, lgl)` is an error.
 
 vctrs solves this with an unspecified type, and it has been painful. See whether
-`rray_bind()` can live without it first.
+`rray_combine()` can live without it first.
 
 ## Classed arrays
 
