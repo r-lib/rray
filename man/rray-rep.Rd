@@ -6,7 +6,7 @@
 \alias{rray_rep_each}
 \title{Repeat an array}
 \usage{
-rray_rep(x, ..., times, axis)
+rray_rep(x, ..., times, axes)
 
 rray_rep_each(x, ..., times, axis)
 }
@@ -15,21 +15,24 @@ rray_rep_each(x, ..., times, axis)
 
 \item{...}{These dots are for future extensions and must be empty.}
 
-\item{times}{For \code{rray_rep()}, a single integer greater than or equal
-to 0.
+\item{times}{For \code{rray_rep()}, a vector of integers greater than or equal
+to 0, either size 1 or the size of \code{axes}.
 
 For \code{rray_rep_each()}, a vector of integers greater than or equal to
 0. It is recycled to the dimension of \code{x} along \code{axis}.}
 
+\item{axes}{An integer vector of axes to repeat along.}
+
 \item{axis}{A single integer representing the axis to repeat along.}
 }
 \value{
-An array with the same dimensions as \code{x}, except along \code{axis}.
+An array with the same dimensions as \code{x}, except along the repeated axes.
 }
 \description{
 \itemize{
-\item \code{rray_rep()} repeats the entire \code{axis} of \code{x} in bulk, i.e. repeat all of
-the columns 5 \code{times}.
+\item \code{rray_rep()} repeats whole axes of \code{x} in bulk, i.e. repeat all of the
+columns 5 \code{times}. It can repeat several \code{axes} at once, with one \code{times}
+per axis.
 \item \code{rray_rep_each()} repeats each individual element of the \code{axis} of \code{x}
 separately, i.e. repeat the first column 2 \code{times}, the second column 3
 \code{times}, and so on. For convenience, you can also provide a single number
@@ -41,20 +44,26 @@ These are the array versions of \code{\link[vctrs:vec-rep]{vctrs::vec_rep()}} an
 along an axis.
 }
 \details{
-Names repeat alongside the data, so the repeated axis can come back with
+Names repeat alongside the data, so a repeated axis can come back with
 duplicate names. Every other axis keeps its names untouched.
 }
 \examples{
 x <- array(1:6, c(3, 2))
 
 # All rows in bulk, twice
-rray_rep(x, times = 2, axis = 1)
+rray_rep(x, times = 2, axes = 1)
 
 # Each row individually, twice
 rray_rep_each(x, times = 2, axis = 1)
 
 # Columns rather than rows
-rray_rep(x, times = 2, axis = 2)
+rray_rep(x, times = 2, axes = 2)
+
+# Rows and columns, twice each
+rray_rep(x, times = 2, axes = c(1, 2))
+
+# Rows twice and columns three times
+rray_rep(x, times = c(2, 3), axes = c(1, 2))
 
 # A different number of repeats per row
 rray_rep_each(x, times = c(1, 2, 3), axis = 1)
@@ -64,6 +73,6 @@ rray_rep_each(x, times = c(1, 0, 2), axis = 1)
 
 # Names repeat with the data, duplicates and all
 y <- array(1:6, c(3, 2), dimnames = list(c("a", "b", "c"), c("x", "y")))
-rray_names(rray_rep(y, times = 2, axis = 1))
+rray_names(rray_rep(y, times = 2, axes = 1))
 rray_names(rray_rep_each(y, times = 2, axis = 1))
 }

@@ -152,7 +152,7 @@ extern r_obj* ffi_rray_unstack(r_obj* ffi_x, r_obj* ffi_axis, r_obj* ffi_frame);
 extern r_obj* ffi_rray_rep(
   r_obj* ffi_x,
   r_obj* ffi_times,
-  r_obj* ffi_axis,
+  r_obj* ffi_axes,
   r_obj* ffi_frame
 );
 extern r_obj* ffi_rray_rep_each(
