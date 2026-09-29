@@ -13,9 +13,13 @@ static r_no_return void stop_rep_times_size(
 );
 
 static int rray_rep_dimension(
-  int dimension,
+  int axis_dimension,
   int times,
   struct r_lazy error_call
 );
 
-static r_obj* rray_rep_locations(int dimension, int out_dimension, int times);
+static r_obj* rray_rep_locations(
+  int axis_dimension,
+  int out_dimension,
+  int times
+);

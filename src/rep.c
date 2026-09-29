@@ -51,12 +51,13 @@ r_obj* rray_rep(
   for (r_ssize i = 0; i < axes_size; ++i) {
     const int axis = v_axes[i];
     const int times = v_times[times_size == 1 ? 0 : i];
-    const int dimension = v_x_dimensions[axis - 1];
-    const int out_dimension = rray_rep_dimension(dimension, times, error_call);
+    const int axis_dimension = v_x_dimensions[axis - 1];
+    const int out_dimension =
+      rray_rep_dimension(axis_dimension, times, error_call);
     r_list_poke(
       indices,
       axis - 1,
-      rray_rep_locations(dimension, out_dimension, times)
+      rray_rep_locations(axis_dimension, out_dimension, times)
     );
   }
 
@@ -110,15 +111,15 @@ static r_no_return void stop_rep_times_size(
 }
 
 static int rray_rep_dimension(
-  int dimension,
+  int axis_dimension,
   int times,
   struct r_lazy error_call
 ) {
-  if (times != 0 && dimension > INT_MAX / times) {
+  if (times != 0 && axis_dimension > INT_MAX / times) {
     stop_rep_dimension_too_large(error_call);
   }
 
-  return dimension * times;
+  return axis_dimension * times;
 }
 
 r_no_return void stop_rep_dimension_too_large(struct r_lazy error_call) {
@@ -128,14 +129,18 @@ r_no_return void stop_rep_dimension_too_large(struct r_lazy error_call) {
   );
 }
 
-static r_obj* rray_rep_locations(int dimension, int out_dimension, int times) {
+static r_obj* rray_rep_locations(
+  int axis_dimension,
+  int out_dimension,
+  int times
+) {
   r_obj* out = KEEP(r_alloc_integer(out_dimension));
   int* v_out = r_int_begin(out);
 
   int out_i = 0;
 
   for (int time = 0; time < times; ++time) {
-    for (int i = 0; i < dimension; ++i) {
+    for (int i = 0; i < axis_dimension; ++i) {
       v_out[out_i] = i + 1;
       ++out_i;
     }
