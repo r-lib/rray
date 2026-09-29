@@ -1,7 +1,7 @@
 #' Reduce an array along axes
 #'
 #' @description
-#' - `rray_sum_along()` computes the sum along the specified `axes`.
+#' - `rray_sum()` computes the sum along the specified `axes`.
 #'
 #' - `rray_product_along()` computes the product along the specified `axes`.
 #'
@@ -44,13 +44,13 @@
 #' x <- array(1:10, c(5L, 2L))
 #'
 #' # Sum along rows
-#' rray_sum_along(x, 1L)
+#' rray_sum(x, 1L)
 #'
 #' # Sum along columns
-#' rray_sum_along(x, 2L)
+#' rray_sum(x, 2L)
 #'
 #' # Sum along both axes
-#' rray_sum_along(x, c(1L, 2L))
+#' rray_sum(x, c(1L, 2L))
 #'
 #' # Product along rows
 #' rray_product_along(x, 1L)
@@ -66,9 +66,9 @@ NULL
 
 #' @rdname reduce
 #' @export
-rray_sum_along <- function(x, axes, ..., na_rm = FALSE) {
+rray_sum <- function(x, axes, ..., na_rm = FALSE) {
   check_dots_empty0(...)
-  .Call(ffi_rray_sum_along, x, axes, na_rm, environment())
+  .Call(ffi_rray_sum, x, axes, na_rm, environment())
 }
 
 #' @rdname reduce
