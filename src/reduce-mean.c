@@ -6,7 +6,7 @@
 
 #include "decl/reduce-mean-decl.h"
 
-r_obj* ffi_rray_mean_along(
+r_obj* ffi_rray_mean(
   r_obj* ffi_x,
   r_obj* ffi_axes,
   r_obj* ffi_na_rm,
@@ -14,27 +14,20 @@ r_obj* ffi_rray_mean_along(
 ) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
   const bool na_rm = r_arg_as_bool(ffi_na_rm, "na_rm");
-  return rray_mean_along(ffi_x, ffi_axes, na_rm, rray_args.x, error_call);
+  return rray_mean(ffi_x, ffi_axes, na_rm, rray_args.x, error_call);
 }
 
-r_obj* rray_mean_along(
+r_obj* rray_mean(
   r_obj* x,
   r_obj* axes,
   bool na_rm,
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  return rray_reduce_nested(
-    x,
-    axes,
-    na_rm,
-    rray_mean_along_switch,
-    arg,
-    error_call
-  );
+  return rray_reduce_nested(x, axes, na_rm, rray_mean_switch, arg, error_call);
 }
 
-static rray_reduce_nested_fn rray_mean_along_switch(
+static rray_reduce_nested_fn rray_mean_switch(
   r_obj* x,
   bool na_rm,
   struct rray_arg* arg,
@@ -42,11 +35,11 @@ static rray_reduce_nested_fn rray_mean_along_switch(
 ) {
   switch (rray_typeof(x)) {
   case RRAY_TYPE_logical:
-    return na_rm ? rray_mean_along_lgl_na_rm : rray_mean_along_lgl;
+    return na_rm ? rray_mean_lgl_na_rm : rray_mean_lgl;
   case RRAY_TYPE_integer:
-    return na_rm ? rray_mean_along_int_na_rm : rray_mean_along_int;
+    return na_rm ? rray_mean_int_na_rm : rray_mean_int;
   case RRAY_TYPE_double:
-    return na_rm ? rray_mean_along_dbl_na_rm : rray_mean_along_dbl;
+    return na_rm ? rray_mean_dbl_na_rm : rray_mean_dbl;
 
   case RRAY_TYPE_complex:
   case RRAY_TYPE_character:
@@ -61,7 +54,7 @@ static rray_reduce_nested_fn rray_mean_along_switch(
   r_stop_unreachable();
 }
 
-static r_obj* rray_mean_along_lgl(
+static r_obj* rray_mean_lgl(
   r_obj* x,
   const struct rray_strided_iterator_plan* outer_plan,
   const struct rray_strided_iterator_plan* inner_plan
@@ -72,11 +65,11 @@ static r_obj* rray_mean_along_lgl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_mean_along_lgl_one
+    rray_mean_lgl_one
   );
 }
 
-static r_obj* rray_mean_along_lgl_na_rm(
+static r_obj* rray_mean_lgl_na_rm(
   r_obj* x,
   const struct rray_strided_iterator_plan* outer_plan,
   const struct rray_strided_iterator_plan* inner_plan
@@ -87,11 +80,11 @@ static r_obj* rray_mean_along_lgl_na_rm(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_mean_along_lgl_one_na_rm
+    rray_mean_lgl_one_na_rm
   );
 }
 
-static r_obj* rray_mean_along_int(
+static r_obj* rray_mean_int(
   r_obj* x,
   const struct rray_strided_iterator_plan* outer_plan,
   const struct rray_strided_iterator_plan* inner_plan
@@ -102,11 +95,11 @@ static r_obj* rray_mean_along_int(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_mean_along_int_one
+    rray_mean_int_one
   );
 }
 
-static r_obj* rray_mean_along_int_na_rm(
+static r_obj* rray_mean_int_na_rm(
   r_obj* x,
   const struct rray_strided_iterator_plan* outer_plan,
   const struct rray_strided_iterator_plan* inner_plan
@@ -117,11 +110,11 @@ static r_obj* rray_mean_along_int_na_rm(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_mean_along_int_one_na_rm
+    rray_mean_int_one_na_rm
   );
 }
 
-static r_obj* rray_mean_along_dbl(
+static r_obj* rray_mean_dbl(
   r_obj* x,
   const struct rray_strided_iterator_plan* outer_plan,
   const struct rray_strided_iterator_plan* inner_plan
@@ -132,11 +125,11 @@ static r_obj* rray_mean_along_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_mean_along_dbl_one
+    rray_mean_dbl_one
   );
 }
 
-static r_obj* rray_mean_along_dbl_na_rm(
+static r_obj* rray_mean_dbl_na_rm(
   r_obj* x,
   const struct rray_strided_iterator_plan* outer_plan,
   const struct rray_strided_iterator_plan* inner_plan
@@ -147,11 +140,11 @@ static r_obj* rray_mean_along_dbl_na_rm(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_mean_along_dbl_one_na_rm
+    rray_mean_dbl_one_na_rm
   );
 }
 
-static inline double rray_mean_along_lgl_one(
+static inline double rray_mean_lgl_one(
   const int* v_x,
   r_ssize x_start,
   const struct rray_strided_iterator_plan* inner_plan
@@ -171,7 +164,7 @@ static inline double rray_mean_along_lgl_one(
   return (double) (sum / count);
 }
 
-static inline double rray_mean_along_lgl_one_na_rm(
+static inline double rray_mean_lgl_one_na_rm(
   const int* v_x,
   r_ssize x_start,
   const struct rray_strided_iterator_plan* inner_plan
@@ -190,7 +183,7 @@ static inline double rray_mean_along_lgl_one_na_rm(
 }
 
 // Impossible to overflow to `NaN`
-static inline double rray_mean_along_int_one(
+static inline double rray_mean_int_one(
   const int* v_x,
   r_ssize x_start,
   const struct rray_strided_iterator_plan* inner_plan
@@ -210,7 +203,7 @@ static inline double rray_mean_along_int_one(
   return (double) (sum / count);
 }
 
-static inline double rray_mean_along_int_one_na_rm(
+static inline double rray_mean_int_one_na_rm(
   const int* v_x,
   r_ssize x_start,
   const struct rray_strided_iterator_plan* inner_plan
@@ -228,7 +221,7 @@ static inline double rray_mean_along_int_one_na_rm(
   return (double) (sum / count);
 }
 
-static inline double rray_mean_along_dbl_one(
+static inline double rray_mean_dbl_one(
   const double* v_x,
   r_ssize x_start,
   const struct rray_strided_iterator_plan* inner_plan
@@ -282,7 +275,7 @@ static inline double rray_mean_along_dbl_one(
   return (double) sum;
 }
 
-static inline double rray_mean_along_dbl_one_na_rm(
+static inline double rray_mean_dbl_one_na_rm(
   const double* v_x,
   r_ssize x_start,
   const struct rray_strided_iterator_plan* inner_plan
