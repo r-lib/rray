@@ -53,8 +53,23 @@ An array with the same dimensionality as \code{x}, but with the dimensions along
 \details{
 The dimensionality of \code{x} is retained in the result, with the reduced axes
 collapsed to size 1.
+}
+\section{Sum}{
 
 If summing an integer array would overflow, an error is thrown.
+}
+
+\section{Product}{
+
+Logicals and integers are cast to double.
+}
+
+\section{Mean}{
+
+Logicals and integers are cast to double.
+}
+
+\section{Min / Max}{
 
 \code{rray_max()} and \code{rray_min()} keep the type of \code{x}. With nothing to reduce,
 such as an axis of dimension 0, \code{rray_max()} returns the smallest value of
@@ -75,14 +90,6 @@ rray_max(c(NaN, NA), 1L) # NA
 
 max(c(NA, NaN)) # NA
 }\if{html}{\out{</div>}}
-}
-\section{Casting}{
-
-Certain inputs are upcast, changing the return type:
-\itemize{
-\item \code{rray_prod()}: logicals and integers are cast to double.
-\item \code{rray_mean()}: logicals and integers are cast to double.
-}
 }
 
 \examples{

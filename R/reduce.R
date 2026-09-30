@@ -19,8 +19,16 @@
 #' The dimensionality of `x` is retained in the result, with the reduced axes
 #' collapsed to size 1.
 #'
+#' @section Sum:
 #' If summing an integer array would overflow, an error is thrown.
 #'
+#' @section Product:
+#' Logicals and integers are cast to double.
+#'
+#' @section Mean:
+#' Logicals and integers are cast to double.
+#'
+#' @section Min / Max:
 #' `rray_max()` and `rray_min()` keep the type of `x`. With nothing to reduce,
 #' such as an axis of dimension 0, `rray_max()` returns the smallest value of
 #' that type and `rray_min()` returns the largest:
@@ -41,13 +49,6 @@
 #'
 #' max(c(NA, NaN)) # NA
 #' ```
-#'
-#' @section Casting:
-#' Certain inputs are upcast, changing the return type:
-#'
-#' - `rray_prod()`: logicals and integers are cast to double.
-#'
-#' - `rray_mean()`: logicals and integers are cast to double.
 #'
 #' @inheritParams rlang::args_dots_empty
 #'
