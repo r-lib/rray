@@ -2,7 +2,7 @@
 % Please edit documentation in R/reverse.R
 \name{rray_reverse}
 \alias{rray_reverse}
-\title{Reverse an array}
+\title{Reverse elements along axes}
 \usage{
 rray_reverse(x, axes)
 }

@@ -1,4 +1,4 @@
-#' Reverse an array
+#' Reverse elements along axes
 #'
 #' `rray_reverse()` reverses the order of the elements of `x` along one or more
 #' `axes`.
