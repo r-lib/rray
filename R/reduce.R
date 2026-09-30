@@ -31,6 +31,17 @@
 #' | integer | `-.Machine$integer.max` | `.Machine$integer.max` |
 #' | double  | `-Inf`                  | `Inf`                  |
 #'
+#' When `NA` and `NaN` are both present, `rray_max()` and `rray_min()` return
+#' whichever comes last. This matches [rray_pmax()] and [rray_pmin()], rather
+#' than base R's [max()] and [min()], where `NA` always wins:
+#'
+#' ```r
+#' rray_max(c(NA, NaN), 1L) # NaN
+#' rray_max(c(NaN, NA), 1L) # NA
+#'
+#' max(c(NA, NaN)) # NA
+#' ```
+#'
 #' @section Casting:
 #' Certain inputs are upcast, changing the return type:
 #'

@@ -64,6 +64,17 @@ that type and \code{rray_min()} returns the largest:\tabular{lll}{
    integer \tab \code{-.Machine$integer.max} \tab \code{.Machine$integer.max} \cr
    double \tab \code{-Inf} \tab \code{Inf} \cr
 }
+
+
+When \code{NA} and \code{NaN} are both present, \code{rray_max()} and \code{rray_min()} return
+whichever comes last. This matches \code{\link[=rray_pmax]{rray_pmax()}} and \code{\link[=rray_pmin]{rray_pmin()}}, rather
+than base R's \code{\link[=max]{max()}} and \code{\link[=min]{min()}}, where \code{NA} always wins:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_max(c(NA, NaN), 1L) # NaN
+rray_max(c(NaN, NA), 1L) # NA
+
+max(c(NA, NaN)) # NA
+}\if{html}{\out{</div>}}
 }
 \section{Casting}{
 
