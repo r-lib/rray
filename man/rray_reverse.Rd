@@ -19,22 +19,8 @@ An array with the same type and dimensions as \code{x}.
 \code{axes}.
 }
 \details{
-Reversing an axis is a \code{\link[=rray_slice]{rray_slice()}} with the locations \code{d:1}, where \code{d} is
-the dimension of the axis:
-
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{x <- c(a = 1L, b = 2L, c = 3L)
-
-rray_reverse(x, axes = 1)
-#> c b a
-#> 3 2 1
-
-rray_slice_axis(x, 3:1, axis = 1)
-#> c b a
-#> 3 2 1
-}\if{html}{\out{</div>}}
-
-Since a reverse is a slice, names on a reversed axis move with the data.
-Every other axis keeps its names untouched.
+Names on a reversed axis move with the data. Every other axis keeps its names
+untouched.
 }
 \examples{
 rray_reverse(1:5, axes = 1)
