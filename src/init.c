@@ -194,31 +194,31 @@ extern r_obj* ffi_rray_move_axes(
   r_obj* ffi_to,
   r_obj* ffi_frame
 );
-extern r_obj* ffi_rray_sum_along(
+extern r_obj* ffi_rray_sum(
   r_obj* ffi_x,
   r_obj* ffi_axes,
   r_obj* ffi_na_rm,
   r_obj* ffi_frame
 );
-extern r_obj* ffi_rray_product_along(
+extern r_obj* ffi_rray_prod(
   r_obj* ffi_x,
   r_obj* ffi_axes,
   r_obj* ffi_na_rm,
   r_obj* ffi_frame
 );
-extern r_obj* ffi_rray_mean_along(
+extern r_obj* ffi_rray_mean(
   r_obj* ffi_x,
   r_obj* ffi_axes,
   r_obj* ffi_na_rm,
   r_obj* ffi_frame
 );
-extern r_obj* ffi_rray_all_along(
+extern r_obj* ffi_rray_all(
   r_obj* ffi_x,
   r_obj* ffi_axes,
   r_obj* ffi_na_rm,
   r_obj* ffi_frame
 );
-extern r_obj* ffi_rray_any_along(
+extern r_obj* ffi_rray_any(
   r_obj* ffi_x,
   r_obj* ffi_axes,
   r_obj* ffi_na_rm,
@@ -247,13 +247,13 @@ extern r_obj* ffi_rray_exponentiate(
 );
 extern r_obj* ffi_rray_multiply(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame);
 extern r_obj* ffi_rray_subtract(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame);
-extern r_obj* ffi_rray_max(
+extern r_obj* ffi_rray_pmax(
   r_obj* ffi_x,
   r_obj* ffi_y,
   r_obj* ffi_na_rm,
   r_obj* ffi_frame
 );
-extern r_obj* ffi_rray_min(
+extern r_obj* ffi_rray_pmin(
   r_obj* ffi_x,
   r_obj* ffi_y,
   r_obj* ffi_na_rm,
@@ -341,11 +341,11 @@ static const R_CallMethodDef CallEntries[] = {
   {"ffi_rray_insert_axes", (DL_FUNC) &ffi_rray_insert_axes, 3},
   {"ffi_rray_permute_axes", (DL_FUNC) &ffi_rray_permute_axes, 3},
   {"ffi_rray_move_axes", (DL_FUNC) &ffi_rray_move_axes, 4},
-  {"ffi_rray_sum_along", (DL_FUNC) &ffi_rray_sum_along, 4},
-  {"ffi_rray_product_along", (DL_FUNC) &ffi_rray_product_along, 4},
-  {"ffi_rray_mean_along", (DL_FUNC) &ffi_rray_mean_along, 4},
-  {"ffi_rray_all_along", (DL_FUNC) &ffi_rray_all_along, 4},
-  {"ffi_rray_any_along", (DL_FUNC) &ffi_rray_any_along, 4},
+  {"ffi_rray_sum", (DL_FUNC) &ffi_rray_sum, 4},
+  {"ffi_rray_prod", (DL_FUNC) &ffi_rray_prod, 4},
+  {"ffi_rray_mean", (DL_FUNC) &ffi_rray_mean, 4},
+  {"ffi_rray_all", (DL_FUNC) &ffi_rray_all, 4},
+  {"ffi_rray_any", (DL_FUNC) &ffi_rray_any, 4},
   {"ffi_rray_ptype", (DL_FUNC) &ffi_rray_ptype, 2},
   {"ffi_rray_ptype2", (DL_FUNC) &ffi_rray_ptype2, 3},
   {"ffi_rray_ptype_common", (DL_FUNC) &ffi_rray_ptype_common, 3},
@@ -356,8 +356,8 @@ static const R_CallMethodDef CallEntries[] = {
   {"ffi_rray_exponentiate", (DL_FUNC) &ffi_rray_exponentiate, 3},
   {"ffi_rray_multiply", (DL_FUNC) &ffi_rray_multiply, 3},
   {"ffi_rray_subtract", (DL_FUNC) &ffi_rray_subtract, 3},
-  {"ffi_rray_max", (DL_FUNC) &ffi_rray_max, 4},
-  {"ffi_rray_min", (DL_FUNC) &ffi_rray_min, 4},
+  {"ffi_rray_pmax", (DL_FUNC) &ffi_rray_pmax, 4},
+  {"ffi_rray_pmin", (DL_FUNC) &ffi_rray_pmin, 4},
   {"ffi_rray_equal", (DL_FUNC) &ffi_rray_equal, 3},
   {"ffi_rray_not_equal", (DL_FUNC) &ffi_rray_not_equal, 3},
   {"ffi_rray_greater_than", (DL_FUNC) &ffi_rray_greater_than, 3},

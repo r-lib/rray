@@ -2,22 +2,22 @@
 % Please edit documentation in R/reduce.R
 \name{reduce}
 \alias{reduce}
-\alias{rray_sum_along}
-\alias{rray_product_along}
-\alias{rray_mean_along}
-\alias{rray_all_along}
-\alias{rray_any_along}
+\alias{rray_sum}
+\alias{rray_prod}
+\alias{rray_mean}
+\alias{rray_all}
+\alias{rray_any}
 \title{Reduce an array along axes}
 \usage{
-rray_sum_along(x, axes, ..., na_rm = FALSE)
+rray_sum(x, axes, ..., na_rm = FALSE)
 
-rray_product_along(x, axes, ..., na_rm = FALSE)
+rray_prod(x, axes, ..., na_rm = FALSE)
 
-rray_mean_along(x, axes, ..., na_rm = FALSE)
+rray_mean(x, axes, ..., na_rm = FALSE)
 
-rray_all_along(x, axes, ..., na_rm = FALSE)
+rray_all(x, axes, ..., na_rm = FALSE)
 
-rray_any_along(x, axes, ..., na_rm = FALSE)
+rray_any(x, axes, ..., na_rm = FALSE)
 }
 \arguments{
 \item{x}{An array.}
@@ -35,13 +35,11 @@ An array with the same dimensionality as \code{x}, but with the dimensions along
 }
 \description{
 \itemize{
-\item \code{rray_sum_along()} computes the sum along the specified \code{axes}.
-\item \code{rray_product_along()} computes the product along the specified \code{axes}.
-\item \code{rray_mean_along()} computes the mean along the specified \code{axes}.
-\item \code{rray_all_along()} checks if all values are \code{TRUE} along the specified
-\code{axes}.
-\item \code{rray_any_along()} checks if any value is \code{TRUE} along the specified
-\code{axes}.
+\item \code{rray_sum()} computes the sum along the specified \code{axes}.
+\item \code{rray_prod()} computes the product along the specified \code{axes}.
+\item \code{rray_mean()} computes the mean along the specified \code{axes}.
+\item \code{rray_all()} checks if all values are \code{TRUE} along the specified \code{axes}.
+\item \code{rray_any()} checks if any value is \code{TRUE} along the specified \code{axes}.
 }
 }
 \details{
@@ -54,8 +52,8 @@ If summing an integer array would overflow, an error is thrown.
 
 Certain inputs are upcast, changing the return type:
 \itemize{
-\item \code{rray_product_along()}: logicals and integers are cast to double.
-\item \code{rray_mean_along()}: logicals and integers are cast to double.
+\item \code{rray_prod()}: logicals and integers are cast to double.
+\item \code{rray_mean()}: logicals and integers are cast to double.
 }
 }
 
@@ -63,22 +61,22 @@ Certain inputs are upcast, changing the return type:
 x <- array(1:10, c(5L, 2L))
 
 # Sum along rows
-rray_sum_along(x, 1L)
+rray_sum(x, 1L)
 
 # Sum along columns
-rray_sum_along(x, 2L)
+rray_sum(x, 2L)
 
 # Sum along both axes
-rray_sum_along(x, c(1L, 2L))
+rray_sum(x, c(1L, 2L))
 
 # Product along rows
-rray_product_along(x, 1L)
+rray_prod(x, 1L)
 
 # Mean along rows
-rray_mean_along(x, 1L)
+rray_mean(x, 1L)
 
 y <- array(c(TRUE, TRUE, FALSE, TRUE), c(2L, 2L))
 
-rray_all_along(y, 1L)
-rray_any_along(y, 1L)
+rray_all(y, 1L)
+rray_any(y, 1L)
 }

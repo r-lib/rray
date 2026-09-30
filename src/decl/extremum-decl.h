@@ -27,127 +27,63 @@ static r_no_return void stop_unsupported_extremum(
   struct r_lazy error_call
 );
 
-static r_obj* rray_max_lgl_lgl(
+static r_obj* rray_pmax_lgl_lgl(
   r_obj* x,
   r_obj* y,
   const struct rray_strided_iterator2_plan* plan,
   bool na_rm,
   struct r_lazy error_call
 );
-static r_obj* rray_max_lgl_int(
+static r_obj* rray_pmax_lgl_int(
   r_obj* x,
   r_obj* y,
   const struct rray_strided_iterator2_plan* plan,
   bool na_rm,
   struct r_lazy error_call
 );
-static r_obj* rray_max_int_lgl(
+static r_obj* rray_pmax_int_lgl(
   r_obj* x,
   r_obj* y,
   const struct rray_strided_iterator2_plan* plan,
   bool na_rm,
   struct r_lazy error_call
 );
-static r_obj* rray_max_lgl_dbl(
+static r_obj* rray_pmax_lgl_dbl(
   r_obj* x,
   r_obj* y,
   const struct rray_strided_iterator2_plan* plan,
   bool na_rm,
   struct r_lazy error_call
 );
-static r_obj* rray_max_dbl_lgl(
+static r_obj* rray_pmax_dbl_lgl(
   r_obj* x,
   r_obj* y,
   const struct rray_strided_iterator2_plan* plan,
   bool na_rm,
   struct r_lazy error_call
 );
-static r_obj* rray_max_int_int(
+static r_obj* rray_pmax_int_int(
   r_obj* x,
   r_obj* y,
   const struct rray_strided_iterator2_plan* plan,
   bool na_rm,
   struct r_lazy error_call
 );
-static r_obj* rray_max_int_dbl(
+static r_obj* rray_pmax_int_dbl(
   r_obj* x,
   r_obj* y,
   const struct rray_strided_iterator2_plan* plan,
   bool na_rm,
   struct r_lazy error_call
 );
-static r_obj* rray_max_dbl_int(
+static r_obj* rray_pmax_dbl_int(
   r_obj* x,
   r_obj* y,
   const struct rray_strided_iterator2_plan* plan,
   bool na_rm,
   struct r_lazy error_call
 );
-static r_obj* rray_max_dbl_dbl(
-  r_obj* x,
-  r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
-  bool na_rm,
-  struct r_lazy error_call
-);
-
-static r_obj* rray_min_lgl_lgl(
-  r_obj* x,
-  r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
-  bool na_rm,
-  struct r_lazy error_call
-);
-static r_obj* rray_min_lgl_int(
-  r_obj* x,
-  r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
-  bool na_rm,
-  struct r_lazy error_call
-);
-static r_obj* rray_min_int_lgl(
-  r_obj* x,
-  r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
-  bool na_rm,
-  struct r_lazy error_call
-);
-static r_obj* rray_min_lgl_dbl(
-  r_obj* x,
-  r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
-  bool na_rm,
-  struct r_lazy error_call
-);
-static r_obj* rray_min_dbl_lgl(
-  r_obj* x,
-  r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
-  bool na_rm,
-  struct r_lazy error_call
-);
-static r_obj* rray_min_int_int(
-  r_obj* x,
-  r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
-  bool na_rm,
-  struct r_lazy error_call
-);
-static r_obj* rray_min_int_dbl(
-  r_obj* x,
-  r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
-  bool na_rm,
-  struct r_lazy error_call
-);
-static r_obj* rray_min_dbl_int(
-  r_obj* x,
-  r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
-  bool na_rm,
-  struct r_lazy error_call
-);
-static r_obj* rray_min_dbl_dbl(
+static r_obj* rray_pmax_dbl_dbl(
   r_obj* x,
   r_obj* y,
   const struct rray_strided_iterator2_plan* plan,
@@ -155,11 +91,75 @@ static r_obj* rray_min_dbl_dbl(
   struct r_lazy error_call
 );
 
-static inline int rray_max_int_one_propagate_na(int x, int y);
-static inline int rray_max_int_one_remove_na(int x, int y);
-static inline double rray_max_dbl_one_propagate_na(double x, double y);
-static inline double rray_max_dbl_one_remove_na(double x, double y);
-static inline int rray_min_int_one_propagate_na(int x, int y);
-static inline int rray_min_int_one_remove_na(int x, int y);
-static inline double rray_min_dbl_one_propagate_na(double x, double y);
-static inline double rray_min_dbl_one_remove_na(double x, double y);
+static r_obj* rray_pmin_lgl_lgl(
+  r_obj* x,
+  r_obj* y,
+  const struct rray_strided_iterator2_plan* plan,
+  bool na_rm,
+  struct r_lazy error_call
+);
+static r_obj* rray_pmin_lgl_int(
+  r_obj* x,
+  r_obj* y,
+  const struct rray_strided_iterator2_plan* plan,
+  bool na_rm,
+  struct r_lazy error_call
+);
+static r_obj* rray_pmin_int_lgl(
+  r_obj* x,
+  r_obj* y,
+  const struct rray_strided_iterator2_plan* plan,
+  bool na_rm,
+  struct r_lazy error_call
+);
+static r_obj* rray_pmin_lgl_dbl(
+  r_obj* x,
+  r_obj* y,
+  const struct rray_strided_iterator2_plan* plan,
+  bool na_rm,
+  struct r_lazy error_call
+);
+static r_obj* rray_pmin_dbl_lgl(
+  r_obj* x,
+  r_obj* y,
+  const struct rray_strided_iterator2_plan* plan,
+  bool na_rm,
+  struct r_lazy error_call
+);
+static r_obj* rray_pmin_int_int(
+  r_obj* x,
+  r_obj* y,
+  const struct rray_strided_iterator2_plan* plan,
+  bool na_rm,
+  struct r_lazy error_call
+);
+static r_obj* rray_pmin_int_dbl(
+  r_obj* x,
+  r_obj* y,
+  const struct rray_strided_iterator2_plan* plan,
+  bool na_rm,
+  struct r_lazy error_call
+);
+static r_obj* rray_pmin_dbl_int(
+  r_obj* x,
+  r_obj* y,
+  const struct rray_strided_iterator2_plan* plan,
+  bool na_rm,
+  struct r_lazy error_call
+);
+static r_obj* rray_pmin_dbl_dbl(
+  r_obj* x,
+  r_obj* y,
+  const struct rray_strided_iterator2_plan* plan,
+  bool na_rm,
+  struct r_lazy error_call
+);
+
+static inline int rray_pmax_int_one_propagate_na(int x, int y);
+static inline int rray_pmax_int_one_remove_na(int x, int y);
+static inline double rray_pmax_dbl_one_propagate_na(double x, double y);
+static inline double rray_pmax_dbl_one_remove_na(double x, double y);
+static inline int rray_pmin_int_one_propagate_na(int x, int y);
+static inline int rray_pmin_int_one_remove_na(int x, int y);
+static inline double rray_pmin_dbl_one_propagate_na(double x, double y);
+static inline double rray_pmin_dbl_one_remove_na(double x, double y);

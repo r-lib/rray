@@ -1,11 +1,11 @@
-#ifndef RRAY_REDUCE_PRODUCT_H
-#define RRAY_REDUCE_PRODUCT_H
+#ifndef RRAY_REDUCE_PROD_H
+#define RRAY_REDUCE_PROD_H
 
 #include "rlang.h"
 
 #include "arg.h"
 
-r_obj* rray_product_along(
+r_obj* rray_prod(
   r_obj* x,
   r_obj* axes,
   bool na_rm,

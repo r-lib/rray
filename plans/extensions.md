@@ -232,7 +232,7 @@ returns a **bare** array with no class restored.
 
 - Comparison returns a bare logical array.
 
-- `rray_all_along()` and `rray_any_along()` return a bare logical array.
+- `rray_all()` and `rray_any()` return a bare logical array.
 
 - `rray_max_pos()` and `rray_min_pos()` return a bare integer array.
 

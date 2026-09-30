@@ -5,7 +5,7 @@
 
 #include "arg.h"
 
-r_obj* rray_all_along(
+r_obj* rray_all(
   r_obj* x,
   r_obj* axes,
   bool na_rm,
@@ -13,7 +13,7 @@ r_obj* rray_all_along(
   struct r_lazy error_call
 );
 
-r_obj* rray_any_along(
+r_obj* rray_any(
   r_obj* x,
   r_obj* axes,
   bool na_rm,

@@ -1,17 +1,15 @@
 #' Reduce an array along axes
 #'
 #' @description
-#' - `rray_sum_along()` computes the sum along the specified `axes`.
+#' - `rray_sum()` computes the sum along the specified `axes`.
 #'
-#' - `rray_product_along()` computes the product along the specified `axes`.
+#' - `rray_prod()` computes the product along the specified `axes`.
 #'
-#' - `rray_mean_along()` computes the mean along the specified `axes`.
+#' - `rray_mean()` computes the mean along the specified `axes`.
 #'
-#' - `rray_all_along()` checks if all values are `TRUE` along the specified
-#'   `axes`.
+#' - `rray_all()` checks if all values are `TRUE` along the specified `axes`.
 #'
-#' - `rray_any_along()` checks if any value is `TRUE` along the specified
-#'   `axes`.
+#' - `rray_any()` checks if any value is `TRUE` along the specified `axes`.
 #'
 #' @details
 #' The dimensionality of `x` is retained in the result, with the reduced axes
@@ -22,9 +20,9 @@
 #' @section Casting:
 #' Certain inputs are upcast, changing the return type:
 #'
-#' - `rray_product_along()`: logicals and integers are cast to double.
+#' - `rray_prod()`: logicals and integers are cast to double.
 #'
-#' - `rray_mean_along()`: logicals and integers are cast to double.
+#' - `rray_mean()`: logicals and integers are cast to double.
 #'
 #' @inheritParams rlang::args_dots_empty
 #'
@@ -44,57 +42,57 @@
 #' x <- array(1:10, c(5L, 2L))
 #'
 #' # Sum along rows
-#' rray_sum_along(x, 1L)
+#' rray_sum(x, 1L)
 #'
 #' # Sum along columns
-#' rray_sum_along(x, 2L)
+#' rray_sum(x, 2L)
 #'
 #' # Sum along both axes
-#' rray_sum_along(x, c(1L, 2L))
+#' rray_sum(x, c(1L, 2L))
 #'
 #' # Product along rows
-#' rray_product_along(x, 1L)
+#' rray_prod(x, 1L)
 #'
 #' # Mean along rows
-#' rray_mean_along(x, 1L)
+#' rray_mean(x, 1L)
 #'
 #' y <- array(c(TRUE, TRUE, FALSE, TRUE), c(2L, 2L))
 #'
-#' rray_all_along(y, 1L)
-#' rray_any_along(y, 1L)
+#' rray_all(y, 1L)
+#' rray_any(y, 1L)
 NULL
 
 #' @rdname reduce
 #' @export
-rray_sum_along <- function(x, axes, ..., na_rm = FALSE) {
+rray_sum <- function(x, axes, ..., na_rm = FALSE) {
   check_dots_empty0(...)
-  .Call(ffi_rray_sum_along, x, axes, na_rm, environment())
+  .Call(ffi_rray_sum, x, axes, na_rm, environment())
 }
 
 #' @rdname reduce
 #' @export
-rray_product_along <- function(x, axes, ..., na_rm = FALSE) {
+rray_prod <- function(x, axes, ..., na_rm = FALSE) {
   check_dots_empty0(...)
-  .Call(ffi_rray_product_along, x, axes, na_rm, environment())
+  .Call(ffi_rray_prod, x, axes, na_rm, environment())
 }
 
 #' @rdname reduce
 #' @export
-rray_mean_along <- function(x, axes, ..., na_rm = FALSE) {
+rray_mean <- function(x, axes, ..., na_rm = FALSE) {
   check_dots_empty0(...)
-  .Call(ffi_rray_mean_along, x, axes, na_rm, environment())
+  .Call(ffi_rray_mean, x, axes, na_rm, environment())
 }
 
 #' @rdname reduce
 #' @export
-rray_all_along <- function(x, axes, ..., na_rm = FALSE) {
+rray_all <- function(x, axes, ..., na_rm = FALSE) {
   check_dots_empty0(...)
-  .Call(ffi_rray_all_along, x, axes, na_rm, environment())
+  .Call(ffi_rray_all, x, axes, na_rm, environment())
 }
 
 #' @rdname reduce
 #' @export
-rray_any_along <- function(x, axes, ..., na_rm = FALSE) {
+rray_any <- function(x, axes, ..., na_rm = FALSE) {
   check_dots_empty0(...)
-  .Call(ffi_rray_any_along, x, axes, na_rm, environment())
+  .Call(ffi_rray_any, x, axes, na_rm, environment())
 }

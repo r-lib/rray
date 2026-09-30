@@ -17,7 +17,7 @@ enum rray_extremum_op {
 
 #include "decl/extremum-decl.h"
 
-r_obj* ffi_rray_max(
+r_obj* ffi_rray_pmax(
   r_obj* ffi_x,
   r_obj* ffi_y,
   r_obj* ffi_na_rm,
@@ -25,10 +25,10 @@ r_obj* ffi_rray_max(
 ) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
   const bool na_rm = r_arg_as_bool(ffi_na_rm, "na_rm");
-  return rray_max(ffi_x, ffi_y, na_rm, rray_args.x, rray_args.y, error_call);
+  return rray_pmax(ffi_x, ffi_y, na_rm, rray_args.x, rray_args.y, error_call);
 }
 
-r_obj* rray_max(
+r_obj* rray_pmax(
   r_obj* x,
   r_obj* y,
   bool na_rm,
@@ -47,7 +47,7 @@ r_obj* rray_max(
   );
 }
 
-r_obj* ffi_rray_min(
+r_obj* ffi_rray_pmin(
   r_obj* ffi_x,
   r_obj* ffi_y,
   r_obj* ffi_na_rm,
@@ -55,10 +55,10 @@ r_obj* ffi_rray_min(
 ) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
   const bool na_rm = r_arg_as_bool(ffi_na_rm, "na_rm");
-  return rray_min(ffi_x, ffi_y, na_rm, rray_args.x, rray_args.y, error_call);
+  return rray_pmin(ffi_x, ffi_y, na_rm, rray_args.x, rray_args.y, error_call);
 }
 
-r_obj* rray_min(
+r_obj* rray_pmin(
   r_obj* x,
   r_obj* y,
   bool na_rm,
@@ -158,68 +158,68 @@ static r_obj* rray_extremum_switch(
   case RRAY_TYPE2_logical_logical:
     switch (op) {
     case RRAY_EXTREMUM_max:
-      return rray_max_lgl_lgl(x, y, plan, na_rm, error_call);
+      return rray_pmax_lgl_lgl(x, y, plan, na_rm, error_call);
     case RRAY_EXTREMUM_min:
-      return rray_min_lgl_lgl(x, y, plan, na_rm, error_call);
+      return rray_pmin_lgl_lgl(x, y, plan, na_rm, error_call);
     }
   case RRAY_TYPE2_logical_integer:
     switch (op) {
     case RRAY_EXTREMUM_max:
       if (side == RRAY_SIDE_right) {
-        return rray_max_lgl_int(x, y, plan, na_rm, error_call);
+        return rray_pmax_lgl_int(x, y, plan, na_rm, error_call);
       } else {
-        return rray_max_int_lgl(x, y, plan, na_rm, error_call);
+        return rray_pmax_int_lgl(x, y, plan, na_rm, error_call);
       }
     case RRAY_EXTREMUM_min:
       if (side == RRAY_SIDE_right) {
-        return rray_min_lgl_int(x, y, plan, na_rm, error_call);
+        return rray_pmin_lgl_int(x, y, plan, na_rm, error_call);
       } else {
-        return rray_min_int_lgl(x, y, plan, na_rm, error_call);
+        return rray_pmin_int_lgl(x, y, plan, na_rm, error_call);
       }
     }
   case RRAY_TYPE2_logical_double:
     switch (op) {
     case RRAY_EXTREMUM_max:
       if (side == RRAY_SIDE_right) {
-        return rray_max_lgl_dbl(x, y, plan, na_rm, error_call);
+        return rray_pmax_lgl_dbl(x, y, plan, na_rm, error_call);
       } else {
-        return rray_max_dbl_lgl(x, y, plan, na_rm, error_call);
+        return rray_pmax_dbl_lgl(x, y, plan, na_rm, error_call);
       }
     case RRAY_EXTREMUM_min:
       if (side == RRAY_SIDE_right) {
-        return rray_min_lgl_dbl(x, y, plan, na_rm, error_call);
+        return rray_pmin_lgl_dbl(x, y, plan, na_rm, error_call);
       } else {
-        return rray_min_dbl_lgl(x, y, plan, na_rm, error_call);
+        return rray_pmin_dbl_lgl(x, y, plan, na_rm, error_call);
       }
     }
   case RRAY_TYPE2_integer_integer:
     switch (op) {
     case RRAY_EXTREMUM_max:
-      return rray_max_int_int(x, y, plan, na_rm, error_call);
+      return rray_pmax_int_int(x, y, plan, na_rm, error_call);
     case RRAY_EXTREMUM_min:
-      return rray_min_int_int(x, y, plan, na_rm, error_call);
+      return rray_pmin_int_int(x, y, plan, na_rm, error_call);
     }
   case RRAY_TYPE2_integer_double:
     switch (op) {
     case RRAY_EXTREMUM_max:
       if (side == RRAY_SIDE_right) {
-        return rray_max_int_dbl(x, y, plan, na_rm, error_call);
+        return rray_pmax_int_dbl(x, y, plan, na_rm, error_call);
       } else {
-        return rray_max_dbl_int(x, y, plan, na_rm, error_call);
+        return rray_pmax_dbl_int(x, y, plan, na_rm, error_call);
       }
     case RRAY_EXTREMUM_min:
       if (side == RRAY_SIDE_right) {
-        return rray_min_int_dbl(x, y, plan, na_rm, error_call);
+        return rray_pmin_int_dbl(x, y, plan, na_rm, error_call);
       } else {
-        return rray_min_dbl_int(x, y, plan, na_rm, error_call);
+        return rray_pmin_dbl_int(x, y, plan, na_rm, error_call);
       }
     }
   case RRAY_TYPE2_double_double:
     switch (op) {
     case RRAY_EXTREMUM_max:
-      return rray_max_dbl_dbl(x, y, plan, na_rm, error_call);
+      return rray_pmax_dbl_dbl(x, y, plan, na_rm, error_call);
     case RRAY_EXTREMUM_min:
-      return rray_min_dbl_dbl(x, y, plan, na_rm, error_call);
+      return rray_pmin_dbl_dbl(x, y, plan, na_rm, error_call);
     }
 
   case RRAY_TYPE2_logical_complex:
@@ -331,7 +331,7 @@ static r_no_return void stop_unsupported_extremum(
     );                                                                         \
   }
 
-static r_obj* rray_max_lgl_lgl(
+static r_obj* rray_pmax_lgl_lgl(
   r_obj* x,
   r_obj* y,
   const struct rray_strided_iterator2_plan* plan,
@@ -348,12 +348,12 @@ static r_obj* rray_max_lgl_lgl(
     R_TYPE_logical,
     int,
     r_lgl_begin,
-    rray_max_int_one_propagate_na,
-    rray_max_int_one_remove_na
+    rray_pmax_int_one_propagate_na,
+    rray_pmax_int_one_remove_na
   );
 }
 
-static r_obj* rray_max_lgl_int(
+static r_obj* rray_pmax_lgl_int(
   r_obj* x,
   r_obj* y,
   const struct rray_strided_iterator2_plan* plan,
@@ -370,12 +370,12 @@ static r_obj* rray_max_lgl_int(
     R_TYPE_integer,
     int,
     r_int_begin,
-    rray_max_int_one_propagate_na,
-    rray_max_int_one_remove_na
+    rray_pmax_int_one_propagate_na,
+    rray_pmax_int_one_remove_na
   );
 }
 
-static r_obj* rray_max_int_lgl(
+static r_obj* rray_pmax_int_lgl(
   r_obj* x,
   r_obj* y,
   const struct rray_strided_iterator2_plan* plan,
@@ -392,12 +392,12 @@ static r_obj* rray_max_int_lgl(
     R_TYPE_integer,
     int,
     r_int_begin,
-    rray_max_int_one_propagate_na,
-    rray_max_int_one_remove_na
+    rray_pmax_int_one_propagate_na,
+    rray_pmax_int_one_remove_na
   );
 }
 
-static r_obj* rray_max_lgl_dbl(
+static r_obj* rray_pmax_lgl_dbl(
   r_obj* x,
   r_obj* y,
   const struct rray_strided_iterator2_plan* plan,
@@ -414,12 +414,12 @@ static r_obj* rray_max_lgl_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_max_dbl_one_propagate_na,
-    rray_max_dbl_one_remove_na
+    rray_pmax_dbl_one_propagate_na,
+    rray_pmax_dbl_one_remove_na
   );
 }
 
-static r_obj* rray_max_dbl_lgl(
+static r_obj* rray_pmax_dbl_lgl(
   r_obj* x,
   r_obj* y,
   const struct rray_strided_iterator2_plan* plan,
@@ -436,12 +436,12 @@ static r_obj* rray_max_dbl_lgl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_max_dbl_one_propagate_na,
-    rray_max_dbl_one_remove_na
+    rray_pmax_dbl_one_propagate_na,
+    rray_pmax_dbl_one_remove_na
   );
 }
 
-static r_obj* rray_max_int_int(
+static r_obj* rray_pmax_int_int(
   r_obj* x,
   r_obj* y,
   const struct rray_strided_iterator2_plan* plan,
@@ -458,12 +458,12 @@ static r_obj* rray_max_int_int(
     R_TYPE_integer,
     int,
     r_int_begin,
-    rray_max_int_one_propagate_na,
-    rray_max_int_one_remove_na
+    rray_pmax_int_one_propagate_na,
+    rray_pmax_int_one_remove_na
   );
 }
 
-static r_obj* rray_max_int_dbl(
+static r_obj* rray_pmax_int_dbl(
   r_obj* x,
   r_obj* y,
   const struct rray_strided_iterator2_plan* plan,
@@ -480,12 +480,12 @@ static r_obj* rray_max_int_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_max_dbl_one_propagate_na,
-    rray_max_dbl_one_remove_na
+    rray_pmax_dbl_one_propagate_na,
+    rray_pmax_dbl_one_remove_na
   );
 }
 
-static r_obj* rray_max_dbl_int(
+static r_obj* rray_pmax_dbl_int(
   r_obj* x,
   r_obj* y,
   const struct rray_strided_iterator2_plan* plan,
@@ -502,12 +502,12 @@ static r_obj* rray_max_dbl_int(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_max_dbl_one_propagate_na,
-    rray_max_dbl_one_remove_na
+    rray_pmax_dbl_one_propagate_na,
+    rray_pmax_dbl_one_remove_na
   );
 }
 
-static r_obj* rray_max_dbl_dbl(
+static r_obj* rray_pmax_dbl_dbl(
   r_obj* x,
   r_obj* y,
   const struct rray_strided_iterator2_plan* plan,
@@ -524,12 +524,12 @@ static r_obj* rray_max_dbl_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_max_dbl_one_propagate_na,
-    rray_max_dbl_one_remove_na
+    rray_pmax_dbl_one_propagate_na,
+    rray_pmax_dbl_one_remove_na
   );
 }
 
-static r_obj* rray_min_lgl_lgl(
+static r_obj* rray_pmin_lgl_lgl(
   r_obj* x,
   r_obj* y,
   const struct rray_strided_iterator2_plan* plan,
@@ -546,12 +546,12 @@ static r_obj* rray_min_lgl_lgl(
     R_TYPE_logical,
     int,
     r_lgl_begin,
-    rray_min_int_one_propagate_na,
-    rray_min_int_one_remove_na
+    rray_pmin_int_one_propagate_na,
+    rray_pmin_int_one_remove_na
   );
 }
 
-static r_obj* rray_min_lgl_int(
+static r_obj* rray_pmin_lgl_int(
   r_obj* x,
   r_obj* y,
   const struct rray_strided_iterator2_plan* plan,
@@ -568,12 +568,12 @@ static r_obj* rray_min_lgl_int(
     R_TYPE_integer,
     int,
     r_int_begin,
-    rray_min_int_one_propagate_na,
-    rray_min_int_one_remove_na
+    rray_pmin_int_one_propagate_na,
+    rray_pmin_int_one_remove_na
   );
 }
 
-static r_obj* rray_min_int_lgl(
+static r_obj* rray_pmin_int_lgl(
   r_obj* x,
   r_obj* y,
   const struct rray_strided_iterator2_plan* plan,
@@ -590,12 +590,12 @@ static r_obj* rray_min_int_lgl(
     R_TYPE_integer,
     int,
     r_int_begin,
-    rray_min_int_one_propagate_na,
-    rray_min_int_one_remove_na
+    rray_pmin_int_one_propagate_na,
+    rray_pmin_int_one_remove_na
   );
 }
 
-static r_obj* rray_min_lgl_dbl(
+static r_obj* rray_pmin_lgl_dbl(
   r_obj* x,
   r_obj* y,
   const struct rray_strided_iterator2_plan* plan,
@@ -612,12 +612,12 @@ static r_obj* rray_min_lgl_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_min_dbl_one_propagate_na,
-    rray_min_dbl_one_remove_na
+    rray_pmin_dbl_one_propagate_na,
+    rray_pmin_dbl_one_remove_na
   );
 }
 
-static r_obj* rray_min_dbl_lgl(
+static r_obj* rray_pmin_dbl_lgl(
   r_obj* x,
   r_obj* y,
   const struct rray_strided_iterator2_plan* plan,
@@ -634,12 +634,12 @@ static r_obj* rray_min_dbl_lgl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_min_dbl_one_propagate_na,
-    rray_min_dbl_one_remove_na
+    rray_pmin_dbl_one_propagate_na,
+    rray_pmin_dbl_one_remove_na
   );
 }
 
-static r_obj* rray_min_int_int(
+static r_obj* rray_pmin_int_int(
   r_obj* x,
   r_obj* y,
   const struct rray_strided_iterator2_plan* plan,
@@ -656,12 +656,12 @@ static r_obj* rray_min_int_int(
     R_TYPE_integer,
     int,
     r_int_begin,
-    rray_min_int_one_propagate_na,
-    rray_min_int_one_remove_na
+    rray_pmin_int_one_propagate_na,
+    rray_pmin_int_one_remove_na
   );
 }
 
-static r_obj* rray_min_int_dbl(
+static r_obj* rray_pmin_int_dbl(
   r_obj* x,
   r_obj* y,
   const struct rray_strided_iterator2_plan* plan,
@@ -678,12 +678,12 @@ static r_obj* rray_min_int_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_min_dbl_one_propagate_na,
-    rray_min_dbl_one_remove_na
+    rray_pmin_dbl_one_propagate_na,
+    rray_pmin_dbl_one_remove_na
   );
 }
 
-static r_obj* rray_min_dbl_int(
+static r_obj* rray_pmin_dbl_int(
   r_obj* x,
   r_obj* y,
   const struct rray_strided_iterator2_plan* plan,
@@ -700,12 +700,12 @@ static r_obj* rray_min_dbl_int(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_min_dbl_one_propagate_na,
-    rray_min_dbl_one_remove_na
+    rray_pmin_dbl_one_propagate_na,
+    rray_pmin_dbl_one_remove_na
   );
 }
 
-static r_obj* rray_min_dbl_dbl(
+static r_obj* rray_pmin_dbl_dbl(
   r_obj* x,
   r_obj* y,
   const struct rray_strided_iterator2_plan* plan,
@@ -722,8 +722,8 @@ static r_obj* rray_min_dbl_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_min_dbl_one_propagate_na,
-    rray_min_dbl_one_remove_na
+    rray_pmin_dbl_one_propagate_na,
+    rray_pmin_dbl_one_remove_na
   );
 }
 
@@ -738,7 +738,7 @@ static r_obj* rray_min_dbl_dbl(
 // - `x = 1`, `y = NA`: returns `NA` (`out = 1`, `has_na = true`).
 // - `x = NA`, `y = 1`: returns `NA` (`out = 1`, `has_na = true`).
 // - `x = NA`, `y = NA`: returns `NA` (`out = NA`, `has_na = true`).
-static inline int rray_max_int_one_propagate_na(int x, int y) {
+static inline int rray_pmax_int_one_propagate_na(int x, int y) {
   const int out = x < y ? y : x;
   const int na = r_globals.na_int;
   const bool has_na = (x == na) | (y == na);
@@ -750,7 +750,7 @@ static inline int rray_max_int_one_propagate_na(int x, int y) {
 // - `x = 1`, `y = NA`: returns `1` (`out = 1`).
 // - `x = NA`, `y = 1`: returns `1` (`out = 1`).
 // - `x = NA`, `y = NA`: returns `NA` (`out = NA`).
-static inline int rray_max_int_one_remove_na(int x, int y) {
+static inline int rray_pmax_int_one_remove_na(int x, int y) {
   return x < y ? y : x;
 }
 
@@ -769,7 +769,7 @@ static inline int rray_max_int_one_remove_na(int x, int y) {
 // - `x = NA_real_`, `y = NaN`: returns `NaN` (`out = NA_real_`, `ISNAN(y) =
 // true`).
 // - `x = NA_real_`, `y = NA_real_`: returns `y` (`out = x`, `ISNAN(y) = true`).
-static inline double rray_max_dbl_one_propagate_na(double x, double y) {
+static inline double rray_pmax_dbl_one_propagate_na(double x, double y) {
   const double out = x < y ? y : x;
   return ISNAN(y) ? y : out;
 }
@@ -788,7 +788,7 @@ static inline double rray_max_dbl_one_propagate_na(double x, double y) {
 // - `x = NA_real_`, `y = NaN`: returns `NaN` (`out = NA_real_`, `ISNAN(x) =
 // true`).
 // - `x = NA_real_`, `y = NA_real_`: returns `y` (`out = x`, `ISNAN(x) = true`).
-static inline double rray_max_dbl_one_remove_na(double x, double y) {
+static inline double rray_pmax_dbl_one_remove_na(double x, double y) {
   const double out = x < y ? y : x;
   return ISNAN(x) ? y : out;
 }
@@ -798,7 +798,7 @@ static inline double rray_max_dbl_one_remove_na(double x, double y) {
 // - `x = 1`, `y = NA`: returns `NA` (`out = NA`).
 // - `x = NA`, `y = 1`: returns `NA` (`out = NA`).
 // - `x = NA`, `y = NA`: returns `NA` (`out = NA`).
-static inline int rray_min_int_one_propagate_na(int x, int y) {
+static inline int rray_pmin_int_one_propagate_na(int x, int y) {
   return x > y ? y : x;
 }
 
@@ -808,7 +808,7 @@ static inline int rray_min_int_one_propagate_na(int x, int y) {
 // - `x = 1`, `y = NA`: returns `1` (`out = NA`, replace `y` with `x`).
 // - `x = NA`, `y = 1`: returns `1` (`out = NA`, replace `x` with `y`).
 // - `x = NA`, `y = NA`: returns `NA` (`out = NA`, both replacements are `NA`).
-static inline int rray_min_int_one_remove_na(int x, int y) {
+static inline int rray_pmin_int_one_remove_na(int x, int y) {
   const int na = r_globals.na_int;
   int out = x > y ? y : x;
   out = y == na ? x : out;
@@ -816,7 +816,7 @@ static inline int rray_min_int_one_remove_na(int x, int y) {
   return out;
 }
 
-// Same as `rray_max_dbl_one_propagate_na()`
+// Same as `rray_pmax_dbl_one_propagate_na()`
 // - `x = 1`, `y = 1`: returns `1` (`out = 1`, `ISNAN(y) = false`).
 // - `x = 1`, `y = NaN`: returns `NaN` (`out = 1`, `ISNAN(y) = true`).
 // - `x = 1`, `y = NA_real_`: returns `NA_real_` (`out = 1`, `ISNAN(y) = true`).
@@ -829,12 +829,12 @@ static inline int rray_min_int_one_remove_na(int x, int y) {
 // - `x = NA_real_`, `y = NaN`: returns `NaN` (`out = NA_real_`, `ISNAN(y) =
 // true`).
 // - `x = NA_real_`, `y = NA_real_`: returns `y` (`out = x`, `ISNAN(y) = true`).
-static inline double rray_min_dbl_one_propagate_na(double x, double y) {
+static inline double rray_pmin_dbl_one_propagate_na(double x, double y) {
   const double out = x > y ? y : x;
   return ISNAN(y) ? y : out;
 }
 
-// Same as `rray_max_dbl_one_remove_na()`
+// Same as `rray_pmax_dbl_one_remove_na()`
 // - `x = 1`, `y = 1`: returns `1` (`out = 1`, `ISNAN(x) = false`).
 // - `x = 1`, `y = NaN`: returns `1` (`out = 1`, `ISNAN(x) = false`).
 // - `x = 1`, `y = NA_real_`: returns `1` (`out = 1`, `ISNAN(x) = false`).
@@ -846,7 +846,7 @@ static inline double rray_min_dbl_one_propagate_na(double x, double y) {
 // - `x = NA_real_`, `y = NaN`: returns `NaN` (`out = NA_real_`, `ISNAN(x) =
 // true`).
 // - `x = NA_real_`, `y = NA_real_`: returns `y` (`out = x`, `ISNAN(x) = true`).
-static inline double rray_min_dbl_one_remove_na(double x, double y) {
+static inline double rray_pmin_dbl_one_remove_na(double x, double y) {
   const double out = x > y ? y : x;
   return ISNAN(x) ? y : out;
 }

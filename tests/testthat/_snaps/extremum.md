@@ -1,7 +1,7 @@
 # the output type of every pair of native types
 
     Code
-      native_ptype_matrix(rray_max, c("x", "y"))
+      native_ptype_matrix(rray_pmax, c("x", "y"))
     Output
             y
       x      lgl       int       dbl      cpl chr raw list
@@ -16,7 +16,7 @@
 ---
 
     Code
-      native_ptype_matrix(rray_min, c("x", "y"))
+      native_ptype_matrix(rray_pmin, c("x", "y"))
     Output
             y
       x      lgl       int       dbl      cpl chr raw list
@@ -31,81 +31,81 @@
 # errors on incompatible dimensions
 
     Code
-      rray_max(x, y)
+      rray_pmax(x, y)
     Condition
-      Error in `rray_max()`:
+      Error in `rray_pmax()`:
       ! Can't find common dimensions at axis 1. `x` has dimension 3 and `y` has dimension 2.
 
 ---
 
     Code
-      rray_min(x, y)
+      rray_pmin(x, y)
     Condition
-      Error in `rray_min()`:
+      Error in `rray_pmin()`:
       ! Can't find common dimensions at axis 1. `x` has dimension 3 and `y` has dimension 2.
 
 # errors on unsupported types
 
     Code
-      rray_max(0+1i, 0+2i)
+      rray_pmax(0+1i, 0+2i)
     Condition
-      Error in `rray_max()`:
+      Error in `rray_pmax()`:
       ! Can't apply `max` to `x` <complex> and `y` <complex>.
 
 ---
 
     Code
-      rray_min(0+1i, 0+2i)
+      rray_pmin(0+1i, 0+2i)
     Condition
-      Error in `rray_min()`:
+      Error in `rray_pmin()`:
       ! Can't apply `min` to `x` <complex> and `y` <complex>.
 
 ---
 
     Code
-      rray_max("a", "b")
+      rray_pmax("a", "b")
     Condition
-      Error in `rray_max()`:
+      Error in `rray_pmax()`:
       ! Can't apply `max` to `x` <character> and `y` <character>.
 
 ---
 
     Code
-      rray_min(as.raw(1), as.raw(2))
+      rray_pmin(as.raw(1), as.raw(2))
     Condition
-      Error in `rray_min()`:
+      Error in `rray_pmin()`:
       ! Can't apply `min` to `x` <raw> and `y` <raw>.
 
 ---
 
     Code
-      rray_max(list(1), list(2))
+      rray_pmax(list(1), list(2))
     Condition
-      Error in `rray_max()`:
+      Error in `rray_pmax()`:
       ! Can't apply `max` to `x` <list> and `y` <list>.
 
 # `na_rm` must be `TRUE` or `FALSE`
 
     Code
-      rray_max(1L, 2L, na_rm = NA)
+      rray_pmax(1L, 2L, na_rm = NA)
     Condition
-      Error in `rray_max()`:
+      Error in `rray_pmax()`:
       ! `na_rm` must be `TRUE` or `FALSE`.
 
 ---
 
     Code
-      rray_min(1L, 2L, na_rm = 1)
+      rray_pmin(1L, 2L, na_rm = 1)
     Condition
-      Error in `rray_min()`:
+      Error in `rray_pmin()`:
       ! `na_rm` must be `TRUE` or `FALSE`.
 
 # dots must be empty
 
     Code
-      rray_max(1L, 2L, 3L)
+      rray_pmax(1L, 2L, 3L)
     Condition
-      Error in `rray_max()`:
+      Error in `rray_pmax()`:
       ! `...` must be empty.
       x Problematic argument:
       * ..1 = 3L
@@ -114,9 +114,9 @@
 ---
 
     Code
-      rray_min(1L, 2L, 3L)
+      rray_pmin(1L, 2L, 3L)
     Condition
-      Error in `rray_min()`:
+      Error in `rray_pmin()`:
       ! `...` must be empty.
       x Problematic argument:
       * ..1 = 3L
@@ -125,32 +125,32 @@
 # errors on scalar and classed input
 
     Code
-      rray_max(NULL, 1L)
+      rray_pmax(NULL, 1L)
     Condition
-      Error in `rray_max()`:
+      Error in `rray_pmax()`:
       ! `x` must be an array, not `NULL`.
 
 ---
 
     Code
-      rray_min(1L, NULL)
+      rray_pmin(1L, NULL)
     Condition
-      Error in `rray_min()`:
+      Error in `rray_pmin()`:
       ! `y` must be an array, not `NULL`.
 
 ---
 
     Code
-      rray_max(x, 1L)
+      rray_pmax(x, 1L)
     Condition
-      Error in `rray_max()`:
+      Error in `rray_pmax()`:
       ! `x` must be a bare array, not a <foo> object.
 
 ---
 
     Code
-      rray_min(1L, x)
+      rray_pmin(1L, x)
     Condition
-      Error in `rray_min()`:
+      Error in `rray_pmin()`:
       ! `y` must be a bare array, not a <foo> object.
 
