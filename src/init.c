@@ -173,6 +173,7 @@ extern r_obj* ffi_rray_roll_each(
   r_obj* ffi_axis,
   r_obj* ffi_frame
 );
+extern r_obj* ffi_rray_reverse(r_obj* ffi_x, r_obj* ffi_axes, r_obj* ffi_frame);
 extern r_obj* ffi_rray_remove_axes(
   r_obj* ffi_x,
   r_obj* ffi_axes,
@@ -337,6 +338,7 @@ static const R_CallMethodDef CallEntries[] = {
   {"ffi_rray_rep_each", (DL_FUNC) &ffi_rray_rep_each, 4},
   {"ffi_rray_roll", (DL_FUNC) &ffi_rray_roll, 4},
   {"ffi_rray_roll_each", (DL_FUNC) &ffi_rray_roll_each, 4},
+  {"ffi_rray_reverse", (DL_FUNC) &ffi_rray_reverse, 3},
   {"ffi_rray_remove_axes", (DL_FUNC) &ffi_rray_remove_axes, 3},
   {"ffi_rray_insert_axes", (DL_FUNC) &ffi_rray_insert_axes, 3},
   {"ffi_rray_permute_axes", (DL_FUNC) &ffi_rray_permute_axes, 3},
