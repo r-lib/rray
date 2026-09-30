@@ -815,29 +815,7 @@ dropped.
 
 - *Fixed.* Output type is fixed regardless of input.
 
-## 4.1 Shape
-
-### `rray_flip()`
-
-Reverse the order along an axis.
-
-```r
-x <- array(1:10, c(5, 2))
-rray_flip(x, 1)      # reverse the rows
-rray_flip(x, 2)      # reverse the columns
-```
-
-Names: follow the axis, with one exception. The flipped axis keeps its dimension,
-so it keeps its names, but they must be **reversed** alongside the data rather
-than copied across.
-
-Type: preserved.
-
-Signature: `rray_flip(x, axis)`. Single axis.
-
-Files: `R/flip.R`, `src/flip.c`, `src/flip.h`.
-
-## 4.2 Other elementwise numeric
+## 4.1 Other elementwise numeric
 
 ### `rray_clip()`
 
@@ -930,7 +908,7 @@ Signature: `rray_full_like(x, value)`, `rray_ones_like(x)`, `rray_zeros_like(x)`
 
 Files: `R/full-like.R`, `src/full-like.c`, `src/full-like.h`.
 
-## 4.3 Reductions
+## 4.2 Reductions
 
 All use the reduction iterator. All keep dimensionality, with reduced axes
 collapsed to a dimension of 1. There is no `keep_dimensions` argument.
@@ -982,7 +960,7 @@ Deliberately not ported from the original rray.
 
 - **`rray_diag()`.**
 
-- **`rray_rotate()`.** Expressible as a transpose plus a flip.
+- **`rray_rotate()`.** Expressible as a transpose plus a reverse.
 
 - **`pad()`** and the padding indexer.
 

@@ -49,6 +49,10 @@ reference:
   contents:
   - rray-roll
 
+- title: Reversing
+  contents:
+  - rray_reverse
+
 - title: Axes
   contents:
   - rray_permute_axes
