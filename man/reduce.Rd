@@ -7,6 +7,8 @@
 \alias{rray_mean}
 \alias{rray_all}
 \alias{rray_any}
+\alias{rray_max}
+\alias{rray_min}
 \title{Reduce an array along axes}
 \usage{
 rray_sum(x, axes, ..., na_rm = FALSE)
@@ -18,6 +20,10 @@ rray_mean(x, axes, ..., na_rm = FALSE)
 rray_all(x, axes, ..., na_rm = FALSE)
 
 rray_any(x, axes, ..., na_rm = FALSE)
+
+rray_max(x, axes, ..., na_rm = FALSE)
+
+rray_min(x, axes, ..., na_rm = FALSE)
 }
 \arguments{
 \item{x}{An array.}
@@ -40,6 +46,8 @@ An array with the same dimensionality as \code{x}, but with the dimensions along
 \item \code{rray_mean()} computes the mean along the specified \code{axes}.
 \item \code{rray_all()} checks if all values are \code{TRUE} along the specified \code{axes}.
 \item \code{rray_any()} checks if any value is \code{TRUE} along the specified \code{axes}.
+\item \code{rray_max()} computes the maximum along the specified \code{axes}.
+\item \code{rray_min()} computes the minimum along the specified \code{axes}.
 }
 }
 \details{
@@ -47,6 +55,15 @@ The dimensionality of \code{x} is retained in the result, with the reduced axes
 collapsed to size 1.
 
 If summing an integer array would overflow, an error is thrown.
+
+\code{rray_max()} and \code{rray_min()} keep the type of \code{x}. With nothing to reduce,
+such as an axis of dimension 0, \code{rray_max()} returns the smallest value of
+that type and \code{rray_min()} returns the largest:\tabular{lll}{
+   type \tab \code{rray_max()} \tab \code{rray_min()} \cr
+   logical \tab \code{FALSE} \tab \code{TRUE} \cr
+   integer \tab \code{-.Machine$integer.max} \tab \code{.Machine$integer.max} \cr
+   double \tab \code{-Inf} \tab \code{Inf} \cr
+}
 }
 \section{Casting}{
 
@@ -79,4 +96,8 @@ y <- array(c(TRUE, TRUE, FALSE, TRUE), c(2L, 2L))
 
 rray_all(y, 1L)
 rray_any(y, 1L)
+
+# Maximum and minimum along columns
+rray_max(x, 2L)
+rray_min(x, 2L)
 }

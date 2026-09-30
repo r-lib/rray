@@ -154,12 +154,3 @@ static r_obj* rray_pmin_dbl_dbl(
   bool na_rm,
   struct r_lazy error_call
 );
-
-static inline int rray_pmax_int_one_propagate_na(int x, int y);
-static inline int rray_pmax_int_one_remove_na(int x, int y);
-static inline double rray_pmax_dbl_one_propagate_na(double x, double y);
-static inline double rray_pmax_dbl_one_remove_na(double x, double y);
-static inline int rray_pmin_int_one_propagate_na(int x, int y);
-static inline int rray_pmin_int_one_remove_na(int x, int y);
-static inline double rray_pmin_dbl_one_propagate_na(double x, double y);
-static inline double rray_pmin_dbl_one_remove_na(double x, double y);

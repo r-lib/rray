@@ -92,11 +92,12 @@ case RRAY_TYPE_double:
 ```
 
 So there is one core per type per variant, the flag stays off the core's
-parameter list, and the loop is written once. `rray_max()` and
-`rray_min()` want the same shape when they land, sharing `rray_reduce()`'s
-shell. `rray_max_pos()` and `rray_min_pos()` take a single `axis` rather than
-`axes` and return positions rather than reduced values, so whether they fit this
-shell at all is still an open question for whoever picks them up.
+parameter list, and the loop is written once. `rray_max()` and `rray_min()`
+share this shell in `src/reduce-extremum.c`, reusing the scalar helpers of
+`rray_pmax()` and `rray_pmin()` from `src/extremum.h`. `rray_max_pos()` and
+`rray_min_pos()` take a single `axis` rather than `axes` and return positions
+rather than reduced values, so whether they fit this shell at all is still an
+open question for whoever picks them up.
 
 A `.c` file reads top down: the main entry point first, its helpers below, in
 the order they are used. For `src/broadcast.c` that is `ffi_rray_broadcast()`,
@@ -910,18 +911,13 @@ Files: `R/full-like.R`, `src/full-like.c`, `src/full-like.h`.
 
 ## 4.2 Reductions
 
-All use the reduction iterator. All keep dimensionality, with reduced axes
-collapsed to a dimension of 1. There is no `keep_dimensions` argument.
+Both use the reduction iterator. Both keep dimensionality, with the reduced
+axis collapsed to a dimension of 1. There is no `keep_dimensions` argument.
 
-`axes` is **required** on every one of them. The original defaulted it to `NULL`
-meaning "all axes". We do not.
+`axis` is **required** on both. The original defaulted it to `NULL` meaning "all
+axes". We do not.
 
 Names: reduce.
-
-| function | op | type rule |
-|---|---|---|
-| `rray_max(x, axes, ..., na_rm = FALSE)` | `max` | preserved, errors on cpl |
-| `rray_min(x, axes, ..., na_rm = FALSE)` | `min` | preserved, errors on cpl |
 
 `rray_max_pos(x, axis)` and `rray_min_pos(x, axis)` give the position of the
 maximum or minimum along a single axis. Type: fixed, integer output.
@@ -931,11 +927,6 @@ x <- array(c(1:10, 20:11), c(5, 2, 2))
 rray_max_pos(x, 1)     # position of the max along the rows
 rray_max_pos(x, 2)     # along the columns
 ```
-
-`rray_max()` and `rray_min()` share `rray_sum()`'s
-`(x, axes, ..., na_rm = FALSE)` shape, so they add `@rdname reduce` entries to
-`R/reduce.R` and their own `src/reduce-{name}.c` beside it, on top of the
-`rray_reduce()` shell in `src/reduce.c`/`src/reduce.h`.
 
 `rray_max_pos()` and `rray_min_pos()` take `axis` rather than `axes` and return
 positions rather than reduced values, so they do not match `rray_reduce()`'s
