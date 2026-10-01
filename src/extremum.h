@@ -4,6 +4,7 @@
 #include "rlang.h"
 
 #include "arg.h"
+#include "missing.h"
 
 r_obj* rray_pmax(
   r_obj* x,
@@ -26,6 +27,9 @@ r_obj* rray_pmin(
 // Each of the "one" functions below is carefully tuned to maximize
 // the chance of the resulting loop being vectorized by the compiler.
 // Anecdotally tested on an M2 Mac, where the assembly was analyzed.
+// For doubles, the double switch is less likely to vectorize but seems
+// to be the most stable when reducing across different combinations of
+// axes.
 
 // Bitwise `|` improves efficiency here
 // - `x = 1`, `y = 1`: returns `1` (`out = 1`, `has_na = false`).
@@ -48,43 +52,69 @@ static inline int rray_pmax_int_one_na_rm(int x, int y) {
   return x < y ? y : x;
 }
 
-// A C comparison involving a `NaN`/`NA_real_` is false, so `out` selects `x`.
-// `ISNAN(y)` propagates missing `y` and also ensures the second missing value
-// wins when both inputs are missing (matching R):
-// - `x = 1`, `y = 1`: returns `1` (`out = 1`, `ISNAN(y) = false`).
-// - `x = 1`, `y = NaN`: returns `NaN` (`out = 1`, `ISNAN(y) = true`).
-// - `x = 1`, `y = NA_real_`: returns `NA_real_` (`out = 1`, `ISNAN(y) = true`).
-// - `x = NaN`, `y = 1`: returns `NaN` (`out = NaN`, `ISNAN(y) = false`).
-// - `x = NaN`, `y = NaN`: returns `y` (`out = x`, `ISNAN(y) = true`).
-// - `x = NaN`, `y = NA_real_`: returns `NA_real_` (`out = NaN`, `ISNAN(y) =
-// true`).
-// - `x = NA_real_`, `y = 1`: returns `NA_real_` (`out = NA_real_`, `ISNAN(y) =
-// false`).
-// - `x = NA_real_`, `y = NaN`: returns `NaN` (`out = NA_real_`, `ISNAN(y) =
-// true`).
-// - `x = NA_real_`, `y = NA_real_`: returns `y` (`out = x`, `ISNAN(y) = true`).
 static inline double rray_pmax_dbl_one(double x, double y) {
-  const double out = x < y ? y : x;
-  return ISNAN(y) ? y : out;
+  switch (rray_dbl_classify(x)) {
+  case RRAY_DBL_number: {
+    switch (rray_dbl_classify(y)) {
+    case RRAY_DBL_number:
+      return x < y ? y : x;
+    case RRAY_DBL_missing:
+      return y;
+    case RRAY_DBL_nan:
+      return y;
+    }
+  }
+  case RRAY_DBL_missing: {
+    return x;
+  }
+  case RRAY_DBL_nan: {
+    switch (rray_dbl_classify(y)) {
+    case RRAY_DBL_number:
+      return x;
+    case RRAY_DBL_missing:
+      return y;
+    case RRAY_DBL_nan:
+      return x;
+    }
+  }
+  }
+  r_stop_unreachable();
 }
 
-// A C comparison involving a `NaN`/`NA_real_` is false, so `out` selects `x`.
-// `ISNAN(x)` replaces `out` with `y` when `x` is missing but `y` is not and
-// when both inputs are missing (matching R):
-// - `x = 1`, `y = 1`: returns `1` (`out = 1`, `ISNAN(x) = false`).
-// - `x = 1`, `y = NaN`: returns `1` (`out = 1`, `ISNAN(x) = false`).
-// - `x = 1`, `y = NA_real_`: returns `1` (`out = 1`, `ISNAN(x) = false`).
-// - `x = NaN`, `y = 1`: returns `1` (`out = NaN`, `ISNAN(x) = true`).
-// - `x = NaN`, `y = NaN`: returns `y` (`out = x`, `ISNAN(x) = true`).
-// - `x = NaN`, `y = NA_real_`: returns `NA_real_` (`out = NaN`, `ISNAN(x) =
-// true`).
-// - `x = NA_real_`, `y = 1`: returns `1` (`out = NA_real_`, `ISNAN(x) = true`).
-// - `x = NA_real_`, `y = NaN`: returns `NaN` (`out = NA_real_`, `ISNAN(x) =
-// true`).
-// - `x = NA_real_`, `y = NA_real_`: returns `y` (`out = x`, `ISNAN(x) = true`).
 static inline double rray_pmax_dbl_one_na_rm(double x, double y) {
-  const double out = x < y ? y : x;
-  return ISNAN(x) ? y : out;
+  switch (rray_dbl_classify(x)) {
+  case RRAY_DBL_number: {
+    switch (rray_dbl_classify(y)) {
+    case RRAY_DBL_number:
+      return x < y ? y : x;
+    case RRAY_DBL_missing:
+      return x;
+    case RRAY_DBL_nan:
+      return x;
+    }
+  }
+  case RRAY_DBL_missing: {
+    switch (rray_dbl_classify(y)) {
+    case RRAY_DBL_number:
+      return y;
+    case RRAY_DBL_missing:
+      return x;
+    case RRAY_DBL_nan:
+      return x;
+    }
+  }
+  case RRAY_DBL_nan: {
+    switch (rray_dbl_classify(y)) {
+    case RRAY_DBL_number:
+      return y;
+    case RRAY_DBL_missing:
+      return y;
+    case RRAY_DBL_nan:
+      return x;
+    }
+  }
+  }
+  r_stop_unreachable();
 }
 
 // Integer `NA` is `INT_MIN`
@@ -110,39 +140,69 @@ static inline int rray_pmin_int_one_na_rm(int x, int y) {
   return out;
 }
 
-// Same as `rray_pmax_dbl_one()`
-// - `x = 1`, `y = 1`: returns `1` (`out = 1`, `ISNAN(y) = false`).
-// - `x = 1`, `y = NaN`: returns `NaN` (`out = 1`, `ISNAN(y) = true`).
-// - `x = 1`, `y = NA_real_`: returns `NA_real_` (`out = 1`, `ISNAN(y) = true`).
-// - `x = NaN`, `y = 1`: returns `NaN` (`out = NaN`, `ISNAN(y) = false`).
-// - `x = NaN`, `y = NaN`: returns `y` (`out = x`, `ISNAN(y) = true`).
-// - `x = NaN`, `y = NA_real_`: returns `NA_real_` (`out = NaN`, `ISNAN(y) =
-// true`).
-// - `x = NA_real_`, `y = 1`: returns `NA_real_` (`out = NA_real_`, `ISNAN(y) =
-// false`).
-// - `x = NA_real_`, `y = NaN`: returns `NaN` (`out = NA_real_`, `ISNAN(y) =
-// true`).
-// - `x = NA_real_`, `y = NA_real_`: returns `y` (`out = x`, `ISNAN(y) = true`).
 static inline double rray_pmin_dbl_one(double x, double y) {
-  const double out = x > y ? y : x;
-  return ISNAN(y) ? y : out;
+  switch (rray_dbl_classify(x)) {
+  case RRAY_DBL_number: {
+    switch (rray_dbl_classify(y)) {
+    case RRAY_DBL_number:
+      return x > y ? y : x;
+    case RRAY_DBL_missing:
+      return y;
+    case RRAY_DBL_nan:
+      return y;
+    }
+  }
+  case RRAY_DBL_missing: {
+    return x;
+  }
+  case RRAY_DBL_nan: {
+    switch (rray_dbl_classify(y)) {
+    case RRAY_DBL_number:
+      return x;
+    case RRAY_DBL_missing:
+      return y;
+    case RRAY_DBL_nan:
+      return x;
+    }
+  }
+  }
+  r_stop_unreachable();
 }
 
-// Same as `rray_pmax_dbl_one_na_rm()`
-// - `x = 1`, `y = 1`: returns `1` (`out = 1`, `ISNAN(x) = false`).
-// - `x = 1`, `y = NaN`: returns `1` (`out = 1`, `ISNAN(x) = false`).
-// - `x = 1`, `y = NA_real_`: returns `1` (`out = 1`, `ISNAN(x) = false`).
-// - `x = NaN`, `y = 1`: returns `1` (`out = NaN`, `ISNAN(x) = true`).
-// - `x = NaN`, `y = NaN`: returns `y` (`out = x`, `ISNAN(x) = true`).
-// - `x = NaN`, `y = NA_real_`: returns `NA_real_` (`out = NaN`, `ISNAN(x) =
-// true`).
-// - `x = NA_real_`, `y = 1`: returns `1` (`out = NA_real_`, `ISNAN(x) = true`).
-// - `x = NA_real_`, `y = NaN`: returns `NaN` (`out = NA_real_`, `ISNAN(x) =
-// true`).
-// - `x = NA_real_`, `y = NA_real_`: returns `y` (`out = x`, `ISNAN(x) = true`).
 static inline double rray_pmin_dbl_one_na_rm(double x, double y) {
-  const double out = x > y ? y : x;
-  return ISNAN(x) ? y : out;
+  switch (rray_dbl_classify(x)) {
+  case RRAY_DBL_number: {
+    switch (rray_dbl_classify(y)) {
+    case RRAY_DBL_number:
+      return x > y ? y : x;
+    case RRAY_DBL_missing:
+      return x;
+    case RRAY_DBL_nan:
+      return x;
+    }
+  }
+  case RRAY_DBL_missing: {
+    switch (rray_dbl_classify(y)) {
+    case RRAY_DBL_number:
+      return y;
+    case RRAY_DBL_missing:
+      return x;
+    case RRAY_DBL_nan:
+      return x;
+    }
+  }
+  case RRAY_DBL_nan: {
+    switch (rray_dbl_classify(y)) {
+    case RRAY_DBL_number:
+      return y;
+    case RRAY_DBL_missing:
+      return y;
+    case RRAY_DBL_nan:
+      return x;
+    }
+  }
+  }
+  r_stop_unreachable();
 }
 
 #endif

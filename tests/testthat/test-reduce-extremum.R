@@ -101,8 +101,8 @@ test_that("matches repeated `pmax()` and `pmin()` across special values", {
     rows <- lapply(1:3, \(i) x[i, ])
 
     for (na_rm in c(FALSE, TRUE)) {
-      pmax_na_rm <- \(x, y) pmax(x, y, na.rm = na_rm)
-      pmin_na_rm <- \(x, y) pmin(x, y, na.rm = na_rm)
+      pmax_na_rm <- \(x, y) na_wins(pmax(x, y, na.rm = na_rm), x, y)
+      pmin_na_rm <- \(x, y) na_wins(pmin(x, y, na.rm = na_rm), x, y)
 
       expect_identical(
         as.vector(rray_max(x, 1L, na_rm = na_rm)),
@@ -125,11 +125,13 @@ test_that("missing values propagate", {
   expect_identical(as.vector(rray_min(c(NA, 1), 1L)), NA_real_)
 })
 
-test_that("the last missing double wins, like `pmax()` and `pmin()`", {
-  expect_identical(as.vector(rray_max(c(NA, NaN), 1L)), NaN)
+test_that("`NA` wins over `NaN`, like `max()` and `min()`", {
+  expect_identical(as.vector(rray_max(c(NA, NaN), 1L)), NA_real_)
   expect_identical(as.vector(rray_max(c(NaN, NA), 1L)), NA_real_)
-  expect_identical(as.vector(rray_min(c(NA, NaN), 1L)), NaN)
+  expect_identical(as.vector(rray_max(c(NaN, 1, NA, NaN), 1L)), NA_real_)
+  expect_identical(as.vector(rray_min(c(NA, NaN), 1L)), NA_real_)
   expect_identical(as.vector(rray_min(c(NaN, NA), 1L)), NA_real_)
+  expect_identical(as.vector(rray_min(c(NaN, 1, NA, NaN), 1L)), NA_real_)
 })
 
 test_that("na_rm removes missing values", {

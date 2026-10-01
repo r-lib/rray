@@ -49,6 +49,17 @@ test_that("double wins over logical and integer, in either position", {
   expect_identical(rray_pmin(2.5, 1L), array(1, 1L))
 })
 
+test_that("`NA` wins over `NaN`, unlike `pmax()` and `pmin()`", {
+  # We do this to instead match rray_max() and rray_min() and allow them to
+  # share one core C helper
+  for (na_rm in c(FALSE, TRUE)) {
+    expect_identical(rray_pmax(NA, NaN, na_rm = na_rm), array(NA_real_, 1L))
+    expect_identical(rray_pmax(NaN, NA, na_rm = na_rm), array(NA_real_, 1L))
+    expect_identical(rray_pmin(NA, NaN, na_rm = na_rm), array(NA_real_, 1L))
+    expect_identical(rray_pmin(NaN, NA, na_rm = na_rm), array(NA_real_, 1L))
+  }
+})
+
 test_that("native extrema match base R across special values", {
   integer_values <- c(NA_integer_, -1L, 0L, 1L)
   double_values <- c(NA_real_, NaN, -Inf, -1, -0, 0, 1, Inf)
@@ -73,11 +84,11 @@ test_that("native extrema match base R across special values", {
     for (na_rm in c(FALSE, TRUE)) {
       expect_identical(
         as.vector(rray_pmax(case$x, case$y, na_rm = na_rm)),
-        case$cast(pmax(case$x, case$y, na.rm = na_rm))
+        case$cast(na_wins(pmax(case$x, case$y, na.rm = na_rm), case$x, case$y))
       )
       expect_identical(
         as.vector(rray_pmin(case$x, case$y, na_rm = na_rm)),
-        case$cast(pmin(case$x, case$y, na.rm = na_rm))
+        case$cast(na_wins(pmin(case$x, case$y, na.rm = na_rm), case$x, case$y))
       )
     }
   }
