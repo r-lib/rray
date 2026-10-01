@@ -11,7 +11,6 @@
 // --------------------------------------------------------------------------
 // Elementwise
 
-// Integer `NA` wins over overflow
 // - `x = 1`, `y = 1`: returns `2`.
 // - `x = 1`, `y = NA`: returns `NA`.
 // - `x = NA`, `y = INT_MAX`: returns `NA`.
