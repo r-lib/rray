@@ -59,7 +59,7 @@
 #' An array with the same dimensionality as `x`, but with the dimensions along
 #' `axes` reduced to 1.
 #'
-#' @name reduce
+#' @name rray-reduce
 #' @examples
 #' x <- array(1:10, c(5L, 2L))
 #'
@@ -88,49 +88,49 @@
 #' rray_min(x, 2L)
 NULL
 
-#' @rdname reduce
+#' @rdname rray-reduce
 #' @export
 rray_sum <- function(x, axes, ..., na_rm = FALSE) {
   check_dots_empty0(...)
   .Call(ffi_rray_sum, x, axes, na_rm, environment())
 }
 
-#' @rdname reduce
+#' @rdname rray-reduce
 #' @export
 rray_prod <- function(x, axes, ..., na_rm = FALSE) {
   check_dots_empty0(...)
   .Call(ffi_rray_prod, x, axes, na_rm, environment())
 }
 
-#' @rdname reduce
+#' @rdname rray-reduce
 #' @export
 rray_mean <- function(x, axes, ..., na_rm = FALSE) {
   check_dots_empty0(...)
   .Call(ffi_rray_mean, x, axes, na_rm, environment())
 }
 
-#' @rdname reduce
+#' @rdname rray-reduce
 #' @export
 rray_all <- function(x, axes, ..., na_rm = FALSE) {
   check_dots_empty0(...)
   .Call(ffi_rray_all, x, axes, na_rm, environment())
 }
 
-#' @rdname reduce
+#' @rdname rray-reduce
 #' @export
 rray_any <- function(x, axes, ..., na_rm = FALSE) {
   check_dots_empty0(...)
   .Call(ffi_rray_any, x, axes, na_rm, environment())
 }
 
-#' @rdname reduce
+#' @rdname rray-reduce
 #' @export
 rray_max <- function(x, axes, ..., na_rm = FALSE) {
   check_dots_empty0(...)
   .Call(ffi_rray_max, x, axes, na_rm, environment())
 }
 
-#' @rdname reduce
+#' @rdname rray-reduce
 #' @export
 rray_min <- function(x, axes, ..., na_rm = FALSE) {
   check_dots_empty0(...)

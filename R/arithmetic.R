@@ -38,7 +38,7 @@
 #' @returns
 #' An array with the common dimensions of `x` and `y`.
 #'
-#' @name arithmetic
+#' @name rray-arithmetic
 #' @examples
 #' x <- array(1:6, c(3L, 2L))
 #'
@@ -65,31 +65,31 @@
 #' rray_add(x, cols)
 NULL
 
-#' @rdname arithmetic
+#' @rdname rray-arithmetic
 #' @export
 rray_add <- function(x, y) {
   .Call(ffi_rray_add, x, y, environment())
 }
 
-#' @rdname arithmetic
+#' @rdname rray-arithmetic
 #' @export
 rray_subtract <- function(x, y) {
   .Call(ffi_rray_subtract, x, y, environment())
 }
 
-#' @rdname arithmetic
+#' @rdname rray-arithmetic
 #' @export
 rray_multiply <- function(x, y) {
   .Call(ffi_rray_multiply, x, y, environment())
 }
 
-#' @rdname arithmetic
+#' @rdname rray-arithmetic
 #' @export
 rray_divide <- function(x, y) {
   .Call(ffi_rray_divide, x, y, environment())
 }
 
-#' @rdname arithmetic
+#' @rdname rray-arithmetic
 #' @export
 rray_exponentiate <- function(x, y) {
   .Call(ffi_rray_exponentiate, x, y, environment())

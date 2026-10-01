@@ -15,7 +15,7 @@
 #' @returns
 #' A logical array with the common dimensions of `x` and `y`.
 #'
-#' @name equal
+#' @name rray-equal
 #' @examples
 #' x <- array(1:2, c(2L, 1L))
 #'
@@ -23,13 +23,13 @@
 #' rray_not_equal(x, array(c(1L, 3L), c(1L, 2L)))
 NULL
 
-#' @rdname equal
+#' @rdname rray-equal
 #' @export
 rray_equal <- function(x, y) {
   .Call(ffi_rray_equal, x, y, environment())
 }
 
-#' @rdname equal
+#' @rdname rray-equal
 #' @export
 rray_not_equal <- function(x, y) {
   .Call(ffi_rray_not_equal, x, y, environment())
