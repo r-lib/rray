@@ -3,7 +3,7 @@
 #include <limits.h>
 #include <math.h>
 
-#include "one-extremum.h"
+#include "extremum.h"
 #include "reduce.h"
 #include "type.h"
 #include "utils.h"

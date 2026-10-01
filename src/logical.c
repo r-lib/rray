@@ -5,7 +5,6 @@
 #include "cast.h"
 #include "dimensionality.h"
 #include "dimensions.h"
-#include "one-logical.h"
 #include "strided-iterator.h"
 
 enum rray_logical_op {
