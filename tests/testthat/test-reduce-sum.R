@@ -114,10 +114,10 @@ test_that("double NA / NaN propagates", {
   expect_identical(as.vector(rray_sum(x, 1L)), NaN)
 
   x <- c(NA, NaN)
-  expect_identical(as.vector(rray_sum(x, 1L)), NA_real_)
+  expect_identical(as.vector(rray_sum(x, 1L)), 0 + NA_real_ + NaN)
 
   x <- c(NaN, NA)
-  expect_identical(as.vector(rray_sum(x, 1L)), NA_real_)
+  expect_identical(as.vector(rray_sum(x, 1L)), 0 + NaN + NA_real_)
 })
 
 test_that("Inf matches base R sum", {

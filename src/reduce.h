@@ -18,7 +18,8 @@
 typedef r_obj* (*rray_reduce_fn)(
   r_obj* x,
   r_ssize out_size,
-  const struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan,
+  struct r_lazy error_call
 );
 
 typedef rray_reduce_fn (*rray_reduce_fn_switch)(
@@ -37,6 +38,9 @@ r_obj* rray_reduce(
   struct r_lazy error_call
 );
 
+#define RRAY_REDUCE_ARGS(...) , __VA_ARGS__
+#define RRAY_REDUCE_NO_ARGS
+
 #define RRAY_REDUCE(                                                           \
   X_CTYPE,                                                                     \
   X_CONST_DEREF,                                                               \
@@ -44,7 +48,8 @@ r_obj* rray_reduce(
   OUT_CTYPE,                                                                   \
   OUT_DEREF,                                                                   \
   OUT_INIT,                                                                    \
-  ONE                                                                          \
+  ONE,                                                                         \
+  ONE_ARGS                                                                     \
 )                                                                              \
   const r_ssize size = rray_strided_iterator_plan_size(plan);                  \
                                                                                \
@@ -72,11 +77,11 @@ r_obj* rray_reduce(
                                                                                \
     if (out_run_stride == 0) {                                                 \
       for (r_ssize i = run_start; i < run_end; ++i) {                          \
-        v_out[out_loc] = ONE(v_out[out_loc], v_x[i]);                          \
+        v_out[out_loc] = ONE(v_out[out_loc], v_x[i] ONE_ARGS);                 \
       }                                                                        \
     } else {                                                                   \
       for (r_ssize i = run_start; i < run_end; ++i) {                          \
-        v_out[out_loc] = ONE(v_out[out_loc], v_x[i]);                          \
+        v_out[out_loc] = ONE(v_out[out_loc], v_x[i] ONE_ARGS);                 \
         out_loc += out_run_stride;                                             \
       }                                                                        \
     }                                                                          \

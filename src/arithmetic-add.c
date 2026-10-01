@@ -1,10 +1,9 @@
 #include "arithmetic-add.h"
 
-#include <limits.h>
-
 #include "arithmetic.h"
 #include "binary.h"
 #include "cast.h"
+#include "one-add.h"
 #include "type.h"
 #include "typeof2.h"
 #include "utils.h"
@@ -439,32 +438,4 @@ static r_obj* rray_add_cpl_cpl(
     rray_add_cpl_one,
     RRAY_BINARY_ARGS(error_call)
   );
-}
-
-static inline int rray_add_int_one(int x, int y, struct r_lazy error_call) {
-  if (x == r_globals.na_int || y == r_globals.na_int) {
-    return r_globals.na_int;
-  }
-
-  if ((y > 0 && x > INT_MAX - y) || (y < 0 && x < -INT_MAX - y)) {
-    stop_int_overflow(error_call);
-  }
-
-  return x + y;
-}
-
-static inline double rray_add_dbl_one(
-  double x,
-  double y,
-  struct r_lazy error_call
-) {
-  return x + y;
-}
-
-static inline r_complex rray_add_cpl_one(
-  r_complex x,
-  r_complex y,
-  struct r_lazy error_call
-) {
-  return (r_complex){.r = x.r + y.r, .i = x.i + y.i};
 }

@@ -1,7 +1,6 @@
 #include "reduce-sum.h"
 
-#include <limits.h>
-
+#include "one-add.h"
 #include "reduce.h"
 #include "type.h"
 #include "utils.h"
@@ -60,7 +59,8 @@ static rray_reduce_fn rray_sum_switch(
 static r_obj* rray_sum_lgl(
   r_obj* x,
   r_ssize out_size,
-  const struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan,
+  struct r_lazy error_call
 ) {
   RRAY_REDUCE(
     int,
@@ -69,14 +69,16 @@ static r_obj* rray_sum_lgl(
     int,
     r_int_begin,
     0,
-    rray_sum_lgl_one
+    rray_add_lgl_one,
+    RRAY_REDUCE_ARGS(error_call)
   );
 }
 
 static r_obj* rray_sum_lgl_na_rm(
   r_obj* x,
   r_ssize out_size,
-  const struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan,
+  struct r_lazy error_call
 ) {
   RRAY_REDUCE(
     int,
@@ -85,14 +87,16 @@ static r_obj* rray_sum_lgl_na_rm(
     int,
     r_int_begin,
     0,
-    rray_sum_lgl_one_na_rm
+    rray_add_lgl_one_na_rm,
+    RRAY_REDUCE_ARGS(error_call)
   );
 }
 
 static r_obj* rray_sum_int(
   r_obj* x,
   r_ssize out_size,
-  const struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan,
+  struct r_lazy error_call
 ) {
   RRAY_REDUCE(
     int,
@@ -101,14 +105,16 @@ static r_obj* rray_sum_int(
     int,
     r_int_begin,
     0,
-    rray_sum_int_one
+    rray_add_int_one,
+    RRAY_REDUCE_ARGS(error_call)
   );
 }
 
 static r_obj* rray_sum_int_na_rm(
   r_obj* x,
   r_ssize out_size,
-  const struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan,
+  struct r_lazy error_call
 ) {
   RRAY_REDUCE(
     int,
@@ -117,14 +123,16 @@ static r_obj* rray_sum_int_na_rm(
     int,
     r_int_begin,
     0,
-    rray_sum_int_one_na_rm
+    rray_add_int_one_na_rm,
+    RRAY_REDUCE_ARGS(error_call)
   );
 }
 
 static r_obj* rray_sum_dbl(
   r_obj* x,
   r_ssize out_size,
-  const struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan,
+  struct r_lazy error_call
 ) {
   RRAY_REDUCE(
     double,
@@ -133,14 +141,16 @@ static r_obj* rray_sum_dbl(
     double,
     r_dbl_begin,
     0.0,
-    rray_sum_dbl_one
+    rray_add_dbl_one,
+    RRAY_REDUCE_ARGS(error_call)
   );
 }
 
 static r_obj* rray_sum_dbl_na_rm(
   r_obj* x,
   r_ssize out_size,
-  const struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan,
+  struct r_lazy error_call
 ) {
   RRAY_REDUCE(
     double,
@@ -149,14 +159,16 @@ static r_obj* rray_sum_dbl_na_rm(
     double,
     r_dbl_begin,
     0.0,
-    rray_sum_dbl_one_na_rm
+    rray_add_dbl_one_na_rm,
+    RRAY_REDUCE_ARGS(error_call)
   );
 }
 
 static r_obj* rray_sum_cpl(
   r_obj* x,
   r_ssize out_size,
-  const struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan,
+  struct r_lazy error_call
 ) {
   RRAY_REDUCE(
     r_complex,
@@ -165,14 +177,16 @@ static r_obj* rray_sum_cpl(
     r_complex,
     r_cpl_begin,
     ((r_complex){.r = 0, .i = 0}),
-    rray_sum_cpl_one
+    rray_add_cpl_one,
+    RRAY_REDUCE_ARGS(error_call)
   );
 }
 
 static r_obj* rray_sum_cpl_na_rm(
   r_obj* x,
   r_ssize out_size,
-  const struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan,
+  struct r_lazy error_call
 ) {
   RRAY_REDUCE(
     r_complex,
@@ -181,95 +195,7 @@ static r_obj* rray_sum_cpl_na_rm(
     r_complex,
     r_cpl_begin,
     ((r_complex){.r = 0, .i = 0}),
-    rray_sum_cpl_one_na_rm
+    rray_add_cpl_one_na_rm,
+    RRAY_REDUCE_ARGS(error_call)
   );
-}
-
-static inline int rray_sum_lgl_one(int out, int x) {
-  if (out == r_globals.na_int) {
-    return r_globals.na_int;
-  }
-
-  if (x == r_globals.na_lgl) {
-    return r_globals.na_int;
-  }
-
-  // Since long vectors aren't supported in arrays,
-  // we can't ever integer overflow in a logical array
-
-  return out + x;
-}
-
-static inline int rray_sum_lgl_one_na_rm(int out, int x) {
-  if (x == r_globals.na_lgl) {
-    return out;
-  }
-
-  return out + x;
-}
-
-static inline int rray_sum_int_one(int out, int x) {
-  if (out == r_globals.na_int) {
-    return r_globals.na_int;
-  }
-
-  if (x == r_globals.na_int) {
-    return r_globals.na_int;
-  }
-
-  check_sum_int_overflow(out, x);
-
-  return out + x;
-}
-
-static inline int rray_sum_int_one_na_rm(int out, int x) {
-  if (x == r_globals.na_int) {
-    return out;
-  }
-
-  check_sum_int_overflow(out, x);
-
-  return out + x;
-}
-
-static inline double rray_sum_dbl_one(double out, double x) {
-  if (ISNAN(out) || ISNAN(x)) {
-    if (R_IsNA(out) || R_IsNA(x)) {
-      // `NA` wins over numbers and `NaN`
-      return r_globals.na_dbl;
-    } else {
-      // `NaN` wins over numbers
-      return R_NaN;
-    }
-  } else {
-    return out + x;
-  }
-}
-
-static inline double rray_sum_dbl_one_na_rm(double out, double x) {
-  if (ISNAN(x)) {
-    return out;
-  }
-
-  return out + x;
-}
-
-static inline r_complex rray_sum_cpl_one(r_complex out, r_complex x) {
-  return (r_complex){
-    .r = rray_sum_dbl_one(out.r, x.r),
-    .i = rray_sum_dbl_one(out.i, x.i),
-  };
-}
-
-static inline r_complex rray_sum_cpl_one_na_rm(r_complex out, r_complex x) {
-  return (r_complex){
-    .r = rray_sum_dbl_one_na_rm(out.r, x.r),
-    .i = rray_sum_dbl_one_na_rm(out.i, x.i),
-  };
-}
-
-static inline void check_sum_int_overflow(int out, int x) {
-  if ((x > 0 && out > INT_MAX - x) || (x < 0 && out < -INT_MAX - x)) {
-    r_abort("Integer overflow.");
-  }
 }
