@@ -57,7 +57,8 @@ static rray_reduce_nested_fn rray_mean_switch(
 static r_obj* rray_mean_lgl(
   r_obj* x,
   const struct rray_strided_iterator_plan* outer_plan,
-  const struct rray_strided_iterator_plan* inner_plan
+  const struct rray_strided_iterator_plan* inner_plan,
+  struct r_lazy error_call
 ) {
   RRAY_REDUCE_OUTER(
     int,
@@ -65,14 +66,16 @@ static r_obj* rray_mean_lgl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_mean_lgl_one
+    rray_mean_lgl_one,
+    RRAY_REDUCE_NO_ARGS
   );
 }
 
 static r_obj* rray_mean_lgl_na_rm(
   r_obj* x,
   const struct rray_strided_iterator_plan* outer_plan,
-  const struct rray_strided_iterator_plan* inner_plan
+  const struct rray_strided_iterator_plan* inner_plan,
+  struct r_lazy error_call
 ) {
   RRAY_REDUCE_OUTER(
     int,
@@ -80,14 +83,16 @@ static r_obj* rray_mean_lgl_na_rm(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_mean_lgl_one_na_rm
+    rray_mean_lgl_one_na_rm,
+    RRAY_REDUCE_NO_ARGS
   );
 }
 
 static r_obj* rray_mean_int(
   r_obj* x,
   const struct rray_strided_iterator_plan* outer_plan,
-  const struct rray_strided_iterator_plan* inner_plan
+  const struct rray_strided_iterator_plan* inner_plan,
+  struct r_lazy error_call
 ) {
   RRAY_REDUCE_OUTER(
     int,
@@ -95,14 +100,16 @@ static r_obj* rray_mean_int(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_mean_int_one
+    rray_mean_int_one,
+    RRAY_REDUCE_NO_ARGS
   );
 }
 
 static r_obj* rray_mean_int_na_rm(
   r_obj* x,
   const struct rray_strided_iterator_plan* outer_plan,
-  const struct rray_strided_iterator_plan* inner_plan
+  const struct rray_strided_iterator_plan* inner_plan,
+  struct r_lazy error_call
 ) {
   RRAY_REDUCE_OUTER(
     int,
@@ -110,14 +117,16 @@ static r_obj* rray_mean_int_na_rm(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_mean_int_one_na_rm
+    rray_mean_int_one_na_rm,
+    RRAY_REDUCE_NO_ARGS
   );
 }
 
 static r_obj* rray_mean_dbl(
   r_obj* x,
   const struct rray_strided_iterator_plan* outer_plan,
-  const struct rray_strided_iterator_plan* inner_plan
+  const struct rray_strided_iterator_plan* inner_plan,
+  struct r_lazy error_call
 ) {
   RRAY_REDUCE_OUTER(
     double,
@@ -125,14 +134,16 @@ static r_obj* rray_mean_dbl(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_mean_dbl_one
+    rray_mean_dbl_one,
+    RRAY_REDUCE_NO_ARGS
   );
 }
 
 static r_obj* rray_mean_dbl_na_rm(
   r_obj* x,
   const struct rray_strided_iterator_plan* outer_plan,
-  const struct rray_strided_iterator_plan* inner_plan
+  const struct rray_strided_iterator_plan* inner_plan,
+  struct r_lazy error_call
 ) {
   RRAY_REDUCE_OUTER(
     double,
@@ -140,7 +151,8 @@ static r_obj* rray_mean_dbl_na_rm(
     R_TYPE_double,
     double,
     r_dbl_begin,
-    rray_mean_dbl_one_na_rm
+    rray_mean_dbl_one_na_rm,
+    RRAY_REDUCE_NO_ARGS
   );
 }
 

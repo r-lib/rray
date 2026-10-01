@@ -59,7 +59,8 @@ static rray_reduce_fn rray_sum_switch(
 static r_obj* rray_sum_lgl(
   r_obj* x,
   r_ssize out_size,
-  const struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan,
+  struct r_lazy error_call
 ) {
   RRAY_REDUCE(
     int,
@@ -68,14 +69,16 @@ static r_obj* rray_sum_lgl(
     int,
     r_int_begin,
     0,
-    rray_sum_lgl_one
+    rray_sum_lgl_one,
+    RRAY_REDUCE_NO_ARGS
   );
 }
 
 static r_obj* rray_sum_lgl_na_rm(
   r_obj* x,
   r_ssize out_size,
-  const struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan,
+  struct r_lazy error_call
 ) {
   RRAY_REDUCE(
     int,
@@ -84,14 +87,16 @@ static r_obj* rray_sum_lgl_na_rm(
     int,
     r_int_begin,
     0,
-    rray_sum_lgl_one_na_rm
+    rray_sum_lgl_one_na_rm,
+    RRAY_REDUCE_NO_ARGS
   );
 }
 
 static r_obj* rray_sum_int(
   r_obj* x,
   r_ssize out_size,
-  const struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan,
+  struct r_lazy error_call
 ) {
   RRAY_REDUCE(
     int,
@@ -100,14 +105,16 @@ static r_obj* rray_sum_int(
     int,
     r_int_begin,
     0,
-    rray_sum_int_one
+    rray_sum_int_one,
+    RRAY_REDUCE_ARGS(error_call)
   );
 }
 
 static r_obj* rray_sum_int_na_rm(
   r_obj* x,
   r_ssize out_size,
-  const struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan,
+  struct r_lazy error_call
 ) {
   RRAY_REDUCE(
     int,
@@ -116,14 +123,16 @@ static r_obj* rray_sum_int_na_rm(
     int,
     r_int_begin,
     0,
-    rray_sum_int_one_na_rm
+    rray_sum_int_one_na_rm,
+    RRAY_REDUCE_ARGS(error_call)
   );
 }
 
 static r_obj* rray_sum_dbl(
   r_obj* x,
   r_ssize out_size,
-  const struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan,
+  struct r_lazy error_call
 ) {
   RRAY_REDUCE(
     double,
@@ -132,14 +141,16 @@ static r_obj* rray_sum_dbl(
     double,
     r_dbl_begin,
     0.0,
-    rray_sum_dbl_one
+    rray_sum_dbl_one,
+    RRAY_REDUCE_NO_ARGS
   );
 }
 
 static r_obj* rray_sum_dbl_na_rm(
   r_obj* x,
   r_ssize out_size,
-  const struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan,
+  struct r_lazy error_call
 ) {
   RRAY_REDUCE(
     double,
@@ -148,14 +159,16 @@ static r_obj* rray_sum_dbl_na_rm(
     double,
     r_dbl_begin,
     0.0,
-    rray_sum_dbl_one_na_rm
+    rray_sum_dbl_one_na_rm,
+    RRAY_REDUCE_NO_ARGS
   );
 }
 
 static r_obj* rray_sum_cpl(
   r_obj* x,
   r_ssize out_size,
-  const struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan,
+  struct r_lazy error_call
 ) {
   RRAY_REDUCE(
     r_complex,
@@ -164,14 +177,16 @@ static r_obj* rray_sum_cpl(
     r_complex,
     r_cpl_begin,
     ((r_complex){.r = 0, .i = 0}),
-    rray_sum_cpl_one
+    rray_sum_cpl_one,
+    RRAY_REDUCE_NO_ARGS
   );
 }
 
 static r_obj* rray_sum_cpl_na_rm(
   r_obj* x,
   r_ssize out_size,
-  const struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan,
+  struct r_lazy error_call
 ) {
   RRAY_REDUCE(
     r_complex,
@@ -180,6 +195,7 @@ static r_obj* rray_sum_cpl_na_rm(
     r_complex,
     r_cpl_begin,
     ((r_complex){.r = 0, .i = 0}),
-    rray_sum_cpl_one_na_rm
+    rray_sum_cpl_one_na_rm,
+    RRAY_REDUCE_NO_ARGS
   );
 }

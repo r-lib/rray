@@ -50,7 +50,7 @@ r_obj* rray_reduce(
 
   const rray_reduce_fn fn = fn_switch(x, na_rm, arg, error_call);
 
-  r_obj* out = KEEP(fn(x, out_size, &plan));
+  r_obj* out = KEEP(fn(x, out_size, &plan, error_call));
   r_attrib_poke_dim(out, out_dimensions);
 
   r_obj* out_names = KEEP(rray_reduce_names(x, axes));
@@ -114,7 +114,7 @@ r_obj* rray_reduce_nested(
 
   const rray_reduce_nested_fn fn = fn_switch(x, na_rm, arg, error_call);
 
-  r_obj* out = KEEP(fn(x, &outer_plan, &inner_plan));
+  r_obj* out = KEEP(fn(x, &outer_plan, &inner_plan, error_call));
 
   r_obj* out_dimensions = KEEP(r_alloc_integer(dimensionality));
   int* v_out_dimensions = r_int_begin(out_dimensions);

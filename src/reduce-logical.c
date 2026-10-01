@@ -71,7 +71,8 @@ static rray_reduce_fn rray_any_switch(
 static r_obj* rray_all_lgl(
   r_obj* x,
   r_ssize out_size,
-  const struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan,
+  struct r_lazy error_call
 ) {
   RRAY_REDUCE(
     int,
@@ -80,14 +81,16 @@ static r_obj* rray_all_lgl(
     int,
     r_lgl_begin,
     1,
-    rray_all_lgl_one
+    rray_all_lgl_one,
+    RRAY_REDUCE_NO_ARGS
   );
 }
 
 static r_obj* rray_all_lgl_na_rm(
   r_obj* x,
   r_ssize out_size,
-  const struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan,
+  struct r_lazy error_call
 ) {
   RRAY_REDUCE(
     int,
@@ -96,14 +99,16 @@ static r_obj* rray_all_lgl_na_rm(
     int,
     r_lgl_begin,
     1,
-    rray_all_lgl_one_na_rm
+    rray_all_lgl_one_na_rm,
+    RRAY_REDUCE_NO_ARGS
   );
 }
 
 static r_obj* rray_any_lgl(
   r_obj* x,
   r_ssize out_size,
-  const struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan,
+  struct r_lazy error_call
 ) {
   RRAY_REDUCE(
     int,
@@ -112,14 +117,16 @@ static r_obj* rray_any_lgl(
     int,
     r_lgl_begin,
     0,
-    rray_any_lgl_one
+    rray_any_lgl_one,
+    RRAY_REDUCE_NO_ARGS
   );
 }
 
 static r_obj* rray_any_lgl_na_rm(
   r_obj* x,
   r_ssize out_size,
-  const struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan,
+  struct r_lazy error_call
 ) {
   RRAY_REDUCE(
     int,
@@ -128,6 +135,7 @@ static r_obj* rray_any_lgl_na_rm(
     int,
     r_lgl_begin,
     0,
-    rray_any_lgl_one_na_rm
+    rray_any_lgl_one_na_rm,
+    RRAY_REDUCE_NO_ARGS
   );
 }
