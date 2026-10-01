@@ -4,6 +4,7 @@
 #include "rlang.h"
 
 #include "missing.h"
+#include "utils.h"
 
 // Each of the "one" functions below is carefully tuned to maximize
 // the chance of the resulting loop being vectorized by the compiler.
@@ -18,9 +19,9 @@
 // See `rray_pmax_int_one()`
 static inline int rray_pmax_lgl_one(int x, int y) {
   const int out = x < y ? y : x;
-  const int na = r_globals.na_lgl;
-  const bool has_na = (x == na) | (y == na);
-  return has_na ? na : out;
+  const bool has_na =
+    bool_bitwise_or(rray_lgl_is_missing(x), rray_lgl_is_missing(y));
+  return has_na ? r_globals.na_lgl : out;
 }
 
 // See `rray_pmax_int_one_na_rm()`
@@ -35,9 +36,9 @@ static inline int rray_pmax_lgl_one_na_rm(int x, int y) {
 // - `x = NA`, `y = NA`: returns `NA` (`out = NA`, `has_na = true`).
 static inline int rray_pmax_int_one(int x, int y) {
   const int out = x < y ? y : x;
-  const int na = r_globals.na_int;
-  const bool has_na = (x == na) | (y == na);
-  return has_na ? na : out;
+  const bool has_na =
+    bool_bitwise_or(rray_int_is_missing(x), rray_int_is_missing(y));
+  return has_na ? r_globals.na_int : out;
 }
 
 // Integer `NA` is `INT_MIN`
