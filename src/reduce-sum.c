@@ -1,7 +1,6 @@
 #include "reduce-sum.h"
 
-#include <limits.h>
-
+#include "one-add.h"
 #include "reduce.h"
 #include "type.h"
 #include "utils.h"
@@ -183,93 +182,4 @@ static r_obj* rray_sum_cpl_na_rm(
     ((r_complex){.r = 0, .i = 0}),
     rray_sum_cpl_one_na_rm
   );
-}
-
-static inline int rray_sum_lgl_one(int out, int x) {
-  if (out == r_globals.na_int) {
-    return r_globals.na_int;
-  }
-
-  if (x == r_globals.na_lgl) {
-    return r_globals.na_int;
-  }
-
-  // Since long vectors aren't supported in arrays,
-  // we can't ever integer overflow in a logical array
-
-  return out + x;
-}
-
-static inline int rray_sum_lgl_one_na_rm(int out, int x) {
-  if (x == r_globals.na_lgl) {
-    return out;
-  }
-
-  return out + x;
-}
-
-static inline int rray_sum_int_one(int out, int x) {
-  if (out == r_globals.na_int) {
-    return r_globals.na_int;
-  }
-
-  if (x == r_globals.na_int) {
-    return r_globals.na_int;
-  }
-
-  check_sum_int_overflow(out, x);
-
-  return out + x;
-}
-
-static inline int rray_sum_int_one_na_rm(int out, int x) {
-  if (x == r_globals.na_int) {
-    return out;
-  }
-
-  check_sum_int_overflow(out, x);
-
-  return out + x;
-}
-
-static inline double rray_sum_dbl_one(double out, double x) {
-  if (ISNAN(out) || ISNAN(x)) {
-    if (R_IsNA(out) || R_IsNA(x)) {
-      // `NA` wins over numbers and `NaN`
-      return r_globals.na_dbl;
-    } else {
-      // `NaN` wins over numbers
-      return R_NaN;
-    }
-  } else {
-    return out + x;
-  }
-}
-
-static inline double rray_sum_dbl_one_na_rm(double out, double x) {
-  if (ISNAN(x)) {
-    return out;
-  }
-
-  return out + x;
-}
-
-static inline r_complex rray_sum_cpl_one(r_complex out, r_complex x) {
-  return (r_complex){
-    .r = rray_sum_dbl_one(out.r, x.r),
-    .i = rray_sum_dbl_one(out.i, x.i),
-  };
-}
-
-static inline r_complex rray_sum_cpl_one_na_rm(r_complex out, r_complex x) {
-  return (r_complex){
-    .r = rray_sum_dbl_one_na_rm(out.r, x.r),
-    .i = rray_sum_dbl_one_na_rm(out.i, x.i),
-  };
-}
-
-static inline void check_sum_int_overflow(int out, int x) {
-  if ((x > 0 && out > INT_MAX - x) || (x < 0 && out < -INT_MAX - x)) {
-    r_abort("Integer overflow.");
-  }
 }
