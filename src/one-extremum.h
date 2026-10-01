@@ -258,7 +258,7 @@ static inline int rray_min_lgl_one(int out, int x) {
 // - `out = 0`, `x = 1`: returns `0` (`is_less = false`).
 // - `out = 1`, `x = NA`: returns `1` (`is_less = false`).
 static inline int rray_min_lgl_one_na_rm(int out, int x) {
-  const bool is_less = (x < out) & (x != r_globals.na_lgl);
+  const bool is_less = bool_bitwise_and(x < out, !rray_lgl_is_missing(x));
   return is_less ? x : out;
 }
 
@@ -271,7 +271,7 @@ static inline int rray_min_int_one(int out, int x) {
 // - `out = 1`, `x = 2`: returns `1` (`is_less = false`).
 // - `out = 1`, `x = NA`: returns `1` (`is_less = false`).
 static inline int rray_min_int_one_na_rm(int out, int x) {
-  const bool is_less = (x < out) & (x != r_globals.na_int);
+  const bool is_less = bool_bitwise_and(x < out, !rray_int_is_missing(x));
   return is_less ? x : out;
 }
 
