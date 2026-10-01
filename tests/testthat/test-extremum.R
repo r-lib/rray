@@ -50,6 +50,8 @@ test_that("double wins over logical and integer, in either position", {
 })
 
 test_that("`NA` wins over `NaN`, unlike `pmax()` and `pmin()`", {
+  # We do this to instead match rray_max() and rray_min() and allow them to
+  # share one core C helper
   for (na_rm in c(FALSE, TRUE)) {
     expect_identical(rray_pmax(NA, NaN, na_rm = na_rm), array(NA_real_, 1L))
     expect_identical(rray_pmax(NaN, NA, na_rm = na_rm), array(NA_real_, 1L))
