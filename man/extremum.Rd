@@ -33,8 +33,9 @@ An array with the common dimensions and common type of \code{x} and \code{y}.
 The arrays are broadcast to common dimensions first, so they do not have to
 be the same shape.
 
-When \code{NA} and \code{NaN} are both present, \code{NA} wins, like \code{\link[=max]{max()}} and \code{\link[=min]{min()}}.
-This differs from \code{\link[=pmax]{pmax()}} and \code{\link[=pmin]{pmin()}}, which return whichever comes last:
+When \code{NA} and \code{NaN} are both present, \code{NA} wins, like \code{\link[=rray_max]{rray_max()}},
+\code{\link[=rray_min]{rray_min()}}, \code{\link[=max]{max()}}, and \code{\link[=min]{min()}}. This differs from \code{\link[=pmax]{pmax()}} and \code{\link[=pmin]{pmin()}},
+which return whichever comes last:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_pmax(NA, NaN) # NA
 rray_pmax(NaN, NA) # NA

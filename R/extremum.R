@@ -9,8 +9,9 @@
 #' The arrays are broadcast to common dimensions first, so they do not have to
 #' be the same shape.
 #'
-#' When `NA` and `NaN` are both present, `NA` wins, like [max()] and [min()].
-#' This differs from [pmax()] and [pmin()], which return whichever comes last:
+#' When `NA` and `NaN` are both present, `NA` wins, like [rray_max()],
+#' [rray_min()], [max()], and [min()]. This differs from [pmax()] and [pmin()],
+#' which return whichever comes last:
 #'
 #' ```r
 #' rray_pmax(NA, NaN) # NA
