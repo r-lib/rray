@@ -1,5 +1,6 @@
 #include "reduce-prod.h"
 
+#include "one-multiply.h"
 #include "reduce.h"
 #include "type.h"
 #include "utils.h"
@@ -181,81 +182,4 @@ static r_obj* rray_prod_cpl_na_rm(
     ((r_complex){.r = 1, .i = 0}),
     rray_prod_cpl_one_na_rm
   );
-}
-
-static inline double rray_prod_lgl_one(double out, int x) {
-  if (R_IsNA(out)) {
-    return r_globals.na_dbl;
-  }
-
-  if (x == r_globals.na_lgl) {
-    return r_globals.na_dbl;
-  }
-
-  return out * x;
-}
-
-static inline double rray_prod_lgl_one_na_rm(double out, int x) {
-  if (x == r_globals.na_lgl) {
-    return out;
-  }
-
-  return out * x;
-}
-
-static inline double rray_prod_int_one(double out, int x) {
-  if (R_IsNA(out)) {
-    return r_globals.na_dbl;
-  }
-
-  if (x == r_globals.na_int) {
-    return r_globals.na_dbl;
-  }
-
-  return out * x;
-}
-
-static inline double rray_prod_int_one_na_rm(double out, int x) {
-  if (x == r_globals.na_int) {
-    return out;
-  }
-
-  return out * x;
-}
-
-static inline double rray_prod_dbl_one(double out, double x) {
-  if (ISNAN(out) || ISNAN(x)) {
-    if (R_IsNA(out) || R_IsNA(x)) {
-      return r_globals.na_dbl;
-    } else {
-      return R_NaN;
-    }
-  } else {
-    return out * x;
-  }
-}
-
-static inline double rray_prod_dbl_one_na_rm(double out, double x) {
-  if (ISNAN(x)) {
-    return out;
-  }
-
-  return out * x;
-}
-
-// Plain formula, not the `_Complex` operator, so `Inf * NA` matches `prod()`.
-// Different from `rray_multiply_cpl_one()`, which instead matches R's `*`.
-static inline r_complex rray_prod_cpl_one(r_complex out, r_complex x) {
-  return (r_complex){
-    .r = out.r * x.r - out.i * x.i,
-    .i = out.r * x.i + out.i * x.r,
-  };
-}
-
-static inline r_complex rray_prod_cpl_one_na_rm(r_complex out, r_complex x) {
-  if (ISNAN(x.r) || ISNAN(x.i)) {
-    return out;
-  }
-
-  return rray_prod_cpl_one(out, x);
 }

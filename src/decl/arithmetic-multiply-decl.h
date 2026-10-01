@@ -102,15 +102,3 @@ static r_obj* rray_multiply_cpl_cpl(
   const struct rray_strided_iterator2_plan* plan,
   struct r_lazy error_call
 );
-
-static inline int rray_multiply_int_one(int x, int y, struct r_lazy error_call);
-static inline double rray_multiply_dbl_one(
-  double x,
-  double y,
-  struct r_lazy error_call
-);
-static inline r_complex rray_multiply_cpl_one(
-  r_complex x,
-  r_complex y,
-  struct r_lazy error_call
-);

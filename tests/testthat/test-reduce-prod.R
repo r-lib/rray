@@ -98,11 +98,12 @@ test_that("double NA / NaN propagates", {
   x <- c(NaN, 1)
   expect_identical(as.vector(rray_prod(x, 1L)), NaN)
 
+  # Purposefully not comparing directly, as the result is implementation defined
   x <- c(NA, NaN)
-  expect_identical(as.vector(rray_prod(x, 1L)), NA_real_)
+  expect_identical(is.na(rray_prod(x, 1L)), array(TRUE, 1L))
 
   x <- c(NaN, NA)
-  expect_identical(as.vector(rray_prod(x, 1L)), NA_real_)
+  expect_identical(is.na(rray_prod(x, 1L)), array(TRUE, 1L))
 })
 
 test_that("Inf matches base R prod", {
@@ -179,17 +180,17 @@ test_that("complex zero times Inf gives NaN, matching base R", {
   expect_identical(as.vector(rray_prod(x, 1L)), prod(x))
 })
 
-test_that("complex Inf combined with NA matches base R's prod()", {
+test_that("complex Inf combined with NA is missing", {
+  # Purposefully not comparing directly, as the result is implementation defined
   x <- c(Inf + 0i, NA_complex_)
-  expect_identical(as.vector(rray_prod(x, 1L)), prod(x))
-  expect_identical(as.vector(rray_prod(x, 1L)), NA_complex_)
+  expect_identical(is.na(rray_prod(x, 1L)), array(TRUE, 1L))
 })
 
-test_that("complex infinities are not recovered, unlike rray_multiply()", {
+test_that("complex infinities are recovered, like rray_multiply()", {
   x <- c(complex(real = Inf, imaginary = Inf), 1 + 0i)
   out <- as.vector(rray_prod(x, 1L))
-  expect_identical(Re(out), NaN)
-  expect_identical(Im(out), NaN)
+  expect_identical(Re(out), Inf)
+  expect_identical(Im(out), Inf)
 })
 
 test_that("na_rm removes integer NA", {
