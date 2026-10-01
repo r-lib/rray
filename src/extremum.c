@@ -5,6 +5,7 @@
 #include "cast.h"
 #include "dimensionality.h"
 #include "dimensions.h"
+#include "one-extremum.h"
 #include "strided-iterator.h"
 #include "type.h"
 #include "typeof2.h"
