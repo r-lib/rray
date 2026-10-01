@@ -122,10 +122,9 @@ static inline int rray_pmin_lgl_one(int x, int y) {
 
 // See `rray_pmin_int_one_na_rm()`
 static inline int rray_pmin_lgl_one_na_rm(int x, int y) {
-  const int na = r_globals.na_lgl;
   int out = x > y ? y : x;
-  out = y == na ? x : out;
-  out = x == na ? y : out;
+  out = rray_lgl_is_missing(y) ? x : out;
+  out = rray_lgl_is_missing(x) ? y : out;
   return out;
 }
 
@@ -145,10 +144,9 @@ static inline int rray_pmin_int_one(int x, int y) {
 // - `x = NA`, `y = 1`: returns `1` (`out = NA`, replace `x` with `y`).
 // - `x = NA`, `y = NA`: returns `NA` (`out = NA`, both replacements are `NA`).
 static inline int rray_pmin_int_one_na_rm(int x, int y) {
-  const int na = r_globals.na_int;
   int out = x > y ? y : x;
-  out = y == na ? x : out;
-  out = x == na ? y : out;
+  out = rray_int_is_missing(y) ? x : out;
+  out = rray_int_is_missing(x) ? y : out;
   return out;
 }
 
