@@ -239,6 +239,11 @@ static inline double rray_max_dbl_one(double out, double x) {
   return rray_pmax_dbl_one(out, x);
 }
 
+// Comparisons with `NA` or `NaN` are false, and `out` is never missing
+// - `out = 1`, `x = 2`: returns `2`.
+// - `out = 2`, `x = 1`: returns `2`.
+// - `out = 1`, `x = NA`: returns `1`.
+// - `out = 1`, `x = NaN`: returns `1`.
 static inline double rray_max_dbl_one_na_rm(double out, double x) {
   return out < x ? x : out;
 }
@@ -247,6 +252,10 @@ static inline int rray_min_lgl_one(int out, int x) {
   return rray_pmin_lgl_one(out, x);
 }
 
+// Logical `NA` is `INT_MIN`, and `out` is never `NA`
+// - `out = 1`, `x = 0`: returns `0` (`is_less = true`).
+// - `out = 0`, `x = 1`: returns `0` (`is_less = false`).
+// - `out = 1`, `x = NA`: returns `1` (`is_less = false`).
 static inline int rray_min_lgl_one_na_rm(int out, int x) {
   const bool is_less = (x < out) & (x != r_globals.na_lgl);
   return is_less ? x : out;
@@ -256,6 +265,10 @@ static inline int rray_min_int_one(int out, int x) {
   return rray_pmin_int_one(out, x);
 }
 
+// Integer `NA` is `INT_MIN`, and `out` is never `NA`
+// - `out = 2`, `x = 1`: returns `1` (`is_less = true`).
+// - `out = 1`, `x = 2`: returns `1` (`is_less = false`).
+// - `out = 1`, `x = NA`: returns `1` (`is_less = false`).
 static inline int rray_min_int_one_na_rm(int out, int x) {
   const bool is_less = (x < out) & (x != r_globals.na_int);
   return is_less ? x : out;
@@ -265,6 +278,11 @@ static inline double rray_min_dbl_one(double out, double x) {
   return rray_pmin_dbl_one(out, x);
 }
 
+// Comparisons with `NA` or `NaN` are false, and `out` is never missing
+// - `out = 2`, `x = 1`: returns `1`.
+// - `out = 1`, `x = 2`: returns `1`.
+// - `out = 1`, `x = NA`: returns `1`.
+// - `out = 1`, `x = NaN`: returns `1`.
 static inline double rray_min_dbl_one_na_rm(double out, double x) {
   return out > x ? x : out;
 }
