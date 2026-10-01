@@ -1,10 +1,9 @@
 #include "arithmetic-multiply.h"
 
-#include <limits.h>
-
 #include "arithmetic.h"
 #include "binary.h"
 #include "cast.h"
+#include "one-multiply.h"
 #include "type.h"
 #include "typeof2.h"
 #include "utils.h"
@@ -191,7 +190,7 @@ static r_obj* rray_multiply_lgl_dbl(
     double,
     r_dbl_begin,
     rray_multiply_dbl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
@@ -212,7 +211,7 @@ static r_obj* rray_multiply_dbl_lgl(
     double,
     r_dbl_begin,
     rray_multiply_dbl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
@@ -233,7 +232,7 @@ static r_obj* rray_multiply_lgl_cpl(
     r_complex,
     r_cpl_begin,
     rray_multiply_cpl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
@@ -254,7 +253,7 @@ static r_obj* rray_multiply_cpl_lgl(
     r_complex,
     r_cpl_begin,
     rray_multiply_cpl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
@@ -296,7 +295,7 @@ static r_obj* rray_multiply_int_dbl(
     double,
     r_dbl_begin,
     rray_multiply_dbl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
@@ -317,7 +316,7 @@ static r_obj* rray_multiply_dbl_int(
     double,
     r_dbl_begin,
     rray_multiply_dbl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
@@ -338,7 +337,7 @@ static r_obj* rray_multiply_int_cpl(
     r_complex,
     r_cpl_begin,
     rray_multiply_cpl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
@@ -359,7 +358,7 @@ static r_obj* rray_multiply_cpl_int(
     r_complex,
     r_cpl_begin,
     rray_multiply_cpl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
@@ -380,7 +379,7 @@ static r_obj* rray_multiply_dbl_dbl(
     double,
     r_dbl_begin,
     rray_multiply_dbl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
@@ -401,7 +400,7 @@ static r_obj* rray_multiply_dbl_cpl(
     r_complex,
     r_cpl_begin,
     rray_multiply_cpl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
@@ -422,7 +421,7 @@ static r_obj* rray_multiply_cpl_dbl(
     r_complex,
     r_cpl_begin,
     rray_multiply_cpl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
@@ -443,44 +442,6 @@ static r_obj* rray_multiply_cpl_cpl(
     r_complex,
     r_cpl_begin,
     rray_multiply_cpl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
-}
-
-static inline int rray_multiply_int_one(
-  int x,
-  int y,
-  struct r_lazy error_call
-) {
-  if (x == r_globals.na_int || y == r_globals.na_int) {
-    return r_globals.na_int;
-  }
-
-  // Benchmarked and this is just as fast as R's `GOODIPROD()`
-  const double out = (double) x * (double) y;
-
-  if (out > INT_MAX || out < -INT_MAX) {
-    stop_int_overflow(error_call);
-  }
-
-  return (int) out;
-}
-
-static inline double rray_multiply_dbl_one(
-  double x,
-  double y,
-  struct r_lazy error_call
-) {
-  return x * y;
-}
-
-// Matching R with `_Complex` `*`, which "recovers" infinities. This is
-// different from `rray_prod_cpl_one()`, which instead matches
-// `prod()`.
-static inline r_complex rray_multiply_cpl_one(
-  r_complex x,
-  r_complex y,
-  struct r_lazy error_call
-) {
-  return rray_c99_to_cpl(rray_cpl_to_c99(x) * rray_cpl_to_c99(y));
 }
