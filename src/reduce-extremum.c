@@ -118,7 +118,7 @@ static r_obj* rray_max_lgl(
     int,
     r_lgl_begin,
     0,
-    rray_pmax_int_one
+    rray_max_lgl_one
   );
 }
 
@@ -134,7 +134,7 @@ static r_obj* rray_max_lgl_na_rm(
     int,
     r_lgl_begin,
     0,
-    rray_pmax_int_one_na_rm
+    rray_max_lgl_one_na_rm
   );
 }
 
@@ -150,7 +150,7 @@ static r_obj* rray_max_int(
     int,
     r_int_begin,
     -INT_MAX,
-    rray_pmax_int_one
+    rray_max_int_one
   );
 }
 
@@ -166,7 +166,7 @@ static r_obj* rray_max_int_na_rm(
     int,
     r_int_begin,
     -INT_MAX,
-    rray_pmax_int_one_na_rm
+    rray_max_int_one_na_rm
   );
 }
 
@@ -182,7 +182,7 @@ static r_obj* rray_max_dbl(
     double,
     r_dbl_begin,
     -INFINITY,
-    rray_pmax_dbl_one
+    rray_max_dbl_one
   );
 }
 
@@ -198,7 +198,7 @@ static r_obj* rray_max_dbl_na_rm(
     double,
     r_dbl_begin,
     -INFINITY,
-    rray_pmax_dbl_one_na_rm
+    rray_max_dbl_one_na_rm
   );
 }
 
@@ -214,7 +214,7 @@ static r_obj* rray_min_lgl(
     int,
     r_lgl_begin,
     1,
-    rray_pmin_int_one
+    rray_min_lgl_one
   );
 }
 
@@ -230,7 +230,7 @@ static r_obj* rray_min_lgl_na_rm(
     int,
     r_lgl_begin,
     1,
-    rray_pmin_int_one_na_rm
+    rray_min_lgl_one_na_rm
   );
 }
 
@@ -246,7 +246,7 @@ static r_obj* rray_min_int(
     int,
     r_int_begin,
     INT_MAX,
-    rray_pmin_int_one
+    rray_min_int_one
   );
 }
 
@@ -262,7 +262,7 @@ static r_obj* rray_min_int_na_rm(
     int,
     r_int_begin,
     INT_MAX,
-    rray_pmin_int_one_na_rm
+    rray_min_int_one_na_rm
   );
 }
 
@@ -278,7 +278,7 @@ static r_obj* rray_min_dbl(
     double,
     r_dbl_begin,
     INFINITY,
-    rray_pmin_dbl_one
+    rray_min_dbl_one
   );
 }
 
@@ -294,6 +294,6 @@ static r_obj* rray_min_dbl_na_rm(
     double,
     r_dbl_begin,
     INFINITY,
-    rray_pmin_dbl_one_na_rm
+    rray_min_dbl_one_na_rm
   );
 }

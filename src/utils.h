@@ -34,6 +34,10 @@ static inline bool bool_bitwise_or(bool x, bool y) {
   return (int) x | (int) y;
 }
 
+static inline bool bool_bitwise_and(bool x, bool y) {
+  return (int) x & (int) y;
+}
+
 void check_unclassed(r_obj* x, struct rray_arg* arg, struct r_lazy error_call);
 
 r_no_return void stop_scalar_input(
