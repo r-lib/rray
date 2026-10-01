@@ -15,6 +15,7 @@
 // --------------------------------------------------------------------------
 // Elementwise
 
+// See `rray_pmax_int_one()`
 static inline int rray_pmax_lgl_one(int x, int y) {
   const int out = x < y ? y : x;
   const int na = r_globals.na_lgl;
