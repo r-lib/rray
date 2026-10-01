@@ -114,10 +114,12 @@ static inline double rray_pmax_dbl_one_na_rm(double x, double y) {
   r_stop_unreachable();
 }
 
+// See `rray_pmin_int_one()`
 static inline int rray_pmin_lgl_one(int x, int y) {
   return x > y ? y : x;
 }
 
+// See `rray_pmin_int_one_na_rm()`
 static inline int rray_pmin_lgl_one_na_rm(int x, int y) {
   const int na = r_globals.na_lgl;
   int out = x > y ? y : x;
