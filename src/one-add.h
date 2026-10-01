@@ -68,40 +68,30 @@ static inline int rray_sum_lgl_one_na_rm(int out, int x) {
   return out + x;
 }
 
-static inline void check_sum_int_overflow(int out, int x) {
-  if ((x > 0 && out > INT_MAX - x) || (x < 0 && out < -INT_MAX - x)) {
-    r_abort("Integer overflow.");
-  }
-}
-
 // - `out = 1`, `x = 1`: returns `2`.
 // - `out = 1`, `x = NA`: returns `NA`.
 // - `out = NA`, `x = INT_MAX`: returns `NA`.
 // - `out = 1`, `x = INT_MAX`: errors.
-static inline int rray_sum_int_one(int out, int x) {
-  if (rray_int_is_missing(out)) {
-    return r_globals.na_int;
-  }
-
-  if (rray_int_is_missing(x)) {
-    return r_globals.na_int;
-  }
-
-  check_sum_int_overflow(out, x);
-
-  return out + x;
+static inline int rray_sum_int_one(int out, int x, struct r_lazy error_call) {
+  return rray_add_int_one(out, x, error_call);
 }
 
 // `out` is never `NA`
 // - `out = 1`, `x = 1`: returns `2`.
 // - `out = 1`, `x = NA`: returns `1`.
 // - `out = 1`, `x = INT_MAX`: errors.
-static inline int rray_sum_int_one_na_rm(int out, int x) {
+static inline int rray_sum_int_one_na_rm(
+  int out,
+  int x,
+  struct r_lazy error_call
+) {
   if (rray_int_is_missing(x)) {
     return out;
   }
 
-  check_sum_int_overflow(out, x);
+  if ((x > 0 && out > INT_MAX - x) || (x < 0 && out < -INT_MAX - x)) {
+    stop_int_overflow(error_call);
+  }
 
   return out + x;
 }

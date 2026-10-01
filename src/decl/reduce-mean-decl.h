@@ -8,32 +8,38 @@ static rray_reduce_nested_fn rray_mean_switch(
 static r_obj* rray_mean_lgl(
   r_obj* x,
   const struct rray_strided_iterator_plan* outer_plan,
-  const struct rray_strided_iterator_plan* inner_plan
+  const struct rray_strided_iterator_plan* inner_plan,
+  struct r_lazy error_call
 );
 static r_obj* rray_mean_lgl_na_rm(
   r_obj* x,
   const struct rray_strided_iterator_plan* outer_plan,
-  const struct rray_strided_iterator_plan* inner_plan
+  const struct rray_strided_iterator_plan* inner_plan,
+  struct r_lazy error_call
 );
 static r_obj* rray_mean_int(
   r_obj* x,
   const struct rray_strided_iterator_plan* outer_plan,
-  const struct rray_strided_iterator_plan* inner_plan
+  const struct rray_strided_iterator_plan* inner_plan,
+  struct r_lazy error_call
 );
 static r_obj* rray_mean_int_na_rm(
   r_obj* x,
   const struct rray_strided_iterator_plan* outer_plan,
-  const struct rray_strided_iterator_plan* inner_plan
+  const struct rray_strided_iterator_plan* inner_plan,
+  struct r_lazy error_call
 );
 static r_obj* rray_mean_dbl(
   r_obj* x,
   const struct rray_strided_iterator_plan* outer_plan,
-  const struct rray_strided_iterator_plan* inner_plan
+  const struct rray_strided_iterator_plan* inner_plan,
+  struct r_lazy error_call
 );
 static r_obj* rray_mean_dbl_na_rm(
   r_obj* x,
   const struct rray_strided_iterator_plan* outer_plan,
-  const struct rray_strided_iterator_plan* inner_plan
+  const struct rray_strided_iterator_plan* inner_plan,
+  struct r_lazy error_call
 );
 
 static inline double rray_mean_lgl_one(

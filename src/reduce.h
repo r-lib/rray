@@ -6,6 +6,9 @@
 #include "arg.h"
 #include "strided-iterator.h"
 
+#define RRAY_REDUCE_ARGS(...) , __VA_ARGS__
+#define RRAY_REDUCE_NO_ARGS
+
 // --------------------------------------------------------------------------
 // rray_reduce
 
@@ -18,7 +21,8 @@
 typedef r_obj* (*rray_reduce_fn)(
   r_obj* x,
   r_ssize out_size,
-  const struct rray_strided_iterator_plan* plan
+  const struct rray_strided_iterator_plan* plan,
+  struct r_lazy error_call
 );
 
 typedef rray_reduce_fn (*rray_reduce_fn_switch)(
@@ -44,7 +48,8 @@ r_obj* rray_reduce(
   OUT_CTYPE,                                                                   \
   OUT_DEREF,                                                                   \
   OUT_INIT,                                                                    \
-  ONE                                                                          \
+  ONE,                                                                         \
+  ONE_ARGS                                                                     \
 )                                                                              \
   const r_ssize size = rray_strided_iterator_plan_size(plan);                  \
                                                                                \
@@ -72,11 +77,11 @@ r_obj* rray_reduce(
                                                                                \
     if (out_run_stride == 0) {                                                 \
       for (r_ssize i = run_start; i < run_end; ++i) {                          \
-        v_out[out_loc] = ONE(v_out[out_loc], v_x[i]);                          \
+        v_out[out_loc] = ONE(v_out[out_loc], v_x[i] ONE_ARGS);                 \
       }                                                                        \
     } else {                                                                   \
       for (r_ssize i = run_start; i < run_end; ++i) {                          \
-        v_out[out_loc] = ONE(v_out[out_loc], v_x[i]);                          \
+        v_out[out_loc] = ONE(v_out[out_loc], v_x[i] ONE_ARGS);                 \
         out_loc += out_run_stride;                                             \
       }                                                                        \
     }                                                                          \
@@ -101,7 +106,8 @@ r_obj* rray_reduce(
 typedef r_obj* (*rray_reduce_nested_fn)(
   r_obj* x,
   const struct rray_strided_iterator_plan* outer_plan,
-  const struct rray_strided_iterator_plan* inner_plan
+  const struct rray_strided_iterator_plan* inner_plan,
+  struct r_lazy error_call
 );
 
 typedef rray_reduce_nested_fn (*rray_reduce_nested_fn_switch)(
@@ -126,7 +132,8 @@ r_obj* rray_reduce_nested(
   OUT_RTYPE,                                                                   \
   OUT_CTYPE,                                                                   \
   OUT_DEREF,                                                                   \
-  ONE                                                                          \
+  ONE,                                                                         \
+  ONE_ARGS                                                                     \
 )                                                                              \
   const r_ssize size = rray_strided_iterator_plan_size(outer_plan);            \
                                                                                \
@@ -151,7 +158,7 @@ r_obj* rray_reduce_nested(
     r_ssize x_loc = x_start;                                                   \
                                                                                \
     for (r_ssize i = out_run_start; i < out_run_end; ++i) {                    \
-      v_out[i] = ONE(v_x, x_loc, inner_plan);                                  \
+      v_out[i] = ONE(v_x, x_loc, inner_plan ONE_ARGS);                         \
       x_loc += x_run_stride;                                                   \
     }                                                                          \
                                                                                \
