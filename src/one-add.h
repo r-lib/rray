@@ -106,6 +106,10 @@ static inline int rray_sum_int_one_na_rm(int out, int x) {
   return out + x;
 }
 
+// Purposefully choose to match `rray_add()` rather than `sum()` regarding
+// `c(NA, NaN)` behavior. Base R `sum()` forces `NA` if present, but `+`
+// doesn't, so R is inconsistent. It's much faster to avoid checking for this,
+// so we just say "it's implementation defined" for both add and sum in rray.
 static inline double rray_sum_dbl_one(double out, double x) {
   return rray_add_dbl_one(out, x);
 }
