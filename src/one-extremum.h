@@ -12,6 +12,20 @@
 // to be the most stable when reducing across different combinations of
 // axes.
 
+// --------------------------------------------------------------------------
+// Elementwise
+
+static inline int rray_pmax_lgl_one(int x, int y) {
+  const int out = x < y ? y : x;
+  const int na = r_globals.na_lgl;
+  const bool has_na = (x == na) | (y == na);
+  return has_na ? na : out;
+}
+
+static inline int rray_pmax_lgl_one_na_rm(int x, int y) {
+  return x < y ? y : x;
+}
+
 // Bitwise `|` improves efficiency here
 // - `x = 1`, `y = 1`: returns `1` (`out = 1`, `has_na = false`).
 // - `x = 1`, `y = NA`: returns `NA` (`out = 1`, `has_na = true`).
@@ -96,6 +110,18 @@ static inline double rray_pmax_dbl_one_na_rm(double x, double y) {
   }
   }
   r_stop_unreachable();
+}
+
+static inline int rray_pmin_lgl_one(int x, int y) {
+  return x > y ? y : x;
+}
+
+static inline int rray_pmin_lgl_one_na_rm(int x, int y) {
+  const int na = r_globals.na_lgl;
+  int out = x > y ? y : x;
+  out = y == na ? x : out;
+  out = x == na ? y : out;
+  return out;
 }
 
 // Integer `NA` is `INT_MIN`
@@ -184,6 +210,59 @@ static inline double rray_pmin_dbl_one_na_rm(double x, double y) {
   }
   }
   r_stop_unreachable();
+}
+
+// --------------------------------------------------------------------------
+// Reduce
+
+static inline int rray_max_lgl_one(int x, int y) {
+  return rray_pmax_lgl_one(x, y);
+}
+
+static inline int rray_max_lgl_one_na_rm(int x, int y) {
+  return rray_pmax_lgl_one_na_rm(x, y);
+}
+
+static inline int rray_max_int_one(int x, int y) {
+  return rray_pmax_int_one(x, y);
+}
+
+static inline int rray_max_int_one_na_rm(int x, int y) {
+  return rray_pmax_int_one_na_rm(x, y);
+}
+
+static inline double rray_max_dbl_one(double x, double y) {
+  return rray_pmax_dbl_one(x, y);
+}
+
+static inline double rray_max_dbl_one_na_rm(double x, double y) {
+  return x < y ? y : x;
+}
+
+static inline int rray_min_lgl_one(int x, int y) {
+  return rray_pmin_lgl_one(x, y);
+}
+
+static inline int rray_min_lgl_one_na_rm(int x, int y) {
+  const bool is_less = (y < x) & (y != r_globals.na_lgl);
+  return is_less ? y : x;
+}
+
+static inline int rray_min_int_one(int x, int y) {
+  return rray_pmin_int_one(x, y);
+}
+
+static inline int rray_min_int_one_na_rm(int x, int y) {
+  const bool is_less = (y < x) & (y != r_globals.na_int);
+  return is_less ? y : x;
+}
+
+static inline double rray_min_dbl_one(double x, double y) {
+  return rray_pmin_dbl_one(x, y);
+}
+
+static inline double rray_min_dbl_one_na_rm(double x, double y) {
+  return x > y ? y : x;
 }
 
 #endif
