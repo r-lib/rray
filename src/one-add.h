@@ -68,10 +68,6 @@ static inline int rray_sum_lgl_one_na_rm(int out, int x) {
   return out + x;
 }
 
-// - `out = 1`, `x = 1`: returns `2`.
-// - `out = 1`, `x = NA`: returns `NA`.
-// - `out = NA`, `x = INT_MAX`: returns `NA`.
-// - `out = 1`, `x = INT_MAX`: errors.
 static inline int rray_sum_int_one(int out, int x, struct r_lazy error_call) {
   return rray_add_int_one(out, x, error_call);
 }
