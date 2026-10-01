@@ -39,15 +39,11 @@
 #' | integer | `-.Machine$integer.max` | `.Machine$integer.max` |
 #' | double  | `-Inf`                  | `Inf`                  |
 #'
-#' When `NA` and `NaN` are both present, `rray_max()` and `rray_min()` return
-#' whichever comes last. This matches [rray_pmax()] and [rray_pmin()], rather
-#' than base R's [max()] and [min()], where `NA` always wins:
+#' When `NA` and `NaN` are both present, `NA` wins, like [max()] and [min()]:
 #'
 #' ```r
-#' rray_max(c(NA, NaN), 1L) # NaN
+#' rray_max(c(NA, NaN), 1L) # NA
 #' rray_max(c(NaN, NA), 1L) # NA
-#'
-#' max(c(NA, NaN)) # NA
 #' ```
 #'
 #' @inheritParams rlang::args_dots_empty

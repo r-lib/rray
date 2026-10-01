@@ -9,6 +9,16 @@
 #' The arrays are broadcast to common dimensions first, so they do not have to
 #' be the same shape.
 #'
+#' When `NA` and `NaN` are both present, `NA` wins, like [max()] and [min()].
+#' This differs from [pmax()] and [pmin()], which return whichever comes last:
+#'
+#' ```r
+#' rray_pmax(NA, NaN) # NA
+#' rray_pmax(NaN, NA) # NA
+#'
+#' pmax(NA, NaN) # NaN
+#' ```
+#'
 #' @inheritParams rlang::args_dots_empty
 #'
 #' @param x An array.

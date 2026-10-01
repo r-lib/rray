@@ -81,14 +81,10 @@ that type and \code{rray_min()} returns the largest:\tabular{lll}{
 }
 
 
-When \code{NA} and \code{NaN} are both present, \code{rray_max()} and \code{rray_min()} return
-whichever comes last. This matches \code{\link[=rray_pmax]{rray_pmax()}} and \code{\link[=rray_pmin]{rray_pmin()}}, rather
-than base R's \code{\link[=max]{max()}} and \code{\link[=min]{min()}}, where \code{NA} always wins:
+When \code{NA} and \code{NaN} are both present, \code{NA} wins, like \code{\link[=max]{max()}} and \code{\link[=min]{min()}}:
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_max(c(NA, NaN), 1L) # NaN
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_max(c(NA, NaN), 1L) # NA
 rray_max(c(NaN, NA), 1L) # NA
-
-max(c(NA, NaN)) # NA
 }\if{html}{\out{</div>}}
 }
 
