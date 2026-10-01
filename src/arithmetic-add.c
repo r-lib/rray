@@ -1,10 +1,9 @@
 #include "arithmetic-add.h"
 
-#include <limits.h>
-
 #include "arithmetic.h"
 #include "binary.h"
 #include "cast.h"
+#include "one-add.h"
 #include "type.h"
 #include "typeof2.h"
 #include "utils.h"
@@ -185,7 +184,7 @@ static r_obj* rray_add_lgl_dbl(
     double,
     r_dbl_begin,
     rray_add_dbl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
@@ -206,7 +205,7 @@ static r_obj* rray_add_dbl_lgl(
     double,
     r_dbl_begin,
     rray_add_dbl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
@@ -227,7 +226,7 @@ static r_obj* rray_add_lgl_cpl(
     r_complex,
     r_cpl_begin,
     rray_add_cpl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
@@ -248,7 +247,7 @@ static r_obj* rray_add_cpl_lgl(
     r_complex,
     r_cpl_begin,
     rray_add_cpl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
@@ -290,7 +289,7 @@ static r_obj* rray_add_int_dbl(
     double,
     r_dbl_begin,
     rray_add_dbl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
@@ -311,7 +310,7 @@ static r_obj* rray_add_dbl_int(
     double,
     r_dbl_begin,
     rray_add_dbl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
@@ -332,7 +331,7 @@ static r_obj* rray_add_int_cpl(
     r_complex,
     r_cpl_begin,
     rray_add_cpl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
@@ -353,7 +352,7 @@ static r_obj* rray_add_cpl_int(
     r_complex,
     r_cpl_begin,
     rray_add_cpl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
@@ -374,7 +373,7 @@ static r_obj* rray_add_dbl_dbl(
     double,
     r_dbl_begin,
     rray_add_dbl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
@@ -395,7 +394,7 @@ static r_obj* rray_add_dbl_cpl(
     r_complex,
     r_cpl_begin,
     rray_add_cpl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
@@ -416,7 +415,7 @@ static r_obj* rray_add_cpl_dbl(
     r_complex,
     r_cpl_begin,
     rray_add_cpl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
@@ -437,34 +436,6 @@ static r_obj* rray_add_cpl_cpl(
     r_complex,
     r_cpl_begin,
     rray_add_cpl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
-}
-
-static inline int rray_add_int_one(int x, int y, struct r_lazy error_call) {
-  if (x == r_globals.na_int || y == r_globals.na_int) {
-    return r_globals.na_int;
-  }
-
-  if ((y > 0 && x > INT_MAX - y) || (y < 0 && x < -INT_MAX - y)) {
-    stop_int_overflow(error_call);
-  }
-
-  return x + y;
-}
-
-static inline double rray_add_dbl_one(
-  double x,
-  double y,
-  struct r_lazy error_call
-) {
-  return x + y;
-}
-
-static inline r_complex rray_add_cpl_one(
-  r_complex x,
-  r_complex y,
-  struct r_lazy error_call
-) {
-  return (r_complex){.r = x.r + y.r, .i = x.i + y.i};
 }
