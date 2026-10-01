@@ -39,9 +39,7 @@ static inline double rray_multiply_dbl_one(double x, double y) {
   return x * y;
 }
 
-// Matching R with `_Complex` `*`, which "recovers" infinities. This is
-// different from `rray_prod_cpl_one()`, which instead matches
-// `prod()`.
+// Matching R with `_Complex` `*`, which "recovers" infinities
 static inline r_complex rray_multiply_cpl_one(r_complex x, r_complex y) {
   return rray_c99_to_cpl(rray_cpl_to_c99(x) * rray_cpl_to_c99(y));
 }
@@ -111,13 +109,10 @@ static inline double rray_prod_dbl_one_na_rm(double out, double x) {
   return out * x;
 }
 
-// Plain formula, not the `_Complex` operator, so `Inf * NA` matches `prod()`.
-// Different from `rray_multiply_cpl_one()`, which instead matches R's `*`.
+// Purposefully choose to match `rray_multiply()` rather than `prod()`, which
+// doesn't recover infinities
 static inline r_complex rray_prod_cpl_one(r_complex out, r_complex x) {
-  return (r_complex) {
-    .r = out.r * x.r - out.i * x.i,
-    .i = out.r * x.i + out.i * x.r,
-  };
+  return rray_multiply_cpl_one(out, x);
 }
 
 // The whole element is removed
