@@ -113,6 +113,7 @@ test_that("double NA / NaN propagates", {
   x <- c(NaN, 1)
   expect_identical(as.vector(rray_sum(x, 1L)), NaN)
 
+  # Purposefully not comparing directly, as the result is implementation defined
   x <- c(NA, NaN)
   expect_identical(is.na(rray_sum(x, 1L)), array(TRUE, 1L))
 
