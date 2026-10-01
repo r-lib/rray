@@ -27,6 +27,10 @@ static inline int rray_add_lgl_one_na_rm(
   int y,
   struct r_lazy error_call
 ) {
+  if (x == r_globals.na_int) {
+    return y == r_globals.na_lgl ? r_globals.na_int : y;
+  }
+
   if (y == r_globals.na_lgl) {
     return x;
   }
@@ -59,6 +63,10 @@ static inline int rray_add_int_one_na_rm(
   int y,
   struct r_lazy error_call
 ) {
+  if (x == r_globals.na_int) {
+    return y;
+  }
+
   if (y == r_globals.na_int) {
     return x;
   }
@@ -81,6 +89,10 @@ static inline double rray_add_dbl_one_na_rm(
   double y,
   struct r_lazy error_call
 ) {
+  if (ISNAN(x)) {
+    return y;
+  }
+
   if (ISNAN(y)) {
     return x;
   }
