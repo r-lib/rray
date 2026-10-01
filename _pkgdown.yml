@@ -6,15 +6,15 @@ development:
 reference:
 - title: Elementwise
   contents:
-  - arithmetic
-  - extremum
-  - equal
-  - compare
+  - rray-arithmetic
+  - rray-extremum
+  - rray-equal
+  - rray-compare
   - rray-logical
 
 - title: Reducers
   contents:
-  - reduce
+  - rray-reduce
 
 - title: Combining and Splitting
   contents:

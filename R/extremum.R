@@ -32,7 +32,7 @@
 #' @returns
 #' An array with the common dimensions and common type of `x` and `y`.
 #'
-#' @name extremum
+#' @name rray-extremum
 #' @examples
 #' x <- array(1:6, c(3L, 2L))
 #'
@@ -43,14 +43,14 @@
 #' rray_pmax(x, array(c(2L, 5L), c(1L, 2L)))
 NULL
 
-#' @rdname extremum
+#' @rdname rray-extremum
 #' @export
 rray_pmax <- function(x, y, ..., na_rm = FALSE) {
   check_dots_empty0(...)
   .Call(ffi_rray_pmax, x, y, na_rm, environment())
 }
 
-#' @rdname extremum
+#' @rdname rray-extremum
 #' @export
 rray_pmin <- function(x, y, ..., na_rm = FALSE) {
   check_dots_empty0(...)

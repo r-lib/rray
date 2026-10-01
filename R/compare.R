@@ -21,7 +21,7 @@
 #' @returns
 #' A logical array with the common dimensions of `x` and `y`.
 #'
-#' @name compare
+#' @name rray-compare
 #' @examples
 #' x <- array(1:6, c(3L, 2L))
 #'
@@ -29,25 +29,25 @@
 #' rray_less_than_or_equal(x, array(c(2L, 5L), c(1L, 2L)))
 NULL
 
-#' @rdname compare
+#' @rdname rray-compare
 #' @export
 rray_greater_than <- function(x, y) {
   .Call(ffi_rray_greater_than, x, y, environment())
 }
 
-#' @rdname compare
+#' @rdname rray-compare
 #' @export
 rray_greater_than_or_equal <- function(x, y) {
   .Call(ffi_rray_greater_than_or_equal, x, y, environment())
 }
 
-#' @rdname compare
+#' @rdname rray-compare
 #' @export
 rray_less_than <- function(x, y) {
   .Call(ffi_rray_less_than, x, y, environment())
 }
 
-#' @rdname compare
+#' @rdname rray-compare
 #' @export
 rray_less_than_or_equal <- function(x, y) {
   .Call(ffi_rray_less_than_or_equal, x, y, environment())
