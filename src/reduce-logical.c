@@ -80,7 +80,7 @@ static r_obj* rray_all_lgl(
     int,
     r_lgl_begin,
     1,
-    rray_and_lgl_one
+    rray_all_lgl_one
   );
 }
 
@@ -96,7 +96,7 @@ static r_obj* rray_all_lgl_na_rm(
     int,
     r_lgl_begin,
     1,
-    rray_and_lgl_one_na_rm
+    rray_all_lgl_one_na_rm
   );
 }
 
@@ -112,7 +112,7 @@ static r_obj* rray_any_lgl(
     int,
     r_lgl_begin,
     0,
-    rray_or_lgl_one
+    rray_any_lgl_one
   );
 }
 
@@ -128,6 +128,6 @@ static r_obj* rray_any_lgl_na_rm(
     int,
     r_lgl_begin,
     0,
-    rray_or_lgl_one_na_rm
+    rray_any_lgl_one_na_rm
   );
 }
