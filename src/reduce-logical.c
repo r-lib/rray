@@ -1,6 +1,7 @@
 #include "reduce-logical.h"
 
 #include "logical.h"
+#include "one-logical.h"
 #include "reduce.h"
 
 #include "decl/reduce-logical-decl.h"
