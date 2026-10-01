@@ -23,6 +23,7 @@ static inline int rray_pmax_lgl_one(int x, int y) {
   return has_na ? na : out;
 }
 
+// See `rray_pmax_int_one_na_rm()`
 static inline int rray_pmax_lgl_one_na_rm(int x, int y) {
   return x < y ? y : x;
 }
