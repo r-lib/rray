@@ -27,6 +27,9 @@ r_obj* rray_pmin(
 // Each of the "one" functions below is carefully tuned to maximize
 // the chance of the resulting loop being vectorized by the compiler.
 // Anecdotally tested on an M2 Mac, where the assembly was analyzed.
+// For doubles, the double switch is less likely to vectorize but seems
+// to be the most stable when reducing across different combinations of
+// axes.
 
 // Bitwise `|` improves efficiency here
 // - `x = 1`, `y = 1`: returns `1` (`out = 1`, `has_na = false`).
