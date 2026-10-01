@@ -74,7 +74,6 @@ static inline void check_sum_int_overflow(int out, int x) {
   }
 }
 
-// Integer `NA` wins over overflow
 // - `out = 1`, `x = 1`: returns `2`.
 // - `out = 1`, `x = NA`: returns `NA`.
 // - `out = NA`, `x = INT_MAX`: returns `NA`.
