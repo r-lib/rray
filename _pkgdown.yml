@@ -4,62 +4,6 @@ development:
   mode: auto
 
 reference:
-- title: Dimensions
-  contents:
-  - rray_dimensions
-  - rray_dimensions_common
-  - rray_dimensionality
-  - rray_size
-  - rray_set_dimensions
-
-- title: Names
-  contents:
-  - rray_names
-  - rray_axis_names
-  - rray_row_names
-  - rray_column_names
-  - rray_set_names
-  - rray_set_axis_names
-  - rray_set_row_names
-  - rray_set_column_names
-
-- title: Broadcasting
-  contents:
-  - rray_broadcast
-  - rray_broadcast_common
-
-- title: Indexing
-  contents:
-  - rray_slice
-  - rray_index
-  - rray_extract
-
-- title: Combining and Splitting
-  contents:
-  - rray_combine
-  - rray_split
-  - rray_stack
-  - rray_unstack
-
-- title: Repeating
-  contents:
-  - rray-rep
-
-- title: Rolling
-  contents:
-  - rray-roll
-
-- title: Reversing
-  contents:
-  - rray_reverse
-
-- title: Axes
-  contents:
-  - rray_permute_axes
-  - rray_move_axes
-  - rray_insert_axes
-  - rray_remove_axes
-
 - title: Elementwise
   contents:
   - arithmetic
@@ -71,3 +15,50 @@ reference:
 - title: Reducers
   contents:
   - reduce
+
+- title: Combining and Splitting
+  contents:
+  - rray_combine
+  - rray_split
+  - rray_stack
+  - rray_unstack
+
+- title: Indexing
+  contents:
+  - rray_slice
+  - rray_index
+  - rray_extract
+  - rray-rep
+  - rray-roll
+  - rray_reverse
+
+- title: Broadcasting
+  contents:
+  - rray_broadcast
+  - rray_broadcast_common
+
+- title: Dimensions
+  contents:
+  - rray_dimensions
+  - rray_dimensions_common
+  - rray_dimensionality
+  - rray_size
+  - rray_set_dimensions
+
+- title: Axes
+  contents:
+  - rray_permute_axes
+  - rray_move_axes
+  - rray_insert_axes
+  - rray_remove_axes
+
+- title: Names
+  contents:
+  - rray_names
+  - rray_axis_names
+  - rray_row_names
+  - rray_column_names
+  - rray_set_names
+  - rray_set_axis_names
+  - rray_set_row_names
+  - rray_set_column_names
