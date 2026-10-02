@@ -61,17 +61,17 @@ r_obj* rray_broadcast(
     error_call
   );
 
-  r_ssize v_strides[RRAY_MAX_DIMENSIONALITY];
+  r_ssize v_x_broadcast_strides[RRAY_MAX_DIMENSIONALITY];
 
   rray_fill_broadcast_strides_from_dimensions(
     v_x_dimensions,
     x_dimensionality,
     dimensionality,
-    v_strides
+    v_x_broadcast_strides
   );
 
   const struct rray_run_plan plan =
-    rray_run_plan(v_dimensions, dimensionality, v_strides, 1);
+    rray_run_plan(v_dimensions, dimensionality, v_x_broadcast_strides, 1);
 
   r_obj* out;
 
