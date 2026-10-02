@@ -14,13 +14,15 @@ This plan looks at the alternative: an iterator that the operation drives itself
 
 - The same run iterator, with each function writing one loop per stride case (an operand fixed or moving), matches the macros in nearly every case we measured. The exception is very short runs: adding `[10, 1e6] + [10, 1]` (a million runs of 10 elements) is 4% to 6% slower, in every one of six runs. It's faster in one case: summing `[10, 1e6]` over axis 1 takes 2.75 ms against 3.53 ms, because the total stays in a local variable.
 
+- That design is what NumPy does. It is also what the macros already do. The loops are the same, so the speed is the same. What changes is where the loops live: in each function, where they can be read and changed, instead of inside a macro.
+
 - One run iterator can serve any number of inputs, replacing today's separate one-input and two-input plans. It's as fast as the specialized ones, as long as each function passes the number of inputs as a literal (`1`, `2`) and the call is inlined. With the count known only at runtime, short runs get 25% to 75% slower.
 
-- That last design is what NumPy does. It is also what the macros already do. The loops are the same, so the speed is the same. What changes is where the loops live: in each function, where they can be read and changed, instead of inside a macro.
+- The short-run gap goes away when the iterator does less per run: keep one location array that the iterator advances directly (no per-run copy for the caller), and advance at the end of each run instead of checking for the first run at the start, like the macros do. That version is within 2.5% of the macro on every short-run case.
 
 - The cost is repetition. rray4 has 84 `RRAY_BINARY()` calls, 32 `RRAY_REDUCE()` calls and 5 `RRAY_BROADCAST_ATOMIC()` calls. Writing every stride case out by hand in each of them is a lot of code. How to handle the per-type repetition is the main open question.
 
-Recommendation: adopt the run iterator with per-stride-case loops, and decide separately how to avoid writing every type out by hand.
+Recommendation: adopt one run iterator for any number of inputs, in the "advance at the end" shape, with per-stride-case loops written in each function. Decide separately how to avoid writing every type out by hand.
 
 ---
 
@@ -332,6 +334,8 @@ A copy of rray4 at `9e171e1` (`main`), with:
 
   - `run_n` and `run_n_runtime`: added later, see "Any number of inputs".
 
+  - `lean` and `advance`: added later, see "Removing the per-run cost".
+
 All four variants pass `test-broadcast.R`, `test-arithmetic-add.R` and `test-reduce-sum.R` (124 tests, 262 expectations each). The benchmark script also checks that every variant returns an `identical()` result to `macro` in every case before timing anything.
 
 ## Broadcast, double
@@ -539,6 +543,106 @@ With `RRAY_MAX_INPUTS` raised to 64, so `rray_index()` could use it, `run_n` was
 
 ---
 
+# Removing the per-run cost
+
+`rray_run_iterator_n` does two things per run that the macros don't:
+
+- It keeps two location arrays. `v_loc_start` is what `next()` advances, and `v_loc` is a copy made at the start of every run for the caller. The copy only protects against a caller that changes `it.v_loc[i]` while walking the run. No caller does: every loop copies the start into a local (`r_ssize x_loc = it.v_loc[0];`) and moves the local.
+
+- `next()` checks `it->end != 0` on every run, so that the first call doesn't advance.
+
+## Two leaner iterators
+
+`rray_run_iterator_n_lean` keeps one array, `v_loc`, which `next()` advances directly. The caller reads it and never writes it. C can't enforce that, since the iterator itself has to change the field. It still has the first-run check.
+
+```c
+static inline bool rray_run_iterator_n_lean_next(
+  struct rray_run_iterator_n_lean* it,
+  const r_ssize n
+) {
+  if (it->end == it->size) {
+    return false;
+  }
+
+  if (it->end != 0) {
+    const struct rray_strided_iterator_n_plan* plan = it->plan;
+    RRAY_STRIDED_ITERATOR_NEXT_N(it->v_loc, it->v_point, plan, n);
+  }
+
+  it->start = it->end;
+  it->end = it->start + it->run_size;
+
+  return true;
+}
+```
+
+`rray_run_iterator_n_advance` also drops the first-run check. Its constructor already describes the first run (`it.end = it.run_size`), and the loop advances at the end of each run. That is the same shape as the macros' `while (run_start != size) { ...; RRAY_STRIDED_ITERATOR_NEXT(); }`.
+
+```c
+static inline bool rray_run_iterator_n_advance_done(
+  const struct rray_run_iterator_n_advance* it
+) {
+  return it->start == it->size;
+}
+
+static inline void rray_run_iterator_n_advance_next(
+  struct rray_run_iterator_n_advance* it,
+  const r_ssize n
+) {
+  const struct rray_strided_iterator_n_plan* plan = it->plan;
+  RRAY_STRIDED_ITERATOR_NEXT_N(it->v_loc, it->v_point, plan, n);
+
+  it->start = it->end;
+  it->end = it->start + it->run_size;
+}
+```
+
+The caller's loop becomes a `for` instead of a `while`:
+
+```c
+struct rray_run_iterator_n_advance it = rray_run_iterator_n_advance(plan, 2);
+
+for (; !rray_run_iterator_n_advance_done(&it);
+     rray_run_iterator_n_advance_next(&it, 2)) {
+  r_ssize x_loc = it.v_loc[0];
+  r_ssize y_loc = it.v_loc[1];
+  ...
+}
+```
+
+After the last run, `next()` carries the point back to zero one extra time. That only changes `v_point` and `v_loc`, which nothing reads afterwards. An empty array (`size == 0`) is done before the first run.
+
+## Benchmarks
+
+Both versions use exactly the same loops as `run_n`, pass the same 262 test expectations, and match `macro` with `identical()` in every case. `RRAY_MAX_INPUTS` was 64 for these runs.
+
+These were measured in a later session, when the machine ran about 7% slower overall than for the tables above (`[4000, 4000]` summed over axis 1 took 13.8 ms instead of 13.05 ms), so compare only within this table. The long-run cases were the same for every version, within noise, across two runs of the full suite. The short-run cases were then rerun on their own: 3 rounds of 50 iterations each, with the order of the versions rotated between rounds, taking the median across rounds.
+
+| Case | Macro | Run split | Run n | Lean | Advance |
+|---|---|---|---|---|---|
+| Broadcast `[10, 1]` to `[10, 1e6]` | 7.08 | 7.14 | 7.06 | 7.13 | 7.16 |
+| Broadcast `[1, 1e6]` to `[10, 1e6]` | 7.00 | 7.09 | 7.39 | 7.22 | 7.32 |
+| Add `[10, 1e6] + [10, 1]` | 8.36 | 9.12 | 9.60 | 8.91 | 8.57 |
+| Add `[10, 1e6] + [1, 1e6]` | 7.98 | 8.28 | 8.70 | 8.08 | 7.81 |
+| Add, integer, `[10, 1e6] + [10, 1]` | 12.08 | 12.58 | 13.13 | 13.18 | 12.02 |
+| Add, integer, `[10, 1e6] + [1, 1e6]` | 14.46 | 15.16 | 14.50 | 14.79 | 14.36 |
+| Sum `[10, 1e6]` over 1 | 3.75 | 2.82 | 3.03 | 2.91 | 3.06 |
+| Sum `[10, 1e6]` over 2 | 4.02 | 3.99 | 3.99 | 3.99 | 3.92 |
+
+## What the numbers say
+
+- Addition is where the per-run cost shows. `advance` is within 2.5% of the macro in all four add cases, and slightly faster in three. `run_n` was 3% to 15% slower.
+
+- Dropping the copy alone (`lean`) gets about two thirds of the way on double addition, but was mixed on integer addition. Dropping the first-run check as well is what closes the gap everywhere.
+
+- Broadcasting and the short sum don't separate the three newer iterator versions beyond noise. All of them beat the macro on the short sum along axis 1, because the total stays in a local variable.
+
+- Differences under about 3% shouldn't be read into, given the noise in this session.
+
+So the recommended iterator is the `advance` shape: one location array, advanced at the end of each run.
+
+---
+
 # The cost: repetition
 
 Moving the loops into each function means each function carries its own copy of the stride cases. Today:
@@ -573,7 +677,7 @@ Options for the per-type repetition:
 
 - Should `rray_strided_iterator_plan` and `rray_strided_iterator2_plan` be replaced by `rray_strided_iterator_n_plan` and `rray_run_iterator_n`, so there is one plan and one iterator?
 
-- Is the 4% to 6% per-run cost on very short runs worth chasing, for example by removing the `it->end != 0` check from `next()`?
+- The `advance` shape needs two calls (`done()` and `next()`) and a `for` loop instead of one `while (next())`. Is that acceptable, or is there a single-call shape that is just as fast?
 
 - None of this has been measured with GCC or on x86_64. Is one Linux run worth doing before committing to the design?
 
@@ -929,4 +1033,76 @@ set_variant(0L)
 
 results <- do.call(rbind, results)
 print(results, row.names = FALSE)
+```
+
+## Short-run benchmark script
+
+The exact script behind the "Removing the per-run cost" table. Run from the root of the variant package.
+
+```r
+devtools::load_all(quiet = TRUE)
+
+variants <- c(macro = 0L, run_split = 3L, run_n = 4L, lean = 6L, advance = 7L)
+
+set_variant <- function(variant) {
+  invisible(.Call(ffi_rray_set_iterator_variant, variant))
+}
+
+set.seed(1)
+
+dbl <- function(...) array(runif(prod(c(...))), c(...))
+int <- function(...) array(sample(100L, prod(c(...)), TRUE), c(...))
+
+wide <- dbl(10, 1e6)
+wide_i <- int(10, 1e6)
+col <- dbl(10, 1)
+row <- dbl(1, 1e6)
+col_i <- int(10, 1)
+row_i <- int(1, 1e6)
+
+cases <- list(
+  "Broadcast [10, 1] to [10, 1e6]" = \() rray_broadcast(col, c(10L, 1000000L)),
+  "Broadcast [1, 1e6] to [10, 1e6]" = \() rray_broadcast(row, c(10L, 1000000L)),
+  "Add [10, 1e6] + [10, 1]" = \() rray_add(wide, col),
+  "Add [10, 1e6] + [1, 1e6]" = \() rray_add(wide, row),
+  "Add, integer, [10, 1e6] + [10, 1]" = \() rray_add(wide_i, col_i),
+  "Add, integer, [10, 1e6] + [1, 1e6]" = \() rray_add(wide_i, row_i),
+  "Sum [10, 1e6] over 1" = \() rray_sum(wide, 1L),
+  "Sum [10, 1e6] over 2" = \() rray_sum(wide, 2L)
+)
+
+for (case in names(cases)) {
+  f <- cases[[case]]
+  set_variant(0L)
+  expected <- f()
+  for (variant in variants) {
+    set_variant(variant)
+    stopifnot(identical(f(), expected))
+  }
+}
+
+rounds <- 3L
+
+times <- array(
+  NA_real_,
+  c(length(cases), length(variants), rounds),
+  dimnames = list(names(cases), names(variants), NULL)
+)
+
+for (round in seq_len(rounds)) {
+  order <- c(seq(round, length(variants)), seq_len(round - 1L))
+  for (case in names(cases)) {
+    f <- cases[[case]]
+    for (variant in names(variants)[order]) {
+      set_variant(variants[[variant]])
+      median <- bench::mark(f(), iterations = 50, check = FALSE)$median
+      times[case, variant, round] <- as.numeric(median) * 1000
+    }
+  }
+}
+
+set_variant(0L)
+
+out <- apply(times, c(1, 2), median)
+print(round(out, 2))
 ```
