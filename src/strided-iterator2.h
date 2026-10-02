@@ -44,6 +44,7 @@
 // coordinates between runs, rather than checking and carrying them after every
 // element. This gives the compiler a small loop where the index and locations
 // advance by fixed strides, making it much easier to optimize and vectorize.
+// This loop is typically what the caller writes.
 //
 // Practical examples of when this is useful:
 //
