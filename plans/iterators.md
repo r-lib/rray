@@ -20,6 +20,8 @@ This plan looks at the alternative: an iterator that the operation drives itself
 
 - The short-run gap goes away when the iterator does less per run: keep one location array that the iterator advances directly (no per-run copy for the caller), and advance at the end of each run instead of checking for the first run at the start, like the macros do. That version is within 2.5% of the macro on every short-run case.
 
+- Keep the plan and the iterator as separate structs. A merged struct is just as fast when it's built inside the kernel. But when the driver builds it and the kernel uses it through a pointer, raw broadcasting gets up to 5x slower and a strided mean 11% slower. With a small `const` plan passed in and the iterator built locally in the kernel, the fast version is the default, with no rule to remember.
+
 - The cost is repetition. rray4 has 84 `RRAY_BINARY()` calls, 32 `RRAY_REDUCE()` calls and 5 `RRAY_BROADCAST_ATOMIC()` calls. Writing every stride case out by hand in each of them is a lot of code. How to handle the per-type repetition is the main open question.
 
 Recommendation: adopt one run iterator for any number of inputs, in the "advance at the end" shape, with per-stride-case loops written in each function. Decide separately how to avoid writing every type out by hand.
@@ -336,6 +338,8 @@ A copy of rray4 at `9e171e1` (`main`), with:
 
   - `lean` and `advance`: added later, see "Removing the per-run cost".
 
+  - `merged`, `merged_reset`, `merged_fresh`, `copy`, `pointer` and `pointer_locals`: added later, see "Plan and iterator: separate or merged". Round 2 adds a branch to each driver that builds the merged struct and calls the hand-off kernel. In the variant package that branch handles any double input to `rray_binary_arithmetic()` and `rray_reduce()` as add and sum, so only the add and sum tests and benchmarks are meaningful under those versions.
+
 All four variants pass `test-broadcast.R`, `test-arithmetic-add.R` and `test-reduce-sum.R` (124 tests, 262 expectations each). The benchmark script also checks that every variant returns an `identical()` result to `macro` in every case before timing anything.
 
 ## Broadcast, double
@@ -640,6 +644,145 @@ These were measured in a later session, when the machine ran about 7% slower ove
 - Differences under about 3% shouldn't be read into, given the noise in this session.
 
 So the recommended iterator is the `advance` shape: one location array, advanced at the end of each run.
+
+---
+
+# Plan and iterator: separate or merged
+
+Every iterator above keeps two structs: an immutable plan (dimensions, strides, size), built once by the driver and passed to the kernel as a `const` pointer, and an iterator holding the changing positions, built inside the kernel. This section checks whether that split matters, or whether one merged struct would do.
+
+## How the variant package is wired
+
+- Every timing goes through the real entry points (`rray_broadcast()`, `rray_add()`, `rray_sum()`, `rray_mean()`) and their unchanged drivers (`rray_broadcast()` itself, `rray_binary_arithmetic()`, `rray_reduce()`, `rray_reduce_nested()`).
+
+- Each driver already builds the plan, picks the per-type kernel, and calls it through a function pointer with `const plan*`. Every iterator version above is built inside that kernel, as a local, from the plan pointer it already receives. Its address only goes to `static inline` functions (`done()`, `next()`), so it never leaves the kernel, and the compiler can keep its positions in registers. No extra parameters needed threading through.
+
+## The merged struct
+
+```c
+struct rray_run_iterator_m {
+  r_ssize start;
+  r_ssize end;
+  r_ssize v_loc[RRAY_MAX_INPUTS];
+  r_ssize v_stride[RRAY_MAX_INPUTS];
+
+  r_ssize size;
+  r_ssize run_size;
+  int dimensionality;
+  r_ssize v_dimensions[RRAY_MAX_DIMENSIONALITY];
+  r_ssize v_strides[RRAY_MAX_DIMENSIONALITY * RRAY_MAX_INPUTS];
+  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];
+};
+
+static inline void rray_run_iterator_m_reset(
+  struct rray_run_iterator_m* it,
+  const r_ssize n
+) {
+  it->start = 0;
+  it->end = it->run_size;
+
+  for (r_ssize i = 0; i < n; ++i) {
+    it->v_loc[i] = 0;
+  }
+
+  r_memset(it->v_point, 0, sizeof(r_ssize) * (size_t) it->dimensionality);
+}
+```
+
+`rray_run_iterator_m_init()` copies the dimensions and strides from a plan, then calls `reset()`. `done()` and `next()` are the same as the `advance` iterator, with the plan fields read from the struct itself. With room for 64 dimensions and 64 inputs, the stride array alone is 32 KB.
+
+## Round 1: merged, built inside the kernel
+
+The kernel builds the merged struct itself, copying from the plan the driver passed in. For the nested integer mean (one inner walk per output), three ways to handle the inner walk:
+
+- `advance`: a new separate-plan iterator for each output.
+
+- `merged_reset`: one merged iterator, reset for each output.
+
+- `merged_fresh`: a new merged iterator for each output, copying the plan every time.
+
+The integer mean makes a single pass, so the per-walk setup cost isn't hidden behind a second pass. Median of 3 rounds of 30 iterations, with the order of the versions rotated between rounds.
+
+| Case | Macro | Advance | Merged |
+|---|---|---|---|
+| Broadcast `[10, 1]` to `[10, 1e6]` | 7.10 | 7.10 | 7.01 |
+| Broadcast `[1, 1e6]` to `[10, 1e6]` | 6.84 | 7.23 | 7.13 |
+| Add `[10, 1e6] + [10, 1]` | 8.38 | 8.40 | 8.52 |
+| Add `[10, 1e6] + [1, 1e6]` | 7.89 | 7.88 | 7.95 |
+| Add, integer, `[10, 1e6] + [10, 1]` | 12.00 | 11.84 | 12.00 |
+| Add `[4000, 4000] + [4000, 4000]` | 10.89 | 10.54 | 10.71 |
+| Sum `[10, 1e6]` over 1 | 3.68 | 2.88 | 3.05 |
+| Sum `[10, 1e6]` over 2 | 4.01 | 3.92 | 3.98 |
+| Sum `[4000, 4000]` over 1 | 13.80 | 13.80 | 13.78 |
+| Sum `[4000, 4000]` over 2 | 2.44 | 2.42 | 2.40 |
+
+| Integer mean | Outputs | Macro | Advance | Merged, reset | Merged, fresh |
+|---|---|---|---|---|---|
+| `[4000, 4000]` over 1 | 4000 | 14.16 | 14.17 | 14.15 | 14.15 |
+| `[4000, 4000]` over 2 | 4000 | 43.25 | 42.84 | 41.65 | 43.01 |
+| `[10, 1e6]` over 1 | 1e6 | 8.17 | 7.95 | 7.76 | 8.45 |
+| `[1e6, 10]` over 2 | 1e6 | 8.16 | 7.91 | 7.87 | 8.51 |
+| `[200, 200, 200]` over 1, 3 | 200 | 7.60 | 7.58 | 7.73 | 7.63 |
+| `[10, 1e5, 10]` over 1, 3 | 1e5 | 6.61 | 6.50 | 6.54 | 6.64 |
+
+- For a single walk, merged and separate are the same within this session's noise (about 3%).
+
+- Copying the plan for every walk costs 4% to 7% when there are a million outputs. Resetting one merged iterator avoids that copy and matches the separate plan.
+
+This round only shows that merging costs nothing inside one function. A real merged design wouldn't build the struct in the kernel, though. The driver would build it and hand it over.
+
+## Round 2: merged, built by the driver
+
+The drivers build the merged struct and pass a pointer to the kernel. The kernels live in their own file and are marked `noinline`, matching today's function-pointer call from driver to kernel. Three kernel versions:
+
+- `copy`: copies the struct into a local (`struct rray_run_iterator_m it_local = *p_it;`), then runs the same loops as round 1.
+
+- `pointer`: uses the driver's struct through the pointer, with the same loop text (`it->end`, `it->v_stride[0]`, ...).
+
+- `pointer_locals`: uses the pointer, but reads `start`, `end`, the strides and the starting locations into locals at the top of each run.
+
+"Local" is round 1's merged struct built inside the kernel. Same timing method as round 1.
+
+| Raw broadcast | Macro | Copy | Pointer | Pointer, locals |
+|---|---|---|---|---|
+| `[10, 1]` to `[10, 1e6]` | 3.35 | 2.86 | 5.47 | 3.16 |
+| `[1, 1e6]` to `[10, 1e6]` | 3.44 | 3.22 | 4.80 | 3.13 |
+| `[4000, 1]` to `[4000, 4000]` | 1.23 | 1.25 | 6.46 | 1.43 |
+
+| Integer mean | Macro | Local | Copy | Pointer | Pointer, locals |
+|---|---|---|---|---|---|
+| `[4000, 4000]` over 1 | 14.12 | 14.15 | 14.15 | 14.15 | 14.16 |
+| `[4000, 4000]` over 2 | 42.77 | 42.82 | 43.00 | 47.71 | 43.12 |
+| `[10, 1e6]` over 1 | 7.92 | 7.88 | 8.44 | 7.26 | 6.99 |
+| `[1e6, 10]` over 2 | 7.87 | 7.87 | 8.45 | 7.26 | 6.98 |
+| `[200, 200, 200]` over 1, 3 | 7.67 | 7.59 | 7.93 | 7.60 | 7.64 |
+| `[10, 1e5, 10]` over 1, 3 | 6.60 | 6.51 | 7.17 | 7.20 | 7.09 |
+
+| Double | Macro | Local | Copy | Pointer | Pointer, locals |
+|---|---|---|---|---|---|
+| Broadcast `[10, 1]` to `[10, 1e6]` | 7.12 | 7.30 | 6.79 | 6.87 | 7.16 |
+| Broadcast `[1, 1e6]` to `[10, 1e6]` | 7.15 | 7.16 | 7.02 | 7.14 | 7.03 |
+| Add `[10, 1e6] + [10, 1]` | 8.24 | 8.49 | 8.25 | 8.44 | 8.67 |
+| Add `[10, 1e6] + [1, 1e6]` | 8.04 | 7.88 | 7.73 | 7.71 | 7.65 |
+| Add `[4000, 4000] + [4000, 4000]` | 10.63 | 10.90 | 10.61 | 10.48 | 10.70 |
+| Sum `[10, 1e6]` over 1 | 3.90 | 2.76 | 3.60 | 2.89 | 2.72 |
+| Sum `[10, 1e6]` over 2 | 3.99 | 3.94 | 3.93 | 3.99 | 3.92 |
+| Sum `[4000, 4000]` over 1 | 13.78 | 13.78 | 13.76 | 13.78 | 13.79 |
+| Sum `[4000, 4000]` over 2 | 2.41 | 2.39 | 2.41 | 2.43 | 2.42 |
+
+## What the numbers say
+
+- Working through the pointer is the trap. For raw output, C allows a byte written through `Rbyte*` to change any object, including `it->end` and `it->v_stride[0]`. So the compiler reloads them on every element and can't vectorize: 5.2x slower on `[4000, 1]` to `[4000, 4000]`. Double output isn't affected, because C's type rules let the compiler assume a `double` write can't change an `r_ssize` field. That's why it never showed up in the double tests. The strided mean also lost 11% through the pointer.
+
+- Reading each run's fields into locals fixes it everywhere, and was the fastest version on the short-walk means (6.98 ms against 7.87 ms for the macro). But it's a rule every loop has to follow. Forgetting it costs nothing visible on `double` and only bites on raw, or anything else written through a character type.
+
+- Copying the struct into a local also avoids the raw problem, but was 30% slower on the short sum and 7% to 10% slower on the short-walk means. The copy happens once per call (about 33 KB, microseconds), so it can't account for milliseconds by itself. A guess is that clang optimizes the loops less well after copying such a large struct. It hasn't been looked into.
+
+- The separate plan avoids all of this without a rule. The kernel gets a small `const` plan, which is only read between runs, and builds its changing positions as locals that can't be confused with the output.
+
+So keep the plan and the iterator separate. The reason isn't that merging is slower in itself. It's that the split makes the fast version the default. The header comment in `src/strided-iterator.h` should give that reason instead of "positions managed by the caller stay in registers", since round 1 shows an iterator struct keeps them in registers just as well.
+
+For the nested reducer, the inner iterator should get a `reset()` that puts it back at the start of the plan, with a new starting location, instead of building a new iterator for every output.
 
 ---
 
@@ -1105,4 +1248,210 @@ set_variant(0L)
 
 out <- apply(times, c(1, 2), median)
 print(round(out, 2))
+```
+
+## Merged, round 1, benchmark script
+
+The exact script behind round 1 of "Plan and iterator: separate or merged". Run from the root of the variant package.
+
+```r
+devtools::load_all(quiet = TRUE)
+
+set_variant <- function(variant) {
+  invisible(.Call(ffi_rray_set_iterator_variant, variant))
+}
+
+set.seed(1)
+
+dbl <- function(...) array(runif(prod(c(...))), c(...))
+int <- function(...) array(sample(100L, prod(c(...)), TRUE), c(...))
+
+m <- dbl(4000, 4000)
+wide <- dbl(10, 1e6)
+wide_i <- int(10, 1e6)
+col <- dbl(10, 1)
+row <- dbl(1, 1e6)
+col_i <- int(10, 1)
+
+mi <- int(4000, 4000)
+tall_i <- int(1e6, 10)
+cube_i <- int(200, 200, 200)
+brick_i <- int(10, 1e5, 10)
+
+single_variants <- c(macro = 0L, advance = 7L, merged = 8L)
+mean_variants <- c(macro = 0L, advance = 7L, merged_reset = 8L, merged_fresh = 9L)
+
+single_cases <- list(
+  "Broadcast [10, 1] to [10, 1e6]" = \() rray_broadcast(col, c(10L, 1000000L)),
+  "Broadcast [1, 1e6] to [10, 1e6]" = \() rray_broadcast(row, c(10L, 1000000L)),
+  "Add [10, 1e6] + [10, 1]" = \() rray_add(wide, col),
+  "Add [10, 1e6] + [1, 1e6]" = \() rray_add(wide, row),
+  "Add, integer, [10, 1e6] + [10, 1]" = \() rray_add(wide_i, col_i),
+  "Add [4000, 4000] + [4000, 4000]" = \() rray_add(m, m),
+  "Sum [10, 1e6] over 1" = \() rray_sum(wide, 1L),
+  "Sum [10, 1e6] over 2" = \() rray_sum(wide, 2L),
+  "Sum [4000, 4000] over 1" = \() rray_sum(m, 1L),
+  "Sum [4000, 4000] over 2" = \() rray_sum(m, 2L)
+)
+
+mean_cases <- list(
+  "Mean [4000, 4000] over 1" = \() rray_mean(mi, 1L),
+  "Mean [4000, 4000] over 2" = \() rray_mean(mi, 2L),
+  "Mean [10, 1e6] over 1" = \() rray_mean(wide_i, 1L),
+  "Mean [1e6, 10] over 2" = \() rray_mean(tall_i, 2L),
+  "Mean [200, 200, 200] over 1, 3" = \() rray_mean(cube_i, c(1L, 3L)),
+  "Mean [10, 1e5, 10] over 1, 3" = \() rray_mean(brick_i, c(1L, 3L))
+)
+
+check <- function(cases, variants) {
+  for (case in names(cases)) {
+    f <- cases[[case]]
+    set_variant(0L)
+    expected <- f()
+    for (variant in variants) {
+      set_variant(variant)
+      stopifnot(identical(f(), expected))
+    }
+  }
+}
+
+time <- function(cases, variants, rounds = 3L, iterations = 30L) {
+  times <- array(
+    NA_real_,
+    c(length(cases), length(variants), rounds),
+    dimnames = list(names(cases), names(variants), NULL)
+  )
+
+  for (round in seq_len(rounds)) {
+    shift <- (round - 1L) %% length(variants)
+    order <- c(seq(shift + 1L, length(variants)), seq_len(shift))
+    for (case in names(cases)) {
+      f <- cases[[case]]
+      for (variant in names(variants)[order]) {
+        set_variant(variants[[variant]])
+        median <- bench::mark(f(), iterations = iterations, check = FALSE)$median
+        times[case, variant, round] <- as.numeric(median) * 1000
+      }
+    }
+  }
+
+  set_variant(0L)
+  round(apply(times, c(1, 2), median), 2)
+}
+
+check(single_cases, single_variants)
+check(mean_cases, mean_variants)
+
+print(time(single_cases, single_variants))
+print(time(mean_cases, mean_variants))
+```
+
+## Merged, round 2, benchmark script
+
+The exact script behind round 2. Run from the root of the variant package.
+
+```r
+devtools::load_all(quiet = TRUE)
+
+set_variant <- function(variant) {
+  invisible(.Call(ffi_rray_set_iterator_variant, variant))
+}
+
+set.seed(1)
+
+dbl <- function(...) array(runif(prod(c(...))), c(...))
+int <- function(...) array(sample(100L, prod(c(...)), TRUE), c(...))
+
+m <- dbl(4000, 4000)
+wide <- dbl(10, 1e6)
+wide_i <- int(10, 1e6)
+col <- dbl(10, 1)
+row <- dbl(1, 1e6)
+col_i <- int(10, 1)
+
+raw <- function(...) array(as.raw(sample(0:255, prod(c(...)), TRUE)), c(...))
+col_r <- raw(10, 1)
+row_r <- raw(1, 1e6)
+tall_col_r <- raw(4000, 1)
+
+mi <- int(4000, 4000)
+tall_i <- int(1e6, 10)
+cube_i <- int(200, 200, 200)
+brick_i <- int(10, 1e5, 10)
+
+single_variants <- c(macro = 0L, local = 8L, copy = 10L, pointer = 11L, pointer_locals = 12L)
+mean_variants <- c(macro = 0L, local = 8L, copy = 10L, pointer = 11L, pointer_locals = 12L)
+raw_variants <- c(macro = 0L, copy = 10L, pointer = 11L, pointer_locals = 12L)
+
+single_cases <- list(
+  "Broadcast [10, 1] to [10, 1e6]" = \() rray_broadcast(col, c(10L, 1000000L)),
+  "Broadcast [1, 1e6] to [10, 1e6]" = \() rray_broadcast(row, c(10L, 1000000L)),
+  "Add [10, 1e6] + [10, 1]" = \() rray_add(wide, col),
+  "Add [10, 1e6] + [1, 1e6]" = \() rray_add(wide, row),
+  "Add, integer, [10, 1e6] + [10, 1]" = \() rray_add(wide_i, col_i),
+  "Add [4000, 4000] + [4000, 4000]" = \() rray_add(m, m),
+  "Sum [10, 1e6] over 1" = \() rray_sum(wide, 1L),
+  "Sum [10, 1e6] over 2" = \() rray_sum(wide, 2L),
+  "Sum [4000, 4000] over 1" = \() rray_sum(m, 1L),
+  "Sum [4000, 4000] over 2" = \() rray_sum(m, 2L)
+)
+
+raw_cases <- list(
+  "Broadcast, raw, [10, 1] to [10, 1e6]" = \() rray_broadcast(col_r, c(10L, 1000000L)),
+  "Broadcast, raw, [1, 1e6] to [10, 1e6]" = \() rray_broadcast(row_r, c(10L, 1000000L)),
+  "Broadcast, raw, [4000, 1] to [4000, 4000]" = \() rray_broadcast(tall_col_r, c(4000L, 4000L))
+)
+
+mean_cases <- list(
+  "Mean [4000, 4000] over 1" = \() rray_mean(mi, 1L),
+  "Mean [4000, 4000] over 2" = \() rray_mean(mi, 2L),
+  "Mean [10, 1e6] over 1" = \() rray_mean(wide_i, 1L),
+  "Mean [1e6, 10] over 2" = \() rray_mean(tall_i, 2L),
+  "Mean [200, 200, 200] over 1, 3" = \() rray_mean(cube_i, c(1L, 3L)),
+  "Mean [10, 1e5, 10] over 1, 3" = \() rray_mean(brick_i, c(1L, 3L))
+)
+
+check <- function(cases, variants) {
+  for (case in names(cases)) {
+    f <- cases[[case]]
+    set_variant(0L)
+    expected <- f()
+    for (variant in variants) {
+      set_variant(variant)
+      stopifnot(identical(f(), expected))
+    }
+  }
+}
+
+time <- function(cases, variants, rounds = 3L, iterations = 30L) {
+  times <- array(
+    NA_real_,
+    c(length(cases), length(variants), rounds),
+    dimnames = list(names(cases), names(variants), NULL)
+  )
+
+  for (round in seq_len(rounds)) {
+    shift <- (round - 1L) %% length(variants)
+    order <- c(seq(shift + 1L, length(variants)), seq_len(shift))
+    for (case in names(cases)) {
+      f <- cases[[case]]
+      for (variant in names(variants)[order]) {
+        set_variant(variants[[variant]])
+        median <- bench::mark(f(), iterations = iterations, check = FALSE)$median
+        times[case, variant, round] <- as.numeric(median) * 1000
+      }
+    }
+  }
+
+  set_variant(0L)
+  round(apply(times, c(1, 2), median), 2)
+}
+
+check(single_cases, single_variants)
+check(mean_cases, mean_variants)
+check(raw_cases, raw_variants)
+
+print(time(single_cases, single_variants))
+print(time(mean_cases, mean_variants))
+print(time(raw_cases, raw_variants))
 ```
