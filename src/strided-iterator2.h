@@ -7,8 +7,6 @@
 
 #include "decl/strided-iterator2-decl.h"
 
-#define RRAY_MAX_INPUTS RRAY_MAX_DIMENSIONALITY
-
 // Strided iterator plan
 //
 // Optimizes and assists in walking a multidimensional point space defined by
