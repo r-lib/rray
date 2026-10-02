@@ -279,17 +279,20 @@ static inline bool rray_run_iterator_done(const struct rray_run_iterator* it) {
 }
 
 static inline void rray_run_iterator_next(struct rray_run_iterator* it) {
+  const r_ssize* v_dimensions = it->v_dimensions;
+  const int dimensionality = it->dimensionality;
+  const r_ssize* v_strides = it->v_strides;
   const r_ssize n = it->n;
 
-  for (int axis = 1; axis < it->dimensionality; ++axis) {
-    const r_ssize* v_strides = it->v_strides + axis * n;
-    const r_ssize dimension = it->v_dimensions[axis];
+  for (int axis = 1; axis < dimensionality; ++axis) {
+    const r_ssize* v_axis_strides = v_strides + axis * n;
+    const r_ssize axis_dimension = v_dimensions[axis];
 
     ++it->v_point[axis];
 
-    if (it->v_point[axis] < dimension) {
+    if (it->v_point[axis] < axis_dimension) {
       for (r_ssize i = 0; i < n; ++i) {
-        it->v_loc[i] += v_strides[i];
+        it->v_loc[i] += v_axis_strides[i];
       }
       break;
     }
@@ -297,45 +300,53 @@ static inline void rray_run_iterator_next(struct rray_run_iterator* it) {
     it->v_point[axis] = 0;
 
     for (r_ssize i = 0; i < n; ++i) {
-      it->v_loc[i] -= (dimension - 1) * v_strides[i];
+      it->v_loc[i] -= (axis_dimension - 1) * v_axis_strides[i];
     }
   }
 
   it->start = it->end;
-  it->end += it->v_dimensions[0];
+  it->end += v_dimensions[0];
 }
 
 static inline void rray_run_iterator_next1(struct rray_run_iterator* it) {
-  for (int axis = 1; axis < it->dimensionality; ++axis) {
-    const r_ssize stride = it->v_strides[axis];
-    const r_ssize dimension = it->v_dimensions[axis];
+  const r_ssize* v_dimensions = it->v_dimensions;
+  const int dimensionality = it->dimensionality;
+  const r_ssize* v_strides = it->v_strides;
+
+  for (int axis = 1; axis < dimensionality; ++axis) {
+    const r_ssize stride = v_strides[axis];
+    const r_ssize axis_dimension = v_dimensions[axis];
 
     ++it->v_point[axis];
 
-    if (it->v_point[axis] < dimension) {
+    if (it->v_point[axis] < axis_dimension) {
       it->v_loc[0] += stride;
       break;
     }
 
     it->v_point[axis] = 0;
 
-    it->v_loc[0] -= (dimension - 1) * stride;
+    it->v_loc[0] -= (axis_dimension - 1) * stride;
   }
 
   it->start = it->end;
-  it->end += it->v_dimensions[0];
+  it->end += v_dimensions[0];
 }
 
 static inline void rray_run_iterator_next2(struct rray_run_iterator* it) {
-  for (int axis = 1; axis < it->dimensionality; ++axis) {
-    const r_ssize* v_strides = it->v_strides + axis * 2;
-    const r_ssize stride1 = v_strides[0];
-    const r_ssize stride2 = v_strides[1];
-    const r_ssize dimension = it->v_dimensions[axis];
+  const r_ssize* v_dimensions = it->v_dimensions;
+  const int dimensionality = it->dimensionality;
+  const r_ssize* v_strides = it->v_strides;
+
+  for (int axis = 1; axis < dimensionality; ++axis) {
+    const r_ssize* v_axis_strides = v_strides + axis * 2;
+    const r_ssize stride1 = v_axis_strides[0];
+    const r_ssize stride2 = v_axis_strides[1];
+    const r_ssize axis_dimension = v_dimensions[axis];
 
     ++it->v_point[axis];
 
-    if (it->v_point[axis] < dimension) {
+    if (it->v_point[axis] < axis_dimension) {
       it->v_loc[0] += stride1;
       it->v_loc[1] += stride2;
       break;
@@ -343,12 +354,12 @@ static inline void rray_run_iterator_next2(struct rray_run_iterator* it) {
 
     it->v_point[axis] = 0;
 
-    it->v_loc[0] -= (dimension - 1) * stride1;
-    it->v_loc[1] -= (dimension - 1) * stride2;
+    it->v_loc[0] -= (axis_dimension - 1) * stride1;
+    it->v_loc[1] -= (axis_dimension - 1) * stride2;
   }
 
   it->start = it->end;
-  it->end += it->v_dimensions[0];
+  it->end += v_dimensions[0];
 }
 
 static inline int rray__run_iterator_axes_coalesce(
