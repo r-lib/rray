@@ -17,10 +17,6 @@
 // loop along the first axis. We've tried many alternative approaches but they
 // tend to tank performance quickly as you increase the level of abstractions.
 //
-// The plan holds only immutable state. The positions that change as it walks
-// are managed by the caller. This lets the compiler keep these positions in
-// registers, which has significant performance implications.
-//
 // --------------------------------------------------------------------------
 // Examples
 //
