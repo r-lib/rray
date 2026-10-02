@@ -8,129 +8,177 @@ static rray_binary_arithmetic_run_fn rray_add_switch(
 
 static r_obj* rray_add_lgl_lgl(
   r_obj* x,
+  const int* v_x_dimensions,
+  int x_dimensionality,
   r_obj* y,
+  const int* v_y_dimensions,
+  int y_dimensionality,
   const int* v_dimensions,
   int dimensionality,
-  const r_ssize* v_strides,
   struct r_lazy error_call
 );
 static r_obj* rray_add_lgl_int(
   r_obj* x,
+  const int* v_x_dimensions,
+  int x_dimensionality,
   r_obj* y,
+  const int* v_y_dimensions,
+  int y_dimensionality,
   const int* v_dimensions,
   int dimensionality,
-  const r_ssize* v_strides,
   struct r_lazy error_call
 );
 static r_obj* rray_add_int_lgl(
   r_obj* x,
+  const int* v_x_dimensions,
+  int x_dimensionality,
   r_obj* y,
+  const int* v_y_dimensions,
+  int y_dimensionality,
   const int* v_dimensions,
   int dimensionality,
-  const r_ssize* v_strides,
   struct r_lazy error_call
 );
 static r_obj* rray_add_lgl_dbl(
   r_obj* x,
+  const int* v_x_dimensions,
+  int x_dimensionality,
   r_obj* y,
+  const int* v_y_dimensions,
+  int y_dimensionality,
   const int* v_dimensions,
   int dimensionality,
-  const r_ssize* v_strides,
   struct r_lazy error_call
 );
 static r_obj* rray_add_dbl_lgl(
   r_obj* x,
+  const int* v_x_dimensions,
+  int x_dimensionality,
   r_obj* y,
+  const int* v_y_dimensions,
+  int y_dimensionality,
   const int* v_dimensions,
   int dimensionality,
-  const r_ssize* v_strides,
   struct r_lazy error_call
 );
 static r_obj* rray_add_lgl_cpl(
   r_obj* x,
+  const int* v_x_dimensions,
+  int x_dimensionality,
   r_obj* y,
+  const int* v_y_dimensions,
+  int y_dimensionality,
   const int* v_dimensions,
   int dimensionality,
-  const r_ssize* v_strides,
   struct r_lazy error_call
 );
 static r_obj* rray_add_cpl_lgl(
   r_obj* x,
+  const int* v_x_dimensions,
+  int x_dimensionality,
   r_obj* y,
+  const int* v_y_dimensions,
+  int y_dimensionality,
   const int* v_dimensions,
   int dimensionality,
-  const r_ssize* v_strides,
   struct r_lazy error_call
 );
 static r_obj* rray_add_int_int(
   r_obj* x,
+  const int* v_x_dimensions,
+  int x_dimensionality,
   r_obj* y,
+  const int* v_y_dimensions,
+  int y_dimensionality,
   const int* v_dimensions,
   int dimensionality,
-  const r_ssize* v_strides,
   struct r_lazy error_call
 );
 static r_obj* rray_add_int_dbl(
   r_obj* x,
+  const int* v_x_dimensions,
+  int x_dimensionality,
   r_obj* y,
+  const int* v_y_dimensions,
+  int y_dimensionality,
   const int* v_dimensions,
   int dimensionality,
-  const r_ssize* v_strides,
   struct r_lazy error_call
 );
 static r_obj* rray_add_dbl_int(
   r_obj* x,
+  const int* v_x_dimensions,
+  int x_dimensionality,
   r_obj* y,
+  const int* v_y_dimensions,
+  int y_dimensionality,
   const int* v_dimensions,
   int dimensionality,
-  const r_ssize* v_strides,
   struct r_lazy error_call
 );
 static r_obj* rray_add_int_cpl(
   r_obj* x,
+  const int* v_x_dimensions,
+  int x_dimensionality,
   r_obj* y,
+  const int* v_y_dimensions,
+  int y_dimensionality,
   const int* v_dimensions,
   int dimensionality,
-  const r_ssize* v_strides,
   struct r_lazy error_call
 );
 static r_obj* rray_add_cpl_int(
   r_obj* x,
+  const int* v_x_dimensions,
+  int x_dimensionality,
   r_obj* y,
+  const int* v_y_dimensions,
+  int y_dimensionality,
   const int* v_dimensions,
   int dimensionality,
-  const r_ssize* v_strides,
   struct r_lazy error_call
 );
 static r_obj* rray_add_dbl_dbl(
   r_obj* x,
+  const int* v_x_dimensions,
+  int x_dimensionality,
   r_obj* y,
+  const int* v_y_dimensions,
+  int y_dimensionality,
   const int* v_dimensions,
   int dimensionality,
-  const r_ssize* v_strides,
   struct r_lazy error_call
 );
 static r_obj* rray_add_dbl_cpl(
   r_obj* x,
+  const int* v_x_dimensions,
+  int x_dimensionality,
   r_obj* y,
+  const int* v_y_dimensions,
+  int y_dimensionality,
   const int* v_dimensions,
   int dimensionality,
-  const r_ssize* v_strides,
   struct r_lazy error_call
 );
 static r_obj* rray_add_cpl_dbl(
   r_obj* x,
+  const int* v_x_dimensions,
+  int x_dimensionality,
   r_obj* y,
+  const int* v_y_dimensions,
+  int y_dimensionality,
   const int* v_dimensions,
   int dimensionality,
-  const r_ssize* v_strides,
   struct r_lazy error_call
 );
 static r_obj* rray_add_cpl_cpl(
   r_obj* x,
+  const int* v_x_dimensions,
+  int x_dimensionality,
   r_obj* y,
+  const int* v_y_dimensions,
+  int y_dimensionality,
   const int* v_dimensions,
   int dimensionality,
-  const r_ssize* v_strides,
   struct r_lazy error_call
 );

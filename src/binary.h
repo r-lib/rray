@@ -3,8 +3,10 @@
 
 #include "rlang.h"
 
+#include "dimensionality.h"
 #include "strided-iterator.h"
 #include "strided-iterator2.h"
+#include "strides.h"
 
 #define RRAY_BINARY_ARGS(...) , __VA_ARGS__
 #define RRAY_BINARY_NO_ARGS
@@ -85,6 +87,41 @@
   FREE(1);                                                                     \
   return out;
 
+static inline struct rray_run_iterator rray_binary_run_iterator(
+  const int* v_x_dimensions,
+  int x_dimensionality,
+  const int* v_y_dimensions,
+  int y_dimensionality,
+  const int* v_dimensions,
+  int dimensionality
+) {
+  check_dimensionality(dimensionality);
+
+  r_ssize v_x_broadcast_strides[RRAY_MAX_DIMENSIONALITY];
+  rray_fill_broadcast_strides_from_dimensions(
+    v_x_dimensions,
+    x_dimensionality,
+    dimensionality,
+    v_x_broadcast_strides
+  );
+
+  r_ssize v_y_broadcast_strides[RRAY_MAX_DIMENSIONALITY];
+  rray_fill_broadcast_strides_from_dimensions(
+    v_y_dimensions,
+    y_dimensionality,
+    dimensionality,
+    v_y_broadcast_strides
+  );
+
+  r_ssize v_strides[RRAY_MAX_DIMENSIONALITY * 2];
+  for (int axis = 0; axis < dimensionality; ++axis) {
+    v_strides[axis * 2] = v_x_broadcast_strides[axis];
+    v_strides[axis * 2 + 1] = v_y_broadcast_strides[axis];
+  }
+
+  return rray_run_iterator(v_dimensions, dimensionality, v_strides, 2);
+}
+
 #define RRAY_BINARY_RUN(                                                       \
   X_CTYPE,                                                                     \
   X_CONST_DEREF,                                                               \
@@ -98,8 +135,14 @@
   ONE,                                                                         \
   ONE_ARGS                                                                     \
 )                                                                              \
-  struct rray_run_iterator it =                                                \
-    rray_run_iterator(v_dimensions, dimensionality, v_strides, 2);             \
+  struct rray_run_iterator it = rray_binary_run_iterator(                      \
+    v_x_dimensions,                                                            \
+    x_dimensionality,                                                          \
+    v_y_dimensions,                                                            \
+    y_dimensionality,                                                          \
+    v_dimensions,                                                              \
+    dimensionality                                                             \
+  );                                                                           \
                                                                                \
   r_obj* out = KEEP(r_alloc_vector(OUT_RTYPE, rray_run_iterator_size(&it)));   \
   OUT_CTYPE* v_out = OUT_DEREF(out);                                           \

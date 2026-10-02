@@ -3,7 +3,6 @@
 #include "broadcast-names.h"
 #include "dimensionality.h"
 #include "dimensions.h"
-#include "strides.h"
 #include "type.h"
 #include "utils.h"
 
@@ -108,32 +107,18 @@ r_obj* rray_binary_arithmetic_run(
   ));
   const int* v_dimensions = r_int_cbegin(dimensions);
   const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
-  check_dimensionality(dimensionality);
 
-  r_ssize v_x_broadcast_strides[RRAY_MAX_DIMENSIONALITY];
-  rray_fill_broadcast_strides_from_dimensions(
+  r_obj* out = KEEP(fn(
+    x,
     v_x_dimensions,
     x_dimensionality,
-    dimensionality,
-    v_x_broadcast_strides
-  );
-
-  r_ssize v_y_broadcast_strides[RRAY_MAX_DIMENSIONALITY];
-  rray_fill_broadcast_strides_from_dimensions(
+    y,
     v_y_dimensions,
     y_dimensionality,
+    v_dimensions,
     dimensionality,
-    v_y_broadcast_strides
-  );
-
-  r_ssize v_strides[RRAY_MAX_DIMENSIONALITY * 2];
-  for (int axis = 0; axis < dimensionality; ++axis) {
-    v_strides[axis * 2] = v_x_broadcast_strides[axis];
-    v_strides[axis * 2 + 1] = v_y_broadcast_strides[axis];
-  }
-
-  r_obj* out =
-    KEEP(fn(x, y, v_dimensions, dimensionality, v_strides, error_call));
+    error_call
+  ));
   r_attrib_poke_dim(out, dimensions);
 
   r_obj* out_names = KEEP(rray_broadcast_names2(x, y, dimensions));

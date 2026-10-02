@@ -32,10 +32,13 @@ r_obj* rray_binary_arithmetic(
 
 typedef r_obj* (*rray_binary_arithmetic_run_fn)(
   r_obj* x,
+  const int* v_x_dimensions,
+  int x_dimensionality,
   r_obj* y,
+  const int* v_y_dimensions,
+  int y_dimensionality,
   const int* v_dimensions,
   int dimensionality,
-  const r_ssize* v_strides,
   struct r_lazy error_call
 );
 
