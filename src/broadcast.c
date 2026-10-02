@@ -113,12 +113,7 @@ r_obj* rray_broadcast(
   return out;
 }
 
-#define RRAY_BROADCAST_ATOMIC(RTYPE, CTYPE, CONST_DEREF, DEREF)                \
-  r_obj* out = KEEP(r_alloc_vector(RTYPE, rray_run_plan_size(plan)));          \
-  CTYPE* v_out = DEREF(out);                                                   \
-                                                                               \
-  const CTYPE* v_x = CONST_DEREF(x);                                           \
-                                                                               \
+#define RRAY_BROADCAST_LOOP(CTYPE, POKE)                                       \
   for (struct rray_run_iterator it = rray_run_iterator(plan, 1);               \
        !rray_run_iterator_done(&it);                                           \
        rray_run_iterator_next(&it, plan, 1)) {                                 \
@@ -129,37 +124,7 @@ r_obj* rray_broadcast(
     const r_ssize x_stride = rray_run_iterator_stride(&it, 0);                 \
                                                                                \
     if (x_stride == 0) {                                                       \
-      const CTYPE x_elt = v_x[x_loc];                                          \
-      for (r_ssize i = start; i < end; ++i) {                                  \
-        v_out[i] = x_elt;                                                      \
-      }                                                                        \
-    } else {                                                                   \
-      for (r_ssize i = start; i < end; ++i) {                                  \
-        v_out[i] = v_x[x_loc];                                                 \
-        x_loc += x_stride;                                                     \
-      }                                                                        \
-    }                                                                          \
-  }                                                                            \
-                                                                               \
-  FREE(1);                                                                     \
-  return out;
-
-#define RRAY_BROADCAST_BARRIER(RTYPE, CONST_DEREF, POKE)                       \
-  r_obj* out = KEEP(r_alloc_vector(RTYPE, rray_run_plan_size(plan)));          \
-                                                                               \
-  r_obj* const* v_x = CONST_DEREF(x);                                          \
-                                                                               \
-  for (struct rray_run_iterator it = rray_run_iterator(plan, 1);               \
-       !rray_run_iterator_done(&it);                                           \
-       rray_run_iterator_next(&it, plan, 1)) {                                 \
-    const r_ssize start = rray_run_iterator_start(&it);                        \
-    const r_ssize end = rray_run_iterator_end(&it);                            \
-                                                                               \
-    r_ssize x_loc = rray_run_iterator_loc(&it, 0);                             \
-    const r_ssize x_stride = rray_run_iterator_stride(&it, 0);                 \
-                                                                               \
-    if (x_stride == 0) {                                                       \
-      r_obj* const x_elt = v_x[x_loc];                                         \
+      CTYPE const x_elt = v_x[x_loc];                                          \
       for (r_ssize i = start; i < end; ++i) {                                  \
         POKE(out, i, x_elt);                                                   \
       }                                                                        \
@@ -169,7 +134,27 @@ r_obj* rray_broadcast(
         x_loc += x_stride;                                                     \
       }                                                                        \
     }                                                                          \
-  }                                                                            \
+  }
+
+#define RRAY_BROADCAST_ATOMIC_POKE(OUT, I, VALUE) v_out[I] = (VALUE)
+
+#define RRAY_BROADCAST_ATOMIC(RTYPE, CTYPE, CONST_DEREF, DEREF)                \
+  r_obj* out = KEEP(r_alloc_vector(RTYPE, rray_run_plan_size(plan)));          \
+  CTYPE* v_out = DEREF(out);                                                   \
+                                                                               \
+  const CTYPE* v_x = CONST_DEREF(x);                                           \
+                                                                               \
+  RRAY_BROADCAST_LOOP(CTYPE, RRAY_BROADCAST_ATOMIC_POKE);                      \
+                                                                               \
+  FREE(1);                                                                     \
+  return out;
+
+#define RRAY_BROADCAST_BARRIER(RTYPE, CONST_DEREF, POKE)                       \
+  r_obj* out = KEEP(r_alloc_vector(RTYPE, rray_run_plan_size(plan)));          \
+                                                                               \
+  r_obj* const* v_x = CONST_DEREF(x);                                          \
+                                                                               \
+  RRAY_BROADCAST_LOOP(r_obj*, POKE);                                           \
                                                                                \
   FREE(1);                                                                     \
   return out;
@@ -202,6 +187,8 @@ static r_obj* rray_broadcast_list(r_obj* x, const struct rray_run_plan* plan) {
   RRAY_BROADCAST_BARRIER(R_TYPE_list, r_list_cbegin, r_list_poke);
 }
 
+#undef RRAY_BROADCAST_LOOP
+#undef RRAY_BROADCAST_ATOMIC_POKE
 #undef RRAY_BROADCAST_ATOMIC
 #undef RRAY_BROADCAST_BARRIER
 
