@@ -215,7 +215,6 @@ struct rray_run_iterator {
   r_ssize v_stride[RRAY_MAX_INPUTS];
 
   r_ssize size;
-  r_ssize run_size;
   const struct rray_run_plan* plan;
   r_ssize v_point[RRAY_MAX_DIMENSIONALITY];
 };
@@ -228,10 +227,9 @@ static inline struct rray_run_iterator rray_run_iterator(
 
   it.plan = plan;
   it.size = plan->size;
-  it.run_size = plan->v_dimensions[0];
 
   it.start = 0;
-  it.end = it.run_size;
+  it.end = plan->v_dimensions[0];
 
   for (r_ssize i = 0; i < n; ++i) {
     it.v_loc[i] = 0;
@@ -274,7 +272,7 @@ static inline void rray_run_iterator_next(
   }
 
   it->start = it->end;
-  it->end += it->run_size;
+  it->end += plan->v_dimensions[0];
 }
 
 static inline int rray__run_plan_axes_coalesce(
