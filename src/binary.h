@@ -98,10 +98,6 @@
   ONE,                                                                         \
   ONE_ARGS                                                                     \
 )                                                                              \
-  const r_ssize* v_v_strides[] = {                                             \
-    v_x_broadcast_strides,                                                     \
-    v_y_broadcast_strides                                                      \
-  };                                                                           \
   struct rray_run_iterator it =                                                \
     rray_run_iterator(v_dimensions, dimensionality, v_v_strides, 2);           \
                                                                                \
