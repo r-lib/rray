@@ -62,7 +62,6 @@ r_obj* rray_broadcast(
   );
 
   r_ssize v_x_broadcast_strides[RRAY_MAX_DIMENSIONALITY];
-
   rray_fill_broadcast_strides_from_dimensions(
     v_x_dimensions,
     x_dimensionality,
