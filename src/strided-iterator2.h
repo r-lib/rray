@@ -213,18 +213,16 @@ struct rray_run_iterator {
   r_ssize size;
   r_ssize run_size;
   const struct rray_run_plan* plan;
-  r_ssize* v_point;
+  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];
 };
 
 static inline struct rray_run_iterator rray_run_iterator(
   const struct rray_run_plan* plan,
-  r_ssize* v_point,
   r_ssize n
 ) {
   struct rray_run_iterator it;
 
   it.plan = plan;
-  it.v_point = v_point;
   it.size = plan->size;
   it.run_size = plan->v_dimensions[0];
 

@@ -121,8 +121,7 @@ r_obj* rray_broadcast(
                                                                                \
   const CTYPE* v_x = CONST_DEREF(x);                                           \
                                                                                \
-  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];                                    \
-  struct rray_run_iterator it = rray_run_iterator(plan, v_point, 1);           \
+  struct rray_run_iterator it = rray_run_iterator(plan, 1);                    \
                                                                                \
   for (; !rray_run_iterator_done(&it); rray_run_iterator_next(&it, 1)) {       \
     r_ssize x_loc = it.v_loc[0];                                               \
@@ -148,8 +147,7 @@ r_obj* rray_broadcast(
                                                                                \
   r_obj* const* v_x = CONST_DEREF(x);                                          \
                                                                                \
-  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];                                    \
-  struct rray_run_iterator it = rray_run_iterator(plan, v_point, 1);           \
+  struct rray_run_iterator it = rray_run_iterator(plan, 1);                    \
                                                                                \
   for (; !rray_run_iterator_done(&it); rray_run_iterator_next(&it, 1)) {       \
     r_ssize x_loc = it.v_loc[0];                                               \
