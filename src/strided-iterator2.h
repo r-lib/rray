@@ -7,7 +7,7 @@
 
 #include "decl/strided-iterator2-decl.h"
 
-// Strided iterator plan
+// Strided iterator
 //
 // Optimizes and assists in walking a multidimensional point space defined by
 // `v_dimensions`. As it walks, it updates a user provided `start` in an
