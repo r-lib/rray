@@ -13,9 +13,10 @@
 // `v_dimensions`. As it walks, it updates the current `loc`ations in one or
 // more alternate subspaces defined by `v_v_strides`.
 //
-// For performance and flexibility, the user is responsible for managing the run
-// loop along the first axis. We've tried many alternative approaches but they
-// tend to tank performance quickly as you increase the level of abstractions.
+// We've carefully tuned this iterator for both performance and flexibility. The
+// caller MUST create the iterator INSIDE the function that utilizes it. If a
+// pointer to the iterator is passed around, it can destroy performance due to
+// the way the result is compiled.
 //
 // --------------------------------------------------------------------------
 // Examples
