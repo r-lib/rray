@@ -10,8 +10,8 @@
 // Strided iterator
 //
 // Optimizes and assists in walking a multidimensional point space defined by
-// `v_dimensions`. As it walks, it updates a user provided `start` in an
-// alternate subspace defined by `v_strides`.
+// `v_dimensions`. As it walks, it updates the current `loc`ations in one or
+// more alternate subspaces defined by `v_v_strides`.
 //
 // For performance and flexibility, the user is responsible for managing the run
 // loop along the first axis. We've tried many alternative approaches but they
