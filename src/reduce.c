@@ -102,13 +102,16 @@ r_obj* rray_reduce_run(
     v_out_broadcast_strides
   );
 
-  const r_ssize* v_v_strides[] = {v_out_broadcast_strides};
-
   const rray_reduce_run_fn fn = fn_switch(x, na_rm, arg, error_call);
 
-  r_obj* out = KEEP(
-    fn(x, out_size, v_dimensions, dimensionality, v_v_strides, error_call)
-  );
+  r_obj* out = KEEP(fn(
+    x,
+    out_size,
+    v_dimensions,
+    dimensionality,
+    v_out_broadcast_strides,
+    error_call
+  ));
   r_attrib_poke_dim(out, out_dimensions);
 
   r_obj* out_names = KEEP(rray_reduce_names(x, axes));

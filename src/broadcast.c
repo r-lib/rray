@@ -69,31 +69,64 @@ r_obj* rray_broadcast(
     v_x_broadcast_strides
   );
 
-  const r_ssize* v_v_strides[] = {v_x_broadcast_strides};
-
   r_obj* out;
 
   switch (r_typeof(x)) {
   case R_TYPE_logical:
-    out = rray_broadcast_lgl(x, v_dimensions, dimensionality, v_v_strides);
+    out = rray_broadcast_lgl(
+      x,
+      v_dimensions,
+      dimensionality,
+      v_x_broadcast_strides
+    );
     break;
   case R_TYPE_integer:
-    out = rray_broadcast_int(x, v_dimensions, dimensionality, v_v_strides);
+    out = rray_broadcast_int(
+      x,
+      v_dimensions,
+      dimensionality,
+      v_x_broadcast_strides
+    );
     break;
   case R_TYPE_double:
-    out = rray_broadcast_dbl(x, v_dimensions, dimensionality, v_v_strides);
+    out = rray_broadcast_dbl(
+      x,
+      v_dimensions,
+      dimensionality,
+      v_x_broadcast_strides
+    );
     break;
   case R_TYPE_complex:
-    out = rray_broadcast_cpl(x, v_dimensions, dimensionality, v_v_strides);
+    out = rray_broadcast_cpl(
+      x,
+      v_dimensions,
+      dimensionality,
+      v_x_broadcast_strides
+    );
     break;
   case R_TYPE_raw:
-    out = rray_broadcast_raw(x, v_dimensions, dimensionality, v_v_strides);
+    out = rray_broadcast_raw(
+      x,
+      v_dimensions,
+      dimensionality,
+      v_x_broadcast_strides
+    );
     break;
   case R_TYPE_character:
-    out = rray_broadcast_chr(x, v_dimensions, dimensionality, v_v_strides);
+    out = rray_broadcast_chr(
+      x,
+      v_dimensions,
+      dimensionality,
+      v_x_broadcast_strides
+    );
     break;
   case R_TYPE_list:
-    out = rray_broadcast_list(x, v_dimensions, dimensionality, v_v_strides);
+    out = rray_broadcast_list(
+      x,
+      v_dimensions,
+      dimensionality,
+      v_x_broadcast_strides
+    );
     break;
   default:
     r_stop_unreachable();
@@ -113,7 +146,7 @@ r_obj* rray_broadcast(
 }
 
 #define RRAY_BROADCAST_LOOP(CTYPE, POKE)                                       \
-  for (; !rray_run_iterator_done(&it); rray_run_iterator_next(&it, 1)) {       \
+  for (; !rray_run_iterator_done(&it); rray_run_iterator_next1(&it)) {         \
     const r_ssize start = rray_run_iterator_start(&it);                        \
     const r_ssize end = rray_run_iterator_end(&it);                            \
                                                                                \
@@ -137,7 +170,7 @@ r_obj* rray_broadcast(
 
 #define RRAY_BROADCAST_ATOMIC(RTYPE, CTYPE, CONST_DEREF, DEREF)                \
   struct rray_run_iterator it =                                                \
-    rray_run_iterator(v_dimensions, dimensionality, v_v_strides, 1);           \
+    rray_run_iterator1(v_dimensions, dimensionality, v_x_broadcast_strides);   \
                                                                                \
   r_obj* out = KEEP(r_alloc_vector(RTYPE, rray_run_iterator_size(&it)));       \
   CTYPE* v_out = DEREF(out);                                                   \
@@ -151,7 +184,7 @@ r_obj* rray_broadcast(
 
 #define RRAY_BROADCAST_BARRIER(RTYPE, CONST_DEREF, POKE)                       \
   struct rray_run_iterator it =                                                \
-    rray_run_iterator(v_dimensions, dimensionality, v_v_strides, 1);           \
+    rray_run_iterator1(v_dimensions, dimensionality, v_x_broadcast_strides);   \
                                                                                \
   r_obj* out = KEEP(r_alloc_vector(RTYPE, rray_run_iterator_size(&it)));       \
                                                                                \
@@ -166,7 +199,7 @@ static r_obj* rray_broadcast_lgl(
   r_obj* x,
   const int* v_dimensions,
   int dimensionality,
-  const r_ssize* const* v_v_strides
+  const r_ssize* v_x_broadcast_strides
 ) {
   RRAY_BROADCAST_ATOMIC(R_TYPE_logical, int, r_lgl_cbegin, r_lgl_begin);
 }
@@ -175,7 +208,7 @@ static r_obj* rray_broadcast_int(
   r_obj* x,
   const int* v_dimensions,
   int dimensionality,
-  const r_ssize* const* v_v_strides
+  const r_ssize* v_x_broadcast_strides
 ) {
   RRAY_BROADCAST_ATOMIC(R_TYPE_integer, int, r_int_cbegin, r_int_begin);
 }
@@ -184,7 +217,7 @@ static r_obj* rray_broadcast_dbl(
   r_obj* x,
   const int* v_dimensions,
   int dimensionality,
-  const r_ssize* const* v_v_strides
+  const r_ssize* v_x_broadcast_strides
 ) {
   RRAY_BROADCAST_ATOMIC(R_TYPE_double, double, r_dbl_cbegin, r_dbl_begin);
 }
@@ -193,7 +226,7 @@ static r_obj* rray_broadcast_cpl(
   r_obj* x,
   const int* v_dimensions,
   int dimensionality,
-  const r_ssize* const* v_v_strides
+  const r_ssize* v_x_broadcast_strides
 ) {
   RRAY_BROADCAST_ATOMIC(R_TYPE_complex, r_complex, r_cpl_cbegin, r_cpl_begin);
 }
@@ -202,7 +235,7 @@ static r_obj* rray_broadcast_raw(
   r_obj* x,
   const int* v_dimensions,
   int dimensionality,
-  const r_ssize* const* v_v_strides
+  const r_ssize* v_x_broadcast_strides
 ) {
   RRAY_BROADCAST_ATOMIC(R_TYPE_raw, Rbyte, r_raw_cbegin, r_raw_begin);
 }
@@ -211,7 +244,7 @@ static r_obj* rray_broadcast_chr(
   r_obj* x,
   const int* v_dimensions,
   int dimensionality,
-  const r_ssize* const* v_v_strides
+  const r_ssize* v_x_broadcast_strides
 ) {
   RRAY_BROADCAST_BARRIER(R_TYPE_character, r_chr_cbegin, r_chr_poke);
 }
@@ -220,7 +253,7 @@ static r_obj* rray_broadcast_list(
   r_obj* x,
   const int* v_dimensions,
   int dimensionality,
-  const r_ssize* const* v_v_strides
+  const r_ssize* v_x_broadcast_strides
 ) {
   RRAY_BROADCAST_BARRIER(R_TYPE_list, r_list_cbegin, r_list_poke);
 }

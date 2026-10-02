@@ -47,7 +47,7 @@ typedef r_obj* (*rray_reduce_run_fn)(
   r_ssize out_size,
   const int* v_dimensions,
   int dimensionality,
-  const r_ssize* const* v_v_strides,
+  const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 );
 
@@ -130,7 +130,7 @@ r_obj* rray_reduce_run(
   ONE_ARGS                                                                     \
 )                                                                              \
   struct rray_run_iterator it =                                                \
-    rray_run_iterator(v_dimensions, dimensionality, v_v_strides, 1);           \
+    rray_run_iterator1(v_dimensions, dimensionality, v_out_broadcast_strides); \
                                                                                \
   r_obj* out = KEEP(r_alloc_vector(OUT_RTYPE, out_size));                      \
   OUT_CTYPE* v_out = OUT_DEREF(out);                                           \
@@ -141,7 +141,7 @@ r_obj* rray_reduce_run(
                                                                                \
   const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
                                                                                \
-  for (; !rray_run_iterator_done(&it); rray_run_iterator_next(&it, 1)) {       \
+  for (; !rray_run_iterator_done(&it); rray_run_iterator_next1(&it)) {         \
     const r_ssize start = rray_run_iterator_start(&it);                        \
     const r_ssize end = rray_run_iterator_end(&it);                            \
                                                                                \

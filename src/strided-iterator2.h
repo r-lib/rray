@@ -217,6 +217,25 @@ static inline struct rray_run_iterator rray_run_iterator(
   return it;
 }
 
+static inline struct rray_run_iterator rray_run_iterator1(
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_strides
+) {
+  const r_ssize* v_v_strides[] = {v_strides};
+  return rray_run_iterator(v_dimensions, dimensionality, v_v_strides, 1);
+}
+
+static inline struct rray_run_iterator rray_run_iterator2(
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_strides1,
+  const r_ssize* v_strides2
+) {
+  const r_ssize* v_v_strides[] = {v_strides1, v_strides2};
+  return rray_run_iterator(v_dimensions, dimensionality, v_v_strides, 2);
+}
+
 static inline r_ssize rray_run_iterator_size(
   const struct rray_run_iterator* it
 ) {
@@ -275,6 +294,52 @@ static inline void rray_run_iterator_next(
     for (r_ssize i = 0; i < n; ++i) {
       it->v_loc[i] -= (dimension - 1) * v_strides[i];
     }
+  }
+
+  it->start = it->end;
+  it->end += it->v_dimensions[0];
+}
+
+static inline void rray_run_iterator_next1(struct rray_run_iterator* it) {
+  for (int axis = 1; axis < it->dimensionality; ++axis) {
+    const r_ssize stride = it->v_strides[axis];
+    const r_ssize dimension = it->v_dimensions[axis];
+
+    ++it->v_point[axis];
+
+    if (it->v_point[axis] < dimension) {
+      it->v_loc[0] += stride;
+      break;
+    }
+
+    it->v_point[axis] = 0;
+
+    it->v_loc[0] -= (dimension - 1) * stride;
+  }
+
+  it->start = it->end;
+  it->end += it->v_dimensions[0];
+}
+
+static inline void rray_run_iterator_next2(struct rray_run_iterator* it) {
+  for (int axis = 1; axis < it->dimensionality; ++axis) {
+    const r_ssize* v_strides = it->v_strides + axis * 2;
+    const r_ssize stride1 = v_strides[0];
+    const r_ssize stride2 = v_strides[1];
+    const r_ssize dimension = it->v_dimensions[axis];
+
+    ++it->v_point[axis];
+
+    if (it->v_point[axis] < dimension) {
+      it->v_loc[0] += stride1;
+      it->v_loc[1] += stride2;
+      break;
+    }
+
+    it->v_point[axis] = 0;
+
+    it->v_loc[0] -= (dimension - 1) * stride1;
+    it->v_loc[1] -= (dimension - 1) * stride2;
   }
 
   it->start = it->end;

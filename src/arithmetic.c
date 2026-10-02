@@ -126,10 +126,15 @@ r_obj* rray_binary_arithmetic_run(
     v_y_broadcast_strides
   );
 
-  const r_ssize* v_v_strides[] = {v_x_broadcast_strides, v_y_broadcast_strides};
-
-  r_obj* out =
-    KEEP(fn(x, y, v_dimensions, dimensionality, v_v_strides, error_call));
+  r_obj* out = KEEP(fn(
+    x,
+    y,
+    v_dimensions,
+    dimensionality,
+    v_x_broadcast_strides,
+    v_y_broadcast_strides,
+    error_call
+  ));
   r_attrib_poke_dim(out, dimensions);
 
   r_obj* out_names = KEEP(rray_broadcast_names2(x, y, dimensions));

@@ -98,8 +98,12 @@
   ONE,                                                                         \
   ONE_ARGS                                                                     \
 )                                                                              \
-  struct rray_run_iterator it =                                                \
-    rray_run_iterator(v_dimensions, dimensionality, v_v_strides, 2);           \
+  struct rray_run_iterator it = rray_run_iterator2(                            \
+    v_dimensions,                                                              \
+    dimensionality,                                                            \
+    v_x_broadcast_strides,                                                     \
+    v_y_broadcast_strides                                                      \
+  );                                                                           \
                                                                                \
   r_obj* out = KEEP(r_alloc_vector(OUT_RTYPE, rray_run_iterator_size(&it)));   \
   OUT_CTYPE* v_out = OUT_DEREF(out);                                           \
@@ -107,7 +111,7 @@
   const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
   const Y_CTYPE* v_y = Y_CONST_DEREF(y);                                       \
                                                                                \
-  for (; !rray_run_iterator_done(&it); rray_run_iterator_next(&it, 2)) {       \
+  for (; !rray_run_iterator_done(&it); rray_run_iterator_next2(&it)) {         \
     const r_ssize start = rray_run_iterator_start(&it);                        \
     const r_ssize end = rray_run_iterator_end(&it);                            \
                                                                                \
