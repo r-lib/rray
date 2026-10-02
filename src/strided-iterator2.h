@@ -137,18 +137,17 @@
 //   with output strides [0, 1]. Each inner run accumulates into one fixed
 //   output location.
 struct rray_run_iterator {
-  r_ssize start;
-  r_ssize end;
-  r_ssize v_loc[RRAY_MAX_INPUTS];
-
   r_ssize size;
-  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];
 
+  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];
   // Since coalescing can multiply two axes' dimensions together, we use an
   // `r_ssize` here even though an individual dimension can't be above an `int`.
   r_ssize v_dimensions[RRAY_MAX_DIMENSIONALITY];
   int dimensionality;
 
+  r_ssize start;
+  r_ssize end;
+  r_ssize v_loc[RRAY_MAX_INPUTS];
   // Strides for all `n` arrays, laid out axis-major in a flat array as
   // [dimensionality][n], allowing contiguous access when doing "next" calls.
   r_ssize v_strides[RRAY_MAX_DIMENSIONALITY * RRAY_MAX_INPUTS];
