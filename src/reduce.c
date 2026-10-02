@@ -74,10 +74,10 @@ r_obj* rray_reduce_run(
   check_unclassed(x, arg, error_call);
   x = KEEP(arg_as_array(x, arg, error_call));
 
-  r_obj* x_dimensions = KEEP(rray_dimensions(x, arg, error_call));
-  const int* v_x_dimensions = r_int_cbegin(x_dimensions);
+  r_obj* dimensions = KEEP(rray_dimensions(x, arg, error_call));
+  const int* v_dimensions = r_int_cbegin(dimensions);
 
-  const int dimensionality = rray_dimensionality_from_dimensions(x_dimensions);
+  const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
   check_dimensionality(dimensionality);
 
   axes = KEEP(arg_as_axes(axes, dimensionality, rray_args.axes, error_call));
@@ -86,7 +86,7 @@ r_obj* rray_reduce_run(
 
   r_obj* out_dimensions = KEEP(r_alloc_integer(dimensionality));
   int* v_out_dimensions = r_int_begin(out_dimensions);
-  r_memcpy(v_out_dimensions, v_x_dimensions, sizeof(int) * dimensionality);
+  r_memcpy(v_out_dimensions, v_dimensions, sizeof(int) * dimensionality);
   for (r_ssize i = 0; i < axes_size; ++i) {
     v_out_dimensions[v_axes[i] - 1] = 1;
   }
@@ -107,7 +107,7 @@ r_obj* rray_reduce_run(
   const rray_reduce_run_fn fn = fn_switch(x, na_rm, arg, error_call);
 
   r_obj* out = KEEP(
-    fn(x, out_size, v_x_dimensions, dimensionality, v_v_strides, error_call)
+    fn(x, out_size, v_dimensions, dimensionality, v_v_strides, error_call)
   );
   r_attrib_poke_dim(out, out_dimensions);
 
