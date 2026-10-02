@@ -145,8 +145,13 @@
 //   produces output strides [0, 1, 3], which coalesce to dimensions [2, 12]
 //   with output strides [0, 1]. Each inner run accumulates into one fixed
 //   output location.
-struct rray_run_plan {
+struct rray_run_iterator {
+  r_ssize start;
+  r_ssize end;
+  r_ssize v_loc[RRAY_MAX_INPUTS];
+
   r_ssize size;
+  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];
 
   // Since coalescing can multiply two axes' dimensions together, we use an
   // `r_ssize` here even though an individual dimension can't be above an `int`.
@@ -158,7 +163,7 @@ struct rray_run_plan {
   r_ssize v_strides[RRAY_MAX_DIMENSIONALITY * RRAY_MAX_INPUTS];
 };
 
-static inline struct rray_run_plan rray_run_plan(
+static inline struct rray_run_iterator rray_run_iterator(
   const int* v_dimensions,
   int dimensionality,
   const r_ssize* v_strides,
@@ -174,67 +179,47 @@ static inline struct rray_run_plan rray_run_plan(
     );
   }
 
-  struct rray_run_plan plan;
+  struct rray_run_iterator it;
 
-  plan.size = rray_size_from_dimensions_checked(
+  it.size = rray_size_from_dimensions_checked(
     v_dimensions,
     dimensionality,
     r_lazy_null
   );
 
   for (int axis = 0; axis < dimensionality; ++axis) {
-    plan.v_dimensions[axis] = (r_ssize) v_dimensions[axis];
+    it.v_dimensions[axis] = (r_ssize) v_dimensions[axis];
   }
 
   r_memcpy(
-    plan.v_strides,
+    it.v_strides,
     v_strides,
     sizeof(r_ssize) * (size_t) (dimensionality * n)
   );
 
-  plan.dimensionality = rray__run_plan_axes_coalesce(
-    plan.v_dimensions,
-    plan.v_strides,
+  it.dimensionality = rray__run_iterator_axes_coalesce(
+    it.v_dimensions,
+    it.v_strides,
     n,
     dimensionality
   );
 
-  return plan;
-}
-
-static inline r_ssize rray_run_plan_size(const struct rray_run_plan* plan) {
-  return plan->size;
-}
-
-struct rray_run_iterator {
-  r_ssize start;
-  r_ssize end;
-  r_ssize v_loc[RRAY_MAX_INPUTS];
-  r_ssize v_stride[RRAY_MAX_INPUTS];
-
-  r_ssize size;
-  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];
-};
-
-static inline struct rray_run_iterator rray_run_iterator(
-  const struct rray_run_plan* plan,
-  r_ssize n
-) {
-  struct rray_run_iterator it;
-
-  it.size = plan->size;
-
   it.start = 0;
-  it.end = plan->v_dimensions[0];
+  it.end = it.v_dimensions[0];
 
   for (r_ssize i = 0; i < n; ++i) {
     it.v_loc[i] = 0;
-    it.v_stride[i] = plan->v_strides[i];
   }
 
-  r_memset(it.v_point, 0, sizeof(r_ssize) * (size_t) plan->dimensionality);
+  r_memset(it.v_point, 0, sizeof(r_ssize) * (size_t) it.dimensionality);
 
   return it;
+}
+
+static inline r_ssize rray_run_iterator_size(
+  const struct rray_run_iterator* it
+) {
+  return it->size;
 }
 
 static inline r_ssize rray_run_iterator_start(
@@ -260,7 +245,7 @@ static inline r_ssize rray_run_iterator_stride(
   const struct rray_run_iterator* it,
   r_ssize i
 ) {
-  return it->v_stride[i];
+  return it->v_strides[i];
 }
 
 static inline bool rray_run_iterator_done(const struct rray_run_iterator* it) {
@@ -269,12 +254,11 @@ static inline bool rray_run_iterator_done(const struct rray_run_iterator* it) {
 
 static inline void rray_run_iterator_next(
   struct rray_run_iterator* it,
-  const struct rray_run_plan* plan,
   r_ssize n
 ) {
-  for (int axis = 1; axis < plan->dimensionality; ++axis) {
-    const r_ssize* v_strides = plan->v_strides + axis * n;
-    const r_ssize dimension = plan->v_dimensions[axis];
+  for (int axis = 1; axis < it->dimensionality; ++axis) {
+    const r_ssize* v_strides = it->v_strides + axis * n;
+    const r_ssize dimension = it->v_dimensions[axis];
 
     ++it->v_point[axis];
 
@@ -293,10 +277,10 @@ static inline void rray_run_iterator_next(
   }
 
   it->start = it->end;
-  it->end += plan->v_dimensions[0];
+  it->end += it->v_dimensions[0];
 }
 
-static inline int rray__run_plan_axes_coalesce(
+static inline int rray__run_iterator_axes_coalesce(
   r_ssize* v_dimensions,
   r_ssize* v_strides,
   r_ssize n,
@@ -313,7 +297,7 @@ static inline int rray__run_plan_axes_coalesce(
     bool coalescible = true;
 
     for (r_ssize i = 0; i < n; ++i) {
-      if (!rray__run_plan_axes_coalescible(
+      if (!rray__run_iterator_axes_coalescible(
             left_dimension,
             v_left_strides[i],
             right_dimension,
@@ -344,7 +328,7 @@ static inline int rray__run_plan_axes_coalesce(
   return out_axis + 1;
 }
 
-static inline bool rray__run_plan_axes_coalescible(
+static inline bool rray__run_iterator_axes_coalescible(
   r_ssize left_dimension,
   r_ssize left_stride,
   r_ssize right_dimension,
