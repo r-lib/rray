@@ -122,16 +122,19 @@ r_obj* rray_broadcast(
   for (struct rray_run_iterator it = rray_run_iterator(plan, 1);               \
        !rray_run_iterator_done(&it);                                           \
        rray_run_iterator_next(&it, 1)) {                                       \
+    const r_ssize start = it.start;                                            \
+    const r_ssize end = it.end;                                                \
+                                                                               \
     r_ssize x_loc = it.v_loc[0];                                               \
     const r_ssize x_stride = it.v_stride[0];                                   \
                                                                                \
     if (x_stride == 0) {                                                       \
       const CTYPE x_elt = v_x[x_loc];                                          \
-      for (r_ssize i = it.start; i < it.end; ++i) {                            \
+      for (r_ssize i = start; i < end; ++i) {                                  \
         v_out[i] = x_elt;                                                      \
       }                                                                        \
     } else {                                                                   \
-      for (r_ssize i = it.start; i < it.end; ++i) {                            \
+      for (r_ssize i = start; i < end; ++i) {                                  \
         v_out[i] = v_x[x_loc];                                                 \
         x_loc += x_stride;                                                     \
       }                                                                        \
@@ -149,16 +152,19 @@ r_obj* rray_broadcast(
   for (struct rray_run_iterator it = rray_run_iterator(plan, 1);               \
        !rray_run_iterator_done(&it);                                           \
        rray_run_iterator_next(&it, 1)) {                                       \
+    const r_ssize start = it.start;                                            \
+    const r_ssize end = it.end;                                                \
+                                                                               \
     r_ssize x_loc = it.v_loc[0];                                               \
     const r_ssize x_stride = it.v_stride[0];                                   \
                                                                                \
     if (x_stride == 0) {                                                       \
       r_obj* const x_elt = v_x[x_loc];                                         \
-      for (r_ssize i = it.start; i < it.end; ++i) {                            \
+      for (r_ssize i = start; i < end; ++i) {                                  \
         POKE(out, i, x_elt);                                                   \
       }                                                                        \
     } else {                                                                   \
-      for (r_ssize i = it.start; i < it.end; ++i) {                            \
+      for (r_ssize i = start; i < end; ++i) {                                  \
         POKE(out, i, v_x[x_loc]);                                              \
         x_loc += x_stride;                                                     \
       }                                                                        \
