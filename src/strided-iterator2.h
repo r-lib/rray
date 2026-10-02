@@ -204,7 +204,9 @@ static inline struct rray_run_iterator rray_run_iterator(
     it.v_loc[i] = 0;
   }
 
-  r_memset(it.v_point, 0, sizeof(r_ssize) * (size_t) it.dimensionality);
+  for (int axis = 0; axis < it.dimensionality; ++axis) {
+    it.v_point[axis] = 0;
+  }
 
   return it;
 }
