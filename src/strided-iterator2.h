@@ -148,9 +148,11 @@ struct rray_run_iterator {
   r_ssize start;
   r_ssize end;
   r_ssize v_loc[RRAY_MAX_INPUTS];
+
   // Strides for all `n` arrays, laid out axis-major in a flat array as
   // [dimensionality][n], allowing contiguous access when doing "next" calls.
   r_ssize v_strides[RRAY_MAX_DIMENSIONALITY * RRAY_MAX_INPUTS];
+  r_ssize n;
 };
 
 static inline struct rray_run_iterator rray_run_iterator(
@@ -198,6 +200,8 @@ static inline struct rray_run_iterator rray_run_iterator(
 
   it.start = 0;
   it.end = it.v_dimensions[0];
+
+  it.n = n;
 
   for (r_ssize i = 0; i < n; ++i) {
     it.v_loc[i] = 0;
@@ -265,10 +269,9 @@ static inline bool rray_run_iterator_done(const struct rray_run_iterator* it) {
   return it->start == it->size;
 }
 
-static inline void rray_run_iterator_next(
-  struct rray_run_iterator* it,
-  r_ssize n
-) {
+static inline void rray_run_iterator_next(struct rray_run_iterator* it) {
+  const r_ssize n = it->n;
+
   for (int axis = 1; axis < it->dimensionality; ++axis) {
     const r_ssize* v_strides = it->v_strides + axis * n;
     const r_ssize dimension = it->v_dimensions[axis];
