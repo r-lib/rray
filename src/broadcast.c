@@ -123,8 +123,9 @@ r_obj* rray_broadcast(
        !rray_run_iterator_done(&it);                                           \
        rray_run_iterator_next(&it, 1)) {                                       \
     r_ssize x_loc = it.v_loc[0];                                               \
+    const r_ssize x_stride = it.v_stride[0];                                   \
                                                                                \
-    if (it.v_stride[0] == 0) {                                                 \
+    if (x_stride == 0) {                                                       \
       const CTYPE x_elt = v_x[x_loc];                                          \
       for (r_ssize i = it.start; i < it.end; ++i) {                            \
         v_out[i] = x_elt;                                                      \
@@ -132,7 +133,7 @@ r_obj* rray_broadcast(
     } else {                                                                   \
       for (r_ssize i = it.start; i < it.end; ++i) {                            \
         v_out[i] = v_x[x_loc];                                                 \
-        x_loc += it.v_stride[0];                                               \
+        x_loc += x_stride;                                                     \
       }                                                                        \
     }                                                                          \
   }                                                                            \
@@ -149,8 +150,9 @@ r_obj* rray_broadcast(
        !rray_run_iterator_done(&it);                                           \
        rray_run_iterator_next(&it, 1)) {                                       \
     r_ssize x_loc = it.v_loc[0];                                               \
+    const r_ssize x_stride = it.v_stride[0];                                   \
                                                                                \
-    if (it.v_stride[0] == 0) {                                                 \
+    if (x_stride == 0) {                                                       \
       r_obj* const x_elt = v_x[x_loc];                                         \
       for (r_ssize i = it.start; i < it.end; ++i) {                            \
         POKE(out, i, x_elt);                                                   \
@@ -158,7 +160,7 @@ r_obj* rray_broadcast(
     } else {                                                                   \
       for (r_ssize i = it.start; i < it.end; ++i) {                            \
         POKE(out, i, v_x[x_loc]);                                              \
-        x_loc += it.v_stride[0];                                               \
+        x_loc += x_stride;                                                     \
       }                                                                        \
     }                                                                          \
   }                                                                            \
