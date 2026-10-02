@@ -215,7 +215,6 @@ struct rray_run_iterator {
   r_ssize v_stride[RRAY_MAX_INPUTS];
 
   r_ssize size;
-  const struct rray_run_plan* plan;
   r_ssize v_point[RRAY_MAX_DIMENSIONALITY];
 };
 
@@ -225,7 +224,6 @@ static inline struct rray_run_iterator rray_run_iterator(
 ) {
   struct rray_run_iterator it;
 
-  it.plan = plan;
   it.size = plan->size;
 
   it.start = 0;
@@ -247,10 +245,9 @@ static inline bool rray_run_iterator_done(const struct rray_run_iterator* it) {
 
 static inline void rray_run_iterator_next(
   struct rray_run_iterator* it,
+  const struct rray_run_plan* plan,
   r_ssize n
 ) {
-  const struct rray_run_plan* plan = it->plan;
-
   for (int axis = 1; axis < plan->dimensionality; ++axis) {
     const r_ssize* v_strides = plan->v_strides + axis * n;
     const r_ssize dimension = plan->v_dimensions[axis];

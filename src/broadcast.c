@@ -121,7 +121,7 @@ r_obj* rray_broadcast(
                                                                                \
   for (struct rray_run_iterator it = rray_run_iterator(plan, 1);               \
        !rray_run_iterator_done(&it);                                           \
-       rray_run_iterator_next(&it, 1)) {                                       \
+       rray_run_iterator_next(&it, plan, 1)) {                                 \
     const r_ssize start = it.start;                                            \
     const r_ssize end = it.end;                                                \
                                                                                \
@@ -151,7 +151,7 @@ r_obj* rray_broadcast(
                                                                                \
   for (struct rray_run_iterator it = rray_run_iterator(plan, 1);               \
        !rray_run_iterator_done(&it);                                           \
-       rray_run_iterator_next(&it, 1)) {                                       \
+       rray_run_iterator_next(&it, plan, 1)) {                                 \
     const r_ssize start = it.start;                                            \
     const r_ssize end = it.end;                                                \
                                                                                \
