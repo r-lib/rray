@@ -98,8 +98,8 @@
 //   [1]. Note that this isn't broadcasting. This is when both input and output
 //   have an axis that stays dimension 1, which is somewhat rare.
 //
-// For iterator2, note that both sets of location strides must be coalescible,
-// as coalescing changes the output dimensionality, so it's all or nothing.
+// Note that all sets of strides must be coalescible, as coalescing changes the
+// output dimensionality, so it's all or nothing.
 //
 // --------------------------------------------------------------------------
 // Optimization - Fixed zero stride paths
