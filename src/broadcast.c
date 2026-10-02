@@ -38,6 +38,7 @@ r_obj* rray_broadcast(
   const int x_dimensionality =
     rray_dimensionality_from_dimensions(x_dimensions);
   const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
+  check_dimensionality(dimensionality);
 
   if (
     rray_dimensions_are_equal(
@@ -59,8 +60,6 @@ r_obj* rray_broadcast(
     arg,
     error_call
   );
-
-  check_dimensionality(dimensionality);
 
   r_ssize v_strides[RRAY_MAX_DIMENSIONALITY];
 
