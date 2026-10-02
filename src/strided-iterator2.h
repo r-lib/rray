@@ -7,7 +7,7 @@
 
 #include "decl/strided-iterator2-decl.h"
 
-#define RRAY_MAX_INPUTS 64
+#define RRAY_MAX_INPUTS RRAY_MAX_DIMENSIONALITY
 
 // Strided iterator plan
 //
