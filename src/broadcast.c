@@ -122,11 +122,11 @@ r_obj* rray_broadcast(
   for (struct rray_run_iterator it = rray_run_iterator(plan, 1);               \
        !rray_run_iterator_done(&it);                                           \
        rray_run_iterator_next(&it, plan, 1)) {                                 \
-    const r_ssize start = it.start;                                            \
-    const r_ssize end = it.end;                                                \
+    const r_ssize start = rray_run_iterator_start(&it);                        \
+    const r_ssize end = rray_run_iterator_end(&it);                            \
                                                                                \
-    r_ssize x_loc = it.v_loc[0];                                               \
-    const r_ssize x_stride = it.v_stride[0];                                   \
+    r_ssize x_loc = rray_run_iterator_loc(&it, 0);                             \
+    const r_ssize x_stride = rray_run_iterator_stride(&it, 0);                 \
                                                                                \
     if (x_stride == 0) {                                                       \
       const CTYPE x_elt = v_x[x_loc];                                          \
@@ -152,11 +152,11 @@ r_obj* rray_broadcast(
   for (struct rray_run_iterator it = rray_run_iterator(plan, 1);               \
        !rray_run_iterator_done(&it);                                           \
        rray_run_iterator_next(&it, plan, 1)) {                                 \
-    const r_ssize start = it.start;                                            \
-    const r_ssize end = it.end;                                                \
+    const r_ssize start = rray_run_iterator_start(&it);                        \
+    const r_ssize end = rray_run_iterator_end(&it);                            \
                                                                                \
-    r_ssize x_loc = it.v_loc[0];                                               \
-    const r_ssize x_stride = it.v_stride[0];                                   \
+    r_ssize x_loc = rray_run_iterator_loc(&it, 0);                             \
+    const r_ssize x_stride = rray_run_iterator_stride(&it, 0);                 \
                                                                                \
     if (x_stride == 0) {                                                       \
       r_obj* const x_elt = v_x[x_loc];                                         \

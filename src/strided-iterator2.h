@@ -237,6 +237,32 @@ static inline struct rray_run_iterator rray_run_iterator(
   return it;
 }
 
+static inline r_ssize rray_run_iterator_start(
+  const struct rray_run_iterator* it
+) {
+  return it->start;
+}
+
+static inline r_ssize rray_run_iterator_end(
+  const struct rray_run_iterator* it
+) {
+  return it->end;
+}
+
+static inline r_ssize rray_run_iterator_loc(
+  const struct rray_run_iterator* it,
+  r_ssize i
+) {
+  return it->v_loc[i];
+}
+
+static inline r_ssize rray_run_iterator_stride(
+  const struct rray_run_iterator* it,
+  r_ssize i
+) {
+  return it->v_stride[i];
+}
+
 static inline bool rray_run_iterator_done(const struct rray_run_iterator* it) {
   return it->start == it->size;
 }
