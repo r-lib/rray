@@ -129,12 +129,9 @@ r_obj* rray_reduce_run(
   ONE,                                                                         \
   ONE_ARGS                                                                     \
 )                                                                              \
-  struct rray_run_iterator it = rray_run_iterator(                             \
-    v_x_dimensions,                                                            \
-    dimensionality,                                                            \
-    v_out_broadcast_strides,                                                   \
-    1                                                                          \
-  );                                                                           \
+  const r_ssize* v_v_strides[] = {v_out_broadcast_strides};                    \
+  struct rray_run_iterator it =                                                \
+    rray_run_iterator(v_x_dimensions, dimensionality, v_v_strides, 1);         \
                                                                                \
   r_obj* out = KEEP(r_alloc_vector(OUT_RTYPE, out_size));                      \
   OUT_CTYPE* v_out = OUT_DEREF(out);                                           \

@@ -166,7 +166,7 @@ struct rray_run_iterator {
 static inline struct rray_run_iterator rray_run_iterator(
   const int* v_dimensions,
   int dimensionality,
-  const r_ssize* v_strides,
+  const r_ssize* const* v_v_strides,
   r_ssize n
 ) {
   check_dimensionality(dimensionality);
@@ -191,11 +191,12 @@ static inline struct rray_run_iterator rray_run_iterator(
     it.v_dimensions[axis] = (r_ssize) v_dimensions[axis];
   }
 
-  r_memcpy(
-    it.v_strides,
-    v_strides,
-    sizeof(r_ssize) * (size_t) (dimensionality * n)
-  );
+  for (int axis = 0; axis < dimensionality; ++axis) {
+    r_ssize* v_strides = it.v_strides + axis * n;
+    for (r_ssize i = 0; i < n; ++i) {
+      v_strides[i] = v_v_strides[i][axis];
+    }
+  }
 
   it.dimensionality = rray__run_iterator_axes_coalesce(
     it.v_dimensions,

@@ -169,8 +169,9 @@ r_obj* rray_broadcast(
 #define RRAY_BROADCAST_ATOMIC_POKE(OUT, I, VALUE) v_out[I] = (VALUE)
 
 #define RRAY_BROADCAST_ATOMIC(RTYPE, CTYPE, CONST_DEREF, DEREF)                \
+  const r_ssize* v_v_strides[] = {v_x_broadcast_strides};                      \
   struct rray_run_iterator it =                                                \
-    rray_run_iterator(v_dimensions, dimensionality, v_x_broadcast_strides, 1); \
+    rray_run_iterator(v_dimensions, dimensionality, v_v_strides, 1);           \
                                                                                \
   r_obj* out = KEEP(r_alloc_vector(RTYPE, rray_run_iterator_size(&it)));       \
   CTYPE* v_out = DEREF(out);                                                   \
@@ -183,8 +184,9 @@ r_obj* rray_broadcast(
   return out;
 
 #define RRAY_BROADCAST_BARRIER(RTYPE, CONST_DEREF, POKE)                       \
+  const r_ssize* v_v_strides[] = {v_x_broadcast_strides};                      \
   struct rray_run_iterator it =                                                \
-    rray_run_iterator(v_dimensions, dimensionality, v_x_broadcast_strides, 1); \
+    rray_run_iterator(v_dimensions, dimensionality, v_v_strides, 1);           \
                                                                                \
   r_obj* out = KEEP(r_alloc_vector(RTYPE, rray_run_iterator_size(&it)));       \
                                                                                \
