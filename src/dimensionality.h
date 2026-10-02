@@ -6,6 +6,7 @@
 #include "arg.h"
 
 #define RRAY_MAX_DIMENSIONALITY 64
+#define RRAY_MAX_INPUTS 64
 
 int rray_dimensionality(
   r_obj* x,
