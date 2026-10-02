@@ -30,6 +30,32 @@ r_obj* rray_binary_arithmetic(
   struct r_lazy error_call
 );
 
+typedef r_obj* (*rray_binary_arithmetic_run_fn)(
+  r_obj* x,
+  r_obj* y,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_strides,
+  struct r_lazy error_call
+);
+
+typedef rray_binary_arithmetic_run_fn (*rray_binary_arithmetic_run_switch_fn)(
+  r_obj* x,
+  r_obj* y,
+  struct rray_arg* x_arg,
+  struct rray_arg* y_arg,
+  struct r_lazy error_call
+);
+
+r_obj* rray_binary_arithmetic_run(
+  r_obj* x,
+  r_obj* y,
+  rray_binary_arithmetic_run_switch_fn fn_switch,
+  struct rray_arg* x_arg,
+  struct rray_arg* y_arg,
+  struct r_lazy error_call
+);
+
 r_no_return void stop_unsupported_arithmetic(
   const char* op,
   r_obj* x,
