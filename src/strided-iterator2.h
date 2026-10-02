@@ -182,6 +182,7 @@ static inline struct rray_run_iterator rray_run_iterator(
     it.v_dimensions[axis] = (r_ssize) v_dimensions[axis];
   }
 
+  // Reorder strides to be contiguous during next() calls
   for (int axis = 0; axis < dimensionality; ++axis) {
     r_ssize* v_strides = it.v_strides + axis * n;
     for (r_ssize i = 0; i < n; ++i) {
