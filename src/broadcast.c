@@ -114,7 +114,7 @@ r_obj* rray_broadcast(
 }
 
 #define RRAY_BROADCAST_ATOMIC(RTYPE, CTYPE, CONST_DEREF, DEREF)                \
-  r_obj* out = KEEP(r_alloc_vector(RTYPE, plan->size));                        \
+  r_obj* out = KEEP(r_alloc_vector(RTYPE, rray_run_plan_size(plan)));          \
   CTYPE* v_out = DEREF(out);                                                   \
                                                                                \
   const CTYPE* v_x = CONST_DEREF(x);                                           \
@@ -141,7 +141,7 @@ r_obj* rray_broadcast(
   return out;
 
 #define RRAY_BROADCAST_BARRIER(RTYPE, CONST_DEREF, POKE)                       \
-  r_obj* out = KEEP(r_alloc_vector(RTYPE, plan->size));                        \
+  r_obj* out = KEEP(r_alloc_vector(RTYPE, rray_run_plan_size(plan)));          \
                                                                                \
   r_obj* const* v_x = CONST_DEREF(x);                                          \
                                                                                \

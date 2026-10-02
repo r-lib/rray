@@ -204,6 +204,10 @@ static inline struct rray_run_plan rray_run_plan(
   return plan;
 }
 
+static inline r_ssize rray_run_plan_size(const struct rray_run_plan* plan) {
+  return plan->size;
+}
+
 struct rray_run_iterator {
   r_ssize start;
   r_ssize end;
