@@ -136,6 +136,15 @@
 //   produces output strides [0, 1, 3], which coalesce to dimensions [2, 12]
 //   with output strides [0, 1]. Each inner run accumulates into one fixed
 //   output location.
+//
+// --------------------------------------------------------------------------
+// Optimization - Next specialization
+//
+// The loops that callers write seem to be particularly sensitive to whether or
+// not the "next" loop is unrolled on `n`. For the generic "next" function with
+// a runtime `n`, it usually isn't unrolled. But most of the time you have
+// either one or two inputs, so we manually unroll in next1() and next2(), and
+// those should be used where possible.
 struct rray_run_iterator {
   r_ssize size;
 
