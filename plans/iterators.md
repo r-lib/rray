@@ -12,7 +12,9 @@ This plan looks at the alternative: an iterator that the operation drives itself
 
 - An iterator that hands back one run at a time, used with a single loop over the run, matches the macros when every operand moves along the run. When one operand stays fixed, it's 1.3x to 1.5x slower on broadcasting and addition, and 4x to 7x slower on sums.
 
-- The same run iterator, with each function writing one loop per stride case (an operand fixed or moving), matches the macros in every case we measured. It's faster in one case: summing `[10, 1e6]` over axis 1 takes 2.75 ms against 3.53 ms, because the total stays in a local variable.
+- The same run iterator, with each function writing one loop per stride case (an operand fixed or moving), matches the macros in nearly every case we measured. The exception is very short runs: adding `[10, 1e6] + [10, 1]` (a million runs of 10 elements) is 4% to 6% slower, in every one of six runs. It's faster in one case: summing `[10, 1e6]` over axis 1 takes 2.75 ms against 3.53 ms, because the total stays in a local variable.
+
+- One run iterator can serve any number of inputs, replacing today's separate one-input and two-input plans. It's as fast as the specialized ones, as long as each function passes the number of inputs as a literal (`1`, `2`) and the call is inlined. With the count known only at runtime, short runs get 25% to 75% slower.
 
 - That last design is what NumPy does. It is also what the macros already do. The loops are the same, so the speed is the same. What changes is where the loops live: in each function, where they can be read and changed, instead of inside a macro.
 
@@ -328,6 +330,8 @@ A copy of rray4 at `9e171e1` (`main`), with:
 
   - `run_split`: the run iterator, with one loop per stride case, as in the worked examples.
 
+  - `run_n` and `run_n_runtime`: added later, see "Any number of inputs".
+
 All four variants pass `test-broadcast.R`, `test-arithmetic-add.R` and `test-reduce-sum.R` (124 tests, 262 expectations each). The benchmark script also checks that every variant returns an `identical()` result to `macro` in every case before timing anything.
 
 ## Broadcast, double
@@ -387,11 +391,151 @@ All four variants pass `test-broadcast.R`, `test-arithmetic-add.R` and `test-red
 
 - The run iterator with one loop is as fast as the macro whenever every operand moves along the run. When an operand is fixed, it loses: up to 1.5x on addition, 1.3x on broadcasting, and 4x to 7x on sums. With a runtime stride, the compiler can't tell the location never moves, so it reloads the fixed value (or re-stores the total) on every element.
 
-- The run iterator with one loop per stride case is within run-to-run noise of the macro everywhere, because it is the same set of loops. Summing `[10, 1e6]` over axis 1 is faster (2.75 ms against 3.53 ms): its total lives in a local variable, while the macro reads and writes `v_out[out_loc]` on each add. Runs here are only 10 elements long, so that matters more.
+- The run iterator with one loop per stride case is within run-to-run noise of the macro nearly everywhere, because it is the same set of loops. The exception is addition with very short runs. Across six runs of the suite, `[10, 1e6] + [10, 1]` took 7.56 to 7.92 ms with the macro and 8.03 to 8.43 ms with the run iterator (integer: 10.97 to 11.29 ms against 11.56 to 11.81 ms). With a million runs of 10 elements, the iterator's per-run work shows up, most likely the `it->end != 0` check and copying the run's starting locations. It hasn't been looked into further. Summing `[10, 1e6]` over axis 1 is faster (2.75 ms against 3.53 ms): its total lives in a local variable, while the macro reads and writes `v_out[out_loc]` on each add. Runs here are only 10 elements long, so that matters more.
 
 - Broadcasting and addition are mostly limited by writing a 128 MB output, so the differences between designs are smaller there than for sums, which write almost nothing.
 
 - An unexpected result: for integer addition with a fixed operand, the specialized loop is about 20% slower than the plain loop (19.4 ms against 16.3 ms for `[4000, 4000] + [1, 4000]`). This affects the current macro too, not just the new design. It hasn't been looked into. A guess is that clang compiles the overflow check differently once one side is a known fixed value. Checked operations could skip the fixed-operand cases, which would also make them shorter.
+
+---
+
+# Any number of inputs
+
+Today there are three plans: `rray_strided_iterator_plan` (one input), `rray_strided_iterator2_plan` (two inputs) and `rray_strided_iterator_n_plan` (any number). `src/index.c` drives the last one through a `switch` with `case 1:` to `case 4:`, passing the count to `RRAY_STRIDED_ITERATOR_NEXT_N()` as a literal so the compiler unrolls its loops over inputs.
+
+## What NumPy does
+
+From knowledge of `nditer_templ.c.src` and `nditer_api.c`, not checked against the source.
+
+- `nditer` is written once for any number of operands. A template generates specialized copies of its `next()` for 1 operand, 2 operands, and any number (crossed with 1, 2, or any number of dimensions, and with its flags). `NpyIter_GetIterNext()` picks one and returns a function pointer. That is the same idea as rray4's `case 1:` to `case 4:`, generated instead of written by hand.
+
+- Ufuncs call `next()` once per run, not per element, so the generic per-operand loops only run between runs.
+
+- The per-element loop belongs to the ufunc, which always knows its operand count (a binary ufunc has 2 inputs and 1 output). It reads `args[0]`, `args[1]` and `args[2]` directly and never loops over operands.
+
+## `rray_run_iterator_n`
+
+The same as `rray_run_iterator`, with arrays of per-input locations and strides, and the number of inputs passed to both functions. When the caller passes a literal and the functions are inlined, the loops over `n` unroll away.
+
+```c
+#define RRAY_MAX_INPUTS 8
+
+struct rray_run_iterator_n {
+  r_ssize start;
+  r_ssize end;
+  r_ssize v_loc[RRAY_MAX_INPUTS];
+  r_ssize v_stride[RRAY_MAX_INPUTS];
+
+  r_ssize size;
+  r_ssize run_size;
+  r_ssize v_loc_start[RRAY_MAX_INPUTS];
+  const struct rray_strided_iterator_n_plan* plan;
+  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];
+};
+
+static inline struct rray_run_iterator_n rray_run_iterator_n(
+  const struct rray_strided_iterator_n_plan* plan,
+  const r_ssize n
+) {
+  struct rray_run_iterator_n it;
+
+  it.plan = plan;
+  it.size = rray_strided_iterator_n_plan_size(plan);
+  it.run_size = rray_strided_iterator_n_plan_run_size(plan);
+
+  it.start = 0;
+  it.end = 0;
+
+  for (r_ssize i = 0; i < n; ++i) {
+    it.v_stride[i] = rray_strided_iterator_n_plan_run_stride(plan, i);
+    it.v_loc[i] = 0;
+    it.v_loc_start[i] = 0;
+  }
+
+  rray_strided_iterator_n_plan_point_init(plan, it.v_point);
+
+  return it;
+}
+
+static inline bool rray_run_iterator_n_next(
+  struct rray_run_iterator_n* it,
+  const r_ssize n
+) {
+  if (it->end == it->size) {
+    return false;
+  }
+
+  if (it->end != 0) {
+    const struct rray_strided_iterator_n_plan* plan = it->plan;
+    RRAY_STRIDED_ITERATOR_NEXT_N(it->v_loc_start, it->v_point, plan, n);
+  }
+
+  it->start = it->end;
+  it->end = it->start + it->run_size;
+
+  for (r_ssize i = 0; i < n; ++i) {
+    it->v_loc[i] = it->v_loc_start[i];
+  }
+
+  return true;
+}
+```
+
+Add then reads like the two-input version, with `it.v_loc[0]` / `it.v_loc[1]` and `it.v_stride[0]` / `it.v_stride[1]` in place of `loc1` / `loc2` and `stride1` / `stride2`:
+
+```c
+struct rray_run_iterator_n it = rray_run_iterator_n(plan, 2);
+
+while (rray_run_iterator_n_next(&it, 2)) {
+  r_ssize x_loc = it.v_loc[0];
+  r_ssize y_loc = it.v_loc[1];
+
+  if (it.v_stride[0] == 0 && it.v_stride[1] == 0) {
+    ...
+  }
+}
+```
+
+In the variant package, the existing one-input and two-input plans were repackaged into a `rray_strided_iterator_n_plan` (copying their already merged dimensions and strides into the axis-major stride layout) at the top of each function. A real version would build the n plan directly.
+
+## Benchmarks
+
+Two more versions were added to the variant package. Both use exactly the same loops as `run_split`:
+
+- `run_n`: `rray_run_iterator_n` with a literal count, `1` for broadcast and sum, `2` for add.
+
+- `run_n_runtime`: the same, with the count passed through a `volatile` variable so the compiler can't see its value. This stands in for code where the count is decided at runtime, like `rray_index()`.
+
+Both pass the same 262 test expectations, and match `macro` with `identical()` in every case.
+
+The first attempt shared one function body between the two versions, with each wrapper passing its count. clang didn't inline that body into the literal wrapper, so the literal never reached the iterator, and `run_n` was as slow as `run_n_runtime`. Marking the shared body `__attribute__((always_inline))` fixed it. In real code each function calls the iterator directly with its literal, which is what the first `run_n` measurement did, and it matched `run_split` without any forced inlining. But it shows the speed depends on the compiler actually seeing the literal.
+
+Median ms, with inlining forced:
+
+| Case | Macro | Run split | Run n | Run n, runtime count |
+|---|---|---|---|---|
+| Broadcast `[10, 1]` to `[10, 1e6]` | 6.24 | 6.38 | 6.45 | 8.07 |
+| Broadcast `[1, 1e6]` to `[10, 1e6]` | 6.68 | 7.12 | 7.25 | 8.11 |
+| Broadcast `[200, 1, 200]` to `[200, 200, 200]` | 4.05 | 4.13 | 4.05 | 4.37 |
+| Add `[10, 1e6] + [10, 1]` | 7.69 | 8.33 | 8.71 | 10.76 |
+| Add `[10, 1e6] + [1, 1e6]` | 7.24 | 7.68 | 7.92 | 10.25 |
+| Add, integer, `[10, 1e6] + [10, 1]` | 10.97 | 11.57 | 12.08 | 14.89 |
+| Add, integer, `[10, 1e6] + [1, 1e6]` | 13.23 | 13.84 | 13.54 | 15.68 |
+| Sum `[10, 1e6]` over 1 | 3.53 | 2.65 | 2.93 | 4.68 |
+| Sum `[10, 1e6]` over 2 | 3.79 | 3.75 | 3.75 | 5.23 |
+| Sum `[200, 200, 200]` over 2 | 1.18 | 1.18 | 1.18 | 1.28 |
+
+Every other case in the suite (long runs: the `[4000, 4000]` and most `[200, 200, 200]` cases) was the same for all four versions, within noise.
+
+With `RRAY_MAX_INPUTS` raised to 64, so `rray_index()` could use it, `run_n` was unchanged: for example 2.84 ms on the short sum along axis 1 and 6.16 ms on the short broadcast. The compiler still keeps the used slots in registers.
+
+## What the numbers say
+
+- With a literal count, one iterator for any number of inputs is as fast as the separate one-input and two-input versions. The small differences between `run_split` and `run_n` move in both directions between runs.
+
+- A count known only at runtime costs 25% to 75% on short runs, and nothing on long runs. The loops over inputs run once per run, so they only matter when there are millions of runs.
+
+- So the plan structs can be merged into one, as long as every function passes its count as a literal. Code like `rray_index()`, where the count really is decided at runtime, keeps its `switch` on the count, with a literal in each case.
 
 ---
 
@@ -427,7 +571,9 @@ Options for the per-type repetition:
 
 - Should the run iterators replace direct uses of `RRAY_STRIDED_ITERATOR_NEXT()` in `combine.c`, `index.c`, `permute-axes.c` and `split.c` too, so there's one way to walk an array?
 
-- `RRAY_STRIDED_ITERATOR_NEXT_N()` (any number of subspaces) has no run iterator in this prototype. Does it need one?
+- Should `rray_strided_iterator_plan` and `rray_strided_iterator2_plan` be replaced by `rray_strided_iterator_n_plan` and `rray_run_iterator_n`, so there is one plan and one iterator?
+
+- Is the 4% to 6% per-run cost on very short runs worth chasing, for example by removing the `it->end != 0` check from `next()`?
 
 - None of this has been measured with GCC or on x86_64. Is one Linux run worth doing before committing to the design?
 
@@ -619,7 +765,7 @@ while (rray_run_iterator_next(&it)) {
 
 ## Benchmark script
 
-Run from the root of the variant package. This is the exact script behind the tables.
+Run from the root of the variant package. This is the exact script behind the tables. For "Any number of inputs", the `variants` line was changed to `c(macro = 0L, run_split = 3L, run_n = 4L, run_n_runtime = 5L)`, and nothing else.
 
 ```r
 devtools::load_all(quiet = TRUE)
