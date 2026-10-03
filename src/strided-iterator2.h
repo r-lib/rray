@@ -274,6 +274,18 @@ static inline r_ssize rray_run_iterator_stride(
   return it->v_strides[i];
 }
 
+static inline const r_ssize* rray_run_iterator_v_loc(
+  const struct rray_run_iterator* it
+) {
+  return it->v_loc;
+}
+
+static inline const r_ssize* rray_run_iterator_v_strides(
+  const struct rray_run_iterator* it
+) {
+  return it->v_strides;
+}
+
 static inline bool rray_run_iterator_done(const struct rray_run_iterator* it) {
   return it->start == it->size;
 }
@@ -356,6 +368,73 @@ static inline void rray_run_iterator_next2(struct rray_run_iterator* it) {
 
     it->v_loc[0] -= (axis_dimension - 1) * axis_stride1;
     it->v_loc[1] -= (axis_dimension - 1) * axis_stride2;
+  }
+
+  it->start = it->end;
+  it->end += v_dimensions[0];
+}
+
+static inline void rray_run_iterator_next3(struct rray_run_iterator* it) {
+  const r_ssize* v_dimensions = it->v_dimensions;
+  const int dimensionality = it->dimensionality;
+  const r_ssize* v_strides = it->v_strides;
+
+  for (int axis = 1; axis < dimensionality; ++axis) {
+    const r_ssize* v_axis_strides = v_strides + axis * 3;
+    const r_ssize axis_stride1 = v_axis_strides[0];
+    const r_ssize axis_stride2 = v_axis_strides[1];
+    const r_ssize axis_stride3 = v_axis_strides[2];
+    const r_ssize axis_dimension = v_dimensions[axis];
+
+    ++it->v_point[axis];
+
+    if (it->v_point[axis] < axis_dimension) {
+      it->v_loc[0] += axis_stride1;
+      it->v_loc[1] += axis_stride2;
+      it->v_loc[2] += axis_stride3;
+      break;
+    }
+
+    it->v_point[axis] = 0;
+
+    it->v_loc[0] -= (axis_dimension - 1) * axis_stride1;
+    it->v_loc[1] -= (axis_dimension - 1) * axis_stride2;
+    it->v_loc[2] -= (axis_dimension - 1) * axis_stride3;
+  }
+
+  it->start = it->end;
+  it->end += v_dimensions[0];
+}
+
+static inline void rray_run_iterator_next4(struct rray_run_iterator* it) {
+  const r_ssize* v_dimensions = it->v_dimensions;
+  const int dimensionality = it->dimensionality;
+  const r_ssize* v_strides = it->v_strides;
+
+  for (int axis = 1; axis < dimensionality; ++axis) {
+    const r_ssize* v_axis_strides = v_strides + axis * 4;
+    const r_ssize axis_stride1 = v_axis_strides[0];
+    const r_ssize axis_stride2 = v_axis_strides[1];
+    const r_ssize axis_stride3 = v_axis_strides[2];
+    const r_ssize axis_stride4 = v_axis_strides[3];
+    const r_ssize axis_dimension = v_dimensions[axis];
+
+    ++it->v_point[axis];
+
+    if (it->v_point[axis] < axis_dimension) {
+      it->v_loc[0] += axis_stride1;
+      it->v_loc[1] += axis_stride2;
+      it->v_loc[2] += axis_stride3;
+      it->v_loc[3] += axis_stride4;
+      break;
+    }
+
+    it->v_point[axis] = 0;
+
+    it->v_loc[0] -= (axis_dimension - 1) * axis_stride1;
+    it->v_loc[1] -= (axis_dimension - 1) * axis_stride2;
+    it->v_loc[2] -= (axis_dimension - 1) * axis_stride3;
+    it->v_loc[3] -= (axis_dimension - 1) * axis_stride4;
   }
 
   it->start = it->end;
