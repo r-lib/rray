@@ -164,7 +164,8 @@ struct rray_run_iterator {
   r_ssize n;
 };
 
-static inline struct rray_run_iterator rray_run_iterator(
+static inline void rray_run_iterator_init(
+  struct rray_run_iterator* it,
   const int* v_dimensions,
   int dimensionality,
   const r_ssize* const* v_v_strides,
@@ -180,46 +181,74 @@ static inline struct rray_run_iterator rray_run_iterator(
     );
   }
 
-  struct rray_run_iterator it;
-
-  it.size = rray_size_from_dimensions_checked(
+  it->size = rray_size_from_dimensions_checked(
     v_dimensions,
     dimensionality,
     r_lazy_null
   );
 
   for (int axis = 0; axis < dimensionality; ++axis) {
-    it.v_dimensions[axis] = (r_ssize) v_dimensions[axis];
+    it->v_dimensions[axis] = (r_ssize) v_dimensions[axis];
   }
 
   // Reorder strides to be contiguous during next() calls
   for (int axis = 0; axis < dimensionality; ++axis) {
-    r_ssize* v_strides = it.v_strides + axis * n;
+    r_ssize* v_strides = it->v_strides + axis * n;
     for (r_ssize i = 0; i < n; ++i) {
       v_strides[i] = v_v_strides[i][axis];
     }
   }
 
-  it.dimensionality = rray__run_iterator_axes_coalesce(
-    it.v_dimensions,
-    it.v_strides,
+  it->dimensionality = rray__run_iterator_axes_coalesce(
+    it->v_dimensions,
+    it->v_strides,
     n,
     dimensionality
   );
 
-  it.start = 0;
-  it.end = it.v_dimensions[0];
+  it->start = 0;
+  it->end = it->v_dimensions[0];
 
-  it.n = n;
+  it->n = n;
 
   for (r_ssize i = 0; i < n; ++i) {
-    it.v_loc[i] = 0;
+    it->v_loc[i] = 0;
   }
 
-  for (int axis = 0; axis < it.dimensionality; ++axis) {
-    it.v_point[axis] = 0;
+  for (int axis = 0; axis < it->dimensionality; ++axis) {
+    it->v_point[axis] = 0;
   }
+}
 
+static inline void rray_run_iterator_init1(
+  struct rray_run_iterator* it,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_strides
+) {
+  const r_ssize* v_v_strides[] = {v_strides};
+  rray_run_iterator_init(it, v_dimensions, dimensionality, v_v_strides, 1);
+}
+
+static inline void rray_run_iterator_init2(
+  struct rray_run_iterator* it,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_strides1,
+  const r_ssize* v_strides2
+) {
+  const r_ssize* v_v_strides[] = {v_strides1, v_strides2};
+  rray_run_iterator_init(it, v_dimensions, dimensionality, v_v_strides, 2);
+}
+
+static inline struct rray_run_iterator rray_run_iterator(
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* const* v_v_strides,
+  r_ssize n
+) {
+  struct rray_run_iterator it;
+  rray_run_iterator_init(&it, v_dimensions, dimensionality, v_v_strides, n);
   return it;
 }
 
@@ -240,6 +269,19 @@ static inline struct rray_run_iterator rray_run_iterator2(
 ) {
   const r_ssize* v_v_strides[] = {v_strides1, v_strides2};
   return rray_run_iterator(v_dimensions, dimensionality, v_v_strides, 2);
+}
+
+static inline void rray_run_iterator_reset(struct rray_run_iterator* it) {
+  it->start = 0;
+  it->end = it->v_dimensions[0];
+
+  for (r_ssize i = 0; i < it->n; ++i) {
+    it->v_loc[i] = 0;
+  }
+
+  for (int axis = 0; axis < it->dimensionality; ++axis) {
+    it->v_point[axis] = 0;
+  }
 }
 
 static inline r_ssize rray_run_iterator_size(
