@@ -42,7 +42,7 @@ In `src/strided-iterator2.h`:
 
 - Keep `rray_run_iterator_init()`, for any number of inputs.
 
-- Add `rray_run_iterator_init1()` and `rray_run_iterator_init2()`, which build the `v_v_strides` array and call `init()` with a literal `n`, like the wrappers they replace.
+- Add `rray_run_iterator_init1()` and `rray_run_iterator_init2()`, which build the `v_v_strides` array and call `init()` with a literal `n`, like the wrappers they replace. Done.
 
 ```c
 static inline void rray_run_iterator_init1(
@@ -73,7 +73,7 @@ rray_run_iterator_init2(&it, v_dimensions, dimensionality, v_x_strides, v_y_stri
 | `src/combine.c` (2) | `rray_run_iterator2()` | `rray_run_iterator_init2()` |
 | `src/index.c` (2) | `rray_run_iterator()` | `rray_run_iterator_init()` |
 | `src/permute-axes.c` (2) | `rray_run_iterator1()` | `rray_run_iterator_init1()` |
-| `src/split.c` | `rray_run_iterator_init()` with a one-element `v_v_x_strides` | `rray_run_iterator_init1()` |
+| `src/split.c` | `rray_run_iterator_init1()` | Done |
 
 `src/reduce-mean.c` and `src/reduce.c` still use the old `src/strided-iterator.h` and aren't touched.
 

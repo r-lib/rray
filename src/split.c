@@ -108,13 +108,11 @@ r_obj* rray_split(
       );
       v_out_elt_dimensions[axis - 1] = dimension;
 
-      const r_ssize* v_v_x_strides[] = {v_x_strides};
-      rray_run_iterator_init(
+      rray_run_iterator_init1(
         &it,
         v_out_elt_dimensions,
         dimensionality,
-        v_v_x_strides,
-        1
+        v_x_strides
       );
     }
 
