@@ -25,10 +25,10 @@ r_obj* rray_sum(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  return rray_reduce_run(x, axes, na_rm, rray_sum_switch, arg, error_call);
+  return rray_reduce(x, axes, na_rm, rray_sum_switch, arg, error_call);
 }
 
-static rray_reduce_run_fn rray_sum_switch(
+static rray_reduce_fn rray_sum_switch(
   r_obj* x,
   bool na_rm,
   struct rray_arg* arg,
@@ -64,7 +64,7 @@ static r_obj* rray_sum_lgl(
   const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_REDUCE_RUN(
+  RRAY_REDUCE(
     int,
     r_lgl_cbegin,
     R_TYPE_integer,
@@ -84,7 +84,7 @@ static r_obj* rray_sum_lgl_na_rm(
   const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_REDUCE_RUN(
+  RRAY_REDUCE(
     int,
     r_lgl_cbegin,
     R_TYPE_integer,
@@ -104,7 +104,7 @@ static r_obj* rray_sum_int(
   const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_REDUCE_RUN(
+  RRAY_REDUCE(
     int,
     r_int_cbegin,
     R_TYPE_integer,
@@ -124,7 +124,7 @@ static r_obj* rray_sum_int_na_rm(
   const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_REDUCE_RUN(
+  RRAY_REDUCE(
     int,
     r_int_cbegin,
     R_TYPE_integer,
@@ -144,7 +144,7 @@ static r_obj* rray_sum_dbl(
   const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_REDUCE_RUN(
+  RRAY_REDUCE(
     double,
     r_dbl_cbegin,
     R_TYPE_double,
@@ -164,7 +164,7 @@ static r_obj* rray_sum_dbl_na_rm(
   const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_REDUCE_RUN(
+  RRAY_REDUCE(
     double,
     r_dbl_cbegin,
     R_TYPE_double,
@@ -184,7 +184,7 @@ static r_obj* rray_sum_cpl(
   const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_REDUCE_RUN(
+  RRAY_REDUCE(
     r_complex,
     r_cpl_cbegin,
     R_TYPE_complex,
@@ -204,7 +204,7 @@ static r_obj* rray_sum_cpl_na_rm(
   const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_REDUCE_RUN(
+  RRAY_REDUCE(
     r_complex,
     r_cpl_cbegin,
     R_TYPE_complex,
