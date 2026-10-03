@@ -5,8 +5,8 @@
 #include "cast.h"
 #include "dimensionality.h"
 #include "dimensions.h"
-#include "strided-iterator.h"
 #include "missing.h"
+#include "strides.h"
 #include "type.h"
 #include "typeof2.h"
 #include "utils.h"
@@ -17,6 +17,16 @@ enum rray_compare_op {
   RRAY_COMPARE_less_than,
   RRAY_COMPARE_less_than_or_equal
 };
+
+typedef r_obj* (*rray_compare_fn)(
+  r_obj* x,
+  r_obj* y,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
+  enum rray_compare_op op
+);
 
 #include "decl/compare-decl.h"
 
@@ -161,16 +171,33 @@ static r_obj* rray_compare(
   const int* v_dimensions = r_int_cbegin(dimensions);
   const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
 
-  struct rray_strided_iterator2_plan plan = rray_broadcast_iterator2_plan(
+  check_dimensionality(dimensionality);
+
+  r_ssize v_x_broadcast_strides[RRAY_MAX_DIMENSIONALITY];
+  rray_fill_broadcast_strides_from_dimensions(
     v_x_dimensions,
     x_dimensionality,
-    v_y_dimensions,
-    y_dimensionality,
-    v_dimensions,
-    dimensionality
+    dimensionality,
+    v_x_broadcast_strides
   );
 
-  r_obj* out = KEEP(fn(x, y, &plan, op));
+  r_ssize v_y_broadcast_strides[RRAY_MAX_DIMENSIONALITY];
+  rray_fill_broadcast_strides_from_dimensions(
+    v_y_dimensions,
+    y_dimensionality,
+    dimensionality,
+    v_y_broadcast_strides
+  );
+
+  r_obj* out = KEEP(fn(
+    x,
+    y,
+    v_dimensions,
+    dimensionality,
+    v_x_broadcast_strides,
+    v_y_broadcast_strides,
+    op
+  ));
   r_attrib_poke_dim(out, dimensions);
 
   r_obj* out_names = KEEP(rray_broadcast_names2(x, y, dimensions));
@@ -374,7 +401,10 @@ static r_no_return void stop_unsupported_compare(
 static r_obj* rray_compare_lgl_lgl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_compare_op op
 ) {
   RRAY_COMPARE(
@@ -394,7 +424,10 @@ static r_obj* rray_compare_lgl_lgl(
 static r_obj* rray_compare_lgl_int(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_compare_op op
 ) {
   RRAY_COMPARE(
@@ -414,7 +447,10 @@ static r_obj* rray_compare_lgl_int(
 static r_obj* rray_compare_int_lgl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_compare_op op
 ) {
   RRAY_COMPARE(
@@ -434,7 +470,10 @@ static r_obj* rray_compare_int_lgl(
 static r_obj* rray_compare_lgl_dbl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_compare_op op
 ) {
   RRAY_COMPARE(
@@ -454,7 +493,10 @@ static r_obj* rray_compare_lgl_dbl(
 static r_obj* rray_compare_dbl_lgl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_compare_op op
 ) {
   RRAY_COMPARE(
@@ -474,7 +516,10 @@ static r_obj* rray_compare_dbl_lgl(
 static r_obj* rray_compare_int_int(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_compare_op op
 ) {
   RRAY_COMPARE(
@@ -494,7 +539,10 @@ static r_obj* rray_compare_int_int(
 static r_obj* rray_compare_int_dbl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_compare_op op
 ) {
   RRAY_COMPARE(
@@ -514,7 +562,10 @@ static r_obj* rray_compare_int_dbl(
 static r_obj* rray_compare_dbl_int(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_compare_op op
 ) {
   RRAY_COMPARE(
@@ -534,7 +585,10 @@ static r_obj* rray_compare_dbl_int(
 static r_obj* rray_compare_dbl_dbl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_compare_op op
 ) {
   RRAY_COMPARE(

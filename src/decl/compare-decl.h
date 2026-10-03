@@ -1,10 +1,3 @@
-typedef r_obj* (*rray_compare_fn)(
-  r_obj* x,
-  r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
-  enum rray_compare_op op
-);
-
 static r_obj* rray_compare(
   r_obj* x,
   r_obj* y,
@@ -35,55 +28,82 @@ static r_no_return void stop_unsupported_compare(
 static r_obj* rray_compare_lgl_lgl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_compare_op op
 );
 static r_obj* rray_compare_lgl_int(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_compare_op op
 );
 static r_obj* rray_compare_int_lgl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_compare_op op
 );
 static r_obj* rray_compare_lgl_dbl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_compare_op op
 );
 static r_obj* rray_compare_dbl_lgl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_compare_op op
 );
 static r_obj* rray_compare_int_int(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_compare_op op
 );
 static r_obj* rray_compare_int_dbl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_compare_op op
 );
 static r_obj* rray_compare_dbl_int(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_compare_op op
 );
 static r_obj* rray_compare_dbl_dbl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_compare_op op
 );
 

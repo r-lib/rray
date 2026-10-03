@@ -303,57 +303,6 @@ static inline struct rray_strided_iterator2_plan rray_strided_iterator2_plan(
   return plan;
 }
 
-// Same as `rray_broadcast_iterator_plan()`, but broadcasts two `from` spaces
-// into one shared `to` space
-static inline struct rray_strided_iterator2_plan rray_broadcast_iterator2_plan(
-  const int* v_from1_dimensions,
-  int from1_dimensionality,
-  const int* v_from2_dimensions,
-  int from2_dimensionality,
-  const int* v_to_dimensions,
-  int to_dimensionality
-) {
-  check_dimensionality(to_dimensionality);
-
-  rray__check_broadcast_dimensions(
-    v_from1_dimensions,
-    from1_dimensionality,
-    v_to_dimensions,
-    to_dimensionality
-  );
-
-  rray__check_broadcast_dimensions(
-    v_from2_dimensions,
-    from2_dimensionality,
-    v_to_dimensions,
-    to_dimensionality
-  );
-
-  r_ssize v_strides1[RRAY_MAX_DIMENSIONALITY];
-  r_ssize v_strides2[RRAY_MAX_DIMENSIONALITY];
-
-  rray_fill_broadcast_strides_from_dimensions(
-    v_from1_dimensions,
-    from1_dimensionality,
-    to_dimensionality,
-    v_strides1
-  );
-
-  rray_fill_broadcast_strides_from_dimensions(
-    v_from2_dimensions,
-    from2_dimensionality,
-    to_dimensionality,
-    v_strides2
-  );
-
-  return rray_strided_iterator2_plan(
-    v_to_dimensions,
-    to_dimensionality,
-    v_strides1,
-    v_strides2
-  );
-}
-
 static inline r_ssize rray_strided_iterator2_plan_size(
   const struct rray_strided_iterator2_plan* plan
 ) {
