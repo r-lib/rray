@@ -13,7 +13,12 @@ operations <- list(
   ),
   min = list(fn = rray_min, types = c("integer", "double")),
   all = list(fn = rray_all, types = "logical"),
-  any = list(fn = rray_any, types = "logical")
+  any = list(fn = rray_any, types = "logical"),
+  mean = list(fn = rray_mean, types = c("logical", "integer", "double")),
+  mean_na_rm = list(
+    fn = \(x, axes) rray_mean(x, axes, na_rm = TRUE),
+    types = c("logical", "integer", "double")
+  )
 )
 
 shapes <- list(

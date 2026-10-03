@@ -96,7 +96,7 @@ r_obj* rray_split(
     const int dimension = uniform ? v_dimensions[0] : v_dimensions[i];
 
     if (dimension == previous_dimension) {
-      rray_run_iterator_reset(&it);
+      rray_run_iterator_reset1(&it);
     } else {
       previous_dimension = dimension;
 

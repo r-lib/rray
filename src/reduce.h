@@ -4,7 +4,6 @@
 #include "rlang.h"
 
 #include "arg.h"
-#include "strided-iterator.h"
 #include "strided-iterator2.h"
 
 #define RRAY_REDUCE_ARGS(...) , __VA_ARGS__
@@ -100,8 +99,12 @@ r_obj* rray_reduce(
 
 typedef r_obj* (*rray_reduce_nested_fn)(
   r_obj* x,
-  const struct rray_strided_iterator_plan* outer_plan,
-  const struct rray_strided_iterator_plan* inner_plan,
+  const int* v_outer_dimensions,
+  int outer_dimensionality,
+  const r_ssize* v_outer_strides,
+  const int* v_inner_dimensions,
+  int inner_dimensionality,
+  const r_ssize* v_inner_strides,
   struct r_lazy error_call
 );
 
@@ -130,35 +133,40 @@ r_obj* rray_reduce_nested(
   ONE,                                                                         \
   ONE_ARGS                                                                     \
 )                                                                              \
-  const r_ssize size = rray_strided_iterator_plan_size(outer_plan);            \
+  struct rray_run_iterator outer;                                              \
+  rray_run_iterator_init1(                                                     \
+    &outer,                                                                    \
+    v_outer_dimensions,                                                        \
+    outer_dimensionality,                                                      \
+    v_outer_strides                                                            \
+  );                                                                           \
                                                                                \
-  r_obj* out = KEEP(r_alloc_vector(OUT_RTYPE, size));                          \
+  struct rray_run_iterator inner;                                              \
+  rray_run_iterator_init1(                                                     \
+    &inner,                                                                    \
+    v_inner_dimensions,                                                        \
+    inner_dimensionality,                                                      \
+    v_inner_strides                                                            \
+  );                                                                           \
+                                                                               \
+  const r_ssize out_size = rray_run_iterator_size(&outer);                     \
+                                                                               \
+  r_obj* out = KEEP(r_alloc_vector(OUT_RTYPE, out_size));                      \
   OUT_CTYPE* v_out = OUT_DEREF(out);                                           \
                                                                                \
   const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
                                                                                \
-  r_ssize out_run_start = 0;                                                   \
-  const r_ssize out_run_size =                                                 \
-    rray_strided_iterator_plan_run_size(outer_plan);                           \
+  for (; !rray_run_iterator_done(&outer); rray_run_iterator_next1(&outer)) {   \
+    const r_ssize start = rray_run_iterator_start(&outer);                     \
+    const r_ssize end = rray_run_iterator_end(&outer);                         \
                                                                                \
-  r_ssize x_start = 0;                                                         \
-  const r_ssize x_run_stride =                                                 \
-    rray_strided_iterator_plan_run_stride(outer_plan);                         \
+    r_ssize x_loc = rray_run_iterator_loc(&outer, 0);                          \
+    const r_ssize x_stride = rray_run_iterator_stride(&outer, 0);              \
                                                                                \
-  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];                                    \
-  rray_strided_iterator_plan_point_init(outer_plan, v_point);                  \
-                                                                               \
-  while (out_run_start != size) {                                              \
-    const r_ssize out_run_end = out_run_start + out_run_size;                  \
-    r_ssize x_loc = x_start;                                                   \
-                                                                               \
-    for (r_ssize i = out_run_start; i < out_run_end; ++i) {                    \
-      v_out[i] = ONE(v_x, x_loc, inner_plan ONE_ARGS);                         \
-      x_loc += x_run_stride;                                                   \
+    for (r_ssize i = start; i < end; ++i) {                                    \
+      v_out[i] = ONE(v_x, x_loc, &inner ONE_ARGS);                             \
+      x_loc += x_stride;                                                       \
     }                                                                          \
-                                                                               \
-    out_run_start = out_run_end;                                               \
-    RRAY_STRIDED_ITERATOR_NEXT(x_start, v_point, outer_plan);                  \
   }                                                                            \
                                                                                \
   FREE(1);                                                                     \
@@ -166,29 +174,20 @@ r_obj* rray_reduce_nested(
 
 #define RRAY_REDUCE_INNER(X_CTYPE, ACCUMULATE)                                 \
   do {                                                                         \
-    const r_ssize size = rray_strided_iterator_plan_size(inner_plan);          \
+    rray_run_iterator_reset1(inner);                                           \
                                                                                \
-    r_ssize run_start = 0;                                                     \
-    const r_ssize run_size = rray_strided_iterator_plan_run_size(inner_plan);  \
+    for (; !rray_run_iterator_done(inner); rray_run_iterator_next1(inner)) {   \
+      const r_ssize start = rray_run_iterator_start(inner);                    \
+      const r_ssize end = rray_run_iterator_end(inner);                        \
                                                                                \
-    const r_ssize x_run_stride =                                               \
-      rray_strided_iterator_plan_run_stride(inner_plan);                       \
+      r_ssize x_loc = x_start + rray_run_iterator_loc(inner, 0);               \
+      const r_ssize x_stride = rray_run_iterator_stride(inner, 0);             \
                                                                                \
-    r_ssize v_point[RRAY_MAX_DIMENSIONALITY];                                  \
-    rray_strided_iterator_plan_point_init(inner_plan, v_point);                \
-                                                                               \
-    while (run_start != size) {                                                \
-      const r_ssize run_end = run_start + run_size;                            \
-      r_ssize x_loc = x_start;                                                 \
-                                                                               \
-      for (r_ssize i = run_start; i < run_end; ++i) {                          \
+      for (r_ssize i = start; i < end; ++i) {                                  \
         const X_CTYPE x_elt = v_x[x_loc];                                      \
         ACCUMULATE;                                                            \
-        x_loc += x_run_stride;                                                 \
+        x_loc += x_stride;                                                     \
       }                                                                        \
-                                                                               \
-      run_start = run_end;                                                     \
-      RRAY_STRIDED_ITERATOR_NEXT(x_start, v_point, inner_plan);                \
     }                                                                          \
   } while (0)
 
