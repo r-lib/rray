@@ -59,7 +59,9 @@ static rray_reduce_fn rray_prod_switch(
 static r_obj* rray_prod_lgl(
   r_obj* x,
   r_ssize out_size,
-  const struct rray_strided_iterator_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 ) {
   RRAY_REDUCE(
@@ -77,7 +79,9 @@ static r_obj* rray_prod_lgl(
 static r_obj* rray_prod_lgl_na_rm(
   r_obj* x,
   r_ssize out_size,
-  const struct rray_strided_iterator_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 ) {
   RRAY_REDUCE(
@@ -95,7 +99,9 @@ static r_obj* rray_prod_lgl_na_rm(
 static r_obj* rray_prod_int(
   r_obj* x,
   r_ssize out_size,
-  const struct rray_strided_iterator_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 ) {
   RRAY_REDUCE(
@@ -113,7 +119,9 @@ static r_obj* rray_prod_int(
 static r_obj* rray_prod_int_na_rm(
   r_obj* x,
   r_ssize out_size,
-  const struct rray_strided_iterator_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 ) {
   RRAY_REDUCE(
@@ -131,7 +139,9 @@ static r_obj* rray_prod_int_na_rm(
 static r_obj* rray_prod_dbl(
   r_obj* x,
   r_ssize out_size,
-  const struct rray_strided_iterator_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 ) {
   RRAY_REDUCE(
@@ -149,7 +159,9 @@ static r_obj* rray_prod_dbl(
 static r_obj* rray_prod_dbl_na_rm(
   r_obj* x,
   r_ssize out_size,
-  const struct rray_strided_iterator_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 ) {
   RRAY_REDUCE(
@@ -167,7 +179,9 @@ static r_obj* rray_prod_dbl_na_rm(
 static r_obj* rray_prod_cpl(
   r_obj* x,
   r_ssize out_size,
-  const struct rray_strided_iterator_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 ) {
   RRAY_REDUCE(
@@ -185,7 +199,9 @@ static r_obj* rray_prod_cpl(
 static r_obj* rray_prod_cpl_na_rm(
   r_obj* x,
   r_ssize out_size,
-  const struct rray_strided_iterator_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 ) {
   RRAY_REDUCE(

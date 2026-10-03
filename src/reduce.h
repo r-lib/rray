@@ -22,7 +22,9 @@
 typedef r_obj* (*rray_reduce_fn)(
   r_obj* x,
   r_ssize out_size,
-  const struct rray_strided_iterator_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 );
 
@@ -42,84 +44,7 @@ r_obj* rray_reduce(
   struct r_lazy error_call
 );
 
-typedef r_obj* (*rray_reduce_run_fn)(
-  r_obj* x,
-  r_ssize out_size,
-  const int* v_dimensions,
-  int dimensionality,
-  const r_ssize* v_out_broadcast_strides,
-  struct r_lazy error_call
-);
-
-typedef rray_reduce_run_fn (*rray_reduce_run_fn_switch)(
-  r_obj* x,
-  bool na_rm,
-  struct rray_arg* arg,
-  struct r_lazy error_call
-);
-
-r_obj* rray_reduce_run(
-  r_obj* x,
-  r_obj* axes,
-  bool na_rm,
-  rray_reduce_run_fn_switch fn_switch,
-  struct rray_arg* arg,
-  struct r_lazy error_call
-);
-
 #define RRAY_REDUCE(                                                           \
-  X_CTYPE,                                                                     \
-  X_CONST_DEREF,                                                               \
-  OUT_RTYPE,                                                                   \
-  OUT_CTYPE,                                                                   \
-  OUT_DEREF,                                                                   \
-  OUT_INIT,                                                                    \
-  ONE,                                                                         \
-  ONE_ARGS                                                                     \
-)                                                                              \
-  const r_ssize size = rray_strided_iterator_plan_size(plan);                  \
-                                                                               \
-  r_obj* out = KEEP(r_alloc_vector(OUT_RTYPE, out_size));                      \
-  OUT_CTYPE* v_out = OUT_DEREF(out);                                           \
-                                                                               \
-  for (r_ssize i = 0; i < out_size; ++i) {                                     \
-    v_out[i] = OUT_INIT;                                                       \
-  }                                                                            \
-                                                                               \
-  const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
-                                                                               \
-  r_ssize run_start = 0;                                                       \
-  const r_ssize run_size = rray_strided_iterator_plan_run_size(plan);          \
-                                                                               \
-  r_ssize out_start = 0;                                                       \
-  const r_ssize out_run_stride = rray_strided_iterator_plan_run_stride(plan);  \
-                                                                               \
-  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];                                    \
-  rray_strided_iterator_plan_point_init(plan, v_point);                        \
-                                                                               \
-  while (run_start != size) {                                                  \
-    const r_ssize run_end = run_start + run_size;                              \
-    r_ssize out_loc = out_start;                                               \
-                                                                               \
-    if (out_run_stride == 0) {                                                 \
-      for (r_ssize i = run_start; i < run_end; ++i) {                          \
-        v_out[out_loc] = ONE(v_out[out_loc], v_x[i] ONE_ARGS);                 \
-      }                                                                        \
-    } else {                                                                   \
-      for (r_ssize i = run_start; i < run_end; ++i) {                          \
-        v_out[out_loc] = ONE(v_out[out_loc], v_x[i] ONE_ARGS);                 \
-        out_loc += out_run_stride;                                             \
-      }                                                                        \
-    }                                                                          \
-                                                                               \
-    run_start = run_end;                                                       \
-    RRAY_STRIDED_ITERATOR_NEXT(out_start, v_point, plan);                      \
-  }                                                                            \
-                                                                               \
-  FREE(1);                                                                     \
-  return out;
-
-#define RRAY_REDUCE_RUN(                                                       \
   X_CTYPE,                                                                     \
   X_CONST_DEREF,                                                               \
   OUT_RTYPE,                                                                   \

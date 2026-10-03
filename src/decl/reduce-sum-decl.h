@@ -1,4 +1,4 @@
-static rray_reduce_run_fn rray_sum_switch(
+static rray_reduce_fn rray_sum_switch(
   r_obj* x,
   bool na_rm,
   struct rray_arg* arg,

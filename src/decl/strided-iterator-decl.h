@@ -17,10 +17,3 @@ static inline bool rray__strided_iterator_axes_coalescible(
   r_ssize right_dimension,
   r_ssize right_stride
 );
-
-static inline void rray__check_broadcast_dimensions(
-  const int* v_from_dimensions,
-  int from_dimensionality,
-  const int* v_to_dimensions,
-  int to_dimensionality
-);
