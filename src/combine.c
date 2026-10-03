@@ -9,7 +9,7 @@
 #include "dimensions.h"
 #include "ptype-common.h"
 #include "size.h"
-#include "strided-iterator.h"
+#include "strided-iterator2.h"
 #include "strides.h"
 #include "utils.h"
 
@@ -122,15 +122,18 @@ r_obj* rray_combine(
       v_x_strides
     );
 
-    const struct rray_strided_iterator2_plan plan = rray_strided_iterator2_plan(
+    const r_ssize out_start = axis_offset * v_out_strides[axis - 1];
+
+    rray_combine_fill(
+      x,
+      out,
+      out_start,
       v_x_broadcast_dimensions,
       out_dimensionality,
       v_out_strides,
       v_x_strides
     );
 
-    const r_ssize out_start = axis_offset * v_out_strides[axis - 1];
-    rray_combine_fill(x, out, out_start, &plan);
     axis_offset += x_axis_dimension;
   }
 
@@ -217,105 +220,148 @@ static void rray_combine_fill(
   r_obj* x,
   r_obj* out,
   r_ssize out_start,
-  const struct rray_strided_iterator2_plan* plan
+  const int* v_x_broadcast_dimensions,
+  int out_dimensionality,
+  const r_ssize* v_out_strides,
+  const r_ssize* v_x_strides
 ) {
   switch (r_typeof(x)) {
   case R_TYPE_logical:
-    rray_combine_fill_lgl(x, out, out_start, plan);
+    rray_combine_fill_lgl(
+      x,
+      out,
+      out_start,
+      v_x_broadcast_dimensions,
+      out_dimensionality,
+      v_out_strides,
+      v_x_strides
+    );
     break;
   case R_TYPE_integer:
-    rray_combine_fill_int(x, out, out_start, plan);
+    rray_combine_fill_int(
+      x,
+      out,
+      out_start,
+      v_x_broadcast_dimensions,
+      out_dimensionality,
+      v_out_strides,
+      v_x_strides
+    );
     break;
   case R_TYPE_double:
-    rray_combine_fill_dbl(x, out, out_start, plan);
+    rray_combine_fill_dbl(
+      x,
+      out,
+      out_start,
+      v_x_broadcast_dimensions,
+      out_dimensionality,
+      v_out_strides,
+      v_x_strides
+    );
     break;
   case R_TYPE_complex:
-    rray_combine_fill_cpl(x, out, out_start, plan);
+    rray_combine_fill_cpl(
+      x,
+      out,
+      out_start,
+      v_x_broadcast_dimensions,
+      out_dimensionality,
+      v_out_strides,
+      v_x_strides
+    );
     break;
   case R_TYPE_raw:
-    rray_combine_fill_raw(x, out, out_start, plan);
+    rray_combine_fill_raw(
+      x,
+      out,
+      out_start,
+      v_x_broadcast_dimensions,
+      out_dimensionality,
+      v_out_strides,
+      v_x_strides
+    );
     break;
   case R_TYPE_character:
-    rray_combine_fill_chr(x, out, out_start, plan);
+    rray_combine_fill_chr(
+      x,
+      out,
+      out_start,
+      v_x_broadcast_dimensions,
+      out_dimensionality,
+      v_out_strides,
+      v_x_strides
+    );
     break;
   case R_TYPE_list:
-    rray_combine_fill_list(x, out, out_start, plan);
+    rray_combine_fill_list(
+      x,
+      out,
+      out_start,
+      v_x_broadcast_dimensions,
+      out_dimensionality,
+      v_out_strides,
+      v_x_strides
+    );
     break;
   default:
     r_stop_unreachable();
   }
 }
 
-#define RRAY_COMBINE_FILL_ATOMIC(CTYPE, CONST_DEREF, DEREF)                    \
-  const r_ssize size = rray_strided_iterator2_plan_size(plan);                 \
+#define RRAY_COMBINE_FILL_LOOP(POKE)                                           \
+  for (; !rray_run_iterator_done(&it); rray_run_iterator_next2(&it)) {         \
+    const r_ssize start = rray_run_iterator_start(&it);                        \
+    const r_ssize end = rray_run_iterator_end(&it);                            \
                                                                                \
-  const CTYPE* v_x = CONST_DEREF(x);                                           \
-  CTYPE* v_out = DEREF(out);                                                   \
+    r_ssize out_loc = out_start + rray_run_iterator_loc(&it, 0);               \
+    const r_ssize out_stride = rray_run_iterator_stride(&it, 0);               \
                                                                                \
-  r_ssize run_start = 0;                                                       \
-  const r_ssize run_size = rray_strided_iterator2_plan_run_size(plan);         \
+    r_ssize x_loc = rray_run_iterator_loc(&it, 1);                             \
+    const r_ssize x_stride = rray_run_iterator_stride(&it, 1);                 \
                                                                                \
-  const r_ssize out_run_stride =                                               \
-    rray_strided_iterator2_plan_run_stride1(plan);                             \
-                                                                               \
-  r_ssize x_start = 0;                                                         \
-  const r_ssize x_run_stride = rray_strided_iterator2_plan_run_stride2(plan);  \
-                                                                               \
-  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];                                    \
-  rray_strided_iterator2_plan_point_init(plan, v_point);                       \
-                                                                               \
-  while (run_start != size) {                                                  \
-    const r_ssize run_end = run_start + run_size;                              \
-    r_ssize out_loc = out_start;                                               \
-    r_ssize x_loc = x_start;                                                   \
-                                                                               \
-    for (r_ssize i = run_start; i < run_end; ++i) {                            \
-      v_out[out_loc] = v_x[x_loc];                                             \
-      out_loc += out_run_stride;                                               \
-      x_loc += x_run_stride;                                                   \
+    for (r_ssize i = start; i < end; ++i) {                                    \
+      POKE(out, out_loc, v_x[x_loc]);                                          \
+      out_loc += out_stride;                                                   \
+      x_loc += x_stride;                                                       \
     }                                                                          \
-                                                                               \
-    run_start = run_end;                                                       \
-    RRAY_STRIDED_ITERATOR_NEXT2(out_start, x_start, v_point, plan);            \
   }
 
+#define RRAY_COMBINE_FILL_ATOMIC_POKE(OUT, LOC, VALUE) v_out[LOC] = (VALUE)
+
+#define RRAY_COMBINE_FILL_ATOMIC(CTYPE, CONST_DEREF, DEREF)                    \
+  struct rray_run_iterator it = rray_run_iterator2(                            \
+    v_x_broadcast_dimensions,                                                  \
+    out_dimensionality,                                                        \
+    v_out_strides,                                                             \
+    v_x_strides                                                                \
+  );                                                                           \
+                                                                               \
+  CTYPE* v_out = DEREF(out);                                                   \
+                                                                               \
+  const CTYPE* v_x = CONST_DEREF(x);                                           \
+                                                                               \
+  RRAY_COMBINE_FILL_LOOP(RRAY_COMBINE_FILL_ATOMIC_POKE)
+
 #define RRAY_COMBINE_FILL_BARRIER(CONST_DEREF, POKE)                           \
-  const r_ssize size = rray_strided_iterator2_plan_size(plan);                 \
+  struct rray_run_iterator it = rray_run_iterator2(                            \
+    v_x_broadcast_dimensions,                                                  \
+    out_dimensionality,                                                        \
+    v_out_strides,                                                             \
+    v_x_strides                                                                \
+  );                                                                           \
                                                                                \
   r_obj* const* v_x = CONST_DEREF(x);                                          \
                                                                                \
-  r_ssize run_start = 0;                                                       \
-  const r_ssize run_size = rray_strided_iterator2_plan_run_size(plan);         \
-                                                                               \
-  const r_ssize out_run_stride =                                               \
-    rray_strided_iterator2_plan_run_stride1(plan);                             \
-                                                                               \
-  r_ssize x_start = 0;                                                         \
-  const r_ssize x_run_stride = rray_strided_iterator2_plan_run_stride2(plan);  \
-                                                                               \
-  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];                                    \
-  rray_strided_iterator2_plan_point_init(plan, v_point);                       \
-                                                                               \
-  while (run_start != size) {                                                  \
-    const r_ssize run_end = run_start + run_size;                              \
-    r_ssize out_loc = out_start;                                               \
-    r_ssize x_loc = x_start;                                                   \
-                                                                               \
-    for (r_ssize i = run_start; i < run_end; ++i) {                            \
-      POKE(out, out_loc, v_x[x_loc]);                                          \
-      out_loc += out_run_stride;                                               \
-      x_loc += x_run_stride;                                                   \
-    }                                                                          \
-                                                                               \
-    run_start = run_end;                                                       \
-    RRAY_STRIDED_ITERATOR_NEXT2(out_start, x_start, v_point, plan);            \
-  }
+  RRAY_COMBINE_FILL_LOOP(POKE)
 
 static void rray_combine_fill_lgl(
   r_obj* x,
   r_obj* out,
   r_ssize out_start,
-  const struct rray_strided_iterator2_plan* plan
+  const int* v_x_broadcast_dimensions,
+  int out_dimensionality,
+  const r_ssize* v_out_strides,
+  const r_ssize* v_x_strides
 ) {
   RRAY_COMBINE_FILL_ATOMIC(int, r_lgl_cbegin, r_lgl_begin);
 }
@@ -324,7 +370,10 @@ static void rray_combine_fill_int(
   r_obj* x,
   r_obj* out,
   r_ssize out_start,
-  const struct rray_strided_iterator2_plan* plan
+  const int* v_x_broadcast_dimensions,
+  int out_dimensionality,
+  const r_ssize* v_out_strides,
+  const r_ssize* v_x_strides
 ) {
   RRAY_COMBINE_FILL_ATOMIC(int, r_int_cbegin, r_int_begin);
 }
@@ -333,7 +382,10 @@ static void rray_combine_fill_dbl(
   r_obj* x,
   r_obj* out,
   r_ssize out_start,
-  const struct rray_strided_iterator2_plan* plan
+  const int* v_x_broadcast_dimensions,
+  int out_dimensionality,
+  const r_ssize* v_out_strides,
+  const r_ssize* v_x_strides
 ) {
   RRAY_COMBINE_FILL_ATOMIC(double, r_dbl_cbegin, r_dbl_begin);
 }
@@ -342,7 +394,10 @@ static void rray_combine_fill_cpl(
   r_obj* x,
   r_obj* out,
   r_ssize out_start,
-  const struct rray_strided_iterator2_plan* plan
+  const int* v_x_broadcast_dimensions,
+  int out_dimensionality,
+  const r_ssize* v_out_strides,
+  const r_ssize* v_x_strides
 ) {
   RRAY_COMBINE_FILL_ATOMIC(r_complex, r_cpl_cbegin, r_cpl_begin);
 }
@@ -351,7 +406,10 @@ static void rray_combine_fill_raw(
   r_obj* x,
   r_obj* out,
   r_ssize out_start,
-  const struct rray_strided_iterator2_plan* plan
+  const int* v_x_broadcast_dimensions,
+  int out_dimensionality,
+  const r_ssize* v_out_strides,
+  const r_ssize* v_x_strides
 ) {
   RRAY_COMBINE_FILL_ATOMIC(Rbyte, r_raw_cbegin, r_raw_begin);
 }
@@ -360,7 +418,10 @@ static void rray_combine_fill_chr(
   r_obj* x,
   r_obj* out,
   r_ssize out_start,
-  const struct rray_strided_iterator2_plan* plan
+  const int* v_x_broadcast_dimensions,
+  int out_dimensionality,
+  const r_ssize* v_out_strides,
+  const r_ssize* v_x_strides
 ) {
   RRAY_COMBINE_FILL_BARRIER(r_chr_cbegin, r_chr_poke);
 }
@@ -369,10 +430,15 @@ static void rray_combine_fill_list(
   r_obj* x,
   r_obj* out,
   r_ssize out_start,
-  const struct rray_strided_iterator2_plan* plan
+  const int* v_x_broadcast_dimensions,
+  int out_dimensionality,
+  const r_ssize* v_out_strides,
+  const r_ssize* v_x_strides
 ) {
   RRAY_COMBINE_FILL_BARRIER(r_list_cbegin, r_list_poke);
 }
 
+#undef RRAY_COMBINE_FILL_LOOP
+#undef RRAY_COMBINE_FILL_ATOMIC_POKE
 #undef RRAY_COMBINE_FILL_ATOMIC
 #undef RRAY_COMBINE_FILL_BARRIER
