@@ -1,13 +1,3 @@
-typedef r_obj* (*rray_compare_fn)(
-  r_obj* x,
-  r_obj* y,
-  const int* v_dimensions,
-  int dimensionality,
-  const r_ssize* v_x_broadcast_strides,
-  const r_ssize* v_y_broadcast_strides,
-  enum rray_compare_op op
-);
-
 static r_obj* rray_compare(
   r_obj* x,
   r_obj* y,

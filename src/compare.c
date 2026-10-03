@@ -18,6 +18,16 @@ enum rray_compare_op {
   RRAY_COMPARE_less_than_or_equal
 };
 
+typedef r_obj* (*rray_compare_fn)(
+  r_obj* x,
+  r_obj* y,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
+  enum rray_compare_op op
+);
+
 #include "decl/compare-decl.h"
 
 r_obj* ffi_rray_greater_than(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame) {
