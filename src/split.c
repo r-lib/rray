@@ -95,7 +95,9 @@ r_obj* rray_split(
   for (r_ssize i = 0; i < out_size; ++i) {
     const int dimension = uniform ? v_dimensions[0] : v_dimensions[i];
 
-    if (dimension != previous_dimension) {
+    if (dimension == previous_dimension) {
+      rray_run_iterator_reset(&it);
+    } else {
       previous_dimension = dimension;
 
       out_elt_dimensions = r_alloc_integer(dimensionality);
@@ -228,8 +230,6 @@ static void rray_split_fill(
 }
 
 #define RRAY_SPLIT_FILL_LOOP(POKE)                                             \
-  rray_run_iterator_reset(it);                                                 \
-                                                                               \
   for (; !rray_run_iterator_done(it); rray_run_iterator_next1(it)) {           \
     const r_ssize start = rray_run_iterator_start(it);                         \
     const r_ssize end = rray_run_iterator_end(it);                             \
