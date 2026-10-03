@@ -3,7 +3,7 @@
 #include "axes.h"
 #include "dimensionality.h"
 #include "dimensions.h"
-#include "strided-iterator.h"
+#include "strided-iterator2.h"
 #include "strides.h"
 #include "utils.h"
 
@@ -44,40 +44,72 @@ r_obj* rray_permute_axes(
   r_obj* dimensions = KEEP(r_alloc_integer(dimensionality));
   int* v_dimensions = r_int_begin(dimensions);
 
-  r_ssize v_strides[RRAY_MAX_DIMENSIONALITY];
+  r_ssize v_x_permuted_strides[RRAY_MAX_DIMENSIONALITY];
 
   for (int i = 0; i < dimensionality; ++i) {
     const int axis = v_axes[i] - 1;
     v_dimensions[i] = v_x_dimensions[axis];
-    v_strides[i] = v_x_strides[axis];
+    v_x_permuted_strides[i] = v_x_strides[axis];
   }
-
-  struct rray_strided_iterator_plan plan =
-    rray_strided_iterator_plan(v_dimensions, dimensionality, v_strides);
 
   r_obj* out;
 
   switch (r_typeof(x)) {
   case R_TYPE_logical:
-    out = rray_permute_axes_lgl(x, &plan);
+    out = rray_permute_axes_lgl(
+      x,
+      v_dimensions,
+      dimensionality,
+      v_x_permuted_strides
+    );
     break;
   case R_TYPE_integer:
-    out = rray_permute_axes_int(x, &plan);
+    out = rray_permute_axes_int(
+      x,
+      v_dimensions,
+      dimensionality,
+      v_x_permuted_strides
+    );
     break;
   case R_TYPE_double:
-    out = rray_permute_axes_dbl(x, &plan);
+    out = rray_permute_axes_dbl(
+      x,
+      v_dimensions,
+      dimensionality,
+      v_x_permuted_strides
+    );
     break;
   case R_TYPE_complex:
-    out = rray_permute_axes_cpl(x, &plan);
+    out = rray_permute_axes_cpl(
+      x,
+      v_dimensions,
+      dimensionality,
+      v_x_permuted_strides
+    );
     break;
   case R_TYPE_raw:
-    out = rray_permute_axes_raw(x, &plan);
+    out = rray_permute_axes_raw(
+      x,
+      v_dimensions,
+      dimensionality,
+      v_x_permuted_strides
+    );
     break;
   case R_TYPE_character:
-    out = rray_permute_axes_chr(x, &plan);
+    out = rray_permute_axes_chr(
+      x,
+      v_dimensions,
+      dimensionality,
+      v_x_permuted_strides
+    );
     break;
   case R_TYPE_list:
-    out = rray_permute_axes_list(x, &plan);
+    out = rray_permute_axes_list(
+      x,
+      v_dimensions,
+      dimensionality,
+      v_x_permuted_strides
+    );
     break;
   default:
     r_stop_unreachable();
@@ -96,109 +128,81 @@ r_obj* rray_permute_axes(
   return out;
 }
 
-#define RRAY_PERMUTE_AXES_ATOMIC(RTYPE, CTYPE, CONST_DEREF, DEREF)             \
-  const r_ssize size = rray_strided_iterator_plan_size(plan);                  \
+#define RRAY_PERMUTE_AXES_LOOP(POKE)                                           \
+  for (; !rray_run_iterator_done(&it); rray_run_iterator_next1(&it)) {         \
+    const r_ssize start = rray_run_iterator_start(&it);                        \
+    const r_ssize end = rray_run_iterator_end(&it);                            \
                                                                                \
-  r_obj* out = KEEP(r_alloc_vector(RTYPE, size));                              \
+    r_ssize x_loc = rray_run_iterator_loc(&it, 0);                             \
+    const r_ssize x_stride = rray_run_iterator_stride(&it, 0);                 \
+                                                                               \
+    for (r_ssize i = start; i < end; ++i) {                                    \
+      POKE(out, i, v_x[x_loc]);                                                \
+      x_loc += x_stride;                                                       \
+    }                                                                          \
+  }
+
+#define RRAY_PERMUTE_AXES_ATOMIC_POKE(OUT, I, VALUE) v_out[I] = (VALUE)
+
+#define RRAY_PERMUTE_AXES_ATOMIC(RTYPE, CTYPE, CONST_DEREF, DEREF)             \
+  struct rray_run_iterator it =                                                \
+    rray_run_iterator1(v_dimensions, dimensionality, v_x_permuted_strides);    \
+                                                                               \
+  r_obj* out = KEEP(r_alloc_vector(RTYPE, rray_run_iterator_size(&it)));       \
   CTYPE* v_out = DEREF(out);                                                   \
                                                                                \
   const CTYPE* v_x = CONST_DEREF(x);                                           \
                                                                                \
-  r_ssize run_start = 0;                                                       \
-  const r_ssize run_size = rray_strided_iterator_plan_run_size(plan);          \
-                                                                               \
-  r_ssize x_start = 0;                                                         \
-  const r_ssize x_run_stride = rray_strided_iterator_plan_run_stride(plan);    \
-                                                                               \
-  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];                                    \
-  rray_strided_iterator_plan_point_init(plan, v_point);                        \
-                                                                               \
-  while (run_start != size) {                                                  \
-    const r_ssize run_end = run_start + run_size;                              \
-    r_ssize x_loc = x_start;                                                   \
-                                                                               \
-    if (x_run_stride == 0) {                                                   \
-      const CTYPE x_elt = v_x[x_loc];                                          \
-      for (r_ssize i = run_start; i < run_end; ++i) {                          \
-        v_out[i] = x_elt;                                                      \
-      }                                                                        \
-    } else {                                                                   \
-      for (r_ssize i = run_start; i < run_end; ++i) {                          \
-        v_out[i] = v_x[x_loc];                                                 \
-        x_loc += x_run_stride;                                                 \
-      }                                                                        \
-    }                                                                          \
-                                                                               \
-    run_start = run_end;                                                       \
-    RRAY_STRIDED_ITERATOR_NEXT(x_start, v_point, plan);                        \
-  }                                                                            \
+  RRAY_PERMUTE_AXES_LOOP(RRAY_PERMUTE_AXES_ATOMIC_POKE);                       \
                                                                                \
   FREE(1);                                                                     \
   return out;
 
 #define RRAY_PERMUTE_AXES_BARRIER(RTYPE, CONST_DEREF, POKE)                    \
-  const r_ssize size = rray_strided_iterator_plan_size(plan);                  \
+  struct rray_run_iterator it =                                                \
+    rray_run_iterator1(v_dimensions, dimensionality, v_x_permuted_strides);    \
                                                                                \
-  r_obj* out = KEEP(r_alloc_vector(RTYPE, size));                              \
+  r_obj* out = KEEP(r_alloc_vector(RTYPE, rray_run_iterator_size(&it)));       \
                                                                                \
   r_obj* const* v_x = CONST_DEREF(x);                                          \
                                                                                \
-  r_ssize run_start = 0;                                                       \
-  const r_ssize run_size = rray_strided_iterator_plan_run_size(plan);          \
-                                                                               \
-  r_ssize x_start = 0;                                                         \
-  const r_ssize x_run_stride = rray_strided_iterator_plan_run_stride(plan);    \
-                                                                               \
-  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];                                    \
-  rray_strided_iterator_plan_point_init(plan, v_point);                        \
-                                                                               \
-  while (run_start != size) {                                                  \
-    const r_ssize run_end = run_start + run_size;                              \
-    r_ssize x_loc = x_start;                                                   \
-                                                                               \
-    if (x_run_stride == 0) {                                                   \
-      r_obj* const x_elt = v_x[x_loc];                                         \
-      for (r_ssize i = run_start; i < run_end; ++i) {                          \
-        POKE(out, i, x_elt);                                                   \
-      }                                                                        \
-    } else {                                                                   \
-      for (r_ssize i = run_start; i < run_end; ++i) {                          \
-        POKE(out, i, v_x[x_loc]);                                              \
-        x_loc += x_run_stride;                                                 \
-      }                                                                        \
-    }                                                                          \
-                                                                               \
-    run_start = run_end;                                                       \
-    RRAY_STRIDED_ITERATOR_NEXT(x_start, v_point, plan);                        \
-  }                                                                            \
+  RRAY_PERMUTE_AXES_LOOP(POKE);                                                \
                                                                                \
   FREE(1);                                                                     \
   return out;
 
 static r_obj* rray_permute_axes_lgl(
   r_obj* x,
-  const struct rray_strided_iterator_plan* plan
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_permuted_strides
 ) {
   RRAY_PERMUTE_AXES_ATOMIC(R_TYPE_logical, int, r_lgl_cbegin, r_lgl_begin);
 }
 
 static r_obj* rray_permute_axes_int(
   r_obj* x,
-  const struct rray_strided_iterator_plan* plan
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_permuted_strides
 ) {
   RRAY_PERMUTE_AXES_ATOMIC(R_TYPE_integer, int, r_int_cbegin, r_int_begin);
 }
 
 static r_obj* rray_permute_axes_dbl(
   r_obj* x,
-  const struct rray_strided_iterator_plan* plan
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_permuted_strides
 ) {
   RRAY_PERMUTE_AXES_ATOMIC(R_TYPE_double, double, r_dbl_cbegin, r_dbl_begin);
 }
 
 static r_obj* rray_permute_axes_cpl(
   r_obj* x,
-  const struct rray_strided_iterator_plan* plan
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_permuted_strides
 ) {
   RRAY_PERMUTE_AXES_ATOMIC(
     R_TYPE_complex,
@@ -210,25 +214,33 @@ static r_obj* rray_permute_axes_cpl(
 
 static r_obj* rray_permute_axes_raw(
   r_obj* x,
-  const struct rray_strided_iterator_plan* plan
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_permuted_strides
 ) {
   RRAY_PERMUTE_AXES_ATOMIC(R_TYPE_raw, Rbyte, r_raw_cbegin, r_raw_begin);
 }
 
 static r_obj* rray_permute_axes_chr(
   r_obj* x,
-  const struct rray_strided_iterator_plan* plan
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_permuted_strides
 ) {
   RRAY_PERMUTE_AXES_BARRIER(R_TYPE_character, r_chr_cbegin, r_chr_poke);
 }
 
 static r_obj* rray_permute_axes_list(
   r_obj* x,
-  const struct rray_strided_iterator_plan* plan
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_permuted_strides
 ) {
   RRAY_PERMUTE_AXES_BARRIER(R_TYPE_list, r_list_cbegin, r_list_poke);
 }
 
+#undef RRAY_PERMUTE_AXES_LOOP
+#undef RRAY_PERMUTE_AXES_ATOMIC_POKE
 #undef RRAY_PERMUTE_AXES_ATOMIC
 #undef RRAY_PERMUTE_AXES_BARRIER
 
