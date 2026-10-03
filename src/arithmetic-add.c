@@ -22,7 +22,7 @@ r_obj* rray_add(
   struct rray_arg* y_arg,
   struct r_lazy error_call
 ) {
-  return rray_binary_arithmetic_run(
+  return rray_binary_arithmetic(
     x,
     y,
     rray_add_switch,
@@ -32,7 +32,7 @@ r_obj* rray_add(
   );
 }
 
-static rray_binary_arithmetic_run_fn rray_add_switch(
+static rray_binary_arithmetic_fn rray_add_switch(
   r_obj* x,
   r_obj* y,
   struct rray_arg* x_arg,
