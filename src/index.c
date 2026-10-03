@@ -340,7 +340,7 @@ static inline r_ssize rray_index_location(
   const r_ssize* v_x_strides,
   const int* const* v_v_index,
   const r_ssize* v_location,
-  const r_ssize* v_run_stride,
+  const r_ssize* v_strides,
   r_ssize run_i,
   r_ssize indices_size
 ) {
@@ -348,7 +348,7 @@ static inline r_ssize rray_index_location(
 
   for (r_ssize i = 0; i < indices_size; ++i) {
     const int* v_index = v_v_index[i];
-    const r_ssize location = v_location[i] + run_i * v_run_stride[i];
+    const r_ssize location = v_location[i] + run_i * v_strides[i];
     const int index = v_index[location];
     out += (r_ssize) (index - 1) * v_x_strides[i];
   }
@@ -360,7 +360,7 @@ static inline r_ssize rray_index_location_missing(
   const r_ssize* v_x_strides,
   const int* const* v_v_index,
   const r_ssize* v_location,
-  const r_ssize* v_run_stride,
+  const r_ssize* v_strides,
   r_ssize run_i,
   r_ssize indices_size
 ) {
@@ -368,7 +368,7 @@ static inline r_ssize rray_index_location_missing(
 
   for (r_ssize i = 0; i < indices_size; ++i) {
     const int* v_index = v_v_index[i];
-    const r_ssize location = v_location[i] + run_i * v_run_stride[i];
+    const r_ssize location = v_location[i] + run_i * v_strides[i];
     const int index = v_index[location];
     if (index == r_globals.na_int) {
       return -1;
@@ -385,14 +385,14 @@ static inline r_ssize rray_index_location_missing(
     const r_ssize end = rray_run_iterator_end(&it);                            \
                                                                                \
     const r_ssize* v_location = rray_run_iterator_v_loc(&it);                  \
-    const r_ssize* v_run_stride = rray_run_iterator_v_axis_strides(&it, 0);    \
+    const r_ssize* v_strides = rray_run_iterator_v_strides(&it);               \
                                                                                \
     for (r_ssize i = start; i < end; ++i) {                                    \
       const r_ssize location = rray_index_location(                            \
         v_x_strides,                                                           \
         v_v_index,                                                             \
         v_location,                                                            \
-        v_run_stride,                                                          \
+        v_strides,                                                             \
         i - start,                                                             \
         INDICES_SIZE                                                           \
       );                                                                       \
@@ -406,14 +406,14 @@ static inline r_ssize rray_index_location_missing(
     const r_ssize end = rray_run_iterator_end(&it);                            \
                                                                                \
     const r_ssize* v_location = rray_run_iterator_v_loc(&it);                  \
-    const r_ssize* v_run_stride = rray_run_iterator_v_axis_strides(&it, 0);    \
+    const r_ssize* v_strides = rray_run_iterator_v_strides(&it);               \
                                                                                \
     for (r_ssize i = start; i < end; ++i) {                                    \
       const r_ssize location = rray_index_location_missing(                    \
         v_x_strides,                                                           \
         v_v_index,                                                             \
         v_location,                                                            \
-        v_run_stride,                                                          \
+        v_strides,                                                             \
         i - start,                                                             \
         INDICES_SIZE                                                           \
       );                                                                       \

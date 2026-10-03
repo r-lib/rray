@@ -94,7 +94,7 @@ static inline r_ssize rray_index_location(
   const r_ssize* v_x_strides,
   const int* const* v_v_index,
   const r_ssize* v_location,
-  const r_ssize* v_run_stride,
+  const r_ssize* v_strides,
   r_ssize run_i,
   r_ssize indices_size
 );
@@ -102,7 +102,7 @@ static inline r_ssize rray_index_location_missing(
   const r_ssize* v_x_strides,
   const int* const* v_v_index,
   const r_ssize* v_location,
-  const r_ssize* v_run_stride,
+  const r_ssize* v_strides,
   r_ssize run_i,
   r_ssize indices_size
 );

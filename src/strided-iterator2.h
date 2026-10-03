@@ -280,11 +280,10 @@ static inline const r_ssize* rray_run_iterator_v_loc(
   return it->v_loc;
 }
 
-static inline const r_ssize* rray_run_iterator_v_axis_strides(
-  const struct rray_run_iterator* it,
-  int axis
+static inline const r_ssize* rray_run_iterator_v_strides(
+  const struct rray_run_iterator* it
 ) {
-  return it->v_strides + axis * it->n;
+  return it->v_strides;
 }
 
 static inline bool rray_run_iterator_done(const struct rray_run_iterator* it) {
