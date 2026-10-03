@@ -4,12 +4,14 @@
 #include "rlang.h"
 
 #include "arg.h"
-#include "strided-iterator.h"
 
 typedef r_obj* (*rray_binary_arithmetic_fn)(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 );
 
@@ -25,33 +27,6 @@ r_obj* rray_binary_arithmetic(
   r_obj* x,
   r_obj* y,
   rray_binary_arithmetic_switch_fn fn_switch,
-  struct rray_arg* x_arg,
-  struct rray_arg* y_arg,
-  struct r_lazy error_call
-);
-
-typedef r_obj* (*rray_binary_arithmetic_run_fn)(
-  r_obj* x,
-  r_obj* y,
-  const int* v_dimensions,
-  int dimensionality,
-  const r_ssize* v_x_broadcast_strides,
-  const r_ssize* v_y_broadcast_strides,
-  struct r_lazy error_call
-);
-
-typedef rray_binary_arithmetic_run_fn (*rray_binary_arithmetic_run_switch_fn)(
-  r_obj* x,
-  r_obj* y,
-  struct rray_arg* x_arg,
-  struct rray_arg* y_arg,
-  struct r_lazy error_call
-);
-
-r_obj* rray_binary_arithmetic_run(
-  r_obj* x,
-  r_obj* y,
-  rray_binary_arithmetic_run_switch_fn fn_switch,
   struct rray_arg* x_arg,
   struct rray_arg* y_arg,
   struct r_lazy error_call

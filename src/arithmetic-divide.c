@@ -112,10 +112,13 @@ static rray_binary_arithmetic_fn rray_divide_switch(
 static r_obj* rray_divide_lgl_lgl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY(
+  RRAY_BINARY_RUN(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_dbl_one,
@@ -126,17 +129,20 @@ static r_obj* rray_divide_lgl_lgl(
     double,
     r_dbl_begin,
     rray_divide_dbl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
 static r_obj* rray_divide_lgl_int(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY(
+  RRAY_BINARY_RUN(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_dbl_one,
@@ -147,17 +153,20 @@ static r_obj* rray_divide_lgl_int(
     double,
     r_dbl_begin,
     rray_divide_dbl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
 static r_obj* rray_divide_int_lgl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY(
+  RRAY_BINARY_RUN(
     int,
     r_int_cbegin,
     rray_cast_int_to_dbl_one,
@@ -168,17 +177,20 @@ static r_obj* rray_divide_int_lgl(
     double,
     r_dbl_begin,
     rray_divide_dbl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
 static r_obj* rray_divide_lgl_dbl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY(
+  RRAY_BINARY_RUN(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_dbl_one,
@@ -189,17 +201,20 @@ static r_obj* rray_divide_lgl_dbl(
     double,
     r_dbl_begin,
     rray_divide_dbl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
 static r_obj* rray_divide_dbl_lgl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY(
+  RRAY_BINARY_RUN(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
@@ -210,17 +225,20 @@ static r_obj* rray_divide_dbl_lgl(
     double,
     r_dbl_begin,
     rray_divide_dbl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
 static r_obj* rray_divide_lgl_cpl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY(
+  RRAY_BINARY_RUN(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_cpl_one,
@@ -231,17 +249,20 @@ static r_obj* rray_divide_lgl_cpl(
     r_complex,
     r_cpl_begin,
     rray_divide_cpl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
 static r_obj* rray_divide_cpl_lgl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY(
+  RRAY_BINARY_RUN(
     r_complex,
     r_cpl_cbegin,
     rray_cast_cpl_to_cpl_one,
@@ -252,17 +273,20 @@ static r_obj* rray_divide_cpl_lgl(
     r_complex,
     r_cpl_begin,
     rray_divide_cpl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
 static r_obj* rray_divide_int_int(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY(
+  RRAY_BINARY_RUN(
     int,
     r_int_cbegin,
     rray_cast_int_to_dbl_one,
@@ -273,17 +297,20 @@ static r_obj* rray_divide_int_int(
     double,
     r_dbl_begin,
     rray_divide_dbl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
 static r_obj* rray_divide_int_dbl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY(
+  RRAY_BINARY_RUN(
     int,
     r_int_cbegin,
     rray_cast_int_to_dbl_one,
@@ -294,17 +321,20 @@ static r_obj* rray_divide_int_dbl(
     double,
     r_dbl_begin,
     rray_divide_dbl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
 static r_obj* rray_divide_dbl_int(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY(
+  RRAY_BINARY_RUN(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
@@ -315,17 +345,20 @@ static r_obj* rray_divide_dbl_int(
     double,
     r_dbl_begin,
     rray_divide_dbl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
 static r_obj* rray_divide_int_cpl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY(
+  RRAY_BINARY_RUN(
     int,
     r_int_cbegin,
     rray_cast_int_to_cpl_one,
@@ -336,17 +369,20 @@ static r_obj* rray_divide_int_cpl(
     r_complex,
     r_cpl_begin,
     rray_divide_cpl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
 static r_obj* rray_divide_cpl_int(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY(
+  RRAY_BINARY_RUN(
     r_complex,
     r_cpl_cbegin,
     rray_cast_cpl_to_cpl_one,
@@ -357,17 +393,20 @@ static r_obj* rray_divide_cpl_int(
     r_complex,
     r_cpl_begin,
     rray_divide_cpl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
 static r_obj* rray_divide_dbl_dbl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY(
+  RRAY_BINARY_RUN(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
@@ -378,17 +417,20 @@ static r_obj* rray_divide_dbl_dbl(
     double,
     r_dbl_begin,
     rray_divide_dbl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
 static r_obj* rray_divide_dbl_cpl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY(
+  RRAY_BINARY_RUN(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_cpl_one,
@@ -399,17 +441,20 @@ static r_obj* rray_divide_dbl_cpl(
     r_complex,
     r_cpl_begin,
     rray_divide_cpl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
 static r_obj* rray_divide_cpl_dbl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY(
+  RRAY_BINARY_RUN(
     r_complex,
     r_cpl_cbegin,
     rray_cast_cpl_to_cpl_one,
@@ -420,17 +465,20 @@ static r_obj* rray_divide_cpl_dbl(
     r_complex,
     r_cpl_begin,
     rray_divide_cpl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
 static r_obj* rray_divide_cpl_cpl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY(
+  RRAY_BINARY_RUN(
     r_complex,
     r_cpl_cbegin,
     rray_cast_cpl_to_cpl_one,
@@ -441,22 +489,14 @@ static r_obj* rray_divide_cpl_cpl(
     r_complex,
     r_cpl_begin,
     rray_divide_cpl_one,
-    RRAY_BINARY_ARGS(error_call)
+    RRAY_BINARY_NO_ARGS
   );
 }
 
-static inline double rray_divide_dbl_one(
-  double x,
-  double y,
-  struct r_lazy error_call
-) {
+static inline double rray_divide_dbl_one(double x, double y) {
   return x / y;
 }
 
-static inline r_complex rray_divide_cpl_one(
-  r_complex x,
-  r_complex y,
-  struct r_lazy error_call
-) {
+static inline r_complex rray_divide_cpl_one(r_complex x, r_complex y) {
   return rray_c99_to_cpl(rray_cpl_to_c99(x) / rray_cpl_to_c99(y));
 }
