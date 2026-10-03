@@ -1,7 +1,10 @@
 typedef r_obj* (*rray_equality_fn)(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_equality_op op
 );
 
@@ -35,97 +38,145 @@ static r_no_return void stop_unsupported_equality(
 static r_obj* rray_equality_lgl_lgl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_equality_op op
 );
 static r_obj* rray_equality_lgl_int(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_equality_op op
 );
 static r_obj* rray_equality_int_lgl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_equality_op op
 );
 static r_obj* rray_equality_lgl_dbl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_equality_op op
 );
 static r_obj* rray_equality_dbl_lgl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_equality_op op
 );
 static r_obj* rray_equality_lgl_cpl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_equality_op op
 );
 static r_obj* rray_equality_cpl_lgl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_equality_op op
 );
 static r_obj* rray_equality_int_int(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_equality_op op
 );
 static r_obj* rray_equality_int_dbl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_equality_op op
 );
 static r_obj* rray_equality_dbl_int(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_equality_op op
 );
 static r_obj* rray_equality_int_cpl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_equality_op op
 );
 static r_obj* rray_equality_cpl_int(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_equality_op op
 );
 static r_obj* rray_equality_dbl_dbl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_equality_op op
 );
 static r_obj* rray_equality_dbl_cpl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_equality_op op
 );
 static r_obj* rray_equality_cpl_dbl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_equality_op op
 );
 static r_obj* rray_equality_cpl_cpl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_equality_op op
 );
 

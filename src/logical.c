@@ -6,7 +6,7 @@
 #include "dimensionality.h"
 #include "dimensions.h"
 #include "one-logical.h"
-#include "strided-iterator.h"
+#include "strides.h"
 
 enum rray_logical_op {
   RRAY_LOGICAL_and,
@@ -101,16 +101,33 @@ static r_obj* rray_logical(
   const int* v_dimensions = r_int_cbegin(dimensions);
   const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
 
-  struct rray_strided_iterator2_plan plan = rray_broadcast_iterator2_plan(
+  check_dimensionality(dimensionality);
+
+  r_ssize v_x_broadcast_strides[RRAY_MAX_DIMENSIONALITY];
+  rray_fill_broadcast_strides_from_dimensions(
     v_x_dimensions,
     x_dimensionality,
-    v_y_dimensions,
-    y_dimensionality,
-    v_dimensions,
-    dimensionality
+    dimensionality,
+    v_x_broadcast_strides
   );
 
-  r_obj* out = KEEP(rray_logical_lgl_lgl(x, y, &plan, op));
+  r_ssize v_y_broadcast_strides[RRAY_MAX_DIMENSIONALITY];
+  rray_fill_broadcast_strides_from_dimensions(
+    v_y_dimensions,
+    y_dimensionality,
+    dimensionality,
+    v_y_broadcast_strides
+  );
+
+  r_obj* out = KEEP(rray_logical_lgl_lgl(
+    x,
+    y,
+    v_dimensions,
+    dimensionality,
+    v_x_broadcast_strides,
+    v_y_broadcast_strides,
+    op
+  ));
   r_attrib_poke_dim(out, dimensions);
 
   r_obj* out_names = KEEP(rray_broadcast_names2(x, y, dimensions));
@@ -126,7 +143,10 @@ static r_obj* rray_logical(
 static r_obj* rray_logical_lgl_lgl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_logical_op op
 ) {
   switch (op) {

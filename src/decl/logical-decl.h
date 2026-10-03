@@ -10,6 +10,9 @@ static r_obj* rray_logical(
 static r_obj* rray_logical_lgl_lgl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
   enum rray_logical_op op
 );

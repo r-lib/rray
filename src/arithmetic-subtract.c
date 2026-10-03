@@ -120,7 +120,7 @@ static r_obj* rray_subtract_lgl_lgl(
   const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY_RUN(
+  RRAY_BINARY(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_int_one,
@@ -144,7 +144,7 @@ static r_obj* rray_subtract_lgl_int(
   const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY_RUN(
+  RRAY_BINARY(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_int_one,
@@ -168,7 +168,7 @@ static r_obj* rray_subtract_int_lgl(
   const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY_RUN(
+  RRAY_BINARY(
     int,
     r_int_cbegin,
     rray_cast_int_to_int_one,
@@ -192,7 +192,7 @@ static r_obj* rray_subtract_lgl_dbl(
   const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY_RUN(
+  RRAY_BINARY(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_dbl_one,
@@ -216,7 +216,7 @@ static r_obj* rray_subtract_dbl_lgl(
   const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY_RUN(
+  RRAY_BINARY(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
@@ -240,7 +240,7 @@ static r_obj* rray_subtract_lgl_cpl(
   const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY_RUN(
+  RRAY_BINARY(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_cpl_one,
@@ -264,7 +264,7 @@ static r_obj* rray_subtract_cpl_lgl(
   const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY_RUN(
+  RRAY_BINARY(
     r_complex,
     r_cpl_cbegin,
     rray_cast_cpl_to_cpl_one,
@@ -288,7 +288,7 @@ static r_obj* rray_subtract_int_int(
   const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY_RUN(
+  RRAY_BINARY(
     int,
     r_int_cbegin,
     rray_cast_int_to_int_one,
@@ -312,7 +312,7 @@ static r_obj* rray_subtract_int_dbl(
   const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY_RUN(
+  RRAY_BINARY(
     int,
     r_int_cbegin,
     rray_cast_int_to_dbl_one,
@@ -336,7 +336,7 @@ static r_obj* rray_subtract_dbl_int(
   const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY_RUN(
+  RRAY_BINARY(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
@@ -360,7 +360,7 @@ static r_obj* rray_subtract_int_cpl(
   const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY_RUN(
+  RRAY_BINARY(
     int,
     r_int_cbegin,
     rray_cast_int_to_cpl_one,
@@ -384,7 +384,7 @@ static r_obj* rray_subtract_cpl_int(
   const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY_RUN(
+  RRAY_BINARY(
     r_complex,
     r_cpl_cbegin,
     rray_cast_cpl_to_cpl_one,
@@ -408,7 +408,7 @@ static r_obj* rray_subtract_dbl_dbl(
   const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY_RUN(
+  RRAY_BINARY(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
@@ -432,7 +432,7 @@ static r_obj* rray_subtract_dbl_cpl(
   const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY_RUN(
+  RRAY_BINARY(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_cpl_one,
@@ -456,7 +456,7 @@ static r_obj* rray_subtract_cpl_dbl(
   const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY_RUN(
+  RRAY_BINARY(
     r_complex,
     r_cpl_cbegin,
     rray_cast_cpl_to_cpl_one,
@@ -480,7 +480,7 @@ static r_obj* rray_subtract_cpl_cpl(
   const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY_RUN(
+  RRAY_BINARY(
     r_complex,
     r_cpl_cbegin,
     rray_cast_cpl_to_cpl_one,

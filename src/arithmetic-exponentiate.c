@@ -113,7 +113,7 @@ static r_obj* rray_exponentiate_lgl_lgl(
   const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY_RUN(
+  RRAY_BINARY(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_dbl_one,
@@ -137,7 +137,7 @@ static r_obj* rray_exponentiate_lgl_int(
   const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY_RUN(
+  RRAY_BINARY(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_dbl_one,
@@ -161,7 +161,7 @@ static r_obj* rray_exponentiate_int_lgl(
   const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY_RUN(
+  RRAY_BINARY(
     int,
     r_int_cbegin,
     rray_cast_int_to_dbl_one,
@@ -185,7 +185,7 @@ static r_obj* rray_exponentiate_lgl_dbl(
   const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY_RUN(
+  RRAY_BINARY(
     int,
     r_lgl_cbegin,
     rray_cast_lgl_to_dbl_one,
@@ -209,7 +209,7 @@ static r_obj* rray_exponentiate_dbl_lgl(
   const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY_RUN(
+  RRAY_BINARY(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
@@ -233,7 +233,7 @@ static r_obj* rray_exponentiate_int_int(
   const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY_RUN(
+  RRAY_BINARY(
     int,
     r_int_cbegin,
     rray_cast_int_to_dbl_one,
@@ -257,7 +257,7 @@ static r_obj* rray_exponentiate_int_dbl(
   const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY_RUN(
+  RRAY_BINARY(
     int,
     r_int_cbegin,
     rray_cast_int_to_dbl_one,
@@ -281,7 +281,7 @@ static r_obj* rray_exponentiate_dbl_int(
   const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY_RUN(
+  RRAY_BINARY(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
@@ -305,7 +305,7 @@ static r_obj* rray_exponentiate_dbl_dbl(
   const r_ssize* v_y_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_BINARY_RUN(
+  RRAY_BINARY(
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,

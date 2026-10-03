@@ -6,7 +6,7 @@
 #include "dimensionality.h"
 #include "dimensions.h"
 #include "one-extremum.h"
-#include "strided-iterator.h"
+#include "strides.h"
 #include "type.h"
 #include "typeof2.h"
 #include "utils.h"
@@ -93,6 +93,9 @@ static r_obj* rray_extremum(
   x = KEEP(arg_as_array(x, x_arg, error_call));
   y = KEEP(arg_as_array(y, y_arg, error_call));
 
+  const rray_extremum_fn fn =
+    rray_extremum_switch(x, y, op, x_arg, y_arg, error_call);
+
   r_obj* x_dimensions = r_dim(x);
   r_obj* y_dimensions = r_dim(y);
 
@@ -116,18 +119,33 @@ static r_obj* rray_extremum(
   const int* v_dimensions = r_int_cbegin(dimensions);
   const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
 
-  struct rray_strided_iterator2_plan plan = rray_broadcast_iterator2_plan(
+  check_dimensionality(dimensionality);
+
+  r_ssize v_x_broadcast_strides[RRAY_MAX_DIMENSIONALITY];
+  rray_fill_broadcast_strides_from_dimensions(
     v_x_dimensions,
     x_dimensionality,
-    v_y_dimensions,
-    y_dimensionality,
-    v_dimensions,
-    dimensionality
+    dimensionality,
+    v_x_broadcast_strides
   );
 
-  r_obj* out = KEEP(
-    rray_extremum_switch(x, y, op, &plan, na_rm, x_arg, y_arg, error_call)
+  r_ssize v_y_broadcast_strides[RRAY_MAX_DIMENSIONALITY];
+  rray_fill_broadcast_strides_from_dimensions(
+    v_y_dimensions,
+    y_dimensionality,
+    dimensionality,
+    v_y_broadcast_strides
   );
+
+  r_obj* out = KEEP(fn(
+    x,
+    y,
+    v_dimensions,
+    dimensionality,
+    v_x_broadcast_strides,
+    v_y_broadcast_strides,
+    na_rm
+  ));
   r_attrib_poke_dim(out, dimensions);
 
   r_obj* out_names = KEEP(rray_broadcast_names2(x, y, dimensions));
@@ -140,12 +158,10 @@ static r_obj* rray_extremum(
   return out;
 }
 
-static r_obj* rray_extremum_switch(
+static rray_extremum_fn rray_extremum_switch(
   r_obj* x,
   r_obj* y,
   enum rray_extremum_op op,
-  const struct rray_strided_iterator2_plan* plan,
-  bool na_rm,
   struct rray_arg* x_arg,
   struct rray_arg* y_arg,
   struct r_lazy error_call
@@ -159,68 +175,44 @@ static r_obj* rray_extremum_switch(
   case RRAY_TYPE2_logical_logical:
     switch (op) {
     case RRAY_EXTREMUM_max:
-      return rray_pmax_lgl_lgl(x, y, plan, na_rm, error_call);
+      return rray_pmax_lgl_lgl;
     case RRAY_EXTREMUM_min:
-      return rray_pmin_lgl_lgl(x, y, plan, na_rm, error_call);
+      return rray_pmin_lgl_lgl;
     }
   case RRAY_TYPE2_logical_integer:
     switch (op) {
     case RRAY_EXTREMUM_max:
-      if (side == RRAY_SIDE_right) {
-        return rray_pmax_lgl_int(x, y, plan, na_rm, error_call);
-      } else {
-        return rray_pmax_int_lgl(x, y, plan, na_rm, error_call);
-      }
+      return side == RRAY_SIDE_right ? rray_pmax_lgl_int : rray_pmax_int_lgl;
     case RRAY_EXTREMUM_min:
-      if (side == RRAY_SIDE_right) {
-        return rray_pmin_lgl_int(x, y, plan, na_rm, error_call);
-      } else {
-        return rray_pmin_int_lgl(x, y, plan, na_rm, error_call);
-      }
+      return side == RRAY_SIDE_right ? rray_pmin_lgl_int : rray_pmin_int_lgl;
     }
   case RRAY_TYPE2_logical_double:
     switch (op) {
     case RRAY_EXTREMUM_max:
-      if (side == RRAY_SIDE_right) {
-        return rray_pmax_lgl_dbl(x, y, plan, na_rm, error_call);
-      } else {
-        return rray_pmax_dbl_lgl(x, y, plan, na_rm, error_call);
-      }
+      return side == RRAY_SIDE_right ? rray_pmax_lgl_dbl : rray_pmax_dbl_lgl;
     case RRAY_EXTREMUM_min:
-      if (side == RRAY_SIDE_right) {
-        return rray_pmin_lgl_dbl(x, y, plan, na_rm, error_call);
-      } else {
-        return rray_pmin_dbl_lgl(x, y, plan, na_rm, error_call);
-      }
+      return side == RRAY_SIDE_right ? rray_pmin_lgl_dbl : rray_pmin_dbl_lgl;
     }
   case RRAY_TYPE2_integer_integer:
     switch (op) {
     case RRAY_EXTREMUM_max:
-      return rray_pmax_int_int(x, y, plan, na_rm, error_call);
+      return rray_pmax_int_int;
     case RRAY_EXTREMUM_min:
-      return rray_pmin_int_int(x, y, plan, na_rm, error_call);
+      return rray_pmin_int_int;
     }
   case RRAY_TYPE2_integer_double:
     switch (op) {
     case RRAY_EXTREMUM_max:
-      if (side == RRAY_SIDE_right) {
-        return rray_pmax_int_dbl(x, y, plan, na_rm, error_call);
-      } else {
-        return rray_pmax_dbl_int(x, y, plan, na_rm, error_call);
-      }
+      return side == RRAY_SIDE_right ? rray_pmax_int_dbl : rray_pmax_dbl_int;
     case RRAY_EXTREMUM_min:
-      if (side == RRAY_SIDE_right) {
-        return rray_pmin_int_dbl(x, y, plan, na_rm, error_call);
-      } else {
-        return rray_pmin_dbl_int(x, y, plan, na_rm, error_call);
-      }
+      return side == RRAY_SIDE_right ? rray_pmin_int_dbl : rray_pmin_dbl_int;
     }
   case RRAY_TYPE2_double_double:
     switch (op) {
     case RRAY_EXTREMUM_max:
-      return rray_pmax_dbl_dbl(x, y, plan, na_rm, error_call);
+      return rray_pmax_dbl_dbl;
     case RRAY_EXTREMUM_min:
-      return rray_pmin_dbl_dbl(x, y, plan, na_rm, error_call);
+      return rray_pmin_dbl_dbl;
     }
 
   case RRAY_TYPE2_logical_complex:
@@ -335,9 +327,11 @@ static r_no_return void stop_unsupported_extremum(
 static r_obj* rray_pmax_lgl_lgl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
-  bool na_rm,
-  struct r_lazy error_call
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
+  bool na_rm
 ) {
   RRAY_EXTREMUM(
     int,
@@ -357,9 +351,11 @@ static r_obj* rray_pmax_lgl_lgl(
 static r_obj* rray_pmax_lgl_int(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
-  bool na_rm,
-  struct r_lazy error_call
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
+  bool na_rm
 ) {
   RRAY_EXTREMUM(
     int,
@@ -379,9 +375,11 @@ static r_obj* rray_pmax_lgl_int(
 static r_obj* rray_pmax_int_lgl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
-  bool na_rm,
-  struct r_lazy error_call
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
+  bool na_rm
 ) {
   RRAY_EXTREMUM(
     int,
@@ -401,9 +399,11 @@ static r_obj* rray_pmax_int_lgl(
 static r_obj* rray_pmax_lgl_dbl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
-  bool na_rm,
-  struct r_lazy error_call
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
+  bool na_rm
 ) {
   RRAY_EXTREMUM(
     int,
@@ -423,9 +423,11 @@ static r_obj* rray_pmax_lgl_dbl(
 static r_obj* rray_pmax_dbl_lgl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
-  bool na_rm,
-  struct r_lazy error_call
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
+  bool na_rm
 ) {
   RRAY_EXTREMUM(
     double,
@@ -445,9 +447,11 @@ static r_obj* rray_pmax_dbl_lgl(
 static r_obj* rray_pmax_int_int(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
-  bool na_rm,
-  struct r_lazy error_call
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
+  bool na_rm
 ) {
   RRAY_EXTREMUM(
     int,
@@ -467,9 +471,11 @@ static r_obj* rray_pmax_int_int(
 static r_obj* rray_pmax_int_dbl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
-  bool na_rm,
-  struct r_lazy error_call
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
+  bool na_rm
 ) {
   RRAY_EXTREMUM(
     int,
@@ -489,9 +495,11 @@ static r_obj* rray_pmax_int_dbl(
 static r_obj* rray_pmax_dbl_int(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
-  bool na_rm,
-  struct r_lazy error_call
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
+  bool na_rm
 ) {
   RRAY_EXTREMUM(
     double,
@@ -511,9 +519,11 @@ static r_obj* rray_pmax_dbl_int(
 static r_obj* rray_pmax_dbl_dbl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
-  bool na_rm,
-  struct r_lazy error_call
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
+  bool na_rm
 ) {
   RRAY_EXTREMUM(
     double,
@@ -533,9 +543,11 @@ static r_obj* rray_pmax_dbl_dbl(
 static r_obj* rray_pmin_lgl_lgl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
-  bool na_rm,
-  struct r_lazy error_call
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
+  bool na_rm
 ) {
   RRAY_EXTREMUM(
     int,
@@ -555,9 +567,11 @@ static r_obj* rray_pmin_lgl_lgl(
 static r_obj* rray_pmin_lgl_int(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
-  bool na_rm,
-  struct r_lazy error_call
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
+  bool na_rm
 ) {
   RRAY_EXTREMUM(
     int,
@@ -577,9 +591,11 @@ static r_obj* rray_pmin_lgl_int(
 static r_obj* rray_pmin_int_lgl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
-  bool na_rm,
-  struct r_lazy error_call
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
+  bool na_rm
 ) {
   RRAY_EXTREMUM(
     int,
@@ -599,9 +615,11 @@ static r_obj* rray_pmin_int_lgl(
 static r_obj* rray_pmin_lgl_dbl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
-  bool na_rm,
-  struct r_lazy error_call
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
+  bool na_rm
 ) {
   RRAY_EXTREMUM(
     int,
@@ -621,9 +639,11 @@ static r_obj* rray_pmin_lgl_dbl(
 static r_obj* rray_pmin_dbl_lgl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
-  bool na_rm,
-  struct r_lazy error_call
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
+  bool na_rm
 ) {
   RRAY_EXTREMUM(
     double,
@@ -643,9 +663,11 @@ static r_obj* rray_pmin_dbl_lgl(
 static r_obj* rray_pmin_int_int(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
-  bool na_rm,
-  struct r_lazy error_call
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
+  bool na_rm
 ) {
   RRAY_EXTREMUM(
     int,
@@ -665,9 +687,11 @@ static r_obj* rray_pmin_int_int(
 static r_obj* rray_pmin_int_dbl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
-  bool na_rm,
-  struct r_lazy error_call
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
+  bool na_rm
 ) {
   RRAY_EXTREMUM(
     int,
@@ -687,9 +711,11 @@ static r_obj* rray_pmin_int_dbl(
 static r_obj* rray_pmin_dbl_int(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
-  bool na_rm,
-  struct r_lazy error_call
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
+  bool na_rm
 ) {
   RRAY_EXTREMUM(
     double,
@@ -709,9 +735,11 @@ static r_obj* rray_pmin_dbl_int(
 static r_obj* rray_pmin_dbl_dbl(
   r_obj* x,
   r_obj* y,
-  const struct rray_strided_iterator2_plan* plan,
-  bool na_rm,
-  struct r_lazy error_call
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
+  bool na_rm
 ) {
   RRAY_EXTREMUM(
     double,
