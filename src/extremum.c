@@ -16,6 +16,16 @@ enum rray_extremum_op {
   RRAY_EXTREMUM_min
 };
 
+typedef r_obj* (*rray_extremum_fn)(
+  r_obj* x,
+  r_obj* y,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_x_broadcast_strides,
+  const r_ssize* v_y_broadcast_strides,
+  bool na_rm
+);
+
 #include "decl/extremum-decl.h"
 
 r_obj* ffi_rray_pmax(
