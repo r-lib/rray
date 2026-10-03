@@ -65,15 +65,8 @@ r_obj* rray_index(
   // `RRAY_MAX_DIMENSIONALITY`, so the maximum size is known.
   r_ssize v_indices_strides[RRAY_MAX_DIMENSIONALITY][RRAY_MAX_DIMENSIONALITY];
   const r_ssize* v_v_indices_strides[RRAY_MAX_DIMENSIONALITY];
-
-  // `...` can have up to `RRAY_MAX_DIMENSIONALITY` inputs, bounded by the
-  // dimensionality of `x`.
-  const int* v_v_index[RRAY_MAX_DIMENSIONALITY];
-
   for (r_ssize i = 0; i < indices_size; ++i) {
-    r_obj* index = v_indices[i];
-
-    r_obj* index_dimensions = r_dim(index);
+    r_obj* index_dimensions = r_dim(v_indices[i]);
     const int* v_index_dimensions = r_int_cbegin(index_dimensions);
     const int index_dimensionality =
       rray_dimensionality_from_dimensions(index_dimensions);
@@ -86,7 +79,13 @@ r_obj* rray_index(
     );
 
     v_v_indices_strides[i] = v_indices_strides[i];
-    v_v_index[i] = r_int_cbegin(index);
+  }
+
+  // `...` can have up to `RRAY_MAX_DIMENSIONALITY` inputs, bounded by the
+  // dimensionality of `x`.
+  const int* v_v_index[RRAY_MAX_DIMENSIONALITY];
+  for (r_ssize i = 0; i < indices_size; ++i) {
+    v_v_index[i] = r_int_cbegin(v_indices[i]);
   }
 
   r_obj* out;
