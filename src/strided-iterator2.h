@@ -308,59 +308,54 @@ static inline void rray_run_iterator_next(struct rray_run_iterator* it) {
   it->end += v_dimensions[0];
 }
 
+#define RRAY_RUN_ITERATOR_NEXT_N(IT, N)                                        \
+  const r_ssize* v_dimensions = IT->v_dimensions;                              \
+  const int dimensionality = IT->dimensionality;                               \
+  const r_ssize* v_strides = IT->v_strides;                                    \
+                                                                               \
+  for (int axis = 1; axis < dimensionality; ++axis) {                          \
+    r_ssize v_axis_strides[N];                                                 \
+    for (r_ssize i = 0; i < N; ++i) {                                          \
+      v_axis_strides[i] = v_strides[axis * N + i];                             \
+    }                                                                          \
+    const r_ssize axis_dimension = v_dimensions[axis];                         \
+                                                                               \
+    ++IT->v_point[axis];                                                       \
+                                                                               \
+    if (IT->v_point[axis] < axis_dimension) {                                  \
+      for (r_ssize i = 0; i < N; ++i) {                                        \
+        IT->v_loc[i] += v_axis_strides[i];                                     \
+      }                                                                        \
+      break;                                                                   \
+    }                                                                          \
+                                                                               \
+    IT->v_point[axis] = 0;                                                     \
+                                                                               \
+    for (r_ssize i = 0; i < N; ++i) {                                          \
+      IT->v_loc[i] -= (axis_dimension - 1) * v_axis_strides[i];                \
+    }                                                                          \
+  }                                                                            \
+                                                                               \
+  IT->start = IT->end;                                                         \
+  IT->end += v_dimensions[0];
+
 static inline void rray_run_iterator_next1(struct rray_run_iterator* it) {
-  const r_ssize* v_dimensions = it->v_dimensions;
-  const int dimensionality = it->dimensionality;
-  const r_ssize* v_strides = it->v_strides;
-
-  for (int axis = 1; axis < dimensionality; ++axis) {
-    const r_ssize axis_stride = v_strides[axis];
-    const r_ssize axis_dimension = v_dimensions[axis];
-
-    ++it->v_point[axis];
-
-    if (it->v_point[axis] < axis_dimension) {
-      it->v_loc[0] += axis_stride;
-      break;
-    }
-
-    it->v_point[axis] = 0;
-
-    it->v_loc[0] -= (axis_dimension - 1) * axis_stride;
-  }
-
-  it->start = it->end;
-  it->end += v_dimensions[0];
+  RRAY_RUN_ITERATOR_NEXT_N(it, 1);
 }
 
 static inline void rray_run_iterator_next2(struct rray_run_iterator* it) {
-  const r_ssize* v_dimensions = it->v_dimensions;
-  const int dimensionality = it->dimensionality;
-  const r_ssize* v_strides = it->v_strides;
-
-  for (int axis = 1; axis < dimensionality; ++axis) {
-    const r_ssize* v_axis_strides = v_strides + axis * 2;
-    const r_ssize axis_stride1 = v_axis_strides[0];
-    const r_ssize axis_stride2 = v_axis_strides[1];
-    const r_ssize axis_dimension = v_dimensions[axis];
-
-    ++it->v_point[axis];
-
-    if (it->v_point[axis] < axis_dimension) {
-      it->v_loc[0] += axis_stride1;
-      it->v_loc[1] += axis_stride2;
-      break;
-    }
-
-    it->v_point[axis] = 0;
-
-    it->v_loc[0] -= (axis_dimension - 1) * axis_stride1;
-    it->v_loc[1] -= (axis_dimension - 1) * axis_stride2;
-  }
-
-  it->start = it->end;
-  it->end += v_dimensions[0];
+  RRAY_RUN_ITERATOR_NEXT_N(it, 2);
 }
+
+static inline void rray_run_iterator_next3(struct rray_run_iterator* it) {
+  RRAY_RUN_ITERATOR_NEXT_N(it, 3);
+}
+
+static inline void rray_run_iterator_next4(struct rray_run_iterator* it) {
+  RRAY_RUN_ITERATOR_NEXT_N(it, 4);
+}
+
+#undef RRAY_RUN_ITERATOR_NEXT_N
 
 static inline int rray__run_iterator_axes_coalesce(
   r_ssize* v_dimensions,

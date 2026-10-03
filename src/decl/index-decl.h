@@ -25,7 +25,9 @@ static r_obj* rray_index_lgl(
   const int* const* v_v_index,
   r_ssize indices_size,
   bool any_missing,
-  const struct rray_strided_iterator_n_plan* plan
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* const* v_v_indices_strides
 );
 static r_obj* rray_index_int(
   r_obj* x,
@@ -33,7 +35,9 @@ static r_obj* rray_index_int(
   const int* const* v_v_index,
   r_ssize indices_size,
   bool any_missing,
-  const struct rray_strided_iterator_n_plan* plan
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* const* v_v_indices_strides
 );
 static r_obj* rray_index_dbl(
   r_obj* x,
@@ -41,7 +45,9 @@ static r_obj* rray_index_dbl(
   const int* const* v_v_index,
   r_ssize indices_size,
   bool any_missing,
-  const struct rray_strided_iterator_n_plan* plan
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* const* v_v_indices_strides
 );
 static r_obj* rray_index_cpl(
   r_obj* x,
@@ -49,7 +55,9 @@ static r_obj* rray_index_cpl(
   const int* const* v_v_index,
   r_ssize indices_size,
   bool any_missing,
-  const struct rray_strided_iterator_n_plan* plan
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* const* v_v_indices_strides
 );
 static r_obj* rray_index_raw(
   r_obj* x,
@@ -57,7 +65,9 @@ static r_obj* rray_index_raw(
   const int* const* v_v_index,
   r_ssize indices_size,
   bool any_missing,
-  const struct rray_strided_iterator_n_plan* plan
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* const* v_v_indices_strides
 );
 static r_obj* rray_index_chr(
   r_obj* x,
@@ -65,7 +75,9 @@ static r_obj* rray_index_chr(
   const int* const* v_v_index,
   r_ssize indices_size,
   bool any_missing,
-  const struct rray_strided_iterator_n_plan* plan
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* const* v_v_indices_strides
 );
 static r_obj* rray_index_list(
   r_obj* x,
@@ -73,7 +85,9 @@ static r_obj* rray_index_list(
   const int* const* v_v_index,
   r_ssize indices_size,
   bool any_missing,
-  const struct rray_strided_iterator_n_plan* plan
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* const* v_v_indices_strides
 );
 
 static inline r_ssize rray_index_location(

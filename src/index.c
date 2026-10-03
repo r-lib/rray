@@ -2,7 +2,7 @@
 
 #include "dimensionality.h"
 #include "dimensions.h"
-#include "strided-iterator.h"
+#include "strided-iterator2.h"
 #include "strides.h"
 #include "utils.h"
 
@@ -58,31 +58,36 @@ r_obj* rray_index(
     KEEP(rray_dimensions_common(indices, r_null, indices_arg, error_call));
   const int* v_dimensions = r_int_cbegin(dimensions);
   const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
+  check_dimensionality(dimensionality);
 
   // `...` can take up to `RRAY_MAX_DIMENSIONALITY` inputs, bounded by the
   // dimensionality of `x`. Each input can have dimensionality up to
   // `RRAY_MAX_DIMENSIONALITY`, so the maximum size is known.
-  r_ssize v_indices_strides[RRAY_MAX_DIMENSIONALITY * RRAY_MAX_DIMENSIONALITY];
-  rray_fill_broadcast_strides_from_arrays(
-    v_indices,
-    indices_size,
-    dimensionality,
-    v_indices_strides
-  );
+  r_ssize v_indices_strides[RRAY_MAX_DIMENSIONALITY][RRAY_MAX_DIMENSIONALITY];
+  const r_ssize* v_v_indices_strides[RRAY_MAX_DIMENSIONALITY];
 
   // `...` can have up to `RRAY_MAX_DIMENSIONALITY` inputs, bounded by the
   // dimensionality of `x`.
   const int* v_v_index[RRAY_MAX_DIMENSIONALITY];
-  for (r_ssize i = 0; i < indices_size; ++i) {
-    v_v_index[i] = r_int_cbegin(v_indices[i]);
-  }
 
-  const struct rray_strided_iterator_n_plan plan = rray_strided_iterator_n_plan(
-    v_dimensions,
-    dimensionality,
-    v_indices_strides,
-    indices_size
-  );
+  for (r_ssize i = 0; i < indices_size; ++i) {
+    r_obj* index = v_indices[i];
+
+    r_obj* index_dimensions = r_dim(index);
+    const int* v_index_dimensions = r_int_cbegin(index_dimensions);
+    const int index_dimensionality =
+      rray_dimensionality_from_dimensions(index_dimensions);
+
+    rray_fill_broadcast_strides_from_dimensions(
+      v_index_dimensions,
+      index_dimensionality,
+      dimensionality,
+      v_indices_strides[i]
+    );
+
+    v_v_indices_strides[i] = v_indices_strides[i];
+    v_v_index[i] = r_int_cbegin(index);
+  }
 
   r_obj* out;
 
@@ -94,7 +99,9 @@ r_obj* rray_index(
       v_v_index,
       indices_size,
       any_missing,
-      &plan
+      v_dimensions,
+      dimensionality,
+      v_v_indices_strides
     );
     break;
   case R_TYPE_integer:
@@ -104,7 +111,9 @@ r_obj* rray_index(
       v_v_index,
       indices_size,
       any_missing,
-      &plan
+      v_dimensions,
+      dimensionality,
+      v_v_indices_strides
     );
     break;
   case R_TYPE_double:
@@ -114,7 +123,9 @@ r_obj* rray_index(
       v_v_index,
       indices_size,
       any_missing,
-      &plan
+      v_dimensions,
+      dimensionality,
+      v_v_indices_strides
     );
     break;
   case R_TYPE_complex:
@@ -124,7 +135,9 @@ r_obj* rray_index(
       v_v_index,
       indices_size,
       any_missing,
-      &plan
+      v_dimensions,
+      dimensionality,
+      v_v_indices_strides
     );
     break;
   case R_TYPE_raw:
@@ -134,7 +147,9 @@ r_obj* rray_index(
       v_v_index,
       indices_size,
       any_missing,
-      &plan
+      v_dimensions,
+      dimensionality,
+      v_v_indices_strides
     );
     break;
   case R_TYPE_character:
@@ -144,7 +159,9 @@ r_obj* rray_index(
       v_v_index,
       indices_size,
       any_missing,
-      &plan
+      v_dimensions,
+      dimensionality,
+      v_v_indices_strides
     );
     break;
   case R_TYPE_list:
@@ -154,7 +171,9 @@ r_obj* rray_index(
       v_v_index,
       indices_size,
       any_missing,
-      &plan
+      v_dimensions,
+      dimensionality,
+      v_v_indices_strides
     );
     break;
   default:
@@ -361,90 +380,97 @@ static inline r_ssize rray_index_location_missing(
   return out;
 }
 
-#define RRAY_INDEX_LOOP(POKE, INDICES_SIZE)                                    \
-  while (run_start != size) {                                                  \
-    for (r_ssize i = 0; i < run_size; ++i) {                                   \
+#define RRAY_INDEX_LOOP(POKE, NEXT, INDICES_SIZE)                              \
+  for (; !rray_run_iterator_done(&it); NEXT(&it)) {                            \
+    const r_ssize start = rray_run_iterator_start(&it);                        \
+    const r_ssize end = rray_run_iterator_end(&it);                            \
+                                                                               \
+    r_ssize v_location[RRAY_MAX_DIMENSIONALITY];                               \
+    for (r_ssize i = 0; i < INDICES_SIZE; ++i) {                               \
+      v_location[i] = rray_run_iterator_loc(&it, i);                           \
+    }                                                                          \
+                                                                               \
+    for (r_ssize i = start; i < end; ++i) {                                    \
       const r_ssize location = rray_index_location(                            \
         v_x_strides,                                                           \
         v_v_index,                                                             \
         v_location,                                                            \
         v_run_stride,                                                          \
-        i,                                                                     \
+        i - start,                                                             \
         INDICES_SIZE                                                           \
       );                                                                       \
-      POKE(out, run_start + i, v_x[location]);                                 \
+      POKE(out, i, v_x[location]);                                             \
     }                                                                          \
-                                                                               \
-    run_start += run_size;                                                     \
-    RRAY_STRIDED_ITERATOR_NEXT_N(v_location, v_point, plan, INDICES_SIZE);     \
   }
 
-#define RRAY_INDEX_LOOP_MISSING(POKE, MISSING, INDICES_SIZE)                   \
-  while (run_start != size) {                                                  \
-    for (r_ssize i = 0; i < run_size; ++i) {                                   \
+#define RRAY_INDEX_LOOP_MISSING(POKE, MISSING, NEXT, INDICES_SIZE)             \
+  for (; !rray_run_iterator_done(&it); NEXT(&it)) {                            \
+    const r_ssize start = rray_run_iterator_start(&it);                        \
+    const r_ssize end = rray_run_iterator_end(&it);                            \
+                                                                               \
+    r_ssize v_location[RRAY_MAX_DIMENSIONALITY];                               \
+    for (r_ssize i = 0; i < INDICES_SIZE; ++i) {                               \
+      v_location[i] = rray_run_iterator_loc(&it, i);                           \
+    }                                                                          \
+                                                                               \
+    for (r_ssize i = start; i < end; ++i) {                                    \
       const r_ssize location = rray_index_location_missing(                    \
         v_x_strides,                                                           \
         v_v_index,                                                             \
         v_location,                                                            \
         v_run_stride,                                                          \
-        i,                                                                     \
+        i - start,                                                             \
         INDICES_SIZE                                                           \
       );                                                                       \
-      POKE(out, run_start + i, location == -1 ? MISSING : v_x[location]);      \
+      POKE(out, i, location == -1 ? MISSING : v_x[location]);                  \
     }                                                                          \
-                                                                               \
-    run_start += run_size;                                                     \
-    RRAY_STRIDED_ITERATOR_NEXT_N(v_location, v_point, plan, INDICES_SIZE);     \
   }
 
 #define RRAY_INDEX_ITERATE(POKE, MISSING)                                      \
-  r_ssize run_start = 0;                                                       \
-  const r_ssize run_size = rray_strided_iterator_n_plan_run_size(plan);        \
-                                                                               \
   r_ssize v_run_stride[RRAY_MAX_DIMENSIONALITY];                               \
   for (r_ssize i = 0; i < indices_size; ++i) {                                 \
-    v_run_stride[i] = rray_strided_iterator_n_plan_run_stride(plan, i);        \
+    v_run_stride[i] = rray_run_iterator_stride(&it, i);                        \
   }                                                                            \
-                                                                               \
-  r_ssize v_location[RRAY_MAX_DIMENSIONALITY] = {0};                           \
-                                                                               \
-  r_ssize v_point[RRAY_MAX_DIMENSIONALITY];                                    \
-  rray_strided_iterator_n_plan_point_init(plan, v_point);                      \
                                                                                \
   if (any_missing) {                                                           \
     switch (indices_size) {                                                    \
     case 1:                                                                    \
-      RRAY_INDEX_LOOP_MISSING(POKE, MISSING, 1);                               \
+      RRAY_INDEX_LOOP_MISSING(POKE, MISSING, rray_run_iterator_next1, 1);      \
       break;                                                                   \
     case 2:                                                                    \
-      RRAY_INDEX_LOOP_MISSING(POKE, MISSING, 2);                               \
+      RRAY_INDEX_LOOP_MISSING(POKE, MISSING, rray_run_iterator_next2, 2);      \
       break;                                                                   \
     case 3:                                                                    \
-      RRAY_INDEX_LOOP_MISSING(POKE, MISSING, 3);                               \
+      RRAY_INDEX_LOOP_MISSING(POKE, MISSING, rray_run_iterator_next3, 3);      \
       break;                                                                   \
     case 4:                                                                    \
-      RRAY_INDEX_LOOP_MISSING(POKE, MISSING, 4);                               \
+      RRAY_INDEX_LOOP_MISSING(POKE, MISSING, rray_run_iterator_next4, 4);      \
       break;                                                                   \
     default:                                                                   \
-      RRAY_INDEX_LOOP_MISSING(POKE, MISSING, indices_size);                    \
+      RRAY_INDEX_LOOP_MISSING(                                                 \
+        POKE,                                                                  \
+        MISSING,                                                               \
+        rray_run_iterator_next,                                                \
+        indices_size                                                           \
+      );                                                                       \
       break;                                                                   \
     }                                                                          \
   } else {                                                                     \
     switch (indices_size) {                                                    \
     case 1:                                                                    \
-      RRAY_INDEX_LOOP(POKE, 1);                                                \
+      RRAY_INDEX_LOOP(POKE, rray_run_iterator_next1, 1);                       \
       break;                                                                   \
     case 2:                                                                    \
-      RRAY_INDEX_LOOP(POKE, 2);                                                \
+      RRAY_INDEX_LOOP(POKE, rray_run_iterator_next2, 2);                       \
       break;                                                                   \
     case 3:                                                                    \
-      RRAY_INDEX_LOOP(POKE, 3);                                                \
+      RRAY_INDEX_LOOP(POKE, rray_run_iterator_next3, 3);                       \
       break;                                                                   \
     case 4:                                                                    \
-      RRAY_INDEX_LOOP(POKE, 4);                                                \
+      RRAY_INDEX_LOOP(POKE, rray_run_iterator_next4, 4);                       \
       break;                                                                   \
     default:                                                                   \
-      RRAY_INDEX_LOOP(POKE, indices_size);                                     \
+      RRAY_INDEX_LOOP(POKE, rray_run_iterator_next, indices_size);             \
       break;                                                                   \
     }                                                                          \
   }
@@ -452,9 +478,14 @@ static inline r_ssize rray_index_location_missing(
 #define RRAY_INDEX_ATOMIC_POKE(OUT, I, VALUE) v_out[I] = (VALUE)
 
 #define RRAY_INDEX_ATOMIC(RTYPE, CTYPE, CONST_DEREF, DEREF, MISSING)           \
-  const r_ssize size = rray_strided_iterator_n_plan_size(plan);                \
+  struct rray_run_iterator it = rray_run_iterator(                             \
+    v_dimensions,                                                              \
+    dimensionality,                                                            \
+    v_v_indices_strides,                                                       \
+    indices_size                                                               \
+  );                                                                           \
                                                                                \
-  r_obj* out = KEEP(r_alloc_vector(RTYPE, size));                              \
+  r_obj* out = KEEP(r_alloc_vector(RTYPE, rray_run_iterator_size(&it)));       \
   CTYPE* v_out = DEREF(out);                                                   \
                                                                                \
   const CTYPE* v_x = CONST_DEREF(x);                                           \
@@ -465,9 +496,14 @@ static inline r_ssize rray_index_location_missing(
   return out;
 
 #define RRAY_INDEX_BARRIER(RTYPE, CONST_DEREF, POKE, MISSING)                  \
-  const r_ssize size = rray_strided_iterator_n_plan_size(plan);                \
+  struct rray_run_iterator it = rray_run_iterator(                             \
+    v_dimensions,                                                              \
+    dimensionality,                                                            \
+    v_v_indices_strides,                                                       \
+    indices_size                                                               \
+  );                                                                           \
                                                                                \
-  r_obj* out = KEEP(r_alloc_vector(RTYPE, size));                              \
+  r_obj* out = KEEP(r_alloc_vector(RTYPE, rray_run_iterator_size(&it)));       \
                                                                                \
   r_obj* const* v_x = CONST_DEREF(x);                                          \
                                                                                \
@@ -482,7 +518,9 @@ static r_obj* rray_index_lgl(
   const int* const* v_v_index,
   r_ssize indices_size,
   bool any_missing,
-  const struct rray_strided_iterator_n_plan* plan
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* const* v_v_indices_strides
 ) {
   RRAY_INDEX_ATOMIC(
     R_TYPE_logical,
@@ -499,7 +537,9 @@ static r_obj* rray_index_int(
   const int* const* v_v_index,
   r_ssize indices_size,
   bool any_missing,
-  const struct rray_strided_iterator_n_plan* plan
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* const* v_v_indices_strides
 ) {
   RRAY_INDEX_ATOMIC(
     R_TYPE_integer,
@@ -516,7 +556,9 @@ static r_obj* rray_index_dbl(
   const int* const* v_v_index,
   r_ssize indices_size,
   bool any_missing,
-  const struct rray_strided_iterator_n_plan* plan
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* const* v_v_indices_strides
 ) {
   RRAY_INDEX_ATOMIC(
     R_TYPE_double,
@@ -533,7 +575,9 @@ static r_obj* rray_index_cpl(
   const int* const* v_v_index,
   r_ssize indices_size,
   bool any_missing,
-  const struct rray_strided_iterator_n_plan* plan
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* const* v_v_indices_strides
 ) {
   RRAY_INDEX_ATOMIC(
     R_TYPE_complex,
@@ -550,7 +594,9 @@ static r_obj* rray_index_raw(
   const int* const* v_v_index,
   r_ssize indices_size,
   bool any_missing,
-  const struct rray_strided_iterator_n_plan* plan
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* const* v_v_indices_strides
 ) {
   RRAY_INDEX_ATOMIC(R_TYPE_raw, Rbyte, r_raw_cbegin, r_raw_begin, 0);
 }
@@ -561,7 +607,9 @@ static r_obj* rray_index_chr(
   const int* const* v_v_index,
   r_ssize indices_size,
   bool any_missing,
-  const struct rray_strided_iterator_n_plan* plan
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* const* v_v_indices_strides
 ) {
   RRAY_INDEX_BARRIER(
     R_TYPE_character,
@@ -577,7 +625,9 @@ static r_obj* rray_index_list(
   const int* const* v_v_index,
   r_ssize indices_size,
   bool any_missing,
-  const struct rray_strided_iterator_n_plan* plan
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* const* v_v_indices_strides
 ) {
   RRAY_INDEX_BARRIER(R_TYPE_list, r_list_cbegin, r_list_poke, r_null);
 }
