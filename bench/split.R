@@ -133,6 +133,32 @@ local({
   ))
 })
 
+cat("\nRaw storage\n")
+
+local({
+  x <- array(as.raw(seq_len(1e6L) %% 256L), c(1000L, 1000L))
+
+  gc()
+  print(bench::mark(
+    rray = rray_split(x, axis = 1L, dimensions = 100L),
+    iterations = 20L,
+    memory = FALSE
+  ))
+})
+
+cat("\nRaw storage, columns\n")
+
+local({
+  x <- array(as.raw(seq_len(1e6L) %% 256L), c(1000L, 1000L))
+
+  gc()
+  print(bench::mark(
+    rray = rray_split(x, axis = 2L, dimensions = 500L),
+    iterations = 20L,
+    memory = FALSE
+  ))
+})
+
 cat("\nCharacter storage\n")
 
 local({

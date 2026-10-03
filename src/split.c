@@ -74,6 +74,8 @@ r_obj* rray_split(
   );
   const r_ssize x_axis_stride = v_x_strides[axis - 1];
 
+  const enum r_type type = r_typeof(x);
+
   // Initialized on the first iteration. Changes any time the output dimension
   // along `axis` changes, but in the uniform case all arrays share the same
   // dimensions object!
@@ -81,7 +83,9 @@ r_obj* rray_split(
   r_keep_loc out_elt_dimensions_loc;
   KEEP_HERE(out_elt_dimensions, &out_elt_dimensions_loc);
 
-  r_ssize group_end = 0;
+  struct rray_run_iterator it;
+
+  int previous_dimension = -1;
 
   // The location along the axis. For example, with a 2x10 array split along
   // columns this runs from 0-9. The `x_axis_stride` maps it to `x_start`, a
@@ -91,13 +95,8 @@ r_obj* rray_split(
   for (r_ssize i = 0; i < out_size; ++i) {
     const int dimension = uniform ? v_dimensions[0] : v_dimensions[i];
 
-    if (i == group_end) {
-      group_end = i + 1;
-
-      while (group_end < out_size &&
-             (uniform || v_dimensions[group_end] == dimension)) {
-        ++group_end;
-      }
+    if (dimension != previous_dimension) {
+      previous_dimension = dimension;
 
       out_elt_dimensions = r_alloc_integer(dimensionality);
       KEEP_AT(out_elt_dimensions, out_elt_dimensions_loc);
@@ -109,23 +108,22 @@ r_obj* rray_split(
       );
       v_out_elt_dimensions[axis - 1] = dimension;
 
-      const r_ssize x_start = x_axis_start * x_axis_stride;
-      const r_ssize x_step = dimension * x_axis_stride;
-
-      rray_split_fill(
-        x,
-        out,
-        i,
-        group_end,
-        x_start,
-        x_step,
-        out_elt_dimensions,
+      const r_ssize* v_v_x_strides[] = {v_x_strides};
+      rray_run_iterator_init(
+        &it,
+        v_out_elt_dimensions,
         dimensionality,
-        v_x_strides
+        v_v_x_strides,
+        1
       );
     }
 
-    r_obj* out_elt = r_list_get(out, i);
+    r_obj* out_elt = r_alloc_vector(type, rray_run_iterator_size(&it));
+    r_list_poke(out, i, out_elt);
+    r_attrib_poke_dim(out_elt, out_elt_dimensions);
+
+    const r_ssize x_start = x_axis_start * x_axis_stride;
+    rray_split_fill(x, out_elt, x_start, &it);
 
     if (v_x_axis_names != NULL) {
       r_obj* out_elt_names = KEEP(rray_split_elt_names(
@@ -201,105 +199,30 @@ static void check_split_dimensions(
 static void rray_split_fill(
   r_obj* x,
   r_obj* out,
-  r_ssize out_start,
-  r_ssize out_end,
   r_ssize x_start,
-  r_ssize x_step,
-  r_obj* out_elt_dimensions,
-  int dimensionality,
-  const r_ssize* v_x_strides
+  struct rray_run_iterator* it
 ) {
   switch (r_typeof(x)) {
   case R_TYPE_logical:
-    rray_split_fill_lgl(
-      x,
-      out,
-      out_start,
-      out_end,
-      x_start,
-      x_step,
-      out_elt_dimensions,
-      dimensionality,
-      v_x_strides
-    );
+    rray_split_fill_lgl(x, out, x_start, it);
     break;
   case R_TYPE_integer:
-    rray_split_fill_int(
-      x,
-      out,
-      out_start,
-      out_end,
-      x_start,
-      x_step,
-      out_elt_dimensions,
-      dimensionality,
-      v_x_strides
-    );
+    rray_split_fill_int(x, out, x_start, it);
     break;
   case R_TYPE_double:
-    rray_split_fill_dbl(
-      x,
-      out,
-      out_start,
-      out_end,
-      x_start,
-      x_step,
-      out_elt_dimensions,
-      dimensionality,
-      v_x_strides
-    );
+    rray_split_fill_dbl(x, out, x_start, it);
     break;
   case R_TYPE_complex:
-    rray_split_fill_cpl(
-      x,
-      out,
-      out_start,
-      out_end,
-      x_start,
-      x_step,
-      out_elt_dimensions,
-      dimensionality,
-      v_x_strides
-    );
+    rray_split_fill_cpl(x, out, x_start, it);
     break;
   case R_TYPE_raw:
-    rray_split_fill_raw(
-      x,
-      out,
-      out_start,
-      out_end,
-      x_start,
-      x_step,
-      out_elt_dimensions,
-      dimensionality,
-      v_x_strides
-    );
+    rray_split_fill_raw(x, out, x_start, it);
     break;
   case R_TYPE_character:
-    rray_split_fill_chr(
-      x,
-      out,
-      out_start,
-      out_end,
-      x_start,
-      x_step,
-      out_elt_dimensions,
-      dimensionality,
-      v_x_strides
-    );
+    rray_split_fill_chr(x, out, x_start, it);
     break;
   case R_TYPE_list:
-    rray_split_fill_list(
-      x,
-      out,
-      out_start,
-      out_end,
-      x_start,
-      x_step,
-      out_elt_dimensions,
-      dimensionality,
-      v_x_strides
-    );
+    rray_split_fill_list(x, out, x_start, it);
     break;
   default:
     r_stop_unreachable();
@@ -307,160 +230,96 @@ static void rray_split_fill(
 }
 
 #define RRAY_SPLIT_FILL_LOOP(POKE)                                             \
-  for (; !rray_run_iterator_done(&it); rray_run_iterator_next1(&it)) {         \
-    const r_ssize start = rray_run_iterator_start(&it);                        \
-    const r_ssize end = rray_run_iterator_end(&it);                            \
+  rray_run_iterator_reset(it);                                                 \
                                                                                \
-    r_ssize x_loc = x_start + rray_run_iterator_loc(&it, 0);                   \
-    const r_ssize x_stride = rray_run_iterator_stride(&it, 0);                 \
+  for (; !rray_run_iterator_done(it); rray_run_iterator_next1(it)) {           \
+    const r_ssize start = rray_run_iterator_start(it);                         \
+    const r_ssize end = rray_run_iterator_end(it);                             \
                                                                                \
-    for (r_ssize j = start; j < end; ++j) {                                    \
-      POKE(out_elt, j, v_x[x_loc]);                                            \
+    r_ssize x_loc = x_start + rray_run_iterator_loc(it, 0);                    \
+    const r_ssize x_stride = rray_run_iterator_stride(it, 0);                  \
+                                                                               \
+    for (r_ssize i = start; i < end; ++i) {                                    \
+      POKE(out, i, v_x[x_loc]);                                                \
       x_loc += x_stride;                                                       \
     }                                                                          \
   }
 
-#define RRAY_SPLIT_FILL_ATOMIC_POKE(OUT, I, VALUE) v_out_elt[I] = (VALUE)
+#define RRAY_SPLIT_FILL_ATOMIC_POKE(OUT, I, VALUE) v_out[I] = (VALUE)
 
-#define RRAY_SPLIT_FILL_ATOMIC(RTYPE, CTYPE, CONST_DEREF, DEREF)               \
-  const int* v_out_elt_dimensions = r_int_cbegin(out_elt_dimensions);          \
-                                                                               \
-  struct rray_run_iterator it =                                                \
-    rray_run_iterator1(v_out_elt_dimensions, dimensionality, v_x_strides);     \
-                                                                               \
-  const r_ssize out_elt_size = rray_run_iterator_size(&it);                    \
+#define RRAY_SPLIT_FILL_ATOMIC(CTYPE, CONST_DEREF, DEREF)                      \
+  CTYPE* v_out = DEREF(out);                                                   \
                                                                                \
   const CTYPE* v_x = CONST_DEREF(x);                                           \
                                                                                \
-  for (r_ssize i = out_start; i < out_end; ++i) {                              \
-    r_obj* out_elt = r_alloc_vector(RTYPE, out_elt_size);                      \
-    r_list_poke(out, i, out_elt);                                              \
-    r_attrib_poke_dim(out_elt, out_elt_dimensions);                            \
-    CTYPE* v_out_elt = DEREF(out_elt);                                         \
-                                                                               \
-    RRAY_SPLIT_FILL_LOOP(RRAY_SPLIT_FILL_ATOMIC_POKE);                         \
-                                                                               \
-    rray_run_iterator_reset(&it);                                              \
-    x_start += x_step;                                                         \
-  }
+  RRAY_SPLIT_FILL_LOOP(RRAY_SPLIT_FILL_ATOMIC_POKE)
 
-#define RRAY_SPLIT_FILL_BARRIER(RTYPE, CONST_DEREF, POKE)                      \
-  const int* v_out_elt_dimensions = r_int_cbegin(out_elt_dimensions);          \
-                                                                               \
-  struct rray_run_iterator it =                                                \
-    rray_run_iterator1(v_out_elt_dimensions, dimensionality, v_x_strides);     \
-                                                                               \
-  const r_ssize out_elt_size = rray_run_iterator_size(&it);                    \
-                                                                               \
+#define RRAY_SPLIT_FILL_BARRIER(CONST_DEREF, POKE)                             \
   r_obj* const* v_x = CONST_DEREF(x);                                          \
                                                                                \
-  for (r_ssize i = out_start; i < out_end; ++i) {                              \
-    r_obj* out_elt = r_alloc_vector(RTYPE, out_elt_size);                      \
-    r_list_poke(out, i, out_elt);                                              \
-    r_attrib_poke_dim(out_elt, out_elt_dimensions);                            \
-                                                                               \
-    RRAY_SPLIT_FILL_LOOP(POKE);                                                \
-                                                                               \
-    rray_run_iterator_reset(&it);                                              \
-    x_start += x_step;                                                         \
-  }
+  RRAY_SPLIT_FILL_LOOP(POKE)
 
 static void rray_split_fill_lgl(
   r_obj* x,
   r_obj* out,
-  r_ssize out_start,
-  r_ssize out_end,
   r_ssize x_start,
-  r_ssize x_step,
-  r_obj* out_elt_dimensions,
-  int dimensionality,
-  const r_ssize* v_x_strides
+  struct rray_run_iterator* it
 ) {
-  RRAY_SPLIT_FILL_ATOMIC(R_TYPE_logical, int, r_lgl_cbegin, r_lgl_begin);
+  RRAY_SPLIT_FILL_ATOMIC(int, r_lgl_cbegin, r_lgl_begin);
 }
 
 static void rray_split_fill_int(
   r_obj* x,
   r_obj* out,
-  r_ssize out_start,
-  r_ssize out_end,
   r_ssize x_start,
-  r_ssize x_step,
-  r_obj* out_elt_dimensions,
-  int dimensionality,
-  const r_ssize* v_x_strides
+  struct rray_run_iterator* it
 ) {
-  RRAY_SPLIT_FILL_ATOMIC(R_TYPE_integer, int, r_int_cbegin, r_int_begin);
+  RRAY_SPLIT_FILL_ATOMIC(int, r_int_cbegin, r_int_begin);
 }
 
 static void rray_split_fill_dbl(
   r_obj* x,
   r_obj* out,
-  r_ssize out_start,
-  r_ssize out_end,
   r_ssize x_start,
-  r_ssize x_step,
-  r_obj* out_elt_dimensions,
-  int dimensionality,
-  const r_ssize* v_x_strides
+  struct rray_run_iterator* it
 ) {
-  RRAY_SPLIT_FILL_ATOMIC(R_TYPE_double, double, r_dbl_cbegin, r_dbl_begin);
+  RRAY_SPLIT_FILL_ATOMIC(double, r_dbl_cbegin, r_dbl_begin);
 }
 
 static void rray_split_fill_cpl(
   r_obj* x,
   r_obj* out,
-  r_ssize out_start,
-  r_ssize out_end,
   r_ssize x_start,
-  r_ssize x_step,
-  r_obj* out_elt_dimensions,
-  int dimensionality,
-  const r_ssize* v_x_strides
+  struct rray_run_iterator* it
 ) {
-  RRAY_SPLIT_FILL_ATOMIC(R_TYPE_complex, r_complex, r_cpl_cbegin, r_cpl_begin);
+  RRAY_SPLIT_FILL_ATOMIC(r_complex, r_cpl_cbegin, r_cpl_begin);
 }
 
 static void rray_split_fill_raw(
   r_obj* x,
   r_obj* out,
-  r_ssize out_start,
-  r_ssize out_end,
   r_ssize x_start,
-  r_ssize x_step,
-  r_obj* out_elt_dimensions,
-  int dimensionality,
-  const r_ssize* v_x_strides
+  struct rray_run_iterator* it
 ) {
-  RRAY_SPLIT_FILL_ATOMIC(R_TYPE_raw, Rbyte, r_raw_cbegin, r_raw_begin);
+  RRAY_SPLIT_FILL_ATOMIC(Rbyte, r_raw_cbegin, r_raw_begin);
 }
 
 static void rray_split_fill_chr(
   r_obj* x,
   r_obj* out,
-  r_ssize out_start,
-  r_ssize out_end,
   r_ssize x_start,
-  r_ssize x_step,
-  r_obj* out_elt_dimensions,
-  int dimensionality,
-  const r_ssize* v_x_strides
+  struct rray_run_iterator* it
 ) {
-  RRAY_SPLIT_FILL_BARRIER(R_TYPE_character, r_chr_cbegin, r_chr_poke);
+  RRAY_SPLIT_FILL_BARRIER(r_chr_cbegin, r_chr_poke);
 }
 
 static void rray_split_fill_list(
   r_obj* x,
   r_obj* out,
-  r_ssize out_start,
-  r_ssize out_end,
   r_ssize x_start,
-  r_ssize x_step,
-  r_obj* out_elt_dimensions,
-  int dimensionality,
-  const r_ssize* v_x_strides
+  struct rray_run_iterator* it
 ) {
-  RRAY_SPLIT_FILL_BARRIER(R_TYPE_list, r_list_cbegin, r_list_poke);
+  RRAY_SPLIT_FILL_BARRIER(r_list_cbegin, r_list_poke);
 }
 
 #undef RRAY_SPLIT_FILL_LOOP

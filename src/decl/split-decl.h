@@ -8,90 +8,50 @@ static void check_split_dimensions(
 static void rray_split_fill(
   r_obj* x,
   r_obj* out,
-  r_ssize out_start,
-  r_ssize out_end,
   r_ssize x_start,
-  r_ssize x_step,
-  r_obj* out_elt_dimensions,
-  int dimensionality,
-  const r_ssize* v_x_strides
+  struct rray_run_iterator* it
 );
 static void rray_split_fill_lgl(
   r_obj* x,
   r_obj* out,
-  r_ssize out_start,
-  r_ssize out_end,
   r_ssize x_start,
-  r_ssize x_step,
-  r_obj* out_elt_dimensions,
-  int dimensionality,
-  const r_ssize* v_x_strides
+  struct rray_run_iterator* it
 );
 static void rray_split_fill_int(
   r_obj* x,
   r_obj* out,
-  r_ssize out_start,
-  r_ssize out_end,
   r_ssize x_start,
-  r_ssize x_step,
-  r_obj* out_elt_dimensions,
-  int dimensionality,
-  const r_ssize* v_x_strides
+  struct rray_run_iterator* it
 );
 static void rray_split_fill_dbl(
   r_obj* x,
   r_obj* out,
-  r_ssize out_start,
-  r_ssize out_end,
   r_ssize x_start,
-  r_ssize x_step,
-  r_obj* out_elt_dimensions,
-  int dimensionality,
-  const r_ssize* v_x_strides
+  struct rray_run_iterator* it
 );
 static void rray_split_fill_cpl(
   r_obj* x,
   r_obj* out,
-  r_ssize out_start,
-  r_ssize out_end,
   r_ssize x_start,
-  r_ssize x_step,
-  r_obj* out_elt_dimensions,
-  int dimensionality,
-  const r_ssize* v_x_strides
+  struct rray_run_iterator* it
 );
 static void rray_split_fill_raw(
   r_obj* x,
   r_obj* out,
-  r_ssize out_start,
-  r_ssize out_end,
   r_ssize x_start,
-  r_ssize x_step,
-  r_obj* out_elt_dimensions,
-  int dimensionality,
-  const r_ssize* v_x_strides
+  struct rray_run_iterator* it
 );
 static void rray_split_fill_chr(
   r_obj* x,
   r_obj* out,
-  r_ssize out_start,
-  r_ssize out_end,
   r_ssize x_start,
-  r_ssize x_step,
-  r_obj* out_elt_dimensions,
-  int dimensionality,
-  const r_ssize* v_x_strides
+  struct rray_run_iterator* it
 );
 static void rray_split_fill_list(
   r_obj* x,
   r_obj* out,
-  r_ssize out_start,
-  r_ssize out_end,
   r_ssize x_start,
-  r_ssize x_step,
-  r_obj* out_elt_dimensions,
-  int dimensionality,
-  const r_ssize* v_x_strides
+  struct rray_run_iterator* it
 );
 
 static r_obj* rray_split_elt_names(
