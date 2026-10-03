@@ -274,6 +274,19 @@ static inline r_ssize rray_run_iterator_stride(
   return it->v_strides[i];
 }
 
+static inline const r_ssize* rray_run_iterator_v_loc(
+  const struct rray_run_iterator* it
+) {
+  return it->v_loc;
+}
+
+static inline const r_ssize* rray_run_iterator_v_axis_strides(
+  const struct rray_run_iterator* it,
+  int axis
+) {
+  return it->v_strides + axis * it->n;
+}
+
 static inline bool rray_run_iterator_done(const struct rray_run_iterator* it) {
   return it->start == it->size;
 }

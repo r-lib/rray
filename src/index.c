@@ -385,11 +385,6 @@ static inline r_ssize rray_index_location_missing(
     const r_ssize start = rray_run_iterator_start(&it);                        \
     const r_ssize end = rray_run_iterator_end(&it);                            \
                                                                                \
-    r_ssize v_location[RRAY_MAX_DIMENSIONALITY];                               \
-    for (r_ssize i = 0; i < INDICES_SIZE; ++i) {                               \
-      v_location[i] = rray_run_iterator_loc(&it, i);                           \
-    }                                                                          \
-                                                                               \
     for (r_ssize i = start; i < end; ++i) {                                    \
       const r_ssize location = rray_index_location(                            \
         v_x_strides,                                                           \
@@ -408,11 +403,6 @@ static inline r_ssize rray_index_location_missing(
     const r_ssize start = rray_run_iterator_start(&it);                        \
     const r_ssize end = rray_run_iterator_end(&it);                            \
                                                                                \
-    r_ssize v_location[RRAY_MAX_DIMENSIONALITY];                               \
-    for (r_ssize i = 0; i < INDICES_SIZE; ++i) {                               \
-      v_location[i] = rray_run_iterator_loc(&it, i);                           \
-    }                                                                          \
-                                                                               \
     for (r_ssize i = start; i < end; ++i) {                                    \
       const r_ssize location = rray_index_location_missing(                    \
         v_x_strides,                                                           \
@@ -427,10 +417,8 @@ static inline r_ssize rray_index_location_missing(
   }
 
 #define RRAY_INDEX_ITERATE(POKE, MISSING)                                      \
-  r_ssize v_run_stride[RRAY_MAX_DIMENSIONALITY];                               \
-  for (r_ssize i = 0; i < indices_size; ++i) {                                 \
-    v_run_stride[i] = rray_run_iterator_stride(&it, i);                        \
-  }                                                                            \
+  const r_ssize* v_location = rray_run_iterator_v_loc(&it);                    \
+  const r_ssize* v_run_stride = rray_run_iterator_v_axis_strides(&it, 0);      \
                                                                                \
   if (any_missing) {                                                           \
     switch (indices_size) {                                                    \
