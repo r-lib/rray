@@ -4,7 +4,7 @@
 #include "rlang.h"
 
 #include "arg.h"
-#include "strided-iterator2.h"
+#include "strided-iterator.h"
 
 #define RRAY_REDUCE_ARGS(...) , __VA_ARGS__
 #define RRAY_REDUCE_NO_ARGS

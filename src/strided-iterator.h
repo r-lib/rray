@@ -1,22 +1,24 @@
-#ifndef RRAY_STRIDED_ITERATOR2_H
-#define RRAY_STRIDED_ITERATOR2_H
+#ifndef RRAY_STRIDED_ITERATOR_H
+#define RRAY_STRIDED_ITERATOR_H
 
 #include "dimensionality.h"
 #include "rlang.h"
 #include "size.h"
 
-#include "decl/strided-iterator2-decl.h"
+#include "decl/strided-iterator-decl.h"
 
-// Strided iterator
+// Run iterator
 //
 // Optimizes and assists in walking a multidimensional point space defined by
 // `v_dimensions`. As it walks, it updates the current `loc`ations in one or
 // more alternate subspaces defined by `v_v_strides`.
 //
-// We've carefully tuned this iterator for both performance and flexibility. The
-// caller MUST create the iterator INSIDE the function that utilizes it. If a
-// pointer to the iterator is passed around, it can destroy performance due to
-// the way the result is compiled.
+// We've carefully tuned this iterator for both performance and flexibility. At
+// the start of each run, read `start`, `end`, and each input's `loc` and
+// `stride` into locals, and loop over those. C allows a write through a
+// character type, like `Rbyte*`, to change any object, including the
+// iterator's fields, so a loop that reads them from the iterator reloads them
+// on every element and can't be vectorized.
 //
 // --------------------------------------------------------------------------
 // Examples

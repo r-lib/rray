@@ -3,7 +3,7 @@
 #include "broadcast-names.h"
 #include "dimensionality.h"
 #include "dimensions.h"
-#include "strided-iterator2.h"
+#include "strided-iterator.h"
 #include "strides.h"
 #include "utils.h"
 
