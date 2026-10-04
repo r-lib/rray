@@ -54,14 +54,14 @@ for (i in seq_len(nrow(cases))) {
   measurement <- switch(
     case$implementation,
     mean = bench::mark(
-      rray_mean_along(x, axes, na_rm = case$na_rm),
+      rray_mean(x, axes, na_rm = case$na_rm),
       iterations = iterations,
       check = FALSE,
       memory = FALSE,
       filter_gc = FALSE
     ),
     sum = bench::mark(
-      rray_sum_along(x, axes, na_rm = case$na_rm),
+      rray_sum(x, axes, na_rm = case$na_rm),
       iterations = iterations,
       check = FALSE,
       memory = FALSE,
