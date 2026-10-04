@@ -414,10 +414,6 @@ static r_obj* rray_mean_dbl_na_rm(
   return out;
 }
 
-static inline r_ssize rray_mean_count(r_ssize x_size, r_ssize out_size) {
-  return out_size == 0 ? 0 : x_size / out_size;
-}
-
 static r_obj* rray_mean_lgl_or_int(
   const int* v_x,
   int na_value,
@@ -553,18 +549,6 @@ static r_obj* rray_mean_lgl_or_int_na_rm(
 
   FREE(3);
   return out;
-}
-
-static inline double rray_mean_int64(int64_t sum, r_ssize count) {
-  if (count == 0) {
-    return R_NaN;
-  }
-
-  if (-RRAY_MEAN_INT64_MAX_EXACT <= sum && sum <= RRAY_MEAN_INT64_MAX_EXACT) {
-    return (double) sum / count;
-  }
-
-  return (double) (sum / count) + (double) (sum % count) / count;
 }
 
 static void rray_mean_lgl_or_int_propagate_na(
@@ -797,39 +781,6 @@ static void rray_mean_dbl_rescale(
   FREE(2);
 }
 
-static void rray_mean_dbl_propagate_na(
-  const double* v_x,
-  double* v_out,
-  const int* v_dimensions,
-  int dimensionality,
-  const r_ssize* v_out_broadcast_strides
-) {
-  const double na_dbl = r_globals.na_dbl;
-
-  struct rray_run_iterator it;
-  rray_run_iterator_init1(
-    &it,
-    v_dimensions,
-    dimensionality,
-    v_out_broadcast_strides
-  );
-
-  for (; !rray_run_iterator_done(&it); rray_run_iterator_next1(&it)) {
-    const r_ssize start = rray_run_iterator_start(&it);
-    const r_ssize end = rray_run_iterator_end(&it);
-
-    r_ssize out_loc = rray_run_iterator_loc(&it, 0);
-    const r_ssize out_stride = rray_run_iterator_stride(&it, 0);
-
-    for (r_ssize i = start; i < end; ++i) {
-      if (R_IsNA(v_x[i])) {
-        v_out[out_loc] = na_dbl;
-      }
-      out_loc += out_stride;
-    }
-  }
-}
-
 static void rray_mean_dbl_rescale_na_rm(
   const double* v_x,
   double* v_out,
@@ -900,4 +851,53 @@ static void rray_mean_dbl_rescale_na_rm(
   }
 
   FREE(2);
+}
+
+static void rray_mean_dbl_propagate_na(
+  const double* v_x,
+  double* v_out,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_out_broadcast_strides
+) {
+  const double na_dbl = r_globals.na_dbl;
+
+  struct rray_run_iterator it;
+  rray_run_iterator_init1(
+    &it,
+    v_dimensions,
+    dimensionality,
+    v_out_broadcast_strides
+  );
+
+  for (; !rray_run_iterator_done(&it); rray_run_iterator_next1(&it)) {
+    const r_ssize start = rray_run_iterator_start(&it);
+    const r_ssize end = rray_run_iterator_end(&it);
+
+    r_ssize out_loc = rray_run_iterator_loc(&it, 0);
+    const r_ssize out_stride = rray_run_iterator_stride(&it, 0);
+
+    for (r_ssize i = start; i < end; ++i) {
+      if (R_IsNA(v_x[i])) {
+        v_out[out_loc] = na_dbl;
+      }
+      out_loc += out_stride;
+    }
+  }
+}
+
+static inline r_ssize rray_mean_count(r_ssize x_size, r_ssize out_size) {
+  return out_size == 0 ? 0 : x_size / out_size;
+}
+
+static inline double rray_mean_int64(int64_t sum, r_ssize count) {
+  if (count == 0) {
+    return R_NaN;
+  }
+
+  if (-RRAY_MEAN_INT64_MAX_EXACT <= sum && sum <= RRAY_MEAN_INT64_MAX_EXACT) {
+    return (double) sum / count;
+  }
+
+  return (double) (sum / count) + (double) (sum % count) / count;
 }
