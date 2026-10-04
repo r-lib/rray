@@ -190,8 +190,6 @@ The buffer benchmark above is a measure of what this costs compared to `RRAY_RED
 
 This also gives `plans/sum.md` the "per-run hook" its "Next step" section asks for.
 
-`plans/iterators.md` describes an alternative with no new macro: a run iterator, with these loops written directly in each function.
-
 ## 3. Double and complex sum
 
 ### Pairwise summation along runs

@@ -9,7 +9,7 @@
 #include "dimensions.h"
 #include "ptype-common.h"
 #include "size.h"
-#include "strided-iterator2.h"
+#include "strided-iterator.h"
 #include "strides.h"
 #include "utils.h"
 

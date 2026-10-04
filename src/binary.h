@@ -3,7 +3,7 @@
 
 #include "rlang.h"
 
-#include "strided-iterator2.h"
+#include "strided-iterator.h"
 
 #define RRAY_BINARY_ARGS(...) , __VA_ARGS__
 #define RRAY_BINARY_NO_ARGS

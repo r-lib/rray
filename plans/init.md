@@ -36,7 +36,7 @@ With `init()` as the only way to build an iterator, that line can't be written. 
 
 ## Header
 
-In `src/strided-iterator2.h`:
+In `src/strided-iterator.h`:
 
 - Remove `rray_run_iterator()`, `rray_run_iterator1()` and `rray_run_iterator2()`.
 
@@ -75,8 +75,6 @@ rray_run_iterator_init2(&it, v_dimensions, dimensionality, v_x_strides, v_y_stri
 | `src/permute-axes.c` (2) | `rray_run_iterator1()` | `rray_run_iterator_init1()` |
 | `src/split.c` | `rray_run_iterator_init1()` | Done |
 
-`src/reduce-mean.c` and `src/reduce.c` still use the old `src/strided-iterator.h` and aren't touched.
-
 ---
 
 # Costs
@@ -91,7 +89,7 @@ rray_run_iterator_init2(&it, v_dimensions, dimensionality, v_x_strides, v_y_stri
 
 - Speed should not change. When `rray_run_iterator()` became a wrapper around `init()`, the code for add, broadcast, combine, compare, permute-axes and sum stayed the same, apart from one equivalent compare instruction (`cmp #16; b.hs` became `cmp #15; b.hi`).
 
-- Confirm that rather than assume it: disassemble every object file that includes `src/strided-iterator2.h` before and after, and compare.
+- Confirm that rather than assume it: disassemble every object file that includes `src/strided-iterator.h` before and after, and compare.
 
 - Run the benchmarks in `bench/` only for files whose code changed in a way that isn't trivially equivalent.
 

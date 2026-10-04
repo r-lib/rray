@@ -1,11 +1,11 @@
-#ifndef RRAY_STRIDED_ITERATOR2_H
-#define RRAY_STRIDED_ITERATOR2_H
+#ifndef RRAY_STRIDED_ITERATOR_H
+#define RRAY_STRIDED_ITERATOR_H
 
 #include "dimensionality.h"
 #include "rlang.h"
 #include "size.h"
 
-#include "decl/strided-iterator2-decl.h"
+#include "decl/strided-iterator-decl.h"
 
 // Strided iterator
 //
