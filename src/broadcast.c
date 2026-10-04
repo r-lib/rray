@@ -169,8 +169,13 @@ r_obj* rray_broadcast(
 #define RRAY_BROADCAST_ATOMIC_POKE(OUT, I, VALUE) v_out[I] = (VALUE)
 
 #define RRAY_BROADCAST_ATOMIC(RTYPE, CTYPE, CONST_DEREF, DEREF)                \
-  struct rray_run_iterator it =                                                \
-    rray_run_iterator1(v_dimensions, dimensionality, v_x_broadcast_strides);   \
+  struct rray_run_iterator it;                                                 \
+  rray_run_iterator_init1(                                                     \
+    &it,                                                                       \
+    v_dimensions,                                                              \
+    dimensionality,                                                            \
+    v_x_broadcast_strides                                                      \
+  );                                                                           \
                                                                                \
   r_obj* out = KEEP(r_alloc_vector(RTYPE, rray_run_iterator_size(&it)));       \
   CTYPE* v_out = DEREF(out);                                                   \
@@ -183,8 +188,13 @@ r_obj* rray_broadcast(
   return out;
 
 #define RRAY_BROADCAST_BARRIER(RTYPE, CONST_DEREF, POKE)                       \
-  struct rray_run_iterator it =                                                \
-    rray_run_iterator1(v_dimensions, dimensionality, v_x_broadcast_strides);   \
+  struct rray_run_iterator it;                                                 \
+  rray_run_iterator_init1(                                                     \
+    &it,                                                                       \
+    v_dimensions,                                                              \
+    dimensionality,                                                            \
+    v_x_broadcast_strides                                                      \
+  );                                                                           \
                                                                                \
   r_obj* out = KEEP(r_alloc_vector(RTYPE, rray_run_iterator_size(&it)));       \
                                                                                \

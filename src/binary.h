@@ -21,7 +21,9 @@
   ONE,                                                                         \
   ONE_ARGS                                                                     \
 )                                                                              \
-  struct rray_run_iterator it = rray_run_iterator2(                            \
+  struct rray_run_iterator it;                                                 \
+  rray_run_iterator_init2(                                                     \
+    &it,                                                                       \
     v_dimensions,                                                              \
     dimensionality,                                                            \
     v_x_broadcast_strides,                                                     \

@@ -145,8 +145,13 @@ r_obj* rray_permute_axes(
 #define RRAY_PERMUTE_AXES_ATOMIC_POKE(OUT, I, VALUE) v_out[I] = (VALUE)
 
 #define RRAY_PERMUTE_AXES_ATOMIC(RTYPE, CTYPE, CONST_DEREF, DEREF)             \
-  struct rray_run_iterator it =                                                \
-    rray_run_iterator1(v_dimensions, dimensionality, v_x_permuted_strides);    \
+  struct rray_run_iterator it;                                                 \
+  rray_run_iterator_init1(                                                     \
+    &it,                                                                       \
+    v_dimensions,                                                              \
+    dimensionality,                                                            \
+    v_x_permuted_strides                                                       \
+  );                                                                           \
                                                                                \
   r_obj* out = KEEP(r_alloc_vector(RTYPE, rray_run_iterator_size(&it)));       \
   CTYPE* v_out = DEREF(out);                                                   \
@@ -159,8 +164,13 @@ r_obj* rray_permute_axes(
   return out;
 
 #define RRAY_PERMUTE_AXES_BARRIER(RTYPE, CONST_DEREF, POKE)                    \
-  struct rray_run_iterator it =                                                \
-    rray_run_iterator1(v_dimensions, dimensionality, v_x_permuted_strides);    \
+  struct rray_run_iterator it;                                                 \
+  rray_run_iterator_init1(                                                     \
+    &it,                                                                       \
+    v_dimensions,                                                              \
+    dimensionality,                                                            \
+    v_x_permuted_strides                                                       \
+  );                                                                           \
                                                                                \
   r_obj* out = KEEP(r_alloc_vector(RTYPE, rray_run_iterator_size(&it)));       \
                                                                                \

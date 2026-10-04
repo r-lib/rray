@@ -53,8 +53,13 @@ r_obj* rray_reduce(
   ONE,                                                                         \
   ONE_ARGS                                                                     \
 )                                                                              \
-  struct rray_run_iterator it =                                                \
-    rray_run_iterator1(v_dimensions, dimensionality, v_out_broadcast_strides); \
+  struct rray_run_iterator it;                                                 \
+  rray_run_iterator_init1(                                                     \
+    &it,                                                                       \
+    v_dimensions,                                                              \
+    dimensionality,                                                            \
+    v_out_broadcast_strides                                                    \
+  );                                                                           \
                                                                                \
   r_obj* out = KEEP(r_alloc_vector(OUT_RTYPE, out_size));                      \
   OUT_CTYPE* v_out = OUT_DEREF(out);                                           \

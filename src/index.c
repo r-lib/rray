@@ -468,7 +468,9 @@ static inline r_ssize rray_index_location_missing(
 #define RRAY_INDEX_ATOMIC_POKE(OUT, I, VALUE) v_out[I] = (VALUE)
 
 #define RRAY_INDEX_ATOMIC(RTYPE, CTYPE, CONST_DEREF, DEREF, MISSING)           \
-  struct rray_run_iterator it = rray_run_iterator(                             \
+  struct rray_run_iterator it;                                                 \
+  rray_run_iterator_init(                                                      \
+    &it,                                                                       \
     v_dimensions,                                                              \
     dimensionality,                                                            \
     v_v_indices_strides,                                                       \
@@ -486,7 +488,9 @@ static inline r_ssize rray_index_location_missing(
   return out;
 
 #define RRAY_INDEX_BARRIER(RTYPE, CONST_DEREF, POKE, MISSING)                  \
-  struct rray_run_iterator it = rray_run_iterator(                             \
+  struct rray_run_iterator it;                                                 \
+  rray_run_iterator_init(                                                      \
+    &it,                                                                       \
     v_dimensions,                                                              \
     dimensionality,                                                            \
     v_v_indices_strides,                                                       \

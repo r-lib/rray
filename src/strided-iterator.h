@@ -241,36 +241,6 @@ static inline void rray_run_iterator_init2(
   rray_run_iterator_init(it, v_dimensions, dimensionality, v_v_strides, 2);
 }
 
-static inline struct rray_run_iterator rray_run_iterator(
-  const int* v_dimensions,
-  int dimensionality,
-  const r_ssize* const* v_v_strides,
-  r_ssize n
-) {
-  struct rray_run_iterator it;
-  rray_run_iterator_init(&it, v_dimensions, dimensionality, v_v_strides, n);
-  return it;
-}
-
-static inline struct rray_run_iterator rray_run_iterator1(
-  const int* v_dimensions,
-  int dimensionality,
-  const r_ssize* v_strides
-) {
-  const r_ssize* v_v_strides[] = {v_strides};
-  return rray_run_iterator(v_dimensions, dimensionality, v_v_strides, 1);
-}
-
-static inline struct rray_run_iterator rray_run_iterator2(
-  const int* v_dimensions,
-  int dimensionality,
-  const r_ssize* v_strides1,
-  const r_ssize* v_strides2
-) {
-  const r_ssize* v_v_strides[] = {v_strides1, v_strides2};
-  return rray_run_iterator(v_dimensions, dimensionality, v_v_strides, 2);
-}
-
 static inline void rray_run_iterator_reset(struct rray_run_iterator* it) {
   it->start = 0;
   it->end = it->v_dimensions[0];
