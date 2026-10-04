@@ -101,6 +101,42 @@ test_that("a second pass corrects the rounding error of the first sum", {
   expect_identical(as.vector(rray_mean(x, 1L)), 2500000000000001)
 })
 
+test_that("integer means are exact when the total is above 2^53", {
+  x <- c(rep(.Machine$integer.max, 2^22 + 1), 1L, 1L)
+  expected <- 2147482623 + 3076 / 4194307
+
+  expect_identical(as.vector(rray_mean(x, 1L)), expected)
+  expect_identical(as.vector(rray_mean(rbind(x, x), 2L)), c(expected, expected))
+
+  x <- c(x, NA)
+  expect_identical(as.vector(rray_mean(x, 1L, na_rm = TRUE)), expected)
+  expect_identical(
+    as.vector(rray_mean(rbind(x, x), 2L, na_rm = TRUE)),
+    c(expected, expected)
+  )
+})
+
+test_that("integer means past 2^32 elements fall back to a double total", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(.Machine$integer.max, c(2^16 + 1, 2^16))
+  expected <- as.double(.Machine$integer.max)
+
+  expect_equal(as.vector(rray_mean(x, 1:2)), expected)
+  expect_equal(as.vector(rray_mean(x, 1:2, na_rm = TRUE)), expected)
+})
+
+test_that("integer means past 2^32 elements fall back with NA", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(.Machine$integer.max, c(2^16 + 1, 2^16))
+  x[1L] <- NA
+  expected <- as.double(.Machine$integer.max)
+
+  expect_identical(as.vector(rray_mean(x, 1:2)), NA_real_)
+  expect_equal(as.vector(rray_mean(x, 1:2, na_rm = TRUE)), expected)
+})
+
 test_that("a sum that overflows to infinity is retried with scaled terms", {
   x <- c(1e308, 1e308, 1e308)
   expect_identical(as.vector(rray_mean(x, 1L)), mean(x))
