@@ -435,13 +435,13 @@ static r_obj* rray_mean_dbl(
 
     if (out_stride == 0) {
       const double mean = v_out[out_loc];
-      double sum = v_correction[out_loc];
+      double correction = v_correction[out_loc];
 
       for (r_ssize i = start; i < end; ++i) {
-        sum += v_x[i] - mean;
+        correction += v_x[i] - mean;
       }
 
-      v_correction[out_loc] = sum;
+      v_correction[out_loc] = correction;
     } else {
       for (r_ssize i = start; i < end; ++i) {
         v_correction[out_loc] += v_x[i] - v_out[out_loc];
@@ -569,14 +569,14 @@ static r_obj* rray_mean_dbl_na_rm(
 
     if (out_stride == 0) {
       const double mean = v_out[out_loc];
-      double sum = v_correction[out_loc];
+      double correction = v_correction[out_loc];
 
       for (r_ssize i = start; i < end; ++i) {
         const double x_elt = v_x[i];
-        sum += ISNAN(x_elt) ? 0 : x_elt - mean;
+        correction += ISNAN(x_elt) ? 0 : x_elt - mean;
       }
 
-      v_correction[out_loc] = sum;
+      v_correction[out_loc] = correction;
     } else {
       for (r_ssize i = start; i < end; ++i) {
         const double x_elt = v_x[i];
