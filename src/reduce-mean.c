@@ -174,6 +174,7 @@ static r_obj* rray_mean_dbl(
   const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 ) {
+  const double* v_x = r_dbl_cbegin(x);
   const r_ssize x_size = r_length(x);
   const r_ssize count = rray_mean_count(x_size, out_size);
 
@@ -187,8 +188,6 @@ static r_obj* rray_mean_dbl(
     v_out[i] = 0.0;
     v_corrections[i] = 0.0;
   }
-
-  const double* v_x = r_dbl_cbegin(x);
 
   struct rray_run_iterator it;
   rray_run_iterator_init1(
@@ -300,6 +299,8 @@ static r_obj* rray_mean_dbl_na_rm(
   const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 ) {
+  const double* v_x = r_dbl_cbegin(x);
+
   r_obj* out = KEEP(r_alloc_double(out_size));
   double* v_out = r_dbl_begin(out);
 
@@ -313,8 +314,6 @@ static r_obj* rray_mean_dbl_na_rm(
 
   r_obj* counts = KEEP(r_alloc_raw0(out_size * sizeof(r_ssize)));
   r_ssize* v_counts = (r_ssize*) r_raw_begin(counts);
-
-  const double* v_x = r_dbl_cbegin(x);
 
   struct rray_run_iterator it;
   rray_run_iterator_init1(
