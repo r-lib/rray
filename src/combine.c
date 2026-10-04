@@ -308,7 +308,7 @@ static void rray_combine_fill(
   }
 }
 
-#define RRAY_COMBINE_FILL_LOOP(POKE)                                           \
+#define RRAY_COMBINE_FILL_LOOP(CTYPE, POKE)                                    \
   for (; !rray_run_iterator_done(&it); rray_run_iterator_next2(&it)) {         \
     const r_ssize start = rray_run_iterator_start(&it);                        \
     const r_ssize end = rray_run_iterator_end(&it);                            \
@@ -319,10 +319,18 @@ static void rray_combine_fill(
     r_ssize x_loc = rray_run_iterator_loc(&it, 1);                             \
     const r_ssize x_stride = rray_run_iterator_stride(&it, 1);                 \
                                                                                \
-    for (r_ssize i = start; i < end; ++i) {                                    \
-      POKE(out, out_loc, v_x[x_loc]);                                          \
-      out_loc += out_stride;                                                   \
-      x_loc += x_stride;                                                       \
+    if (x_stride == 0) {                                                       \
+      CTYPE const x_elt = v_x[x_loc];                                          \
+      for (r_ssize i = start; i < end; ++i) {                                  \
+        POKE(out, out_loc, x_elt);                                             \
+        out_loc += out_stride;                                                 \
+      }                                                                        \
+    } else {                                                                   \
+      for (r_ssize i = start; i < end; ++i) {                                  \
+        POKE(out, out_loc, v_x[x_loc]);                                        \
+        out_loc += out_stride;                                                 \
+        x_loc += x_stride;                                                     \
+      }                                                                        \
     }                                                                          \
   }
 
@@ -342,7 +350,7 @@ static void rray_combine_fill(
                                                                                \
   const CTYPE* v_x = CONST_DEREF(x);                                           \
                                                                                \
-  RRAY_COMBINE_FILL_LOOP(RRAY_COMBINE_FILL_ATOMIC_POKE)
+  RRAY_COMBINE_FILL_LOOP(CTYPE, RRAY_COMBINE_FILL_ATOMIC_POKE)
 
 #define RRAY_COMBINE_FILL_BARRIER(CONST_DEREF, POKE)                           \
   struct rray_run_iterator it;                                                 \
@@ -356,7 +364,7 @@ static void rray_combine_fill(
                                                                                \
   r_obj* const* v_x = CONST_DEREF(x);                                          \
                                                                                \
-  RRAY_COMBINE_FILL_LOOP(POKE)
+  RRAY_COMBINE_FILL_LOOP(r_obj*, POKE)
 
 static void rray_combine_fill_lgl(
   r_obj* x,

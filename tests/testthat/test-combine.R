@@ -94,6 +94,27 @@ test_that("broadcasts every non-combine axis", {
   expect_identical(out[, 3:6, ], y)
 })
 
+test_that("broadcasts every type along a leading axis", {
+  values <- list(
+    c(TRUE, FALSE, NA),
+    1:3,
+    c(1.5, 2.5, NA),
+    c(1i, 2i, NA),
+    as.raw(1:3),
+    c("a", "b", NA),
+    list(1L, "x", NULL)
+  )
+
+  for (value in values) {
+    x <- array(value[1:2], c(1L, 2L))
+    y <- array(value, c(3L, 1L))
+    expect_identical(
+      rray_combine(x, y, .axis = 2L),
+      array(c(rep(value[1L], 3L), rep(value[2L], 3L), value), c(3L, 3L))
+    )
+  }
+})
+
 test_that("conflicting dimensions are allowed on the combine axis", {
   x <- array(1:4, c(2L, 2L))
   y <- array(1:6, c(3L, 2L))
