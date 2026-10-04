@@ -837,14 +837,14 @@ static void rray_mean_dbl_rescale(
   int dimensionality,
   const r_ssize* v_out_broadcast_strides
 ) {
-  r_obj* sum = KEEP(r_alloc_double(out_size));
-  double* v_sum = r_dbl_begin(sum);
+  r_obj* sums = KEEP(r_alloc_double(out_size));
+  double* v_sums = r_dbl_begin(sums);
 
   r_obj* corrections = KEEP(r_alloc_double(out_size));
   double* v_corrections = r_dbl_begin(corrections);
 
   for (r_ssize i = 0; i < out_size; ++i) {
-    v_sum[i] = 0.0;
+    v_sums[i] = 0.0;
     v_corrections[i] = 0.0;
   }
 
@@ -865,7 +865,7 @@ static void rray_mean_dbl_rescale(
 
     for (r_ssize i = start; i < end; ++i) {
       if (isinf(v_out[out_loc])) {
-        v_sum[out_loc] += v_x[i] / count;
+        v_sums[out_loc] += v_x[i] / count;
       }
       out_loc += out_stride;
     }
@@ -882,7 +882,7 @@ static void rray_mean_dbl_rescale(
 
     for (r_ssize i = start; i < end; ++i) {
       if (isinf(v_out[out_loc])) {
-        v_corrections[out_loc] += (v_x[i] - v_sum[out_loc]) / count;
+        v_corrections[out_loc] += (v_x[i] - v_sums[out_loc]) / count;
       }
       out_loc += out_stride;
     }
@@ -890,7 +890,7 @@ static void rray_mean_dbl_rescale(
 
   for (r_ssize i = 0; i < out_size; ++i) {
     if (isinf(v_out[i])) {
-      const double mean = v_sum[i];
+      const double mean = v_sums[i];
       v_out[i] = R_FINITE(mean) ? mean + v_corrections[i] : mean;
     }
   }
@@ -940,14 +940,14 @@ static void rray_mean_dbl_rescale_na_rm(
   int dimensionality,
   const r_ssize* v_out_broadcast_strides
 ) {
-  r_obj* sum = KEEP(r_alloc_double(out_size));
-  double* v_sum = r_dbl_begin(sum);
+  r_obj* sums = KEEP(r_alloc_double(out_size));
+  double* v_sums = r_dbl_begin(sums);
 
   r_obj* corrections = KEEP(r_alloc_double(out_size));
   double* v_corrections = r_dbl_begin(corrections);
 
   for (r_ssize i = 0; i < out_size; ++i) {
-    v_sum[i] = 0.0;
+    v_sums[i] = 0.0;
     v_corrections[i] = 0.0;
   }
 
@@ -969,7 +969,7 @@ static void rray_mean_dbl_rescale_na_rm(
     for (r_ssize i = start; i < end; ++i) {
       const double x_elt = v_x[i];
       if (isinf(v_out[out_loc]) && !ISNAN(x_elt)) {
-        v_sum[out_loc] += x_elt / v_counts[out_loc];
+        v_sums[out_loc] += x_elt / v_counts[out_loc];
       }
       out_loc += out_stride;
     }
@@ -987,7 +987,7 @@ static void rray_mean_dbl_rescale_na_rm(
     for (r_ssize i = start; i < end; ++i) {
       const double x_elt = v_x[i];
       if (isinf(v_out[out_loc]) && !ISNAN(x_elt)) {
-        v_corrections[out_loc] += (x_elt - v_sum[out_loc]) / v_counts[out_loc];
+        v_corrections[out_loc] += (x_elt - v_sums[out_loc]) / v_counts[out_loc];
       }
       out_loc += out_stride;
     }
@@ -995,7 +995,7 @@ static void rray_mean_dbl_rescale_na_rm(
 
   for (r_ssize i = 0; i < out_size; ++i) {
     if (isinf(v_out[i])) {
-      const double mean = v_sum[i];
+      const double mean = v_sums[i];
       v_out[i] = R_FINITE(mean) ? mean + v_corrections[i] : mean;
     }
   }
