@@ -295,6 +295,18 @@ static inline void rray_run_iterator_reset1(struct rray_run_iterator* it) {
   }
 }
 
+static inline void rray_run_iterator_reset2(struct rray_run_iterator* it) {
+  it->start = 0;
+  it->end = it->v_dimensions[0];
+
+  it->v_loc[0] = 0;
+  it->v_loc[1] = 0;
+
+  for (int axis = 0; axis < it->dimensionality; ++axis) {
+    it->v_point[axis] = 0;
+  }
+}
+
 static inline r_ssize rray_run_iterator_size(
   const struct rray_run_iterator* it
 ) {
