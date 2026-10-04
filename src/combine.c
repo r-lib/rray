@@ -329,7 +329,9 @@ static void rray_combine_fill(
 #define RRAY_COMBINE_FILL_ATOMIC_POKE(OUT, LOC, VALUE) v_out[LOC] = (VALUE)
 
 #define RRAY_COMBINE_FILL_ATOMIC(CTYPE, CONST_DEREF, DEREF)                    \
-  struct rray_run_iterator it = rray_run_iterator2(                            \
+  struct rray_run_iterator it;                                                 \
+  rray_run_iterator_init2(                                                     \
+    &it,                                                                       \
     v_x_broadcast_dimensions,                                                  \
     out_dimensionality,                                                        \
     v_out_strides,                                                             \
@@ -343,7 +345,9 @@ static void rray_combine_fill(
   RRAY_COMBINE_FILL_LOOP(RRAY_COMBINE_FILL_ATOMIC_POKE)
 
 #define RRAY_COMBINE_FILL_BARRIER(CONST_DEREF, POKE)                           \
-  struct rray_run_iterator it = rray_run_iterator2(                            \
+  struct rray_run_iterator it;                                                 \
+  rray_run_iterator_init2(                                                     \
+    &it,                                                                       \
     v_x_broadcast_dimensions,                                                  \
     out_dimensionality,                                                        \
     v_out_strides,                                                             \
