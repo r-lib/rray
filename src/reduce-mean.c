@@ -67,12 +67,13 @@ static r_obj* rray_mean_lgl(
 ) {
   const int* v_x = r_lgl_cbegin(x);
   const r_ssize x_size = r_length(x);
+  const r_ssize count = rray_mean_count(x_size, out_size);
 
   return rray_mean_lgl_or_int(
     v_x,
     r_globals.na_lgl,
-    x_size,
     out_size,
+    count,
     v_dimensions,
     dimensionality,
     v_out_broadcast_strides
@@ -88,12 +89,10 @@ static r_obj* rray_mean_lgl_na_rm(
   struct r_lazy error_call
 ) {
   const int* v_x = r_lgl_cbegin(x);
-  const r_ssize x_size = r_length(x);
 
   return rray_mean_lgl_or_int_na_rm(
     v_x,
     r_globals.na_lgl,
-    x_size,
     out_size,
     v_dimensions,
     dimensionality,
@@ -111,12 +110,13 @@ static r_obj* rray_mean_int(
 ) {
   const int* v_x = r_int_cbegin(x);
   const r_ssize x_size = r_length(x);
+  const r_ssize count = rray_mean_count(x_size, out_size);
 
-  if (rray_mean_count(x_size, out_size) > RRAY_MEAN_INT64_MAX_COUNT) {
+  if (count > RRAY_MEAN_INT64_MAX_COUNT) {
     return rray_mean_int_fallback(
       v_x,
-      x_size,
       out_size,
+      count,
       v_dimensions,
       dimensionality,
       v_out_broadcast_strides
@@ -126,8 +126,8 @@ static r_obj* rray_mean_int(
   return rray_mean_lgl_or_int(
     v_x,
     r_globals.na_int,
-    x_size,
     out_size,
+    count,
     v_dimensions,
     dimensionality,
     v_out_broadcast_strides
@@ -144,8 +144,9 @@ static r_obj* rray_mean_int_na_rm(
 ) {
   const int* v_x = r_int_cbegin(x);
   const r_ssize x_size = r_length(x);
+  const r_ssize count = rray_mean_count(x_size, out_size);
 
-  if (rray_mean_count(x_size, out_size) > RRAY_MEAN_INT64_MAX_COUNT) {
+  if (count > RRAY_MEAN_INT64_MAX_COUNT) {
     return rray_mean_int_na_rm_fallback(
       v_x,
       out_size,
@@ -158,7 +159,6 @@ static r_obj* rray_mean_int_na_rm(
   return rray_mean_lgl_or_int_na_rm(
     v_x,
     r_globals.na_int,
-    x_size,
     out_size,
     v_dimensions,
     dimensionality,
@@ -415,17 +415,19 @@ static r_obj* rray_mean_dbl_na_rm(
   return out;
 }
 
+static inline r_ssize rray_mean_count(r_ssize x_size, r_ssize out_size) {
+  return out_size == 0 ? 0 : x_size / out_size;
+}
+
 static r_obj* rray_mean_lgl_or_int(
   const int* v_x,
   int na_value,
-  r_ssize x_size,
   r_ssize out_size,
+  r_ssize count,
   const int* v_dimensions,
   int dimensionality,
   const r_ssize* v_out_broadcast_strides
 ) {
-  const r_ssize count = rray_mean_count(x_size, out_size);
-
   r_obj* sums = KEEP(r_alloc_raw0(out_size * sizeof(int64_t)));
   int64_t* v_sums = (int64_t*) r_raw_begin(sums);
 
@@ -493,7 +495,6 @@ static r_obj* rray_mean_lgl_or_int(
 static r_obj* rray_mean_lgl_or_int_na_rm(
   const int* v_x,
   int na_value,
-  r_ssize x_size,
   r_ssize out_size,
   const int* v_dimensions,
   int dimensionality,
@@ -555,10 +556,6 @@ static r_obj* rray_mean_lgl_or_int_na_rm(
   return out;
 }
 
-static inline r_ssize rray_mean_count(r_ssize x_size, r_ssize out_size) {
-  return out_size == 0 ? 0 : x_size / out_size;
-}
-
 static inline double rray_mean_int64(int64_t sum, r_ssize count) {
   if (count == 0) {
     return R_NaN;
@@ -607,13 +604,12 @@ static void rray_mean_lgl_or_int_propagate_na(
 
 static r_obj* rray_mean_int_fallback(
   const int* v_x,
-  r_ssize x_size,
   r_ssize out_size,
+  r_ssize count,
   const int* v_dimensions,
   int dimensionality,
   const r_ssize* v_out_broadcast_strides
 ) {
-  const r_ssize count = rray_mean_count(x_size, out_size);
   const int na_int = r_globals.na_int;
   const double na_dbl = r_globals.na_dbl;
 
