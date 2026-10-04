@@ -172,9 +172,9 @@ static r_obj* rray_mean_lgl_na_rm(
 
       for (r_ssize i = start; i < end; ++i) {
         const int x_elt = v_x[i];
-        const bool ok = x_elt != na_lgl;
-        sum += ok ? x_elt : 0;
-        count += ok;
+        const bool na = x_elt == na_lgl;
+        sum += na ? 0 : x_elt;
+        count += !na;
       }
 
       v_sums[out_loc] = sum;
@@ -182,9 +182,9 @@ static r_obj* rray_mean_lgl_na_rm(
     } else {
       for (r_ssize i = start; i < end; ++i) {
         const int x_elt = v_x[i];
-        const bool ok = x_elt != na_lgl;
-        v_sums[out_loc] += ok ? x_elt : 0;
-        v_counts[out_loc] += ok;
+        const bool na = x_elt == na_lgl;
+        v_sums[out_loc] += na ? 0 : x_elt;
+        v_counts[out_loc] += !na;
         out_loc += out_stride;
       }
     }
@@ -337,9 +337,9 @@ static r_obj* rray_mean_int_na_rm(
 
       for (r_ssize i = start; i < end; ++i) {
         const int x_elt = v_x[i];
-        const bool ok = x_elt != na_int;
-        sum += ok ? x_elt : 0;
-        count += ok;
+        const bool na = x_elt == na_int;
+        sum += na ? 0 : x_elt;
+        count += !na;
       }
 
       v_sums[out_loc] = sum;
@@ -347,9 +347,9 @@ static r_obj* rray_mean_int_na_rm(
     } else {
       for (r_ssize i = start; i < end; ++i) {
         const int x_elt = v_x[i];
-        const bool ok = x_elt != na_int;
-        v_sums[out_loc] += ok ? x_elt : 0;
-        v_counts[out_loc] += ok;
+        const bool na = x_elt == na_int;
+        v_sums[out_loc] += na ? 0 : x_elt;
+        v_counts[out_loc] += !na;
         out_loc += out_stride;
       }
     }
@@ -536,9 +536,9 @@ static r_obj* rray_mean_dbl_na_rm(
 
       for (r_ssize i = start; i < end; ++i) {
         const double x_elt = v_x[i];
-        const bool ok = !ISNAN(x_elt);
-        sum += ok ? x_elt : 0;
-        count += ok;
+        const bool na = ISNAN(x_elt);
+        sum += na ? 0 : x_elt;
+        count += !na;
       }
 
       v_out[out_loc] = sum;
@@ -546,9 +546,9 @@ static r_obj* rray_mean_dbl_na_rm(
     } else {
       for (r_ssize i = start; i < end; ++i) {
         const double x_elt = v_x[i];
-        const bool ok = !ISNAN(x_elt);
-        v_out[out_loc] += ok ? x_elt : 0;
-        v_counts[out_loc] += ok;
+        const bool na = ISNAN(x_elt);
+        v_out[out_loc] += na ? 0 : x_elt;
+        v_counts[out_loc] += !na;
         out_loc += out_stride;
       }
     }
@@ -802,9 +802,9 @@ static r_obj* rray_mean_int_na_rm_fallback(
 
       for (r_ssize i = start; i < end; ++i) {
         const int x_elt = v_x[i];
-        const bool ok = x_elt != na_int;
-        sum += ok ? x_elt : 0;
-        count += ok;
+        const bool na = x_elt == na_int;
+        sum += na ? 0 : x_elt;
+        count += !na;
       }
 
       v_out[out_loc] = sum;
@@ -812,9 +812,9 @@ static r_obj* rray_mean_int_na_rm_fallback(
     } else {
       for (r_ssize i = start; i < end; ++i) {
         const int x_elt = v_x[i];
-        const bool ok = x_elt != na_int;
-        v_out[out_loc] += ok ? x_elt : 0;
-        v_counts[out_loc] += ok;
+        const bool na = x_elt == na_int;
+        v_out[out_loc] += na ? 0 : x_elt;
+        v_counts[out_loc] += !na;
         out_loc += out_stride;
       }
     }
