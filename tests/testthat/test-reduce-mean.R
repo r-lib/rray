@@ -122,8 +122,8 @@ test_that("integer means past 2^32 elements fall back to a double total", {
   x <- array(.Machine$integer.max, c(2^16 + 1, 2^16))
   expected <- as.double(.Machine$integer.max)
 
-  expect_equal(as.vector(rray_mean(x, 1:2)), expected)
-  expect_equal(as.vector(rray_mean(x, 1:2, na_rm = TRUE)), expected)
+  expect_identical(as.vector(rray_mean(x, 1:2)), expected)
+  expect_identical(as.vector(rray_mean(x, 1:2, na_rm = TRUE)), expected)
 })
 
 test_that("integer means past 2^32 elements fall back with NA", {
@@ -134,7 +134,7 @@ test_that("integer means past 2^32 elements fall back with NA", {
   expected <- as.double(.Machine$integer.max)
 
   expect_identical(as.vector(rray_mean(x, 1:2)), NA_real_)
-  expect_equal(as.vector(rray_mean(x, 1:2, na_rm = TRUE)), expected)
+  expect_identical(as.vector(rray_mean(x, 1:2, na_rm = TRUE)), expected)
 })
 
 test_that("a sum that overflows to infinity is retried with scaled terms", {

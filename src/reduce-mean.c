@@ -599,8 +599,12 @@ static r_obj* rray_mean_int_fallback(
   r_obj* out = KEEP(r_alloc_double(out_size));
   double* v_out = r_dbl_begin(out);
 
+  r_obj* corrections = KEEP(r_alloc_double(out_size));
+  double* v_corrections = r_dbl_begin(corrections);
+
   for (r_ssize i = 0; i < out_size; ++i) {
     v_out[i] = 0.0;
+    v_corrections[i] = 0.0;
   }
 
   struct rray_run_iterator it;
@@ -641,7 +645,41 @@ static r_obj* rray_mean_int_fallback(
     v_out[i] = ISNAN(sum) ? na_dbl : sum / count;
   }
 
-  FREE(1);
+  rray_run_iterator_reset1(&it);
+
+  for (; !rray_run_iterator_done(&it); rray_run_iterator_next1(&it)) {
+    const r_ssize start = rray_run_iterator_start(&it);
+    const r_ssize end = rray_run_iterator_end(&it);
+
+    r_ssize out_loc = rray_run_iterator_loc(&it, 0);
+    const r_ssize out_stride = rray_run_iterator_stride(&it, 0);
+
+    if (out_stride == 0) {
+      const double mean = v_out[out_loc];
+      double correction = v_corrections[out_loc];
+
+      for (r_ssize i = start; i < end; ++i) {
+        correction += v_x[i] - mean;
+      }
+
+      v_corrections[out_loc] = correction;
+    } else {
+      for (r_ssize i = start; i < end; ++i) {
+        v_corrections[out_loc] += v_x[i] - v_out[out_loc];
+        out_loc += out_stride;
+      }
+    }
+  }
+
+  for (r_ssize i = 0; i < out_size; ++i) {
+    const double mean = v_out[i];
+
+    if (R_FINITE(mean)) {
+      v_out[i] = mean + v_corrections[i] / count;
+    }
+  }
+
+  FREE(2);
   return out;
 }
 
@@ -657,8 +695,12 @@ static r_obj* rray_mean_int_na_rm_fallback(
   r_obj* out = KEEP(r_alloc_double(out_size));
   double* v_out = r_dbl_begin(out);
 
+  r_obj* corrections = KEEP(r_alloc_double(out_size));
+  double* v_corrections = r_dbl_begin(corrections);
+
   for (r_ssize i = 0; i < out_size; ++i) {
     v_out[i] = 0.0;
+    v_corrections[i] = 0.0;
   }
 
   r_obj* counts = KEEP(r_alloc_raw0(out_size * sizeof(r_ssize)));
@@ -707,7 +749,43 @@ static r_obj* rray_mean_int_na_rm_fallback(
     v_out[i] /= v_counts[i];
   }
 
-  FREE(2);
+  rray_run_iterator_reset1(&it);
+
+  for (; !rray_run_iterator_done(&it); rray_run_iterator_next1(&it)) {
+    const r_ssize start = rray_run_iterator_start(&it);
+    const r_ssize end = rray_run_iterator_end(&it);
+
+    r_ssize out_loc = rray_run_iterator_loc(&it, 0);
+    const r_ssize out_stride = rray_run_iterator_stride(&it, 0);
+
+    if (out_stride == 0) {
+      const double mean = v_out[out_loc];
+      double correction = v_corrections[out_loc];
+
+      for (r_ssize i = start; i < end; ++i) {
+        const int x_elt = v_x[i];
+        correction += x_elt == na_int ? 0 : x_elt - mean;
+      }
+
+      v_corrections[out_loc] = correction;
+    } else {
+      for (r_ssize i = start; i < end; ++i) {
+        const int x_elt = v_x[i];
+        v_corrections[out_loc] += x_elt == na_int ? 0 : x_elt - v_out[out_loc];
+        out_loc += out_stride;
+      }
+    }
+  }
+
+  for (r_ssize i = 0; i < out_size; ++i) {
+    const double mean = v_out[i];
+
+    if (R_FINITE(mean)) {
+      v_out[i] = mean + v_corrections[i] / v_counts[i];
+    }
+  }
+
+  FREE(3);
   return out;
 }
 
