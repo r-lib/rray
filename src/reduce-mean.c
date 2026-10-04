@@ -379,12 +379,12 @@ static r_obj* rray_mean_dbl(
   r_obj* out = KEEP(r_alloc_double(out_size));
   double* v_out = r_dbl_begin(out);
 
-  r_obj* correction = KEEP(r_alloc_double(out_size));
-  double* v_correction = r_dbl_begin(correction);
+  r_obj* corrections = KEEP(r_alloc_double(out_size));
+  double* v_corrections = r_dbl_begin(corrections);
 
   for (r_ssize i = 0; i < out_size; ++i) {
     v_out[i] = 0.0;
-    v_correction[i] = 0.0;
+    v_corrections[i] = 0.0;
   }
 
   const double* v_x = r_dbl_cbegin(x);
@@ -435,16 +435,16 @@ static r_obj* rray_mean_dbl(
 
     if (out_stride == 0) {
       const double mean = v_out[out_loc];
-      double correction = v_correction[out_loc];
+      double correction = v_corrections[out_loc];
 
       for (r_ssize i = start; i < end; ++i) {
         correction += v_x[i] - mean;
       }
 
-      v_correction[out_loc] = correction;
+      v_corrections[out_loc] = correction;
     } else {
       for (r_ssize i = start; i < end; ++i) {
-        v_correction[out_loc] += v_x[i] - v_out[out_loc];
+        v_corrections[out_loc] += v_x[i] - v_out[out_loc];
         out_loc += out_stride;
       }
     }
@@ -457,7 +457,7 @@ static r_obj* rray_mean_dbl(
     const double mean = v_out[i];
 
     if (R_FINITE(mean)) {
-      v_out[i] = mean + v_correction[i] / count;
+      v_out[i] = mean + v_corrections[i] / count;
     } else if (ISNAN(mean)) {
       any_nan = true;
     } else {
@@ -502,12 +502,12 @@ static r_obj* rray_mean_dbl_na_rm(
   r_obj* out = KEEP(r_alloc_double(out_size));
   double* v_out = r_dbl_begin(out);
 
-  r_obj* correction = KEEP(r_alloc_double(out_size));
-  double* v_correction = r_dbl_begin(correction);
+  r_obj* corrections = KEEP(r_alloc_double(out_size));
+  double* v_corrections = r_dbl_begin(corrections);
 
   for (r_ssize i = 0; i < out_size; ++i) {
     v_out[i] = 0.0;
-    v_correction[i] = 0.0;
+    v_corrections[i] = 0.0;
   }
 
   r_obj* counts = KEEP(r_alloc_raw0(out_size * sizeof(r_ssize)));
@@ -569,18 +569,18 @@ static r_obj* rray_mean_dbl_na_rm(
 
     if (out_stride == 0) {
       const double mean = v_out[out_loc];
-      double correction = v_correction[out_loc];
+      double correction = v_corrections[out_loc];
 
       for (r_ssize i = start; i < end; ++i) {
         const double x_elt = v_x[i];
         correction += ISNAN(x_elt) ? 0 : x_elt - mean;
       }
 
-      v_correction[out_loc] = correction;
+      v_corrections[out_loc] = correction;
     } else {
       for (r_ssize i = start; i < end; ++i) {
         const double x_elt = v_x[i];
-        v_correction[out_loc] += ISNAN(x_elt) ? 0 : x_elt - v_out[out_loc];
+        v_corrections[out_loc] += ISNAN(x_elt) ? 0 : x_elt - v_out[out_loc];
         out_loc += out_stride;
       }
     }
@@ -592,7 +592,7 @@ static r_obj* rray_mean_dbl_na_rm(
     const double mean = v_out[i];
 
     if (R_FINITE(mean)) {
-      v_out[i] = mean + v_correction[i] / v_counts[i];
+      v_out[i] = mean + v_corrections[i] / v_counts[i];
     } else if (!ISNAN(mean)) {
       any_infinite = true;
     }
@@ -840,12 +840,12 @@ static void rray_mean_dbl_rescale(
   r_obj* sum = KEEP(r_alloc_double(out_size));
   double* v_sum = r_dbl_begin(sum);
 
-  r_obj* correction = KEEP(r_alloc_double(out_size));
-  double* v_correction = r_dbl_begin(correction);
+  r_obj* corrections = KEEP(r_alloc_double(out_size));
+  double* v_corrections = r_dbl_begin(corrections);
 
   for (r_ssize i = 0; i < out_size; ++i) {
     v_sum[i] = 0.0;
-    v_correction[i] = 0.0;
+    v_corrections[i] = 0.0;
   }
 
   struct rray_run_iterator it;
@@ -882,7 +882,7 @@ static void rray_mean_dbl_rescale(
 
     for (r_ssize i = start; i < end; ++i) {
       if (isinf(v_out[out_loc])) {
-        v_correction[out_loc] += (v_x[i] - v_sum[out_loc]) / count;
+        v_corrections[out_loc] += (v_x[i] - v_sum[out_loc]) / count;
       }
       out_loc += out_stride;
     }
@@ -891,7 +891,7 @@ static void rray_mean_dbl_rescale(
   for (r_ssize i = 0; i < out_size; ++i) {
     if (isinf(v_out[i])) {
       const double mean = v_sum[i];
-      v_out[i] = R_FINITE(mean) ? mean + v_correction[i] : mean;
+      v_out[i] = R_FINITE(mean) ? mean + v_corrections[i] : mean;
     }
   }
 
@@ -943,12 +943,12 @@ static void rray_mean_dbl_rescale_na_rm(
   r_obj* sum = KEEP(r_alloc_double(out_size));
   double* v_sum = r_dbl_begin(sum);
 
-  r_obj* correction = KEEP(r_alloc_double(out_size));
-  double* v_correction = r_dbl_begin(correction);
+  r_obj* corrections = KEEP(r_alloc_double(out_size));
+  double* v_corrections = r_dbl_begin(corrections);
 
   for (r_ssize i = 0; i < out_size; ++i) {
     v_sum[i] = 0.0;
-    v_correction[i] = 0.0;
+    v_corrections[i] = 0.0;
   }
 
   struct rray_run_iterator it;
@@ -987,7 +987,7 @@ static void rray_mean_dbl_rescale_na_rm(
     for (r_ssize i = start; i < end; ++i) {
       const double x_elt = v_x[i];
       if (isinf(v_out[out_loc]) && !ISNAN(x_elt)) {
-        v_correction[out_loc] += (x_elt - v_sum[out_loc]) / v_counts[out_loc];
+        v_corrections[out_loc] += (x_elt - v_sum[out_loc]) / v_counts[out_loc];
       }
       out_loc += out_stride;
     }
@@ -996,7 +996,7 @@ static void rray_mean_dbl_rescale_na_rm(
   for (r_ssize i = 0; i < out_size; ++i) {
     if (isinf(v_out[i])) {
       const double mean = v_sum[i];
-      v_out[i] = R_FINITE(mean) ? mean + v_correction[i] : mean;
+      v_out[i] = R_FINITE(mean) ? mean + v_corrections[i] : mean;
     }
   }
 
