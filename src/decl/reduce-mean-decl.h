@@ -54,32 +54,47 @@ static r_obj* rray_mean_dbl_na_rm(
   struct r_lazy error_call
 );
 
-static inline r_ssize rray_mean_count(r_obj* x, r_ssize out_size);
-static inline double rray_mean_int64(int64_t sum, r_ssize count);
-static void rray_mean_lgl_propagate_na(
+static r_obj* rray_mean_lgl_or_int(
   const int* v_x,
-  double* v_out,
-  const int* v_dimensions,
-  int dimensionality,
-  const r_ssize* v_out_broadcast_strides
-);
-
-static r_obj* rray_mean_int_fallback(
-  r_obj* x,
+  int na_value,
+  r_ssize x_size,
   r_ssize out_size,
   const int* v_dimensions,
   int dimensionality,
   const r_ssize* v_out_broadcast_strides
 );
-static void rray_mean_int_propagate_na(
+static r_obj* rray_mean_lgl_or_int_na_rm(
   const int* v_x,
+  int na_value,
+  r_ssize x_size,
+  r_ssize out_size,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_out_broadcast_strides
+);
+
+static inline r_ssize rray_mean_count(r_ssize x_size, r_ssize out_size);
+static r_obj* rray_mean_lgl_or_int_fallback(
+  const int* v_x,
+  int na_value,
+  r_ssize out_size,
+  r_ssize count,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_out_broadcast_strides
+);
+static inline double rray_mean_int64(int64_t sum, r_ssize count);
+static void rray_mean_lgl_or_int_propagate_na(
+  const int* v_x,
+  int na_value,
   double* v_out,
   const int* v_dimensions,
   int dimensionality,
   const r_ssize* v_out_broadcast_strides
 );
-static r_obj* rray_mean_int_na_rm_fallback(
-  r_obj* x,
+static r_obj* rray_mean_lgl_or_int_na_rm_fallback(
+  const int* v_x,
+  int na_value,
   r_ssize out_size,
   const int* v_dimensions,
   int dimensionality,
