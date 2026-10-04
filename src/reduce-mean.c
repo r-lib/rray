@@ -67,16 +67,13 @@ static r_obj* rray_mean_lgl(
 ) {
   const r_ssize count = rray_mean_count(x, out_size);
   const int na_lgl = r_globals.na_lgl;
-  const double na_dbl = r_globals.na_dbl;
 
-  r_obj* out = KEEP(r_alloc_double(out_size));
-  double* v_out = r_dbl_begin(out);
-
-  for (r_ssize i = 0; i < out_size; ++i) {
-    v_out[i] = 0.0;
-  }
+  r_obj* sums = KEEP(r_alloc_raw0(out_size * sizeof(int64_t)));
+  int64_t* v_sums = (int64_t*) r_raw_begin(sums);
 
   const int* v_x = r_lgl_cbegin(x);
+
+  bool any_na = false;
 
   struct rray_run_iterator it;
   rray_run_iterator_init1(
@@ -94,29 +91,45 @@ static r_obj* rray_mean_lgl(
     const r_ssize out_stride = rray_run_iterator_stride(&it, 0);
 
     if (out_stride == 0) {
-      double sum = v_out[out_loc];
+      int64_t sum = v_sums[out_loc];
 
       for (r_ssize i = start; i < end; ++i) {
         const int x_elt = v_x[i];
-        sum += x_elt == na_lgl ? na_dbl : x_elt;
+        const bool na = x_elt == na_lgl;
+        sum += na ? 0 : x_elt;
+        any_na |= na;
       }
 
-      v_out[out_loc] = sum;
+      v_sums[out_loc] = sum;
     } else {
       for (r_ssize i = start; i < end; ++i) {
         const int x_elt = v_x[i];
-        v_out[out_loc] += x_elt == na_lgl ? na_dbl : x_elt;
+        const bool na = x_elt == na_lgl;
+        v_sums[out_loc] += na ? 0 : x_elt;
+        any_na |= na;
         out_loc += out_stride;
       }
     }
   }
 
+  r_obj* out = KEEP(r_alloc_double(out_size));
+  double* v_out = r_dbl_begin(out);
+
   for (r_ssize i = 0; i < out_size; ++i) {
-    const double sum = v_out[i];
-    v_out[i] = ISNAN(sum) ? na_dbl : sum / count;
+    v_out[i] = rray_mean_int64(v_sums[i], count);
   }
 
-  FREE(1);
+  if (any_na) {
+    rray_mean_lgl_propagate_na(
+      v_x,
+      v_out,
+      v_dimensions,
+      dimensionality,
+      v_out_broadcast_strides
+    );
+  }
+
+  FREE(2);
   return out;
 }
 
@@ -130,12 +143,8 @@ static r_obj* rray_mean_lgl_na_rm(
 ) {
   const int na_lgl = r_globals.na_lgl;
 
-  r_obj* out = KEEP(r_alloc_double(out_size));
-  double* v_out = r_dbl_begin(out);
-
-  for (r_ssize i = 0; i < out_size; ++i) {
-    v_out[i] = 0.0;
-  }
+  r_obj* sums = KEEP(r_alloc_raw0(out_size * sizeof(int64_t)));
+  int64_t* v_sums = (int64_t*) r_raw_begin(sums);
 
   r_obj* counts = KEEP(r_alloc_raw0(out_size * sizeof(r_ssize)));
   r_ssize* v_counts = (r_ssize*) r_raw_begin(counts);
@@ -158,7 +167,7 @@ static r_obj* rray_mean_lgl_na_rm(
     const r_ssize out_stride = rray_run_iterator_stride(&it, 0);
 
     if (out_stride == 0) {
-      double sum = v_out[out_loc];
+      int64_t sum = v_sums[out_loc];
       r_ssize count = 0;
 
       for (r_ssize i = start; i < end; ++i) {
@@ -168,24 +177,27 @@ static r_obj* rray_mean_lgl_na_rm(
         count += ok;
       }
 
-      v_out[out_loc] = sum;
+      v_sums[out_loc] = sum;
       v_counts[out_loc] += count;
     } else {
       for (r_ssize i = start; i < end; ++i) {
         const int x_elt = v_x[i];
         const bool ok = x_elt != na_lgl;
-        v_out[out_loc] += ok ? x_elt : 0;
+        v_sums[out_loc] += ok ? x_elt : 0;
         v_counts[out_loc] += ok;
         out_loc += out_stride;
       }
     }
   }
 
+  r_obj* out = KEEP(r_alloc_double(out_size));
+  double* v_out = r_dbl_begin(out);
+
   for (r_ssize i = 0; i < out_size; ++i) {
-    v_out[i] /= v_counts[i];
+    v_out[i] = rray_mean_int64(v_sums[i], v_counts[i]);
   }
 
-  FREE(2);
+  FREE(3);
   return out;
 }
 
@@ -606,6 +618,52 @@ static inline r_ssize rray_mean_count(r_obj* x, r_ssize out_size) {
   return out_size == 0 ? 0 : r_length(x) / out_size;
 }
 
+static inline double rray_mean_int64(int64_t sum, r_ssize count) {
+  if (count == 0) {
+    return R_NaN;
+  }
+
+  if (-RRAY_MEAN_INT64_MAX_EXACT <= sum && sum <= RRAY_MEAN_INT64_MAX_EXACT) {
+    return (double) sum / count;
+  }
+
+  return (double) (sum / count) + (double) (sum % count) / count;
+}
+
+static void rray_mean_lgl_propagate_na(
+  const int* v_x,
+  double* v_out,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_out_broadcast_strides
+) {
+  const int na_lgl = r_globals.na_lgl;
+  const double na_dbl = r_globals.na_dbl;
+
+  struct rray_run_iterator it;
+  rray_run_iterator_init1(
+    &it,
+    v_dimensions,
+    dimensionality,
+    v_out_broadcast_strides
+  );
+
+  for (; !rray_run_iterator_done(&it); rray_run_iterator_next1(&it)) {
+    const r_ssize start = rray_run_iterator_start(&it);
+    const r_ssize end = rray_run_iterator_end(&it);
+
+    r_ssize out_loc = rray_run_iterator_loc(&it, 0);
+    const r_ssize out_stride = rray_run_iterator_stride(&it, 0);
+
+    for (r_ssize i = start; i < end; ++i) {
+      if (v_x[i] == na_lgl) {
+        v_out[out_loc] = na_dbl;
+      }
+      out_loc += out_stride;
+    }
+  }
+}
+
 static r_obj* rray_mean_int_fallback(
   r_obj* x,
   r_ssize out_size,
@@ -666,18 +724,6 @@ static r_obj* rray_mean_int_fallback(
 
   FREE(1);
   return out;
-}
-
-static inline double rray_mean_int64(int64_t sum, r_ssize count) {
-  if (count == 0) {
-    return R_NaN;
-  }
-
-  if (-RRAY_MEAN_INT64_MAX_EXACT <= sum && sum <= RRAY_MEAN_INT64_MAX_EXACT) {
-    return (double) sum / count;
-  }
-
-  return (double) (sum / count) + (double) (sum % count) / count;
 }
 
 static void rray_mean_int_propagate_na(
