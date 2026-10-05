@@ -514,12 +514,27 @@ static r_obj* rray_sum_int_fallback(
     r_ssize out_loc = rray_run_iterator_loc(&it, 0);
     const r_ssize out_stride = rray_run_iterator_stride(&it, 0);
 
-    for (r_ssize i = start; i < end; ++i) {
-      const int x_elt = v_x[i];
-      const bool na = x_elt == na_int;
-      v_sums[out_loc] = rray_sum_int128_add(v_sums[out_loc], na ? 0 : x_elt);
-      v_missings[out_loc] |= na;
-      out_loc += out_stride;
+    if (out_stride == 0) {
+      struct rray_sum_int128 sum = v_sums[out_loc];
+      bool missing = v_missings[out_loc];
+
+      for (r_ssize i = start; i < end; ++i) {
+        const int x_elt = v_x[i];
+        const bool na = x_elt == na_int;
+        sum = rray_sum_int128_add(sum, na ? 0 : x_elt);
+        missing |= na;
+      }
+
+      v_sums[out_loc] = sum;
+      v_missings[out_loc] = missing;
+    } else {
+      for (r_ssize i = start; i < end; ++i) {
+        const int x_elt = v_x[i];
+        const bool na = x_elt == na_int;
+        v_sums[out_loc] = rray_sum_int128_add(v_sums[out_loc], na ? 0 : x_elt);
+        v_missings[out_loc] |= na;
+        out_loc += out_stride;
+      }
     }
   }
 
