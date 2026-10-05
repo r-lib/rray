@@ -654,6 +654,7 @@ static r_obj* rray_mean_int_fallback(
 
       v_out[out_loc] = sum;
     } else {
+      // Untested, requires 32 GB of memory
       for (r_ssize i = start; i < end; ++i) {
         const int x_elt = v_x[i];
         v_out[out_loc] += x_elt == na_int ? na_dbl : x_elt;
@@ -686,6 +687,7 @@ static r_obj* rray_mean_int_fallback(
 
       v_corrections[out_loc] = correction;
     } else {
+      // Untested, requires 32 GB of memory
       for (r_ssize i = start; i < end; ++i) {
         v_corrections[out_loc] += v_x[i] - v_out[out_loc];
         out_loc += out_stride;
@@ -757,6 +759,7 @@ static r_obj* rray_mean_int_na_rm_fallback(
       v_out[out_loc] = sum;
       v_counts[out_loc] = count;
     } else {
+      // Untested, requires 32 GB of memory
       for (r_ssize i = start; i < end; ++i) {
         const int x_elt = v_x[i];
         const bool na = x_elt == na_int;
@@ -791,6 +794,7 @@ static r_obj* rray_mean_int_na_rm_fallback(
 
       v_corrections[out_loc] = correction;
     } else {
+      // Untested, requires 32 GB of memory
       for (r_ssize i = start; i < end; ++i) {
         const int x_elt = v_x[i];
         v_corrections[out_loc] += x_elt == na_int ? 0 : x_elt - v_out[out_loc];
