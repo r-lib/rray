@@ -81,9 +81,11 @@ One caveat on "same bits everywhere". GCC defaults to `-ffp-contract=fast`, whic
 
 All numbers are medians from `bench::mark()` on Apple silicon (arm64), where `long double` is the same as `double`. Inputs are `runif()` doubles. None of this has been measured on x86_64 or Linux arm64.
 
+These were measured before #124 moved `rray_mean()` to the flat walk, so the `rray_mean()` numbers are out of date.
+
 ## Flat against nested
 
-`rray_sum()` uses the flat walk (`RRAY_REDUCE()`). `rray_mean()` uses the nested walk (`RRAY_REDUCE_OUTER()` / `RRAY_REDUCE_INNER()`). The integer mean makes one pass, so it isolates the cost of the nested walk.
+`rray_sum()` used the flat walk (`RRAY_REDUCE()`). `rray_mean()` used the nested walk (`RRAY_REDUCE_OUTER()` / `RRAY_REDUCE_INNER()`). The integer mean makes one pass, so it isolates the cost of the nested walk.
 
 | Input | Axes | Flat double sum | Nested integer mean | Nested double mean (2 passes) |
 |---|---|---|---|---|
@@ -136,65 +138,21 @@ It also shows that summing along axis 1 is about 6x slower than along axis 2. Do
 
 # Plan
 
+Integer and logical sums, and the decision to write reducers as hand written loops instead of a `RRAY_REDUCE_ACC()` macro, are in `plans/sum-accurate.md`.
+
 ## 1. `rray_mean()` accumulates in `double`
 
-`src/reduce-mean.c` is the only place in rray4 that uses `long double`.
+Done in #124: the double mean adds in `double`, and the integer and logical means add into an `int64_t`, with a fallback past 2^32 elements per output.
 
-- Double mean: change every `long double` to `double`. Keep the algorithm as is: the first sum, the correction pass, and the scaled retry when the first sum overflows to infinity. The correction pass already recovers most of what `long double` would add.
+One test change is left:
 
-- Integer and logical mean: add into an `int64_t` instead of a floating point type. That is exact, and more accurate than `long double` on every platform. Compute the mean from the quotient and remainder, `(double) (sum / count) + (double) (sum % count) / count`, so the large total is never rounded on its own.
+- `"matches mean() over every combination of axes"` and `"a second pass corrects the rounding error of the first sum"` compare against base `mean()` with `expect_identical()`. Now that rray4 uses `double`, they can fail on x86_64, where base R uses `long double`. CI wouldn't notice, since it only runs on macOS arm64. Replace the base R comparison with expected values computed by hand, so the tests don't depend on the platform.
 
-- An `int64_t` total can't overflow unless one output has more than 2^32 elements, since each element is less than 2^31 in absolute value. Check `count` against that bound and fall back to a slower checked path past it.
-
-Tests:
-
-- `"matches mean() over every combination of axes"` and `"a second pass corrects the rounding error of the first sum"` compare against base `mean()` with `expect_identical()`. Once rray4 uses `double`, they can fail on x86_64, where base R uses `long double`. CI wouldn't notice, since it only runs on macOS arm64. Replace the base R comparison with expected values computed by hand, so the tests don't depend on the platform.
-
-- Add an integer mean whose exact total is above 2^53.
-
-## 2. A new macro, `RRAY_REDUCE_ACC()`
-
-Plans 3 to 5 all need state that the output vector can't hold: a 64-bit integer total, a running compensation term, or a separate exponent. They also need to replace the one-element-at-a-time loop in the `out_run_stride == 0` branch with something faster or more accurate.
-
-`RRAY_REDUCE()` stays as it is, for reducers whose output is their whole state: extremum, logical, and complex product. Add a second macro next to it in `src/reduce.h`. It is a separate macro for now so the two can be compared side by side. Whether to merge them is a later decision.
-
-```c
-#define RRAY_REDUCE_ACC(                                                       \
-  X_CTYPE,                                                                     \
-  X_CONST_DEREF,                                                               \
-  ACC_CTYPE,                                                                   \
-  ACC_INIT,                                                                    \
-  ONE,                                                                         \
-  RUN,                                                                         \
-  OUT_RTYPE,                                                                   \
-  OUT_CTYPE,                                                                   \
-  OUT_DEREF,                                                                   \
-  FINISH,                                                                      \
-  ONE_ARGS                                                                     \
-)
-```
-
-- It allocates a buffer of `out_size` `ACC_CTYPE` values with `r_alloc_raw()`, protected with `KEEP()`, and fills it with `ACC_INIT`.
-
-- It walks `x` in the same order as `RRAY_REDUCE()`, so it keeps the flat walk's speed.
-
-- When `out_run_stride == 0`, a whole run feeds one output, and the macro calls `v_acc[out_loc] = RUN(v_acc[out_loc], v_x + run_start, run_size ONE_ARGS)` once per run.
-
-- Otherwise it calls `v_acc[out_loc] = ONE(v_acc[out_loc], v_x[i] ONE_ARGS)` per element, as today.
-
-- At the end it allocates the output and fills it with `FINISH(v_acc[i] ONE_ARGS)`. `FINISH` can error, which is how integer overflow gets reported.
-
-- `RUN`, `ONE` and `FINISH` are plain `static inline` functions in the matching `one-*.h` header, in its Reduce section. `ONE_ARGS` passes through the same way it does now, through `RRAY_REDUCE_ARGS()` / `RRAY_REDUCE_NO_ARGS`.
-
-The buffer benchmark above is a measure of what this costs compared to `RRAY_REDUCE()`. On arm64 it was close to free, except for about 10% on outputs with millions of elements.
-
-This also gives `plans/sum.md` the "per-run hook" its "Next step" section asks for.
-
-## 3. Double and complex sum
+## 2. Double and complex sum
 
 ### Pairwise summation along runs
 
-`RUN` for the double sum is NumPy's pairwise sum. Split the run into blocks of 128, sum each block with 8 running totals, and combine the blocks as a tree.
+The `out_stride == 0` loop of `rray_sum_dbl()` becomes NumPy's pairwise sum. Split the run into blocks of 128, sum each block with 8 running totals, and combine the blocks as a tree.
 
 - Accuracy: error grows like `log(n)` instead of `n` along the run.
 
@@ -202,7 +160,7 @@ This also gives `plans/sum.md` the "per-run hook" its "Next step" section asks f
 
 - `na_rm`: replace `NaN` elements with `0` before adding. This keeps the loop free of branches.
 
-- `NA` against `NaN`: which one wins is already implementation defined for `rray_sum()` (see `rray_sum_dbl_one()`), so reordering the adds doesn't change any promise.
+- `NA` against `NaN`: which one wins is already implementation defined for `rray_sum()` (see `rray_add_dbl_one()`), so reordering the adds doesn't change any promise.
 
 - Complex: run the same pairwise sum on the real and imaginary parts separately.
 
@@ -210,7 +168,7 @@ When `out_run_stride != 0`, each output gets one element per run, so there is no
 
 ### Undecided: compensated summation everywhere else
 
-To make accuracy independent of memory layout, `ACC_CTYPE` could be a struct holding a total and a compensation term, using Neumaier's variant of Kahan summation:
+To make accuracy independent of memory layout, each output could keep a struct holding a total and a compensation term, using Neumaier's variant of Kahan summation:
 
 ```c
 struct rray_sum_dbl_acc {
@@ -219,43 +177,23 @@ struct rray_sum_dbl_acc {
 };
 ```
 
-- `ONE` adds one element with the compensation update. `RUN` adds the run's pairwise sum the same way. `FINISH` returns `sum + compensation`.
+- Each element is added with the compensation update. A run adds its pairwise sum the same way. The result is `sum + compensation`.
 
 - The error then stays at a few units in the last place regardless of how many elements are added, along any axis.
 
-- If `sum` becomes infinite or `NaN`, `compensation` turns into `NaN` (from `Inf - Inf`). `FINISH` must return `sum` alone when it isn't finite.
+- If `sum` becomes infinite or `NaN`, `compensation` turns into `NaN` (from `Inf - Inf`). The result must be `sum` alone when it isn't finite.
 
 - Costs: the buffer doubles to 16 bytes per output, and each element takes about 4 floating point operations instead of 1. The axis 2 loop is limited by memory speed, so this may be nearly free there. Not measured.
 
-This is an idea to keep in mind, not part of the work yet. Either way, the double sum uses `RRAY_REDUCE_ACC()` with `ACC_CTYPE` as `double`, so that it gets `RUN`.
+This is an idea to keep in mind, not part of the work yet.
 
-## 4. Integer and logical sum
-
-Today the total is an `int` and every intermediate total is checked, so `c(.Machine$integer.max, 1L, -1L)` errors even though the result fits. Base R returns `.Machine$integer.max`.
-
-Decided: `ACC_CTYPE` is `int64_t`.
-
-- The rule becomes "error when an output doesn't fit in `int`". `rray_sum()` only checks the final total in `FINISH`. Cumulative sums check every running total, since each one is an output. That is the same rule applied to two different sets of outputs.
-
-- `NA` is tracked with a sentinel, `INT64_MIN`. Any `NA` makes the output `NA`, regardless of where the overflow would have happened. The two order dependent cases in `plans/sum.md` ("an NA before an overflow gives NA", "an overflow before an NA errors") collapse into one: `NA` wins. That is simpler to document, and it matches base R, where `NA` also wins.
-
-- An output that doesn't fit errors, as today. Base R returns `NA` with a warning instead. Keep rray4's error.
-
-- `RUN` adds the run into a local `int64_t` and sets an `any_na` flag, with no checks. With no intermediate checks, reordering is safe, so the loop vectorizes along axis 1 too.
-
-- The 2^32 element bound from plan 1 applies here too.
-
-- Logical sums use the same accumulator. This fixes the logical overflow bug described in `plans/sum.md`, where more than `INT_MAX` `TRUE` values in one output overflowed an `int`.
-
-`plans/sum.md` rejected an `int64_t` buffer because it "allocates a buffer that can be large". The buffer is `out_size` elements, twice the size of the `int` output, and the buffer benchmark above shows it is close to free. That same section also measured this design as the fastest option it found (1.14 ms along axis 2, against 3.06 ms for the branch). It is worth revisiting.
-
-## 5. Product
+## 3. Product
 
 Multiplication doesn't have the cancellation problem that addition has. Each multiply adds at most half a unit of rounding error, in relative terms, regardless of order. So there is no pairwise or compensated version worth building.
 
 The real gap is range. With `long double` on x86_64, base R can hold intermediate products up to about 10^4932. In `double`, `prod(c(1e300, 1e300, 1e-300))` overflows to `Inf` partway through, though the answer is `1e300`. That already happens in base R on Apple silicon, so base R itself differs by platform here.
 
-Undecided. If we do it, `ACC_CTYPE` stores a mantissa and a separate exponent, and it waits on a benchmark.
+Undecided. If we do it, each output keeps a mantissa and a separate exponent in a buffer, and it waits on a benchmark.
 
 ```c
 struct rray_prod_dbl_acc {
@@ -264,7 +202,7 @@ struct rray_prod_dbl_acc {
 };
 ```
 
-- Each step multiplies the mantissa by the element's mantissa and adds the exponents, then renormalizes the mantissa into `[0.5, 1)`. The mantissa can then never overflow or underflow, and `FINISH` applies the exponent once with `ldexp()`.
+- Each step multiplies the mantissa by the element's mantissa and adds the exponents, then renormalizes the mantissa into `[0.5, 1)`. The mantissa can then never overflow or underflow, and the exponent is applied once at the end with `ldexp()`.
 
 - Rounding is the same as a plain multiply. Only the range changes.
 
@@ -278,7 +216,7 @@ Integer and logical products already accumulate in `double` and return `double`.
 
 Complex products stay on `RRAY_REDUCE()` as they are.
 
-## 6. Cumulative functions
+## 4. Cumulative functions
 
 The cumulative plan (`plans/cumulative.md` on `feature/cumulative-plan`) is already consistent with this one.
 
@@ -286,46 +224,28 @@ The cumulative plan (`plans/cumulative.md` on `feature/cumulative-plan`) is alre
 
 - It already says rray4 won't promise bit-for-bit matches with base `cumsum()` for doubles.
 
-- Integer cumulative sums check every running total, which fits the rule from plan 4.
-
-## 7. `rray_mean()` on the flat walk
-
-This is about speed, not accuracy, so it can come last. On the columns case the nested double mean takes 61.9 ms, against 2.3 ms for base `rowMeans()`.
-
-- First pass: `RRAY_REDUCE_ACC()` with a `double` total, plus an `r_ssize` count for `na_rm`.
-
-- Correction pass: a second flat walk that adds `x - mean` into a second buffer, using the means from the first pass.
-
-- Both passes read memory in order. The cost is two buffers of `out_size`.
-
-- The integer and logical means need only the first pass.
+- Integer cumulative sums check every running total. `rray_sum()` checks only its final total. That is the same rule, "error when an output doesn't fit in `int`", applied to two different sets of outputs.
 
 ---
 
 # Order of work
 
-As stacked pull requests:
+1. Integer, logical, double and complex sums on hand written loops (`plans/sum-accurate.md`).
 
-1. `rray_mean()` in `double` and `int64_t` (plan 1).
+2. The `rray_mean()` test change (plan 1).
 
-2. `RRAY_REDUCE_ACC()` with integer and logical sums on `int64_t` (plans 2 and 4).
+3. Pairwise double and complex sums (plan 2).
 
-3. Pairwise double and complex sums (plan 3).
+4. One shared docs section saying rray4 accumulates in `double`, linked from `rray_sum()`, `rray_prod()` and `rray_mean()`.
 
-4. `rray_mean()` on the flat walk (plan 7).
-
-5. One shared docs section saying rray4 accumulates in `double`, linked from `rray_sum()`, `rray_prod()` and `rray_mean()`.
-
-Compensated summation (plan 3) and the product's range (plan 5) are not scheduled. Each would be its own pull request once decided.
+Compensated summation (plan 2) and the product's range (plan 3) are not scheduled. Each would be its own pull request once decided.
 
 ---
 
 # Open questions
 
-- Should the double sum use compensated summation outside of runs (plan 3), or accept that accuracy depends on memory layout, as NumPy does?
+- Should the double sum use compensated summation outside of runs (plan 2), or accept that accuracy depends on memory layout, as NumPy does?
 
-- Is extending the product's range (plan 5) worth a second piece of state per output, if the benchmark comes back acceptable?
-
-- Once `RRAY_REDUCE_ACC()` exists, should it merge back into `RRAY_REDUCE()`? One macro would mean every extremum and logical reducer supplies a `RUN` and a `FINISH` that just loop over `ONE` or copy the value.
+- Is extending the product's range (plan 3) worth a second piece of state per output, if the benchmark comes back acceptable?
 
 - CI runs only on macOS arm64, where `double` and `long double` agree, so it can't catch platform differences. No CI changes for now. Revisit adding x86_64 and arm64 Linux later.
