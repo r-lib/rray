@@ -443,7 +443,7 @@ static r_obj* rray_mean_lgl_or_int(
   r_obj* sums = KEEP(r_alloc_raw0(out_size * sizeof(int64_t)));
   int64_t* v_sums = (int64_t*) r_raw_begin(sums);
 
-  bool any_na = false;
+  bool any_missing = false;
 
   struct rray_run_iterator it;
   rray_run_iterator_init1(
@@ -467,7 +467,7 @@ static r_obj* rray_mean_lgl_or_int(
         const int x_elt = v_x[i];
         const bool na = x_elt == na_value;
         sum += na ? 0 : x_elt;
-        any_na |= na;
+        any_missing |= na;
       }
 
       v_sums[out_loc] = sum;
@@ -476,7 +476,7 @@ static r_obj* rray_mean_lgl_or_int(
         const int x_elt = v_x[i];
         const bool na = x_elt == na_value;
         v_sums[out_loc] += na ? 0 : x_elt;
-        any_na |= na;
+        any_missing |= na;
         out_loc += out_stride;
       }
     }
@@ -489,7 +489,7 @@ static r_obj* rray_mean_lgl_or_int(
     v_out[i] = rray_mean_int64(v_sums[i], count);
   }
 
-  if (any_na) {
+  if (any_missing) {
     rray_mean_lgl_or_int_propagate_na(
       v_x,
       na_value,
