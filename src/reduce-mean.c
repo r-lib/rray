@@ -270,6 +270,7 @@ static r_obj* rray_mean_dbl(
     rray_mean_dbl_rescale(
       v_x,
       v_out,
+      v_corrections,
       out_size,
       count,
       v_dimensions,
@@ -404,6 +405,7 @@ static r_obj* rray_mean_dbl_na_rm(
     rray_mean_dbl_rescale_na_rm(
       v_x,
       v_out,
+      v_corrections,
       v_counts,
       out_size,
       v_dimensions,
@@ -794,6 +796,7 @@ static r_obj* rray_mean_int_na_rm_fallback(
 static void rray_mean_dbl_rescale(
   const double* v_x,
   double* v_out,
+  double* v_corrections,
   r_ssize out_size,
   r_ssize count,
   const int* v_dimensions,
@@ -802,9 +805,6 @@ static void rray_mean_dbl_rescale(
 ) {
   r_obj* means = KEEP(r_alloc_double(out_size));
   double* v_means = r_dbl_begin(means);
-
-  r_obj* corrections = KEEP(r_alloc_double(out_size));
-  double* v_corrections = r_dbl_begin(corrections);
 
   for (r_ssize i = 0; i < out_size; ++i) {
     v_means[i] = 0.0;
@@ -860,12 +860,13 @@ static void rray_mean_dbl_rescale(
     }
   }
 
-  FREE(2);
+  FREE(1);
 }
 
 static void rray_mean_dbl_rescale_na_rm(
   const double* v_x,
   double* v_out,
+  double* v_corrections,
   const r_ssize* v_counts,
   r_ssize out_size,
   const int* v_dimensions,
@@ -874,9 +875,6 @@ static void rray_mean_dbl_rescale_na_rm(
 ) {
   r_obj* means = KEEP(r_alloc_double(out_size));
   double* v_means = r_dbl_begin(means);
-
-  r_obj* corrections = KEEP(r_alloc_double(out_size));
-  double* v_corrections = r_dbl_begin(corrections);
 
   for (r_ssize i = 0; i < out_size; ++i) {
     v_means[i] = 0.0;
@@ -935,7 +933,7 @@ static void rray_mean_dbl_rescale_na_rm(
     }
   }
 
-  FREE(2);
+  FREE(1);
 }
 
 static void rray_mean_dbl_propagate_na(
