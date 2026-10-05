@@ -430,6 +430,7 @@ static r_obj* rray_mean_dbl_na_rm(
   return out;
 }
 
+// Sum into an `int64_t` losslessly
 static r_obj* rray_mean_lgl_or_int(
   const int* v_x,
   int na_value,
