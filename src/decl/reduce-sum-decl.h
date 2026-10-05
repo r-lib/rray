@@ -112,8 +112,4 @@ static r_obj* rray_sum_int_fallback(
   struct r_lazy error_call
 );
 
-static inline struct rray_sum_int128 rray_sum_int128_add(
-  struct rray_sum_int128 sum,
-  int x
-);
 static inline r_ssize rray_sum_count(r_ssize x_size, r_ssize out_size);

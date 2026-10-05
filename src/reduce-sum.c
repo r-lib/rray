@@ -3,6 +3,7 @@
 #include <stdint.h>
 
 #include "arithmetic.h"
+#include "int-128.h"
 #include "reduce.h"
 #include "type.h"
 #include "utils.h"
@@ -10,11 +11,6 @@
 #include "decl/reduce-sum-decl.h"
 
 #define RRAY_SUM_INT64_MAX_COUNT ((r_ssize) 1 << 32)
-
-struct rray_sum_int128 {
-  uint64_t lo;
-  int64_t hi;
-};
 
 r_obj* ffi_rray_sum(
   r_obj* ffi_x,
@@ -567,8 +563,8 @@ static r_obj* rray_sum_int_fallback(
 ) {
   const int na_int = r_globals.na_int;
 
-  r_obj* sums = KEEP(r_alloc_raw0(out_size * sizeof(struct rray_sum_int128)));
-  struct rray_sum_int128* v_sums = (struct rray_sum_int128*) r_raw_begin(sums);
+  r_obj* sums = KEEP(r_alloc_raw0(out_size * sizeof(struct rray_int128)));
+  struct rray_int128* v_sums = (struct rray_int128*) r_raw_begin(sums);
 
   r_obj* missings = KEEP(r_alloc_raw0(out_size * sizeof(bool)));
   bool* v_missings = (bool*) r_raw_begin(missings);
@@ -589,13 +585,13 @@ static r_obj* rray_sum_int_fallback(
     const r_ssize out_stride = rray_run_iterator_stride(&it, 0);
 
     if (out_stride == 0) {
-      struct rray_sum_int128 sum = v_sums[out_loc];
+      struct rray_int128 sum = v_sums[out_loc];
       bool missing = v_missings[out_loc];
 
       for (r_ssize i = start; i < end; ++i) {
         const int x_elt = v_x[i];
         const bool na = x_elt == na_int;
-        sum = rray_sum_int128_add(sum, na ? 0 : x_elt);
+        sum = rray_int128_add(sum, na ? 0 : x_elt);
         missing |= na;
       }
 
@@ -605,7 +601,7 @@ static r_obj* rray_sum_int_fallback(
       for (r_ssize i = start; i < end; ++i) {
         const int x_elt = v_x[i];
         const bool na = x_elt == na_int;
-        v_sums[out_loc] = rray_sum_int128_add(v_sums[out_loc], na ? 0 : x_elt);
+        v_sums[out_loc] = rray_int128_add(v_sums[out_loc], na ? 0 : x_elt);
         v_missings[out_loc] |= na;
         out_loc += out_stride;
       }
@@ -621,7 +617,7 @@ static r_obj* rray_sum_int_fallback(
       continue;
     }
 
-    const struct rray_sum_int128 sum = v_sums[i];
+    const struct rray_int128 sum = v_sums[i];
 
     if (sum.hi == 0 && sum.lo <= INT_MAX) {
       v_out[i] = (int) sum.lo;
@@ -634,15 +630,6 @@ static r_obj* rray_sum_int_fallback(
 
   FREE(3);
   return out;
-}
-
-static inline struct rray_sum_int128 rray_sum_int128_add(
-  struct rray_sum_int128 sum,
-  int x
-) {
-  const uint64_t lo = sum.lo + (uint64_t) (int64_t) x;
-  const int64_t hi = sum.hi + (x < 0 ? -1 : 0) + (lo < sum.lo);
-  return (struct rray_sum_int128){.lo = lo, .hi = hi};
 }
 
 static inline r_ssize rray_sum_count(r_ssize x_size, r_ssize out_size) {
