@@ -63,6 +63,7 @@ test_that("coalesces reduction axes", {
 
   for (axis in axes) {
     expect_identical(rray_sum(x, axis), expected(axis))
+    expect_identical(rray_sum_forced_fallback(x, axis), expected(axis))
   }
 })
 
@@ -95,9 +96,11 @@ test_that("logical TRUE is summed as 1", {
 test_that("integer NA propagates", {
   x <- array(c(1L, NA_integer_), c(2L, 1L))
   expect_identical(as.vector(rray_sum(x, 1L)), NA_integer_)
+  expect_identical(as.vector(rray_sum_forced_fallback(x, 1L)), NA_integer_)
 
   x <- array(c(NA_integer_, 1L), c(2L, 1L))
   expect_identical(as.vector(rray_sum(x, 1L)), NA_integer_)
+  expect_identical(as.vector(rray_sum_forced_fallback(x, 1L)), NA_integer_)
 })
 
 test_that("double NA / NaN propagates", {
@@ -192,7 +195,11 @@ test_that("logical NA propagates along axis 2", {
 
 test_that("na_rm removes integer NA", {
   x <- array(c(1L, NA_integer_, 3L, 4L), c(2L, 2L))
+
   out <- rray_sum(x, 1L, na_rm = TRUE)
+  expect_identical(as.vector(out), c(1L, 7L))
+
+  out <- rray_sum_forced_fallback(x, 1L, na_rm = TRUE)
   expect_identical(as.vector(out), c(1L, 7L))
 })
 
@@ -230,6 +237,10 @@ test_that("na_rm with all NA returns identity", {
 
   x <- c(NA_integer_, NA_integer_)
   expect_identical(as.vector(rray_sum(x, 1L, na_rm = TRUE)), 0L)
+  expect_identical(
+    as.vector(rray_sum_forced_fallback(x, 1L, na_rm = TRUE)),
+    0L
+  )
 
   x <- c(NA_real_, NA_real_)
   expect_identical(as.vector(rray_sum(x, 1L, na_rm = TRUE)), 0)
@@ -244,6 +255,10 @@ test_that("na_rm with all NA returns identity along axis 2", {
 
   x <- matrix(NA_integer_, 2L, 2L)
   expect_identical(as.vector(rray_sum(x, 2L, na_rm = TRUE)), c(0L, 0L))
+  expect_identical(
+    as.vector(rray_sum_forced_fallback(x, 2L, na_rm = TRUE)),
+    c(0L, 0L)
+  )
 })
 
 test_that("na_rm with no NA matches default", {
@@ -300,6 +315,10 @@ test_that("the identity of an empty reduction has the output type", {
 
   expect_identical(as.vector(rray_sum(zero_size(logical()), 1L)), 0L)
   expect_identical(as.vector(rray_sum(zero_size(integer()), 1L)), 0L)
+  expect_identical(
+    as.vector(rray_sum_forced_fallback(zero_size(integer()), 1L)),
+    0L
+  )
   expect_identical(as.vector(rray_sum(zero_size(double()), 1L)), 0)
   expect_identical(as.vector(rray_sum(zero_size(complex()), 1L)), 0 + 0i)
 })
@@ -333,24 +352,29 @@ test_that("errors on axes with NA", {
 test_that("errors on integer overflow", {
   x <- array(c(.Machine$integer.max, 1L), c(2L, 1L))
   expect_snapshot(rray_sum(x, 1L), error = TRUE)
+  expect_snapshot(rray_sum_forced_fallback(x, 1L), error = TRUE)
 })
 
 test_that("errors on integer underflow", {
   x <- array(c(-.Machine$integer.max, -1L), c(2L, 1L))
   expect_snapshot(rray_sum(x, 1L), error = TRUE)
+  expect_snapshot(rray_sum_forced_fallback(x, 1L), error = TRUE)
 })
 
 test_that("errors on integer overflow with `na_rm = TRUE`", {
   x <- array(c(.Machine$integer.max, NA_integer_, 1L), c(3L, 1L))
   expect_snapshot(rray_sum(x, 1L, na_rm = TRUE), error = TRUE)
+  expect_snapshot(rray_sum_forced_fallback(x, 1L, na_rm = TRUE), error = TRUE)
 })
 
 test_that("errors on integer overflow along axis 2", {
   x <- rbind(c(1L, 2L), c(.Machine$integer.max, 1L))
   expect_snapshot(rray_sum(x, 2L), error = TRUE)
+  expect_snapshot(rray_sum_forced_fallback(x, 2L), error = TRUE)
 
   x <- rbind(c(1L, 2L, 3L), c(.Machine$integer.max, NA, 1L))
   expect_snapshot(rray_sum(x, 2L, na_rm = TRUE), error = TRUE)
+  expect_snapshot(rray_sum_forced_fallback(x, 2L, na_rm = TRUE), error = TRUE)
 })
 
 test_that("only the final integer sum is checked for overflow", {
@@ -362,6 +386,21 @@ test_that("only the final integer sum is checked for overflow", {
 
   expect_identical(as.vector(rray_sum(x, 2L)), expected)
   expect_identical(as.vector(rray_sum(t(x), 1L)), expected)
+  expect_identical(as.vector(rray_sum_forced_fallback(x, 2L)), expected)
+  expect_identical(as.vector(rray_sum_forced_fallback(t(x), 1L)), expected)
+})
+
+test_that("integer sums can come back into range from far out of range", {
+  x <- rbind(
+    c(rep(.Machine$integer.max, 3L), rep(-.Machine$integer.max, 3L), -5L),
+    c(rep(-.Machine$integer.max, 3L), rep(.Machine$integer.max, 3L), 5L)
+  )
+  expected <- c(-5L, 5L)
+
+  expect_identical(as.vector(rray_sum(x, 2L)), expected)
+  expect_identical(as.vector(rray_sum(t(x), 1L)), expected)
+  expect_identical(as.vector(rray_sum_forced_fallback(x, 2L)), expected)
+  expect_identical(as.vector(rray_sum_forced_fallback(t(x), 1L)), expected)
 })
 
 test_that("integer sums can land exactly on the integer limits", {
@@ -373,6 +412,8 @@ test_that("integer sums can land exactly on the integer limits", {
 
   expect_identical(as.vector(rray_sum(x, 2L)), expected)
   expect_identical(as.vector(rray_sum(t(x), 1L)), expected)
+  expect_identical(as.vector(rray_sum_forced_fallback(x, 2L)), expected)
+  expect_identical(as.vector(rray_sum_forced_fallback(t(x), 1L)), expected)
 })
 
 test_that("integer NA wins over overflow", {
@@ -384,6 +425,8 @@ test_that("integer NA wins over overflow", {
 
   expect_identical(as.vector(rray_sum(x, 2L)), expected)
   expect_identical(as.vector(rray_sum(t(x), 1L)), expected)
+  expect_identical(as.vector(rray_sum_forced_fallback(x, 2L)), expected)
+  expect_identical(as.vector(rray_sum_forced_fallback(t(x), 1L)), expected)
 })
 
 test_that("each output handles its own NA and overflow", {
@@ -395,6 +438,8 @@ test_that("each output handles its own NA and overflow", {
 
   expect_identical(as.vector(rray_sum(x, 2L)), expected)
   expect_identical(as.vector(rray_sum(t(x), 1L)), expected)
+  expect_identical(as.vector(rray_sum_forced_fallback(x, 2L)), expected)
+  expect_identical(as.vector(rray_sum_forced_fallback(t(x), 1L)), expected)
 })
 
 test_that("an output fed by several runs is only checked at the end", {
@@ -404,10 +449,10 @@ test_that("an output fed by several runs is only checked at the end", {
   x[, 2L, 1L] <- c(.Machine$integer.max, .Machine$integer.max)
   x[, 2L, 2L] <- c(-.Machine$integer.max, -1L)
 
-  expect_identical(
-    as.vector(rray_sum(x, c(1L, 3L))),
-    c(NA, .Machine$integer.max - 1L)
-  )
+  expected <- c(NA, .Machine$integer.max - 1L)
+
+  expect_identical(as.vector(rray_sum(x, c(1L, 3L))), expected)
+  expect_identical(as.vector(rray_sum_forced_fallback(x, c(1L, 3L))), expected)
 })
 
 test_that("errors when a logical sum has too many `TRUE` values", {
@@ -423,16 +468,6 @@ test_that("integer sums past 2^32 elements fall back and error on overflow", {
   x <- array(.Machine$integer.max, c(2^16 + 1, 2^16))
   expect_snapshot(rray_sum(x, 1:2), error = TRUE)
   expect_snapshot(rray_sum(x, 1:2, na_rm = TRUE), error = TRUE)
-})
-
-test_that("integer sums past 2^32 elements fall back and come back into range", {
-  skip_if_not_testing_long_vectors()
-
-  x <- array(.Machine$integer.max, c(2^16 + 1, 2^16))
-  x[, (2^15 + 1):2^16] <- -.Machine$integer.max
-  x[1L, 1L] <- x[1L, 1L] - 5L
-
-  expect_identical(as.vector(rray_sum(x, 1:2)), -5L)
 })
 
 test_that("integer sums past 2^32 elements fall back with NA", {

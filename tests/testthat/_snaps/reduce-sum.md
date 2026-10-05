@@ -46,6 +46,14 @@
       Error in `rray_sum()`:
       ! Integer overflow.
 
+---
+
+    Code
+      rray_sum_forced_fallback(x, 1L)
+    Condition
+      Error in `rray_sum_forced_fallback()`:
+      ! Integer overflow.
+
 # errors on integer underflow
 
     Code
@@ -54,12 +62,28 @@
       Error in `rray_sum()`:
       ! Integer overflow.
 
+---
+
+    Code
+      rray_sum_forced_fallback(x, 1L)
+    Condition
+      Error in `rray_sum_forced_fallback()`:
+      ! Integer overflow.
+
 # errors on integer overflow with `na_rm = TRUE`
 
     Code
       rray_sum(x, 1L, na_rm = TRUE)
     Condition
       Error in `rray_sum()`:
+      ! Integer overflow.
+
+---
+
+    Code
+      rray_sum_forced_fallback(x, 1L, na_rm = TRUE)
+    Condition
+      Error in `rray_sum_forced_fallback()`:
       ! Integer overflow.
 
 # errors on integer overflow along axis 2
@@ -73,9 +97,25 @@
 ---
 
     Code
+      rray_sum_forced_fallback(x, 2L)
+    Condition
+      Error in `rray_sum_forced_fallback()`:
+      ! Integer overflow.
+
+---
+
+    Code
       rray_sum(x, 2L, na_rm = TRUE)
     Condition
       Error in `rray_sum()`:
+      ! Integer overflow.
+
+---
+
+    Code
+      rray_sum_forced_fallback(x, 2L, na_rm = TRUE)
+    Condition
+      Error in `rray_sum_forced_fallback()`:
       ! Integer overflow.
 
 # errors when a logical sum has too many `TRUE` values

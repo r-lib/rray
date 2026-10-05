@@ -27,6 +27,24 @@ r_obj* ffi_rray_sum(
   return rray_sum(ffi_x, ffi_axes, na_rm, rray_args.x, error_call);
 }
 
+r_obj* ffi_test_rray_sum_forced_fallback(
+  r_obj* ffi_x,
+  r_obj* ffi_axes,
+  r_obj* ffi_na_rm,
+  r_obj* ffi_frame
+) {
+  struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
+  const bool na_rm = r_arg_as_bool(ffi_na_rm, "na_rm");
+  return rray_reduce(
+    ffi_x,
+    ffi_axes,
+    na_rm,
+    rray_sum_forced_fallback_switch,
+    rray_args.x,
+    error_call
+  );
+}
+
 r_obj* rray_sum(
   r_obj* x,
   r_obj* axes,
@@ -63,6 +81,20 @@ static rray_reduce_fn rray_sum_switch(
   }
 
   r_stop_unreachable();
+}
+
+static rray_reduce_fn rray_sum_forced_fallback_switch(
+  r_obj* x,
+  bool na_rm,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+) {
+  if (rray_typeof(x) != RRAY_TYPE_integer) {
+    r_stop_internal("`x` must be an integer array.");
+  }
+
+  return na_rm ? rray_sum_int_na_rm_forced_fallback
+               : rray_sum_int_forced_fallback;
 }
 
 static r_obj* rray_sum_lgl(
@@ -403,6 +435,48 @@ static r_obj* rray_sum_cpl_na_rm(
 
   FREE(1);
   return out;
+}
+
+static r_obj* rray_sum_int_forced_fallback(
+  r_obj* x,
+  r_ssize out_size,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_out_broadcast_strides,
+  struct r_lazy error_call
+) {
+  const int* v_x = r_int_cbegin(x);
+
+  return rray_sum_int_fallback(
+    v_x,
+    false,
+    out_size,
+    v_dimensions,
+    dimensionality,
+    v_out_broadcast_strides,
+    error_call
+  );
+}
+
+static r_obj* rray_sum_int_na_rm_forced_fallback(
+  r_obj* x,
+  r_ssize out_size,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_out_broadcast_strides,
+  struct r_lazy error_call
+) {
+  const int* v_x = r_int_cbegin(x);
+
+  return rray_sum_int_fallback(
+    v_x,
+    true,
+    out_size,
+    v_dimensions,
+    dimensionality,
+    v_out_broadcast_strides,
+    error_call
+  );
 }
 
 static r_obj* rray_sum_lgl_or_int(
