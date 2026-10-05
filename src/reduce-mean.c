@@ -257,7 +257,8 @@ static r_obj* rray_mean_dbl(
     const double mean = v_out[i];
 
     if (R_FINITE(mean)) {
-      v_out[i] = mean + v_corrections[i] / count;
+      const double correction = v_corrections[i];
+      v_out[i] = R_FINITE(correction) ? mean + correction / count : mean;
     } else if (ISNAN(mean)) {
       any_nan = true;
     } else {
@@ -392,7 +393,8 @@ static r_obj* rray_mean_dbl_na_rm(
     const double mean = v_out[i];
 
     if (R_FINITE(mean)) {
-      v_out[i] = mean + v_corrections[i] / v_counts[i];
+      const double correction = v_corrections[i];
+      v_out[i] = R_FINITE(correction) ? mean + correction / v_counts[i] : mean;
     } else if (!ISNAN(mean)) {
       any_infinite = true;
     }
@@ -852,7 +854,9 @@ static void rray_mean_dbl_rescale(
   for (r_ssize i = 0; i < out_size; ++i) {
     if (isinf(v_out[i])) {
       const double mean = v_means[i];
-      v_out[i] = R_FINITE(mean) ? mean + v_corrections[i] : mean;
+      const double correction = v_corrections[i];
+      v_out[i] =
+        R_FINITE(mean) && R_FINITE(correction) ? mean + correction : mean;
     }
   }
 
@@ -925,7 +929,9 @@ static void rray_mean_dbl_rescale_na_rm(
   for (r_ssize i = 0; i < out_size; ++i) {
     if (isinf(v_out[i])) {
       const double mean = v_means[i];
-      v_out[i] = R_FINITE(mean) ? mean + v_corrections[i] : mean;
+      const double correction = v_corrections[i];
+      v_out[i] =
+        R_FINITE(mean) && R_FINITE(correction) ? mean + correction : mean;
     }
   }
 

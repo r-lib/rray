@@ -143,6 +143,18 @@ test_that("a sum that overflows to infinity is retried with scaled terms", {
   expect_identical(as.vector(rray_mean(x, 1L)), 1e308)
 })
 
+test_that("a correction that overflows is not applied", {
+  m <- .Machine$double.xmax
+
+  x <- c(m, -m, m)
+  expect_identical(as.vector(rray_mean(x, 1L)), m / 3)
+  expect_identical(as.vector(rray_mean(c(x, NA), 1L, na_rm = TRUE)), m / 3)
+
+  x <- c(m, m, -m)
+  expect_identical(as.vector(rray_mean(x, 1L)), m / 3)
+  expect_identical(as.vector(rray_mean(c(x, NA), 1L, na_rm = TRUE)), m / 3)
+})
+
 test_that("integer NA propagates", {
   x <- array(c(1L, NA_integer_), c(2L, 1L))
   expect_identical(as.vector(rray_mean(x, 1L)), NA_real_)
