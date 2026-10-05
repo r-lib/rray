@@ -1006,6 +1006,8 @@ static inline double rray_mean_int64(int64_t sum, r_ssize count) {
     return R_NaN;
   }
 
+  // Within this range, the cast to `double` is lossless, and the only lossy bit
+  // is the division
   if (-RRAY_MEAN_INT64_MAX_EXACT <= sum && sum <= RRAY_MEAN_INT64_MAX_EXACT) {
     return (double) sum / count;
   }
