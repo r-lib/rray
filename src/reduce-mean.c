@@ -14,6 +14,11 @@
 // instead, which is less precise but won't overflow.
 #define RRAY_MEAN_INT64_MAX_COUNT ((r_ssize) 1 << 32)
 
+// For anything outside the bounds of this number, casting from `int64_t` to
+// `double` may do inexact rounding. If the `sum` exceeds this bound, we split
+// its division by `count` into an exact integer division plus a possibly lossy
+// (but much less so!) double division of the remainder by `count`, which
+// greatly limits the overall error.
 #define RRAY_MEAN_INT64_MAX_EXACT ((int64_t) 1 << 53)
 
 r_obj* ffi_rray_mean(
