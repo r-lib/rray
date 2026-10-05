@@ -262,7 +262,7 @@ static r_obj* rray_mean_dbl(
     }
   }
 
-  bool any_nan = false;
+  bool any_missing = false;
   bool any_infinite = false;
 
   for (r_ssize i = 0; i < out_size; ++i) {
@@ -272,7 +272,7 @@ static r_obj* rray_mean_dbl(
       const double correction = v_corrections[i];
       v_out[i] = R_FINITE(correction) ? mean + correction / count : mean;
     } else if (ISNAN(mean)) {
-      any_nan = true;
+      any_missing = true;
     } else {
       any_infinite = true;
     }
@@ -291,7 +291,7 @@ static r_obj* rray_mean_dbl(
     );
   }
 
-  if (any_nan) {
+  if (any_missing) {
     rray_mean_dbl_propagate_na(
       v_x,
       v_out,
