@@ -604,6 +604,9 @@ static void rray_mean_lgl_or_int_propagate_na(
   }
 }
 
+// Fallback method for int when it is a long vector. In that case, summing could
+// possibly overflow `int64_t`, so we perform the sum in a less precise `double`
+// instead, with correction.
 static r_obj* rray_mean_int_fallback(
   const int* v_x,
   r_ssize out_size,
