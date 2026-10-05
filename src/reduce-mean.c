@@ -346,7 +346,7 @@ static r_obj* rray_mean_dbl_na_rm(
 
     if (out_stride == 0) {
       double sum = v_out[out_loc];
-      r_ssize count = 0;
+      r_ssize count = v_counts[out_loc];
 
       for (r_ssize i = start; i < end; ++i) {
         const double x_elt = v_x[i];
@@ -356,7 +356,7 @@ static r_obj* rray_mean_dbl_na_rm(
       }
 
       v_out[out_loc] = sum;
-      v_counts[out_loc] += count;
+      v_counts[out_loc] = count;
     } else {
       for (r_ssize i = start; i < end; ++i) {
         const double x_elt = v_x[i];
@@ -537,7 +537,7 @@ static r_obj* rray_mean_lgl_or_int_na_rm(
 
     if (out_stride == 0) {
       int64_t sum = v_sums[out_loc];
-      r_ssize count = 0;
+      r_ssize count = v_counts[out_loc];
 
       for (r_ssize i = start; i < end; ++i) {
         const int x_elt = v_x[i];
@@ -547,7 +547,7 @@ static r_obj* rray_mean_lgl_or_int_na_rm(
       }
 
       v_sums[out_loc] = sum;
-      v_counts[out_loc] += count;
+      v_counts[out_loc] = count;
     } else {
       for (r_ssize i = start; i < end; ++i) {
         const int x_elt = v_x[i];
@@ -745,7 +745,7 @@ static r_obj* rray_mean_int_na_rm_fallback(
 
     if (out_stride == 0) {
       double sum = v_out[out_loc];
-      r_ssize count = 0;
+      r_ssize count = v_counts[out_loc];
 
       for (r_ssize i = start; i < end; ++i) {
         const int x_elt = v_x[i];
@@ -755,7 +755,7 @@ static r_obj* rray_mean_int_na_rm_fallback(
       }
 
       v_out[out_loc] = sum;
-      v_counts[out_loc] += count;
+      v_counts[out_loc] = count;
     } else {
       for (r_ssize i = start; i < end; ++i) {
         const int x_elt = v_x[i];
