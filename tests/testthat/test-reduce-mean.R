@@ -101,10 +101,58 @@ test_that("a second pass corrects the rounding error of the first sum", {
   expect_identical(as.vector(rray_mean(x, 1L)), 2500000000000001)
 })
 
+test_that("integer means are exact when the total is above 2^53", {
+  x <- c(rep(.Machine$integer.max, 2^22 + 1), 1L, 1L)
+  expected <- 2147482623 + 3076 / 4194307
+
+  expect_identical(as.vector(rray_mean(x, 1L)), expected)
+  expect_identical(as.vector(rray_mean(rbind(x, x), 2L)), c(expected, expected))
+
+  x <- c(x, NA)
+  expect_identical(as.vector(rray_mean(x, 1L, na_rm = TRUE)), expected)
+  expect_identical(
+    as.vector(rray_mean(rbind(x, x), 2L, na_rm = TRUE)),
+    c(expected, expected)
+  )
+})
+
+test_that("integer means past 2^32 elements fall back to a double total", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(.Machine$integer.max, c(2^16 + 1, 2^16))
+  expected <- as.double(.Machine$integer.max)
+
+  expect_identical(as.vector(rray_mean(x, 1:2)), expected)
+  expect_identical(as.vector(rray_mean(x, 1:2, na_rm = TRUE)), expected)
+})
+
+test_that("integer means past 2^32 elements fall back with NA", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(.Machine$integer.max, c(2^16 + 1, 2^16))
+  x[1L] <- NA
+  expected <- as.double(.Machine$integer.max)
+
+  expect_identical(as.vector(rray_mean(x, 1:2)), NA_real_)
+  expect_identical(as.vector(rray_mean(x, 1:2, na_rm = TRUE)), expected)
+})
+
 test_that("a sum that overflows to infinity is retried with scaled terms", {
   x <- c(1e308, 1e308, 1e308)
   expect_identical(as.vector(rray_mean(x, 1L)), mean(x))
   expect_identical(as.vector(rray_mean(x, 1L)), 1e308)
+})
+
+test_that("a correction that overflows is not applied", {
+  m <- .Machine$double.xmax
+
+  x <- c(m, -m, m)
+  expect_identical(as.vector(rray_mean(x, 1L)), m / 3)
+  expect_identical(as.vector(rray_mean(c(x, NA), 1L, na_rm = TRUE)), m / 3)
+
+  x <- c(m, m, -m)
+  expect_identical(as.vector(rray_mean(x, 1L)), m / 3)
+  expect_identical(as.vector(rray_mean(c(x, NA), 1L, na_rm = TRUE)), m / 3)
 })
 
 test_that("integer NA propagates", {
@@ -149,6 +197,43 @@ test_that("Inf matches base R mean", {
   )
   expect_identical(as.vector(rray_mean(c(Inf, NaN), 1L)), NaN)
   expect_identical(as.vector(rray_mean(c(Inf, NA), 1L)), NA_real_)
+})
+
+test_that("each output handles its own missing values and overflow", {
+  x <- rbind(
+    c(1, NA, 3, 4),
+    c(1, NaN, 3, 4),
+    c(1e308, 1e308, 1e308, 1e308),
+    c(1e16, 1, 1, 1),
+    c(Inf, 1, 1, 1),
+    c(NaN, NA, 1, 1)
+  )
+  expected <- c(NA, NaN, 1e308, 2500000000000001, Inf, NA)
+
+  expect_identical(as.vector(rray_mean(x, 2L)), expected)
+  expect_identical(as.vector(rray_mean(t(x), 1L)), expected)
+})
+
+test_that("each output handles its own integer and logical NA", {
+  x <- rbind(c(1L, NA, 3L), c(1L, 2L, 3L))
+  expect_identical(as.vector(rray_mean(x, 2L)), c(NA, 2))
+  expect_identical(as.vector(rray_mean(t(x), 1L)), c(NA, 2))
+
+  x <- rbind(c(TRUE, NA, FALSE), c(TRUE, TRUE, FALSE))
+  expect_identical(as.vector(rray_mean(x, 2L)), c(NA, 2 / 3))
+  expect_identical(as.vector(rray_mean(t(x), 1L)), c(NA, 2 / 3))
+})
+
+test_that("outputs that are fed by multiple runs are corrected", {
+  x <- array(
+    c(1e16, 1, NA, 1, 1e308, 1e308, 1, 1, 1e16, 1, 1e308, 1e308),
+    c(2L, 3L, 2L)
+  )
+  out <- rray_mean(x, c(1L, 3L))
+  expect_identical(
+    as.vector(out),
+    c(2500000000000001, NA, mean(rep(1e308, 4L)))
+  )
 })
 
 test_that("na_rm removes integer NA", {
@@ -207,6 +292,36 @@ test_that("na_rm gives `NaN` when infinities of both signs remain", {
   x <- array(c(Inf, -Inf, Inf, NA), c(2L, 2L))
   out <- rray_mean(x, 1L, na_rm = TRUE)
   expect_identical(as.vector(out), c(NaN, Inf))
+})
+
+test_that("na_rm counts the missing values of each output", {
+  x <- rbind(
+    c(1, NA, 3, NaN),
+    c(NA, NA, NA, NA),
+    c(1e308, 1e308, NA, 1e308),
+    c(1e16, NA, 1, 1),
+    c(-Inf, NA, 1, 1)
+  )
+  expected <- c(2, NaN, mean(rep(1e308, 3L)), 3333333333333334, -Inf)
+
+  expect_identical(as.vector(rray_mean(x, 2L, na_rm = TRUE)), expected)
+  expect_identical(as.vector(rray_mean(t(x), 1L, na_rm = TRUE)), expected)
+})
+
+test_that("na_rm counts the integer and logical NA of each output", {
+  x <- rbind(c(1L, NA, 3L), c(NA, NA, NA), c(1L, 2L, 6L))
+  expect_identical(as.vector(rray_mean(x, 2L, na_rm = TRUE)), c(2, NaN, 3))
+  expect_identical(as.vector(rray_mean(t(x), 1L, na_rm = TRUE)), c(2, NaN, 3))
+
+  x <- rbind(c(TRUE, NA, FALSE), c(NA, NA, NA), c(TRUE, TRUE, FALSE))
+  expect_identical(
+    as.vector(rray_mean(x, 2L, na_rm = TRUE)),
+    c(0.5, NaN, 2 / 3)
+  )
+  expect_identical(
+    as.vector(rray_mean(t(x), 1L, na_rm = TRUE)),
+    c(0.5, NaN, 2 / 3)
+  )
 })
 
 test_that("na_rm with no missing values matches the default", {
