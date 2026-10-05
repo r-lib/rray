@@ -533,19 +533,31 @@ static r_obj* rray_sum_lgl_or_int(
   r_obj* out = KEEP(r_alloc_integer(out_size));
   int* v_out = r_int_begin(out);
 
-  for (r_ssize i = 0; i < out_size; ++i) {
-    if (!na_rm && v_missings[i]) {
-      v_out[i] = r_globals.na_int;
-      continue;
+  if (na_rm) {
+    for (r_ssize i = 0; i < out_size; ++i) {
+      const int64_t sum = v_sums[i];
+
+      if (sum > INT_MAX || sum < -INT_MAX) {
+        stop_int_overflow(error_call);
+      }
+
+      v_out[i] = (int) sum;
     }
+  } else {
+    for (r_ssize i = 0; i < out_size; ++i) {
+      if (v_missings[i]) {
+        v_out[i] = r_globals.na_int;
+        continue;
+      }
 
-    const int64_t sum = v_sums[i];
+      const int64_t sum = v_sums[i];
 
-    if (sum > INT_MAX || sum < -INT_MAX) {
-      stop_int_overflow(error_call);
+      if (sum > INT_MAX || sum < -INT_MAX) {
+        stop_int_overflow(error_call);
+      }
+
+      v_out[i] = (int) sum;
     }
-
-    v_out[i] = (int) sum;
   }
 
   FREE(3);
@@ -611,13 +623,15 @@ static r_obj* rray_sum_int_fallback(
   r_obj* out = KEEP(r_alloc_integer(out_size));
   int* v_out = r_int_begin(out);
 
-  for (r_ssize i = 0; i < out_size; ++i) {
-    if (!na_rm && v_missings[i]) {
-      v_out[i] = na_int;
-      continue;
+  if (na_rm) {
+    for (r_ssize i = 0; i < out_size; ++i) {
+      v_out[i] = rray_int128_as_int(v_sums[i], error_call);
     }
-
-    v_out[i] = rray_int128_as_int(v_sums[i], error_call);
+  } else {
+    for (r_ssize i = 0; i < out_size; ++i) {
+      v_out[i] =
+        v_missings[i] ? na_int : rray_int128_as_int(v_sums[i], error_call);
+    }
   }
 
   FREE(3);
