@@ -961,6 +961,7 @@ static void rray_mean_dbl_rescale_na_rm(
   FREE(1);
 }
 
+// If any `NA` was present, we force `NA` in the output over any potential `NaN`
 static void rray_mean_dbl_propagate_na(
   const double* v_x,
   double* v_out,
