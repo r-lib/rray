@@ -1012,5 +1012,9 @@ static inline double rray_mean_int64(int64_t sum, r_ssize count) {
     return (double) sum / count;
   }
 
+  // Otherwise we do a lossless integer division and cast its partial mean
+  // result to `double`, and add that to a lossless remainder calculation cast
+  // to `double` and lossily (but much less so!) divided by the `count` to get
+  // the rest of the mean
   return (double) (sum / count) + (double) (sum % count) / count;
 }
