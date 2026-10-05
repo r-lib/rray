@@ -811,6 +811,13 @@ static r_obj* rray_mean_int_na_rm_fallback(
   return out;
 }
 
+// When an infinity is detected, it's possible it came from overflowing a
+// `double` beyond its max value during the summation, but the mean itself is
+// still well defined. To try and detect those cases, we recompute a scaled sum
+// at the infinity output locations, and if that avoids overflowing to infinity
+// we compute the mean from that. We don't do this in general because division
+// like this is much slower. We don't do this for the int fallback because sums
+// won't ever get this large from an int.
 static void rray_mean_dbl_rescale(
   const double* v_x,
   double* v_out,
