@@ -995,6 +995,8 @@ static void rray_mean_dbl_propagate_na(
   }
 }
 
+// Numbers of inputs used to compute each mean in the obvious `na_rm = FALSE`
+// case
 static inline r_ssize rray_mean_count(r_ssize x_size, r_ssize out_size) {
   return out_size == 0 ? 0 : x_size / out_size;
 }
