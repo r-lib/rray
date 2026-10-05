@@ -56,7 +56,16 @@ collapsed to size 1.
 }
 \section{Sum}{
 
-If summing an integer array would overflow, an error is thrown.
+Logicals are summed as integers. If an integer sum doesn't fit in an
+integer, an error is thrown. Only the final sum is checked, and \code{NA} wins
+over an overflow:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{x <- c(.Machine$integer.max, 1L, -1L)
+rray_sum(x, 1L) # .Machine$integer.max
+
+x <- c(.Machine$integer.max, 1L, NA)
+rray_sum(x, 1L) # NA
+}\if{html}{\out{</div>}}
 }
 
 \section{Product}{

@@ -1,11 +1,20 @@
 #include "reduce-sum.h"
 
-#include "one-add.h"
+#include <stdint.h>
+
+#include "arithmetic.h"
 #include "reduce.h"
 #include "type.h"
 #include "utils.h"
 
 #include "decl/reduce-sum-decl.h"
+
+#define RRAY_SUM_INT64_MAX_COUNT ((r_ssize) 1 << 32)
+
+struct rray_sum_int128 {
+  uint64_t lo;
+  int64_t hi;
+};
 
 r_obj* ffi_rray_sum(
   r_obj* ffi_x,
@@ -64,15 +73,17 @@ static r_obj* rray_sum_lgl(
   const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_REDUCE(
-    int,
-    r_lgl_cbegin,
-    R_TYPE_integer,
-    int,
-    r_int_begin,
-    0,
-    rray_sum_lgl_one,
-    RRAY_REDUCE_NO_ARGS
+  const int* v_x = r_lgl_cbegin(x);
+
+  return rray_sum_lgl_or_int(
+    v_x,
+    r_globals.na_lgl,
+    false,
+    out_size,
+    v_dimensions,
+    dimensionality,
+    v_out_broadcast_strides,
+    error_call
   );
 }
 
@@ -84,15 +95,17 @@ static r_obj* rray_sum_lgl_na_rm(
   const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_REDUCE(
-    int,
-    r_lgl_cbegin,
-    R_TYPE_integer,
-    int,
-    r_int_begin,
-    0,
-    rray_sum_lgl_one_na_rm,
-    RRAY_REDUCE_NO_ARGS
+  const int* v_x = r_lgl_cbegin(x);
+
+  return rray_sum_lgl_or_int(
+    v_x,
+    r_globals.na_lgl,
+    true,
+    out_size,
+    v_dimensions,
+    dimensionality,
+    v_out_broadcast_strides,
+    error_call
   );
 }
 
@@ -104,15 +117,31 @@ static r_obj* rray_sum_int(
   const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_REDUCE(
-    int,
-    r_int_cbegin,
-    R_TYPE_integer,
-    int,
-    r_int_begin,
-    0,
-    rray_sum_int_one,
-    RRAY_REDUCE_ARGS(error_call)
+  const int* v_x = r_int_cbegin(x);
+  const r_ssize x_size = r_length(x);
+  const r_ssize count = rray_sum_count(x_size, out_size);
+
+  if (count > RRAY_SUM_INT64_MAX_COUNT) {
+    return rray_sum_int_fallback(
+      v_x,
+      false,
+      out_size,
+      v_dimensions,
+      dimensionality,
+      v_out_broadcast_strides,
+      error_call
+    );
+  }
+
+  return rray_sum_lgl_or_int(
+    v_x,
+    r_globals.na_int,
+    false,
+    out_size,
+    v_dimensions,
+    dimensionality,
+    v_out_broadcast_strides,
+    error_call
   );
 }
 
@@ -124,15 +153,31 @@ static r_obj* rray_sum_int_na_rm(
   const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_REDUCE(
-    int,
-    r_int_cbegin,
-    R_TYPE_integer,
-    int,
-    r_int_begin,
-    0,
-    rray_sum_int_one_na_rm,
-    RRAY_REDUCE_ARGS(error_call)
+  const int* v_x = r_int_cbegin(x);
+  const r_ssize x_size = r_length(x);
+  const r_ssize count = rray_sum_count(x_size, out_size);
+
+  if (count > RRAY_SUM_INT64_MAX_COUNT) {
+    return rray_sum_int_fallback(
+      v_x,
+      true,
+      out_size,
+      v_dimensions,
+      dimensionality,
+      v_out_broadcast_strides,
+      error_call
+    );
+  }
+
+  return rray_sum_lgl_or_int(
+    v_x,
+    r_globals.na_int,
+    true,
+    out_size,
+    v_dimensions,
+    dimensionality,
+    v_out_broadcast_strides,
+    error_call
   );
 }
 
@@ -144,16 +189,48 @@ static r_obj* rray_sum_dbl(
   const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_REDUCE(
-    double,
-    r_dbl_cbegin,
-    R_TYPE_double,
-    double,
-    r_dbl_begin,
-    0.0,
-    rray_sum_dbl_one,
-    RRAY_REDUCE_NO_ARGS
+  const double* v_x = r_dbl_cbegin(x);
+
+  r_obj* out = KEEP(r_alloc_double(out_size));
+  double* v_out = r_dbl_begin(out);
+
+  for (r_ssize i = 0; i < out_size; ++i) {
+    v_out[i] = 0.0;
+  }
+
+  struct rray_run_iterator it;
+  rray_run_iterator_init1(
+    &it,
+    v_dimensions,
+    dimensionality,
+    v_out_broadcast_strides
   );
+
+  for (; !rray_run_iterator_done(&it); rray_run_iterator_next1(&it)) {
+    const r_ssize start = rray_run_iterator_start(&it);
+    const r_ssize end = rray_run_iterator_end(&it);
+
+    r_ssize out_loc = rray_run_iterator_loc(&it, 0);
+    const r_ssize out_stride = rray_run_iterator_stride(&it, 0);
+
+    if (out_stride == 0) {
+      double sum = v_out[out_loc];
+
+      for (r_ssize i = start; i < end; ++i) {
+        sum += v_x[i];
+      }
+
+      v_out[out_loc] = sum;
+    } else {
+      for (r_ssize i = start; i < end; ++i) {
+        v_out[out_loc] += v_x[i];
+        out_loc += out_stride;
+      }
+    }
+  }
+
+  FREE(1);
+  return out;
 }
 
 static r_obj* rray_sum_dbl_na_rm(
@@ -164,16 +241,50 @@ static r_obj* rray_sum_dbl_na_rm(
   const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_REDUCE(
-    double,
-    r_dbl_cbegin,
-    R_TYPE_double,
-    double,
-    r_dbl_begin,
-    0.0,
-    rray_sum_dbl_one_na_rm,
-    RRAY_REDUCE_NO_ARGS
+  const double* v_x = r_dbl_cbegin(x);
+
+  r_obj* out = KEEP(r_alloc_double(out_size));
+  double* v_out = r_dbl_begin(out);
+
+  for (r_ssize i = 0; i < out_size; ++i) {
+    v_out[i] = 0.0;
+  }
+
+  struct rray_run_iterator it;
+  rray_run_iterator_init1(
+    &it,
+    v_dimensions,
+    dimensionality,
+    v_out_broadcast_strides
   );
+
+  for (; !rray_run_iterator_done(&it); rray_run_iterator_next1(&it)) {
+    const r_ssize start = rray_run_iterator_start(&it);
+    const r_ssize end = rray_run_iterator_end(&it);
+
+    r_ssize out_loc = rray_run_iterator_loc(&it, 0);
+    const r_ssize out_stride = rray_run_iterator_stride(&it, 0);
+
+    if (out_stride == 0) {
+      double sum = v_out[out_loc];
+
+      for (r_ssize i = start; i < end; ++i) {
+        const double x_elt = v_x[i];
+        sum += ISNAN(x_elt) ? 0 : x_elt;
+      }
+
+      v_out[out_loc] = sum;
+    } else {
+      for (r_ssize i = start; i < end; ++i) {
+        const double x_elt = v_x[i];
+        v_out[out_loc] += ISNAN(x_elt) ? 0 : x_elt;
+        out_loc += out_stride;
+      }
+    }
+  }
+
+  FREE(1);
+  return out;
 }
 
 static r_obj* rray_sum_cpl(
@@ -184,16 +295,55 @@ static r_obj* rray_sum_cpl(
   const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_REDUCE(
-    r_complex,
-    r_cpl_cbegin,
-    R_TYPE_complex,
-    r_complex,
-    r_cpl_begin,
-    ((r_complex){.r = 0, .i = 0}),
-    rray_sum_cpl_one,
-    RRAY_REDUCE_NO_ARGS
+  const r_complex* v_x = r_cpl_cbegin(x);
+
+  r_obj* out = KEEP(r_alloc_complex(out_size));
+  r_complex* v_out = r_cpl_begin(out);
+
+  for (r_ssize i = 0; i < out_size; ++i) {
+    v_out[i] = (r_complex){.r = 0.0, .i = 0.0};
+  }
+
+  struct rray_run_iterator it;
+  rray_run_iterator_init1(
+    &it,
+    v_dimensions,
+    dimensionality,
+    v_out_broadcast_strides
   );
+
+  for (; !rray_run_iterator_done(&it); rray_run_iterator_next1(&it)) {
+    const r_ssize start = rray_run_iterator_start(&it);
+    const r_ssize end = rray_run_iterator_end(&it);
+
+    r_ssize out_loc = rray_run_iterator_loc(&it, 0);
+    const r_ssize out_stride = rray_run_iterator_stride(&it, 0);
+
+    if (out_stride == 0) {
+      r_complex sum = v_out[out_loc];
+
+      for (r_ssize i = start; i < end; ++i) {
+        const r_complex x_elt = v_x[i];
+        sum.r += x_elt.r;
+        sum.i += x_elt.i;
+      }
+
+      v_out[out_loc] = sum;
+    } else {
+      for (r_ssize i = start; i < end; ++i) {
+        const r_complex x_elt = v_x[i];
+        const r_complex out_elt = v_out[out_loc];
+        v_out[out_loc] = (r_complex){
+          .r = out_elt.r + x_elt.r,
+          .i = out_elt.i + x_elt.i,
+        };
+        out_loc += out_stride;
+      }
+    }
+  }
+
+  FREE(1);
+  return out;
 }
 
 static r_obj* rray_sum_cpl_na_rm(
@@ -204,14 +354,208 @@ static r_obj* rray_sum_cpl_na_rm(
   const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_REDUCE(
-    r_complex,
-    r_cpl_cbegin,
-    R_TYPE_complex,
-    r_complex,
-    r_cpl_begin,
-    ((r_complex){.r = 0, .i = 0}),
-    rray_sum_cpl_one_na_rm,
-    RRAY_REDUCE_NO_ARGS
+  const r_complex* v_x = r_cpl_cbegin(x);
+
+  r_obj* out = KEEP(r_alloc_complex(out_size));
+  r_complex* v_out = r_cpl_begin(out);
+
+  for (r_ssize i = 0; i < out_size; ++i) {
+    v_out[i] = (r_complex){.r = 0.0, .i = 0.0};
+  }
+
+  struct rray_run_iterator it;
+  rray_run_iterator_init1(
+    &it,
+    v_dimensions,
+    dimensionality,
+    v_out_broadcast_strides
   );
+
+  for (; !rray_run_iterator_done(&it); rray_run_iterator_next1(&it)) {
+    const r_ssize start = rray_run_iterator_start(&it);
+    const r_ssize end = rray_run_iterator_end(&it);
+
+    r_ssize out_loc = rray_run_iterator_loc(&it, 0);
+    const r_ssize out_stride = rray_run_iterator_stride(&it, 0);
+
+    if (out_stride == 0) {
+      r_complex sum = v_out[out_loc];
+
+      for (r_ssize i = start; i < end; ++i) {
+        const r_complex x_elt = v_x[i];
+        sum.r += ISNAN(x_elt.r) ? 0 : x_elt.r;
+        sum.i += ISNAN(x_elt.i) ? 0 : x_elt.i;
+      }
+
+      v_out[out_loc] = sum;
+    } else {
+      for (r_ssize i = start; i < end; ++i) {
+        const r_complex x_elt = v_x[i];
+        const r_complex out_elt = v_out[out_loc];
+        v_out[out_loc] = (r_complex){
+          .r = out_elt.r + (ISNAN(x_elt.r) ? 0 : x_elt.r),
+          .i = out_elt.i + (ISNAN(x_elt.i) ? 0 : x_elt.i),
+        };
+        out_loc += out_stride;
+      }
+    }
+  }
+
+  FREE(1);
+  return out;
+}
+
+static r_obj* rray_sum_lgl_or_int(
+  const int* v_x,
+  int na_value,
+  bool na_rm,
+  r_ssize out_size,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_out_broadcast_strides,
+  struct r_lazy error_call
+) {
+  r_obj* sums = KEEP(r_alloc_raw0(out_size * sizeof(int64_t)));
+  int64_t* v_sums = (int64_t*) r_raw_begin(sums);
+
+  r_obj* missings = KEEP(r_alloc_raw0(out_size * sizeof(bool)));
+  bool* v_missings = (bool*) r_raw_begin(missings);
+
+  struct rray_run_iterator it;
+  rray_run_iterator_init1(
+    &it,
+    v_dimensions,
+    dimensionality,
+    v_out_broadcast_strides
+  );
+
+  for (; !rray_run_iterator_done(&it); rray_run_iterator_next1(&it)) {
+    const r_ssize start = rray_run_iterator_start(&it);
+    const r_ssize end = rray_run_iterator_end(&it);
+
+    r_ssize out_loc = rray_run_iterator_loc(&it, 0);
+    const r_ssize out_stride = rray_run_iterator_stride(&it, 0);
+
+    if (out_stride == 0) {
+      int64_t sum = v_sums[out_loc];
+      bool missing = v_missings[out_loc];
+
+      for (r_ssize i = start; i < end; ++i) {
+        const int x_elt = v_x[i];
+        const bool na = x_elt == na_value;
+        sum += na ? 0 : x_elt;
+        missing |= na;
+      }
+
+      v_sums[out_loc] = sum;
+      v_missings[out_loc] = missing;
+    } else {
+      for (r_ssize i = start; i < end; ++i) {
+        const int x_elt = v_x[i];
+        const bool na = x_elt == na_value;
+        v_sums[out_loc] += na ? 0 : x_elt;
+        v_missings[out_loc] |= na;
+        out_loc += out_stride;
+      }
+    }
+  }
+
+  r_obj* out = KEEP(r_alloc_integer(out_size));
+  int* v_out = r_int_begin(out);
+
+  for (r_ssize i = 0; i < out_size; ++i) {
+    if (!na_rm && v_missings[i]) {
+      v_out[i] = r_globals.na_int;
+      continue;
+    }
+
+    const int64_t sum = v_sums[i];
+
+    if (sum > INT_MAX || sum < -INT_MAX) {
+      stop_int_overflow(error_call);
+    }
+
+    v_out[i] = (int) sum;
+  }
+
+  FREE(3);
+  return out;
+}
+
+static r_obj* rray_sum_int_fallback(
+  const int* v_x,
+  bool na_rm,
+  r_ssize out_size,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_out_broadcast_strides,
+  struct r_lazy error_call
+) {
+  const int na_int = r_globals.na_int;
+
+  r_obj* sums = KEEP(r_alloc_raw0(out_size * sizeof(struct rray_sum_int128)));
+  struct rray_sum_int128* v_sums = (struct rray_sum_int128*) r_raw_begin(sums);
+
+  r_obj* missings = KEEP(r_alloc_raw0(out_size * sizeof(bool)));
+  bool* v_missings = (bool*) r_raw_begin(missings);
+
+  struct rray_run_iterator it;
+  rray_run_iterator_init1(
+    &it,
+    v_dimensions,
+    dimensionality,
+    v_out_broadcast_strides
+  );
+
+  for (; !rray_run_iterator_done(&it); rray_run_iterator_next1(&it)) {
+    const r_ssize start = rray_run_iterator_start(&it);
+    const r_ssize end = rray_run_iterator_end(&it);
+
+    r_ssize out_loc = rray_run_iterator_loc(&it, 0);
+    const r_ssize out_stride = rray_run_iterator_stride(&it, 0);
+
+    for (r_ssize i = start; i < end; ++i) {
+      const int x_elt = v_x[i];
+      const bool na = x_elt == na_int;
+      v_sums[out_loc] = rray_sum_int128_add(v_sums[out_loc], na ? 0 : x_elt);
+      v_missings[out_loc] |= na;
+      out_loc += out_stride;
+    }
+  }
+
+  r_obj* out = KEEP(r_alloc_integer(out_size));
+  int* v_out = r_int_begin(out);
+
+  for (r_ssize i = 0; i < out_size; ++i) {
+    if (!na_rm && v_missings[i]) {
+      v_out[i] = na_int;
+      continue;
+    }
+
+    const struct rray_sum_int128 sum = v_sums[i];
+
+    if (sum.hi == 0 && sum.lo <= INT_MAX) {
+      v_out[i] = (int) sum.lo;
+    } else if (sum.hi == -1 && sum.lo >= -(uint64_t) INT_MAX) {
+      v_out[i] = -(int) -sum.lo;
+    } else {
+      stop_int_overflow(error_call);
+    }
+  }
+
+  FREE(3);
+  return out;
+}
+
+static inline struct rray_sum_int128 rray_sum_int128_add(
+  struct rray_sum_int128 sum,
+  int x
+) {
+  const uint64_t lo = sum.lo + (uint64_t) (int64_t) x;
+  const int64_t hi = sum.hi + (x < 0 ? -1 : 0) + (lo < sum.lo);
+  return (struct rray_sum_int128){.lo = lo, .hi = hi};
+}
+
+static inline r_ssize rray_sum_count(r_ssize x_size, r_ssize out_size) {
+  return out_size == 0 ? 0 : x_size / out_size;
 }

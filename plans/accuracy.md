@@ -138,7 +138,7 @@ It also shows that summing along axis 1 is about 6x slower than along axis 2. Do
 
 # Plan
 
-Integer and logical sums, and the decision to write reducers as hand written loops instead of a `RRAY_REDUCE_ACC()` macro, are in `plans/sum-accurate.md`.
+`rray_sum()` already runs on hand written loops, like `rray_mean()`. Integer and logical sums add into an `int64_t` and only check the final total. Reducers are written as hand written loops, not with a `RRAY_REDUCE_ACC()` macro.
 
 ## 1. `rray_mean()` accumulates in `double`
 
@@ -230,13 +230,11 @@ The cumulative plan (`plans/cumulative.md` on `feature/cumulative-plan`) is alre
 
 # Order of work
 
-1. Integer, logical, double and complex sums on hand written loops (`plans/sum-accurate.md`).
+1. The `rray_mean()` test change (plan 1).
 
-2. The `rray_mean()` test change (plan 1).
+2. Pairwise double and complex sums (plan 2).
 
-3. Pairwise double and complex sums (plan 2).
-
-4. One shared docs section saying rray4 accumulates in `double`, linked from `rray_sum()`, `rray_prod()` and `rray_mean()`.
+3. One shared docs section saying rray4 accumulates in `double`, linked from `rray_sum()`, `rray_prod()` and `rray_mean()`.
 
 Compensated summation (plan 2) and the product's range (plan 3) are not scheduled. Each would be its own pull request once decided.
 

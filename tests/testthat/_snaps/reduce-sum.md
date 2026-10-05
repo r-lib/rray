@@ -62,6 +62,46 @@
       Error in `rray_sum()`:
       ! Integer overflow.
 
+# errors on integer overflow along axis 2
+
+    Code
+      rray_sum(x, 2L)
+    Condition
+      Error in `rray_sum()`:
+      ! Integer overflow.
+
+---
+
+    Code
+      rray_sum(x, 2L, na_rm = TRUE)
+    Condition
+      Error in `rray_sum()`:
+      ! Integer overflow.
+
+# errors when a logical sum has too many `TRUE` values
+
+    Code
+      rray_sum(x, 1:2)
+    Condition
+      Error in `rray_sum()`:
+      ! Integer overflow.
+
+# integer sums past 2^32 elements fall back and error on overflow
+
+    Code
+      rray_sum(x, 1:2)
+    Condition
+      Error in `rray_sum()`:
+      ! Integer overflow.
+
+---
+
+    Code
+      rray_sum(x, 1:2, na_rm = TRUE)
+    Condition
+      Error in `rray_sum()`:
+      ! Integer overflow.
+
 # `na_rm` must be `TRUE` or `FALSE`
 
     Code

@@ -92,7 +92,7 @@ static inline double rray_prod_int_one_na_rm(double out, int x) {
 }
 
 // Purposefully choose to match `rray_multiply()` rather than `prod()`
-// regarding `c(NA, NaN)` behavior, see `rray_sum_dbl_one()`.
+// regarding `c(NA, NaN)` behavior, see `rray_add_dbl_one()`.
 static inline double rray_prod_dbl_one(double out, double x) {
   return rray_multiply_dbl_one(out, x);
 }

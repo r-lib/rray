@@ -125,9 +125,7 @@ Use zero as the starting value, separately for each line.
 Add or reuse one-element operations in `src/one-add.h`. The integer path can
 reuse `rray_add_int_one()` and its existing overflow error. The logical path
 must convert `TRUE` to 1 and `FALSE` to 0, propagate logical `NA` as integer
-`NA`, and check overflow too. Do not use `rray_sum_lgl_one()` unchanged: its
-current assumption that arrays cannot be long vectors is incorrect. A
-missing value before a would-be overflow makes that line missing, so no
+`NA`, and check overflow too. A missing value before a would-be overflow makes that line missing, so no
 overflow is reported for later positions on it. A real overflowing prefix
 errors immediately. For example, `c(.Machine$integer.max, 1L, -1L)` errors.
 Base `cumsum()` instead warns and fills the suffix with `NA`.
