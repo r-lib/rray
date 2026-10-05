@@ -3,11 +3,6 @@ static rray_reduce2_fn rray_sum_switch(
   struct rray_arg* arg,
   struct r_lazy error_call
 );
-static rray_reduce2_fn rray_sum_forced_fallback_switch(
-  r_obj* x,
-  struct rray_arg* arg,
-  struct r_lazy error_call
-);
 
 static r_obj* rray_sum_lgl(
   r_obj* x,
@@ -45,8 +40,9 @@ static r_obj* rray_sum_cpl(
   const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 );
-static r_obj* rray_sum_int_forced_fallback(
-  r_obj* x,
+static r_obj* rray_sum_lgl_or_int(
+  const int* v_x,
+  int na_value,
   bool na_rm,
   r_ssize out_size,
   const int* v_dimensions,
@@ -55,9 +51,13 @@ static r_obj* rray_sum_int_forced_fallback(
   struct r_lazy error_call
 );
 
-static r_obj* rray_sum_lgl_or_int(
-  const int* v_x,
-  int na_value,
+static rray_reduce2_fn rray_sum_forced_fallback_switch(
+  r_obj* x,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+);
+static r_obj* rray_sum_int_forced_fallback(
+  r_obj* x,
   bool na_rm,
   r_ssize out_size,
   const int* v_dimensions,
