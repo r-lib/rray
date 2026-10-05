@@ -489,6 +489,8 @@ static r_obj* rray_mean_lgl_or_int(
     v_out[i] = rray_mean_int64(v_sums[i], count);
   }
 
+  // Make a second pass, replacing `out` locations that involved `NA` with `NA`.
+  // We avoid this on the first pass to keep it branchless.
   if (any_missing) {
     rray_mean_lgl_or_int_propagate_na(
       v_x,
