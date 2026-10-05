@@ -6,7 +6,14 @@
 
 #include "decl/reduce-mean-decl.h"
 
+// Max count is 2^32. Each integer is at most about 2^31 in size, so 2^32 of
+// them add up to at most 2^63, which still fits in `int64_t`. If more than 2^32
+// inputs make up a single slot in the output there is a risk of overflow (from
+// reducing over two 2^16+1 length axes, all INT_MAX). `rray_mean_int()`
+// switches to `rray_mean_int_fallback()`, which sums directly in a double
+// instead, which is less precise but won't overflow.
 #define RRAY_MEAN_INT64_MAX_COUNT ((r_ssize) 1 << 32)
+
 #define RRAY_MEAN_INT64_MAX_EXACT ((int64_t) 1 << 53)
 
 r_obj* ffi_rray_mean(
