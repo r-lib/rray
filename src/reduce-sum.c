@@ -617,15 +617,7 @@ static r_obj* rray_sum_int_fallback(
       continue;
     }
 
-    const struct rray_int128 sum = v_sums[i];
-
-    if (sum.hi == 0 && sum.lo <= INT_MAX) {
-      v_out[i] = (int) sum.lo;
-    } else if (sum.hi == -1 && sum.lo >= -(uint64_t) INT_MAX) {
-      v_out[i] = -(int) -sum.lo;
-    } else {
-      stop_int_overflow(error_call);
-    }
+    v_out[i] = rray_int128_as_int(v_sums[i], error_call);
   }
 
   FREE(3);
