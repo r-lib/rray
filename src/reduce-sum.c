@@ -471,6 +471,8 @@ static r_obj* rray_sum_int_forced_fallback(
   );
 }
 
+// Lossless sum into `int128_t`-ish, which is wide enough to handle any length
+// vector with any values, but is slower
 static r_obj* rray_sum_int_fallback(
   const int* v_x,
   bool na_rm,
