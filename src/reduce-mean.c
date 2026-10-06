@@ -35,24 +35,6 @@ r_obj* ffi_rray_mean(
   return rray_mean(ffi_x, ffi_axes, na_rm, rray_args.x, error_call);
 }
 
-r_obj* ffi_test_rray_mean_forced_fallback(
-  r_obj* ffi_x,
-  r_obj* ffi_axes,
-  r_obj* ffi_na_rm,
-  r_obj* ffi_frame
-) {
-  struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  const bool na_rm = r_arg_as_bool(ffi_na_rm, "na_rm");
-  return rray_reduce(
-    ffi_x,
-    ffi_axes,
-    na_rm,
-    rray_mean_forced_fallback_switch,
-    rray_args.x,
-    error_call
-  );
-}
-
 r_obj* rray_mean(
   r_obj* x,
   r_obj* axes,
@@ -88,20 +70,6 @@ static rray_reduce_fn rray_mean_switch(
   }
 
   r_stop_unreachable();
-}
-
-static rray_reduce_fn rray_mean_forced_fallback_switch(
-  r_obj* x,
-  bool na_rm,
-  struct rray_arg* arg,
-  struct r_lazy error_call
-) {
-  if (rray_typeof(x) != RRAY_TYPE_integer) {
-    r_stop_internal("`x` must be an integer array.");
-  }
-
-  return na_rm ? rray_mean_int_na_rm_forced_fallback
-               : rray_mean_int_forced_fallback;
 }
 
 static r_obj* rray_mean_lgl(
@@ -465,47 +433,6 @@ static r_obj* rray_mean_dbl_na_rm(
   return out;
 }
 
-static r_obj* rray_mean_int_forced_fallback(
-  r_obj* x,
-  r_ssize out_size,
-  const int* v_dimensions,
-  int dimensionality,
-  const r_ssize* v_out_broadcast_strides,
-  struct r_lazy error_call
-) {
-  const int* v_x = r_int_cbegin(x);
-  const r_ssize x_size = r_length(x);
-  const r_ssize count = rray_mean_count(x_size, out_size);
-
-  return rray_mean_int_fallback(
-    v_x,
-    out_size,
-    count,
-    v_dimensions,
-    dimensionality,
-    v_out_broadcast_strides
-  );
-}
-
-static r_obj* rray_mean_int_na_rm_forced_fallback(
-  r_obj* x,
-  r_ssize out_size,
-  const int* v_dimensions,
-  int dimensionality,
-  const r_ssize* v_out_broadcast_strides,
-  struct r_lazy error_call
-) {
-  const int* v_x = r_int_cbegin(x);
-
-  return rray_mean_int_na_rm_fallback(
-    v_x,
-    out_size,
-    v_dimensions,
-    dimensionality,
-    v_out_broadcast_strides
-  );
-}
-
 // Sum into an `int64_t` losslessly
 static r_obj* rray_mean_lgl_or_int(
   const int* v_x,
@@ -678,141 +605,6 @@ static void rray_mean_lgl_or_int_propagate_na(
       out_loc += out_stride;
     }
   }
-}
-
-// Fallback method for int when it is a long vector. In that case, summing could
-// possibly overflow `int64_t`, so we perform the sum in our own minimal
-// `int128_t` instead, which is slower but still lossless.
-static r_obj* rray_mean_int_fallback(
-  const int* v_x,
-  r_ssize out_size,
-  r_ssize count,
-  const int* v_dimensions,
-  int dimensionality,
-  const r_ssize* v_out_broadcast_strides
-) {
-  const int na_int = r_globals.na_int;
-  const double na_dbl = r_globals.na_dbl;
-
-  r_obj* sums = KEEP(r_alloc_raw0(out_size * sizeof(struct rray_int128)));
-  struct rray_int128* v_sums = (struct rray_int128*) r_raw_begin(sums);
-
-  r_obj* missings = KEEP(r_alloc_raw0(out_size * sizeof(bool)));
-  bool* v_missings = (bool*) r_raw_begin(missings);
-
-  struct rray_run_iterator it;
-  rray_run_iterator_init1(
-    &it,
-    v_dimensions,
-    dimensionality,
-    v_out_broadcast_strides
-  );
-
-  for (; !rray_run_iterator_done(&it); rray_run_iterator_next1(&it)) {
-    const r_ssize start = rray_run_iterator_start(&it);
-    const r_ssize end = rray_run_iterator_end(&it);
-
-    r_ssize out_loc = rray_run_iterator_loc(&it, 0);
-    const r_ssize out_stride = rray_run_iterator_stride(&it, 0);
-
-    if (out_stride == 0) {
-      struct rray_int128 sum = v_sums[out_loc];
-      bool missing = v_missings[out_loc];
-
-      for (r_ssize i = start; i < end; ++i) {
-        const int x_elt = v_x[i];
-        const bool na = x_elt == na_int;
-        sum = rray_int128_add(sum, na ? 0 : x_elt);
-        missing |= na;
-      }
-
-      v_sums[out_loc] = sum;
-      v_missings[out_loc] = missing;
-    } else {
-      for (r_ssize i = start; i < end; ++i) {
-        const int x_elt = v_x[i];
-        const bool na = x_elt == na_int;
-        v_sums[out_loc] = rray_int128_add(v_sums[out_loc], na ? 0 : x_elt);
-        v_missings[out_loc] |= na;
-        out_loc += out_stride;
-      }
-    }
-  }
-
-  r_obj* out = KEEP(r_alloc_double(out_size));
-  double* v_out = r_dbl_begin(out);
-
-  for (r_ssize i = 0; i < out_size; ++i) {
-    v_out[i] = v_missings[i] ? na_dbl : rray_mean_int128(v_sums[i], count);
-  }
-
-  FREE(3);
-  return out;
-}
-
-static r_obj* rray_mean_int_na_rm_fallback(
-  const int* v_x,
-  r_ssize out_size,
-  const int* v_dimensions,
-  int dimensionality,
-  const r_ssize* v_out_broadcast_strides
-) {
-  const int na_int = r_globals.na_int;
-
-  r_obj* sums = KEEP(r_alloc_raw0(out_size * sizeof(struct rray_int128)));
-  struct rray_int128* v_sums = (struct rray_int128*) r_raw_begin(sums);
-
-  r_obj* counts = KEEP(r_alloc_raw0(out_size * sizeof(r_ssize)));
-  r_ssize* v_counts = (r_ssize*) r_raw_begin(counts);
-
-  struct rray_run_iterator it;
-  rray_run_iterator_init1(
-    &it,
-    v_dimensions,
-    dimensionality,
-    v_out_broadcast_strides
-  );
-
-  for (; !rray_run_iterator_done(&it); rray_run_iterator_next1(&it)) {
-    const r_ssize start = rray_run_iterator_start(&it);
-    const r_ssize end = rray_run_iterator_end(&it);
-
-    r_ssize out_loc = rray_run_iterator_loc(&it, 0);
-    const r_ssize out_stride = rray_run_iterator_stride(&it, 0);
-
-    if (out_stride == 0) {
-      struct rray_int128 sum = v_sums[out_loc];
-      r_ssize count = v_counts[out_loc];
-
-      for (r_ssize i = start; i < end; ++i) {
-        const int x_elt = v_x[i];
-        const bool na = x_elt == na_int;
-        sum = rray_int128_add(sum, na ? 0 : x_elt);
-        count += !na;
-      }
-
-      v_sums[out_loc] = sum;
-      v_counts[out_loc] = count;
-    } else {
-      for (r_ssize i = start; i < end; ++i) {
-        const int x_elt = v_x[i];
-        const bool na = x_elt == na_int;
-        v_sums[out_loc] = rray_int128_add(v_sums[out_loc], na ? 0 : x_elt);
-        v_counts[out_loc] += !na;
-        out_loc += out_stride;
-      }
-    }
-  }
-
-  r_obj* out = KEEP(r_alloc_double(out_size));
-  double* v_out = r_dbl_begin(out);
-
-  for (r_ssize i = 0; i < out_size; ++i) {
-    v_out[i] = rray_mean_int128(v_sums[i], v_counts[i]);
-  }
-
-  FREE(3);
-  return out;
 }
 
 // When an infinity is detected, it's possible it came from overflowing a
@@ -996,6 +788,214 @@ static void rray_mean_dbl_propagate_na(
       out_loc += out_stride;
     }
   }
+}
+
+r_obj* ffi_test_rray_mean_forced_fallback(
+  r_obj* ffi_x,
+  r_obj* ffi_axes,
+  r_obj* ffi_na_rm,
+  r_obj* ffi_frame
+) {
+  struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
+  const bool na_rm = r_arg_as_bool(ffi_na_rm, "na_rm");
+  return rray_reduce(
+    ffi_x,
+    ffi_axes,
+    na_rm,
+    rray_mean_forced_fallback_switch,
+    rray_args.x,
+    error_call
+  );
+}
+
+static rray_reduce_fn rray_mean_forced_fallback_switch(
+  r_obj* x,
+  bool na_rm,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+) {
+  if (rray_typeof(x) != RRAY_TYPE_integer) {
+    r_stop_internal("`x` must be an integer array.");
+  }
+
+  return na_rm ? rray_mean_int_na_rm_forced_fallback
+               : rray_mean_int_forced_fallback;
+}
+
+static r_obj* rray_mean_int_forced_fallback(
+  r_obj* x,
+  r_ssize out_size,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_out_broadcast_strides,
+  struct r_lazy error_call
+) {
+  const int* v_x = r_int_cbegin(x);
+  const r_ssize x_size = r_length(x);
+  const r_ssize count = rray_mean_count(x_size, out_size);
+
+  return rray_mean_int_fallback(
+    v_x,
+    out_size,
+    count,
+    v_dimensions,
+    dimensionality,
+    v_out_broadcast_strides
+  );
+}
+
+static r_obj* rray_mean_int_na_rm_forced_fallback(
+  r_obj* x,
+  r_ssize out_size,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_out_broadcast_strides,
+  struct r_lazy error_call
+) {
+  const int* v_x = r_int_cbegin(x);
+
+  return rray_mean_int_na_rm_fallback(
+    v_x,
+    out_size,
+    v_dimensions,
+    dimensionality,
+    v_out_broadcast_strides
+  );
+}
+
+// Fallback method for int when it is a long vector. In that case, summing could
+// possibly overflow `int64_t`, so we perform the sum in our own minimal
+// `int128_t` instead, which is slower but still lossless.
+static r_obj* rray_mean_int_fallback(
+  const int* v_x,
+  r_ssize out_size,
+  r_ssize count,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_out_broadcast_strides
+) {
+  const int na_int = r_globals.na_int;
+  const double na_dbl = r_globals.na_dbl;
+
+  r_obj* sums = KEEP(r_alloc_raw0(out_size * sizeof(struct rray_int128)));
+  struct rray_int128* v_sums = (struct rray_int128*) r_raw_begin(sums);
+
+  r_obj* missings = KEEP(r_alloc_raw0(out_size * sizeof(bool)));
+  bool* v_missings = (bool*) r_raw_begin(missings);
+
+  struct rray_run_iterator it;
+  rray_run_iterator_init1(
+    &it,
+    v_dimensions,
+    dimensionality,
+    v_out_broadcast_strides
+  );
+
+  for (; !rray_run_iterator_done(&it); rray_run_iterator_next1(&it)) {
+    const r_ssize start = rray_run_iterator_start(&it);
+    const r_ssize end = rray_run_iterator_end(&it);
+
+    r_ssize out_loc = rray_run_iterator_loc(&it, 0);
+    const r_ssize out_stride = rray_run_iterator_stride(&it, 0);
+
+    if (out_stride == 0) {
+      struct rray_int128 sum = v_sums[out_loc];
+      bool missing = v_missings[out_loc];
+
+      for (r_ssize i = start; i < end; ++i) {
+        const int x_elt = v_x[i];
+        const bool na = x_elt == na_int;
+        sum = rray_int128_add(sum, na ? 0 : x_elt);
+        missing |= na;
+      }
+
+      v_sums[out_loc] = sum;
+      v_missings[out_loc] = missing;
+    } else {
+      for (r_ssize i = start; i < end; ++i) {
+        const int x_elt = v_x[i];
+        const bool na = x_elt == na_int;
+        v_sums[out_loc] = rray_int128_add(v_sums[out_loc], na ? 0 : x_elt);
+        v_missings[out_loc] |= na;
+        out_loc += out_stride;
+      }
+    }
+  }
+
+  r_obj* out = KEEP(r_alloc_double(out_size));
+  double* v_out = r_dbl_begin(out);
+
+  for (r_ssize i = 0; i < out_size; ++i) {
+    v_out[i] = v_missings[i] ? na_dbl : rray_mean_int128(v_sums[i], count);
+  }
+
+  FREE(3);
+  return out;
+}
+
+static r_obj* rray_mean_int_na_rm_fallback(
+  const int* v_x,
+  r_ssize out_size,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_out_broadcast_strides
+) {
+  const int na_int = r_globals.na_int;
+
+  r_obj* sums = KEEP(r_alloc_raw0(out_size * sizeof(struct rray_int128)));
+  struct rray_int128* v_sums = (struct rray_int128*) r_raw_begin(sums);
+
+  r_obj* counts = KEEP(r_alloc_raw0(out_size * sizeof(r_ssize)));
+  r_ssize* v_counts = (r_ssize*) r_raw_begin(counts);
+
+  struct rray_run_iterator it;
+  rray_run_iterator_init1(
+    &it,
+    v_dimensions,
+    dimensionality,
+    v_out_broadcast_strides
+  );
+
+  for (; !rray_run_iterator_done(&it); rray_run_iterator_next1(&it)) {
+    const r_ssize start = rray_run_iterator_start(&it);
+    const r_ssize end = rray_run_iterator_end(&it);
+
+    r_ssize out_loc = rray_run_iterator_loc(&it, 0);
+    const r_ssize out_stride = rray_run_iterator_stride(&it, 0);
+
+    if (out_stride == 0) {
+      struct rray_int128 sum = v_sums[out_loc];
+      r_ssize count = v_counts[out_loc];
+
+      for (r_ssize i = start; i < end; ++i) {
+        const int x_elt = v_x[i];
+        const bool na = x_elt == na_int;
+        sum = rray_int128_add(sum, na ? 0 : x_elt);
+        count += !na;
+      }
+
+      v_sums[out_loc] = sum;
+      v_counts[out_loc] = count;
+    } else {
+      for (r_ssize i = start; i < end; ++i) {
+        const int x_elt = v_x[i];
+        const bool na = x_elt == na_int;
+        v_sums[out_loc] = rray_int128_add(v_sums[out_loc], na ? 0 : x_elt);
+        v_counts[out_loc] += !na;
+        out_loc += out_stride;
+      }
+    }
+  }
+
+  r_obj* out = KEEP(r_alloc_double(out_size));
+  double* v_out = r_dbl_begin(out);
+
+  for (r_ssize i = 0; i < out_size; ++i) {
+    v_out[i] = rray_mean_int128(v_sums[i], v_counts[i]);
+  }
+
+  FREE(3);
+  return out;
 }
 
 // Numbers of inputs used to compute each mean in the obvious `na_rm = FALSE`
