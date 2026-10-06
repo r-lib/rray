@@ -74,5 +74,3 @@ static r_obj* rray_sum_int_fallback(
   const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 );
-
-static inline r_ssize rray_sum_count(r_ssize x_size, r_ssize out_size);

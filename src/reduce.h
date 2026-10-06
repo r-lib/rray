@@ -68,6 +68,10 @@ r_obj* rray_reduce2(
   struct r_lazy error_call
 );
 
+static inline r_ssize rray_reduce_count(r_ssize x_size, r_ssize out_size) {
+  return out_size == 0 ? 0 : x_size / out_size;
+}
+
 #define RRAY_REDUCE(                                                           \
   X_CTYPE,                                                                     \
   X_CONST_DEREF,                                                               \

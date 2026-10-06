@@ -38,6 +38,15 @@
 #' @section Mean:
 #' Logicals and integers are cast to double.
 #'
+#' When `NA` and `NaN` are both present, you get one of them, but which one
+#' depends on the platform and the order of the values, like [mean()]. Either
+#' way, `is.na()` is `TRUE`:
+#'
+#' ```r
+#' rray_mean(c(NA, NaN), 1L) # NA or NaN
+#' rray_mean(c(NaN, NA), 1L) # NA or NaN
+#' ```
+#'
 #' @section Min / Max:
 #' `rray_max()` and `rray_min()` keep the type of `x`. With nothing to reduce,
 #' such as an axis of dimension 0, `rray_max()` returns the smallest value of
