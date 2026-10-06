@@ -13,6 +13,7 @@ dimensions <- c(side, side)
 
 cases <- expand.grid(
   implementation = c("mean", "sum", "base"),
+  type = c("lgl", "int", "int128", "dbl", "inf"),
   na_rm = c(FALSE, TRUE),
   missing = c("none", "sparse"),
   axes = c("axis1", "axis2", "both"),
@@ -28,10 +29,37 @@ add_missing <- function(x, missing) {
   x
 }
 
-make_input <- function(missing) {
-  x <- as.double(seq_len(size)) / 7
+make_input <- function(type, missing) {
+  x <- switch(
+    type,
+    lgl = rep_len(c(TRUE, FALSE, TRUE), size),
+    int = rep_len(1:1000, size),
+    int128 = rep_len(1:1000, size),
+    dbl = as.double(seq_len(size)) / 7,
+    inf = rep_len(c(.Machine$double.xmax, 1), size)
+  )
   x <- add_missing(x, missing)
   array(x, dimensions)
+}
+
+mean_fn <- function(type) {
+  if (type != "int128") {
+    return(rray_mean)
+  }
+
+  function(x, axes, na_rm) {
+    .Call(ffi_test_rray_mean_forced_fallback, x, axes, na_rm, environment())
+  }
+}
+
+sum_fn <- function(type) {
+  if (type != "int128") {
+    return(rray_sum)
+  }
+
+  function(x, axes, na_rm) {
+    .Call(ffi_test_rray_sum_forced_fallback, x, axes, na_rm, environment())
+  }
 }
 
 base_fn <- function(axes) {
@@ -47,21 +75,23 @@ results <- vector("list", nrow(cases))
 
 for (i in seq_len(nrow(cases))) {
   case <- cases[i, ]
-  x <- make_input(case$missing)
+  x <- make_input(case$type, case$missing)
   axes <- switch(case$axes, axis1 = 1L, axis2 = 2L, both = c(1L, 2L))
+  rray_mean_impl <- mean_fn(case$type)
+  rray_sum_impl <- sum_fn(case$type)
   base <- base_fn(case$axes)
 
   measurement <- switch(
     case$implementation,
     mean = bench::mark(
-      rray_mean(x, axes, na_rm = case$na_rm),
+      rray_mean_impl(x, axes, na_rm = case$na_rm),
       iterations = iterations,
       check = FALSE,
       memory = FALSE,
       filter_gc = FALSE
     ),
     sum = bench::mark(
-      rray_sum(x, axes, na_rm = case$na_rm),
+      rray_sum_impl(x, axes, na_rm = case$na_rm),
       iterations = iterations,
       check = FALSE,
       memory = FALSE,

@@ -98,7 +98,7 @@ static r_obj* rray_sum_int(
 ) {
   const int* v_x = r_int_cbegin(x);
   const r_ssize x_size = r_length(x);
-  const r_ssize count = rray_sum_count(x_size, out_size);
+  const r_ssize count = rray_reduce_count(x_size, out_size);
 
   if (count > RRAY_SUM_INT64_MAX_COUNT) {
     return rray_sum_int_fallback(
@@ -584,8 +584,4 @@ static r_obj* rray_sum_int_fallback(
 
   FREE(n_prot);
   return out;
-}
-
-static inline r_ssize rray_sum_count(r_ssize x_size, r_ssize out_size) {
-  return out_size == 0 ? 0 : x_size / out_size;
 }
