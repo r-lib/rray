@@ -309,6 +309,7 @@ static r_obj* rray_sum_lgl_or_int(
 ) {
   int n_prot = 0;
 
+  // Initializes with 0
   r_obj* sums = KEEP_N(r_alloc_raw0(out_size * sizeof(int64_t)), &n_prot);
   int64_t* v_sums = (int64_t*) r_raw_begin(sums);
 
