@@ -68,6 +68,9 @@ struct rray_int128_div_result {
   int64_t remainder;
 };
 
+// Assumes the quotient fits in an `int64_t`, i.e. `|x / y| < 2^63`, and `y >
+// 0`. This holds for usage in `rray_mean()` because each input is an `int`, so
+// `|sum| <= INT_MAX * count`, and the quotient is at most `INT_MAX` in size.
 static inline struct rray_int128_div_result rray_int128_div(
   struct rray_int128 x,
   int64_t y
