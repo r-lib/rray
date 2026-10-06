@@ -9,6 +9,11 @@
 
 #include "decl/reduce-sum-decl.h"
 
+// Above an input length of 2^32 for a single output location, we can't
+// guarantee that an `int` sum will fit in an `int64_t`. However, it is
+// guaranteed to fit in an `int128_t`. So we fall back to a slower sum that
+// relies on `int128_t` summing. That type isn't actually portable, so we mock
+// our own minimal version.
 #define RRAY_SUM_INT64_MAX_COUNT ((r_ssize) 1 << 32)
 
 r_obj* ffi_rray_sum(
