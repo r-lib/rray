@@ -296,6 +296,7 @@ static r_obj* rray_sum_cpl(
   return out;
 }
 
+// Lossless sum into `int64_t`, cast back to `int` if it fits at the end!
 static r_obj* rray_sum_lgl_or_int(
   const int* v_x,
   int na_value,
