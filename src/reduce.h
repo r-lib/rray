@@ -43,6 +43,31 @@ r_obj* rray_reduce(
   struct r_lazy error_call
 );
 
+typedef r_obj* (*rray_reduce2_fn)(
+  r_obj* x,
+  bool na_rm,
+  r_ssize out_size,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_out_broadcast_strides,
+  struct r_lazy error_call
+);
+
+typedef rray_reduce2_fn (*rray_reduce2_fn_switch)(
+  r_obj* x,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+);
+
+r_obj* rray_reduce2(
+  r_obj* x,
+  r_obj* axes,
+  bool na_rm,
+  rray_reduce2_fn_switch fn_switch,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+);
+
 #define RRAY_REDUCE(                                                           \
   X_CTYPE,                                                                     \
   X_CONST_DEREF,                                                               \

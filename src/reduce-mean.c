@@ -32,6 +32,24 @@ r_obj* ffi_rray_mean(
   return rray_mean(ffi_x, ffi_axes, na_rm, rray_args.x, error_call);
 }
 
+r_obj* ffi_test_rray_mean_forced_fallback(
+  r_obj* ffi_x,
+  r_obj* ffi_axes,
+  r_obj* ffi_na_rm,
+  r_obj* ffi_frame
+) {
+  struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
+  const bool na_rm = r_arg_as_bool(ffi_na_rm, "na_rm");
+  return rray_reduce(
+    ffi_x,
+    ffi_axes,
+    na_rm,
+    rray_mean_forced_fallback_switch,
+    rray_args.x,
+    error_call
+  );
+}
+
 r_obj* rray_mean(
   r_obj* x,
   r_obj* axes,
@@ -67,6 +85,20 @@ static rray_reduce_fn rray_mean_switch(
   }
 
   r_stop_unreachable();
+}
+
+static rray_reduce_fn rray_mean_forced_fallback_switch(
+  r_obj* x,
+  bool na_rm,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+) {
+  if (rray_typeof(x) != RRAY_TYPE_integer) {
+    r_stop_internal("`x` must be an integer array.");
+  }
+
+  return na_rm ? rray_mean_int_na_rm_forced_fallback
+               : rray_mean_int_forced_fallback;
 }
 
 static r_obj* rray_mean_lgl(
@@ -430,6 +462,47 @@ static r_obj* rray_mean_dbl_na_rm(
   return out;
 }
 
+static r_obj* rray_mean_int_forced_fallback(
+  r_obj* x,
+  r_ssize out_size,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_out_broadcast_strides,
+  struct r_lazy error_call
+) {
+  const int* v_x = r_int_cbegin(x);
+  const r_ssize x_size = r_length(x);
+  const r_ssize count = rray_mean_count(x_size, out_size);
+
+  return rray_mean_int_fallback(
+    v_x,
+    out_size,
+    count,
+    v_dimensions,
+    dimensionality,
+    v_out_broadcast_strides
+  );
+}
+
+static r_obj* rray_mean_int_na_rm_forced_fallback(
+  r_obj* x,
+  r_ssize out_size,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_out_broadcast_strides,
+  struct r_lazy error_call
+) {
+  const int* v_x = r_int_cbegin(x);
+
+  return rray_mean_int_na_rm_fallback(
+    v_x,
+    out_size,
+    v_dimensions,
+    dimensionality,
+    v_out_broadcast_strides
+  );
+}
+
 // Sum into an `int64_t` losslessly
 static r_obj* rray_mean_lgl_or_int(
   const int* v_x,
@@ -654,7 +727,6 @@ static r_obj* rray_mean_int_fallback(
 
       v_out[out_loc] = sum;
     } else {
-      // Untested, requires 32 GB of memory
       for (r_ssize i = start; i < end; ++i) {
         const int x_elt = v_x[i];
         v_out[out_loc] += x_elt == na_int ? na_dbl : x_elt;
@@ -687,7 +759,6 @@ static r_obj* rray_mean_int_fallback(
 
       v_corrections[out_loc] = correction;
     } else {
-      // Untested, requires 32 GB of memory
       for (r_ssize i = start; i < end; ++i) {
         v_corrections[out_loc] += v_x[i] - v_out[out_loc];
         out_loc += out_stride;
@@ -759,7 +830,6 @@ static r_obj* rray_mean_int_na_rm_fallback(
       v_out[out_loc] = sum;
       v_counts[out_loc] = count;
     } else {
-      // Untested, requires 32 GB of memory
       for (r_ssize i = start; i < end; ++i) {
         const int x_elt = v_x[i];
         const bool na = x_elt == na_int;
@@ -794,7 +864,6 @@ static r_obj* rray_mean_int_na_rm_fallback(
 
       v_corrections[out_loc] = correction;
     } else {
-      // Untested, requires 32 GB of memory
       for (r_ssize i = start; i < end; ++i) {
         const int x_elt = v_x[i];
         v_corrections[out_loc] += x_elt == na_int ? 0 : x_elt - v_out[out_loc];

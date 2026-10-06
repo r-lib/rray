@@ -1,12 +1,20 @@
 test_that("can take the mean along axis 1", {
   x <- array(1:10, c(5L, 2L))
+
   out <- rray_mean(x, 1L)
+  expect_identical(as.vector(out), c(3, 8))
+
+  out <- rray_mean_forced_fallback(x, 1L)
   expect_identical(as.vector(out), c(3, 8))
 })
 
 test_that("can take the mean along axis 2", {
   x <- array(1:10, c(5L, 2L))
+
   out <- rray_mean(x, 2L)
+  expect_identical(as.vector(out), c(3.5, 4.5, 5.5, 6.5, 7.5))
+
+  out <- rray_mean_forced_fallback(x, 2L)
   expect_identical(as.vector(out), c(3.5, 4.5, 5.5, 6.5, 7.5))
 })
 
@@ -116,6 +124,27 @@ test_that("integer means are exact when the total is above 2^53", {
   )
 })
 
+test_that("integer mean fallbacks are close when the total is above 2^53", {
+  x <- c(rep(.Machine$integer.max, 2^22 + 1), 1L, 1L)
+  expected <- 2147482623 + 3076 / 4194307
+
+  expect_equal(as.vector(rray_mean_forced_fallback(x, 1L)), expected)
+  expect_equal(
+    as.vector(rray_mean_forced_fallback(rbind(x, x), 2L)),
+    c(expected, expected)
+  )
+
+  x <- c(x, NA)
+  expect_equal(
+    as.vector(rray_mean_forced_fallback(x, 1L, na_rm = TRUE)),
+    expected
+  )
+  expect_equal(
+    as.vector(rray_mean_forced_fallback(rbind(x, x), 2L, na_rm = TRUE)),
+    c(expected, expected)
+  )
+})
+
 test_that("integer means past 2^32 elements fall back to a double total", {
   skip_if_not_testing_long_vectors()
 
@@ -158,9 +187,11 @@ test_that("a correction that overflows is not applied", {
 test_that("integer NA propagates", {
   x <- array(c(1L, NA_integer_), c(2L, 1L))
   expect_identical(as.vector(rray_mean(x, 1L)), NA_real_)
+  expect_identical(as.vector(rray_mean_forced_fallback(x, 1L)), NA_real_)
 
   x <- array(c(NA_integer_, 1L), c(2L, 1L))
   expect_identical(as.vector(rray_mean(x, 1L)), NA_real_)
+  expect_identical(as.vector(rray_mean_forced_fallback(x, 1L)), NA_real_)
 })
 
 test_that("logical NA propagates", {
@@ -218,6 +249,8 @@ test_that("each output handles its own integer and logical NA", {
   x <- rbind(c(1L, NA, 3L), c(1L, 2L, 3L))
   expect_identical(as.vector(rray_mean(x, 2L)), c(NA, 2))
   expect_identical(as.vector(rray_mean(t(x), 1L)), c(NA, 2))
+  expect_identical(as.vector(rray_mean_forced_fallback(x, 2L)), c(NA, 2))
+  expect_identical(as.vector(rray_mean_forced_fallback(t(x), 1L)), c(NA, 2))
 
   x <- rbind(c(TRUE, NA, FALSE), c(TRUE, TRUE, FALSE))
   expect_identical(as.vector(rray_mean(x, 2L)), c(NA, 2 / 3))
@@ -236,9 +269,29 @@ test_that("outputs that are fed by multiple runs are corrected", {
   )
 })
 
+test_that("integer outputs can be fed by multiple runs", {
+  x <- array(1:24, c(2L, 3L, 4L))
+  x[1L, 2L, 3L] <- NA
+
+  expected <- c(10.5, NA, 14.5)
+  expect_identical(as.vector(rray_mean(x, c(1L, 3L))), expected)
+  expect_identical(as.vector(rray_mean_forced_fallback(x, c(1L, 3L))), expected)
+
+  expected <- c(10.5, 85 / 7, 14.5)
+  expect_identical(as.vector(rray_mean(x, c(1L, 3L), na_rm = TRUE)), expected)
+  expect_identical(
+    as.vector(rray_mean_forced_fallback(x, c(1L, 3L), na_rm = TRUE)),
+    expected
+  )
+})
+
 test_that("na_rm removes integer NA", {
   x <- array(c(1L, NA_integer_, 3L, 5L), c(2L, 2L))
+
   out <- rray_mean(x, 1L, na_rm = TRUE)
+  expect_identical(as.vector(out), c(1, 4))
+
+  out <- rray_mean_forced_fallback(x, 1L, na_rm = TRUE)
   expect_identical(as.vector(out), c(1, 4))
 })
 
@@ -312,6 +365,14 @@ test_that("na_rm counts the integer and logical NA of each output", {
   x <- rbind(c(1L, NA, 3L), c(NA, NA, NA), c(1L, 2L, 6L))
   expect_identical(as.vector(rray_mean(x, 2L, na_rm = TRUE)), c(2, NaN, 3))
   expect_identical(as.vector(rray_mean(t(x), 1L, na_rm = TRUE)), c(2, NaN, 3))
+  expect_identical(
+    as.vector(rray_mean_forced_fallback(x, 2L, na_rm = TRUE)),
+    c(2, NaN, 3)
+  )
+  expect_identical(
+    as.vector(rray_mean_forced_fallback(t(x), 1L, na_rm = TRUE)),
+    c(2, NaN, 3)
+  )
 
   x <- rbind(c(TRUE, NA, FALSE), c(NA, NA, NA), c(TRUE, TRUE, FALSE))
   expect_identical(
@@ -404,6 +465,18 @@ test_that("the empty reduction of each input type is `NaN`", {
 
   expect_identical(as.vector(rray_mean(zero_size(logical()), 1L)), NaN)
   expect_identical(as.vector(rray_mean(zero_size(integer()), 1L)), NaN)
+  expect_identical(
+    as.vector(rray_mean_forced_fallback(zero_size(integer()), 1L)),
+    NaN
+  )
+  expect_identical(
+    as.vector(rray_mean_forced_fallback(
+      zero_size(integer()),
+      1L,
+      na_rm = TRUE
+    )),
+    NaN
+  )
   expect_identical(as.vector(rray_mean(zero_size(double()), 1L)), NaN)
 })
 

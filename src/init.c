@@ -298,6 +298,18 @@ extern r_obj* ffi_test_wrap(r_obj* ffi_x);
 extern r_obj* ffi_test_wrapper_readonly(r_obj* ffi_x);
 extern r_obj* ffi_test_wrapper_writable(r_obj* ffi_x);
 extern r_obj* ffi_test_is_wrapper(r_obj* ffi_x);
+extern r_obj* ffi_test_rray_sum_forced_fallback(
+  r_obj* ffi_x,
+  r_obj* ffi_axes,
+  r_obj* ffi_na_rm,
+  r_obj* ffi_frame
+);
+extern r_obj* ffi_test_rray_mean_forced_fallback(
+  r_obj* ffi_x,
+  r_obj* ffi_axes,
+  r_obj* ffi_na_rm,
+  r_obj* ffi_frame
+);
 
 // Defined below
 r_obj* ffi_rray4_init_library(r_obj* ffi_ns);
@@ -389,6 +401,12 @@ static const R_CallMethodDef CallEntries[] = {
   {"ffi_test_wrapper_readonly", (DL_FUNC) &ffi_test_wrapper_readonly, 1},
   {"ffi_test_wrapper_writable", (DL_FUNC) &ffi_test_wrapper_writable, 1},
   {"ffi_test_is_wrapper", (DL_FUNC) &ffi_test_is_wrapper, 1},
+  {"ffi_test_rray_sum_forced_fallback",
+   (DL_FUNC) &ffi_test_rray_sum_forced_fallback,
+   4},
+  {"ffi_test_rray_mean_forced_fallback",
+   (DL_FUNC) &ffi_test_rray_mean_forced_fallback,
+   4},
   {"ffi_rray4_init_library", (DL_FUNC) &ffi_rray4_init_library, 1},
   {NULL, NULL, 0}
 };
