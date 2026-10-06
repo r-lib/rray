@@ -27,10 +27,10 @@ static inline int rray_add_int_one(int x, int y, struct r_lazy error_call) {
   return x + y;
 }
 
-// Purposefully choose to match `rray_add()` rather than `sum()` regarding
-// `c(NA, NaN)` behavior. Base R `sum()` forces `NA` if present, but `+`
-// doesn't, so R is inconsistent. It's much faster to avoid checking for this,
-// so we just say "it's implementation defined" for both add and sum in rray.
+// For `c(NA, NaN)` behavior, match `+` and let the order be "implementation
+// defined" which is very fast. We consistently do this for both `rray_add()`
+// and `rray_sum()`, while R itself only does this for `+`. `sum()` prefers
+// `NA` when both are present.
 static inline double rray_add_dbl_one(double x, double y) {
   return x + y;
 }
