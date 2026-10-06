@@ -35,7 +35,7 @@ r_obj* rray_all(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  return rray_reduce(x, axes, na_rm, rray_all_switch, arg, error_call);
+  return rray_reduce2(x, axes, na_rm, rray_all_switch, arg, error_call);
 }
 
 r_obj* rray_any(
@@ -45,105 +45,91 @@ r_obj* rray_any(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  return rray_reduce(x, axes, na_rm, rray_any_switch, arg, error_call);
+  return rray_reduce2(x, axes, na_rm, rray_any_switch, arg, error_call);
 }
 
-static rray_reduce_fn rray_all_switch(
+static rray_reduce2_fn rray_all_switch(
   r_obj* x,
-  bool na_rm,
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
   check_logical(x, arg, error_call);
-  return na_rm ? rray_all_lgl_na_rm : rray_all_lgl;
+  return rray_all_lgl;
 }
 
-static rray_reduce_fn rray_any_switch(
+static rray_reduce2_fn rray_any_switch(
   r_obj* x,
-  bool na_rm,
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
   check_logical(x, arg, error_call);
-  return na_rm ? rray_any_lgl_na_rm : rray_any_lgl;
+  return rray_any_lgl;
 }
 
 static r_obj* rray_all_lgl(
   r_obj* x,
+  bool na_rm,
   r_ssize out_size,
   const int* v_dimensions,
   int dimensionality,
   const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_REDUCE(
-    int,
-    r_lgl_cbegin,
-    R_TYPE_logical,
-    int,
-    r_lgl_begin,
-    1,
-    rray_all_lgl_one,
-    RRAY_REDUCE_NO_ARGS
-  );
-}
-
-static r_obj* rray_all_lgl_na_rm(
-  r_obj* x,
-  r_ssize out_size,
-  const int* v_dimensions,
-  int dimensionality,
-  const r_ssize* v_out_broadcast_strides,
-  struct r_lazy error_call
-) {
-  RRAY_REDUCE(
-    int,
-    r_lgl_cbegin,
-    R_TYPE_logical,
-    int,
-    r_lgl_begin,
-    1,
-    rray_all_lgl_one_na_rm,
-    RRAY_REDUCE_NO_ARGS
-  );
+  if (na_rm) {
+    RRAY_REDUCE(
+      int,
+      r_lgl_cbegin,
+      R_TYPE_logical,
+      int,
+      r_lgl_begin,
+      1,
+      rray_all_lgl_one_na_rm,
+      RRAY_REDUCE_NO_ARGS
+    );
+  } else {
+    RRAY_REDUCE(
+      int,
+      r_lgl_cbegin,
+      R_TYPE_logical,
+      int,
+      r_lgl_begin,
+      1,
+      rray_all_lgl_one,
+      RRAY_REDUCE_NO_ARGS
+    );
+  }
 }
 
 static r_obj* rray_any_lgl(
   r_obj* x,
+  bool na_rm,
   r_ssize out_size,
   const int* v_dimensions,
   int dimensionality,
   const r_ssize* v_out_broadcast_strides,
   struct r_lazy error_call
 ) {
-  RRAY_REDUCE(
-    int,
-    r_lgl_cbegin,
-    R_TYPE_logical,
-    int,
-    r_lgl_begin,
-    0,
-    rray_any_lgl_one,
-    RRAY_REDUCE_NO_ARGS
-  );
-}
-
-static r_obj* rray_any_lgl_na_rm(
-  r_obj* x,
-  r_ssize out_size,
-  const int* v_dimensions,
-  int dimensionality,
-  const r_ssize* v_out_broadcast_strides,
-  struct r_lazy error_call
-) {
-  RRAY_REDUCE(
-    int,
-    r_lgl_cbegin,
-    R_TYPE_logical,
-    int,
-    r_lgl_begin,
-    0,
-    rray_any_lgl_one_na_rm,
-    RRAY_REDUCE_NO_ARGS
-  );
+  if (na_rm) {
+    RRAY_REDUCE(
+      int,
+      r_lgl_cbegin,
+      R_TYPE_logical,
+      int,
+      r_lgl_begin,
+      0,
+      rray_any_lgl_one_na_rm,
+      RRAY_REDUCE_NO_ARGS
+    );
+  } else {
+    RRAY_REDUCE(
+      int,
+      r_lgl_cbegin,
+      R_TYPE_logical,
+      int,
+      r_lgl_begin,
+      0,
+      rray_any_lgl_one,
+      RRAY_REDUCE_NO_ARGS
+    );
+  }
 }
