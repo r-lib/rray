@@ -6,6 +6,8 @@
 #include "missing.h"
 #include "reduce-names.h"
 #include "size.h"
+#include "strided-iterator.h"
+#include "strides.h"
 #include "type.h"
 #include "utils.h"
 
@@ -16,10 +18,9 @@ enum rray_locate_op {
 
 typedef void (*rray_locate_fn)(
   r_obj* x,
+  r_obj* best,
   bool na_rm,
-  r_ssize inner_size,
-  r_ssize axis_dimension,
-  r_ssize outer_size,
+  struct rray_run_iterator* it,
   int* v_out
 );
 
@@ -90,28 +91,47 @@ static r_obj* rray_locate(
 
   const rray_locate_fn fn = rray_locate_switch(x, op, arg, error_call);
 
-  const r_ssize inner_size =
-    rray_size_from_dimensions(v_x_dimensions, axis - 1);
-  const r_ssize axis_dimension = v_x_dimensions[axis - 1];
-  const r_ssize outer_size =
-    rray_size_from_dimensions(v_x_dimensions + axis, dimensionality - axis);
-  const r_ssize out_size = inner_size * outer_size;
-
-  r_obj* out = KEEP(r_alloc_integer(out_size));
-  int* v_out = r_int_begin(out);
-
-  if (axis_dimension == 0) {
-    for (r_ssize i = 0; i < out_size; ++i) {
-      v_out[i] = r_globals.na_int;
-    }
-  } else {
-    fn(x, na_rm, inner_size, axis_dimension, outer_size, v_out);
-  }
-
   r_obj* out_dimensions = KEEP(r_alloc_integer(dimensionality));
   int* v_out_dimensions = r_int_begin(out_dimensions);
   r_memcpy(v_out_dimensions, v_x_dimensions, sizeof(int) * dimensionality);
   v_out_dimensions[axis - 1] = 1;
+
+  const r_ssize out_size =
+    rray_size_from_dimensions(v_out_dimensions, dimensionality);
+
+  r_obj* out = KEEP(r_alloc_integer(out_size));
+  int* v_out = r_int_begin(out);
+
+  if (v_x_dimensions[axis - 1] == 0) {
+    for (r_ssize i = 0; i < out_size; ++i) {
+      v_out[i] = r_globals.na_int;
+    }
+  } else {
+    r_ssize v_out_broadcast_strides[RRAY_MAX_DIMENSIONALITY];
+    rray_fill_broadcast_strides_from_dimensions(
+      v_out_dimensions,
+      dimensionality,
+      dimensionality,
+      v_out_broadcast_strides
+    );
+
+    r_ssize v_position_strides[RRAY_MAX_DIMENSIONALITY] = {0};
+    v_position_strides[axis - 1] = 1;
+
+    struct rray_run_iterator it;
+    rray_run_iterator_init2(
+      &it,
+      v_x_dimensions,
+      dimensionality,
+      v_out_broadcast_strides,
+      v_position_strides
+    );
+
+    r_obj* best = KEEP(r_alloc_vector(r_typeof(x), out_size));
+    fn(x, best, na_rm, &it, v_out);
+    FREE(1);
+  }
+
   r_attrib_poke_dim(out, out_dimensions);
 
   r_obj* axes = KEEP(r_int(axis));
@@ -186,52 +206,78 @@ static r_no_return void stop_unsupported_locate(
   );
 }
 
-#define RRAY_LOCATE(CTYPE, CONST_DEREF, IS_MISSING, ONE)                       \
+#define RRAY_LOCATE(CTYPE, CONST_DEREF, DEREF, IS_MISSING, ONE)                \
   const CTYPE* v_x = CONST_DEREF(x);                                           \
+  CTYPE* v_best = DEREF(best);                                                 \
                                                                                \
-  for (r_ssize i = 0; i < outer_size; ++i) {                                   \
-    const CTYPE* v_x_block = v_x + i * axis_dimension * inner_size;            \
-    int* v_out_block = v_out + i * inner_size;                                 \
+  for (; !rray_run_iterator_done(it); rray_run_iterator_next2(it)) {           \
+    r_ssize start = rray_run_iterator_start(it);                               \
+    const r_ssize end = rray_run_iterator_end(it);                             \
                                                                                \
-    for (r_ssize j = 0; j < inner_size; ++j) {                                 \
-      v_out_block[j] = 1;                                                      \
-    }                                                                          \
+    r_ssize out_loc = rray_run_iterator_loc(it, 0);                            \
+    const r_ssize out_stride = rray_run_iterator_stride(it, 0);                \
                                                                                \
-    for (r_ssize k = 1; k < axis_dimension; ++k) {                             \
-      const CTYPE* v_x_row = v_x_block + k * inner_size;                       \
+    int position = (int) rray_run_iterator_loc(it, 1) + 1;                     \
+    const int position_stride = (int) rray_run_iterator_stride(it, 1);         \
                                                                                \
-      for (r_ssize j = 0; j < inner_size; ++j) {                               \
-        const CTYPE best = v_x_block[(v_out_block[j] - 1) * inner_size + j];   \
+    if (out_stride == 0) {                                                     \
+      if (position == 1) {                                                     \
+        v_best[out_loc] = v_x[start];                                          \
+        v_out[out_loc] = 1;                                                    \
+        ++start;                                                               \
+        position += position_stride;                                           \
+      }                                                                        \
                                                                                \
-        if (ONE(v_x_row[j], best)) {                                           \
-          v_out_block[j] = (int) (k + 1);                                      \
-        }                                                                      \
+      CTYPE best_elt = v_best[out_loc];                                        \
+      int best_position = v_out[out_loc];                                      \
+                                                                               \
+      for (r_ssize i = start; i < end; ++i) {                                  \
+        const CTYPE x_elt = v_x[i];                                            \
+        const bool is_better = ONE(x_elt, best_elt);                           \
+        best_elt = is_better ? x_elt : best_elt;                               \
+        best_position = is_better ? position : best_position;                  \
+        position += position_stride;                                           \
+      }                                                                        \
+                                                                               \
+      v_best[out_loc] = best_elt;                                              \
+      v_out[out_loc] = best_position;                                          \
+    } else if (position == 1) {                                                \
+      for (r_ssize i = start; i < end; ++i) {                                  \
+        v_best[out_loc] = v_x[i];                                              \
+        v_out[out_loc] = 1;                                                    \
+        out_loc += out_stride;                                                 \
+      }                                                                        \
+    } else {                                                                   \
+      for (r_ssize i = start; i < end; ++i) {                                  \
+        const CTYPE x_elt = v_x[i];                                            \
+        const bool is_better = ONE(x_elt, v_best[out_loc]);                    \
+        v_best[out_loc] = is_better ? x_elt : v_best[out_loc];                 \
+        v_out[out_loc] = is_better ? position : v_out[out_loc];                \
+        out_loc += out_stride;                                                 \
       }                                                                        \
     }                                                                          \
+  }                                                                            \
                                                                                \
-    if (na_rm) {                                                               \
-      for (r_ssize j = 0; j < inner_size; ++j) {                               \
-        const CTYPE best = v_x_block[(v_out_block[j] - 1) * inner_size + j];   \
+  if (na_rm) {                                                                 \
+    const r_ssize out_size = r_length(best);                                   \
                                                                                \
-        if (IS_MISSING(best)) {                                                \
-          v_out_block[j] = r_globals.na_int;                                   \
-        }                                                                      \
-      }                                                                        \
+    for (r_ssize i = 0; i < out_size; ++i) {                                   \
+      v_out[i] = IS_MISSING(v_best[i]) ? r_globals.na_int : v_out[i];          \
     }                                                                          \
   }
 
 static void rray_locate_max_lgl(
   r_obj* x,
+  r_obj* best,
   bool na_rm,
-  r_ssize inner_size,
-  r_ssize axis_dimension,
-  r_ssize outer_size,
+  struct rray_run_iterator* it,
   int* v_out
 ) {
   if (na_rm) {
     RRAY_LOCATE(
       int,
       r_lgl_cbegin,
+      r_lgl_begin,
       rray_lgl_is_missing,
       rray_locate_max_lgl_one_na_rm
     );
@@ -239,6 +285,7 @@ static void rray_locate_max_lgl(
     RRAY_LOCATE(
       int,
       r_lgl_cbegin,
+      r_lgl_begin,
       rray_lgl_is_missing,
       rray_locate_max_lgl_one
     );
@@ -247,16 +294,16 @@ static void rray_locate_max_lgl(
 
 static void rray_locate_max_int(
   r_obj* x,
+  r_obj* best,
   bool na_rm,
-  r_ssize inner_size,
-  r_ssize axis_dimension,
-  r_ssize outer_size,
+  struct rray_run_iterator* it,
   int* v_out
 ) {
   if (na_rm) {
     RRAY_LOCATE(
       int,
       r_int_cbegin,
+      r_int_begin,
       rray_int_is_missing,
       rray_locate_max_int_one_na_rm
     );
@@ -264,6 +311,7 @@ static void rray_locate_max_int(
     RRAY_LOCATE(
       int,
       r_int_cbegin,
+      r_int_begin,
       rray_int_is_missing,
       rray_locate_max_int_one
     );
@@ -272,16 +320,16 @@ static void rray_locate_max_int(
 
 static void rray_locate_max_dbl(
   r_obj* x,
+  r_obj* best,
   bool na_rm,
-  r_ssize inner_size,
-  r_ssize axis_dimension,
-  r_ssize outer_size,
+  struct rray_run_iterator* it,
   int* v_out
 ) {
   if (na_rm) {
     RRAY_LOCATE(
       double,
       r_dbl_cbegin,
+      r_dbl_begin,
       rray_dbl_is_missing,
       rray_locate_max_dbl_one_na_rm
     );
@@ -289,6 +337,7 @@ static void rray_locate_max_dbl(
     RRAY_LOCATE(
       double,
       r_dbl_cbegin,
+      r_dbl_begin,
       rray_dbl_is_missing,
       rray_locate_max_dbl_one
     );
@@ -297,16 +346,16 @@ static void rray_locate_max_dbl(
 
 static void rray_locate_min_lgl(
   r_obj* x,
+  r_obj* best,
   bool na_rm,
-  r_ssize inner_size,
-  r_ssize axis_dimension,
-  r_ssize outer_size,
+  struct rray_run_iterator* it,
   int* v_out
 ) {
   if (na_rm) {
     RRAY_LOCATE(
       int,
       r_lgl_cbegin,
+      r_lgl_begin,
       rray_lgl_is_missing,
       rray_locate_min_lgl_one_na_rm
     );
@@ -314,6 +363,7 @@ static void rray_locate_min_lgl(
     RRAY_LOCATE(
       int,
       r_lgl_cbegin,
+      r_lgl_begin,
       rray_lgl_is_missing,
       rray_locate_min_lgl_one
     );
@@ -322,16 +372,16 @@ static void rray_locate_min_lgl(
 
 static void rray_locate_min_int(
   r_obj* x,
+  r_obj* best,
   bool na_rm,
-  r_ssize inner_size,
-  r_ssize axis_dimension,
-  r_ssize outer_size,
+  struct rray_run_iterator* it,
   int* v_out
 ) {
   if (na_rm) {
     RRAY_LOCATE(
       int,
       r_int_cbegin,
+      r_int_begin,
       rray_int_is_missing,
       rray_locate_min_int_one_na_rm
     );
@@ -339,6 +389,7 @@ static void rray_locate_min_int(
     RRAY_LOCATE(
       int,
       r_int_cbegin,
+      r_int_begin,
       rray_int_is_missing,
       rray_locate_min_int_one
     );
@@ -347,16 +398,16 @@ static void rray_locate_min_int(
 
 static void rray_locate_min_dbl(
   r_obj* x,
+  r_obj* best,
   bool na_rm,
-  r_ssize inner_size,
-  r_ssize axis_dimension,
-  r_ssize outer_size,
+  struct rray_run_iterator* it,
   int* v_out
 ) {
   if (na_rm) {
     RRAY_LOCATE(
       double,
       r_dbl_cbegin,
+      r_dbl_begin,
       rray_dbl_is_missing,
       rray_locate_min_dbl_one_na_rm
     );
@@ -364,6 +415,7 @@ static void rray_locate_min_dbl(
     RRAY_LOCATE(
       double,
       r_dbl_cbegin,
+      r_dbl_begin,
       rray_dbl_is_missing,
       rray_locate_min_dbl_one
     );
@@ -399,7 +451,7 @@ static inline bool rray_locate_max_dbl_one(double x, double best) {
 }
 
 static inline bool rray_locate_max_dbl_one_na_rm(double x, double best) {
-  return !rray_dbl_is_missing(x) && (rray_dbl_is_missing(best) || x > best);
+  return !rray_dbl_is_missing(x) && !(x <= best);
 }
 
 static inline bool rray_locate_min_lgl_one(int x, int best) {
@@ -431,5 +483,5 @@ static inline bool rray_locate_min_dbl_one(double x, double best) {
 }
 
 static inline bool rray_locate_min_dbl_one_na_rm(double x, double best) {
-  return !rray_dbl_is_missing(x) && (rray_dbl_is_missing(best) || x < best);
+  return !rray_dbl_is_missing(x) && !(x >= best);
 }
