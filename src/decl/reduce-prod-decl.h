@@ -1,4 +1,4 @@
-static rray_reduce2_fn rray_prod_switch(
+static rray_reduce_fn rray_prod_switch(
   r_obj* x,
   struct rray_arg* arg,
   struct r_lazy error_call

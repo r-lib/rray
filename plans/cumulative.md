@@ -89,11 +89,9 @@ the next block begins at offset 6
 ```
 
 Make `RRAY_CUMULATIVE()` analogous to `RRAY_REDUCE()`: typed input and output
-accessors, output type, initial state, one-element operation, and optional
-extra operation arguments. The macro allocates one output vector, obtains
-input and output pointers once, and writes every prefix. Use the established
-`RRAY_REDUCE_ARGS(...)` and `RRAY_REDUCE_NO_ARGS` pattern, or equivalent
-cumulative names, without a nonportable empty variadic argument.
+accessors, output type, initial state, and one-element operation. The macro
+allocates one output vector, obtains input and output pointers once, and
+writes every prefix.
 
 Process each block in axis order and each `k` across adjacent `j` lanes.
 At `k = 0`, apply the operation to its identity and the first input. At

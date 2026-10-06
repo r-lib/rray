@@ -42,10 +42,10 @@ r_obj* rray_mean(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  return rray_reduce2(x, axes, na_rm, rray_mean_switch, arg, error_call);
+  return rray_reduce(x, axes, na_rm, rray_mean_switch, arg, error_call);
 }
 
-static rray_reduce2_fn rray_mean_switch(
+static rray_reduce_fn rray_mean_switch(
   r_obj* x,
   struct rray_arg* arg,
   struct r_lazy error_call
@@ -529,7 +529,7 @@ r_obj* ffi_test_rray_mean_forced_fallback(
 ) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
   const bool na_rm = r_arg_as_bool(ffi_na_rm, "na_rm");
-  return rray_reduce2(
+  return rray_reduce(
     ffi_x,
     ffi_axes,
     na_rm,
@@ -539,7 +539,7 @@ r_obj* ffi_test_rray_mean_forced_fallback(
   );
 }
 
-static rray_reduce2_fn rray_mean_forced_fallback_switch(
+static rray_reduce_fn rray_mean_forced_fallback_switch(
   r_obj* x,
   struct rray_arg* arg,
   struct r_lazy error_call

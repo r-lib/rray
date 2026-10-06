@@ -1,4 +1,4 @@
-static rray_reduce2_fn rray_sum_switch(
+static rray_reduce_fn rray_sum_switch(
   r_obj* x,
   struct rray_arg* arg,
   struct r_lazy error_call
@@ -51,7 +51,7 @@ static r_obj* rray_sum_lgl_or_int(
   struct r_lazy error_call
 );
 
-static rray_reduce2_fn rray_sum_forced_fallback_switch(
+static rray_reduce_fn rray_sum_forced_fallback_switch(
   r_obj* x,
   struct rray_arg* arg,
   struct r_lazy error_call

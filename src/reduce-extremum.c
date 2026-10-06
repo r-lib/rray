@@ -39,7 +39,7 @@ r_obj* rray_max(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  return rray_reduce2(x, axes, na_rm, rray_max_switch, arg, error_call);
+  return rray_reduce(x, axes, na_rm, rray_max_switch, arg, error_call);
 }
 
 r_obj* rray_min(
@@ -49,10 +49,10 @@ r_obj* rray_min(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  return rray_reduce2(x, axes, na_rm, rray_min_switch, arg, error_call);
+  return rray_reduce(x, axes, na_rm, rray_min_switch, arg, error_call);
 }
 
-static rray_reduce2_fn rray_max_switch(
+static rray_reduce_fn rray_max_switch(
   r_obj* x,
   struct rray_arg* arg,
   struct r_lazy error_call
@@ -78,7 +78,7 @@ static rray_reduce2_fn rray_max_switch(
   r_stop_unreachable();
 }
 
-static rray_reduce2_fn rray_min_switch(
+static rray_reduce_fn rray_min_switch(
   r_obj* x,
   struct rray_arg* arg,
   struct r_lazy error_call
@@ -121,8 +121,7 @@ static r_obj* rray_max_lgl(
       int,
       r_lgl_begin,
       0,
-      rray_max_lgl_one_na_rm,
-      RRAY_REDUCE_NO_ARGS
+      rray_max_lgl_one_na_rm
     );
   } else {
     RRAY_REDUCE(
@@ -132,8 +131,7 @@ static r_obj* rray_max_lgl(
       int,
       r_lgl_begin,
       0,
-      rray_max_lgl_one,
-      RRAY_REDUCE_NO_ARGS
+      rray_max_lgl_one
     );
   }
 }
@@ -155,8 +153,7 @@ static r_obj* rray_max_int(
       int,
       r_int_begin,
       -INT_MAX,
-      rray_max_int_one_na_rm,
-      RRAY_REDUCE_NO_ARGS
+      rray_max_int_one_na_rm
     );
   } else {
     RRAY_REDUCE(
@@ -166,8 +163,7 @@ static r_obj* rray_max_int(
       int,
       r_int_begin,
       -INT_MAX,
-      rray_max_int_one,
-      RRAY_REDUCE_NO_ARGS
+      rray_max_int_one
     );
   }
 }
@@ -189,8 +185,7 @@ static r_obj* rray_max_dbl(
       double,
       r_dbl_begin,
       -INFINITY,
-      rray_max_dbl_one_na_rm,
-      RRAY_REDUCE_NO_ARGS
+      rray_max_dbl_one_na_rm
     );
   } else {
     RRAY_REDUCE(
@@ -200,8 +195,7 @@ static r_obj* rray_max_dbl(
       double,
       r_dbl_begin,
       -INFINITY,
-      rray_max_dbl_one,
-      RRAY_REDUCE_NO_ARGS
+      rray_max_dbl_one
     );
   }
 }
@@ -223,8 +217,7 @@ static r_obj* rray_min_lgl(
       int,
       r_lgl_begin,
       1,
-      rray_min_lgl_one_na_rm,
-      RRAY_REDUCE_NO_ARGS
+      rray_min_lgl_one_na_rm
     );
   } else {
     RRAY_REDUCE(
@@ -234,8 +227,7 @@ static r_obj* rray_min_lgl(
       int,
       r_lgl_begin,
       1,
-      rray_min_lgl_one,
-      RRAY_REDUCE_NO_ARGS
+      rray_min_lgl_one
     );
   }
 }
@@ -257,8 +249,7 @@ static r_obj* rray_min_int(
       int,
       r_int_begin,
       INT_MAX,
-      rray_min_int_one_na_rm,
-      RRAY_REDUCE_NO_ARGS
+      rray_min_int_one_na_rm
     );
   } else {
     RRAY_REDUCE(
@@ -268,8 +259,7 @@ static r_obj* rray_min_int(
       int,
       r_int_begin,
       INT_MAX,
-      rray_min_int_one,
-      RRAY_REDUCE_NO_ARGS
+      rray_min_int_one
     );
   }
 }
@@ -291,8 +281,7 @@ static r_obj* rray_min_dbl(
       double,
       r_dbl_begin,
       INFINITY,
-      rray_min_dbl_one_na_rm,
-      RRAY_REDUCE_NO_ARGS
+      rray_min_dbl_one_na_rm
     );
   } else {
     RRAY_REDUCE(
@@ -302,8 +291,7 @@ static r_obj* rray_min_dbl(
       double,
       r_dbl_begin,
       INFINITY,
-      rray_min_dbl_one,
-      RRAY_REDUCE_NO_ARGS
+      rray_min_dbl_one
     );
   }
 }
