@@ -72,6 +72,10 @@ r_no_return void stop_scalar_input(
   );
 }
 
+r_no_return void stop_int_overflow(struct r_lazy error_call) {
+  r_abort_lazy_call(error_call, "Integer overflow.");
+}
+
 r_obj* arg_as_bare_integer(
   r_obj* x,
   struct rray_arg* arg,

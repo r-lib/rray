@@ -5,7 +5,6 @@
 
 #include "rlang.h"
 
-#include "arithmetic.h"
 #include "missing.h"
 #include "utils.h"
 

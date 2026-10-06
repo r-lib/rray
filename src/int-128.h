@@ -4,7 +4,7 @@
 #include <limits.h>
 #include <stdint.h>
 
-#include "arithmetic.h"
+#include "utils.h"
 
 // A signed 128-bit value represented as `hi * 2^64 + lo`.
 // `lo` holds the low 64 bits, and `hi` holds the signed high 64 bits.

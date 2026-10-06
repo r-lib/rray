@@ -2,7 +2,6 @@
 
 #include <stdint.h>
 
-#include "arithmetic.h"
 #include "int-128.h"
 #include "reduce.h"
 #include "type.h"

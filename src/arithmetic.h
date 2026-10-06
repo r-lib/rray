@@ -41,6 +41,4 @@ r_no_return void stop_unsupported_arithmetic(
   struct r_lazy error_call
 );
 
-r_no_return void stop_int_overflow(struct r_lazy error_call);
-
 #endif

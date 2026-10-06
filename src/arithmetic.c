@@ -101,7 +101,3 @@ r_no_return void stop_unsupported_arithmetic(
     rray_arg_type_format(y_arg, rray_typeof(y))
   );
 }
-
-r_no_return void stop_int_overflow(struct r_lazy error_call) {
-  r_abort_lazy_call(error_call, "Integer overflow.");
-}
