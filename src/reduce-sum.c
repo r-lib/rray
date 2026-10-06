@@ -486,6 +486,7 @@ static r_obj* rray_sum_int_fallback(
 
   int n_prot = 0;
 
+  // Initializes with 0
   r_obj* sums =
     KEEP_N(r_alloc_raw0(out_size * sizeof(struct rray_int128)), &n_prot);
   struct rray_int128* v_sums = (struct rray_int128*) r_raw_begin(sums);
@@ -493,6 +494,7 @@ static r_obj* rray_sum_int_fallback(
   bool* v_missings = NULL;
 
   if (!na_rm) {
+    // Initializes with `false` for missings
     r_obj* missings = KEEP_N(r_alloc_raw0(out_size * sizeof(bool)), &n_prot);
     v_missings = (bool*) r_raw_begin(missings);
   }
