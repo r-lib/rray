@@ -15,6 +15,7 @@ reference:
 - title: Reducers
   contents:
   - rray-reduce
+  - rray-locate
 
 - title: Combining and Splitting
   contents:

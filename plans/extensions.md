@@ -234,7 +234,7 @@ returns a **bare** array with no class restored.
 
 - `rray_all()` and `rray_any()` return a bare logical array.
 
-- `rray_max_pos()` and `rray_min_pos()` return a bare integer array.
+- `rray_locate_max()` and `rray_locate_min()` return a bare integer array.
 
 A comparison of two `foo_array`s is a logical array, not a `foo_array`. Stated
 once: **these hooks are only for operators whose output type equals their input
