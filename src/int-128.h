@@ -58,6 +58,11 @@ static inline bool rray_int128_fits_int64(struct rray_int128 x) {
   return (x.hi == 0 && x.lo <= INT64_MAX) || (x.hi == -1 && x.lo > INT64_MAX);
 }
 
+// Assumes you've guarded usage with `rray_int128_fits_int64()`
+static inline int64_t rray_int128_as_int64(struct rray_int128 x) {
+  return (int64_t) x.lo;
+}
+
 struct rray_int128_div_result {
   int64_t quotient;
   int64_t remainder;

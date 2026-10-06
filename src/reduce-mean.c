@@ -1024,7 +1024,7 @@ static inline double rray_mean_int64(int64_t sum, r_ssize count) {
 
 static inline double rray_mean_int128(struct rray_int128 sum, r_ssize count) {
   if (rray_int128_fits_int64(sum)) {
-    return rray_mean_int64((int64_t) sum.lo, count);
+    return rray_mean_int64(rray_int128_as_int64(sum), count);
   }
 
   const struct rray_int128_div_result div = rray_int128_div(sum, count);
