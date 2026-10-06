@@ -494,7 +494,7 @@ static r_obj* rray_sum_int_fallback(
   bool* v_missings = NULL;
 
   if (!na_rm) {
-    // Initializes with `false` for missings
+    // Initializes with `false`
     r_obj* missings = KEEP_N(r_alloc_raw0(out_size * sizeof(bool)), &n_prot);
     v_missings = (bool*) r_raw_begin(missings);
   }
