@@ -76,6 +76,14 @@ Logicals and integers are cast to double.
 \section{Mean}{
 
 Logicals and integers are cast to double.
+
+When \code{NA} and \code{NaN} are both present, you get one of them, but which one
+depends on the platform and the order of the values, like \code{\link[=mean]{mean()}}. Either
+way, \code{is.na()} is \code{TRUE}:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_mean(c(NA, NaN), 1L) # NA or NaN
+rray_mean(c(NaN, NA), 1L) # NA or NaN
+}\if{html}{\out{</div>}}
 }
 
 \section{Min / Max}{

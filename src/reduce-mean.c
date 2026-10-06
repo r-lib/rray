@@ -288,7 +288,6 @@ static r_obj* rray_mean_dbl(
     }
   }
 
-  bool any_missing = false;
   bool any_infinite = false;
 
   for (r_ssize i = 0; i < out_size; ++i) {
@@ -299,9 +298,7 @@ static r_obj* rray_mean_dbl(
       v_out[i] = R_FINITE(correction)
         ? mean + correction / (na_rm ? v_counts[i] : count)
         : mean;
-    } else if (ISNAN(mean)) {
-      any_missing = true;
-    } else {
+    } else if (!ISNAN(mean)) {
       any_infinite = true;
     }
   }
@@ -315,16 +312,6 @@ static r_obj* rray_mean_dbl(
       v_counts,
       out_size,
       count,
-      v_dimensions,
-      dimensionality,
-      v_out_broadcast_strides
-    );
-  }
-
-  if (!na_rm && any_missing) {
-    rray_mean_dbl_propagate_na(
-      v_x,
-      v_out,
       v_dimensions,
       dimensionality,
       v_out_broadcast_strides
@@ -532,40 +519,6 @@ static void rray_mean_dbl_rescale(
   }
 
   FREE(1);
-}
-
-// If any `NA` was present, we force `NA` in the output over any potential `NaN`
-static void rray_mean_dbl_propagate_na(
-  const double* v_x,
-  double* v_out,
-  const int* v_dimensions,
-  int dimensionality,
-  const r_ssize* v_out_broadcast_strides
-) {
-  const double na_dbl = r_globals.na_dbl;
-
-  struct rray_run_iterator it;
-  rray_run_iterator_init1(
-    &it,
-    v_dimensions,
-    dimensionality,
-    v_out_broadcast_strides
-  );
-
-  for (; !rray_run_iterator_done(&it); rray_run_iterator_next1(&it)) {
-    const r_ssize start = rray_run_iterator_start(&it);
-    const r_ssize end = rray_run_iterator_end(&it);
-
-    r_ssize out_loc = rray_run_iterator_loc(&it, 0);
-    const r_ssize out_stride = rray_run_iterator_stride(&it, 0);
-
-    for (r_ssize i = start; i < end; ++i) {
-      if (R_IsNA(v_x[i])) {
-        v_out[out_loc] = na_dbl;
-      }
-      out_loc += out_stride;
-    }
-  }
 }
 
 r_obj* ffi_test_rray_mean_forced_fallback(

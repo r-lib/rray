@@ -55,13 +55,6 @@ static void rray_mean_dbl_rescale(
   int dimensionality,
   const r_ssize* v_out_broadcast_strides
 );
-static void rray_mean_dbl_propagate_na(
-  const double* v_x,
-  double* v_out,
-  const int* v_dimensions,
-  int dimensionality,
-  const r_ssize* v_out_broadcast_strides
-);
 
 static rray_reduce2_fn rray_mean_forced_fallback_switch(
   r_obj* x,

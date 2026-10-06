@@ -212,7 +212,7 @@ test_that("logical NA propagates", {
   expect_identical(as.vector(rray_mean(x, 1L)), NA_real_)
 })
 
-test_that("double NA / NaN propagates, with NA winning over NaN", {
+test_that("double NA / NaN propagates", {
   x <- c(1, NA_real_)
   expect_identical(as.vector(rray_mean(x, 1L)), NA_real_)
 
@@ -223,10 +223,10 @@ test_that("double NA / NaN propagates, with NA winning over NaN", {
   expect_identical(as.vector(rray_mean(x, 1L)), NaN)
 
   x <- c(NA, NaN)
-  expect_identical(as.vector(rray_mean(x, 1L)), NA_real_)
+  expect_identical(is.na(rray_mean(x, 1L)), array(TRUE, 1L))
 
   x <- c(NaN, NA)
-  expect_identical(as.vector(rray_mean(x, 1L)), NA_real_)
+  expect_identical(is.na(rray_mean(x, 1L)), array(TRUE, 1L))
 })
 
 test_that("Inf matches base R mean", {
@@ -246,10 +246,9 @@ test_that("each output handles its own missing values and overflow", {
     c(1, NaN, 3, 4),
     c(1e308, 1e308, 1e308, 1e308),
     c(1e16, 1, 1, 1),
-    c(Inf, 1, 1, 1),
-    c(NaN, NA, 1, 1)
+    c(Inf, 1, 1, 1)
   )
-  expected <- c(NA, NaN, 1e308, 2500000000000001, Inf, NA)
+  expected <- c(NA, NaN, 1e308, 2500000000000001, Inf)
 
   expect_identical(as.vector(rray_mean(x, 2L)), expected)
   expect_identical(as.vector(rray_mean(t(x), 1L)), expected)
