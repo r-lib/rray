@@ -54,4 +54,60 @@ static inline int rray_int128_as_int(
   stop_int_overflow(error_call);
 }
 
+static inline bool rray_int128_fits_int64(struct rray_int128 x) {
+  return (x.hi == 0 && x.lo <= INT64_MAX) || (x.hi == -1 && x.lo > INT64_MAX);
+}
+
+// Assumes you've guarded usage with `rray_int128_fits_int64()`
+static inline int64_t rray_int128_as_int64(struct rray_int128 x) {
+  return (int64_t) x.lo;
+}
+
+struct rray_int128_div_result {
+  int64_t quotient;
+  int64_t remainder;
+};
+
+// Assumes the quotient fits in an `int64_t`, i.e. `|x / y| < 2^63`, and that
+// `y > 0`. This holds for usage in `rray_mean()` because each input is an
+// `int`, so `|sum| <= INT_MAX * count`, which rearranged is
+// `|sum / count| <= INT_MAX < 2^63`.
+static inline struct rray_int128_div_result rray_int128_div(
+  struct rray_int128 x,
+  int64_t y
+) {
+  const bool negative = x.hi < 0;
+
+  uint64_t hi = (uint64_t) x.hi;
+  uint64_t lo = x.lo;
+
+  if (negative) {
+    hi = ~hi + (lo == 0);
+    lo = -lo;
+  }
+
+  const uint64_t divisor = (uint64_t) y;
+
+  uint64_t quotient = 0;
+  uint64_t remainder = hi % divisor;
+
+  for (int i = 63; i >= 0; --i) {
+    remainder = (remainder << 1) | ((lo >> i) & 1);
+    quotient <<= 1;
+
+    if (remainder >= divisor) {
+      remainder -= divisor;
+      quotient |= 1;
+    }
+  }
+
+  const int64_t signed_quotient = (int64_t) quotient;
+  const int64_t signed_remainder = (int64_t) remainder;
+
+  return (struct rray_int128_div_result) {
+    .quotient = negative ? -signed_quotient : signed_quotient,
+    .remainder = negative ? -signed_remainder : signed_remainder
+  };
+}
+
 #endif

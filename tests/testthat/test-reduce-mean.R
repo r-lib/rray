@@ -116,40 +116,50 @@ test_that("integer means are exact when the total is above 2^53", {
   expect_identical(as.vector(rray_mean(x, 1L)), expected)
   expect_identical(as.vector(rray_mean(rbind(x, x), 2L)), c(expected, expected))
 
+  expect_identical(as.vector(rray_mean_forced_fallback(x, 1L)), expected)
+  expect_identical(
+    as.vector(rray_mean_forced_fallback(rbind(x, x), 2L)),
+    c(expected, expected)
+  )
+
+  expect_identical(as.vector(rray_mean(-x, 1L)), -expected)
+  expect_identical(as.vector(rray_mean_forced_fallback(-x, 1L)), -expected)
+
   x <- c(x, NA)
   expect_identical(as.vector(rray_mean(x, 1L, na_rm = TRUE)), expected)
   expect_identical(
     as.vector(rray_mean(rbind(x, x), 2L, na_rm = TRUE)),
     c(expected, expected)
   )
-})
 
-test_that("integer mean fallbacks are close when the total is above 2^53", {
-  x <- c(rep(.Machine$integer.max, 2^22 + 1), 1L, 1L)
-  expected <- 2147482623 + 3076 / 4194307
-
-  expect_equal(as.vector(rray_mean_forced_fallback(x, 1L)), expected)
-  expect_equal(
-    as.vector(rray_mean_forced_fallback(rbind(x, x), 2L)),
-    c(expected, expected)
-  )
-
-  x <- c(x, NA)
-  expect_equal(
+  expect_identical(
     as.vector(rray_mean_forced_fallback(x, 1L, na_rm = TRUE)),
     expected
   )
-  expect_equal(
+  expect_identical(
     as.vector(rray_mean_forced_fallback(rbind(x, x), 2L, na_rm = TRUE)),
     c(expected, expected)
   )
 })
 
-test_that("integer means past 2^32 elements fall back to a double total", {
+test_that("integer means past 2^32 elements fall back to an int128 total", {
   skip_if_not_testing_long_vectors()
 
   x <- array(.Machine$integer.max, c(2^16 + 1, 2^16))
   expected <- as.double(.Machine$integer.max)
+
+  expect_identical(as.vector(rray_mean(x, 1:2)), expected)
+  expect_identical(as.vector(rray_mean(x, 1:2, na_rm = TRUE)), expected)
+})
+
+test_that("integer means past 2^32 elements are exact for negative totals", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(-.Machine$integer.max, c(2^16 + 1, 2^16))
+  x[1L] <- 0L
+
+  n <- length(x)
+  expected <- -(.Machine$integer.max - 1) - (n - .Machine$integer.max) / n
 
   expect_identical(as.vector(rray_mean(x, 1:2)), expected)
   expect_identical(as.vector(rray_mean(x, 1:2, na_rm = TRUE)), expected)
