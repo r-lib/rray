@@ -18,31 +18,6 @@
 // reduction because it reads `x` linearly and avoids a separate inner traversal
 // for each output element.
 
-typedef r_obj* (*rray_reduce_fn)(
-  r_obj* x,
-  r_ssize out_size,
-  const int* v_dimensions,
-  int dimensionality,
-  const r_ssize* v_out_broadcast_strides,
-  struct r_lazy error_call
-);
-
-typedef rray_reduce_fn (*rray_reduce_fn_switch)(
-  r_obj* x,
-  bool na_rm,
-  struct rray_arg* arg,
-  struct r_lazy error_call
-);
-
-r_obj* rray_reduce(
-  r_obj* x,
-  r_obj* axes,
-  bool na_rm,
-  rray_reduce_fn_switch fn_switch,
-  struct rray_arg* arg,
-  struct r_lazy error_call
-);
-
 typedef r_obj* (*rray_reduce2_fn)(
   r_obj* x,
   bool na_rm,
