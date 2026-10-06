@@ -1023,6 +1023,9 @@ static inline double rray_mean_int64(int64_t sum, r_ssize count) {
 }
 
 static inline double rray_mean_int128(struct rray_int128 sum, r_ssize count) {
+  // Prefer int64 handler if possible. It handles the 0 `count` case, but more
+  // importantly if the int64 can be represented exactly as a double we get to
+  // use the lossless double conversion path.
   if (rray_int128_fits_int64(sum)) {
     return rray_mean_int64(rray_int128_as_int64(sum), count);
   }
