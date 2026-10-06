@@ -35,7 +35,7 @@ r_obj* rray_all(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  return rray_reduce2(x, axes, na_rm, rray_all_switch, arg, error_call);
+  return rray_reduce(x, axes, na_rm, rray_all_switch, arg, error_call);
 }
 
 r_obj* rray_any(
@@ -45,10 +45,10 @@ r_obj* rray_any(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  return rray_reduce2(x, axes, na_rm, rray_any_switch, arg, error_call);
+  return rray_reduce(x, axes, na_rm, rray_any_switch, arg, error_call);
 }
 
-static rray_reduce2_fn rray_all_switch(
+static rray_reduce_fn rray_all_switch(
   r_obj* x,
   struct rray_arg* arg,
   struct r_lazy error_call
@@ -57,7 +57,7 @@ static rray_reduce2_fn rray_all_switch(
   return rray_all_lgl;
 }
 
-static rray_reduce2_fn rray_any_switch(
+static rray_reduce_fn rray_any_switch(
   r_obj* x,
   struct rray_arg* arg,
   struct r_lazy error_call
@@ -83,8 +83,7 @@ static r_obj* rray_all_lgl(
       int,
       r_lgl_begin,
       1,
-      rray_all_lgl_one_na_rm,
-      RRAY_REDUCE_NO_ARGS
+      rray_all_lgl_one_na_rm
     );
   } else {
     RRAY_REDUCE(
@@ -94,8 +93,7 @@ static r_obj* rray_all_lgl(
       int,
       r_lgl_begin,
       1,
-      rray_all_lgl_one,
-      RRAY_REDUCE_NO_ARGS
+      rray_all_lgl_one
     );
   }
 }
@@ -117,8 +115,7 @@ static r_obj* rray_any_lgl(
       int,
       r_lgl_begin,
       0,
-      rray_any_lgl_one_na_rm,
-      RRAY_REDUCE_NO_ARGS
+      rray_any_lgl_one_na_rm
     );
   } else {
     RRAY_REDUCE(
@@ -128,8 +125,7 @@ static r_obj* rray_any_lgl(
       int,
       r_lgl_begin,
       0,
-      rray_any_lgl_one,
-      RRAY_REDUCE_NO_ARGS
+      rray_any_lgl_one
     );
   }
 }

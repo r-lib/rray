@@ -1,4 +1,4 @@
-static rray_reduce2_fn rray_mean_switch(
+static rray_reduce_fn rray_mean_switch(
   r_obj* x,
   struct rray_arg* arg,
   struct r_lazy error_call
@@ -56,7 +56,7 @@ static void rray_mean_dbl_rescale(
   const r_ssize* v_out_broadcast_strides
 );
 
-static rray_reduce2_fn rray_mean_forced_fallback_switch(
+static rray_reduce_fn rray_mean_forced_fallback_switch(
   r_obj* x,
   struct rray_arg* arg,
   struct r_lazy error_call

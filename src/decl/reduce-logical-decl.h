@@ -1,9 +1,9 @@
-static rray_reduce2_fn rray_all_switch(
+static rray_reduce_fn rray_all_switch(
   r_obj* x,
   struct rray_arg* arg,
   struct r_lazy error_call
 );
-static rray_reduce2_fn rray_any_switch(
+static rray_reduce_fn rray_any_switch(
   r_obj* x,
   struct rray_arg* arg,
   struct r_lazy error_call

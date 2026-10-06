@@ -6,9 +6,6 @@
 #include "arg.h"
 #include "strided-iterator.h"
 
-#define RRAY_REDUCE_ARGS(...) , __VA_ARGS__
-#define RRAY_REDUCE_NO_ARGS
-
 // --------------------------------------------------------------------------
 // rray_reduce
 
@@ -18,7 +15,7 @@
 // reduction because it reads `x` linearly and avoids a separate inner traversal
 // for each output element.
 
-typedef r_obj* (*rray_reduce2_fn)(
+typedef r_obj* (*rray_reduce_fn)(
   r_obj* x,
   bool na_rm,
   r_ssize out_size,
@@ -28,17 +25,17 @@ typedef r_obj* (*rray_reduce2_fn)(
   struct r_lazy error_call
 );
 
-typedef rray_reduce2_fn (*rray_reduce2_fn_switch)(
+typedef rray_reduce_fn (*rray_reduce_fn_switch)(
   r_obj* x,
   struct rray_arg* arg,
   struct r_lazy error_call
 );
 
-r_obj* rray_reduce2(
+r_obj* rray_reduce(
   r_obj* x,
   r_obj* axes,
   bool na_rm,
-  rray_reduce2_fn_switch fn_switch,
+  rray_reduce_fn_switch fn_switch,
   struct rray_arg* arg,
   struct r_lazy error_call
 );
@@ -54,8 +51,7 @@ static inline r_ssize rray_reduce_count(r_ssize x_size, r_ssize out_size) {
   OUT_CTYPE,                                                                   \
   OUT_DEREF,                                                                   \
   OUT_INIT,                                                                    \
-  ONE,                                                                         \
-  ONE_ARGS                                                                     \
+  ONE                                                                          \
 )                                                                              \
   struct rray_run_iterator it;                                                 \
   rray_run_iterator_init1(                                                     \
@@ -83,11 +79,11 @@ static inline r_ssize rray_reduce_count(r_ssize x_size, r_ssize out_size) {
                                                                                \
     if (out_stride == 0) {                                                     \
       for (r_ssize i = start; i < end; ++i) {                                  \
-        v_out[out_loc] = ONE(v_out[out_loc], v_x[i] ONE_ARGS);                 \
+        v_out[out_loc] = ONE(v_out[out_loc], v_x[i]);                          \
       }                                                                        \
     } else {                                                                   \
       for (r_ssize i = start; i < end; ++i) {                                  \
-        v_out[out_loc] = ONE(v_out[out_loc], v_x[i] ONE_ARGS);                 \
+        v_out[out_loc] = ONE(v_out[out_loc], v_x[i]);                          \
         out_loc += out_stride;                                                 \
       }                                                                        \
     }                                                                          \

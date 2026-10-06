@@ -9,11 +9,11 @@
 #include "type.h"
 #include "utils.h"
 
-r_obj* rray_reduce2(
+r_obj* rray_reduce(
   r_obj* x,
   r_obj* axes,
   bool na_rm,
-  rray_reduce2_fn_switch fn_switch,
+  rray_reduce_fn_switch fn_switch,
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
@@ -48,7 +48,7 @@ r_obj* rray_reduce2(
     v_out_broadcast_strides
   );
 
-  const rray_reduce2_fn fn = fn_switch(x, arg, error_call);
+  const rray_reduce_fn fn = fn_switch(x, arg, error_call);
 
   r_obj* out = KEEP(fn(
     x,
