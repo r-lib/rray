@@ -56,7 +56,33 @@ test_that("can reduce axis 3", {
   expect_identical(as.vector(out), c(10, 11, 12, 13, 14, 15))
 })
 
+test_that("works over every combination of axes", {
+  x <- array(c(1e16, 1, -3, 7e15, 1, 1), c(1L, 3L, 2L, 4L))
+
+  expect_identical(rray_mean(x, 1L), x)
+  expect_identical(
+    rray_mean(x, 2L),
+    array(c((1e16 - 2) / 3, (7e15 + 2) / 3), c(1L, 1L, 2L, 4L))
+  )
+  expect_identical(
+    rray_mean(x, 3L),
+    array(c(8.5e15, 1, -1), c(1L, 3L, 1L, 4L))
+  )
+  expect_identical(
+    rray_mean(x, 4L),
+    array(c(1e16, 1, -3, 7e15, 1, 1), c(1L, 3L, 2L, 1L))
+  )
+  expect_identical(rray_mean(x, c(1L, 3L)), rray_mean(x, 3L))
+  expect_identical(
+    rray_mean(x, c(2L, 4L)),
+    array(c((1e16 - 2) / 3, (7e15 + 2) / 3), c(1L, 1L, 2L, 1L))
+  )
+  expect_identical(rray_mean(x, 1:4), array(1.7e16 / 6, c(1L, 1L, 1L, 1L)))
+})
+
 test_that("matches `mean()` over every combination of axes", {
+  skip_if_long_double()
+
   x <- array(c(1e16, 1, -3, 7e15, 1, 1), c(1L, 3L, 2L, 4L))
 
   expected <- function(axes) {
@@ -105,8 +131,14 @@ test_that("logical TRUE is averaged as 1", {
 
 test_that("a second pass corrects the rounding error of the first sum", {
   x <- c(1e16, 1, 1, 1)
-  expect_identical(as.vector(rray_mean(x, 1L)), mean(x))
   expect_identical(as.vector(rray_mean(x, 1L)), 2500000000000001)
+})
+
+test_that("a second pass matches `mean()`", {
+  skip_if_long_double()
+
+  x <- c(1e16, 1, 1, 1)
+  expect_identical(as.vector(rray_mean(x, 1L)), mean(x))
 })
 
 test_that("integer means are exact when the total is above 2^53", {
@@ -274,8 +306,19 @@ test_that("outputs that are fed by multiple runs are corrected", {
   out <- rray_mean(x, c(1L, 3L))
   expect_identical(
     as.vector(out),
-    c(2500000000000001, NA, mean(rep(1e308, 4L)))
+    c(2500000000000001, NA, 1e308)
   )
+})
+
+test_that("outputs that are fed by multiple runs match `mean()`", {
+  skip_if_long_double()
+
+  x <- array(
+    c(1e16, 1, NA, 1, 1e308, 1e308, 1, 1, 1e16, 1, 1e308, 1e308),
+    c(2L, 3L, 2L)
+  )
+  out <- rray_mean(x, c(1L, 3L))
+  expect_identical(as.vector(out), apply(x, 2L, mean))
 })
 
 test_that("integer outputs can be fed by multiple runs", {
@@ -364,7 +407,23 @@ test_that("na_rm counts the missing values of each output", {
     c(1e16, NA, 1, 1),
     c(-Inf, NA, 1, 1)
   )
-  expected <- c(2, NaN, mean(rep(1e308, 3L)), 3333333333333334, -Inf)
+  expected <- c(2, NaN, 1e308, 3333333333333334, -Inf)
+
+  expect_identical(as.vector(rray_mean(x, 2L, na_rm = TRUE)), expected)
+  expect_identical(as.vector(rray_mean(t(x), 1L, na_rm = TRUE)), expected)
+})
+
+test_that("na_rm matches `mean()` for each output", {
+  skip_if_long_double()
+
+  x <- rbind(
+    c(1, NA, 3, NaN),
+    c(NA, NA, NA, NA),
+    c(1e308, 1e308, NA, 1e308),
+    c(1e16, NA, 1, 1),
+    c(-Inf, NA, 1, 1)
+  )
+  expected <- apply(x, 1L, mean, na.rm = TRUE)
 
   expect_identical(as.vector(rray_mean(x, 2L, na_rm = TRUE)), expected)
   expect_identical(as.vector(rray_mean(t(x), 1L, na_rm = TRUE)), expected)
@@ -402,7 +461,56 @@ test_that("na_rm with no missing values matches the default", {
   )
 })
 
+test_that("na_rm works over every combination of axes", {
+  x <- array(c(1e16, 1, -3, 7e15, 1, 1), c(1L, 3L, 2L, 4L))
+  x[c(1L, 5L, 9L, 20L)] <- NA
+  x[c(2L, 6L)] <- NaN
+
+  expect_identical(rray_mean(x, 1L, na_rm = TRUE), replace(x, is.na(x), NaN))
+  expect_identical(
+    rray_mean(x, 2L, na_rm = TRUE),
+    array(
+      c(
+        -3,
+        7e15,
+        5e15,
+        2333333333333334,
+        6666666666666665 / 2,
+        2333333333333334,
+        4999999999999998,
+        2333333333333334
+      ),
+      c(1L, 1L, 2L, 4L)
+    )
+  )
+  expect_identical(
+    rray_mean(x, 3L, na_rm = TRUE),
+    array(
+      c(7e15, NaN, -3, 8.5e15, 1, 1, 8.5e15, 1, -1, 8.5e15, 1, -1),
+      c(1L, 3L, 1L, 4L)
+    )
+  )
+  expect_identical(
+    rray_mean(x, 4L, na_rm = TRUE),
+    array(c(1e16, 1, -3, 7e15, 1, 1), c(1L, 3L, 2L, 1L))
+  )
+  expect_identical(
+    rray_mean(x, c(1L, 3L), na_rm = TRUE),
+    rray_mean(x, 3L, na_rm = TRUE)
+  )
+  expect_identical(
+    rray_mean(x, c(2L, 4L), na_rm = TRUE),
+    array(c(7499999999999999 / 2, 5600000000000001 / 2), c(1L, 1L, 2L, 1L))
+  )
+  expect_identical(
+    rray_mean(x, 1:4, na_rm = TRUE),
+    array(3222222222222222, c(1L, 1L, 1L, 1L))
+  )
+})
+
 test_that("na_rm matches `mean()` over every combination of axes", {
+  skip_if_long_double()
+
   x <- array(c(1e16, 1, -3, 7e15, 1, 1), c(1L, 3L, 2L, 4L))
   x[c(1L, 5L, 9L, 20L)] <- NA
   x[c(2L, 6L)] <- NaN
