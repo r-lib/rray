@@ -1,5 +1,8 @@
 #include "reduce-mean.h"
 
+#include <stdint.h>
+
+#include "int-128.h"
 #include "reduce.h"
 #include "type.h"
 #include "utils.h"
@@ -10,8 +13,8 @@
 // them add up to at most 2^63, which still fits in `int64_t`. If more than 2^32
 // inputs make up a single slot in the output there is a risk of overflow (from
 // reducing over two 2^16+1 length axes, all INT_MAX). `rray_mean_int()`
-// switches to `rray_mean_int_fallback()`, which sums directly in a double
-// instead, which is less precise but won't overflow.
+// switches to `rray_mean_int_fallback()`, which sums into our own minimal
+// `int128_t` instead, which is slower but won't overflow.
 #define RRAY_MEAN_INT64_MAX_COUNT ((r_ssize) 1 << 32)
 
 // For anything outside the bounds of this number, casting from `int64_t` to
@@ -678,8 +681,8 @@ static void rray_mean_lgl_or_int_propagate_na(
 }
 
 // Fallback method for int when it is a long vector. In that case, summing could
-// possibly overflow `int64_t`, so we perform the sum in a less precise `double`
-// instead, with correction.
+// possibly overflow `int64_t`, so we perform the sum in our own minimal
+// `int128_t` instead, which is slower but still lossless.
 static r_obj* rray_mean_int_fallback(
   const int* v_x,
   r_ssize out_size,
@@ -691,16 +694,11 @@ static r_obj* rray_mean_int_fallback(
   const int na_int = r_globals.na_int;
   const double na_dbl = r_globals.na_dbl;
 
-  r_obj* out = KEEP(r_alloc_double(out_size));
-  double* v_out = r_dbl_begin(out);
+  r_obj* sums = KEEP(r_alloc_raw0(out_size * sizeof(struct rray_int128)));
+  struct rray_int128* v_sums = (struct rray_int128*) r_raw_begin(sums);
 
-  r_obj* corrections = KEEP(r_alloc_double(out_size));
-  double* v_corrections = r_dbl_begin(corrections);
-
-  for (r_ssize i = 0; i < out_size; ++i) {
-    v_out[i] = 0.0;
-    v_corrections[i] = 0.0;
-  }
+  r_obj* missings = KEEP(r_alloc_raw0(out_size * sizeof(bool)));
+  bool* v_missings = (bool*) r_raw_begin(missings);
 
   struct rray_run_iterator it;
   rray_run_iterator_init1(
@@ -718,63 +716,37 @@ static r_obj* rray_mean_int_fallback(
     const r_ssize out_stride = rray_run_iterator_stride(&it, 0);
 
     if (out_stride == 0) {
-      double sum = v_out[out_loc];
+      struct rray_int128 sum = v_sums[out_loc];
+      bool missing = v_missings[out_loc];
 
       for (r_ssize i = start; i < end; ++i) {
         const int x_elt = v_x[i];
-        sum += x_elt == na_int ? na_dbl : x_elt;
+        const bool na = x_elt == na_int;
+        sum = rray_int128_add(sum, na ? 0 : x_elt);
+        missing |= na;
       }
 
-      v_out[out_loc] = sum;
+      v_sums[out_loc] = sum;
+      v_missings[out_loc] = missing;
     } else {
       for (r_ssize i = start; i < end; ++i) {
         const int x_elt = v_x[i];
-        v_out[out_loc] += x_elt == na_int ? na_dbl : x_elt;
+        const bool na = x_elt == na_int;
+        v_sums[out_loc] = rray_int128_add(v_sums[out_loc], na ? 0 : x_elt);
+        v_missings[out_loc] |= na;
         out_loc += out_stride;
       }
     }
   }
 
-  for (r_ssize i = 0; i < out_size; ++i) {
-    const double sum = v_out[i];
-    v_out[i] = ISNAN(sum) ? na_dbl : sum / count;
-  }
-
-  rray_run_iterator_reset1(&it);
-
-  for (; !rray_run_iterator_done(&it); rray_run_iterator_next1(&it)) {
-    const r_ssize start = rray_run_iterator_start(&it);
-    const r_ssize end = rray_run_iterator_end(&it);
-
-    r_ssize out_loc = rray_run_iterator_loc(&it, 0);
-    const r_ssize out_stride = rray_run_iterator_stride(&it, 0);
-
-    if (out_stride == 0) {
-      const double mean = v_out[out_loc];
-      double correction = v_corrections[out_loc];
-
-      for (r_ssize i = start; i < end; ++i) {
-        correction += v_x[i] - mean;
-      }
-
-      v_corrections[out_loc] = correction;
-    } else {
-      for (r_ssize i = start; i < end; ++i) {
-        v_corrections[out_loc] += v_x[i] - v_out[out_loc];
-        out_loc += out_stride;
-      }
-    }
-  }
+  r_obj* out = KEEP(r_alloc_double(out_size));
+  double* v_out = r_dbl_begin(out);
 
   for (r_ssize i = 0; i < out_size; ++i) {
-    const double mean = v_out[i];
-
-    if (R_FINITE(mean)) {
-      v_out[i] = mean + v_corrections[i] / count;
-    }
+    v_out[i] = v_missings[i] ? na_dbl : rray_mean_int128(v_sums[i], count);
   }
 
-  FREE(2);
+  FREE(3);
   return out;
 }
 
@@ -787,16 +759,8 @@ static r_obj* rray_mean_int_na_rm_fallback(
 ) {
   const int na_int = r_globals.na_int;
 
-  r_obj* out = KEEP(r_alloc_double(out_size));
-  double* v_out = r_dbl_begin(out);
-
-  r_obj* corrections = KEEP(r_alloc_double(out_size));
-  double* v_corrections = r_dbl_begin(corrections);
-
-  for (r_ssize i = 0; i < out_size; ++i) {
-    v_out[i] = 0.0;
-    v_corrections[i] = 0.0;
-  }
+  r_obj* sums = KEEP(r_alloc_raw0(out_size * sizeof(struct rray_int128)));
+  struct rray_int128* v_sums = (struct rray_int128*) r_raw_begin(sums);
 
   r_obj* counts = KEEP(r_alloc_raw0(out_size * sizeof(r_ssize)));
   r_ssize* v_counts = (r_ssize*) r_raw_begin(counts);
@@ -817,67 +781,34 @@ static r_obj* rray_mean_int_na_rm_fallback(
     const r_ssize out_stride = rray_run_iterator_stride(&it, 0);
 
     if (out_stride == 0) {
-      double sum = v_out[out_loc];
+      struct rray_int128 sum = v_sums[out_loc];
       r_ssize count = v_counts[out_loc];
 
       for (r_ssize i = start; i < end; ++i) {
         const int x_elt = v_x[i];
         const bool na = x_elt == na_int;
-        sum += na ? 0 : x_elt;
+        sum = rray_int128_add(sum, na ? 0 : x_elt);
         count += !na;
       }
 
-      v_out[out_loc] = sum;
+      v_sums[out_loc] = sum;
       v_counts[out_loc] = count;
     } else {
       for (r_ssize i = start; i < end; ++i) {
         const int x_elt = v_x[i];
         const bool na = x_elt == na_int;
-        v_out[out_loc] += na ? 0 : x_elt;
+        v_sums[out_loc] = rray_int128_add(v_sums[out_loc], na ? 0 : x_elt);
         v_counts[out_loc] += !na;
         out_loc += out_stride;
       }
     }
   }
 
-  for (r_ssize i = 0; i < out_size; ++i) {
-    v_out[i] /= v_counts[i];
-  }
-
-  rray_run_iterator_reset1(&it);
-
-  for (; !rray_run_iterator_done(&it); rray_run_iterator_next1(&it)) {
-    const r_ssize start = rray_run_iterator_start(&it);
-    const r_ssize end = rray_run_iterator_end(&it);
-
-    r_ssize out_loc = rray_run_iterator_loc(&it, 0);
-    const r_ssize out_stride = rray_run_iterator_stride(&it, 0);
-
-    if (out_stride == 0) {
-      const double mean = v_out[out_loc];
-      double correction = v_corrections[out_loc];
-
-      for (r_ssize i = start; i < end; ++i) {
-        const int x_elt = v_x[i];
-        correction += x_elt == na_int ? 0 : x_elt - mean;
-      }
-
-      v_corrections[out_loc] = correction;
-    } else {
-      for (r_ssize i = start; i < end; ++i) {
-        const int x_elt = v_x[i];
-        v_corrections[out_loc] += x_elt == na_int ? 0 : x_elt - v_out[out_loc];
-        out_loc += out_stride;
-      }
-    }
-  }
+  r_obj* out = KEEP(r_alloc_double(out_size));
+  double* v_out = r_dbl_begin(out);
 
   for (r_ssize i = 0; i < out_size; ++i) {
-    const double mean = v_out[i];
-
-    if (R_FINITE(mean)) {
-      v_out[i] = mean + v_corrections[i] / v_counts[i];
-    }
+    v_out[i] = rray_mean_int128(v_sums[i], v_counts[i]);
   }
 
   FREE(3);
@@ -889,8 +820,7 @@ static r_obj* rray_mean_int_na_rm_fallback(
 // still well defined. To try and detect those cases, we recompute a scaled sum
 // at the infinity output locations, and if that avoids overflowing to infinity
 // we compute the mean from that. We don't do this in general because division
-// like this is much slower. We don't do this for the int fallback because sums
-// won't ever get this large from an int.
+// like this is much slower.
 static void rray_mean_dbl_rescale(
   const double* v_x,
   double* v_out,
@@ -1090,4 +1020,13 @@ static inline double rray_mean_int64(int64_t sum, r_ssize count) {
   // to `double` and lossily (but much less so!) divided by the `count` to get
   // the rest of the mean
   return (double) (sum / count) + (double) (sum % count) / count;
+}
+
+static inline double rray_mean_int128(struct rray_int128 sum, r_ssize count) {
+  if (rray_int128_fits_int64(sum)) {
+    return rray_mean_int64((int64_t) sum.lo, count);
+  }
+
+  const struct rray_int128_div_result div = rray_int128_div(sum, count);
+  return (double) div.quotient + (double) div.remainder / count;
 }

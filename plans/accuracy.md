@@ -142,7 +142,7 @@ It also shows that summing along axis 1 is about 6x slower than along axis 2. Do
 
 ## 1. `rray_mean()` accumulates in `double`
 
-Done in #124: the double mean adds in `double`, and the integer and logical means add into an `int64_t`, with a fallback past 2^32 elements per output.
+Done in #124: the double mean adds in `double`, and the integer and logical means add into an `int64_t`, with an `int128_t` fallback past 2^32 elements per output.
 
 One test change is left:
 

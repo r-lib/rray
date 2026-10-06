@@ -148,3 +148,4 @@ static void rray_mean_dbl_propagate_na(
 
 static inline r_ssize rray_mean_count(r_ssize x_size, r_ssize out_size);
 static inline double rray_mean_int64(int64_t sum, r_ssize count);
+static inline double rray_mean_int128(struct rray_int128 sum, r_ssize count);
