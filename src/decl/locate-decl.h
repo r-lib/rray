@@ -20,48 +20,48 @@ static r_no_return void stop_unsupported_locate(
   struct r_lazy error_call
 );
 
-static void rray_locate_max_lgl(
+static r_obj* rray_locate_max_lgl(
   r_obj* x,
-  r_obj* best,
+  r_ssize out_size,
+  bool zero_axis,
   bool na_rm,
-  struct rray_run_iterator* it,
-  int* v_out
+  struct rray_run_iterator* it
 );
-static void rray_locate_max_int(
+static r_obj* rray_locate_max_int(
   r_obj* x,
-  r_obj* best,
+  r_ssize out_size,
+  bool zero_axis,
   bool na_rm,
-  struct rray_run_iterator* it,
-  int* v_out
+  struct rray_run_iterator* it
 );
-static void rray_locate_max_dbl(
+static r_obj* rray_locate_max_dbl(
   r_obj* x,
-  r_obj* best,
+  r_ssize out_size,
+  bool zero_axis,
   bool na_rm,
-  struct rray_run_iterator* it,
-  int* v_out
+  struct rray_run_iterator* it
 );
 
-static void rray_locate_min_lgl(
+static r_obj* rray_locate_min_lgl(
   r_obj* x,
-  r_obj* best,
+  r_ssize out_size,
+  bool zero_axis,
   bool na_rm,
-  struct rray_run_iterator* it,
-  int* v_out
+  struct rray_run_iterator* it
 );
-static void rray_locate_min_int(
+static r_obj* rray_locate_min_int(
   r_obj* x,
-  r_obj* best,
+  r_ssize out_size,
+  bool zero_axis,
   bool na_rm,
-  struct rray_run_iterator* it,
-  int* v_out
+  struct rray_run_iterator* it
 );
-static void rray_locate_min_dbl(
+static r_obj* rray_locate_min_dbl(
   r_obj* x,
-  r_obj* best,
+  r_ssize out_size,
+  bool zero_axis,
   bool na_rm,
-  struct rray_run_iterator* it,
-  int* v_out
+  struct rray_run_iterator* it
 );
 
 static inline bool rray_locate_max_lgl_one(int x, int best);

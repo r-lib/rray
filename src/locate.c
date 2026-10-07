@@ -19,12 +19,12 @@ enum rray_locate_op {
   RRAY_LOCATE_min
 };
 
-typedef void (*rray_locate_fn)(
+typedef r_obj* (*rray_locate_fn)(
   r_obj* x,
-  r_obj* best,
+  r_ssize out_size,
+  bool zero_axis,
   bool na_rm,
-  struct rray_run_iterator* it,
-  int* v_out
+  struct rray_run_iterator* it
 );
 
 #include "decl/locate-decl.h"
@@ -102,39 +102,28 @@ static r_obj* rray_locate(
   const r_ssize out_size =
     rray_size_from_dimensions(v_out_dimensions, dimensionality);
 
-  r_obj* out = KEEP(r_alloc_integer(out_size));
-  int* v_out = r_int_begin(out);
+  r_ssize v_out_broadcast_strides[RRAY_MAX_DIMENSIONALITY];
+  rray_fill_broadcast_strides_from_dimensions(
+    v_out_dimensions,
+    dimensionality,
+    dimensionality,
+    v_out_broadcast_strides
+  );
 
-  if (v_x_dimensions[axis - 1] == 0) {
-    // Algorithm requires at least 1 input to run
-    for (r_ssize i = 0; i < out_size; ++i) {
-      v_out[i] = r_globals.na_int;
-    }
-  } else {
-    r_ssize v_out_broadcast_strides[RRAY_MAX_DIMENSIONALITY];
-    rray_fill_broadcast_strides_from_dimensions(
-      v_out_dimensions,
-      dimensionality,
-      dimensionality,
-      v_out_broadcast_strides
-    );
+  r_ssize v_position_strides[RRAY_MAX_DIMENSIONALITY] = {0};
+  v_position_strides[axis - 1] = 1;
 
-    r_ssize v_position_strides[RRAY_MAX_DIMENSIONALITY] = {0};
-    v_position_strides[axis - 1] = 1;
+  struct rray_run_iterator it;
+  rray_run_iterator_init2(
+    &it,
+    v_x_dimensions,
+    dimensionality,
+    v_out_broadcast_strides,
+    v_position_strides
+  );
 
-    struct rray_run_iterator it;
-    rray_run_iterator_init2(
-      &it,
-      v_x_dimensions,
-      dimensionality,
-      v_out_broadcast_strides,
-      v_position_strides
-    );
-
-    r_obj* best = KEEP(r_alloc_vector(r_typeof(x), out_size));
-    fn(x, best, na_rm, &it, v_out);
-    FREE(1);
-  }
+  const bool zero_axis = v_x_dimensions[axis - 1] == 0;
+  r_obj* out = KEEP(fn(x, out_size, zero_axis, na_rm, &it));
 
   r_attrib_poke_dim(out, out_dimensions);
 
@@ -211,10 +200,21 @@ static r_no_return void stop_unsupported_locate(
 }
 
 #define RRAY_LOCATE(CTYPE, CONST_DEREF, DEREF, IS_MISSING, INIT, ONE)          \
+  r_obj* out = KEEP(r_alloc_integer(out_size));                                \
+  int* v_out = r_int_begin(out);                                               \
+                                                                               \
+  if (zero_axis) {                                                             \
+    /* The algorithm requires at least one input to run. */                    \
+    for (r_ssize i = 0; i < out_size; ++i) {                                   \
+      v_out[i] = r_globals.na_int;                                             \
+    }                                                                          \
+    FREE(1);                                                                   \
+    return out;                                                                \
+  }                                                                            \
+                                                                               \
+  r_obj* best = KEEP(r_alloc_vector(r_typeof(x), out_size));                   \
   const CTYPE* v_x = CONST_DEREF(x);                                           \
   CTYPE* v_best = DEREF(best);                                                 \
-                                                                               \
-  const r_ssize out_size = r_length(best);                                     \
                                                                                \
   for (r_ssize i = 0; i < out_size; ++i) {                                     \
     v_best[i] = INIT;                                                          \
@@ -260,14 +260,17 @@ static r_no_return void stop_unsupported_locate(
   for (r_ssize i = 0; i < out_size; ++i) {                                     \
     const int out_elt = v_out[i];                                              \
     v_out[i] = IS_MISSING(v_best[i]) ? r_globals.na_int : out_elt;             \
-  }
+  }                                                                            \
+                                                                               \
+  FREE(2);                                                                     \
+  return out
 
-static void rray_locate_max_lgl(
+static r_obj* rray_locate_max_lgl(
   r_obj* x,
-  r_obj* best,
+  r_ssize out_size,
+  bool zero_axis,
   bool na_rm,
-  struct rray_run_iterator* it,
-  int* v_out
+  struct rray_run_iterator* it
 ) {
   if (na_rm) {
     RRAY_LOCATE(
@@ -290,12 +293,12 @@ static void rray_locate_max_lgl(
   }
 }
 
-static void rray_locate_max_int(
+static r_obj* rray_locate_max_int(
   r_obj* x,
-  r_obj* best,
+  r_ssize out_size,
+  bool zero_axis,
   bool na_rm,
-  struct rray_run_iterator* it,
-  int* v_out
+  struct rray_run_iterator* it
 ) {
   if (na_rm) {
     RRAY_LOCATE(
@@ -318,12 +321,12 @@ static void rray_locate_max_int(
   }
 }
 
-static void rray_locate_max_dbl(
+static r_obj* rray_locate_max_dbl(
   r_obj* x,
-  r_obj* best,
+  r_ssize out_size,
+  bool zero_axis,
   bool na_rm,
-  struct rray_run_iterator* it,
-  int* v_out
+  struct rray_run_iterator* it
 ) {
   if (na_rm) {
     RRAY_LOCATE(
@@ -346,12 +349,12 @@ static void rray_locate_max_dbl(
   }
 }
 
-static void rray_locate_min_lgl(
+static r_obj* rray_locate_min_lgl(
   r_obj* x,
-  r_obj* best,
+  r_ssize out_size,
+  bool zero_axis,
   bool na_rm,
-  struct rray_run_iterator* it,
-  int* v_out
+  struct rray_run_iterator* it
 ) {
   if (na_rm) {
     RRAY_LOCATE(
@@ -374,12 +377,12 @@ static void rray_locate_min_lgl(
   }
 }
 
-static void rray_locate_min_int(
+static r_obj* rray_locate_min_int(
   r_obj* x,
-  r_obj* best,
+  r_ssize out_size,
+  bool zero_axis,
   bool na_rm,
-  struct rray_run_iterator* it,
-  int* v_out
+  struct rray_run_iterator* it
 ) {
   if (na_rm) {
     RRAY_LOCATE(
@@ -402,12 +405,12 @@ static void rray_locate_min_int(
   }
 }
 
-static void rray_locate_min_dbl(
+static r_obj* rray_locate_min_dbl(
   r_obj* x,
-  r_obj* best,
+  r_ssize out_size,
+  bool zero_axis,
   bool na_rm,
-  struct rray_run_iterator* it,
-  int* v_out
+  struct rray_run_iterator* it
 ) {
   if (na_rm) {
     RRAY_LOCATE(
