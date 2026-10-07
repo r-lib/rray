@@ -1,14 +1,7 @@
 locate_oracle <- function(x, axis, fn, na_rm) {
   lane <- function(values) {
-    if (!na_rm) {
-      missing <- which(is.na(values) & !is.nan(values))
-      nan <- which(is.nan(values))
-      if (length(missing)) {
-        return(missing[[1L]])
-      }
-      if (length(nan)) {
-        return(nan[[1L]])
-      }
+    if (!na_rm && anyNA(values)) {
+      return(NA_integer_)
     }
 
     out <- fn(values)

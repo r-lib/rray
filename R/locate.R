@@ -15,12 +15,12 @@
 #' rray_locate_max(c(1, 3, 3), 1L) # 2
 #' ```
 #'
-#' Missing values win, so the position of the first one is returned. `NA` wins
-#' over `NaN`, like [rray_max()] and [rray_min()]:
+#' Missing values are infectious, so the result is `NA` if any value along
+#' `axis` is `NA` or `NaN`. Use `na_rm = TRUE` to skip them:
 #'
 #' ```r
-#' rray_locate_max(c(1, NaN, NA), 1L) # 3
-#' rray_locate_max(c(1, NaN, NA), 1L, na_rm = TRUE) # 1
+#' rray_locate_max(c(1, NaN, 3), 1L) # NA
+#' rray_locate_max(c(1, NaN, 3), 1L, na_rm = TRUE) # 3
 #' ```
 #'
 #' When there is no position to return, the result is `NA`. This happens when

@@ -258,12 +258,10 @@ static r_no_return void stop_unsupported_locate(
     }                                                                          \
   }                                                                            \
                                                                                \
-  if (na_rm) {                                                                 \
-    const r_ssize out_size = r_length(best);                                   \
+  const r_ssize out_size = r_length(best);                                     \
                                                                                \
-    for (r_ssize i = 0; i < out_size; ++i) {                                   \
-      v_out[i] = IS_MISSING(v_best[i]) ? r_globals.na_int : v_out[i];          \
-    }                                                                          \
+  for (r_ssize i = 0; i < out_size; ++i) {                                     \
+    v_out[i] = IS_MISSING(v_best[i]) ? r_globals.na_int : v_out[i];            \
   }
 
 static void rray_locate_max_lgl(
@@ -439,15 +437,7 @@ static inline bool rray_locate_max_int_one_na_rm(int x, int best) {
 }
 
 static inline bool rray_locate_max_dbl_one(double x, double best) {
-  switch (rray_dbl_classify(best)) {
-  case RRAY_DBL_number:
-    return rray_dbl_is_missing(x) || x > best;
-  case RRAY_DBL_missing:
-    return false;
-  case RRAY_DBL_nan:
-    return rray_dbl_classify(x) == RRAY_DBL_missing;
-  }
-  r_stop_unreachable();
+  return rray_dbl_is_missing(x) || x > best;
 }
 
 static inline bool rray_locate_max_dbl_one_na_rm(double x, double best) {
@@ -455,7 +445,7 @@ static inline bool rray_locate_max_dbl_one_na_rm(double x, double best) {
 }
 
 static inline bool rray_locate_min_lgl_one(int x, int best) {
-  return !rray_lgl_is_missing(best) && x < best;
+  return x < best;
 }
 
 static inline bool rray_locate_min_lgl_one_na_rm(int x, int best) {
@@ -463,7 +453,7 @@ static inline bool rray_locate_min_lgl_one_na_rm(int x, int best) {
 }
 
 static inline bool rray_locate_min_int_one(int x, int best) {
-  return !rray_int_is_missing(best) && x < best;
+  return x < best;
 }
 
 static inline bool rray_locate_min_int_one_na_rm(int x, int best) {
@@ -471,15 +461,7 @@ static inline bool rray_locate_min_int_one_na_rm(int x, int best) {
 }
 
 static inline bool rray_locate_min_dbl_one(double x, double best) {
-  switch (rray_dbl_classify(best)) {
-  case RRAY_DBL_number:
-    return rray_dbl_is_missing(x) || x < best;
-  case RRAY_DBL_missing:
-    return false;
-  case RRAY_DBL_nan:
-    return rray_dbl_classify(x) == RRAY_DBL_missing;
-  }
-  r_stop_unreachable();
+  return rray_dbl_is_missing(x) || x < best;
 }
 
 static inline bool rray_locate_min_dbl_one_na_rm(double x, double best) {

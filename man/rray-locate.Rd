@@ -39,11 +39,11 @@ Ties return the first position, like \code{\link[=which.max]{which.max()}} and \
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_locate_max(c(1, 3, 3), 1L) # 2
 }\if{html}{\out{</div>}}
 
-Missing values win, so the position of the first one is returned. \code{NA} wins
-over \code{NaN}, like \code{\link[=rray_max]{rray_max()}} and \code{\link[=rray_min]{rray_min()}}:
+Missing values are infectious, so the result is \code{NA} if any value along
+\code{axis} is \code{NA} or \code{NaN}. Use \code{na_rm = TRUE} to skip them:
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_locate_max(c(1, NaN, NA), 1L) # 3
-rray_locate_max(c(1, NaN, NA), 1L, na_rm = TRUE) # 1
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_locate_max(c(1, NaN, 3), 1L) # NA
+rray_locate_max(c(1, NaN, 3), 1L, na_rm = TRUE) # 3
 }\if{html}{\out{</div>}}
 
 When there is no position to return, the result is \code{NA}. This happens when
