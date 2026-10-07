@@ -22,46 +22,58 @@ static r_no_return void stop_unsupported_locate(
 
 static r_obj* rray_locate_max_lgl(
   r_obj* x,
-  r_ssize out_size,
-  bool zero_axis,
   bool na_rm,
-  struct rray_run_iterator* it
+  r_ssize out_size,
+  const int* v_x_dimensions,
+  const int* v_out_dimensions,
+  int dimensionality,
+  int axis
 );
 static r_obj* rray_locate_max_int(
   r_obj* x,
-  r_ssize out_size,
-  bool zero_axis,
   bool na_rm,
-  struct rray_run_iterator* it
+  r_ssize out_size,
+  const int* v_x_dimensions,
+  const int* v_out_dimensions,
+  int dimensionality,
+  int axis
 );
 static r_obj* rray_locate_max_dbl(
   r_obj* x,
-  r_ssize out_size,
-  bool zero_axis,
   bool na_rm,
-  struct rray_run_iterator* it
+  r_ssize out_size,
+  const int* v_x_dimensions,
+  const int* v_out_dimensions,
+  int dimensionality,
+  int axis
 );
 
 static r_obj* rray_locate_min_lgl(
   r_obj* x,
-  r_ssize out_size,
-  bool zero_axis,
   bool na_rm,
-  struct rray_run_iterator* it
+  r_ssize out_size,
+  const int* v_x_dimensions,
+  const int* v_out_dimensions,
+  int dimensionality,
+  int axis
 );
 static r_obj* rray_locate_min_int(
   r_obj* x,
-  r_ssize out_size,
-  bool zero_axis,
   bool na_rm,
-  struct rray_run_iterator* it
+  r_ssize out_size,
+  const int* v_x_dimensions,
+  const int* v_out_dimensions,
+  int dimensionality,
+  int axis
 );
 static r_obj* rray_locate_min_dbl(
   r_obj* x,
-  r_ssize out_size,
-  bool zero_axis,
   bool na_rm,
-  struct rray_run_iterator* it
+  r_ssize out_size,
+  const int* v_x_dimensions,
+  const int* v_out_dimensions,
+  int dimensionality,
+  int axis
 );
 
 static inline bool rray_locate_max_lgl_one(int x, int best);
