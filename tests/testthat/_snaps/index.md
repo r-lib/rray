@@ -164,7 +164,7 @@
       rray_as_index_array(1L, NULL)
     Condition
       Error in `rray_as_index_array()`:
-      ! `dimension` must be a single integer, not length 0.
+      ! `dimension` must be an integer or double vector, not `NULL`.
     Code
       rray_as_index_array(1L, integer())
     Condition
@@ -178,7 +178,6 @@
     Code
       rray_as_index_array(1L, 1.5)
     Condition
-      Error:
-      ! Can't convert from `dimension` <double> to <integer> due to loss of precision.
-      * Locations: 1
+      Error in `rray_as_index_array()`:
+      ! `dimension` must contain whole numbers that fit in an integer. Problem at location 1.
 

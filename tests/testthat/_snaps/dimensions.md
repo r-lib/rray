@@ -131,8 +131,8 @@
     Code
       rray_dimensions_common(1, .dimensions = "a")
     Condition
-      Error:
-      ! Can't convert `.dimensions` <character> to <integer>.
+      Error in `rray_dimensions_common()`:
+      ! `.dimensions` must be an integer or double vector, not the string "a".
 
 ---
 
@@ -171,17 +171,16 @@
     Code
       rray_set_dimensions(1, 2.5)
     Condition
-      Error:
-      ! Can't convert from `dimensions` <double> to <integer> due to loss of precision.
-      * Locations: 1
+      Error in `rray_set_dimensions()`:
+      ! `dimensions` must contain whole numbers that fit in an integer. Problem at location 1.
 
 # errors on non-coercible dimensions
 
     Code
       rray_set_dimensions(1, "a")
     Condition
-      Error:
-      ! Can't convert `dimensions` <character> to <integer>.
+      Error in `rray_set_dimensions()`:
+      ! `dimensions` must be an integer or double vector, not the string "a".
 
 # errors on empty dimensions
 

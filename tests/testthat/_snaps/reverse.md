@@ -1,6 +1,14 @@
 # `axes` is validated
 
     Code
+      rray_reverse(x, axes = TRUE)
+    Condition
+      Error in `rray_reverse()`:
+      ! `axes` must be an integer or double vector, not `TRUE`.
+
+---
+
+    Code
       rray_reverse(x, axes = c(1, 1))
     Condition
       Error in `rray_reverse()`:
@@ -36,24 +44,23 @@
       rray_reverse(x, axes = NA)
     Condition
       Error in `rray_reverse()`:
-      ! `axes` must not contain missing values.
+      ! `axes` must be an integer or double vector, not `NA`.
 
 ---
 
     Code
       rray_reverse(x, axes = 1.5)
     Condition
-      Error:
-      ! Can't convert from `axes` <double> to <integer> due to loss of precision.
-      * Locations: 1
+      Error in `rray_reverse()`:
+      ! `axes` must contain whole numbers that fit in an integer. Problem at location 1.
 
 ---
 
     Code
       rray_reverse(x, axes = "a")
     Condition
-      Error:
-      ! Can't convert `axes` <character> to <integer>.
+      Error in `rray_reverse()`:
+      ! `axes` must be an integer or double vector, not the string "a".
 
 # errors on invalid input
 

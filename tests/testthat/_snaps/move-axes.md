@@ -48,14 +48,13 @@
     Code
       rray_move_axes(x, from = 1.5, to = 1L)
     Condition
-      Error:
-      ! Can't convert from `from` <double> to <integer> due to loss of precision.
-      * Locations: 1
+      Error in `rray_move_axes()`:
+      ! `from` must contain whole numbers that fit in an integer. Problem at location 1.
     Code
       rray_move_axes(x, from = "x", to = 1L)
     Condition
-      Error:
-      ! Can't convert `from` <character> to <integer>.
+      Error in `rray_move_axes()`:
+      ! `from` must be an integer or double vector, not the string "x".
 
 # errors on invalid `to`
 
@@ -87,14 +86,13 @@
     Code
       rray_move_axes(x, from = 1L, to = 1.5)
     Condition
-      Error:
-      ! Can't convert from `to` <double> to <integer> due to loss of precision.
-      * Locations: 1
+      Error in `rray_move_axes()`:
+      ! `to` must contain whole numbers that fit in an integer. Problem at location 1.
     Code
       rray_move_axes(x, from = 1L, to = "x")
     Condition
-      Error:
-      ! Can't convert `to` <character> to <integer>.
+      Error in `rray_move_axes()`:
+      ! `to` must be an integer or double vector, not the string "x".
 
 # `from` and `to` must be the same length
 

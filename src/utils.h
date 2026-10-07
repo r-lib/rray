@@ -70,11 +70,4 @@ bool r_has_name_at(r_obj* names, r_ssize i);
 
 int int_add_checked(int x, int y);
 
-r_obj* vec_cast(
-  r_obj* x,
-  r_obj* to,
-  struct rray_arg* x_arg,
-  struct rray_arg* to_arg
-);
-
 #endif

@@ -10,8 +10,8 @@
 #'   `times`, and so on. For convenience, you can also provide a single number
 #'   to repeat each element along the `axis` the same number of times.
 #'
-#' These are the array versions of [vctrs::vec_rep()] and
-#' [vctrs::vec_rep_each()], which repeat along the size of a vector rather than
+#' These are the array versions of `vctrs::vec_rep()` and
+#' `vctrs::vec_rep_each()`, which repeat along the size of a vector rather than
 #' along an axis.
 #'
 #' @details

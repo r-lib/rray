@@ -131,21 +131,18 @@ test_that("names still reverse with a zero dimension on another axis", {
   )
 })
 
-test_that("`axes` can be integerish doubles or logicals", {
+test_that("`axes` can be integerish doubles", {
   x <- array(1:24, c(2, 3, 4))
 
   expect_identical(
     rray_reverse(x, axes = c(2, 3)),
     rray_reverse(x, axes = c(2L, 3L))
   )
-  expect_identical(
-    rray_reverse(x, axes = TRUE),
-    rray_reverse(x, axes = 1L)
-  )
 })
 
 test_that("`axes` is validated", {
   x <- array(1:6, c(2, 3))
+  expect_snapshot(rray_reverse(x, axes = TRUE), error = TRUE)
   expect_snapshot(rray_reverse(x, axes = c(1, 1)), error = TRUE)
   expect_snapshot(rray_reverse(x, axes = c(2, 1)), error = TRUE)
   expect_snapshot(rray_reverse(x, axes = 3), error = TRUE)

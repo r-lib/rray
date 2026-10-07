@@ -1,6 +1,7 @@
 #include "utils.h"
 
 #include <limits.h>
+#include <math.h>
 
 #include "syms.h"
 #include "wrapper.h"
@@ -81,11 +82,6 @@ r_obj* arg_as_bare_integer(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  if (r_typeof(x) != R_TYPE_integer) {
-    x = vec_cast(x, r_globals.empty_int, arg, NULL);
-  }
-  KEEP(x);
-
   if (r_attrib_has_any(x)) {
     r_abort_lazy_call(
       error_call,
@@ -94,8 +90,66 @@ r_obj* arg_as_bare_integer(
     );
   }
 
+  x = KEEP(arg_as_integer(x, arg, error_call));
+
   FREE(1);
   return x;
+}
+
+static r_obj* arg_as_integer(
+  r_obj* x,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+) {
+  if (r_typeof(x) == R_TYPE_integer) {
+    return x;
+  }
+
+  x = KEEP(x);
+
+  if (r_typeof(x) != R_TYPE_double) {
+    r_abort_lazy_call(
+      error_call,
+      "%s must be an integer or double vector, not %s.",
+      rray_arg_format(arg),
+      r_obj_type_friendly(x)
+    );
+  }
+
+  const r_ssize size = r_length(x);
+  const double* v_x = r_dbl_cbegin(x);
+
+  r_obj* out = KEEP(r_alloc_integer(size));
+  int* v_out = r_int_begin(out);
+
+  for (r_ssize i = 0; i < size; ++i) {
+    const double elt = v_x[i];
+
+    if (isnan(elt)) {
+      v_out[i] = r_globals.na_int;
+      continue;
+    }
+
+    if (elt <= INT_MIN || elt >= INT_MAX + 1.0 || (double) (int) elt != elt) {
+      r_abort_lazy_call(
+        error_call,
+        "%s must contain whole numbers that fit in an integer. Problem at "
+        "location %" R_PRI_SSIZE ".",
+        rray_arg_format(arg),
+        i + 1
+      );
+    }
+
+    v_out[i] = (int) elt;
+  }
+
+  r_obj* names = r_names(x);
+  if (names != r_null) {
+    r_attrib_poke_names(out, names);
+  }
+
+  FREE(2);
+  return out;
 }
 
 int arg_as_int(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
@@ -174,34 +228,4 @@ int int_add_checked(int x, int y) {
   }
 
   return x + y;
-}
-
-r_obj* vec_cast(
-  r_obj* x,
-  r_obj* to,
-  struct rray_arg* x_arg,
-  struct rray_arg* to_arg
-) {
-  r_obj* x_arg_chr = KEEP(rray_arg(x_arg));
-  r_obj* to_arg_chr = KEEP(rray_arg(to_arg));
-
-  r_obj* mask = KEEP(r_alloc_environment(4, r_envs.global));
-
-  r_env_bind(mask, r_syms.x, x);
-  r_env_bind(mask, rray_syms.to, to);
-  r_env_bind(mask, rray_syms.x_arg, x_arg_chr);
-  r_env_bind(mask, rray_syms.to_arg, to_arg_chr);
-
-  r_obj* out = r_eval(vec_cast_call, mask);
-
-  FREE(3);
-  return out;
-}
-
-r_obj* vec_cast_call = NULL;
-
-void rray_init_utils(r_obj* ns) {
-  vec_cast_call =
-    r_parse("vctrs::vec_cast(x, to, x_arg = x_arg, to_arg = to_arg)");
-  r_preserve(vec_cast_call);
 }
