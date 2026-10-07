@@ -31,8 +31,8 @@ along \code{axis} reduced to 1.
 }
 }
 \details{
-The dimensionality of \code{x} is retained in the result, with \code{axis} collapsed
-to size 1.
+The dimensionality of \code{x} is retained, with \code{axis} collapsed to a dimension
+of 1.
 
 Ties return the first position, like \code{\link[=which.max]{which.max()}} and \code{\link[=which.min]{which.min()}}:
 

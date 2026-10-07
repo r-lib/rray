@@ -6,8 +6,8 @@
 #' - `rray_locate_min()` finds the position of the minimum along `axis`.
 #'
 #' @details
-#' The dimensionality of `x` is retained in the result, with `axis` collapsed
-#' to size 1.
+#' The dimensionality of `x` is retained, with `axis` collapsed to a dimension
+#' of 1.
 #'
 #' Ties return the first position, like [which.max()] and [which.min()]:
 #'
