@@ -212,8 +212,9 @@ static r_no_return void stop_unsupported_locate(
     return out;                                                                \
   }                                                                            \
                                                                                \
-  r_obj* best = KEEP(r_alloc_vector(r_typeof(x), out_size));                   \
   const CTYPE* v_x = CONST_DEREF(x);                                           \
+                                                                               \
+  r_obj* best = KEEP(r_alloc_vector(r_typeof(x), out_size));                   \
   CTYPE* v_best = DEREF(best);                                                 \
                                                                                \
   for (r_ssize i = 0; i < out_size; ++i) {                                     \
