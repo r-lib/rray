@@ -1,4 +1,4 @@
-locate_oracle <- function(x, axis, fn, na_rm) {
+base_locate <- function(x, axis, fn, na_rm) {
   lane <- function(values) {
     if (!na_rm && anyNA(values)) {
       return(NA_integer_)

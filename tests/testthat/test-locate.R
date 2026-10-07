@@ -24,11 +24,11 @@ test_that("matches the oracle along every axis", {
     for (na_rm in c(FALSE, TRUE)) {
       expect_identical(
         rray_locate_max(x, axis, na_rm = na_rm),
-        locate_oracle(x, axis, which.max, na_rm)
+        base_locate(x, axis, which.max, na_rm)
       )
       expect_identical(
         rray_locate_min(x, axis, na_rm = na_rm),
-        locate_oracle(x, axis, which.min, na_rm)
+        base_locate(x, axis, which.min, na_rm)
       )
     }
   }
@@ -49,8 +49,8 @@ test_that("matches the oracle and `rray_max()` across special values", {
       max_loc <- rray_locate_max(x, 1L, na_rm = na_rm)
       min_loc <- rray_locate_min(x, 1L, na_rm = na_rm)
 
-      expect_identical(max_loc, locate_oracle(x, 1L, which.max, na_rm))
-      expect_identical(min_loc, locate_oracle(x, 1L, which.min, na_rm))
+      expect_identical(max_loc, base_locate(x, 1L, which.max, na_rm))
+      expect_identical(min_loc, base_locate(x, 1L, which.min, na_rm))
 
       expect_identical(
         rray_locate_max(t(x), 2L, na_rm = na_rm),
