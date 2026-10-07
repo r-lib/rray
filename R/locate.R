@@ -34,8 +34,7 @@
 #'
 #' @param x An array.
 #'
-#' @param axis A single integer giving the axis to locate along. `1` locates
-#'   along rows, `2` along columns, and so on.
+#' @param axis A single integer giving the axis to locate along.
 #'
 #' @param na_rm If `TRUE`, missing values are skipped.
 #'

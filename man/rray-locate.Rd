@@ -13,8 +13,7 @@ rray_locate_min(x, axis, ..., na_rm = FALSE)
 \arguments{
 \item{x}{An array.}
 
-\item{axis}{A single integer giving the axis to locate along. \code{1} locates
-along rows, \code{2} along columns, and so on.}
+\item{axis}{A single integer giving the axis to locate along.}
 
 \item{...}{These dots are for future extensions and must be empty.}
 
