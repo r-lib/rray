@@ -246,18 +246,20 @@ static r_no_return void stop_unsupported_locate(
       v_best[out_loc] = best_elt;                                              \
       v_out[out_loc] = best_position;                                          \
     } else {                                                                   \
-      for (r_ssize i = start; i < end; ++i) {                                  \
+      for (r_ssize i = start; i < end; ++i, ++out_loc) {                       \
         const CTYPE x_elt = v_x[i];                                            \
-        const bool is_better = ONE(x_elt, v_best[out_loc]);                    \
-        v_best[out_loc] = is_better ? x_elt : v_best[out_loc];                 \
-        v_out[out_loc] = is_better ? position : v_out[out_loc];                \
-        out_loc += out_stride;                                                 \
+        const CTYPE best_elt = v_best[out_loc];                                \
+        const int out_elt = v_out[out_loc];                                    \
+        const bool is_better = ONE(x_elt, best_elt);                           \
+        v_best[out_loc] = is_better ? x_elt : best_elt;                        \
+        v_out[out_loc] = is_better ? position : out_elt;                       \
       }                                                                        \
     }                                                                          \
   }                                                                            \
                                                                                \
   for (r_ssize i = 0; i < out_size; ++i) {                                     \
-    v_out[i] = IS_MISSING(v_best[i]) ? r_globals.na_int : v_out[i];            \
+    const int out_elt = v_out[i];                                              \
+    v_out[i] = IS_MISSING(v_best[i]) ? r_globals.na_int : out_elt;             \
   }
 
 static void rray_locate_max_lgl(
@@ -429,7 +431,10 @@ static void rray_locate_min_dbl(
 }
 
 static inline bool rray_locate_max_lgl_one(int x, int best) {
-  return !rray_lgl_is_missing(best) && (rray_lgl_is_missing(x) || x > best);
+  return bool_bitwise_and(
+    !rray_lgl_is_missing(best),
+    bool_bitwise_or(rray_lgl_is_missing(x), x > best)
+  );
 }
 
 static inline bool rray_locate_max_lgl_one_na_rm(int x, int best) {
@@ -437,7 +442,10 @@ static inline bool rray_locate_max_lgl_one_na_rm(int x, int best) {
 }
 
 static inline bool rray_locate_max_int_one(int x, int best) {
-  return !rray_int_is_missing(best) && (rray_int_is_missing(x) || x > best);
+  return bool_bitwise_and(
+    !rray_int_is_missing(best),
+    bool_bitwise_or(rray_int_is_missing(x), x > best)
+  );
 }
 
 static inline bool rray_locate_max_int_one_na_rm(int x, int best) {
@@ -445,11 +453,11 @@ static inline bool rray_locate_max_int_one_na_rm(int x, int best) {
 }
 
 static inline bool rray_locate_max_dbl_one(double x, double best) {
-  return rray_dbl_is_missing(x) || x > best;
+  return bool_bitwise_or(rray_dbl_is_missing(x), x > best);
 }
 
 static inline bool rray_locate_max_dbl_one_na_rm(double x, double best) {
-  return !rray_dbl_is_missing(x) && !(x <= best);
+  return bool_bitwise_and(!rray_dbl_is_missing(x), !(x <= best));
 }
 
 static inline bool rray_locate_min_lgl_one(int x, int best) {
@@ -457,7 +465,10 @@ static inline bool rray_locate_min_lgl_one(int x, int best) {
 }
 
 static inline bool rray_locate_min_lgl_one_na_rm(int x, int best) {
-  return !rray_lgl_is_missing(x) && (rray_lgl_is_missing(best) || x < best);
+  return bool_bitwise_and(
+    !rray_lgl_is_missing(x),
+    bool_bitwise_or(rray_lgl_is_missing(best), x < best)
+  );
 }
 
 static inline bool rray_locate_min_int_one(int x, int best) {
@@ -465,13 +476,16 @@ static inline bool rray_locate_min_int_one(int x, int best) {
 }
 
 static inline bool rray_locate_min_int_one_na_rm(int x, int best) {
-  return !rray_int_is_missing(x) && (rray_int_is_missing(best) || x < best);
+  return bool_bitwise_and(
+    !rray_int_is_missing(x),
+    bool_bitwise_or(rray_int_is_missing(best), x < best)
+  );
 }
 
 static inline bool rray_locate_min_dbl_one(double x, double best) {
-  return rray_dbl_is_missing(x) || x < best;
+  return bool_bitwise_or(rray_dbl_is_missing(x), x < best);
 }
 
 static inline bool rray_locate_min_dbl_one_na_rm(double x, double best) {
-  return !rray_dbl_is_missing(x) && !(x >= best);
+  return bool_bitwise_and(!rray_dbl_is_missing(x), !(x >= best));
 }

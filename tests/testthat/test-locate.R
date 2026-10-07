@@ -93,6 +93,15 @@ test_that("ties return the first position", {
   expect_identical(rray_locate_min(c(Inf, Inf), 1L), array(1L, 1L))
 })
 
+test_that("signed zeros tie", {
+  expect_identical(rray_locate_max(c(-0, 0), 1L), array(1L, 1L))
+  expect_identical(rray_locate_max(c(0, -0), 1L), array(1L, 1L))
+  expect_identical(rray_locate_min(c(-0, 0), 1L), array(1L, 1L))
+  expect_identical(rray_locate_min(c(0, -0), 1L), array(1L, 1L))
+  expect_identical(rray_locate_max(t(c(-0, 0)), 2L), array(1L, c(1L, 1L)))
+  expect_identical(rray_locate_min(t(c(0, -0)), 2L), array(1L, c(1L, 1L)))
+})
+
 test_that("missing values give `NA`", {
   na <- array(NA_integer_, 1L)
   expect_identical(rray_locate_max(c(TRUE, NA, FALSE), 1L), na)
