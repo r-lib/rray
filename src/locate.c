@@ -1,5 +1,8 @@
 #include "locate.h"
 
+#include <limits.h>
+#include <math.h>
+
 #include "axes.h"
 #include "dimensionality.h"
 #include "dimensions.h"
@@ -103,6 +106,7 @@ static r_obj* rray_locate(
   int* v_out = r_int_begin(out);
 
   if (v_x_dimensions[axis - 1] == 0) {
+    // Algorithm requires at least 1 input to run
     for (r_ssize i = 0; i < out_size; ++i) {
       v_out[i] = r_globals.na_int;
     }
@@ -206,12 +210,19 @@ static r_no_return void stop_unsupported_locate(
   );
 }
 
-#define RRAY_LOCATE(CTYPE, CONST_DEREF, DEREF, IS_MISSING, ONE)                \
+#define RRAY_LOCATE(CTYPE, CONST_DEREF, DEREF, IS_MISSING, INIT, ONE)          \
   const CTYPE* v_x = CONST_DEREF(x);                                           \
   CTYPE* v_best = DEREF(best);                                                 \
                                                                                \
+  const r_ssize out_size = r_length(best);                                     \
+                                                                               \
+  for (r_ssize i = 0; i < out_size; ++i) {                                     \
+    v_best[i] = INIT;                                                          \
+    v_out[i] = 1;                                                              \
+  }                                                                            \
+                                                                               \
   for (; !rray_run_iterator_done(it); rray_run_iterator_next2(it)) {           \
-    r_ssize start = rray_run_iterator_start(it);                               \
+    const r_ssize start = rray_run_iterator_start(it);                         \
     const r_ssize end = rray_run_iterator_end(it);                             \
                                                                                \
     r_ssize out_loc = rray_run_iterator_loc(it, 0);                            \
@@ -221,13 +232,6 @@ static r_no_return void stop_unsupported_locate(
     const int position_stride = (int) rray_run_iterator_stride(it, 1);         \
                                                                                \
     if (out_stride == 0) {                                                     \
-      if (position == 1) {                                                     \
-        v_best[out_loc] = v_x[start];                                          \
-        v_out[out_loc] = 1;                                                    \
-        ++start;                                                               \
-        position += position_stride;                                           \
-      }                                                                        \
-                                                                               \
       CTYPE best_elt = v_best[out_loc];                                        \
       int best_position = v_out[out_loc];                                      \
                                                                                \
@@ -241,12 +245,6 @@ static r_no_return void stop_unsupported_locate(
                                                                                \
       v_best[out_loc] = best_elt;                                              \
       v_out[out_loc] = best_position;                                          \
-    } else if (position == 1) {                                                \
-      for (r_ssize i = start; i < end; ++i) {                                  \
-        v_best[out_loc] = v_x[i];                                              \
-        v_out[out_loc] = 1;                                                    \
-        out_loc += out_stride;                                                 \
-      }                                                                        \
     } else {                                                                   \
       for (r_ssize i = start; i < end; ++i) {                                  \
         const CTYPE x_elt = v_x[i];                                            \
@@ -257,8 +255,6 @@ static r_no_return void stop_unsupported_locate(
       }                                                                        \
     }                                                                          \
   }                                                                            \
-                                                                               \
-  const r_ssize out_size = r_length(best);                                     \
                                                                                \
   for (r_ssize i = 0; i < out_size; ++i) {                                     \
     v_out[i] = IS_MISSING(v_best[i]) ? r_globals.na_int : v_out[i];            \
@@ -277,6 +273,7 @@ static void rray_locate_max_lgl(
       r_lgl_cbegin,
       r_lgl_begin,
       rray_lgl_is_missing,
+      r_globals.na_lgl,
       rray_locate_max_lgl_one_na_rm
     );
   } else {
@@ -285,6 +282,7 @@ static void rray_locate_max_lgl(
       r_lgl_cbegin,
       r_lgl_begin,
       rray_lgl_is_missing,
+      0,
       rray_locate_max_lgl_one
     );
   }
@@ -303,6 +301,7 @@ static void rray_locate_max_int(
       r_int_cbegin,
       r_int_begin,
       rray_int_is_missing,
+      r_globals.na_int,
       rray_locate_max_int_one_na_rm
     );
   } else {
@@ -311,6 +310,7 @@ static void rray_locate_max_int(
       r_int_cbegin,
       r_int_begin,
       rray_int_is_missing,
+      -INT_MAX,
       rray_locate_max_int_one
     );
   }
@@ -329,6 +329,7 @@ static void rray_locate_max_dbl(
       r_dbl_cbegin,
       r_dbl_begin,
       rray_dbl_is_missing,
+      r_globals.na_dbl,
       rray_locate_max_dbl_one_na_rm
     );
   } else {
@@ -337,6 +338,7 @@ static void rray_locate_max_dbl(
       r_dbl_cbegin,
       r_dbl_begin,
       rray_dbl_is_missing,
+      -INFINITY,
       rray_locate_max_dbl_one
     );
   }
@@ -355,6 +357,7 @@ static void rray_locate_min_lgl(
       r_lgl_cbegin,
       r_lgl_begin,
       rray_lgl_is_missing,
+      r_globals.na_lgl,
       rray_locate_min_lgl_one_na_rm
     );
   } else {
@@ -363,6 +366,7 @@ static void rray_locate_min_lgl(
       r_lgl_cbegin,
       r_lgl_begin,
       rray_lgl_is_missing,
+      1,
       rray_locate_min_lgl_one
     );
   }
@@ -381,6 +385,7 @@ static void rray_locate_min_int(
       r_int_cbegin,
       r_int_begin,
       rray_int_is_missing,
+      r_globals.na_int,
       rray_locate_min_int_one_na_rm
     );
   } else {
@@ -389,6 +394,7 @@ static void rray_locate_min_int(
       r_int_cbegin,
       r_int_begin,
       rray_int_is_missing,
+      INT_MAX,
       rray_locate_min_int_one
     );
   }
@@ -407,6 +413,7 @@ static void rray_locate_min_dbl(
       r_dbl_cbegin,
       r_dbl_begin,
       rray_dbl_is_missing,
+      r_globals.na_dbl,
       rray_locate_min_dbl_one_na_rm
     );
   } else {
@@ -415,6 +422,7 @@ static void rray_locate_min_dbl(
       r_dbl_cbegin,
       r_dbl_begin,
       rray_dbl_is_missing,
+      INFINITY,
       rray_locate_min_dbl_one
     );
   }
