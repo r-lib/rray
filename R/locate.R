@@ -46,7 +46,7 @@
 #' @examples
 #' x <- array(c(3L, 1L, 2L, 4L, 6L, 5L), c(3L, 2L))
 #'
-#' # Position of the maximum in each column
+#' # Position of the maximum going down the rows
 #' rray_locate_max(x, 1L)
 #'
 #' # Position of the minimum in each row
