@@ -1,6 +1,8 @@
 ^rray4\.Rproj$
 ^\.Rproj\.user$
 ^CLAUDE\.md$
+^AGENTS\.md$
+^xcrun_db$
 ^LICENSE\.md$
 ^compile_commands\.json$
 ^\.cache$
