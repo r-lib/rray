@@ -4,7 +4,7 @@
 \alias{rray_if_else}
 \title{Choose values from arrays}
 \usage{
-rray_if_else(condition, true, false, ..., missing = NULL)
+rray_if_else(condition, true, false, ..., missing = NULL, dimensions = NULL)
 }
 \arguments{
 \item{condition}{A logical array or vector.}
@@ -17,10 +17,14 @@ rray_if_else(condition, true, false, ..., missing = NULL)
 
 \item{missing}{Values to use where \code{condition} is \code{NA}. If \code{NULL}, missing
 conditions produce missing values of the output type.}
+
+\item{dimensions}{An optional integer vector of output dimensions. When
+supplied, every input must broadcast to these dimensions. Use
+\code{rray_dimensions(condition)} to keep the shape of \code{condition}.}
 }
 \value{
-An array with the dimensions of \code{condition} and the common type of the
-supplied branches. Names are dropped.
+An array with the common dimensions of the inputs, or \code{dimensions} when
+supplied, and the common type of the branches. Names are dropped.
 }
 \description{
 \code{rray_if_else()} selects values from \code{true} and \code{false} using a logical
@@ -28,10 +32,19 @@ supplied branches. Names are dropped.
 \code{missing}, or returns a missing value if \code{missing} is \code{NULL}.
 }
 \details{
-\code{true}, \code{false}, and \code{missing} are broadcast to the dimensions of
-\code{condition}. All supplied branches determine the common output type.
+All supplied inputs are broadcast to common dimensions. All supplied
+branches determine the common output type.
 }
 \examples{
 condition <- array(c(TRUE, FALSE, NA), c(3L, 1L))
-rray_if_else(condition, 1L, 2, missing = 3L)
+true <- array(1:12, c(3L, 4L))
+false <- array(101:112, c(3L, 4L))
+missing <- array(201:212, c(3L, 4L))
+rray_if_else(condition, true, false, missing = missing)
+
+condition <- array(c(TRUE, FALSE), c(2L, 1L))
+true <- array(1:6, c(2L, 3L))
+false <- array(11:16, c(2L, 3L))
+rray_if_else(condition, true, false)
+rray_if_else(condition, 1L, 2L, dimensions = rray_dimensions(condition))
 }

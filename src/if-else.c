@@ -3,7 +3,9 @@
 #include "broadcast.h"
 #include "cast.h"
 #include "dimensionality.h"
+#include "dimensions.h"
 #include "ptype.h"
+#include "size.h"
 #include "strided-iterator.h"
 #include "strides.h"
 #include "utils.h"
@@ -15,6 +17,7 @@ r_obj* ffi_rray_if_else(
   r_obj* ffi_true,
   r_obj* ffi_false,
   r_obj* ffi_missing,
+  r_obj* ffi_dimensions,
   r_obj* ffi_frame
 ) {
   struct rray_arg condition_arg = new_wrapper_arg(NULL, "condition");
@@ -28,6 +31,7 @@ r_obj* ffi_rray_if_else(
     ffi_true,
     ffi_false,
     ffi_missing,
+    ffi_dimensions,
     &condition_arg,
     &true_arg,
     &false_arg,
@@ -41,6 +45,7 @@ r_obj* rray_if_else(
   r_obj* true_,
   r_obj* false_,
   r_obj* missing,
+  r_obj* dimensions,
   struct rray_arg* condition_arg,
   struct rray_arg* true_arg,
   struct rray_arg* false_arg,
@@ -103,10 +108,48 @@ r_obj* rray_if_else(
     );
   }
 
-  r_obj* dimensions = r_dim(condition);
+  if (dimensions == r_null) {
+    const r_ssize n_inputs = has_missing ? 4 : 3;
+    r_obj* inputs = KEEP_N(r_alloc_list(n_inputs), &n_prot);
+    r_obj* input_names = KEEP_N(r_alloc_character(n_inputs), &n_prot);
+    r_list_poke(inputs, 0, condition);
+    r_list_poke(inputs, 1, true_);
+    r_list_poke(inputs, 2, false_);
+    r_chr_poke(input_names, 0, r_str("condition"));
+    r_chr_poke(input_names, 1, r_str("true"));
+    r_chr_poke(input_names, 2, r_str("false"));
+    if (has_missing) {
+      r_list_poke(inputs, 3, missing);
+      r_chr_poke(input_names, 3, r_str("missing"));
+    }
+    r_attrib_poke_names(inputs, input_names);
+    dimensions = KEEP_N(
+      rray_dimensions_common(inputs, r_null, rray_args.empty, error_call),
+      &n_prot
+    );
+  } else {
+    dimensions = KEEP_N(
+      arg_as_dimensions(dimensions, rray_args.dimensions, error_call),
+      &n_prot
+    );
+  }
+
   const int* v_dimensions = r_int_cbegin(dimensions);
   const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
   check_dimensionality(dimensionality);
+
+  r_obj* condition_dimensions = r_dim(condition);
+  const int* v_condition_dimensions = r_int_cbegin(condition_dimensions);
+  const int condition_dimensionality =
+    rray_dimensionality_from_dimensions(condition_dimensions);
+  check_broadcastable(
+    v_condition_dimensions,
+    condition_dimensionality,
+    v_dimensions,
+    dimensionality,
+    condition_arg,
+    error_call
+  );
 
   r_obj* true_dimensions = r_dim(true_);
   const int* v_true_dimensions = r_int_cbegin(true_dimensions);
@@ -132,6 +175,14 @@ r_obj* rray_if_else(
     dimensionality,
     false_arg,
     error_call
+  );
+
+  r_ssize v_condition_strides[RRAY_MAX_DIMENSIONALITY];
+  rray_fill_broadcast_strides_from_dimensions(
+    v_condition_dimensions,
+    condition_dimensionality,
+    dimensionality,
+    v_condition_strides
   );
 
   r_ssize v_true_strides[RRAY_MAX_DIMENSIONALITY];
@@ -172,6 +223,9 @@ r_obj* rray_if_else(
     );
   }
 
+  const r_ssize size =
+    rray_size_from_dimensions_checked(v_dimensions, dimensionality, error_call);
+
   r_obj* out = KEEP_N(
     rray_if_else_fill(
       condition,
@@ -180,6 +234,8 @@ r_obj* rray_if_else(
       missing,
       v_dimensions,
       dimensionality,
+      size,
+      v_condition_strides,
       v_true_strides,
       v_false_strides,
       v_missing_strides
@@ -192,37 +248,101 @@ r_obj* rray_if_else(
   return out;
 }
 
-#define RRAY_IF_ELSE_RUN2(CTYPE, POKE, MISSING, TRUE_VALUE, FALSE_VALUE)       \
+#define RRAY_IF_ELSE_RUN2_INNER(                                               \
+  CTYPE,                                                                       \
+  POKE,                                                                        \
+  MISSING,                                                                     \
+  TRUE_VALUE,                                                                  \
+  FALSE_VALUE,                                                                 \
+  CONDITION_VALUE                                                              \
+)                                                                              \
   do {                                                                         \
     for (r_ssize i = start; i < end; ++i) {                                    \
-      const int cnd = v_condition[i];                                          \
-      const CTYPE elt = cnd == 1 ? TRUE_VALUE                                  \
+      const int cnd = CONDITION_VALUE;                                         \
+      CTYPE const elt = cnd == 1 ? TRUE_VALUE                                  \
         : cnd == 0               ? FALSE_VALUE                                 \
                                  : MISSING;                                    \
       POKE;                                                                    \
+      condition_loc += condition_stride;                                       \
       true_loc += true_stride;                                                 \
       false_loc += false_stride;                                               \
     }                                                                          \
   } while (0)
 
-#define RRAY_IF_ELSE_RUN3(CTYPE, POKE, TRUE_VALUE, FALSE_VALUE, MISSING_VALUE) \
+#define RRAY_IF_ELSE_RUN2(CTYPE, POKE, MISSING, TRUE_VALUE, FALSE_VALUE)       \
+  do {                                                                         \
+    if (condition_stride == 0) {                                               \
+      const int condition_elt = v_condition[condition_loc];                    \
+      RRAY_IF_ELSE_RUN2_INNER(                                                 \
+        CTYPE,                                                                 \
+        POKE,                                                                  \
+        MISSING,                                                               \
+        TRUE_VALUE,                                                            \
+        FALSE_VALUE,                                                           \
+        condition_elt                                                          \
+      );                                                                       \
+    } else {                                                                   \
+      RRAY_IF_ELSE_RUN2_INNER(                                                 \
+        CTYPE,                                                                 \
+        POKE,                                                                  \
+        MISSING,                                                               \
+        TRUE_VALUE,                                                            \
+        FALSE_VALUE,                                                           \
+        v_condition[condition_loc]                                             \
+      );                                                                       \
+    }                                                                          \
+  } while (0)
+
+#define RRAY_IF_ELSE_RUN3_INNER(                                               \
+  CTYPE,                                                                       \
+  POKE,                                                                        \
+  TRUE_VALUE,                                                                  \
+  FALSE_VALUE,                                                                 \
+  MISSING_VALUE,                                                               \
+  CONDITION_VALUE                                                              \
+)                                                                              \
   do {                                                                         \
     for (r_ssize i = start; i < end; ++i) {                                    \
-      const int cnd = v_condition[i];                                          \
-      const CTYPE elt = cnd == 1 ? TRUE_VALUE                                  \
+      const int cnd = CONDITION_VALUE;                                         \
+      CTYPE const elt = cnd == 1 ? TRUE_VALUE                                  \
         : cnd == 0               ? FALSE_VALUE                                 \
                                  : MISSING_VALUE;                              \
       POKE;                                                                    \
+      condition_loc += condition_stride;                                       \
       true_loc += true_stride;                                                 \
       false_loc += false_stride;                                               \
       missing_loc += missing_stride;                                           \
     }                                                                          \
   } while (0)
 
+#define RRAY_IF_ELSE_RUN3(CTYPE, POKE, TRUE_VALUE, FALSE_VALUE, MISSING_VALUE) \
+  do {                                                                         \
+    if (condition_stride == 0) {                                               \
+      const int condition_elt = v_condition[condition_loc];                    \
+      RRAY_IF_ELSE_RUN3_INNER(                                                 \
+        CTYPE,                                                                 \
+        POKE,                                                                  \
+        TRUE_VALUE,                                                            \
+        FALSE_VALUE,                                                           \
+        MISSING_VALUE,                                                         \
+        condition_elt                                                          \
+      );                                                                       \
+    } else {                                                                   \
+      RRAY_IF_ELSE_RUN3_INNER(                                                 \
+        CTYPE,                                                                 \
+        POKE,                                                                  \
+        TRUE_VALUE,                                                            \
+        FALSE_VALUE,                                                           \
+        MISSING_VALUE,                                                         \
+        v_condition[condition_loc]                                             \
+      );                                                                       \
+    }                                                                          \
+  } while (0)
+
 #define RRAY_IF_ELSE_RUN3_MISSING(CTYPE, POKE, TRUE_VALUE, FALSE_VALUE)        \
   do {                                                                         \
     if (missing_stride == 0) {                                                 \
-      const CTYPE missing_elt = v_missing[missing_loc];                        \
+      CTYPE const missing_elt = v_missing[missing_loc];                        \
       RRAY_IF_ELSE_RUN3(CTYPE, POKE, TRUE_VALUE, FALSE_VALUE, missing_elt);    \
     } else {                                                                   \
       RRAY_IF_ELSE_RUN3(                                                       \
@@ -242,42 +362,50 @@ r_obj* rray_if_else(
     CTYPE const* v_true = CBEGIN(true_);                                       \
     CTYPE const* v_false = CBEGIN(false_);                                     \
                                                                                \
-    r_obj* out = KEEP(r_alloc_vector(RTYPE, r_length(condition)));             \
+    r_obj* out = KEEP(r_alloc_vector(RTYPE, size));                            \
     OUT_DEREF;                                                                 \
                                                                                \
     if (missing != r_null) {                                                   \
       CTYPE const* v_missing = CBEGIN(missing);                                \
                                                                                \
       struct rray_run_iterator it;                                             \
-      rray_run_iterator_init3(                                                 \
-        &it,                                                                   \
-        v_dimensions,                                                          \
-        dimensionality,                                                        \
+      const r_ssize* v_v_strides[] = {                                         \
+        v_condition_strides,                                                   \
         v_true_strides,                                                        \
         v_false_strides,                                                       \
         v_missing_strides                                                      \
+      };                                                                       \
+      rray_run_iterator_init(                                                  \
+        &it,                                                                   \
+        v_dimensions,                                                          \
+        dimensionality,                                                        \
+        v_v_strides,                                                           \
+        4                                                                      \
       );                                                                       \
                                                                                \
-      for (; !rray_run_iterator_done(&it); rray_run_iterator_next3(&it)) {     \
+      for (; !rray_run_iterator_done(&it); rray_run_iterator_next4(&it)) {     \
         const r_ssize start = rray_run_iterator_start(&it);                    \
         const r_ssize end = rray_run_iterator_end(&it);                        \
                                                                                \
-        r_ssize true_loc = rray_run_iterator_loc(&it, 0);                      \
-        const r_ssize true_stride = rray_run_iterator_stride(&it, 0);          \
+        r_ssize condition_loc = rray_run_iterator_loc(&it, 0);                 \
+        const r_ssize condition_stride = rray_run_iterator_stride(&it, 0);     \
                                                                                \
-        r_ssize false_loc = rray_run_iterator_loc(&it, 1);                     \
-        const r_ssize false_stride = rray_run_iterator_stride(&it, 1);         \
+        r_ssize true_loc = rray_run_iterator_loc(&it, 1);                      \
+        const r_ssize true_stride = rray_run_iterator_stride(&it, 1);          \
                                                                                \
-        r_ssize missing_loc = rray_run_iterator_loc(&it, 2);                   \
-        const r_ssize missing_stride = rray_run_iterator_stride(&it, 2);       \
+        r_ssize false_loc = rray_run_iterator_loc(&it, 2);                     \
+        const r_ssize false_stride = rray_run_iterator_stride(&it, 2);         \
+                                                                               \
+        r_ssize missing_loc = rray_run_iterator_loc(&it, 3);                   \
+        const r_ssize missing_stride = rray_run_iterator_stride(&it, 3);       \
                                                                                \
         if (true_stride == 0 && false_stride == 0) {                           \
-          const CTYPE true_elt = v_true[true_loc];                             \
-          const CTYPE false_elt = v_false[false_loc];                          \
+          CTYPE const true_elt = v_true[true_loc];                             \
+          CTYPE const false_elt = v_false[false_loc];                          \
                                                                                \
           RRAY_IF_ELSE_RUN3_MISSING(CTYPE, POKE, true_elt, false_elt);         \
         } else if (true_stride == 0) {                                         \
-          const CTYPE true_elt = v_true[true_loc];                             \
+          CTYPE const true_elt = v_true[true_loc];                             \
                                                                                \
           RRAY_IF_ELSE_RUN3_MISSING(                                           \
             CTYPE,                                                             \
@@ -286,7 +414,7 @@ r_obj* rray_if_else(
             v_false[false_loc]                                                 \
           );                                                                   \
         } else if (false_stride == 0) {                                        \
-          const CTYPE false_elt = v_false[false_loc];                          \
+          CTYPE const false_elt = v_false[false_loc];                          \
                                                                                \
           RRAY_IF_ELSE_RUN3_MISSING(CTYPE, POKE, v_true[true_loc], false_elt); \
         } else {                                                               \
@@ -300,31 +428,35 @@ r_obj* rray_if_else(
       }                                                                        \
     } else {                                                                   \
       struct rray_run_iterator it;                                             \
-      rray_run_iterator_init2(                                                 \
+      rray_run_iterator_init3(                                                 \
         &it,                                                                   \
         v_dimensions,                                                          \
         dimensionality,                                                        \
+        v_condition_strides,                                                   \
         v_true_strides,                                                        \
         v_false_strides                                                        \
       );                                                                       \
                                                                                \
-      for (; !rray_run_iterator_done(&it); rray_run_iterator_next2(&it)) {     \
+      for (; !rray_run_iterator_done(&it); rray_run_iterator_next3(&it)) {     \
         const r_ssize start = rray_run_iterator_start(&it);                    \
         const r_ssize end = rray_run_iterator_end(&it);                        \
                                                                                \
-        r_ssize true_loc = rray_run_iterator_loc(&it, 0);                      \
-        const r_ssize true_stride = rray_run_iterator_stride(&it, 0);          \
+        r_ssize condition_loc = rray_run_iterator_loc(&it, 0);                 \
+        const r_ssize condition_stride = rray_run_iterator_stride(&it, 0);     \
                                                                                \
-        r_ssize false_loc = rray_run_iterator_loc(&it, 1);                     \
-        const r_ssize false_stride = rray_run_iterator_stride(&it, 1);         \
+        r_ssize true_loc = rray_run_iterator_loc(&it, 1);                      \
+        const r_ssize true_stride = rray_run_iterator_stride(&it, 1);          \
+                                                                               \
+        r_ssize false_loc = rray_run_iterator_loc(&it, 2);                     \
+        const r_ssize false_stride = rray_run_iterator_stride(&it, 2);         \
                                                                                \
         if (true_stride == 0 && false_stride == 0) {                           \
-          const CTYPE true_elt = v_true[true_loc];                             \
-          const CTYPE false_elt = v_false[false_loc];                          \
+          CTYPE const true_elt = v_true[true_loc];                             \
+          CTYPE const false_elt = v_false[false_loc];                          \
                                                                                \
           RRAY_IF_ELSE_RUN2(CTYPE, POKE, MISSING, true_elt, false_elt);        \
         } else if (true_stride == 0) {                                         \
-          const CTYPE true_elt = v_true[true_loc];                             \
+          CTYPE const true_elt = v_true[true_loc];                             \
                                                                                \
           RRAY_IF_ELSE_RUN2(                                                   \
             CTYPE,                                                             \
@@ -334,7 +466,7 @@ r_obj* rray_if_else(
             v_false[false_loc]                                                 \
           );                                                                   \
         } else if (false_stride == 0) {                                        \
-          const CTYPE false_elt = v_false[false_loc];                          \
+          CTYPE const false_elt = v_false[false_loc];                          \
                                                                                \
           RRAY_IF_ELSE_RUN2(                                                   \
             CTYPE,                                                             \
@@ -368,6 +500,8 @@ static r_obj* rray_if_else_fill(
   r_obj* missing,
   const int* v_dimensions,
   int dimensionality,
+  r_ssize size,
+  const r_ssize* v_condition_strides,
   const r_ssize* v_true_strides,
   const r_ssize* v_false_strides,
   const r_ssize* v_missing_strides
@@ -442,7 +576,9 @@ static r_obj* rray_if_else_fill(
 }
 
 #undef RRAY_IF_ELSE_RUN2
+#undef RRAY_IF_ELSE_RUN2_INNER
 #undef RRAY_IF_ELSE_RUN3
+#undef RRAY_IF_ELSE_RUN3_INNER
 #undef RRAY_IF_ELSE_RUN3_MISSING
 #undef RRAY_IF_ELSE_FILL
 #undef RRAY_IF_ELSE_NO_DEREF

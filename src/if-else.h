@@ -10,6 +10,7 @@ r_obj* rray_if_else(
   r_obj* true_,
   r_obj* false_,
   r_obj* missing,
+  r_obj* dimensions,
   struct rray_arg* condition_arg,
   struct rray_arg* true_arg,
   struct rray_arg* false_arg,

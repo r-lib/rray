@@ -11,7 +11,7 @@ test_that("condition selects true, false, and missing values", {
   )
 })
 
-test_that("condition determines the dimensions and names are dropped", {
+test_that("names are dropped from every input", {
   condition <- array(
     c(TRUE, FALSE, NA, TRUE),
     c(2L, 2L),
@@ -27,6 +27,88 @@ test_that("condition determines the dimensions and names are dropped", {
   expect_identical(
     rray_if_else(c(a = TRUE, b = FALSE), 1L, 2L),
     array(c(1L, 2L), 2L)
+  )
+
+  named_true <- array(
+    1:4,
+    c(2L, 2L),
+    dimnames = list(c("r1", "r2"), c("c1", "c2"))
+  )
+  named_false <- named_true + 10L
+  dimnames(named_false) <- dimnames(named_true)
+  named_condition <- array(
+    c(TRUE, FALSE),
+    c(2L, 1L),
+    dimnames = list(c("r1", "r2"), "c1")
+  )
+
+  expect_null(dimnames(rray_if_else(named_condition, named_true, named_false)))
+})
+
+test_that("a one-column condition selects whole rows", {
+  condition <- array(c(TRUE, FALSE, NA), c(3L, 1L))
+  true <- array(1:12, c(3L, 4L))
+  false <- array(101:112, c(3L, 4L))
+  missing <- array(201:212, c(3L, 4L))
+
+  expected <- true
+  expected[2L, ] <- false[2L, ]
+  expected[3L, ] <- missing[3L, ]
+
+  expect_identical(
+    rray_if_else(condition, true, false, missing = missing),
+    expected
+  )
+})
+
+test_that("a one-column condition selects rows without missing", {
+  condition <- array(c(TRUE, FALSE), c(2L, 1L))
+  true <- array(1:6, c(2L, 3L))
+  false <- array(11:16, c(2L, 3L))
+
+  expected <- true
+  expected[2L, ] <- false[2L, ]
+
+  expect_identical(rray_if_else(condition, true, false), expected)
+})
+
+test_that("a one-row condition selects whole columns", {
+  condition <- array(c(TRUE, FALSE, NA), c(1L, 3L))
+  true <- array(1:12, c(4L, 3L))
+  false <- array(101:112, c(4L, 3L))
+  missing <- array(201:212, c(4L, 3L))
+
+  expected <- true
+  expected[, 2L] <- false[, 2L]
+  expected[, 3L] <- missing[, 3L]
+
+  expect_identical(
+    rray_if_else(condition, true, false, missing = missing),
+    expected
+  )
+})
+
+test_that("condition broadcasts across more than one axis", {
+  condition <- array(c(TRUE, FALSE), c(1L, 2L, 1L))
+  true <- array(1:12, c(2L, 2L, 3L))
+  false <- array(101:112, c(2L, 2L, 3L))
+
+  expected <- true
+  expected[, 2L, ] <- false[, 2L, ]
+
+  expect_identical(rray_if_else(condition, true, false), expected)
+})
+
+test_that("dimensions can fix or expand the output shape", {
+  condition <- array(c(TRUE, FALSE), c(2L, 1L))
+
+  expect_identical(
+    rray_if_else(condition, 1L, 2L, dimensions = rray_dimensions(condition)),
+    array(c(1L, 2L), c(2L, 1L))
+  )
+  expect_identical(
+    rray_if_else(condition, 1L, 2L, dimensions = c(2L, 3L)),
+    array(rep(c(1L, 2L), 3L), c(2L, 3L))
   )
 })
 
@@ -125,8 +207,36 @@ test_that("all branches must broadcast even when unselected", {
     rray_if_else(condition, 1L, 2L, missing = bad),
     error = TRUE
   )
-  expect_snapshot(
+  expect_identical(
     rray_if_else(condition, 1L, 2L, missing = array(3L, c(1L, 1L, 1L))),
+    array(1L, c(2L, 2L, 1L))
+  )
+})
+
+test_that("explicit dimensions must fit every input", {
+  condition <- array(TRUE, c(2L, 1L))
+  true <- array(1:6, c(2L, 3L))
+
+  expect_snapshot(
+    rray_if_else(condition, true, 2L, dimensions = rray_dimensions(condition)),
+    error = TRUE
+  )
+  expect_snapshot(
+    rray_if_else(condition, 1L, true, dimensions = rray_dimensions(condition)),
+    error = TRUE
+  )
+  expect_snapshot(
+    rray_if_else(
+      condition,
+      1L,
+      2L,
+      missing = true,
+      dimensions = rray_dimensions(condition)
+    ),
+    error = TRUE
+  )
+  expect_snapshot(
+    rray_if_else(condition, 1L, 2L, dimensions = c(3L, 1L)),
     error = TRUE
   )
 })
