@@ -104,7 +104,6 @@ static r_obj* arg_as_integer(
   case R_TYPE_double:
     return arg_as_integer_from_double(x, arg, error_call);
   default:
-    KEEP(x);
     r_abort_lazy_call(
       error_call,
       "%s must be an integer or double vector, not %s.",
@@ -119,8 +118,6 @@ static r_obj* arg_as_integer_from_double(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  x = KEEP(x);
-
   const r_ssize size = r_length(x);
   const double* v_x = r_dbl_cbegin(x);
 
@@ -153,7 +150,7 @@ static r_obj* arg_as_integer_from_double(
     r_attrib_poke_names(out, names);
   }
 
-  FREE(2);
+  FREE(1);
   return out;
 }
 
