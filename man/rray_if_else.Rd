@@ -36,11 +36,10 @@ All supplied inputs are broadcast to common dimensions. The common output
 type comes from \code{true}, \code{false}, and \code{missing}.
 }
 \examples{
-condition <- array(c(TRUE, FALSE, NA), c(3L, 1L))
-true <- array(1:12, c(3L, 4L))
-false <- array(101:112, c(3L, 4L))
-missing <- array(201:212, c(3L, 4L))
-rray_if_else(condition, true, false, missing = missing)
+x <- array(1:12, c(3L, 4L))
+x[1, 1] <- NA_integer_
+y <- array(101:104, c(1L, 4L))
+rray_if_else(x > 5L, x, y, missing = 0L)
 
 condition <- array(c(TRUE, FALSE), c(2L, 1L))
 true <- array(1:6, c(2L, 3L))
