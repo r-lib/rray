@@ -28,6 +28,14 @@
 # `axes` is validated
 
     Code
+      rray_rep(x, times = 2, axes = TRUE)
+    Condition
+      Error in `rray_rep()`:
+      ! `axes` must be an integer or double vector, not `TRUE`.
+
+---
+
+    Code
       rray_rep(x, times = 2, axes = c(1, 1))
     Condition
       Error in `rray_rep()`:
@@ -63,9 +71,17 @@
       rray_rep(x, times = 2, axes = NA)
     Condition
       Error in `rray_rep()`:
-      ! `axes` must not contain missing values.
+      ! `axes` must be an integer or double vector, not `NA`.
 
 # `times` is validated
+
+    Code
+      rray_rep(x, times = TRUE, axes = 1)
+    Condition
+      Error in `rray_rep()`:
+      ! `times` must be an integer or double vector, not `TRUE`.
+
+---
 
     Code
       rray_rep(x, times = NA_integer_, axes = 1)
@@ -86,14 +102,45 @@
     Code
       rray_rep(x, times = 1.5, axes = 1)
     Condition
-      Error:
-      ! Can't convert from `times` <double> to <integer> due to loss of precision.
-      * Locations: 1
+      Error in `rray_rep()`:
+      ! `times` must contain whole numbers that fit in an integer. Problem at location 1.
+
+---
+
+    Code
+      rray_rep(x, times = Inf, axes = 1)
+    Condition
+      Error in `rray_rep()`:
+      ! `times` must contain whole numbers that fit in an integer. Problem at location 1.
+
+---
+
+    Code
+      rray_rep(x, times = .Machine$integer.max + 1, axes = 1)
+    Condition
+      Error in `rray_rep()`:
+      ! `times` must contain whole numbers that fit in an integer. Problem at location 1.
+
+---
+
+    Code
+      rray_rep(x, times = NaN, axes = 1)
+    Condition
+      Error in `rray_rep()`:
+      ! `times` must not contain missing values.
 
 ---
 
     Code
       rray_rep(x, times = structure(1L, names = "a"), axes = 1)
+    Condition
+      Error in `rray_rep()`:
+      ! `times` can't have attributes.
+
+---
+
+    Code
+      rray_rep(x, times = c(a = 1), axes = 1)
     Condition
       Error in `rray_rep()`:
       ! `times` can't have attributes.

@@ -59,14 +59,13 @@
     Code
       rray_remove_axes(x, 1.5)
     Condition
-      Error:
-      ! Can't convert from `axes` <double> to <integer> due to loss of precision.
-      * Locations: 1
+      Error in `rray_remove_axes()`:
+      ! `axes` must contain whole numbers that fit in an integer. Problem at location 1.
     Code
       rray_remove_axes(x, "x")
     Condition
-      Error:
-      ! Can't convert `axes` <character> to <integer>.
+      Error in `rray_remove_axes()`:
+      ! `axes` must be an integer or double vector, not the string "x".
 
 # errors on non-array input
 

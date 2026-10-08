@@ -286,6 +286,7 @@ test_that("`times` and `axes` must be named", {
 
 test_that("`axes` is validated", {
   x <- array(1:6, c(3, 2))
+  expect_snapshot(rray_rep(x, times = 2, axes = TRUE), error = TRUE)
   expect_snapshot(rray_rep(x, times = 2, axes = c(1, 1)), error = TRUE)
   expect_snapshot(rray_rep(x, times = 2, axes = c(2, 1)), error = TRUE)
   expect_snapshot(rray_rep(x, times = 2, axes = 0), error = TRUE)
@@ -295,13 +296,21 @@ test_that("`axes` is validated", {
 
 test_that("`times` is validated", {
   x <- array(1:6, c(3, 2))
+  expect_snapshot(rray_rep(x, times = TRUE, axes = 1), error = TRUE)
   expect_snapshot(rray_rep(x, times = NA_integer_, axes = 1), error = TRUE)
   expect_snapshot(rray_rep(x, times = -1, axes = 1), error = TRUE)
   expect_snapshot(rray_rep(x, times = 1.5, axes = 1), error = TRUE)
+  expect_snapshot(rray_rep(x, times = Inf, axes = 1), error = TRUE)
+  expect_snapshot(
+    rray_rep(x, times = .Machine$integer.max + 1, axes = 1),
+    error = TRUE
+  )
+  expect_snapshot(rray_rep(x, times = NaN, axes = 1), error = TRUE)
   expect_snapshot(
     rray_rep(x, times = structure(1L, names = "a"), axes = 1),
     error = TRUE
   )
+  expect_snapshot(rray_rep(x, times = c(a = 1), axes = 1), error = TRUE)
   expect_snapshot(rray_rep(x, times = c(1, 2), axes = 1), error = TRUE)
   expect_snapshot(rray_rep(x, times = c(1, 2, 3), axes = c(1, 2)), error = TRUE)
   expect_snapshot(rray_rep(x, times = integer(), axes = 1), error = TRUE)

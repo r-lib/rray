@@ -55,9 +55,8 @@
     Code
       rray_split(x, axis = 1.5, dimensions = 1)
     Condition
-      Error:
-      ! Can't convert from `axis` <double> to <integer> due to loss of precision.
-      * Locations: 1
+      Error in `rray_split()`:
+      ! `axis` must contain whole numbers that fit in an integer. Problem at location 1.
 
 ---
 
@@ -80,9 +79,8 @@
     Code
       rray_split(x, axis = 1, dimensions = 1.5)
     Condition
-      Error:
-      ! Can't convert from `dimensions` <double> to <integer> due to loss of precision.
-      * Locations: 1
+      Error in `rray_split()`:
+      ! `dimensions` must contain whole numbers that fit in an integer. Problem at location 1.
 
 ---
 

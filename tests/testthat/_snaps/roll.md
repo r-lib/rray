@@ -21,6 +21,14 @@
 # `axes` is validated
 
     Code
+      rray_roll(x, n = 1, axes = TRUE)
+    Condition
+      Error in `rray_roll()`:
+      ! `axes` must be an integer or double vector, not `TRUE`.
+
+---
+
+    Code
       rray_roll(x, n = 1, axes = c(1, 1))
     Condition
       Error in `rray_roll()`:
@@ -56,9 +64,17 @@
       rray_roll(x, n = 1, axes = NA)
     Condition
       Error in `rray_roll()`:
-      ! `axes` must not contain missing values.
+      ! `axes` must be an integer or double vector, not `NA`.
 
 # `n` is validated
+
+    Code
+      rray_roll(x, n = TRUE, axes = 1)
+    Condition
+      Error in `rray_roll()`:
+      ! `n` must be an integer or double vector, not `TRUE`.
+
+---
 
     Code
       rray_roll(x, n = c(1, 2, 3), axes = c(1, 2))
@@ -88,7 +104,7 @@
       rray_roll(x, n = NA, axes = 1)
     Condition
       Error in `rray_roll()`:
-      ! `n` must not contain missing values.
+      ! `n` must be an integer or double vector, not `NA`.
 
 ---
 
@@ -103,17 +119,16 @@
     Code
       rray_roll(x, n = 1.5, axes = 1)
     Condition
-      Error:
-      ! Can't convert from `n` <double> to <integer> due to loss of precision.
-      * Locations: 1
+      Error in `rray_roll()`:
+      ! `n` must contain whole numbers that fit in an integer. Problem at location 1.
 
 ---
 
     Code
       rray_roll(x, n = "a", axes = 1)
     Condition
-      Error:
-      ! Can't convert `n` <character> to <integer>.
+      Error in `rray_roll()`:
+      ! `n` must be an integer or double vector, not the string "a".
 
 ---
 

@@ -219,6 +219,6 @@
     Code
       rray_as_extract_subscript(1L, "a")
     Condition
-      Error:
-      ! Can't convert `dimensions` <character> to <integer>.
+      Error in `rray_as_extract_subscript()`:
+      ! `dimensions` must be an integer or double vector, not the string "a".
 

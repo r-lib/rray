@@ -39,8 +39,8 @@ separately, i.e. repeat the first column 2 \code{times}, the second column 3
 to repeat each element along the \code{axis} the same number of times.
 }
 
-These are the array versions of \code{\link[vctrs:vec-rep]{vctrs::vec_rep()}} and
-\code{\link[vctrs:vec-rep]{vctrs::vec_rep_each()}}, which repeat along the size of a vector rather than
+These are the array versions of \code{vctrs::vec_rep()} and
+\code{vctrs::vec_rep_each()}, which repeat along the size of a vector rather than
 along an axis.
 }
 \details{

@@ -192,16 +192,12 @@ test_that("names still roll with a zero dimension on another axis", {
   )
 })
 
-test_that("`n` and `axes` can be integerish doubles or logicals", {
+test_that("`n` and `axes` can be integerish doubles", {
   x <- array(1:24, c(2, 3, 4))
 
   expect_identical(
     rray_roll(x, n = c(1, 2), axes = c(2, 3)),
     rray_roll(x, n = c(1L, 2L), axes = c(2L, 3L))
-  )
-  expect_identical(
-    rray_roll(x, n = TRUE, axes = TRUE),
-    rray_roll(x, n = 1L, axes = 1L)
   )
 })
 
@@ -236,6 +232,7 @@ test_that("`n` and `axes` must be named", {
 
 test_that("`axes` is validated", {
   x <- array(1:6, c(2, 3))
+  expect_snapshot(rray_roll(x, n = 1, axes = TRUE), error = TRUE)
   expect_snapshot(rray_roll(x, n = 1, axes = c(1, 1)), error = TRUE)
   expect_snapshot(rray_roll(x, n = 1, axes = c(2, 1)), error = TRUE)
   expect_snapshot(rray_roll(x, n = 1, axes = 3), error = TRUE)
@@ -245,6 +242,7 @@ test_that("`axes` is validated", {
 
 test_that("`n` is validated", {
   x <- array(1:6, c(2, 3))
+  expect_snapshot(rray_roll(x, n = TRUE, axes = 1), error = TRUE)
   expect_snapshot(rray_roll(x, n = c(1, 2, 3), axes = c(1, 2)), error = TRUE)
   expect_snapshot(rray_roll(x, n = c(1, 2), axes = 1), error = TRUE)
   expect_snapshot(rray_roll(x, n = integer(), axes = 1), error = TRUE)

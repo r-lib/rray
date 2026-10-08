@@ -33,9 +33,8 @@
     Code
       rray_combine(x, .axis = 1.5)
     Condition
-      Error:
-      ! Can't convert from `.axis` <double> to <integer> due to loss of precision.
-      * Locations: 1
+      Error in `rray_combine()`:
+      ! `.axis` must contain whole numbers that fit in an integer. Problem at location 1.
     Code
       rray_combine(x, .axis = 0L)
     Condition

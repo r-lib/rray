@@ -35,9 +35,8 @@
     Code
       rray_unstack(x, 1.5)
     Condition
-      Error:
-      ! Can't convert from `axis` <double> to <integer> due to loss of precision.
-      * Locations: 1
+      Error in `rray_unstack()`:
+      ! `axis` must contain whole numbers that fit in an integer. Problem at location 1.
 
 ---
 
