@@ -29,7 +29,7 @@ One pull request per entry. Keep them small.
 # Part 1: Conventions
 
 Terminology (size, axis, dimension, dimensions, dimensionality) is defined in
-`CLAUDE.md`. Use it exactly.
+`AGENTS.md`. Use it exactly.
 
 ## Files
 
