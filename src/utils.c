@@ -90,10 +90,7 @@ r_obj* arg_as_bare_integer(
     );
   }
 
-  x = KEEP(arg_as_integer(x, arg, error_call));
-
-  FREE(1);
-  return x;
+  return arg_as_integer(x, arg, error_call);
 }
 
 static r_obj* arg_as_integer(
