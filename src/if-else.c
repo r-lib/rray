@@ -251,12 +251,16 @@ r_obj* rray_if_else(
       for (; !rray_run_iterator_done(&it); rray_run_iterator_next3(&it)) {     \
         const r_ssize start = rray_run_iterator_start(&it);                    \
         const r_ssize end = rray_run_iterator_end(&it);                        \
+                                                                               \
         r_ssize true_loc = rray_run_iterator_loc(&it, 0);                      \
-        r_ssize false_loc = rray_run_iterator_loc(&it, 1);                     \
-        r_ssize missing_loc = rray_run_iterator_loc(&it, 2);                   \
         const r_ssize true_stride = rray_run_iterator_stride(&it, 0);          \
+                                                                               \
+        r_ssize false_loc = rray_run_iterator_loc(&it, 1);                     \
         const r_ssize false_stride = rray_run_iterator_stride(&it, 1);         \
+                                                                               \
+        r_ssize missing_loc = rray_run_iterator_loc(&it, 2);                   \
         const r_ssize missing_stride = rray_run_iterator_stride(&it, 2);       \
+                                                                               \
         if (true_stride == 0) {                                                \
           const CTYPE true_elt = v_true[true_loc];                             \
           if (false_stride == 0) {                                             \
@@ -294,10 +298,13 @@ r_obj* rray_if_else(
       for (; !rray_run_iterator_done(&it); rray_run_iterator_next2(&it)) {     \
         const r_ssize start = rray_run_iterator_start(&it);                    \
         const r_ssize end = rray_run_iterator_end(&it);                        \
+                                                                               \
         r_ssize true_loc = rray_run_iterator_loc(&it, 0);                      \
-        r_ssize false_loc = rray_run_iterator_loc(&it, 1);                     \
         const r_ssize true_stride = rray_run_iterator_stride(&it, 0);          \
+                                                                               \
+        r_ssize false_loc = rray_run_iterator_loc(&it, 1);                     \
         const r_ssize false_stride = rray_run_iterator_stride(&it, 1);         \
+                                                                               \
         if (true_stride == 0) {                                                \
           const CTYPE true_elt = v_true[true_loc];                             \
           if (false_stride == 0) {                                             \
