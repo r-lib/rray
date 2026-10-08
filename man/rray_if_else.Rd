@@ -31,8 +31,7 @@ supplied. Names are dropped.
 \code{rray_if_else()} selects values from \code{true} and \code{false} using a logical
 \code{condition}. When an element of \code{condition} is \code{NA}, it selects from
 \code{missing}, or returns a missing value if \code{missing} is \code{NULL}.
-}
-\details{
+
 All supplied inputs are broadcast to common dimensions. The common output
 type comes from \code{true}, \code{false}, and \code{missing} when supplied.
 }

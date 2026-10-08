@@ -1,5 +1,6 @@
 #' If-else for arrays
 #'
+#' @description
 #' `rray_if_else()` selects values from `true` and `false` using a logical
 #' `condition`. When an element of `condition` is `NA`, it selects from
 #' `missing`, or returns a missing value if `missing` is `NULL`.
