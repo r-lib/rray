@@ -2,7 +2,7 @@
 % Please edit documentation in R/if-else.R
 \name{rray_if_else}
 \alias{rray_if_else}
-\title{Choose values from arrays}
+\title{If-else for arrays}
 \usage{
 rray_if_else(condition, true, false, ..., missing = NULL, dimensions = NULL)
 }

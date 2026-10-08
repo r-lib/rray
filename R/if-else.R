@@ -1,4 +1,4 @@
-#' Choose values from arrays
+#' If-else for arrays
 #'
 #' `rray_if_else()` selects values from `true` and `false` using a logical
 #' `condition`. When an element of `condition` is `NA`, it selects from
