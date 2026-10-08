@@ -11,6 +11,7 @@ reference:
   - rray-equal
   - rray-compare
   - rray-logical
+  - rray_if_else
 
 - title: Reducers
   contents:
