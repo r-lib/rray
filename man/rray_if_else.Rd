@@ -13,7 +13,7 @@ rray_if_else(condition, true, false, ..., missing = NULL, dimensions = NULL)
 
 \item{false}{Values to use where \code{condition} is \code{FALSE}.}
 
-\item{...}{Must be empty.}
+\item{...}{These dots are for future extensions and must be empty.}
 
 \item{missing}{Values to use where \code{condition} is \code{NA}. If \code{NULL}, missing
 conditions produce missing values of the output type.}

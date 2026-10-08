@@ -14,7 +14,7 @@
 #'
 #' @param false Values to use where `condition` is `FALSE`.
 #'
-#' @param ... Must be empty.
+#' @inheritParams rlang::args_dots_empty
 #'
 #' @param missing Values to use where `condition` is `NA`. If `NULL`, missing
 #'   conditions produce missing values of the output type.
