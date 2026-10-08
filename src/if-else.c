@@ -248,11 +248,15 @@ r_obj* rray_if_else(
     if (missing != r_null) {                                                   \
       CTYPE const* v_missing = CBEGIN(missing);                                \
                                                                                \
-      const r_ssize* v_strides[] =                                             \
-        {v_true_strides, v_false_strides, v_missing_strides};                  \
-                                                                               \
       struct rray_run_iterator it;                                             \
-      rray_run_iterator_init(&it, v_dimensions, dimensionality, v_strides, 3); \
+      rray_run_iterator_init3(                                                 \
+        &it,                                                                   \
+        v_dimensions,                                                          \
+        dimensionality,                                                        \
+        v_true_strides,                                                        \
+        v_false_strides,                                                       \
+        v_missing_strides                                                      \
+      );                                                                       \
                                                                                \
       for (; !rray_run_iterator_done(&it); rray_run_iterator_next3(&it)) {     \
         const r_ssize start = rray_run_iterator_start(&it);                    \
