@@ -275,7 +275,7 @@ static r_obj* rray_if_else_dimensions_common(
   return out;
 }
 
-#define RRAY_IF_ELSE_RUN2_INNER(                                               \
+#define RRAY_IF_ELSE_RUN3_LOOP(                                                \
   CTYPE,                                                                       \
   POKE,                                                                        \
   MISSING,                                                                     \
@@ -296,11 +296,11 @@ static r_obj* rray_if_else_dimensions_common(
     }                                                                          \
   } while (0)
 
-#define RRAY_IF_ELSE_RUN2(CTYPE, POKE, MISSING, TRUE_VALUE, FALSE_VALUE)       \
+#define RRAY_IF_ELSE_RUN3(CTYPE, POKE, MISSING, TRUE_VALUE, FALSE_VALUE)       \
   do {                                                                         \
     if (condition_stride == 0) {                                               \
       const int condition_elt = v_condition[condition_loc];                    \
-      RRAY_IF_ELSE_RUN2_INNER(                                                 \
+      RRAY_IF_ELSE_RUN3_LOOP(                                                  \
         CTYPE,                                                                 \
         POKE,                                                                  \
         MISSING,                                                               \
@@ -309,7 +309,7 @@ static r_obj* rray_if_else_dimensions_common(
         condition_elt                                                          \
       );                                                                       \
     } else {                                                                   \
-      RRAY_IF_ELSE_RUN2_INNER(                                                 \
+      RRAY_IF_ELSE_RUN3_LOOP(                                                  \
         CTYPE,                                                                 \
         POKE,                                                                  \
         MISSING,                                                               \
@@ -320,7 +320,7 @@ static r_obj* rray_if_else_dimensions_common(
     }                                                                          \
   } while (0)
 
-#define RRAY_IF_ELSE_RUN3_INNER(                                               \
+#define RRAY_IF_ELSE_RUN4_LOOP(                                                \
   CTYPE,                                                                       \
   POKE,                                                                        \
   TRUE_VALUE,                                                                  \
@@ -342,11 +342,11 @@ static r_obj* rray_if_else_dimensions_common(
     }                                                                          \
   } while (0)
 
-#define RRAY_IF_ELSE_RUN3(CTYPE, POKE, TRUE_VALUE, FALSE_VALUE, MISSING_VALUE) \
+#define RRAY_IF_ELSE_RUN4(CTYPE, POKE, TRUE_VALUE, FALSE_VALUE, MISSING_VALUE) \
   do {                                                                         \
     if (condition_stride == 0) {                                               \
       const int condition_elt = v_condition[condition_loc];                    \
-      RRAY_IF_ELSE_RUN3_INNER(                                                 \
+      RRAY_IF_ELSE_RUN4_LOOP(                                                  \
         CTYPE,                                                                 \
         POKE,                                                                  \
         TRUE_VALUE,                                                            \
@@ -355,7 +355,7 @@ static r_obj* rray_if_else_dimensions_common(
         condition_elt                                                          \
       );                                                                       \
     } else {                                                                   \
-      RRAY_IF_ELSE_RUN3_INNER(                                                 \
+      RRAY_IF_ELSE_RUN4_LOOP(                                                  \
         CTYPE,                                                                 \
         POKE,                                                                  \
         TRUE_VALUE,                                                            \
@@ -366,13 +366,13 @@ static r_obj* rray_if_else_dimensions_common(
     }                                                                          \
   } while (0)
 
-#define RRAY_IF_ELSE_RUN3_MISSING(CTYPE, POKE, TRUE_VALUE, FALSE_VALUE)        \
+#define RRAY_IF_ELSE_RUN4_MISSING(CTYPE, POKE, TRUE_VALUE, FALSE_VALUE)        \
   do {                                                                         \
     if (missing_stride == 0) {                                                 \
       CTYPE const missing_elt = v_missing[missing_loc];                        \
-      RRAY_IF_ELSE_RUN3(CTYPE, POKE, TRUE_VALUE, FALSE_VALUE, missing_elt);    \
+      RRAY_IF_ELSE_RUN4(CTYPE, POKE, TRUE_VALUE, FALSE_VALUE, missing_elt);    \
     } else {                                                                   \
-      RRAY_IF_ELSE_RUN3(                                                       \
+      RRAY_IF_ELSE_RUN4(                                                       \
         CTYPE,                                                                 \
         POKE,                                                                  \
         TRUE_VALUE,                                                            \
@@ -426,11 +426,11 @@ static r_obj* rray_if_else_dimensions_common(
           CTYPE const true_elt = v_true[true_loc];                             \
           CTYPE const false_elt = v_false[false_loc];                          \
                                                                                \
-          RRAY_IF_ELSE_RUN3_MISSING(CTYPE, POKE, true_elt, false_elt);         \
+          RRAY_IF_ELSE_RUN4_MISSING(CTYPE, POKE, true_elt, false_elt);         \
         } else if (true_stride == 0) {                                         \
           CTYPE const true_elt = v_true[true_loc];                             \
                                                                                \
-          RRAY_IF_ELSE_RUN3_MISSING(                                           \
+          RRAY_IF_ELSE_RUN4_MISSING(                                           \
             CTYPE,                                                             \
             POKE,                                                              \
             true_elt,                                                          \
@@ -439,9 +439,9 @@ static r_obj* rray_if_else_dimensions_common(
         } else if (false_stride == 0) {                                        \
           CTYPE const false_elt = v_false[false_loc];                          \
                                                                                \
-          RRAY_IF_ELSE_RUN3_MISSING(CTYPE, POKE, v_true[true_loc], false_elt); \
+          RRAY_IF_ELSE_RUN4_MISSING(CTYPE, POKE, v_true[true_loc], false_elt); \
         } else {                                                               \
-          RRAY_IF_ELSE_RUN3_MISSING(                                           \
+          RRAY_IF_ELSE_RUN4_MISSING(                                           \
             CTYPE,                                                             \
             POKE,                                                              \
             v_true[true_loc],                                                  \
@@ -477,11 +477,11 @@ static r_obj* rray_if_else_dimensions_common(
           CTYPE const true_elt = v_true[true_loc];                             \
           CTYPE const false_elt = v_false[false_loc];                          \
                                                                                \
-          RRAY_IF_ELSE_RUN2(CTYPE, POKE, MISSING, true_elt, false_elt);        \
+          RRAY_IF_ELSE_RUN3(CTYPE, POKE, MISSING, true_elt, false_elt);        \
         } else if (true_stride == 0) {                                         \
           CTYPE const true_elt = v_true[true_loc];                             \
                                                                                \
-          RRAY_IF_ELSE_RUN2(                                                   \
+          RRAY_IF_ELSE_RUN3(                                                   \
             CTYPE,                                                             \
             POKE,                                                              \
             MISSING,                                                           \
@@ -491,7 +491,7 @@ static r_obj* rray_if_else_dimensions_common(
         } else if (false_stride == 0) {                                        \
           CTYPE const false_elt = v_false[false_loc];                          \
                                                                                \
-          RRAY_IF_ELSE_RUN2(                                                   \
+          RRAY_IF_ELSE_RUN3(                                                   \
             CTYPE,                                                             \
             POKE,                                                              \
             MISSING,                                                           \
@@ -499,7 +499,7 @@ static r_obj* rray_if_else_dimensions_common(
             false_elt                                                          \
           );                                                                   \
         } else {                                                               \
-          RRAY_IF_ELSE_RUN2(                                                   \
+          RRAY_IF_ELSE_RUN3(                                                   \
             CTYPE,                                                             \
             POKE,                                                              \
             MISSING,                                                           \
@@ -598,10 +598,10 @@ static r_obj* rray_if_else_fill(
   }
 }
 
-#undef RRAY_IF_ELSE_RUN2
-#undef RRAY_IF_ELSE_RUN2_INNER
 #undef RRAY_IF_ELSE_RUN3
-#undef RRAY_IF_ELSE_RUN3_INNER
-#undef RRAY_IF_ELSE_RUN3_MISSING
+#undef RRAY_IF_ELSE_RUN3_LOOP
+#undef RRAY_IF_ELSE_RUN4
+#undef RRAY_IF_ELSE_RUN4_LOOP
+#undef RRAY_IF_ELSE_RUN4_MISSING
 #undef RRAY_IF_ELSE_FILL
 #undef RRAY_IF_ELSE_NO_DEREF
