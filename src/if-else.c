@@ -248,6 +248,7 @@ static r_obj* rray_if_else_dimensions_common(
 
   const bool has_missing = missing != r_null;
   const r_ssize n_inputs = has_missing ? 4 : 3;
+
   r_obj* inputs = KEEP(r_alloc_list(n_inputs));
   r_obj* input_names = KEEP(r_alloc_character(n_inputs));
   r_attrib_poke_names(inputs, input_names);
