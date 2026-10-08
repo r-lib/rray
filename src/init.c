@@ -310,6 +310,7 @@ extern r_obj* ffi_test_wrap(r_obj* ffi_x);
 extern r_obj* ffi_test_wrapper_readonly(r_obj* ffi_x);
 extern r_obj* ffi_test_wrapper_writable(r_obj* ffi_x);
 extern r_obj* ffi_test_is_wrapper(r_obj* ffi_x);
+extern r_obj* ffi_test_wrapper_read_access(r_obj* ffi_x);
 extern r_obj* ffi_test_rray_sum_forced_fallback(
   r_obj* ffi_x,
   r_obj* ffi_axes,
@@ -415,6 +416,7 @@ static const R_CallMethodDef CallEntries[] = {
   {"ffi_test_wrapper_readonly", (DL_FUNC) &ffi_test_wrapper_readonly, 1},
   {"ffi_test_wrapper_writable", (DL_FUNC) &ffi_test_wrapper_writable, 1},
   {"ffi_test_is_wrapper", (DL_FUNC) &ffi_test_is_wrapper, 1},
+  {"ffi_test_wrapper_read_access", (DL_FUNC) &ffi_test_wrapper_read_access, 1},
   {"ffi_test_rray_sum_forced_fallback",
    (DL_FUNC) &ffi_test_rray_sum_forced_fallback,
    4},

@@ -130,6 +130,23 @@ test_that("wrapper starts out sharing data", {
   expect_identical_addresses(wrapper_readonly(w), x)
 })
 
+test_that("read-only access to a dimensioned wrapper shares data", {
+  xs <- list(
+    c(TRUE, FALSE),
+    c(1L, 2L),
+    c(1.5, 2.5),
+    c(1 + 2i, 3 + 4i)
+  )
+
+  for (x in xs) {
+    dim(x) <- c(1L, 2L)
+    w <- wrap(x)
+
+    expect_identical(wrapper_read_access(w), TRUE)
+    expect_identical_addresses(wrapper_readonly(w), x)
+  }
+})
+
 test_that("write access triggers ownership via writable dataptr", {
   x <- 1:3
   w <- wrap(x)
