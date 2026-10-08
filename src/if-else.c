@@ -108,31 +108,17 @@ r_obj* rray_if_else(
     );
   }
 
-  if (dimensions == r_null) {
-    const r_ssize n_inputs = has_missing ? 4 : 3;
-    r_obj* inputs = KEEP_N(r_alloc_list(n_inputs), &n_prot);
-    r_obj* input_names = KEEP_N(r_alloc_character(n_inputs), &n_prot);
-    r_list_poke(inputs, 0, condition);
-    r_list_poke(inputs, 1, true_);
-    r_list_poke(inputs, 2, false_);
-    r_chr_poke(input_names, 0, r_str("condition"));
-    r_chr_poke(input_names, 1, r_str("true"));
-    r_chr_poke(input_names, 2, r_str("false"));
-    if (has_missing) {
-      r_list_poke(inputs, 3, missing);
-      r_chr_poke(input_names, 3, r_str("missing"));
-    }
-    r_attrib_poke_names(inputs, input_names);
-    dimensions = KEEP_N(
-      rray_dimensions_common(inputs, r_null, rray_args.empty, error_call),
-      &n_prot
-    );
-  } else {
-    dimensions = KEEP_N(
-      arg_as_dimensions(dimensions, rray_args.dimensions, error_call),
-      &n_prot
-    );
-  }
+  dimensions = KEEP_N(
+    rray_if_else_dimensions_common(
+      condition,
+      true_,
+      false_,
+      missing,
+      dimensions,
+      error_call
+    ),
+    &n_prot
+  );
 
   const int* v_dimensions = r_int_cbegin(dimensions);
   const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
@@ -245,6 +231,43 @@ r_obj* rray_if_else(
   r_attrib_poke_dim(out, dimensions);
 
   FREE(n_prot);
+  return out;
+}
+
+static r_obj* rray_if_else_dimensions_common(
+  r_obj* condition,
+  r_obj* true_,
+  r_obj* false_,
+  r_obj* missing,
+  r_obj* dimensions,
+  struct r_lazy error_call
+) {
+  if (dimensions != r_null) {
+    return arg_as_dimensions(dimensions, rray_args.dimensions, error_call);
+  }
+
+  const bool has_missing = missing != r_null;
+  const r_ssize n_inputs = has_missing ? 4 : 3;
+  r_obj* inputs = KEEP(r_alloc_list(n_inputs));
+  r_obj* input_names = KEEP(r_alloc_character(n_inputs));
+
+  r_list_poke(inputs, 0, condition);
+  r_list_poke(inputs, 1, true_);
+  r_list_poke(inputs, 2, false_);
+  r_chr_poke(input_names, 0, r_str("condition"));
+  r_chr_poke(input_names, 1, r_str("true"));
+  r_chr_poke(input_names, 2, r_str("false"));
+
+  if (has_missing) {
+    r_list_poke(inputs, 3, missing);
+    r_chr_poke(input_names, 3, r_str("missing"));
+  }
+
+  r_attrib_poke_names(inputs, input_names);
+  r_obj* out =
+    KEEP(rray_dimensions_common(inputs, r_null, rray_args.empty, error_call));
+
+  FREE(3);
   return out;
 }
 

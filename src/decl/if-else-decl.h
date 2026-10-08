@@ -1,3 +1,12 @@
+static r_obj* rray_if_else_dimensions_common(
+  r_obj* condition,
+  r_obj* true_,
+  r_obj* false_,
+  r_obj* missing,
+  r_obj* dimensions,
+  struct r_lazy error_call
+);
+
 static r_obj* rray_if_else_fill(
   r_obj* condition,
   r_obj* true_,
