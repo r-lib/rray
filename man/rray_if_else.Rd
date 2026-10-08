@@ -33,7 +33,7 @@ supplied. Names are dropped.
 \code{missing}, or returns a missing value if \code{missing} is \code{NULL}.
 
 All supplied inputs are broadcast to common dimensions. The common output
-type comes from \code{true}, \code{false}, and \code{missing} when supplied.
+type comes from \code{true}, \code{false}, and \code{missing}.
 }
 \examples{
 condition <- array(c(TRUE, FALSE, NA), c(3L, 1L))

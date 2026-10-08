@@ -6,7 +6,7 @@
 #' `missing`, or returns a missing value if `missing` is `NULL`.
 #'
 #' All supplied inputs are broadcast to common dimensions. The common output
-#' type comes from `true`, `false`, and `missing` when supplied.
+#' type comes from `true`, `false`, and `missing`.
 #'
 #' @param condition A logical array or vector.
 #'
