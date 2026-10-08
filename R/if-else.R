@@ -40,7 +40,6 @@
 #' true <- array(1:6, c(2L, 3L))
 #' false <- array(11:16, c(2L, 3L))
 #' rray_if_else(condition, true, false)
-#' rray_if_else(condition, 1L, 2L, dimensions = rray_dimensions(condition))
 rray_if_else <- function(
   condition,
   true,
