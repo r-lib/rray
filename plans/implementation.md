@@ -843,49 +843,6 @@ Signature: `rray_clip(x, low, high)`.
 
 Files: `R/clip.R`, `src/clip.c`, `src/clip.h`.
 
-### `rray_if_else()`
-
-Elementwise choice between two arrays based on a logical array.
-
-Follow vctrs' `vec_if_else()` closely. Read `R/if-else.R` and `src/if-else.c` in
-vctrs before starting. The three things worth taking from it:
-
-- **A `missing` argument.** If not `NULL`, it supplies the value wherever
-  `condition` is `NA`, rather than forcing a missing value into the output. This
-  is the main thing `ifelse()` gets wrong.
-
-- **`missing` participates in the type.** The output type is the common type of
-  `true`, `false` **and** `missing`, not just the first two.
-
-- **A `ptype` override**, which wins over that common type.
-
-The array specific part: `condition` drives the shape. `true`, `false` and
-`missing` are broadcast to `condition`'s dimensions, and `condition` itself is
-never broadcast.
-
-Names: dropped. Type: common across `true`, `false` and `missing`, overridden by
-`.ptype`. `condition` is cast to logical and takes no part in either rule.
-
-**Names is the one place not to follow `vec_if_else()`.** It assigns names
-elementwise, giving each output element the name from whichever branch supplied
-it:
-
-```r
-vec_if_else(c(TRUE, FALSE, TRUE), c(a = 1, b = 2, c = 3), c(x = 9, y = 8, z = 7))
-#> a y c
-#> 1 8 3
-```
-
-That works because a vector's names are per element. An array's names live on
-axes, so it does not translate: two elements in the same row can come from
-different branches, and the row can only have one name. We drop all names
-instead.
-
-Signature: `rray_if_else(condition, true, false, ..., missing = NULL, .ptype =
-NULL)`.
-
-Files: `R/if-else.R`, `src/if-else.c`, `src/if-else.h`.
-
 ### `rray_full_like()`, `rray_ones_like()`, `rray_zeros_like()`
 
 An array with the dimensions and type of `x`, filled with a single value.
