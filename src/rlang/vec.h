@@ -27,19 +27,34 @@ static inline void* r_raw_begin(r_obj* x) {
 }
 
 static inline const int* r_int_cbegin(r_obj* x) {
-    return (const int*) INTEGER(x);
+    // —- rray start —-
+    // return (const int*) INTEGER(x);
+    return (const int*) INTEGER_RO(x);
+    // —- rray stop —-
 }
 static inline const int* r_lgl_cbegin(r_obj* x) {
-    return (const int*) LOGICAL(x);
+    // —- rray start —-
+    // return (const int*) LOGICAL(x);
+    return (const int*) LOGICAL_RO(x);
+    // —- rray stop —-
 }
 static inline const double* r_dbl_cbegin(r_obj* x) {
-    return (const double*) REAL(x);
+    // —- rray start —-
+    // return (const double*) REAL(x);
+    return (const double*) REAL_RO(x);
+    // —- rray stop —-
 }
 static inline const r_complex* r_cpl_cbegin(r_obj* x) {
-    return (const r_complex*) COMPLEX(x);
+    // —- rray start —-
+    // return (const r_complex*) COMPLEX(x);
+    return (const r_complex*) COMPLEX_RO(x);
+    // —- rray stop —-
 }
 static inline const void* r_raw_cbegin(r_obj* x) {
-    return (const void*) RAW(x);
+    // —- rray start —-
+    // return (const void*) RAW(x);
+    return DATAPTR_RO(x);
+    // —- rray stop —-
 }
 static inline r_obj* const* r_chr_cbegin(r_obj* x) {
     return STRING_PTR_RO(x);
@@ -121,19 +136,34 @@ static inline int r_vec_elt_sizeof(r_obj* x) {
 }
 
 static inline int r_lgl_get(r_obj* x, r_ssize i) {
-    return LOGICAL(x)[i];
+    // —- rray start —-
+    // return LOGICAL(x)[i];
+    return LOGICAL_RO(x)[i];
+    // —- rray stop —-
 }
 static inline int r_int_get(r_obj* x, r_ssize i) {
-    return INTEGER(x)[i];
+    // —- rray start —-
+    // return INTEGER(x)[i];
+    return INTEGER_RO(x)[i];
+    // —- rray stop —-
 }
 static inline double r_dbl_get(r_obj* x, r_ssize i) {
-    return REAL(x)[i];
+    // —- rray start —-
+    // return REAL(x)[i];
+    return REAL_RO(x)[i];
+    // —- rray stop —-
 }
 static inline r_complex r_cpl_get(r_obj* x, r_ssize i) {
-    return COMPLEX(x)[i];
+    // —- rray start —-
+    // return COMPLEX(x)[i];
+    return COMPLEX_RO(x)[i];
+    // —- rray stop —-
 }
 static inline char r_raw_get(r_obj* x, r_ssize i) {
-    return RAW(x)[i];
+    // —- rray start —-
+    // return RAW(x)[i];
+    return ((const Rbyte*) DATAPTR_RO(x))[i];
+    // —- rray stop —-
 }
 static inline r_obj* r_chr_get(r_obj* x, r_ssize i) {
     return STRING_ELT(x, i);
