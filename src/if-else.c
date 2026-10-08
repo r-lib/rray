@@ -286,9 +286,8 @@ static r_obj* rray_if_else_dimensions_common(
   do {                                                                         \
     for (r_ssize i = start; i < end; ++i) {                                    \
       const int cnd = CONDITION_VALUE;                                         \
-      CTYPE const elt = cnd == 1 ? TRUE_VALUE                                  \
-        : cnd == 0               ? FALSE_VALUE                                 \
-                                 : MISSING;                                    \
+      CTYPE const elt =                                                        \
+        cnd == 1 ? TRUE_VALUE : (cnd == 0 ? FALSE_VALUE : MISSING);            \
       POKE;                                                                    \
       condition_loc += condition_stride;                                       \
       true_loc += true_stride;                                                 \
@@ -331,9 +330,8 @@ static r_obj* rray_if_else_dimensions_common(
   do {                                                                         \
     for (r_ssize i = start; i < end; ++i) {                                    \
       const int cnd = CONDITION_VALUE;                                         \
-      CTYPE const elt = cnd == 1 ? TRUE_VALUE                                  \
-        : cnd == 0               ? FALSE_VALUE                                 \
-                                 : MISSING_VALUE;                              \
+      CTYPE const elt =                                                        \
+        cnd == 1 ? TRUE_VALUE : (cnd == 0 ? FALSE_VALUE : MISSING_VALUE);      \
       POKE;                                                                    \
       condition_loc += condition_stride;                                       \
       true_loc += true_stride;                                                 \
