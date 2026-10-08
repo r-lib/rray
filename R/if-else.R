@@ -25,8 +25,8 @@
 #'
 #' @returns
 #' An array with the common dimensions of the inputs, or `dimensions` when
-#' supplied. Its type comes from `true`, `false`, and `missing` when
-#' supplied. Names are dropped.
+#' supplied. Its type comes from `true`, `false`, and `missing`.
+#' Names are dropped.
 #'
 #' @export
 #' @examples

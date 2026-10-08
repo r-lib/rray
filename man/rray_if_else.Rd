@@ -24,8 +24,8 @@ supplied, every input must broadcast to these dimensions. Use
 }
 \value{
 An array with the common dimensions of the inputs, or \code{dimensions} when
-supplied. Its type comes from \code{true}, \code{false}, and \code{missing} when
-supplied. Names are dropped.
+supplied. Its type comes from \code{true}, \code{false}, and \code{missing}.
+Names are dropped.
 }
 \description{
 \code{rray_if_else()} selects values from \code{true} and \code{false} using a logical
