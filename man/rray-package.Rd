@@ -11,8 +11,8 @@ A toolkit for broadcasting, reshaping, reducing, and indexing arrays.
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/DavisVaughan/rray}
-  \item Report bugs at \url{https://github.com/DavisVaughan/rray/issues}
+  \item \url{https://github.com/r-lib/rray}
+  \item Report bugs at \url{https://github.com/r-lib/rray/issues}
 }
 
 }

@@ -6,8 +6,8 @@ Authors@R:
 Description: A toolkit for broadcasting, reshaping, reducing, and indexing
     arrays.
 License: MIT + file LICENSE
-URL: https://github.com/DavisVaughan/rray
-BugReports: https://github.com/DavisVaughan/rray/issues
+URL: https://github.com/r-lib/rray
+BugReports: https://github.com/r-lib/rray/issues
 Imports:
     rlang
 Suggests:
