@@ -8,7 +8,7 @@
 #' All supplied inputs are broadcast to common dimensions. The common output
 #' type comes from `true`, `false`, and `missing`.
 #'
-#' @param condition A logical array or vector.
+#' @param condition A logical array.
 #'
 #' @param true Values to use where `condition` is `TRUE`.
 #'

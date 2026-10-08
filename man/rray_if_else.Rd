@@ -7,7 +7,7 @@
 rray_if_else(condition, true, false, ..., missing = NULL, dimensions = NULL)
 }
 \arguments{
-\item{condition}{A logical array or vector.}
+\item{condition}{A logical array.}
 
 \item{true}{Values to use where \code{condition} is \code{TRUE}.}
 
