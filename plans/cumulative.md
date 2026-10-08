@@ -13,7 +13,7 @@ For an array `x`, the value at position `i` on the selected axis summarizes
 positions `1:i` on that axis. All other coordinates stay fixed. Each such
 line starts with fresh state. The output has the same dimensions and axis
 names as `x`; only the element type may change. A vector is treated as a
-one-dimensional array, following the rest of rray4.
+one-dimensional array, following the rest of rray.
 
 ```r
 x <- matrix(1:6, nrow = 2)
@@ -26,7 +26,7 @@ rows `(1, 4, 9)` and `(2, 6, 12)`.
 
 One axis keeps prefix order clear. NumPy also accepts one axis for
 [`cumsum()`](https://numpy.org/doc/stable/reference/generated/numpy.cumsum.html);
-its `axis = None` scans a flattened array. rray4 will require an axis and
+its `axis = None` scans a flattened array. rray will require an axis and
 retain the input dimensions. A scan over several axes would need a separate
 rule for their order and for which intermediate prefixes become output.
 
@@ -136,7 +136,7 @@ until a later `NA`, which then wins. An arithmetic `NaN` from `Inf + -Inf`
 also persists unless a later `NA` appears. Handle the real and imaginary
 parts of complex sums separately, as base R does for addition. Do not
 promise bit-for-bit equality with base R for finite doubles: base R
-accumulates in `long double` where available, while rray4's addition works
+accumulates in `long double` where available, while rray's addition works
 in double.
 
 Test both scan axes, a third axis, type, reset between lines, integer upper
@@ -155,10 +155,10 @@ Use the relevant operations in `src/one-multiply.h`. Integer multiplication
 is done in double, so it has no integer overflow error. A double product may
 become `Inf` or underflow to zero, as ordinary multiplication does. `0 * Inf`
 is `NaN`. Add a double cumulative helper to preserve the same `NA` after
-`NaN` rule described for sum. For complex multiplication, keep rray4's
+`NaN` rule described for sum. For complex multiplication, keep rray's
 existing C99 operation and its infinity recovery behavior. Its special
 values can differ from base R's complex `cumprod()`; follow the existing
-rray4 multiplication rule instead of claiming the double missing rule for
+rray multiplication rule instead of claiming the double missing rule for
 complex products. State that difference in documentation.
 
 Test type promotion, line resets, signed and zero products, `0 * Inf`,
@@ -209,7 +209,7 @@ persists. Later finite values cannot clear either missing state. Compare
 ordinary values by taking the smaller one. Check ties and signed zero
 explicitly: the existing one-element helper keeps the earlier operand on
 a tie, while base R's double `cummin()` may keep the later one. Keep the
-rray4 helper rule and avoid a bit-level promise for signed zero.
+rray helper rule and avoid a bit-level promise for signed zero.
 
 Test logical, integer, and double types; rising and falling values;
 repeated extrema; both missing orders; infinity; signed zero; empty
@@ -237,7 +237,7 @@ operation in `src/one-logical.h`, starting each line at `FALSE`.
 `FALSE, NA, TRUE` yields `FALSE, NA, TRUE`: a later `TRUE` resolves an
 earlier unknown result. `TRUE, NA` remains `TRUE, TRUE`. This is the
 prefix form of `rray_any()`, and matches dplyr's `cumany()` for logical
-vectors. dplyr coerces other inputs to logical; rray4 should keep the
+vectors. dplyr coerces other inputs to logical; rray should keep the
 reducer's strict logical input rule.
 
 Test every combination of `FALSE`, `TRUE`, and `NA` in short lines,

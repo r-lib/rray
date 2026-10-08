@@ -1,8 +1,8 @@
-# rray4 implementation plan
+# rray implementation plan
 
 ## What this is
 
-rray4 is a reimagining of rray, written in pure C with no xtensor. It is a
+rray is a reimagining of rray, written in pure C with no xtensor. It is a
 toolkit of `rray_*()` functions that broadcast, reshape, reduce and index base R
 arrays.
 
@@ -11,7 +11,7 @@ error. The extension system that would let other packages plug their own array
 classes in is deliberately deferred, and is written up separately in
 `plans/extensions.md`.
 
-This document is the guide for agents working on rray4 across many sessions.
+This document is the guide for agents working on rray across many sessions.
 Part 4 is the catalogue of functions still to build.
 
 ## How to use this plan
@@ -208,7 +208,7 @@ Never use the term "load bearing". Say what the thing actually does.
 
 ## 2.1 Arrays in, arrays out
 
-Every rray4 function takes arrays and returns arrays.
+Every rray function takes arrays and returns arrays.
 
 A **native** type is one of the seven R vector types: logical, integer, double,
 complex, raw, character, list. Every function works on native types, and the
@@ -489,7 +489,7 @@ rray_cast_common(
 )
 ```
 
-`call = caller_env()` means the wrapper is blamed rather than the rray4
+`call = caller_env()` means the wrapper is blamed rather than the rray
 function, which is the point of taking it:
 
 ```r
@@ -871,7 +871,7 @@ Deliberately not ported from the original rray.
 
 - **The rray class.** `new_rray()`, `as_rray()`, `is_rray()`, `rray()`,
   `as_array()`, `as_matrix()`, the print and format methods, `[` and `[[`
-  methods, and every `vctrs_rray` S3 method. rray4 ships functions, not a type.
+  methods, and every `vctrs_rray` S3 method. rray ships functions, not a type.
 
 - **Operators.** `%b+%`, `%b-%`, `%b*%`, `%b/%`, `%b^%`, and the `vec_arith()`
   methods.
@@ -886,7 +886,7 @@ Deliberately not ported from the original rray.
 
 - **`rray_shape()`, `rray_shape2()`, `rray_shapecast()`.**
 
-- **The container and inner type split.** rray4 has one set of type rules, and
+- **The container and inner type split.** rray has one set of type rules, and
   they are internal.
 
 - **The purrr compatibility shims** in `compat-purrr.R`.

@@ -1,7 +1,7 @@
 # Adding a null type
 
 Future work. This document describes what it would take to make `NULL` a real
-type in rray4's type system, the way it is in vctrs.
+type in rray's type system, the way it is in vctrs.
 
 Nothing here is built yet. Read the whole document before starting, then work
 through Part 6 in order.
@@ -10,7 +10,7 @@ through Part 6 in order.
 
 # Part 1: Where things stand
 
-rray4 has eight types today, listed in `enum rray_type` in `src/type.h`:
+rray has eight types today, listed in `enum rray_type` in `src/type.h`:
 
 ```
 logical, integer, double, complex, character, raw, list, scalar
@@ -101,13 +101,13 @@ Note the last two. Casting `NULL` to a real type gives back `NULL`, it does not
 give back a zero length vector. So `vec_cast_common()` leaves the `NULL` alone.
 
 vctrs handles `NULL` by checking for it at the top of `vec_ptype2()` and
-`vec_cast()`, before it reaches the big switch. We should not copy that. rray4
+`vec_cast()`, before it reaches the big switch. We should not copy that. rray
 prefers switches that list every case, so `NULL` goes in the switch with
 everything else. See `feedback_exhaustive_type_switch` in the project memory.
 
 ---
 
-# Part 3: What rray4 would look like afterwards
+# Part 3: What rray would look like afterwards
 
 ```r
 rray_ptype(NULL)               # NULL

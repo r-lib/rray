@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(rray4)
+library(rray)
 
-test_check("rray4")
+test_check("rray")

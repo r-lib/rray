@@ -1,4 +1,4 @@
-#' @useDynLib rray4, .registration = TRUE
+#' @useDynLib rray, .registration = TRUE
 #' @keywords internal
 "_PACKAGE"
 

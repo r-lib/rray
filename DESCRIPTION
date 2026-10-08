@@ -1,4 +1,4 @@
-Package: rray4
+Package: rray
 Title: Array Helpers
 Version: 0.0.0.9000
 Authors@R:
@@ -6,8 +6,8 @@ Authors@R:
 Description: A toolkit for broadcasting, reshaping, reducing, and indexing
     arrays.
 License: MIT + file LICENSE
-URL: https://github.com/DavisVaughan/rray4
-BugReports: https://github.com/DavisVaughan/rray4/issues
+URL: https://github.com/DavisVaughan/rray
+BugReports: https://github.com/DavisVaughan/rray/issues
 Imports:
     rlang
 Suggests:

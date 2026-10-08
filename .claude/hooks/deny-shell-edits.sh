@@ -54,7 +54,7 @@ if [ -n "$reason" ]; then
       hookEventName: "PreToolUse",
       permissionDecision: "deny",
       permissionDecisionReason: (
-        "Blocked: this is " + $reason + ". rray4 requires the Read, Edit and Write tools for all file access and edits. Use Edit instead, with replace_all for multi-site renames. Reading with cat, sed -n and grep is still fine, as is clang-format -i and air format."
+        "Blocked: this is " + $reason + ". rray requires the Read, Edit and Write tools for all file access and edits. Use Edit instead, with replace_all for multi-site renames. Reading with cat, sed -n and grep is still fine, as is clang-format -i and air format."
       )
     }
   }'

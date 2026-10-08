@@ -12,13 +12,13 @@ if (!requireNamespace("broadcast", quietly = TRUE)) {
 
 iterations <- 30L
 
-benchmark_pair <- function(group, case, rray4, comparison, other) {
-  rray4()
+benchmark_pair <- function(group, case, rray, comparison, other) {
+  rray()
   other()
   gc()
 
   result <- bench::mark(
-    rray4 = rray4(),
+    rray = rray(),
     comparison = other(),
     iterations = iterations,
     check = TRUE,
@@ -28,7 +28,7 @@ benchmark_pair <- function(group, case, rray4, comparison, other) {
   data.frame(
     group = group,
     case = case,
-    implementation = c("rray4", comparison),
+    implementation = c("rray", comparison),
     median_ms = as.numeric(result$median) * 1000,
     mem_alloc_mb = as.numeric(result$mem_alloc) / 1024^2,
     relative_time = as.numeric(result$median) / min(as.numeric(result$median)),
@@ -181,6 +181,6 @@ results$relative_time <- round(results$relative_time, 2L)
 
 print(results, row.names = FALSE)
 cat("\nR:", as.character(getRversion()), "\n")
-cat("rray4:", as.character(utils::packageVersion("rray4")), "\n")
+cat("rray:", as.character(utils::packageVersion("rray")), "\n")
 cat("broadcast:", as.character(utils::packageVersion("broadcast")), "\n")
 cat("platform:", R.version$platform, "\n")

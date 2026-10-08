@@ -6,7 +6,7 @@
 
 #include "decl/wrapper-decl.h"
 
-static char* package = "rray4";
+static char* package = "rray";
 
 // Wrap an R object in a lightweight ALTREP wrapper
 //

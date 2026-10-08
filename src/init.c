@@ -333,7 +333,7 @@ extern r_obj* ffi_test_rray_mean_forced_fallback(
 );
 
 // Defined below
-r_obj* ffi_rray4_init_library(r_obj* ffi_ns);
+r_obj* ffi_rray_init_library(r_obj* ffi_ns);
 
 static const R_CallMethodDef CallEntries[] = {
   {"ffi_rray_broadcast", (DL_FUNC) &ffi_rray_broadcast, 3},
@@ -432,13 +432,13 @@ static const R_CallMethodDef CallEntries[] = {
   {"ffi_test_rray_mean_forced_fallback",
    (DL_FUNC) &ffi_test_rray_mean_forced_fallback,
    4},
-  {"ffi_rray4_init_library", (DL_FUNC) &ffi_rray4_init_library, 1},
+  {"ffi_rray_init_library", (DL_FUNC) &ffi_rray_init_library, 1},
   {NULL, NULL, 0}
 };
 
 extern void r_init_wrapper(DllInfo* dll);
 
-void R_init_rray4(DllInfo* dll) {
+void R_init_rray(DllInfo* dll) {
   R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
   R_useDynamicSymbols(dll, FALSE);
   r_init_wrapper(dll);
@@ -447,7 +447,7 @@ void R_init_rray4(DllInfo* dll) {
 extern void rray_init_args(r_obj* ns);
 extern void rray_init_syms(r_obj* ns);
 
-r_obj* ffi_rray4_init_library(r_obj* ffi_ns) {
+r_obj* ffi_rray_init_library(r_obj* ffi_ns) {
   r_init_library(ffi_ns);
   rray_init_syms(ffi_ns);
   rray_init_args(ffi_ns);

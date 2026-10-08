@@ -1,4 +1,4 @@
-## rray4
+## rray
 
 This is a reimagining of rray. This reimagining of rray will be written in pure C without xtensor. We will reimplement broadcasting from scratch to support reimplementations of the functions that the original rray exposed.
 

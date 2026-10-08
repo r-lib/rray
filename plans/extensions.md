@@ -1,6 +1,6 @@
 # Supporting classed arrays
 
-Future work. rray4 works on bare arrays today, and classed input is an error.
+Future work. rray works on bare arrays today, and classed input is an error.
 
 This document records a design for letting other packages plug their own array
 classes in, why it is not being built yet, and the cases that must shape it when
@@ -45,12 +45,12 @@ same-class fallback, and no unspecified type. Methods are hand written against
 every native type the class wants to interoperate with.
 
 At that point a class author gets broadcasting and our C loops. They can get the
-same thing by unclassing, calling rray4, and re-wrapping, which is the same work
+same thing by unclassing, calling rray, and re-wrapping, which is the same work
 the recipes were asking of them.
 
 ## Deferring is safe
 
-rray4 errors on classed input. Going from "errors" to "works" never breaks
+rray errors on classed input. Going from "errors" to "works" never breaks
 anyone, so this can be added later with no compatibility cost.
 
 The two alternatives we rejected both would have created one:
@@ -206,7 +206,7 @@ Each returns **one ptype**, used both to cast the inputs and to restore the
 output. That works because we always promote before computing, so the input type
 and the output type are the same.
 
-`op` is a single string from a closed vocabulary that rray4 ships. Users cannot
+`op` is a single string from a closed vocabulary that rray ships. Users cannot
 invent new operators.
 
 ### The pipeline

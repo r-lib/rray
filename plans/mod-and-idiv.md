@@ -196,7 +196,7 @@ plus `NA`, `NaN`, `Inf` and `y == 0` on both sides.
   than we've added for any other arithmetic operator so far. Worth deciding
   deliberately rather than silently dropping it or silently keeping it.
 
-- **Licensing.** R is GPL (`r-svn/COPYING` is GPL-2), and rray4 is
+- **Licensing.** R is GPL (`r-svn/COPYING` is GPL-2), and rray is
   `MIT + file LICENSE`. `myfmod()`/`myfloor()` aren't a restatement of the
   floored-mod definition — the precision-loss short circuit, the `long double`
   intermediate, and the warning threshold are specific implementation choices,

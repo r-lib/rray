@@ -343,7 +343,7 @@ test_that("`rray_as_index_array()` normalizes vectors", {
 })
 
 test_that("`rray_as_index_array()` is internal", {
-  exports <- getNamespaceExports("rray4")
+  exports <- getNamespaceExports("rray")
 
   expect_identical("rray_as_index_array" %in% exports, FALSE)
 })

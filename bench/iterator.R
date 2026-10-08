@@ -61,7 +61,7 @@ local({
     contiguous_with_scalar = rray_add(short_first_x, 1),
     leading_unit_matrix = rray_add(leading_unit_x, leading_unit_y),
     internal_unit_array = rray_add(internal_unit_x, internal_unit_y),
-    leading_unit_array4 = rray_add(leading_unit4_x, 1),
+    leading_unit_array = rray_add(leading_unit4_x, 1),
     leading_unit_array6 = rray_add(leading_unit6_x, 1),
     crossed_broadcast = rray_add(crossed_x, crossed_y),
     iterations = 20L,

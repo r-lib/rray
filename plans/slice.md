@@ -44,7 +44,7 @@ slice subscript into a coordinate array. `rray_extract()` has a separate,
 explicit matrix rule for coordinate points.
 
 Do not add replacement functions. Every `_assign()` function returns a
-modified copy of `x`. There are no `[` or `[[` methods because rray4 provides
+modified copy of `x`. There are no `[` or `[[` methods because rray provides
 functions rather than an array class.
 
 ## The indexing family
@@ -480,7 +480,7 @@ Do not carry these parts of the original API forward:
 - `rray_yank()`: `rray_extract()` is the clearer name for flat extraction.
 - `pad()`: `rray_slice_axis()` handles an axis held in a variable, and
   `rray_slice_rows()` and `rray_slice_columns()` handle the common ones.
-- `drop`: rray4 always returns arrays and never drops axes implicitly.
+- `drop`: rray always returns arrays and never drops axes implicitly.
 - `rray_take()`, `rray_take_along_axis()`, `rray_shuffle_axis()`, and
   `rray_slice_by_lane()`: `rray_slice_axis()` and `rray_index_axis()` provide
   the two distinct one-axis contracts.
@@ -664,7 +664,7 @@ is identical to:
 x[i, j, k, drop = FALSE]
 ```
 
-on the shared semantic subset. Compare values, dimensions, and names. rray4
+on the shared semantic subset. Compare values, dimensions, and names. rray
 intentionally rejects logical recycling and implicit dropping.
 
 Spell a whole axis as an empty argument on the base side, not as `TRUE`. Base
@@ -747,7 +747,7 @@ as the source of truth for ordinary subscripts and extraction, and
 
 Base R supports flat vector indexing, per-axis indexing, and point indexing by
 a numeric or character matrix. It drops dimensions by default and recycles
-logical per-axis subscripts. rray4 keeps the useful subscript forms but assigns
+logical per-axis subscripts. rray keeps the useful subscript forms but assigns
 each output model to an explicit function and never drops axes implicitly.
 
 Useful sources:
