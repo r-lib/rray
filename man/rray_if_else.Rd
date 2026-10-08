@@ -24,7 +24,8 @@ supplied, every input must broadcast to these dimensions. Use
 }
 \value{
 An array with the common dimensions of the inputs, or \code{dimensions} when
-supplied, and the common type of the branches. Names are dropped.
+supplied. Its type comes from \code{true}, \code{false}, and \code{missing} when
+supplied. Names are dropped.
 }
 \description{
 \code{rray_if_else()} selects values from \code{true} and \code{false} using a logical
@@ -32,8 +33,8 @@ supplied, and the common type of the branches. Names are dropped.
 \code{missing}, or returns a missing value if \code{missing} is \code{NULL}.
 }
 \details{
-All supplied inputs are broadcast to common dimensions. All supplied
-branches determine the common output type.
+All supplied inputs are broadcast to common dimensions. The common output
+type comes from \code{true}, \code{false}, and \code{missing} when supplied.
 }
 \examples{
 condition <- array(c(TRUE, FALSE, NA), c(3L, 1L))

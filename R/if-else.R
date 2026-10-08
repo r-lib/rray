@@ -4,8 +4,8 @@
 #' `condition`. When an element of `condition` is `NA`, it selects from
 #' `missing`, or returns a missing value if `missing` is `NULL`.
 #'
-#' All supplied inputs are broadcast to common dimensions. All supplied
-#' branches determine the common output type.
+#' All supplied inputs are broadcast to common dimensions. The common output
+#' type comes from `true`, `false`, and `missing` when supplied.
 #'
 #' @param condition A logical array or vector.
 #'
@@ -24,7 +24,8 @@
 #'
 #' @returns
 #' An array with the common dimensions of the inputs, or `dimensions` when
-#' supplied, and the common type of the branches. Names are dropped.
+#' supplied. Its type comes from `true`, `false`, and `missing` when
+#' supplied. Names are dropped.
 #'
 #' @export
 #' @examples
