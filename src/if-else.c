@@ -391,15 +391,6 @@ static r_obj* rray_if_else_fill(
       v_out[i] = elt,
       r_globals.na_cpl
     );
-  case R_TYPE_character:
-    RRAY_IF_ELSE_FILL(
-      R_TYPE_character,
-      r_obj*,
-      r_chr_cbegin,
-      RRAY_IF_ELSE_NO_DEREF,
-      r_chr_poke(out, i, elt),
-      r_globals.na_str
-    );
   case R_TYPE_raw:
     RRAY_IF_ELSE_FILL(
       R_TYPE_raw,
@@ -408,6 +399,15 @@ static r_obj* rray_if_else_fill(
       Rbyte* v_out = r_raw_begin(out),
       v_out[i] = elt,
       (Rbyte) 0
+    );
+  case R_TYPE_character:
+    RRAY_IF_ELSE_FILL(
+      R_TYPE_character,
+      r_obj*,
+      r_chr_cbegin,
+      RRAY_IF_ELSE_NO_DEREF,
+      r_chr_poke(out, i, elt),
+      r_globals.na_str
     );
   case R_TYPE_list:
     RRAY_IF_ELSE_FILL(
