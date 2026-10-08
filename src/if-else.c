@@ -261,19 +261,18 @@ r_obj* rray_if_else(
         r_ssize missing_loc = rray_run_iterator_loc(&it, 2);                   \
         const r_ssize missing_stride = rray_run_iterator_stride(&it, 2);       \
                                                                                \
-        if (true_stride == 0) {                                                \
+        if (true_stride == 0 && false_stride == 0) {                           \
           const CTYPE true_elt = v_true[true_loc];                             \
-          if (false_stride == 0) {                                             \
-            const CTYPE false_elt = v_false[false_loc];                        \
-            RRAY_IF_ELSE_RUN3_MISSING(CTYPE, POKE, true_elt, false_elt);       \
-          } else {                                                             \
-            RRAY_IF_ELSE_RUN3_MISSING(                                         \
-              CTYPE,                                                           \
-              POKE,                                                            \
-              true_elt,                                                        \
-              v_false[false_loc]                                               \
-            );                                                                 \
-          }                                                                    \
+          const CTYPE false_elt = v_false[false_loc];                          \
+          RRAY_IF_ELSE_RUN3_MISSING(CTYPE, POKE, true_elt, false_elt);         \
+        } else if (true_stride == 0) {                                         \
+          const CTYPE true_elt = v_true[true_loc];                             \
+          RRAY_IF_ELSE_RUN3_MISSING(                                           \
+            CTYPE,                                                             \
+            POKE,                                                              \
+            true_elt,                                                          \
+            v_false[false_loc]                                                 \
+          );                                                                   \
         } else if (false_stride == 0) {                                        \
           const CTYPE false_elt = v_false[false_loc];                          \
           RRAY_IF_ELSE_RUN3_MISSING(CTYPE, POKE, v_true[true_loc], false_elt); \
@@ -305,20 +304,19 @@ r_obj* rray_if_else(
         r_ssize false_loc = rray_run_iterator_loc(&it, 1);                     \
         const r_ssize false_stride = rray_run_iterator_stride(&it, 1);         \
                                                                                \
-        if (true_stride == 0) {                                                \
+        if (true_stride == 0 && false_stride == 0) {                           \
           const CTYPE true_elt = v_true[true_loc];                             \
-          if (false_stride == 0) {                                             \
-            const CTYPE false_elt = v_false[false_loc];                        \
-            RRAY_IF_ELSE_RUN2(CTYPE, POKE, MISSING, true_elt, false_elt);      \
-          } else {                                                             \
-            RRAY_IF_ELSE_RUN2(                                                 \
-              CTYPE,                                                           \
-              POKE,                                                            \
-              MISSING,                                                         \
-              true_elt,                                                        \
-              v_false[false_loc]                                               \
-            );                                                                 \
-          }                                                                    \
+          const CTYPE false_elt = v_false[false_loc];                          \
+          RRAY_IF_ELSE_RUN2(CTYPE, POKE, MISSING, true_elt, false_elt);        \
+        } else if (true_stride == 0) {                                         \
+          const CTYPE true_elt = v_true[true_loc];                             \
+          RRAY_IF_ELSE_RUN2(                                                   \
+            CTYPE,                                                             \
+            POKE,                                                              \
+            MISSING,                                                           \
+            true_elt,                                                          \
+            v_false[false_loc]                                                 \
+          );                                                                   \
         } else if (false_stride == 0) {                                        \
           const CTYPE false_elt = v_false[false_loc];                          \
           RRAY_IF_ELSE_RUN2(                                                   \
