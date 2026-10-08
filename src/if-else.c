@@ -392,18 +392,14 @@ static r_obj* rray_if_else_dimensions_common(
       CTYPE const* v_missing = CBEGIN(missing);                                \
                                                                                \
       struct rray_run_iterator it;                                             \
-      const r_ssize* v_v_strides[] = {                                         \
+      rray_run_iterator_init4(                                                 \
+        &it,                                                                   \
+        v_dimensions,                                                          \
+        dimensionality,                                                        \
         v_condition_strides,                                                   \
         v_true_strides,                                                        \
         v_false_strides,                                                       \
         v_missing_strides                                                      \
-      };                                                                       \
-      rray_run_iterator_init(                                                  \
-        &it,                                                                   \
-        v_dimensions,                                                          \
-        dimensionality,                                                        \
-        v_v_strides,                                                           \
-        4                                                                      \
       );                                                                       \
                                                                                \
       for (; !rray_run_iterator_done(&it); rray_run_iterator_next4(&it)) {     \
