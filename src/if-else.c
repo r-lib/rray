@@ -255,10 +255,12 @@ static r_obj* rray_if_else_dimensions_common(
   FREE(1);
 
   r_list_poke(inputs, 0, condition);
-  r_list_poke(inputs, 1, true_);
-  r_list_poke(inputs, 2, false_);
   r_chr_poke(input_names, 0, r_str("condition"));
+
+  r_list_poke(inputs, 1, true_);
   r_chr_poke(input_names, 1, r_str("true"));
+
+  r_list_poke(inputs, 2, false_);
   r_chr_poke(input_names, 2, r_str("false"));
 
   if (has_missing) {
