@@ -250,6 +250,8 @@ static r_obj* rray_if_else_dimensions_common(
   const r_ssize n_inputs = has_missing ? 4 : 3;
   r_obj* inputs = KEEP(r_alloc_list(n_inputs));
   r_obj* input_names = KEEP(r_alloc_character(n_inputs));
+  r_attrib_poke_names(inputs, input_names);
+  FREE(1);
 
   r_list_poke(inputs, 0, condition);
   r_list_poke(inputs, 1, true_);
@@ -263,11 +265,10 @@ static r_obj* rray_if_else_dimensions_common(
     r_chr_poke(input_names, 3, r_str("missing"));
   }
 
-  r_attrib_poke_names(inputs, input_names);
   r_obj* out =
     KEEP(rray_dimensions_common(inputs, r_null, rray_args.empty, error_call));
 
-  FREE(3);
+  FREE(2);
   return out;
 }
 
