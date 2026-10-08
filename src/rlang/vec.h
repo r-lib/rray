@@ -53,7 +53,8 @@ static inline const r_complex* r_cpl_cbegin(r_obj* x) {
 static inline const void* r_raw_cbegin(r_obj* x) {
     // —- rray start —-
     // return (const void*) RAW(x);
-    return DATAPTR_RO(x);
+    // As of R 4.6, this accidentally calls `RAW()` internally, forcing duplication
+    return (const void*) RAW_RO(x);
     // —- rray stop —-
 }
 static inline r_obj* const* r_chr_cbegin(r_obj* x) {
@@ -162,7 +163,7 @@ static inline r_complex r_cpl_get(r_obj* x, r_ssize i) {
 static inline char r_raw_get(r_obj* x, r_ssize i) {
     // —- rray start —-
     // return RAW(x)[i];
-    return ((const Rbyte*) DATAPTR_RO(x))[i];
+    return RAW_RO(x)[i];
     // —- rray stop —-
 }
 static inline r_obj* r_chr_get(r_obj* x, r_ssize i) {

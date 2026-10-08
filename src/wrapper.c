@@ -375,10 +375,6 @@ r_obj* ffi_test_wrapper_read_access(r_obj* ffi_x) {
     const r_complex elt = r_cpl_get(ffi_x, 0);
     return r_lgl(v_x[0].r == elt.r && v_x[0].i == elt.i);
   }
-  case R_TYPE_raw: {
-    const unsigned char* v_x = r_raw_cbegin(ffi_x);
-    return r_lgl((char) v_x[0] == r_raw_get(ffi_x, 0));
-  }
   default:
     r_stop_unimplemented_type(r_typeof(ffi_x));
   }

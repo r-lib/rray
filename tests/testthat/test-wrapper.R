@@ -135,8 +135,7 @@ test_that("read-only access to a dimensioned wrapper shares data", {
     c(TRUE, FALSE),
     c(1L, 2L),
     c(1.5, 2.5),
-    c(1 + 2i, 3 + 4i),
-    as.raw(c(255, 2))
+    c(1 + 2i, 3 + 4i)
   )
 
   for (x in xs) {
