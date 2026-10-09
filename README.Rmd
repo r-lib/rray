@@ -45,33 +45,58 @@ pak::pak("r-lib/rray")
 
 ## What can it do?
 
-In short, rray tries to make array manipulation in R more intuitive by combining
-the idea of broadcasting with knowing when to *not* drop dimensions. This
-results in operations such as:
+rray reimagines array based operations on top of a concept called
+*broadcasting*. If you are familiar with the [tidyverse recycling
+rules](https://vctrs.r-lib.org/reference/theory-faq-recycling.html) that state
+that a vector of size 1 can be *recycled* to any other size, then you're already
+most of the way to understanding broadcasting. Broadcasting takes that principle
+and applies it to each axis of an array. For example:
+
+```{r}
+#| error: true
+
+x <- array(1:3, dim = c(1, 3))
+x
+
+y <- array(1:6, dim = c(2, 3))
+y
+
+# Error with base R, non-conformable arrays
+x + y
+
+# Broadcasts `x`'s first axis to match the 2x3 dimensions of `y`
+rray_add(x, y)
+```
+
+Broadcasting is used throughout the entire package and allows you to elegantly
+chain operations together. For example, you can sum down the rows and then
+compute proportions by using a broadcasted divide.
 
 ```{r}
 x <- array(1:6, dim = c(3, 2))
+x
+
+# Sum down the rows
+sums <- rray_sum(x, axes = 1)
+sums
 
 # Compute proportions along the 1st dimension
-rray_divide(x, rray_sum(x, axes = 1))
+rray_divide(x, sums)
 
 # Equivalent base R syntax
 sweep(x, 2, apply(x, 2, sum), "/")
 ```
 
-These concepts are baked into every part of rray, and show up in other functions
-such as `rray_combine()`. Using broadcasting, `rray_combine()` can bind arrays
-together in ways that base R cannot with the native `cbind()` and `rbind()`
-functions.
+When combining arrays with `rray_combine()`, broadcasting allows you to combine
+in ways that base R cannot with the native `cbind()` and `rbind()` functions:
 
 ```{r}
 #| error: true
 
 a <- array(c(1, 2), dim = c(2, 1))
-b <- array(c(3, 4), dim = c(1, 2))
-
 a
 
+b <- array(c(3, 4), dim = c(1, 2))
 b
 
 # Error
@@ -111,4 +136,16 @@ served as a nice benchmark for rray.
 
 ## Limitations
 
-- No S3 support. rray is currently a closed system
+- No S3 support. rray is currently a closed system and only works on base R
+  arrays. This allows us to get the API right without having to worry about
+  extensibility.
+
+- Dimension name handling is currently still a bit experimental. When you add
+  `x + y` together, what should the resulting dimension names be? Turns out
+  there is no obvious answer, so we haven't settled on the handling for these
+  yet.
+
+- Dimension name names, i.e. the names on the `dimnames()` list. We do intend to
+  support these, at least by propagating them through manipulation functions
+  like `rray_insert_axes()` where appropriate. Currently they are dropped
+  entirely.
