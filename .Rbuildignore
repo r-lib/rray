@@ -17,3 +17,4 @@
 ^README\.Rmd$
 ^docs$
 ^pkgdown$
+^codecov\.yml$
