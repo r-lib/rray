@@ -1,6 +1,7 @@
-url: https://github.com/DavisVaughan/rray
+url: https://rray.r-lib.org
 
 template:
+  package: tidytemplate
   bootstrap: 5
 
 development:

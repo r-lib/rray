@@ -6,12 +6,15 @@
 \alias{rray-package}
 \title{rray: Array Helpers}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 A toolkit for broadcasting, reshaping, reducing, and indexing arrays.
 }
 \seealso{
 Useful links:
 \itemize{
   \item \url{https://github.com/r-lib/rray}
+  \item \url{https://rray.r-lib.org}
   \item Report bugs at \url{https://github.com/r-lib/rray/issues}
 }
 
