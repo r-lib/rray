@@ -6,3 +6,5 @@
 .quarto
 compile_commands.json
 .cache
+inst/doc
+docs

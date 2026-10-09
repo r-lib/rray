@@ -15,3 +15,5 @@
 ^\.claude$
 ^bench$
 ^README\.Rmd$
+^docs$
+^pkgdown$

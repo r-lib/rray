@@ -1,5 +1,8 @@
 url: https://github.com/DavisVaughan/rray
 
+template:
+  bootstrap: 5
+
 development:
   mode: auto
 

@@ -1,0 +1,2 @@
+[lint.rules]
+missing-chunk-labels = false
