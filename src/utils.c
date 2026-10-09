@@ -160,7 +160,7 @@ int arg_as_int(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
   if (r_length(x) != 1) {
     r_abort_lazy_call(
       error_call,
-      "%s must be a single integer, not length %" R_PRIdXLEN_T ".",
+      "%s must be a single integer, not length %" R_PRI_SSIZE ".",
       rray_arg_format(arg),
       r_length(x)
     );

@@ -84,8 +84,8 @@ r_obj* rray_set_dimensions(
     r_abort_lazy_call(
       error_call,
       "Can't set these dimensions. "
-      "Can't change from a size of %" R_PRIdXLEN_T
-      " to a size of %" R_PRIdXLEN_T ".",
+      "Can't change from a size of %" R_PRI_SSIZE " to a size of %" R_PRI_SSIZE
+      ".",
       x_size,
       size
     );

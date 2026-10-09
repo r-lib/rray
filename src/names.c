@@ -89,7 +89,7 @@ r_obj* rray_set_names(
       r_abort_lazy_call(
         error_call,
         "%s must have length %d to match the dimensionality of %s, "
-        "not length %" R_PRIdXLEN_T ".",
+        "not length %" R_PRI_SSIZE ".",
         rray_arg_format(rray_args.names),
         dimensionality,
         rray_arg_format(arg),
@@ -197,7 +197,7 @@ static inline void check_axis_names(
   if (r_length(names) != dimension) {
     r_abort_lazy_call(
       error_call,
-      "Names for axis %d must have length %d, not length %" R_PRIdXLEN_T ".",
+      "Names for axis %d must have length %d, not length %" R_PRI_SSIZE ".",
       axis,
       dimension,
       r_length(names)

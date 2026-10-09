@@ -35,7 +35,7 @@ r_obj* rray_move_axes(
   if (from_size != to_size) {
     r_abort_lazy_call(
       error_call,
-      "`from` (%" R_PRIdXLEN_T ") and `to` (%" R_PRIdXLEN_T
+      "`from` (%" R_PRI_SSIZE ") and `to` (%" R_PRI_SSIZE
       ") must be the same length.",
       from_size,
       to_size

@@ -145,7 +145,7 @@ r_obj* arg_as_axes_permutation(
     r_abort_lazy_call(
       error_call,
       "%s must have length %d to match the dimensionality of the array, "
-      "not length %" R_PRIdXLEN_T ".",
+      "not length %" R_PRI_SSIZE ".",
       rray_arg_format(arg),
       dimensionality,
       axes_size
