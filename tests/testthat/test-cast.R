@@ -30,19 +30,47 @@ test_that("`NaN` matches base R", {
   expect_identical(rray_cast(NaN, logical()), array(NA, 1L))
 })
 
-test_that("casting to complex matches base R, imaginary part and all", {
-  expect_identical(rray_cast(NA, complex()), array(as.complex(NA), 1L))
+test_that("casting missing to complex uses a `0` for `imaginary`, same as base R", {
+  skip_if_not(
+    getRversion() >= "4.4.0",
+    "`as.complex()` used to use `NA` in the `Im()` slot"
+  )
+
+  expect_identical(
+    rray_cast(NA, complex()),
+    array(complex(real = NA_real_, imaginary = 0), 1L)
+  )
+  expect_identical(
+    rray_cast(NA, complex()),
+    array(as.complex(NA), 1L)
+  )
+
+  expect_identical(
+    rray_cast(NA_integer_, complex()),
+    array(complex(real = NA_real_, imaginary = 0), 1L)
+  )
   expect_identical(
     rray_cast(NA_integer_, complex()),
     array(as.complex(NA_integer_), 1L)
+  )
+
+  expect_identical(
+    rray_cast(NA_real_, complex()),
+    array(complex(real = NA_real_, imaginary = 0), 1L)
   )
   expect_identical(
     rray_cast(NA_real_, complex()),
     array(as.complex(NA_real_), 1L)
   )
-  expect_identical(rray_cast(NaN, complex()), array(as.complex(NaN), 1L))
 
-  expect_identical(Im(rray_cast(NA_real_, complex())), array(0, 1L))
+  expect_identical(
+    rray_cast(NaN, complex()),
+    array(complex(real = NaN, imaginary = 0), 1L)
+  )
+  expect_identical(
+    rray_cast(NaN, complex()),
+    array(as.complex(NaN), 1L)
+  )
 })
 
 test_that("the integer boundaries cast", {
