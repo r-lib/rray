@@ -8,13 +8,15 @@ Description: A toolkit for broadcasting, reshaping, reducing, and indexing
 License: MIT + file LICENSE
 URL: https://github.com/r-lib/rray, https://rray.r-lib.org
 BugReports: https://github.com/r-lib/rray/issues
+Depends:
+    R (>= 4.3.0)
 Imports:
     rlang
 Suggests:
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
-VignetteBuilder: 
+VignetteBuilder:
     knitr
 Config/build/compilation-database: true
 Config/Needs/website: tidyverse/tidytemplate
