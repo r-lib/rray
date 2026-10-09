@@ -14,3 +14,4 @@
 ^\.github$
 ^\.claude$
 ^bench$
+^README\.Rmd$
