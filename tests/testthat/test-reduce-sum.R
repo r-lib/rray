@@ -134,10 +134,6 @@ test_that("Inf matches base R sum", {
     sum(-Inf, 1)
   )
   expect_identical(
-    as.vector(rray_sum(c(Inf, -Inf), 1L)),
-    sum(Inf, -Inf)
-  )
-  expect_identical(
     as.vector(rray_sum(c(Inf, NA), 1L)),
     sum(Inf, NA)
   )
@@ -153,10 +149,16 @@ test_that("Inf matches base R sum", {
     as.vector(rray_sum(c(-Inf, NaN), 1L)),
     sum(-Inf, NaN)
   )
+
+  # `NaN` from `Inf` + `-Inf`
   expect_identical(
-    as.vector(rray_sum(c(Inf, -Inf, NA), 1L)),
-    sum(Inf, -Inf, NA)
+    as.vector(rray_sum(c(Inf, -Inf), 1L)),
+    sum(Inf, -Inf)
   )
+  # `NaN` from `Inf` + `-Inf`, so can't trust that added to `NA`
+  # across platforms, it is compiler defined!
+  expect_true(is.na(as.vector(rray_sum(c(Inf, -Inf, NA), 1L))))
+  # `NaN` from `Inf` + `-Inf`, but added to a plain `NaN`, so predictable
   expect_identical(
     as.vector(rray_sum(c(Inf, -Inf, NaN), 1L)),
     sum(Inf, -Inf, NaN)
