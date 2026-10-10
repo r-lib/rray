@@ -60,42 +60,42 @@ r_obj* rray_set_titles(
   check_unclassed(x, arg, error_call);
   x = KEEP(arg_as_array(x, arg, error_call));
 
+  if (titles == r_null) {
+    r_obj* out = rray_clear_titles(x);
+    FREE(1);
+    return out;
+  }
+
   const int dimensionality = rray_dimensionality(x, arg, error_call);
 
-  if (titles != r_null) {
-    if (r_typeof(titles) != R_TYPE_character) {
-      r_abort_lazy_call(
-        error_call,
-        "%s must be a character vector or `NULL`, not %s.",
-        rray_arg_format(rray_args.titles),
-        r_obj_type_friendly(titles)
-      );
-    }
+  if (r_typeof(titles) != R_TYPE_character) {
+    r_abort_lazy_call(
+      error_call,
+      "%s must be a character vector or `NULL`, not %s.",
+      rray_arg_format(rray_args.titles),
+      r_obj_type_friendly(titles)
+    );
+  }
 
-    if (r_length(titles) != dimensionality) {
-      r_abort_lazy_call(
-        error_call,
-        "%s must have length %d to match the dimensionality of %s, "
-        "not length %" R_PRI_SSIZE ".",
-        rray_arg_format(rray_args.titles),
-        dimensionality,
-        rray_arg_format(arg),
-        r_length(titles)
-      );
-    }
+  if (r_length(titles) != dimensionality) {
+    r_abort_lazy_call(
+      error_call,
+      "%s must have length %d to match the dimensionality of %s, "
+      "not length %" R_PRI_SSIZE ".",
+      rray_arg_format(rray_args.titles),
+      dimensionality,
+      rray_arg_format(arg),
+      r_length(titles)
+    );
+  }
 
-    if (!rray_titles_have_any(titles)) {
-      titles = r_null;
-    }
+  if (!rray_titles_have_any(titles)) {
+    r_obj* out = rray_clear_titles(x);
+    FREE(1);
+    return out;
   }
 
   r_obj* old_names = r_dim_names(x);
-
-  if (old_names == r_null && titles == r_null) {
-    FREE(1);
-    return x;
-  }
-
   r_obj* new_names = KEEP(r_alloc_list(dimensionality));
 
   if (old_names != r_null) {
@@ -105,9 +105,7 @@ r_obj* rray_set_titles(
     }
   }
 
-  if (titles != r_null) {
-    r_attrib_poke_names(new_names, titles);
-  }
+  r_attrib_poke_names(new_names, titles);
 
   r_obj* out = KEEP(r_wrap(x));
   r_attrib_poke_dim_names(out, new_names);
@@ -140,33 +138,34 @@ r_obj* rray_set_axis_title(
   const int dimensionality = rray_dimensionality(x, arg, error_call);
   check_axis(axis, dimensionality, rray_args.axis, error_call);
 
-  if (title != r_null) {
-    if (r_typeof(title) != R_TYPE_character) {
-      r_abort_lazy_call(
-        error_call,
-        "%s must be a character vector or `NULL`, not %s.",
-        rray_arg_format(rray_args.title),
-        r_obj_type_friendly(title)
-      );
-    }
+  if (title == r_null) {
+    r_obj* out = rray_clear_axis_title(x, axis, arg, error_call);
+    FREE(1);
+    return out;
+  }
 
-    if (r_length(title) != 1) {
-      r_abort_lazy_call(
-        error_call,
-        "%s must have length 1, not length %" R_PRI_SSIZE ".",
-        rray_arg_format(rray_args.title),
-        r_length(title)
-      );
-    }
+  if (r_typeof(title) != R_TYPE_character) {
+    r_abort_lazy_call(
+      error_call,
+      "%s must be a character vector or `NULL`, not %s.",
+      rray_arg_format(rray_args.title),
+      r_obj_type_friendly(title)
+    );
+  }
+
+  if (r_length(title) != 1) {
+    r_abort_lazy_call(
+      error_call,
+      "%s must have length 1, not length %" R_PRI_SSIZE ".",
+      rray_arg_format(rray_args.title),
+      r_length(title)
+    );
   }
 
   r_obj* names = r_dim_names(x);
   r_obj* old_titles = names == r_null ? r_null : r_names(names);
 
-  if (
-    old_titles == r_null &&
-    (title == r_null || r_chr_get(title, 0) == r_strs.empty)
-  ) {
+  if (old_titles == r_null && r_chr_get(title, 0) == r_strs.empty) {
     FREE(1);
     return x;
   }
@@ -183,15 +182,50 @@ r_obj* rray_set_axis_title(
     );
   }
 
-  r_chr_poke(
-    new_titles,
-    axis - 1,
-    title == r_null ? r_strs.empty : r_chr_get(title, 0)
-  );
+  r_chr_poke(new_titles, axis - 1, r_chr_get(title, 0));
 
   r_obj* out = KEEP(rray_set_titles(x, new_titles, arg, error_call));
 
   FREE(3);
+  return out;
+}
+
+static r_obj* rray_clear_titles(r_obj* x) {
+  r_obj* names = r_dim_names(x);
+
+  if (names == r_null || r_names(names) == r_null) {
+    return x;
+  }
+
+  r_obj* new_names = KEEP(r_clone(names));
+  r_attrib_poke_names(new_names, r_null);
+
+  r_obj* out = KEEP(r_wrap(x));
+  r_attrib_poke_dim_names(out, new_names);
+
+  FREE(2);
+  return out;
+}
+
+static r_obj* rray_clear_axis_title(
+  r_obj* x,
+  int axis,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+) {
+  r_obj* names = r_dim_names(x);
+  r_obj* old_titles = names == r_null ? r_null : r_names(names);
+
+  if (old_titles == r_null) {
+    return x;
+  }
+
+  r_obj* new_titles = KEEP(r_clone(old_titles));
+  r_chr_poke(new_titles, axis - 1, r_strs.empty);
+
+  r_obj* out = KEEP(rray_set_titles(x, new_titles, arg, error_call));
+
+  FREE(2);
   return out;
 }
 
