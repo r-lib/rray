@@ -62,10 +62,9 @@ dimnames(y)
    attribute when no titles remain. Removing a title from an array with no
    dimension names must not create a list. Wrap `x` to change attributes
    without copying its data, as the names setters do.
-6. Preserve the outer names of the dimension names list in
-   `rray_set_axis_names()`. Its current list copy keeps element names but
-   drops titles. Keep `rray_set_names()` as a whole-list replacement: a named
-   input list supplies titles, and `NULL` removes the list and its titles.
+6. Limit behavior changes to the four title functions. Leave existing names
+   functions and other array operations as they are. Title handling in those
+   operations belongs in future plans and PRs.
 7. Make a separate protection pass over every new or touched `r_obj*`, then
    run `clang-format -i src/*.c src/*.h`, `air format .`, and
    `devtools::document()`.
@@ -80,7 +79,7 @@ Add `tests/testthat/test-titles.R` with focused tests for:
 - Both setters when dimension names are absent, and preservation of element
   names and the input object when dimension names are present.
 - Removing one or all titles, including the last title, while keeping axis
-  element names. Check that changing axis element names keeps titles.
+  element names.
 - Invalid array inputs, axes, types, and lengths. Snapshot only package
   errors.
 - A title-only matrix in base R's printed output, to confirm the underlying
