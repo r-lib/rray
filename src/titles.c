@@ -57,7 +57,6 @@ r_obj* rray_set_titles(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  titles = KEEP(titles);
   check_unclassed(x, arg, error_call);
   x = KEEP(arg_as_array(x, arg, error_call));
 
@@ -93,7 +92,7 @@ r_obj* rray_set_titles(
   r_obj* old_names = r_dim_names(x);
 
   if (old_names == r_null && titles == r_null) {
-    FREE(2);
+    FREE(1);
     return x;
   }
 
@@ -113,7 +112,7 @@ r_obj* rray_set_titles(
   r_obj* out = KEEP(r_wrap(x));
   r_attrib_poke_dim_names(out, new_names);
 
-  FREE(4);
+  FREE(3);
   return out;
 }
 
@@ -135,7 +134,6 @@ r_obj* rray_set_axis_title(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  title = KEEP(title);
   check_unclassed(x, arg, error_call);
   x = KEEP(arg_as_array(x, arg, error_call));
 
@@ -169,7 +167,7 @@ r_obj* rray_set_axis_title(
     old_titles == r_null &&
     (title == r_null || r_chr_get(title, 0) == r_strs.empty)
   ) {
-    FREE(2);
+    FREE(1);
     return x;
   }
 
@@ -193,7 +191,7 @@ r_obj* rray_set_axis_title(
 
   r_obj* out = KEEP(rray_set_titles(x, new_titles, arg, error_call));
 
-  FREE(4);
+  FREE(3);
   return out;
 }
 
