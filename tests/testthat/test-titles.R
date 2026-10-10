@@ -97,26 +97,41 @@ test_that("title setters remove one or all titles", {
   expect_identical(rray_titles(out), c("", "Column"))
   expect_identical(rray_axis_title(out, 1), "")
 
-  out <- rray_set_axis_title(out, 2, "")
-  expect_null(rray_titles(out))
-  expect_identical(dimnames(out), unname(dimnames(x)))
+  out <- rray_set_axis_title(out, 2, NULL)
+  expect_identical(rray_titles(out), c("", ""))
 
   out <- rray_set_titles(x, NULL)
   expect_null(rray_titles(out))
   expect_identical(dimnames(out), unname(dimnames(x)))
+})
+
+test_that("title setters keep empty titles", {
+  x <- matrix(
+    1:6,
+    2,
+    3,
+    dimnames = list(Row = c("a", "b"), Column = c("x", "y", "z"))
+  )
+
+  out <- rray_set_axis_title(x, 2, "")
+  expect_identical(rray_titles(out), c("Row", ""))
+
+  out <- rray_set_axis_title(out, 1, "")
+  expect_identical(rray_titles(out), c("", ""))
 
   out <- rray_set_titles(x, c("", ""))
-  expect_null(rray_titles(out))
-  expect_identical(dimnames(out), unname(dimnames(x)))
+  expect_identical(rray_titles(out), c("", ""))
+
+  y <- matrix(1:6, 2, 3)
+  expect_identical(rray_titles(rray_set_titles(y, c("", ""))), c("", ""))
+  expect_identical(rray_titles(rray_set_axis_title(y, 1, "")), c("", ""))
 })
 
 test_that("removing absent titles does not make a dimension names list", {
   x <- matrix(1:6, 2, 3)
 
   expect_null(dimnames(rray_set_titles(x, NULL)))
-  expect_null(dimnames(rray_set_titles(x, c("", ""))))
   expect_null(dimnames(rray_set_axis_title(x, 1, NULL)))
-  expect_null(dimnames(rray_set_axis_title(x, 1, "")))
 })
 
 test_that("title getters reject invalid input and axes", {

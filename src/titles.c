@@ -89,12 +89,6 @@ r_obj* rray_set_titles(
     );
   }
 
-  if (!rray_titles_have_any(titles)) {
-    r_obj* out = rray_clear_titles(x);
-    FREE(1);
-    return out;
-  }
-
   r_obj* old_names = r_dim_names(x);
   r_obj* new_names = KEEP(r_alloc_list(dimensionality));
 
@@ -219,17 +213,4 @@ static r_obj* rray_clear_axis_title(
 
   FREE(2);
   return out;
-}
-
-static bool rray_titles_have_any(r_obj* titles) {
-  r_obj* const* v_titles = r_chr_cbegin(titles);
-  const r_ssize size = r_length(titles);
-
-  for (r_ssize i = 0; i < size; ++i) {
-    if (v_titles[i] != r_strs.empty) {
-      return true;
-    }
-  }
-
-  return false;
 }
