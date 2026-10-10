@@ -20,9 +20,9 @@ These calls return `c("Row", "Column")` and `"Column"`.
   entry per axis. `NULL` removes all titles. An empty string leaves that axis
   without a title. If every entry is empty, remove the names attribute. It
   keeps every axis's element names.
-- `rray_axis_title(x, axis)` returns one character string, or `NULL` when
-  that axis has no title. This includes an empty string in the underlying
-  names vector.
+- `rray_axis_title(x, axis)` returns `NULL` when there is no titles vector.
+  Otherwise, it returns `rray_titles(x)[[axis]]` as is, including `""` or
+  `NA_character_`.
 - `rray_set_axis_title(x, axis, title)` accepts one character string or
   `NULL`. `NULL` and `""` remove that axis's title. It keeps titles and element
   names on the other axes.
@@ -36,11 +36,12 @@ may return an existing `NA_character_` title, as base R permits it in names.
 x <- matrix(1:6, 2, 3)
 y <- rray_set_axis_title(x, 2, "Column")
 rray_titles(y)
+rray_axis_title(y, 1)
 dimnames(y)
 ```
 
-`rray_titles(y)` returns `c("", "Column")`. `dimnames(y)` is a list of two
-`NULL` entries with those titles.
+`rray_titles(y)` returns `c("", "Column")`, and `rray_axis_title(y, 1)` returns
+`""`. `dimnames(y)` is a list of two `NULL` entries with those titles.
 
 ## Implementation
 
@@ -74,7 +75,8 @@ dimnames(y)
 Add `tests/testthat/test-titles.R` with focused tests for:
 
 - Untitled arrays, title-only arrays, partly titled arrays, named vectors,
-  and one-dimensional arrays.
+  and one-dimensional arrays. Check that an empty axis title is returned as
+  `""` when the titles vector exists.
 - Both setters when dimension names are absent, and preservation of element
   names and the input object when dimension names are present.
 - Removing one or all titles, including the last title, while keeping axis
