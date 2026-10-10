@@ -165,11 +165,6 @@ r_obj* rray_set_axis_title(
   r_obj* names = r_dim_names(x);
   r_obj* old_titles = names == r_null ? r_null : r_names(names);
 
-  if (old_titles == r_null && r_chr_get(title, 0) == r_strs.empty) {
-    FREE(1);
-    return x;
-  }
-
   r_obj* new_titles = KEEP(r_alloc_character(dimensionality));
   r_obj* const* v_old_titles =
     old_titles == r_null ? NULL : r_chr_cbegin(old_titles);
