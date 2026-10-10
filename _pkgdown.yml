@@ -71,7 +71,4 @@ reference:
 
 - title: Titles
   contents:
-  - rray_titles
-  - rray_axis_title
-  - rray_set_titles
-  - rray_set_axis_title
+  - rray-titles
