@@ -39,7 +39,7 @@ one-dimensional arrays.
 }
 }
 \description{
-Titles are the names on an array's list of dimension names. They appear in
+Titles are the names on an array's list of names. They appear in
 array print output.
 \itemize{
 \item \code{rray_titles()} returns the titles for every axis.
