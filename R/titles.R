@@ -12,9 +12,6 @@
 #'
 #' - `rray_set_axis_title()` sets the title for one axis.
 #'
-#' The setters keep element names on each axis. They create a dimension names
-#' list when needed.
-#'
 #' @param x An array.
 #'
 #' @param axis A single integer. The axis to get or set the title for.

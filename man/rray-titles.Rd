@@ -47,9 +47,6 @@ array print output.
 \item \code{rray_set_titles()} sets the titles for every axis.
 \item \code{rray_set_axis_title()} sets the title for one axis.
 }
-
-The setters keep element names on each axis. They create a dimension names
-list when needed.
 }
 \examples{
 x <- matrix(1:6, 2, 3)
