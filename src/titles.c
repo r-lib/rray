@@ -38,12 +38,11 @@ r_obj* rray_axis_title(
   const int dimensionality = rray_dimensionality(x, arg, error_call);
   check_axis(axis, dimensionality, rray_args.axis, error_call);
 
-  r_obj* names = r_dim_names(x);
-  r_obj* titles = names == r_null ? r_null : r_names(names);
+  r_obj* titles = KEEP(rray_titles(x, arg, error_call));
   r_obj* out =
     titles == r_null ? r_null : r_str_as_character(r_chr_get(titles, axis - 1));
 
-  FREE(1);
+  FREE(2);
   return out;
 }
 
