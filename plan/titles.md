@@ -46,7 +46,7 @@ dimnames(y)
 ## Implementation
 
 1. Add `R/titles.R` with the four exported functions and roxygen topics.
-   Add the topics to the Names section of `_pkgdown.yml`.
+   Add a Titles section after Names in `_pkgdown.yml` with all four topics.
 2. Add `src/titles.c` and `src/titles.h`. Put thin FFI wrappers before the
    internal functions. Use `src/decl/titles-decl.h` for any helpers needed
    after the entry points, and include it last. Register the wrappers in
