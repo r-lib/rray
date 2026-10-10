@@ -166,15 +166,12 @@ r_obj* rray_set_axis_title(
   r_obj* old_titles = names == r_null ? r_null : r_names(names);
 
   r_obj* new_titles = KEEP(r_alloc_character(dimensionality));
-  r_obj* const* v_old_titles =
-    old_titles == r_null ? NULL : r_chr_cbegin(old_titles);
 
-  for (int i = 0; i < dimensionality; ++i) {
-    r_chr_poke(
-      new_titles,
-      i,
-      old_titles == r_null ? r_strs.empty : v_old_titles[i]
-    );
+  if (old_titles != r_null) {
+    r_obj* const* v_old_titles = r_chr_cbegin(old_titles);
+    for (int i = 0; i < dimensionality; ++i) {
+      r_chr_poke(new_titles, i, v_old_titles[i]);
+    }
   }
 
   r_chr_poke(new_titles, axis - 1, r_chr_get(title, 0));
