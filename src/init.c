@@ -95,6 +95,23 @@ extern r_obj* ffi_rray_size(r_obj* ffi_x, r_obj* ffi_frame);
 extern r_obj* ffi_rray_dimensionality(r_obj* ffi_x, r_obj* ffi_frame);
 extern r_obj* ffi_rray_dimensions(r_obj* ffi_x, r_obj* ffi_frame);
 extern r_obj* ffi_rray_names(r_obj* ffi_x, r_obj* ffi_frame);
+extern r_obj* ffi_rray_titles(r_obj* ffi_x, r_obj* ffi_frame);
+extern r_obj* ffi_rray_axis_title(
+  r_obj* ffi_x,
+  r_obj* ffi_axis,
+  r_obj* ffi_frame
+);
+extern r_obj* ffi_rray_set_titles(
+  r_obj* ffi_x,
+  r_obj* ffi_titles,
+  r_obj* ffi_frame
+);
+extern r_obj* ffi_rray_set_axis_title(
+  r_obj* ffi_x,
+  r_obj* ffi_axis,
+  r_obj* ffi_title,
+  r_obj* ffi_frame
+);
 extern r_obj* ffi_rray_axis_names(
   r_obj* ffi_x,
   r_obj* ffi_axis,
@@ -362,6 +379,10 @@ static const R_CallMethodDef CallEntries[] = {
   {"ffi_rray_dimensions_common", (DL_FUNC) &ffi_rray_dimensions_common, 3},
   {"ffi_rray_dimensionality", (DL_FUNC) &ffi_rray_dimensionality, 2},
   {"ffi_rray_names", (DL_FUNC) &ffi_rray_names, 2},
+  {"ffi_rray_titles", (DL_FUNC) &ffi_rray_titles, 2},
+  {"ffi_rray_axis_title", (DL_FUNC) &ffi_rray_axis_title, 3},
+  {"ffi_rray_set_titles", (DL_FUNC) &ffi_rray_set_titles, 3},
+  {"ffi_rray_set_axis_title", (DL_FUNC) &ffi_rray_set_axis_title, 4},
   {"ffi_rray_axis_names", (DL_FUNC) &ffi_rray_axis_names, 3},
   {"ffi_rray_row_names", (DL_FUNC) &ffi_rray_row_names, 2},
   {"ffi_rray_column_names", (DL_FUNC) &ffi_rray_column_names, 2},

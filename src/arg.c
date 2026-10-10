@@ -219,6 +219,8 @@ void rray_init_args(r_obj* ns) {
   INIT_ARG(y);
   INIT_ARG(i);
   INIT_ARG(names);
+  INIT_ARG(titles);
+  INIT_ARG(title);
   INIT_ARG(axis);
   INIT_ARG2(dot_axis, ".axis");
   INIT_ARG(axes);
