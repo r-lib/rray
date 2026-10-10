@@ -50,8 +50,8 @@ array print output.
 }
 \examples{
 x <- matrix(1:6, 2, 3)
-y <- rray_set_titles(x, c("Row", "Column"))
-rray_titles(y)
-rray_axis_title(y, 2)
-rray_set_axis_title(y, 1, NULL)
+x <- rray_set_titles(x, c("Row", "Column"))
+rray_titles(x)
+rray_axis_title(x, 2)
+rray_set_axis_title(x, 1, NULL)
 }
