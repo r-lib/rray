@@ -68,3 +68,7 @@ reference:
   - rray_set_axis_names
   - rray_set_row_names
   - rray_set_column_names
+
+- title: Titles
+  contents:
+  - rray-titles
