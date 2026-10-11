@@ -50,11 +50,7 @@ static inline r_complex rray_multiply_cpl_one(r_complex x, r_complex y) {
 // - `out = 2`, `x = 1`: returns `2`.
 // - `out = 2`, `x = NA`: returns `NA`.
 static inline double rray_prod_lgl_one(double out, int x) {
-  if (rray_lgl_is_missing(x)) {
-    return r_globals.na_dbl;
-  }
-
-  return out * x;
+  return out * (rray_lgl_is_missing(x) ? r_globals.na_dbl : (double) x);
 }
 
 // `out` is a double, `x` is a logical
@@ -72,11 +68,7 @@ static inline double rray_prod_lgl_one_na_rm(double out, int x) {
 // - `out = 2`, `x = 3`: returns `6`.
 // - `out = 2`, `x = NA`: returns `NA`.
 static inline double rray_prod_int_one(double out, int x) {
-  if (rray_int_is_missing(x)) {
-    return r_globals.na_dbl;
-  }
-
-  return out * x;
+  return out * (rray_int_is_missing(x) ? r_globals.na_dbl : (double) x);
 }
 
 // `out` is a double, `x` is an integer
