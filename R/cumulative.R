@@ -1,4 +1,4 @@
-#' Cumulative functions along an axis
+#' Accumulate along an axis
 #'
 #' @description
 #' - `rray_cumulative_all()` checks if all values are `TRUE` so far along

@@ -4,7 +4,7 @@
 \alias{rray-cumulative}
 \alias{rray_cumulative_all}
 \alias{rray_cumulative_any}
-\title{Cumulative functions along an axis}
+\title{Accumulate along an axis}
 \usage{
 rray_cumulative_all(x, axis)
 
