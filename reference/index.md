@@ -121,3 +121,11 @@
   [`rray_set_row_names()`](https://rray.r-lib.org/reference/rray_set_axis_names.md)
   [`rray_set_column_names()`](https://rray.r-lib.org/reference/rray_set_axis_names.md)
   : Set names for a single axis of an array
+
+## Titles
+
+- [`rray_titles()`](https://rray.r-lib.org/reference/rray-titles.md)
+  [`rray_axis_title()`](https://rray.r-lib.org/reference/rray-titles.md)
+  [`rray_set_titles()`](https://rray.r-lib.org/reference/rray-titles.md)
+  [`rray_set_axis_title()`](https://rray.r-lib.org/reference/rray-titles.md)
+  : Array titles
