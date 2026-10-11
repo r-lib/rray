@@ -32,9 +32,6 @@ r_obj* rray_axis_title(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  check_unclassed(x, arg, error_call);
-  x = KEEP(arg_as_array(x, arg, error_call));
-
   const int dimensionality = rray_dimensionality(x, arg, error_call);
   check_axis(axis, dimensionality, rray_args.axis, error_call);
 
@@ -42,7 +39,7 @@ r_obj* rray_axis_title(
   r_obj* out =
     titles == r_null ? r_null : r_str_as_character(r_chr_get(titles, axis - 1));
 
-  FREE(2);
+  FREE(1);
   return out;
 }
 
