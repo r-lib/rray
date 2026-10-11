@@ -101,3 +101,4 @@
     Condition
       Error in `rray_set_axis_title()`:
       ! `title` must have length 1, not length 2.
+
