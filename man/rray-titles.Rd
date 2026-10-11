@@ -22,10 +22,10 @@ rray_set_axis_title(x, axis, title)
 \item{axis}{A single integer. The axis to get or set the title for.}
 
 \item{titles}{A character vector with one title per axis, or \code{NULL} to
-remove all titles. An empty string leaves that axis without a title.}
+remove all titles.}
 
-\item{title}{A single character string, or \code{NULL}. Use \code{NULL} or \code{""} to
-remove the title for \code{axis}.}
+\item{title}{A single character string, or \code{NULL} to remove the title for
+\code{axis}.}
 }
 \value{
 \itemize{

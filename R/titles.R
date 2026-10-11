@@ -17,10 +17,10 @@
 #' @param axis A single integer. The axis to get or set the title for.
 #'
 #' @param titles A character vector with one title per axis, or `NULL` to
-#'   remove all titles. An empty string leaves that axis without a title.
+#'   remove all titles.
 #'
-#' @param title A single character string, or `NULL`. Use `NULL` or `""` to
-#'   remove the title for `axis`.
+#' @param title A single character string, or `NULL` to remove the title for
+#'   `axis`.
 #'
 #' @returns
 #' - `rray_titles()` returns a character vector, or `NULL` if there are no
