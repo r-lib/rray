@@ -11,6 +11,8 @@
 #'
 #' - `rray_cumulative_min()` computes the minimum so far along `axis`.
 #'
+#' - `rray_cumulative_prod()` computes the product so far along `axis`.
+#'
 #' @details
 #' Each position along `axis` summarizes every position up to and including
 #' it.
@@ -41,6 +43,18 @@
 #' rray_cumulative_any(c(NA, TRUE), 1L) # NA, TRUE
 #' ```
 #'
+#' @section Product:
+#' `x` must be logical, integer, double, or complex. Logicals and integers are
+#' cast to double.
+#'
+#' When `NA` and `NaN` are both present, you get one of them, but which one
+#' depends on the platform and the order of the values. Either way, `is.na()`
+#' is `TRUE` from that point on:
+#'
+#' ```r
+#' rray_cumulative_prod(c(2, NA, NaN), 1L) # 2, NA, NA or NaN
+#' ```
+#'
 #' @param x An array.
 #'
 #' @param axis A single integer. The axis to accumulate along. `1`
@@ -68,6 +82,9 @@
 #' # Running maximum and minimum across columns
 #' rray_cumulative_max(x, 2L)
 #' rray_cumulative_min(x, 2L)
+#'
+#' # Running product down rows
+#' rray_cumulative_prod(x, 1L)
 NULL
 
 #' @rdname rray-cumulative
@@ -92,4 +109,10 @@ rray_cumulative_max <- function(x, axis) {
 #' @export
 rray_cumulative_min <- function(x, axis) {
   .Call(ffi_rray_cumulative_min, x, axis, environment())
+}
+
+#' @rdname rray-cumulative
+#' @export
+rray_cumulative_prod <- function(x, axis) {
+  .Call(ffi_rray_cumulative_prod, x, axis, environment())
 }
