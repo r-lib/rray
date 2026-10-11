@@ -274,6 +274,16 @@ extern r_obj* ffi_rray_locate_min(
   r_obj* ffi_na_rm,
   r_obj* ffi_frame
 );
+extern r_obj* ffi_rray_cumulative_all(
+  r_obj* ffi_x,
+  r_obj* ffi_axis,
+  r_obj* ffi_frame
+);
+extern r_obj* ffi_rray_cumulative_any(
+  r_obj* ffi_x,
+  r_obj* ffi_axis,
+  r_obj* ffi_frame
+);
 extern r_obj* ffi_rray_ptype(r_obj* ffi_x, r_obj* ffi_frame);
 extern r_obj* ffi_rray_ptype2(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame);
 extern r_obj* ffi_rray_ptype_common(
@@ -419,6 +429,8 @@ static const R_CallMethodDef CallEntries[] = {
   {"ffi_rray_min", (DL_FUNC) &ffi_rray_min, 4},
   {"ffi_rray_locate_max", (DL_FUNC) &ffi_rray_locate_max, 4},
   {"ffi_rray_locate_min", (DL_FUNC) &ffi_rray_locate_min, 4},
+  {"ffi_rray_cumulative_all", (DL_FUNC) &ffi_rray_cumulative_all, 3},
+  {"ffi_rray_cumulative_any", (DL_FUNC) &ffi_rray_cumulative_any, 3},
   {"ffi_rray_ptype", (DL_FUNC) &ffi_rray_ptype, 2},
   {"ffi_rray_ptype2", (DL_FUNC) &ffi_rray_ptype2, 3},
   {"ffi_rray_ptype_common", (DL_FUNC) &ffi_rray_ptype_common, 3},

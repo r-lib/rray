@@ -22,6 +22,10 @@ reference:
   - rray-reduce
   - rray-locate
 
+- title: Cumulative
+  contents:
+  - rray-cumulative
+
 - title: Combining and Splitting
   contents:
   - rray_combine
