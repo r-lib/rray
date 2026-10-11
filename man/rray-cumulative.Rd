@@ -45,11 +45,11 @@ rray_cumulative_any(c(FALSE, NA, TRUE), 1L) # FALSE, NA, TRUE
 x <- array(c(TRUE, TRUE, FALSE, TRUE, NA, TRUE), c(2L, 3L))
 x
 
-# Along rows
+# Down rows
 rray_cumulative_all(x, 1L)
 rray_cumulative_any(x, 1L)
 
-# Along columns
+# Across columns
 rray_cumulative_all(x, 2L)
 rray_cumulative_any(x, 2L)
 }
