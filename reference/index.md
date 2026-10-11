@@ -40,6 +40,12 @@
   [`rray_locate_min()`](https://rray.r-lib.org/reference/rray-locate.md)
   : Locate the maximum or minimum along an axis
 
+## Cumulative
+
+- [`rray_cumulative_all()`](https://rray.r-lib.org/reference/rray-cumulative.md)
+  [`rray_cumulative_any()`](https://rray.r-lib.org/reference/rray-cumulative.md)
+  : Accumulate along an axis
+
 ## Combining and Splitting
 
 - [`rray_combine()`](https://rray.r-lib.org/reference/rray_combine.md) :
