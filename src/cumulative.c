@@ -3,6 +3,7 @@
 #include "axes.h"
 #include "dimensionality.h"
 #include "size.h"
+#include "strides.h"
 #include "utils.h"
 
 r_obj* rray_cumulative(
@@ -22,13 +23,31 @@ r_obj* rray_cumulative(
 
   check_axis(axis, dimensionality, rray_args.axis, error_call);
 
+  int v_state_dimensions[RRAY_MAX_DIMENSIONALITY];
+  r_memcpy(v_state_dimensions, v_dimensions, sizeof(int) * dimensionality);
+  v_state_dimensions[axis - 1] = 1;
+
+  const r_ssize state_size =
+    rray_size_from_dimensions(v_state_dimensions, dimensionality);
+
+  r_ssize v_state_broadcast_strides[RRAY_MAX_DIMENSIONALITY];
+  rray_fill_broadcast_strides_from_dimensions(
+    v_state_dimensions,
+    dimensionality,
+    dimensionality,
+    v_state_broadcast_strides
+  );
+
   const rray_cumulative_fn fn = fn_switch(x, arg, error_call);
 
-  const r_ssize axis_dimension = v_dimensions[axis - 1];
-  const r_ssize stride =
-    r_length(x) == 0 ? 0 : rray_size_from_dimensions(v_dimensions, axis - 1);
-
-  r_obj* out = KEEP(fn(x, stride, axis_dimension, error_call));
+  r_obj* out = KEEP(fn(
+    x,
+    state_size,
+    v_dimensions,
+    dimensionality,
+    v_state_broadcast_strides,
+    error_call
+  ));
   r_attrib_poke_dim(out, dimensions);
 
   r_obj* names = r_dim_names(x);

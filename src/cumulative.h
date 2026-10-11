@@ -4,11 +4,14 @@
 #include "rlang.h"
 
 #include "arg.h"
+#include "strided-iterator.h"
 
 typedef r_obj* (*rray_cumulative_fn)(
   r_obj* x,
-  r_ssize stride,
-  r_ssize axis_dimension,
+  r_ssize state_size,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_state_broadcast_strides,
   struct r_lazy error_call
 );
 
@@ -35,40 +38,53 @@ r_obj* rray_cumulative(
   OUT_INIT,                                                                    \
   ONE                                                                          \
 )                                                                              \
-  const r_ssize size = r_length(x);                                            \
-  const r_ssize block_size = stride * axis_dimension;                          \
+  struct rray_run_iterator it;                                                 \
+  rray_run_iterator_init1(                                                     \
+    &it,                                                                       \
+    v_dimensions,                                                              \
+    dimensionality,                                                            \
+    v_state_broadcast_strides                                                  \
+  );                                                                           \
                                                                                \
-  r_obj* out = KEEP(r_alloc_vector(OUT_RTYPE, size));                          \
+  r_obj* out = KEEP(r_alloc_vector(OUT_RTYPE, r_length(x)));                   \
   OUT_CTYPE* v_out = OUT_DEREF(out);                                           \
+                                                                               \
+  r_obj* state = KEEP(r_alloc_vector(OUT_RTYPE, state_size));                  \
+  OUT_CTYPE* v_state = OUT_DEREF(state);                                       \
+                                                                               \
+  for (r_ssize i = 0; i < state_size; ++i) {                                   \
+    v_state[i] = OUT_INIT;                                                     \
+  }                                                                            \
                                                                                \
   const X_CTYPE* v_x = X_CONST_DEREF(x);                                       \
                                                                                \
-  if (stride == 1) {                                                           \
-    for (r_ssize start = 0; start < size; start += block_size) {               \
-      const r_ssize end = start + block_size;                                  \
-      OUT_CTYPE elt = OUT_INIT;                                                \
+  for (; !rray_run_iterator_done(&it); rray_run_iterator_next1(&it)) {         \
+    const r_ssize start = rray_run_iterator_start(&it);                        \
+    const r_ssize end = rray_run_iterator_end(&it);                            \
+                                                                               \
+    r_ssize state_loc = rray_run_iterator_loc(&it, 0);                         \
+    const r_ssize state_stride = rray_run_iterator_stride(&it, 0);             \
+                                                                               \
+    if (state_stride == 0) {                                                   \
+      OUT_CTYPE elt = v_state[state_loc];                                      \
                                                                                \
       for (r_ssize i = start; i < end; ++i) {                                  \
         elt = ONE(elt, v_x[i]);                                                \
         v_out[i] = elt;                                                        \
       }                                                                        \
-    }                                                                          \
-  } else {                                                                     \
-    for (r_ssize start = 0; start < size; start += block_size) {               \
-      const r_ssize first_end = start + stride;                                \
-      const r_ssize end = start + block_size;                                  \
                                                                                \
-      for (r_ssize i = start; i < first_end; ++i) {                            \
-        v_out[i] = ONE(OUT_INIT, v_x[i]);                                      \
-      }                                                                        \
-                                                                               \
-      for (r_ssize i = first_end; i < end; ++i) {                              \
-        v_out[i] = ONE(v_out[i - stride], v_x[i]);                             \
+      v_state[state_loc] = elt;                                                \
+    } else {                                                                   \
+      for (r_ssize i = start; i < end; ++i) {                                  \
+        const OUT_CTYPE elt = ONE(v_state[state_loc], v_x[i]);                 \
+        v_state[state_loc] = elt;                                              \
+        v_out[i] = elt;                                                        \
+        state_loc += state_stride;                                             \
       }                                                                        \
     }                                                                          \
   }                                                                            \
                                                                                \
-  FREE(1);                                                                     \
+  FREE(2);                                                                     \
   return out;
 
 #endif

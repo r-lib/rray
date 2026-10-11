@@ -65,8 +65,10 @@ static rray_cumulative_fn rray_cumulative_any_switch(
 
 static r_obj* rray_cumulative_all_lgl(
   r_obj* x,
-  r_ssize stride,
-  r_ssize axis_dimension,
+  r_ssize state_size,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_state_broadcast_strides,
   struct r_lazy error_call
 ) {
   RRAY_CUMULATIVE(
@@ -82,8 +84,10 @@ static r_obj* rray_cumulative_all_lgl(
 
 static r_obj* rray_cumulative_any_lgl(
   r_obj* x,
-  r_ssize stride,
-  r_ssize axis_dimension,
+  r_ssize state_size,
+  const int* v_dimensions,
+  int dimensionality,
+  const r_ssize* v_state_broadcast_strides,
   struct r_lazy error_call
 ) {
   RRAY_CUMULATIVE(

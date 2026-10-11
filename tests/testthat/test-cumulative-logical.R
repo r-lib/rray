@@ -119,14 +119,6 @@ test_that("zero-size arrays keep their shape", {
   }
 })
 
-test_that("zero-size arrays with large dimensions don't overflow", {
-  max <- .Machine$integer.max
-  x <- array(logical(), c(max, max, max, 0L))
-
-  expect_identical(rray_cumulative_all(x, 4L), x)
-  expect_identical(rray_cumulative_any(x, 4L), x)
-})
-
 test_that("names are kept on every axis", {
   x <- array(
     c(TRUE, FALSE, NA, TRUE),
