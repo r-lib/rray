@@ -4,6 +4,7 @@
 #include "dimensionality.h"
 #include "size.h"
 #include "strides.h"
+#include "type.h"
 #include "utils.h"
 
 r_obj* rray_cumulative(
@@ -58,4 +59,18 @@ r_obj* rray_cumulative(
 
   FREE(2);
   return out;
+}
+
+r_no_return void stop_unsupported_cumulative(
+  const char* op,
+  r_obj* x,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+) {
+  r_abort_lazy_call(
+    error_call,
+    "Can't compute the cumulative %s of %s.",
+    op,
+    rray_arg_type_format(arg, rray_typeof(x))
+  );
 }

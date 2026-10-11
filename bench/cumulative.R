@@ -5,7 +5,15 @@ output <- Sys.getenv("RRAY_BENCH_OUTPUT", "")
 
 operations <- list(
   all = list(fn = rray_cumulative_all, types = "logical"),
-  any = list(fn = rray_cumulative_any, types = "logical")
+  any = list(fn = rray_cumulative_any, types = "logical"),
+  max = list(
+    fn = rray_cumulative_max,
+    types = c("logical", "integer", "double")
+  ),
+  min = list(
+    fn = rray_cumulative_min,
+    types = c("logical", "integer", "double")
+  )
 )
 
 shapes <- list(

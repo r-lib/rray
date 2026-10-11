@@ -87,4 +87,11 @@ r_obj* rray_cumulative(
   FREE(2);                                                                     \
   return out;
 
+r_no_return void stop_unsupported_cumulative(
+  const char* op,
+  r_obj* x,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+);
+
 #endif
