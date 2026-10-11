@@ -3,11 +3,12 @@
 ## Scope and decisions
 
 Add `rray_cumulative_sum()`, `rray_cumulative_prod()`,
-`rray_cumulative_mean()`, `rray_cumulative_min()`,
-`rray_cumulative_max()`, `rray_cumulative_any()`, and
-`rray_cumulative_all()`. Each takes one required, one-based `axis`.
-There is no `na_rm` argument. An integer cumulative sum errors when any
-prefix overflows, even if later values would bring the total back into range.
+`rray_cumulative_min()`, `rray_cumulative_max()`,
+`rray_cumulative_any()`, and `rray_cumulative_all()`. Each takes one
+required, one-based `axis`. There is no `na_rm` argument. Do not add a
+cumulative mean. The current mean reducer uses a corrected second pass for
+doubles and exact wide integer sums. A cumulative mean would need a separate
+numerical rule for every prefix.
 
 For an array `x`, the value at position `i` on the selected axis summarizes
 positions `1:i` on that axis. All other coordinates stay fixed. Each such
@@ -30,13 +31,13 @@ its `axis = None` scans a flattened array. rray will require an axis and
 retain the input dimensions. A scan over several axes would need a separate
 rule for their order and for which intermediate prefixes become output.
 
-These are array scans, not reductions: the selected axis does not collapse.
-The established reducer type rules are the starting point. Where base R or
-dplyr differs, the per-function sections below say so.
+These are array scans: the selected axis does not collapse. Use the current
+reducer type rules and the existing one-element operations where they fit.
+Each section below states any difference from a reducer or base R.
 
 ## Public API and file layout
 
-- Put all seven documented and exported R functions in `R/cumulative.R`.
+- Put all six documented and exported R functions in `R/cumulative.R`.
   Use one `rray-cumulative` documentation topic, a required `axis`, and
   `.Call(ffi_rray_cumulative_..., x, axis, environment())`. Do not add
   `na_rm` or an unused `...` argument.
@@ -44,17 +45,17 @@ dplyr differs, the per-function sections below say so.
   `src/decl/cumulative-decl.h` for input validation, shape handling,
   dispatch, and `RRAY_CUMULATIVE()`. Add operation files
   `src/cumulative-sum.c/.h`, `src/cumulative-prod.c/.h`,
-  `src/cumulative-mean.c/.h`, `src/cumulative-extremum.c/.h`, and
-  `src/cumulative-logical.c/.h`, each with its own `src/decl/*-decl.h`.
+  `src/cumulative-extremum.c/.h`, and `src/cumulative-logical.c/.h`,
+  each with its own `src/decl/*-decl.h`.
   Extremum holds min and max; logical holds any and all, as the reducers do.
-- Add the seven `extern` FFI declarations and registrations to `src/init.c`.
+- Add the six `extern` FFI declarations and registrations to `src/init.c`.
   Keep FFI declarations out of feature headers. Put thin FFI wrappers first
   in each operation `.c`, then the internal entry points, type switches,
   typed loops, and helpers in use order. Include the decl header last.
 - Add `test-cumulative-sum.R`, `test-cumulative-prod.R`,
-  `test-cumulative-mean.R`, `test-cumulative-extremum.R`, and
-  `test-cumulative-logical.R`. Add the topic to `_pkgdown.yml` under a
-  Cumulative section, then document and run `pkgdown::check_pkgdown()`.
+  `test-cumulative-extremum.R`, and `test-cumulative-logical.R`.
+  Add the topic to `_pkgdown.yml` under a Cumulative section, then
+  document and run `pkgdown::check_pkgdown()`.
 
 The common C entry point should accept the validated integer axis and a
 typed function switch, for example
@@ -64,14 +65,17 @@ returns a freshly allocated output vector. Each public internal function
 passes its switch to the common entry point. Convert the R axis in the
 FFI wrapper with `arg_as_int(ffi_axis, rray_args.axis, error_call)` and call
 `check_axis()` after finding dimensionality. Use `check_unclassed()` and
-`arg_as_array()` as the reducers do. Reject unsupported types through a
-cumulative-specific error naming the operation.
+`arg_as_array()` as `rray_reduce()` does. Switch on `rray_typeof(x)` and
+reject unsupported types through a cumulative-specific error naming the
+operation. For any and all, use `check_logical()` as their reducers do.
 
-The common entry point protects the converted `x`, calls the typed function,
-protects its output, then attaches `r_dim(x)` and `r_dim_names(x)`. The typed
-function or macro allocates and fills the output. Do not copy class or other
-attributes. Preserve all axis names, including the scanned axis, since every
-output position still belongs to the same input position.
+The common entry point protects the converted `x` and the typed output. It
+attaches `r_dim(x)` and, when present, `r_dim_names(x)`. Both are borrowed
+from the protected input. The typed function or macro allocates and fills
+the output. Do not copy class or other attributes. Preserve all axis names,
+including the scanned axis, since every output position still belongs to
+the same input position. A named vector becomes a one-dimensional array
+with its names on that axis through `arg_as_array()`.
 
 ## Traversal and `RRAY_CUMULATIVE()`
 
@@ -103,15 +107,13 @@ contiguous line per outer block. Do not pass this scan through the reduction
 iterator, whose zero strides intentionally merge all positions of a reduced
 axis into one result.
 
-Guard zero-sized arrays before any division or first-element access. An axis
-of dimension 1 still applies type conversion. Use checked size arithmetic
-through the existing dimensions validation; do not narrow total size or
-strides to `int`. An error in any line aborts the whole call. Line state does
-not leak into the next line, including after `NA`, `NaN`, or infinity.
-
-`rray_cumulative_mean()` has extra state and can use its own specialized core
-with the same block and lane indexing. It need not force an awkward count
-parameter through the general macro.
+For zero-sized arrays, allocate a zero-sized output of the right type and
+attach the input shape and names. Do not divide by an axis dimension or
+read a first element. An axis of dimension 1 still applies type conversion.
+Use `r_ssize` for size, stride, and outer counts. Base their products on the
+validated dimensions of `x`, and check multiplication if a product can be
+formed before encountering a zero dimension. An error in any line aborts
+the whole call. Line state does not leak into the next line.
 
 ## `rray_cumulative_sum()`
 
@@ -120,29 +122,40 @@ integer; every other accepted input keeps its type, like `rray_sum()` and
 base [`cumsum()`](https://stat.ethz.ch/R-manual/R-devel/library/base/html/cumsum.html).
 Use zero as the starting value, separately for each line.
 
-Add or reuse one-element operations in `src/one-add.h`. The integer path can
-reuse `rray_add_int_one()` and its existing overflow error. The logical path
-must convert `TRUE` to 1 and `FALSE` to 0, propagate logical `NA` as integer
-`NA`, and check overflow too. A missing value before a would-be overflow makes that line missing, so no
-overflow is reported for later positions on it. A real overflowing prefix
-errors immediately. For example, `c(.Machine$integer.max, 1L, -1L)` errors.
-Base `cumsum()` instead warns and fills the suffix with `NA`.
+Reuse `rray_add_int_one()` from `src/one-add.h` for both integer and logical
+input. Logical values already use `0`, `1`, and the same missing sentinel as
+integers. This checks each returned prefix against `[-INT_MAX, INT_MAX]`.
+The current `rray_sum()` instead sums in `int64_t`, or its `int128_t`
+fallback for very long reductions, and checks only the final result. A
+cumulative sum must error as soon as a returned prefix overflows, even if
+a later value or `NA` would make the final reduction valid. Once a line is
+missing, `rray_add_int_one()` keeps it missing and does not report a later
+overflow. Base `cumsum()` warns and fills the suffix with `NA` on overflow.
 
-Double and complex sums apply the existing rray addition operation in
-prefix order. Add cumulative one-element helpers in `one-add.h` to make
-missing precedence explicit. For each double component, a source `NA`
-makes that prefix and later prefixes `NA`; a source `NaN` makes them `NaN`
-until a later `NA`, which then wins. An arithmetic `NaN` from `Inf + -Inf`
-also persists unless a later `NA` appears. Handle the real and imaginary
-parts of complex sums separately, as base R does for addition. Do not
-promise bit-for-bit equality with base R for finite doubles: base R
-accumulates in `long double` where available, while rray's addition works
-in double.
+```r
+x <- c(.Machine$integer.max, 1L, -1L)
+rray_sum(x, 1L)
+rray_cumulative_sum(x, 1L)
+```
 
-Test both scan axes, a third axis, type, reset between lines, integer upper
-and lower overflow, cancellation after overflow, missing before overflow,
-`NA` after `NaN`, opposing infinities, and finite complex values. Compare
-each line with base `cumsum()` only where the intended semantics match.
+The reducer returns `.Machine$integer.max`; the scan errors at its second
+prefix.
+
+For double input, reuse `rray_add_dbl_one()`. For complex input, reuse
+`rray_add_cpl_one()`, which adds real and imaginary parts separately. These
+are ordinary double additions in prefix order, like the current double and
+complex sum reducers. Do not add a separate missing-value rule. When `NA`
+and `NaN` meet, the result can be either one, depending on the platform and
+operand order. Test `is.na()` for those mixed cases. A single `NA` or `NaN`
+persists in its line, and opposing infinities produce `NaN`. Base `cumsum()`
+revisits missing prefixes to prefer `NA`; it also uses `long double` when
+available for real doubles. Compare with base only for cases whose semantics
+agree.
+
+Test both scan axes and a third axis, types, resets between lines, upper
+and lower integer overflow, cancellation after overflow, a missing value
+before overflow, both `NA` and `NaN` orders, opposing infinities, and
+complex values with a missing real or imaginary part.
 
 ## `rray_cumulative_prod()`
 
@@ -151,49 +164,20 @@ input yield double, matching `rray_prod()` and base `cumprod()`. Double and
 complex input keep their type. Start every line at one, with a zero
 imaginary part for complex numbers.
 
-Use the relevant operations in `src/one-multiply.h`. Integer multiplication
+Reuse `rray_prod_lgl_one()`, `rray_prod_int_one()`, `rray_prod_dbl_one()`,
+and `rray_prod_cpl_one()` from `src/one-multiply.h`. Integer multiplication
 is done in double, so it has no integer overflow error. A double product may
-become `Inf` or underflow to zero, as ordinary multiplication does. `0 * Inf`
-is `NaN`. Add a double cumulative helper to preserve the same `NA` after
-`NaN` rule described for sum. For complex multiplication, keep rray's
-existing C99 operation and its infinity recovery behavior. Its special
-values can differ from base R's complex `cumprod()`; follow the existing
-rray multiplication rule instead of claiming the double missing rule for
-complex products. State that difference in documentation.
+become `Inf` or underflow to zero; `0 * Inf` is `NaN`. As with the current
+product reducer, do not promise whether `NA` or `NaN` wins when both occur.
+For complex multiplication, keep rray's C99 operation and its infinity
+recovery behavior. Its special values can differ from base R's complex
+`cumprod()`. Base real `cumprod()` also uses `long double` when available
+and revisits missing prefixes to prefer `NA`. State these differences in
+documentation.
 
 Test type promotion, line resets, signed and zero products, `0 * Inf`,
-`NA` after `NaN`, overflow to infinity, underflow, and finite complex
-products. Compare simple lines to base `cumprod()`.
-
-## `rray_cumulative_mean()`
-
-Accepted types: logical, integer, and double. All yield double, following
-`rray_mean()`. Complex is unsupported, as it is in the reducer. dplyr's
-[`cummean()`](https://dplyr.tidyverse.org/reference/cumall.html) supplies
-the vector counterpart; base R has no cumulative mean function.
-
-The denominator at position `k` is `k + 1`, including missing positions.
-Without `na_rm`, the first `NA` makes that and all later prefixes `NA`.
-`NaN` behaves similarly, with a later `NA` taking precedence. A first
-prefix with a finite value should return that value after conversion.
-
-Use a specialized per-line running mean, retaining a double mean and an
-`r_ssize` count. For finite `x` and finite current mean, update with
-`mean + (x - mean) / count`; when `x - mean` overflows because the signs
-differ, use `mean * (1 - 1 / count) + x / count`. This keeps
-`c(1e308, 1e308)` finite and `c(1e308, -1e308)` near zero without an
-overflowing prefix sum. Handle `NA`, `NaN`, `Inf`, and `-Inf` before this
-finite update: one infinity persists, opposing infinities make `NaN`, and
-a later `NA` wins. Use this core in `cumulative-mean.c`; it does not belong
-in an existing one-element header because it needs a prefix count. Document
-that floating point results can differ slightly from both dplyr's running
-sum divided by count and `rray_mean()`'s corrected whole-line result.
-
-Test logical and integer promotion, first prefix, each axis, line reset,
-`NA` and `NaN` order, opposing infinities, large same-sign values, large
-opposite-sign values, and values whose naive sum would overflow. Compare
-ordinary finite lines with dplyr `cummean()` when dplyr is installed, but
-do not make dplyr a test dependency.
+both `NA` and `NaN` orders, overflow to infinity, underflow, and finite
+complex products. Compare simple lines to base `cumprod()`.
 
 ## `rray_cumulative_min()`
 
@@ -261,10 +245,14 @@ empty arrays, names, and rejection of nonlogical input.
 
 Use a 3D example with distinct values on all axes to check indexing.
 Check that `axis` rejects length zero, length greater than one, `NA`, zero,
-negative, fractional, and out-of-range values. Check unclassed input rules
-and unsupported input types. Verify dimensions and dimnames with absent,
-partial, and full names. An array with any zero dimension returns a zero-size
-result of the correct type and shape. No state is read when size is zero.
+negative, fractional, out-of-range, and attributed values. Check that a
+whole-valued double axis is accepted, as `arg_as_int()` allows. Check
+unclassed input rules and unsupported input types. Verify dimensions and
+dimnames with absent, partial, and full names, including names on a plain
+vector. An array with any zero dimension returns a zero-size result of the
+correct type and shape. No state is read when size is zero. For ordinary
+nonmissing lines, compare the last prefix with the matching reducer over
+that axis.
 
 Add only tests whose expected values exercise behavior, including snapshots
 for errors thrown by this package. Do not snapshot base R errors. Use
