@@ -29,8 +29,7 @@ An array with the same dimensions and names as \code{x}.
 }
 \details{
 Each position along \code{axis} summarizes every position up to and including
-it. Every other axis is held fixed, so each line along \code{axis} starts
-fresh.
+it.
 }
 \section{All / Any}{
 

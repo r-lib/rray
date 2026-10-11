@@ -9,8 +9,7 @@
 #'
 #' @details
 #' Each position along `axis` summarizes every position up to and including
-#' it. Every other axis is held fixed, so each line along `axis` starts
-#' fresh.
+#' it.
 #'
 #' @section All / Any:
 #' `x` must be logical. Missing values follow [all()] and [any()], so a later
