@@ -6,12 +6,20 @@
 - `rray_cumulative_any()` checks if any value is `TRUE` so far along
   `axis`.
 
+- `rray_cumulative_max()` computes the maximum so far along `axis`.
+
+- `rray_cumulative_min()` computes the minimum so far along `axis`.
+
 ## Usage
 
 ``` r
 rray_cumulative_all(x, axis)
 
 rray_cumulative_any(x, axis)
+
+rray_cumulative_max(x, axis)
+
+rray_cumulative_min(x, axis)
 ```
 
 ## Arguments
@@ -44,6 +52,22 @@ can settle an earlier `NA`:
     rray_cumulative_all(c(TRUE, NA, FALSE), 1L) # TRUE, NA, FALSE
     rray_cumulative_any(c(FALSE, NA, TRUE), 1L) # FALSE, NA, TRUE
 
+## Min / Max
+
+`x` must be logical, integer, or double, and the result keeps the type
+of `x`. Once a line hits `NA` or `NaN`, the rest of it stays missing. A
+later `NA` replaces an earlier `NaN`, like
+[`max()`](https://rdrr.io/r/base/Extremes.html) and
+[`min()`](https://rdrr.io/r/base/Extremes.html):
+
+    rray_cumulative_max(c(1, NaN, 2, NA, 3), 1L) # 1, NaN, NaN, NA, NA
+
+For logical `x`, a later `TRUE` or `FALSE` does not settle an earlier
+`NA`, unlike `rray_cumulative_any()` and `rray_cumulative_all()`:
+
+    rray_cumulative_max(c(NA, TRUE), 1L) # NA, NA
+    rray_cumulative_any(c(NA, TRUE), 1L) # NA, TRUE
+
 ## Examples
 
 ``` r
@@ -72,4 +96,20 @@ rray_cumulative_any(x, 2L)
 #>      [,1] [,2] [,3]
 #> [1,] TRUE TRUE TRUE
 #> [2,] TRUE TRUE TRUE
+
+x <- array(c(3L, 1L, 2L, 5L, 4L, 0L), c(2L, 3L))
+x
+#>      [,1] [,2] [,3]
+#> [1,]    3    2    4
+#> [2,]    1    5    0
+
+# Running maximum and minimum across columns
+rray_cumulative_max(x, 2L)
+#>      [,1] [,2] [,3]
+#> [1,]    3    3    4
+#> [2,]    1    5    5
+rray_cumulative_min(x, 2L)
+#>      [,1] [,2] [,3]
+#> [1,]    3    2    2
+#> [2,]    1    1    0
 ```
