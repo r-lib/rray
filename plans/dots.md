@@ -153,7 +153,7 @@ All commits land in one pull request from `feature/dots`.
 
 - [x] `rray_any()`
 
-- [ ] `rray_max()`
+- [x] `rray_max()`
 
 - [ ] `rray_min()`
 

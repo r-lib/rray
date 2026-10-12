@@ -73,8 +73,8 @@
 #' When `NA` and `NaN` are both present, `NA` wins, like [max()] and [min()]:
 #'
 #' ```r
-#' rray_max(c(NA, NaN), 1L) # NA
-#' rray_max(c(NaN, NA), 1L) # NA
+#' rray_max(c(NA, NaN), axes = 1L) # NA
+#' rray_max(c(NaN, NA), axes = 1L) # NA
 #' ```
 #'
 #' @inheritParams rlang::args_dots_empty
@@ -115,7 +115,7 @@
 #' rray_any(y, axes = 1L)
 #'
 #' # Maximum and minimum along columns
-#' rray_max(x, 2L)
+#' rray_max(x, axes = 2L)
 #' rray_min(x, 2L)
 NULL
 
@@ -156,7 +156,7 @@ rray_any <- function(x, ..., axes, na_rm = FALSE) {
 
 #' @rdname rray-reduce
 #' @export
-rray_max <- function(x, axes, ..., na_rm = FALSE) {
+rray_max <- function(x, ..., axes, na_rm = FALSE) {
   check_dots_empty0(...)
   .Call(ffi_rray_max, x, axes, na_rm, environment())
 }

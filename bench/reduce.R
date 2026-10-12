@@ -15,7 +15,7 @@ operations <- list(
   ),
   max = list(fn = rray_max, types = c("integer", "double")),
   max_na_rm = list(
-    fn = \(x, axes) rray_max(x, axes, na_rm = TRUE),
+    fn = \(x, axes) rray_max(x, axes = axes, na_rm = TRUE),
     types = c("integer", "double")
   ),
   min = list(fn = rray_min, types = c("integer", "double")),

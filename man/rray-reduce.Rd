@@ -21,7 +21,7 @@ rray_all(x, ..., axes, na_rm = FALSE)
 
 rray_any(x, ..., axes, na_rm = FALSE)
 
-rray_max(x, axes, ..., na_rm = FALSE)
+rray_max(x, ..., axes, na_rm = FALSE)
 
 rray_min(x, axes, ..., na_rm = FALSE)
 }
@@ -111,8 +111,8 @@ that type and \code{rray_min()} returns the largest:\tabular{lll}{
 
 When \code{NA} and \code{NaN} are both present, \code{NA} wins, like \code{\link[=max]{max()}} and \code{\link[=min]{min()}}:
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_max(c(NA, NaN), 1L) # NA
-rray_max(c(NaN, NA), 1L) # NA
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_max(c(NA, NaN), axes = 1L) # NA
+rray_max(c(NaN, NA), axes = 1L) # NA
 }\if{html}{\out{</div>}}
 }
 
@@ -140,6 +140,6 @@ rray_all(y, axes = 1L)
 rray_any(y, axes = 1L)
 
 # Maximum and minimum along columns
-rray_max(x, 2L)
+rray_max(x, axes = 2L)
 rray_min(x, 2L)
 }

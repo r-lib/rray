@@ -64,7 +64,7 @@ test_that("matches the oracle and `rray_max()` across special values", {
 
     max_loc <- as.vector(rray_locate_max(x, 1L))
     min_loc <- as.vector(rray_locate_min(x, 1L))
-    max <- as.vector(rray_max(x, 1L))
+    max <- as.vector(rray_max(x, axes = 1L))
     min <- as.vector(rray_min(x, 1L))
 
     expect_identical(is.na(max_loc), is.na(max))

@@ -143,7 +143,7 @@ test_that("last position matches the reducer", {
 
   expect_identical(
     rray_cumulative_max(x, 2L)[, 3L, drop = FALSE],
-    rray_max(x, 2L)
+    rray_max(x, axes = 2L)
   )
   expect_identical(
     rray_cumulative_min(x, 2L)[, 3L, drop = FALSE],
