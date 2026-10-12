@@ -5,7 +5,14 @@ output <- Sys.getenv("RRAY_BENCH_OUTPUT", "")
 
 operations <- list(
   sum = list(fn = rray_sum, types = c("integer", "double")),
-  prod = list(fn = rray_prod, types = c("integer", "double")),
+  prod = list(
+    fn = rray_prod,
+    types = c("logical", "integer", "double", "complex")
+  ),
+  prod_na_rm = list(
+    fn = \(x, axes) rray_prod(x, axes, na_rm = TRUE),
+    types = c("logical", "integer", "double", "complex")
+  ),
   max = list(fn = rray_max, types = c("integer", "double")),
   max_na_rm = list(
     fn = \(x, axes) rray_max(x, axes, na_rm = TRUE),
@@ -22,6 +29,7 @@ operations <- list(
 )
 
 shapes <- list(
+  "[1.6e7] over 1" = list(16000000L, 1L),
   "[4000, 4000] over 1" = list(c(4000L, 4000L), 1L),
   "[4000, 4000] over 2" = list(c(4000L, 4000L), 2L),
   "[4000, 4000] over 1, 2" = list(c(4000L, 4000L), 1:2),
@@ -40,7 +48,8 @@ make_array <- function(dimensions, type) {
     type,
     logical = sample(c(TRUE, FALSE), n, replace = TRUE),
     integer = sample(100L, n, replace = TRUE),
-    double = runif(n)
+    double = runif(n),
+    complex = complex(real = runif(n), imaginary = runif(n))
   )
 
   array(values, dimensions)

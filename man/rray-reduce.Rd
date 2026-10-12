@@ -71,6 +71,17 @@ rray_sum(x, 1L) # NA
 \section{Product}{
 
 Logicals and integers are cast to double.
+
+When \code{NA} and \code{NaN} are both present, you get one of them, but which one
+depends on the platform and the order of the values. Either way, \code{is.na()}
+is \code{TRUE}. Integers can hit this too, since a product that overflows to
+\code{Inf} becomes \code{NaN} when multiplied by \code{0}:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_prod(c(NA, NaN), 1L) # NA or NaN
+
+x <- c(rep(.Machine$integer.max, 40L), 0L, NA)
+rray_prod(x, 1L) # NA or NaN
+}\if{html}{\out{</div>}}
 }
 
 \section{Mean}{
