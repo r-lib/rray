@@ -17,7 +17,7 @@ rray_prod(x, ..., axes, na_rm = FALSE)
 
 rray_mean(x, ..., axes, na_rm = FALSE)
 
-rray_all(x, axes, ..., na_rm = FALSE)
+rray_all(x, ..., axes, na_rm = FALSE)
 
 rray_any(x, axes, ..., na_rm = FALSE)
 
@@ -136,7 +136,7 @@ rray_mean(x, axes = 1L)
 
 y <- array(c(TRUE, TRUE, FALSE, TRUE), c(2L, 2L))
 
-rray_all(y, 1L)
+rray_all(y, axes = 1L)
 rray_any(y, 1L)
 
 # Maximum and minimum along columns

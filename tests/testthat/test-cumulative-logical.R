@@ -96,7 +96,7 @@ test_that("last position matches the reducer", {
 
   expect_identical(
     rray_cumulative_all(x, 2L)[, 3L, drop = FALSE],
-    rray_all(x, 2L)
+    rray_all(x, axes = 2L)
   )
   expect_identical(
     rray_cumulative_any(x, 2L)[, 3L, drop = FALSE],

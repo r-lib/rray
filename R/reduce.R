@@ -111,7 +111,7 @@
 #'
 #' y <- array(c(TRUE, TRUE, FALSE, TRUE), c(2L, 2L))
 #'
-#' rray_all(y, 1L)
+#' rray_all(y, axes = 1L)
 #' rray_any(y, 1L)
 #'
 #' # Maximum and minimum along columns
@@ -142,7 +142,7 @@ rray_mean <- function(x, ..., axes, na_rm = FALSE) {
 
 #' @rdname rray-reduce
 #' @export
-rray_all <- function(x, axes, ..., na_rm = FALSE) {
+rray_all <- function(x, ..., axes, na_rm = FALSE) {
   check_dots_empty0(...)
   .Call(ffi_rray_all, x, axes, na_rm, environment())
 }
