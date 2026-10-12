@@ -9,7 +9,7 @@
 ---
 
     Code
-      rray_any(x, 3L)
+      rray_any(x, axes = 3L)
     Condition
       Error in `rray_any()`:
       ! `axes` must contain values less than or equal to the dimensionality of 2, not 3.
@@ -20,6 +20,17 @@
       rray_all(c(TRUE, FALSE), 1)
     Condition
       Error in `rray_all()`:
+      ! `...` must be empty.
+      x Problematic argument:
+      * ..1 = 1
+      i Did you forget to name an argument?
+
+---
+
+    Code
+      rray_any(c(TRUE, FALSE), 1)
+    Condition
+      Error in `rray_any()`:
       ! `...` must be empty.
       x Problematic argument:
       * ..1 = 1
@@ -36,7 +47,7 @@
 ---
 
     Code
-      rray_any(x, 1L, na_rm = 1)
+      rray_any(x, axes = 1L, na_rm = 1)
     Condition
       Error in `rray_any()`:
       ! `na_rm` must be `TRUE` or `FALSE`.
@@ -92,7 +103,7 @@
 ---
 
     Code
-      rray_any(array(1L, c(2L, 2L)), 1L)
+      rray_any(array(1L, c(2L, 2L)), axes = 1L)
     Condition
       Error in `rray_any()`:
       ! `x` must be a logical array, not an integer matrix.
@@ -108,7 +119,7 @@
 ---
 
     Code
-      rray_any(quote(x), 1L)
+      rray_any(quote(x), axes = 1L)
     Condition
       Error in `rray_any()`:
       ! `x` must be an array, not a symbol.
@@ -124,7 +135,7 @@
 ---
 
     Code
-      rray_any(x, 1L)
+      rray_any(x, axes = 1L)
     Condition
       Error in `rray_any()`:
       ! `x` must be a bare array, not a <foo> object.
