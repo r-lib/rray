@@ -20,7 +20,14 @@ operations <- list(
   ),
   sum = list(
     fn = rray_cumulative_sum,
-    types = c("logical", "integer", "double", "complex")
+    types = c(
+      "logical",
+      "logical_no_na",
+      "integer",
+      "integer_mixed",
+      "double",
+      "complex"
+    )
   )
 )
 
@@ -41,7 +48,9 @@ make_array <- function(dimensions, type) {
   values <- switch(
     type,
     logical = sample(c(TRUE, FALSE, NA), n, replace = TRUE),
+    logical_no_na = sample(c(TRUE, FALSE), n, replace = TRUE),
     integer = sample(100L, n, replace = TRUE),
+    integer_mixed = sample(-50:50, n, replace = TRUE),
     double = runif(n),
     complex = complex(real = runif(n), imaginary = runif(n))
   )

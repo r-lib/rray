@@ -1,10 +1,12 @@
 #include "arithmetic-subtract.h"
 
 #include <limits.h>
+#include <stdint.h>
 
 #include "arithmetic.h"
 #include "binary.h"
 #include "cast.h"
+#include "missing.h"
 #include "type.h"
 #include "typeof2.h"
 #include "utils.h"
@@ -500,15 +502,17 @@ static inline int rray_subtract_int_one(
   int y,
   struct r_lazy error_call
 ) {
-  if (x == r_globals.na_int || y == r_globals.na_int) {
+  if (rray_int_is_missing(x) || rray_int_is_missing(y)) {
     return r_globals.na_int;
   }
 
-  if ((y < 0 && x > INT_MAX + y) || (y > 0 && x < -INT_MAX + y)) {
+  const int64_t out = (int64_t) x - y;
+
+  if (out > INT_MAX || out < -INT_MAX) {
     stop_int_overflow(error_call);
   }
 
-  return x - y;
+  return (int) out;
 }
 
 static inline double rray_subtract_dbl_one(double x, double y) {

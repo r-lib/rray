@@ -4,7 +4,15 @@ iterations <- as.integer(Sys.getenv("RRAY_BENCH_ITERATIONS", "20"))
 output <- Sys.getenv("RRAY_BENCH_OUTPUT", "")
 
 operations <- list(
-  multiply = list(fn = rray_multiply, types = c("integer", "double")),
+  add = list(fn = rray_add, types = c("integer", "integer_mixed", "double")),
+  subtract = list(
+    fn = rray_subtract,
+    types = c("integer", "integer_mixed", "double")
+  ),
+  multiply = list(
+    fn = rray_multiply,
+    types = c("integer", "integer_mixed", "double")
+  ),
   greater_than = list(fn = rray_greater_than, types = c("integer", "double")),
   equal = list(fn = rray_equal, types = c("integer", "double")),
   pmax = list(fn = rray_pmax, types = c("integer", "double")),
@@ -32,6 +40,7 @@ make_array <- function(dimensions, type) {
     type,
     logical = sample(c(TRUE, FALSE), n, replace = TRUE),
     integer = sample(100L, n, replace = TRUE),
+    integer_mixed = sample(-50:50, n, replace = TRUE),
     double = runif(n)
   )
 
