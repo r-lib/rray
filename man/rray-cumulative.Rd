@@ -7,6 +7,7 @@
 \alias{rray_cumulative_max}
 \alias{rray_cumulative_min}
 \alias{rray_cumulative_prod}
+\alias{rray_cumulative_sum}
 \title{Accumulate along an axis}
 \usage{
 rray_cumulative_all(x, axis)
@@ -18,6 +19,8 @@ rray_cumulative_max(x, axis)
 rray_cumulative_min(x, axis)
 
 rray_cumulative_prod(x, axis)
+
+rray_cumulative_sum(x, axis)
 }
 \arguments{
 \item{x}{An array.}
@@ -37,6 +40,7 @@ An array with the same dimensions and names as \code{x}.
 \item \code{rray_cumulative_max()} computes the maximum so far along \code{axis}.
 \item \code{rray_cumulative_min()} computes the minimum so far along \code{axis}.
 \item \code{rray_cumulative_prod()} computes the product so far along \code{axis}.
+\item \code{rray_cumulative_sum()} computes the sum so far along \code{axis}.
 }
 }
 \details{
@@ -83,6 +87,30 @@ is \code{TRUE} from that point on:
 }\if{html}{\out{</div>}}
 }
 
+\section{Sum}{
+
+\code{x} must be logical, integer, double, or complex. Logicals are cast to
+integer.
+
+An integer sum errors as soon as a running total overflows, even if a
+later value would bring it back in range. This differs from \code{\link[=rray_sum]{rray_sum()}},
+which only checks the final total:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{x <- c(.Machine$integer.max, 1L, -1L)
+rray_sum(x, 1L) # .Machine$integer.max
+rray_cumulative_sum(x, 1L) # Error
+}\if{html}{\out{</div>}}
+
+Once a line is \code{NA}, it stays \code{NA}, and a later overflow does not error.
+
+When \code{NA} and \code{NaN} are both present, you get one of them, but which one
+depends on the platform and the order of the values. Either way, \code{is.na()}
+is \code{TRUE} from that point on:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_cumulative_sum(c(2, NA, NaN), 1L) # 2, NA, NA or NaN
+}\if{html}{\out{</div>}}
+}
+
 \examples{
 x <- array(c(TRUE, TRUE, FALSE, TRUE, NA, TRUE), c(2L, 3L))
 x
@@ -104,4 +132,7 @@ rray_cumulative_min(x, 2L)
 
 # Running product down rows
 rray_cumulative_prod(x, 1L)
+
+# Running sum across columns
+rray_cumulative_sum(x, 2L)
 }

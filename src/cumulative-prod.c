@@ -68,7 +68,8 @@ static r_obj* rray_cumulative_prod_lgl(
     double,
     r_dbl_begin,
     1.0,
-    rray_prod_lgl_one
+    rray_prod_lgl_one,
+    RRAY_CUMULATIVE_NO_ARGS
   );
 }
 
@@ -87,7 +88,8 @@ static r_obj* rray_cumulative_prod_int(
     double,
     r_dbl_begin,
     1.0,
-    rray_prod_int_one
+    rray_prod_int_one,
+    RRAY_CUMULATIVE_NO_ARGS
   );
 }
 
@@ -106,7 +108,8 @@ static r_obj* rray_cumulative_prod_dbl(
     double,
     r_dbl_begin,
     1.0,
-    rray_prod_dbl_one
+    rray_prod_dbl_one,
+    RRAY_CUMULATIVE_NO_ARGS
   );
 }
 
@@ -125,6 +128,7 @@ static r_obj* rray_cumulative_prod_cpl(
     r_complex,
     r_cpl_begin,
     ((r_complex){.r = 1, .i = 0}),
-    rray_prod_cpl_one
+    rray_prod_cpl_one,
+    RRAY_CUMULATIVE_NO_ARGS
   );
 }

@@ -78,7 +78,8 @@ static r_obj* rray_cumulative_all_lgl(
     int,
     r_lgl_begin,
     1,
-    rray_all_lgl_one
+    rray_all_lgl_one,
+    RRAY_CUMULATIVE_NO_ARGS
   );
 }
 
@@ -97,6 +98,7 @@ static r_obj* rray_cumulative_any_lgl(
     int,
     r_lgl_begin,
     0,
-    rray_any_lgl_one
+    rray_any_lgl_one,
+    RRAY_CUMULATIVE_NO_ARGS
   );
 }

@@ -17,6 +17,10 @@ operations <- list(
   prod = list(
     fn = rray_cumulative_prod,
     types = c("logical", "integer", "double", "complex")
+  ),
+  sum = list(
+    fn = rray_cumulative_sum,
+    types = c("logical", "integer", "double", "complex")
   )
 )
 
