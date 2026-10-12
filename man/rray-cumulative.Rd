@@ -12,7 +12,7 @@
 \usage{
 rray_cumulative_all(x, ..., axis)
 
-rray_cumulative_any(x, axis)
+rray_cumulative_any(x, ..., axis)
 
 rray_cumulative_max(x, axis)
 
@@ -55,7 +55,7 @@ it.
 \code{FALSE} or \code{TRUE} can settle an earlier \code{NA}:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_cumulative_all(c(TRUE, NA, FALSE), axis = 1L) # TRUE, NA, FALSE
-rray_cumulative_any(c(FALSE, NA, TRUE), 1L) # FALSE, NA, TRUE
+rray_cumulative_any(c(FALSE, NA, TRUE), axis = 1L) # FALSE, NA, TRUE
 }\if{html}{\out{</div>}}
 }
 
@@ -72,7 +72,7 @@ For logical \code{x}, a later \code{TRUE} or \code{FALSE} does not settle an ear
 unlike \code{rray_cumulative_any()} and \code{rray_cumulative_all()}:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_cumulative_max(c(NA, TRUE), 1L) # NA, NA
-rray_cumulative_any(c(NA, TRUE), 1L) # NA, TRUE
+rray_cumulative_any(c(NA, TRUE), axis = 1L) # NA, TRUE
 }\if{html}{\out{</div>}}
 }
 
@@ -119,11 +119,11 @@ x
 
 # Down rows
 rray_cumulative_all(x, axis = 1L)
-rray_cumulative_any(x, 1L)
+rray_cumulative_any(x, axis = 1L)
 
 # Across columns
 rray_cumulative_all(x, axis = 2L)
-rray_cumulative_any(x, 2L)
+rray_cumulative_any(x, axis = 2L)
 
 x <- array(c(3L, 1L, 2L, 5L, 4L, 0L), c(2L, 3L))
 x

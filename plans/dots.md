@@ -167,7 +167,7 @@ All commits land in one pull request from `feature/dots`.
 
 - [x] `rray_cumulative_all()`
 
-- [ ] `rray_cumulative_any()`
+- [x] `rray_cumulative_any()`
 
 - [ ] `rray_cumulative_max()`
 

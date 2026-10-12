@@ -65,7 +65,7 @@
 ---
 
     Code
-      rray_cumulative_any(x, "a")
+      rray_cumulative_any(x, axis = "a")
     Condition
       Error in `rray_cumulative_any()`:
       ! `axis` must be an integer or double vector, not the string "a".
@@ -76,6 +76,17 @@
       rray_cumulative_all(c(TRUE, FALSE), 1)
     Condition
       Error in `rray_cumulative_all()`:
+      ! `...` must be empty.
+      x Problematic argument:
+      * ..1 = 1
+      i Did you forget to name an argument?
+
+---
+
+    Code
+      rray_cumulative_any(c(TRUE, FALSE), 1)
+    Condition
+      Error in `rray_cumulative_any()`:
       ! `...` must be empty.
       x Problematic argument:
       * ..1 = 1
@@ -92,7 +103,7 @@
 ---
 
     Code
-      rray_cumulative_any(array(1, c(2L, 2L)), 1L)
+      rray_cumulative_any(array(1, c(2L, 2L)), axis = 1L)
     Condition
       Error in `rray_cumulative_any()`:
       ! `x` must be a logical array, not a double matrix.
@@ -108,7 +119,7 @@
 ---
 
     Code
-      rray_cumulative_any(x, 1L)
+      rray_cumulative_any(x, axis = 1L)
     Condition
       Error in `rray_cumulative_any()`:
       ! `x` must be a bare array, not a <foo> object.

@@ -25,7 +25,7 @@
 #'
 #' ```r
 #' rray_cumulative_all(c(TRUE, NA, FALSE), axis = 1L) # TRUE, NA, FALSE
-#' rray_cumulative_any(c(FALSE, NA, TRUE), 1L) # FALSE, NA, TRUE
+#' rray_cumulative_any(c(FALSE, NA, TRUE), axis = 1L) # FALSE, NA, TRUE
 #' ```
 #'
 #' @section Min / Max:
@@ -42,7 +42,7 @@
 #'
 #' ```r
 #' rray_cumulative_max(c(NA, TRUE), 1L) # NA, NA
-#' rray_cumulative_any(c(NA, TRUE), 1L) # NA, TRUE
+#' rray_cumulative_any(c(NA, TRUE), axis = 1L) # NA, TRUE
 #' ```
 #'
 #' @section Product:
@@ -98,11 +98,11 @@
 #'
 #' # Down rows
 #' rray_cumulative_all(x, axis = 1L)
-#' rray_cumulative_any(x, 1L)
+#' rray_cumulative_any(x, axis = 1L)
 #'
 #' # Across columns
 #' rray_cumulative_all(x, axis = 2L)
-#' rray_cumulative_any(x, 2L)
+#' rray_cumulative_any(x, axis = 2L)
 #'
 #' x <- array(c(3L, 1L, 2L, 5L, 4L, 0L), c(2L, 3L))
 #' x
@@ -127,7 +127,8 @@ rray_cumulative_all <- function(x, ..., axis) {
 
 #' @rdname rray-cumulative
 #' @export
-rray_cumulative_any <- function(x, axis) {
+rray_cumulative_any <- function(x, ..., axis) {
+  check_dots_empty0(...)
   .Call(ffi_rray_cumulative_any, x, axis, environment())
 }
 
