@@ -324,12 +324,12 @@ static r_obj* rray_equality_lgl_int(
   RRAY_EQUALITY(
     int,
     r_lgl_cbegin,
-    rray_cast_lgl_to_lgl_one,
+    rray_cast_lgl_to_int_one,
     int,
     r_int_cbegin,
     rray_cast_int_to_int_one,
-    rray_equal_lgl_int_one,
-    rray_not_equal_lgl_int_one
+    rray_equal_int_one,
+    rray_not_equal_int_one
   );
 }
 
@@ -348,9 +348,9 @@ static r_obj* rray_equality_int_lgl(
     rray_cast_int_to_int_one,
     int,
     r_lgl_cbegin,
-    rray_cast_lgl_to_lgl_one,
-    rray_equal_int_lgl_one,
-    rray_not_equal_int_lgl_one
+    rray_cast_lgl_to_int_one,
+    rray_equal_int_one,
+    rray_not_equal_int_one
   );
 }
 
@@ -639,20 +639,6 @@ static inline int rray_equal_lgl_one(int x, int y) {
 }
 static inline int rray_not_equal_lgl_one(int x, int y) {
   RRAY_EQUALITY_ONE(rray_lgl_is_missing, rray_lgl_is_missing, !=);
-}
-
-static inline int rray_equal_lgl_int_one(int x, int y) {
-  RRAY_EQUALITY_ONE(rray_lgl_is_missing, rray_int_is_missing, ==);
-}
-static inline int rray_not_equal_lgl_int_one(int x, int y) {
-  RRAY_EQUALITY_ONE(rray_lgl_is_missing, rray_int_is_missing, !=);
-}
-
-static inline int rray_equal_int_lgl_one(int x, int y) {
-  RRAY_EQUALITY_ONE(rray_int_is_missing, rray_lgl_is_missing, ==);
-}
-static inline int rray_not_equal_int_lgl_one(int x, int y) {
-  RRAY_EQUALITY_ONE(rray_int_is_missing, rray_lgl_is_missing, !=);
 }
 
 static inline int rray_equal_int_one(int x, int y) {
