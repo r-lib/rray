@@ -4,10 +4,12 @@
 \alias{rray_unstack}
 \title{Unstack an array}
 \usage{
-rray_unstack(x, axis)
+rray_unstack(x, ..., axis)
 }
 \arguments{
 \item{x}{An array.}
+
+\item{...}{These dots are for future extensions and must be empty.}
 
 \item{axis}{A single integer representing the axis to unstack along.}
 }
@@ -33,17 +35,17 @@ of at least 2 to begin with.
 x <- array(1:6, c(2, 3))
 
 # One array per row
-rray_unstack(x, 1)
+rray_unstack(x, axis = 1)
 
 # One array per column
-rray_unstack(x, 2)
+rray_unstack(x, axis = 2)
 
 # Names along the axis become list names
 y <- array(1:4, c(2, 2), dimnames = list(c("a", "b"), c("x", "y")))
-rray_unstack(y, 2)
+rray_unstack(y, axis = 2)
 
 # Unstacking and stacking along the same axis are inverses
-rray_stack(!!!rray_unstack(x, 2), .axis = 2)
+rray_stack(!!!rray_unstack(x, axis = 2), .axis = 2)
 }
 \seealso{
 \code{\link[=rray_stack]{rray_stack()}}
