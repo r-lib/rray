@@ -116,15 +116,15 @@ static r_obj* rray_add_lgl_lgl(
   RRAY_BINARY(
     int,
     r_lgl_cbegin,
-    rray_cast_lgl_to_int_one,
+    rray_cast_lgl_to_lgl_one,
     int,
     r_lgl_cbegin,
-    rray_cast_lgl_to_int_one,
+    rray_cast_lgl_to_lgl_one,
     R_TYPE_integer,
     int,
     r_int_begin,
-    rray_add_int_one,
-    RRAY_BINARY_ARGS(error_call)
+    rray_add_lgl_one,
+    RRAY_BINARY_NO_ARGS
   );
 }
 
