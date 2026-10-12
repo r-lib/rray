@@ -91,7 +91,7 @@ for (i in seq_len(nrow(cases))) {
       filter_gc = FALSE
     ),
     sum = bench::mark(
-      rray_sum_impl(x, axes, na_rm = case$na_rm),
+      rray_sum_impl(x, axes = axes, na_rm = case$na_rm),
       iterations = iterations,
       check = FALSE,
       memory = FALSE,

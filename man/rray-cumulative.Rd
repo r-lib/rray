@@ -97,7 +97,7 @@ later value would bring it back in range. This differs from \code{\link[=rray_su
 which only checks the final total:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{x <- c(.Machine$integer.max, 1L, -1L)
-rray_sum(x, 1L) # .Machine$integer.max
+rray_sum(x, axes = 1L) # .Machine$integer.max
 rray_cumulative_sum(x, 1L) # Error
 }\if{html}{\out{</div>}}
 

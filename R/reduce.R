@@ -26,10 +26,10 @@
 #'
 #' ```r
 #' x <- c(.Machine$integer.max, 1L, -1L)
-#' rray_sum(x, 1L) # .Machine$integer.max
+#' rray_sum(x, axes = 1L) # .Machine$integer.max
 #'
 #' x <- c(.Machine$integer.max, 1L, NA)
-#' rray_sum(x, 1L) # NA
+#' rray_sum(x, axes = 1L) # NA
 #' ```
 #'
 #' @section Product:
@@ -95,13 +95,13 @@
 #' x <- array(1:10, c(5L, 2L))
 #'
 #' # Sum along rows
-#' rray_sum(x, 1L)
+#' rray_sum(x, axes = 1L)
 #'
 #' # Sum along columns
-#' rray_sum(x, 2L)
+#' rray_sum(x, axes = 2L)
 #'
 #' # Sum along both axes
-#' rray_sum(x, c(1L, 2L))
+#' rray_sum(x, axes = c(1L, 2L))
 #'
 #' # Product along rows
 #' rray_prod(x, 1L)
@@ -121,7 +121,7 @@ NULL
 
 #' @rdname rray-reduce
 #' @export
-rray_sum <- function(x, axes, ..., na_rm = FALSE) {
+rray_sum <- function(x, ..., axes, na_rm = FALSE) {
   check_dots_empty0(...)
   .Call(ffi_rray_sum, x, axes, na_rm, environment())
 }

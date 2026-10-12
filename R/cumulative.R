@@ -67,7 +67,7 @@
 #'
 #' ```r
 #' x <- c(.Machine$integer.max, 1L, -1L)
-#' rray_sum(x, 1L) # .Machine$integer.max
+#' rray_sum(x, axes = 1L) # .Machine$integer.max
 #' rray_cumulative_sum(x, 1L) # Error
 #' ```
 #'

@@ -11,7 +11,7 @@
 \alias{rray_min}
 \title{Reduce an array along axes}
 \usage{
-rray_sum(x, axes, ..., na_rm = FALSE)
+rray_sum(x, ..., axes, na_rm = FALSE)
 
 rray_prod(x, axes, ..., na_rm = FALSE)
 
@@ -28,10 +28,10 @@ rray_min(x, axes, ..., na_rm = FALSE)
 \arguments{
 \item{x}{An array.}
 
+\item{...}{These dots are for future extensions and must be empty.}
+
 \item{axes}{An integer vector of axes to reduce over. \code{1} reduces
 rows, \code{2} reduces columns, and so on.}
-
-\item{...}{These dots are for future extensions and must be empty.}
 
 \item{na_rm}{If \code{TRUE}, missing values are removed before reducing.}
 }
@@ -61,10 +61,10 @@ integer, an error is thrown. Only the final sum is checked, and \code{NA} wins
 over an overflow:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{x <- c(.Machine$integer.max, 1L, -1L)
-rray_sum(x, 1L) # .Machine$integer.max
+rray_sum(x, axes = 1L) # .Machine$integer.max
 
 x <- c(.Machine$integer.max, 1L, NA)
-rray_sum(x, 1L) # NA
+rray_sum(x, axes = 1L) # NA
 }\if{html}{\out{</div>}}
 }
 
@@ -120,13 +120,13 @@ rray_max(c(NaN, NA), 1L) # NA
 x <- array(1:10, c(5L, 2L))
 
 # Sum along rows
-rray_sum(x, 1L)
+rray_sum(x, axes = 1L)
 
 # Sum along columns
-rray_sum(x, 2L)
+rray_sum(x, axes = 2L)
 
 # Sum along both axes
-rray_sum(x, c(1L, 2L))
+rray_sum(x, axes = c(1L, 2L))
 
 # Product along rows
 rray_prod(x, 1L)

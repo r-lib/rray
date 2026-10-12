@@ -68,7 +68,7 @@ for (operation in names(operations)) {
       axes <- shapes[[shape]][[2L]]
 
       measurement <- bench::mark(
-        fn(x, axes),
+        fn(x, axes = axes),
         iterations = iterations,
         check = FALSE,
         memory = FALSE,

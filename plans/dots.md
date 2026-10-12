@@ -143,7 +143,7 @@ All commits land in one pull request from `feature/dots`.
 
 ### Reduce
 
-- [ ] `rray_sum()`
+- [x] `rray_sum()`
 
 - [ ] `rray_prod()`
 
