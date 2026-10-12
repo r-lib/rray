@@ -15,7 +15,7 @@ rray_sum(x, ..., axes, na_rm = FALSE)
 
 rray_prod(x, ..., axes, na_rm = FALSE)
 
-rray_mean(x, axes, ..., na_rm = FALSE)
+rray_mean(x, ..., axes, na_rm = FALSE)
 
 rray_all(x, axes, ..., na_rm = FALSE)
 
@@ -92,8 +92,8 @@ When \code{NA} and \code{NaN} are both present, you get one of them, but which o
 depends on the platform and the order of the values, like \code{\link[=mean]{mean()}}. Either
 way, \code{is.na()} is \code{TRUE}:
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_mean(c(NA, NaN), 1L) # NA or NaN
-rray_mean(c(NaN, NA), 1L) # NA or NaN
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_mean(c(NA, NaN), axes = 1L) # NA or NaN
+rray_mean(c(NaN, NA), axes = 1L) # NA or NaN
 }\if{html}{\out{</div>}}
 }
 
@@ -132,7 +132,7 @@ rray_sum(x, axes = c(1L, 2L))
 rray_prod(x, axes = 1L)
 
 # Mean along rows
-rray_mean(x, 1L)
+rray_mean(x, axes = 1L)
 
 y <- array(c(TRUE, TRUE, FALSE, TRUE), c(2L, 2L))
 

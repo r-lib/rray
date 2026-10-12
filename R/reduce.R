@@ -55,8 +55,8 @@
 #' way, `is.na()` is `TRUE`:
 #'
 #' ```r
-#' rray_mean(c(NA, NaN), 1L) # NA or NaN
-#' rray_mean(c(NaN, NA), 1L) # NA or NaN
+#' rray_mean(c(NA, NaN), axes = 1L) # NA or NaN
+#' rray_mean(c(NaN, NA), axes = 1L) # NA or NaN
 #' ```
 #'
 #' @section Min / Max:
@@ -107,7 +107,7 @@
 #' rray_prod(x, axes = 1L)
 #'
 #' # Mean along rows
-#' rray_mean(x, 1L)
+#' rray_mean(x, axes = 1L)
 #'
 #' y <- array(c(TRUE, TRUE, FALSE, TRUE), c(2L, 2L))
 #'
@@ -135,7 +135,7 @@ rray_prod <- function(x, ..., axes, na_rm = FALSE) {
 
 #' @rdname rray-reduce
 #' @export
-rray_mean <- function(x, axes, ..., na_rm = FALSE) {
+rray_mean <- function(x, ..., axes, na_rm = FALSE) {
   check_dots_empty0(...)
   .Call(ffi_rray_mean, x, axes, na_rm, environment())
 }

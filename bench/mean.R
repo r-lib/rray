@@ -84,7 +84,7 @@ for (i in seq_len(nrow(cases))) {
   measurement <- switch(
     case$implementation,
     mean = bench::mark(
-      rray_mean_impl(x, axes, na_rm = case$na_rm),
+      rray_mean_impl(x, axes = axes, na_rm = case$na_rm),
       iterations = iterations,
       check = FALSE,
       memory = FALSE,

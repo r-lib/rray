@@ -23,7 +23,7 @@ operations <- list(
   any = list(fn = rray_any, types = "logical"),
   mean = list(fn = rray_mean, types = c("logical", "integer", "double")),
   mean_na_rm = list(
-    fn = \(x, axes) rray_mean(x, axes, na_rm = TRUE),
+    fn = \(x, axes) rray_mean(x, axes = axes, na_rm = TRUE),
     types = c("logical", "integer", "double")
   )
 )

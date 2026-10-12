@@ -1,57 +1,57 @@
 test_that("can take the mean along axis 1", {
   x <- array(1:10, c(5L, 2L))
 
-  out <- rray_mean(x, 1L)
+  out <- rray_mean(x, axes = 1L)
   expect_identical(as.vector(out), c(3, 8))
 
-  out <- rray_mean_forced_fallback(x, 1L)
+  out <- rray_mean_forced_fallback(x, axes = 1L)
   expect_identical(as.vector(out), c(3, 8))
 })
 
 test_that("can take the mean along axis 2", {
   x <- array(1:10, c(5L, 2L))
 
-  out <- rray_mean(x, 2L)
+  out <- rray_mean(x, axes = 2L)
   expect_identical(as.vector(out), c(3.5, 4.5, 5.5, 6.5, 7.5))
 
-  out <- rray_mean_forced_fallback(x, 2L)
+  out <- rray_mean_forced_fallback(x, axes = 2L)
   expect_identical(as.vector(out), c(3.5, 4.5, 5.5, 6.5, 7.5))
 })
 
 test_that("reduced axes become size 1", {
   x <- array(1:10, c(5L, 2L))
-  expect_identical(rray_dimensions(rray_mean(x, 1L)), c(1L, 2L))
-  expect_identical(rray_dimensions(rray_mean(x, 2L)), c(5L, 1L))
+  expect_identical(rray_dimensions(rray_mean(x, axes = 1L)), c(1L, 2L))
+  expect_identical(rray_dimensions(rray_mean(x, axes = 2L)), c(5L, 1L))
 })
 
 test_that("can reduce over all axes", {
   x <- array(1:10, c(5L, 2L))
-  out <- rray_mean(x, c(1L, 2L))
+  out <- rray_mean(x, axes = c(1L, 2L))
   expect_identical(as.vector(out), 5.5)
   expect_identical(rray_dimensions(out), c(1L, 1L))
 })
 
 test_that("reducing over no axes returns the input as a double", {
   x <- array(c(1.5, 2.5, 3.5, 4.5), c(2L, 2L))
-  expect_identical(rray_mean(x, integer()), x)
+  expect_identical(rray_mean(x, axes = integer()), x)
 
   x <- array(1:4, c(2L, 2L))
   expect_identical(
-    rray_mean(x, integer()),
+    rray_mean(x, axes = integer()),
     array(as.double(1:4), c(2L, 2L))
   )
 })
 
 test_that("can reduce over multiple axes of a 3D array", {
   x <- array(1, c(2L, 3L, 4L))
-  out <- rray_mean(x, c(1L, 2L))
+  out <- rray_mean(x, axes = c(1L, 2L))
   expect_identical(as.vector(out), rep(1, 4L))
   expect_identical(rray_dimensions(out), c(1L, 1L, 4L))
 })
 
 test_that("can reduce axis 3", {
   x <- array(1:24, c(2L, 3L, 4L))
-  out <- rray_mean(x, 3L)
+  out <- rray_mean(x, axes = 3L)
   expect_identical(rray_dimensions(out), c(2L, 3L, 1L))
   expect_identical(as.vector(out), c(10, 11, 12, 13, 14, 15))
 })
@@ -59,25 +59,28 @@ test_that("can reduce axis 3", {
 test_that("works over every combination of axes", {
   x <- array(c(1e16, 1, -3, 7e15, 1, 1), c(1L, 3L, 2L, 4L))
 
-  expect_identical(rray_mean(x, 1L), x)
+  expect_identical(rray_mean(x, axes = 1L), x)
   expect_identical(
-    rray_mean(x, 2L),
+    rray_mean(x, axes = 2L),
     array(c((1e16 - 2) / 3, (7e15 + 2) / 3), c(1L, 1L, 2L, 4L))
   )
   expect_identical(
-    rray_mean(x, 3L),
+    rray_mean(x, axes = 3L),
     array(c(8.5e15, 1, -1), c(1L, 3L, 1L, 4L))
   )
   expect_identical(
-    rray_mean(x, 4L),
+    rray_mean(x, axes = 4L),
     array(c(1e16, 1, -3, 7e15, 1, 1), c(1L, 3L, 2L, 1L))
   )
-  expect_identical(rray_mean(x, c(1L, 3L)), rray_mean(x, 3L))
+  expect_identical(rray_mean(x, axes = c(1L, 3L)), rray_mean(x, axes = 3L))
   expect_identical(
-    rray_mean(x, c(2L, 4L)),
+    rray_mean(x, axes = c(2L, 4L)),
     array(c((1e16 - 2) / 3, (7e15 + 2) / 3), c(1L, 1L, 2L, 1L))
   )
-  expect_identical(rray_mean(x, 1:4), array(1.7e16 / 6, c(1L, 1L, 1L, 1L)))
+  expect_identical(
+    rray_mean(x, axes = 1:4),
+    array(1.7e16 / 6, c(1L, 1L, 1L, 1L))
+  )
 })
 
 test_that("matches `mean()` over every combination of axes", {
@@ -102,74 +105,80 @@ test_that("matches `mean()` over every combination of axes", {
   axes <- list(1L, 2L, 3L, 4L, c(1L, 3L), c(2L, 4L), 1:4)
 
   for (axis in axes) {
-    expect_identical(rray_mean(x, axis), expected(axis))
+    expect_identical(rray_mean(x, axes = axis), expected(axis))
   }
 })
 
 test_that("dimension names are kept for non-reduced axes", {
   x <- array(1:10, c(5L, 2L), dimnames = list(letters[1:5], c("c1", "c2")))
-  expect_identical(dimnames(rray_mean(x, 1L)), list(NULL, c("c1", "c2")))
-  expect_identical(dimnames(rray_mean(x, 2L)), list(letters[1:5], NULL))
+  expect_identical(dimnames(rray_mean(x, axes = 1L)), list(NULL, c("c1", "c2")))
+  expect_identical(dimnames(rray_mean(x, axes = 2L)), list(letters[1:5], NULL))
 })
 
 test_that("dimension names are dropped when all named axes are reduced", {
   x <- array(1:10, c(5L, 2L), dimnames = list(letters[1:5], NULL))
-  expect_null(dimnames(rray_mean(x, 1L)))
+  expect_null(dimnames(rray_mean(x, axes = 1L)))
 })
 
 test_that("output type is always double", {
-  expect_identical(storage.mode(rray_mean(array(TRUE), 1L)), "double")
-  expect_identical(storage.mode(rray_mean(array(1L), 1L)), "double")
-  expect_identical(storage.mode(rray_mean(array(1), 1L)), "double")
+  expect_identical(storage.mode(rray_mean(array(TRUE), axes = 1L)), "double")
+  expect_identical(storage.mode(rray_mean(array(1L), axes = 1L)), "double")
+  expect_identical(storage.mode(rray_mean(array(1), axes = 1L)), "double")
 })
 
 test_that("logical TRUE is averaged as 1", {
   x <- array(c(TRUE, FALSE, TRUE, TRUE), c(2L, 2L))
-  out <- rray_mean(x, 1L)
+  out <- rray_mean(x, axes = 1L)
   expect_identical(as.vector(out), c(0.5, 1))
 })
 
 test_that("a second pass corrects the rounding error of the first sum", {
   x <- c(1e16, 1, 1, 1)
-  expect_identical(as.vector(rray_mean(x, 1L)), 2500000000000001)
+  expect_identical(as.vector(rray_mean(x, axes = 1L)), 2500000000000001)
 })
 
 test_that("a second pass matches `mean()`", {
   skip_if_long_double()
 
   x <- c(1e16, 1, 1, 1)
-  expect_identical(as.vector(rray_mean(x, 1L)), mean(x))
+  expect_identical(as.vector(rray_mean(x, axes = 1L)), mean(x))
 })
 
 test_that("integer means are exact when the total is above 2^53", {
   x <- c(rep(.Machine$integer.max, 2^22 + 1), 1L, 1L)
   expected <- 2147482623 + 3076 / 4194307
 
-  expect_identical(as.vector(rray_mean(x, 1L)), expected)
-  expect_identical(as.vector(rray_mean(rbind(x, x), 2L)), c(expected, expected))
-
-  expect_identical(as.vector(rray_mean_forced_fallback(x, 1L)), expected)
+  expect_identical(as.vector(rray_mean(x, axes = 1L)), expected)
   expect_identical(
-    as.vector(rray_mean_forced_fallback(rbind(x, x), 2L)),
+    as.vector(rray_mean(rbind(x, x), axes = 2L)),
     c(expected, expected)
   )
 
-  expect_identical(as.vector(rray_mean(-x, 1L)), -expected)
-  expect_identical(as.vector(rray_mean_forced_fallback(-x, 1L)), -expected)
+  expect_identical(as.vector(rray_mean_forced_fallback(x, axes = 1L)), expected)
+  expect_identical(
+    as.vector(rray_mean_forced_fallback(rbind(x, x), axes = 2L)),
+    c(expected, expected)
+  )
+
+  expect_identical(as.vector(rray_mean(-x, axes = 1L)), -expected)
+  expect_identical(
+    as.vector(rray_mean_forced_fallback(-x, axes = 1L)),
+    -expected
+  )
 
   x <- c(x, NA)
-  expect_identical(as.vector(rray_mean(x, 1L, na_rm = TRUE)), expected)
+  expect_identical(as.vector(rray_mean(x, axes = 1L, na_rm = TRUE)), expected)
   expect_identical(
-    as.vector(rray_mean(rbind(x, x), 2L, na_rm = TRUE)),
+    as.vector(rray_mean(rbind(x, x), axes = 2L, na_rm = TRUE)),
     c(expected, expected)
   )
 
   expect_identical(
-    as.vector(rray_mean_forced_fallback(x, 1L, na_rm = TRUE)),
+    as.vector(rray_mean_forced_fallback(x, axes = 1L, na_rm = TRUE)),
     expected
   )
   expect_identical(
-    as.vector(rray_mean_forced_fallback(rbind(x, x), 2L, na_rm = TRUE)),
+    as.vector(rray_mean_forced_fallback(rbind(x, x), axes = 2L, na_rm = TRUE)),
     c(expected, expected)
   )
 })
@@ -180,8 +189,8 @@ test_that("integer means past 2^32 elements fall back to an int128 total", {
   x <- array(.Machine$integer.max, c(2^16 + 1, 2^16))
   expected <- as.double(.Machine$integer.max)
 
-  expect_identical(as.vector(rray_mean(x, 1:2)), expected)
-  expect_identical(as.vector(rray_mean(x, 1:2, na_rm = TRUE)), expected)
+  expect_identical(as.vector(rray_mean(x, axes = 1:2)), expected)
+  expect_identical(as.vector(rray_mean(x, axes = 1:2, na_rm = TRUE)), expected)
 })
 
 test_that("integer means past 2^32 elements are exact for negative totals", {
@@ -193,8 +202,8 @@ test_that("integer means past 2^32 elements are exact for negative totals", {
   n <- length(x)
   expected <- -(.Machine$integer.max - 1) - (n - .Machine$integer.max) / n
 
-  expect_identical(as.vector(rray_mean(x, 1:2)), expected)
-  expect_identical(as.vector(rray_mean(x, 1:2, na_rm = TRUE)), expected)
+  expect_identical(as.vector(rray_mean(x, axes = 1:2)), expected)
+  expect_identical(as.vector(rray_mean(x, axes = 1:2, na_rm = TRUE)), expected)
 })
 
 test_that("integer means past 2^32 elements fall back with NA", {
@@ -204,72 +213,81 @@ test_that("integer means past 2^32 elements fall back with NA", {
   x[1L] <- NA
   expected <- as.double(.Machine$integer.max)
 
-  expect_identical(as.vector(rray_mean(x, 1:2)), NA_real_)
-  expect_identical(as.vector(rray_mean(x, 1:2, na_rm = TRUE)), expected)
+  expect_identical(as.vector(rray_mean(x, axes = 1:2)), NA_real_)
+  expect_identical(as.vector(rray_mean(x, axes = 1:2, na_rm = TRUE)), expected)
 })
 
 test_that("a sum that overflows to infinity is retried with scaled terms", {
   x <- c(1e308, 1e308, 1e308)
-  expect_identical(as.vector(rray_mean(x, 1L)), mean(x))
-  expect_identical(as.vector(rray_mean(x, 1L)), 1e308)
+  expect_identical(as.vector(rray_mean(x, axes = 1L)), mean(x))
+  expect_identical(as.vector(rray_mean(x, axes = 1L)), 1e308)
 })
 
 test_that("a correction that overflows is not applied", {
   m <- .Machine$double.xmax
 
   x <- c(m, -m, m)
-  expect_identical(as.vector(rray_mean(x, 1L)), m / 3)
-  expect_identical(as.vector(rray_mean(c(x, NA), 1L, na_rm = TRUE)), m / 3)
+  expect_identical(as.vector(rray_mean(x, axes = 1L)), m / 3)
+  expect_identical(
+    as.vector(rray_mean(c(x, NA), axes = 1L, na_rm = TRUE)),
+    m / 3
+  )
 
   x <- c(m, m, -m)
-  expect_identical(as.vector(rray_mean(x, 1L)), m / 3)
-  expect_identical(as.vector(rray_mean(c(x, NA), 1L, na_rm = TRUE)), m / 3)
+  expect_identical(as.vector(rray_mean(x, axes = 1L)), m / 3)
+  expect_identical(
+    as.vector(rray_mean(c(x, NA), axes = 1L, na_rm = TRUE)),
+    m / 3
+  )
 })
 
 test_that("integer NA propagates", {
   x <- array(c(1L, NA_integer_), c(2L, 1L))
-  expect_identical(as.vector(rray_mean(x, 1L)), NA_real_)
-  expect_identical(as.vector(rray_mean_forced_fallback(x, 1L)), NA_real_)
+  expect_identical(as.vector(rray_mean(x, axes = 1L)), NA_real_)
+  expect_identical(as.vector(rray_mean_forced_fallback(x, axes = 1L)), NA_real_)
 
   x <- array(c(NA_integer_, 1L), c(2L, 1L))
-  expect_identical(as.vector(rray_mean(x, 1L)), NA_real_)
-  expect_identical(as.vector(rray_mean_forced_fallback(x, 1L)), NA_real_)
+  expect_identical(as.vector(rray_mean(x, axes = 1L)), NA_real_)
+  expect_identical(as.vector(rray_mean_forced_fallback(x, axes = 1L)), NA_real_)
 })
 
 test_that("logical NA propagates", {
   x <- array(c(TRUE, NA), c(2L, 1L))
-  expect_identical(as.vector(rray_mean(x, 1L)), NA_real_)
+  expect_identical(as.vector(rray_mean(x, axes = 1L)), NA_real_)
 
   x <- array(c(NA, TRUE), c(2L, 1L))
-  expect_identical(as.vector(rray_mean(x, 1L)), NA_real_)
+  expect_identical(as.vector(rray_mean(x, axes = 1L)), NA_real_)
 })
 
 test_that("double NA / NaN propagates", {
   x <- c(1, NA_real_)
-  expect_identical(as.vector(rray_mean(x, 1L)), NA_real_)
+  expect_identical(as.vector(rray_mean(x, axes = 1L)), NA_real_)
 
   x <- c(1, NaN)
-  expect_identical(as.vector(rray_mean(x, 1L)), NaN)
+  expect_identical(as.vector(rray_mean(x, axes = 1L)), NaN)
 
   x <- c(NaN, 1)
-  expect_identical(as.vector(rray_mean(x, 1L)), NaN)
+  expect_identical(as.vector(rray_mean(x, axes = 1L)), NaN)
 
   x <- c(NA, NaN)
-  expect_identical(is.na(rray_mean(x, 1L)), array(TRUE, 1L))
+  expect_identical(is.na(rray_mean(x, axes = 1L)), array(TRUE, 1L))
 
   x <- c(NaN, NA)
-  expect_identical(is.na(rray_mean(x, 1L)), array(TRUE, 1L))
+  expect_identical(is.na(rray_mean(x, axes = 1L)), array(TRUE, 1L))
 })
 
 test_that("Inf matches base R mean", {
-  expect_identical(as.vector(rray_mean(c(Inf, 1), 1L)), mean(c(Inf, 1)))
-  expect_identical(as.vector(rray_mean(c(-Inf, 1), 1L)), mean(c(-Inf, 1)))
+  expect_identical(as.vector(rray_mean(c(Inf, 1), axes = 1L)), mean(c(Inf, 1)))
   expect_identical(
-    as.vector(rray_mean(c(Inf, -Inf), 1L)),
+    as.vector(rray_mean(c(-Inf, 1), axes = 1L)),
+    mean(c(-Inf, 1))
+  )
+  expect_identical(
+    as.vector(rray_mean(c(Inf, -Inf), axes = 1L)),
     mean(c(Inf, -Inf))
   )
-  expect_identical(as.vector(rray_mean(c(Inf, NaN), 1L)), NaN)
-  expect_identical(as.vector(rray_mean(c(Inf, NA), 1L)), NA_real_)
+  expect_identical(as.vector(rray_mean(c(Inf, NaN), axes = 1L)), NaN)
+  expect_identical(as.vector(rray_mean(c(Inf, NA), axes = 1L)), NA_real_)
 })
 
 test_that("each output handles its own missing values and overflow", {
@@ -282,20 +300,23 @@ test_that("each output handles its own missing values and overflow", {
   )
   expected <- c(NA, NaN, 1e308, 2500000000000001, Inf)
 
-  expect_identical(as.vector(rray_mean(x, 2L)), expected)
-  expect_identical(as.vector(rray_mean(t(x), 1L)), expected)
+  expect_identical(as.vector(rray_mean(x, axes = 2L)), expected)
+  expect_identical(as.vector(rray_mean(t(x), axes = 1L)), expected)
 })
 
 test_that("each output handles its own integer and logical NA", {
   x <- rbind(c(1L, NA, 3L), c(1L, 2L, 3L))
-  expect_identical(as.vector(rray_mean(x, 2L)), c(NA, 2))
-  expect_identical(as.vector(rray_mean(t(x), 1L)), c(NA, 2))
-  expect_identical(as.vector(rray_mean_forced_fallback(x, 2L)), c(NA, 2))
-  expect_identical(as.vector(rray_mean_forced_fallback(t(x), 1L)), c(NA, 2))
+  expect_identical(as.vector(rray_mean(x, axes = 2L)), c(NA, 2))
+  expect_identical(as.vector(rray_mean(t(x), axes = 1L)), c(NA, 2))
+  expect_identical(as.vector(rray_mean_forced_fallback(x, axes = 2L)), c(NA, 2))
+  expect_identical(
+    as.vector(rray_mean_forced_fallback(t(x), axes = 1L)),
+    c(NA, 2)
+  )
 
   x <- rbind(c(TRUE, NA, FALSE), c(TRUE, TRUE, FALSE))
-  expect_identical(as.vector(rray_mean(x, 2L)), c(NA, 2 / 3))
-  expect_identical(as.vector(rray_mean(t(x), 1L)), c(NA, 2 / 3))
+  expect_identical(as.vector(rray_mean(x, axes = 2L)), c(NA, 2 / 3))
+  expect_identical(as.vector(rray_mean(t(x), axes = 1L)), c(NA, 2 / 3))
 })
 
 test_that("outputs that are fed by multiple runs are corrected", {
@@ -303,7 +324,7 @@ test_that("outputs that are fed by multiple runs are corrected", {
     c(1e16, 1, NA, 1, 1e308, 1e308, 1, 1, 1e16, 1, 1e308, 1e308),
     c(2L, 3L, 2L)
   )
-  out <- rray_mean(x, c(1L, 3L))
+  out <- rray_mean(x, axes = c(1L, 3L))
   expect_identical(
     as.vector(out),
     c(2500000000000001, NA, 1e308)
@@ -317,7 +338,7 @@ test_that("outputs that are fed by multiple runs match `mean()`", {
     c(1e16, 1, NA, 1, 1e308, 1e308, 1, 1, 1e16, 1, 1e308, 1e308),
     c(2L, 3L, 2L)
   )
-  out <- rray_mean(x, c(1L, 3L))
+  out <- rray_mean(x, axes = c(1L, 3L))
   expect_identical(as.vector(out), apply(x, 2L, mean))
 })
 
@@ -326,13 +347,19 @@ test_that("integer outputs can be fed by multiple runs", {
   x[1L, 2L, 3L] <- NA
 
   expected <- c(10.5, NA, 14.5)
-  expect_identical(as.vector(rray_mean(x, c(1L, 3L))), expected)
-  expect_identical(as.vector(rray_mean_forced_fallback(x, c(1L, 3L))), expected)
+  expect_identical(as.vector(rray_mean(x, axes = c(1L, 3L))), expected)
+  expect_identical(
+    as.vector(rray_mean_forced_fallback(x, axes = c(1L, 3L))),
+    expected
+  )
 
   expected <- c(10.5, 85 / 7, 14.5)
-  expect_identical(as.vector(rray_mean(x, c(1L, 3L), na_rm = TRUE)), expected)
   expect_identical(
-    as.vector(rray_mean_forced_fallback(x, c(1L, 3L), na_rm = TRUE)),
+    as.vector(rray_mean(x, axes = c(1L, 3L), na_rm = TRUE)),
+    expected
+  )
+  expect_identical(
+    as.vector(rray_mean_forced_fallback(x, axes = c(1L, 3L), na_rm = TRUE)),
     expected
   )
 })
@@ -340,62 +367,62 @@ test_that("integer outputs can be fed by multiple runs", {
 test_that("na_rm removes integer NA", {
   x <- array(c(1L, NA_integer_, 3L, 5L), c(2L, 2L))
 
-  out <- rray_mean(x, 1L, na_rm = TRUE)
+  out <- rray_mean(x, axes = 1L, na_rm = TRUE)
   expect_identical(as.vector(out), c(1, 4))
 
-  out <- rray_mean_forced_fallback(x, 1L, na_rm = TRUE)
+  out <- rray_mean_forced_fallback(x, axes = 1L, na_rm = TRUE)
   expect_identical(as.vector(out), c(1, 4))
 })
 
 test_that("na_rm removes logical NA", {
   x <- array(c(TRUE, NA, FALSE, TRUE), c(2L, 2L))
-  out <- rray_mean(x, 1L, na_rm = TRUE)
+  out <- rray_mean(x, axes = 1L, na_rm = TRUE)
   expect_identical(as.vector(out), c(1, 0.5))
 })
 
 test_that("na_rm removes double NA and NaN", {
   x <- c(1, NA_real_, 5)
-  expect_identical(as.vector(rray_mean(x, 1L, na_rm = TRUE)), 3)
+  expect_identical(as.vector(rray_mean(x, axes = 1L, na_rm = TRUE)), 3)
 
   x <- c(1, NaN, 5)
-  expect_identical(as.vector(rray_mean(x, 1L, na_rm = TRUE)), 3)
+  expect_identical(as.vector(rray_mean(x, axes = 1L, na_rm = TRUE)), 3)
 })
 
 test_that("na_rm with all missing values gives `NaN`", {
   x <- c(NA, NA)
-  expect_identical(as.vector(rray_mean(x, 1L, na_rm = TRUE)), NaN)
+  expect_identical(as.vector(rray_mean(x, axes = 1L, na_rm = TRUE)), NaN)
 
   x <- c(NA_integer_, NA_integer_)
-  expect_identical(as.vector(rray_mean(x, 1L, na_rm = TRUE)), NaN)
+  expect_identical(as.vector(rray_mean(x, axes = 1L, na_rm = TRUE)), NaN)
 
   x <- c(NA_real_, NaN)
-  expect_identical(as.vector(rray_mean(x, 1L, na_rm = TRUE)), NaN)
+  expect_identical(as.vector(rray_mean(x, axes = 1L, na_rm = TRUE)), NaN)
 })
 
 test_that("na_rm does not change the sign of a zero mean", {
   x <- c(-0, NA)
-  out <- as.vector(rray_mean(x, 1L, na_rm = TRUE))
+  out <- as.vector(rray_mean(x, axes = 1L, na_rm = TRUE))
   expect_identical(out, mean(x, na.rm = TRUE))
   expect_identical(1 / out, Inf)
 })
 
 test_that("na_rm keeps infinities", {
   x <- c(Inf, NA, 1)
-  expect_identical(as.vector(rray_mean(x, 1L, na_rm = TRUE)), Inf)
+  expect_identical(as.vector(rray_mean(x, axes = 1L, na_rm = TRUE)), Inf)
 
   x <- c(-Inf, NA, 1)
-  expect_identical(as.vector(rray_mean(x, 1L, na_rm = TRUE)), -Inf)
+  expect_identical(as.vector(rray_mean(x, axes = 1L, na_rm = TRUE)), -Inf)
 })
 
 test_that("na_rm gives `NaN` when infinities of both signs remain", {
   x <- c(Inf, -Inf, NA)
-  expect_identical(as.vector(rray_mean(x, 1L, na_rm = TRUE)), NaN)
+  expect_identical(as.vector(rray_mean(x, axes = 1L, na_rm = TRUE)), NaN)
 
   x <- c(-Inf, NaN, Inf)
-  expect_identical(as.vector(rray_mean(x, 1L, na_rm = TRUE)), NaN)
+  expect_identical(as.vector(rray_mean(x, axes = 1L, na_rm = TRUE)), NaN)
 
   x <- array(c(Inf, -Inf, Inf, NA), c(2L, 2L))
-  out <- rray_mean(x, 1L, na_rm = TRUE)
+  out <- rray_mean(x, axes = 1L, na_rm = TRUE)
   expect_identical(as.vector(out), c(NaN, Inf))
 })
 
@@ -409,8 +436,11 @@ test_that("na_rm counts the missing values of each output", {
   )
   expected <- c(2, NaN, 1e308, 3333333333333334, -Inf)
 
-  expect_identical(as.vector(rray_mean(x, 2L, na_rm = TRUE)), expected)
-  expect_identical(as.vector(rray_mean(t(x), 1L, na_rm = TRUE)), expected)
+  expect_identical(as.vector(rray_mean(x, axes = 2L, na_rm = TRUE)), expected)
+  expect_identical(
+    as.vector(rray_mean(t(x), axes = 1L, na_rm = TRUE)),
+    expected
+  )
 })
 
 test_that("na_rm matches `mean()` for each output", {
@@ -425,30 +455,39 @@ test_that("na_rm matches `mean()` for each output", {
   )
   expected <- apply(x, 1L, mean, na.rm = TRUE)
 
-  expect_identical(as.vector(rray_mean(x, 2L, na_rm = TRUE)), expected)
-  expect_identical(as.vector(rray_mean(t(x), 1L, na_rm = TRUE)), expected)
+  expect_identical(as.vector(rray_mean(x, axes = 2L, na_rm = TRUE)), expected)
+  expect_identical(
+    as.vector(rray_mean(t(x), axes = 1L, na_rm = TRUE)),
+    expected
+  )
 })
 
 test_that("na_rm counts the integer and logical NA of each output", {
   x <- rbind(c(1L, NA, 3L), c(NA, NA, NA), c(1L, 2L, 6L))
-  expect_identical(as.vector(rray_mean(x, 2L, na_rm = TRUE)), c(2, NaN, 3))
-  expect_identical(as.vector(rray_mean(t(x), 1L, na_rm = TRUE)), c(2, NaN, 3))
   expect_identical(
-    as.vector(rray_mean_forced_fallback(x, 2L, na_rm = TRUE)),
+    as.vector(rray_mean(x, axes = 2L, na_rm = TRUE)),
     c(2, NaN, 3)
   )
   expect_identical(
-    as.vector(rray_mean_forced_fallback(t(x), 1L, na_rm = TRUE)),
+    as.vector(rray_mean(t(x), axes = 1L, na_rm = TRUE)),
+    c(2, NaN, 3)
+  )
+  expect_identical(
+    as.vector(rray_mean_forced_fallback(x, axes = 2L, na_rm = TRUE)),
+    c(2, NaN, 3)
+  )
+  expect_identical(
+    as.vector(rray_mean_forced_fallback(t(x), axes = 1L, na_rm = TRUE)),
     c(2, NaN, 3)
   )
 
   x <- rbind(c(TRUE, NA, FALSE), c(NA, NA, NA), c(TRUE, TRUE, FALSE))
   expect_identical(
-    as.vector(rray_mean(x, 2L, na_rm = TRUE)),
+    as.vector(rray_mean(x, axes = 2L, na_rm = TRUE)),
     c(0.5, NaN, 2 / 3)
   )
   expect_identical(
-    as.vector(rray_mean(t(x), 1L, na_rm = TRUE)),
+    as.vector(rray_mean(t(x), axes = 1L, na_rm = TRUE)),
     c(0.5, NaN, 2 / 3)
   )
 })
@@ -456,8 +495,8 @@ test_that("na_rm counts the integer and logical NA of each output", {
 test_that("na_rm with no missing values matches the default", {
   x <- array(1:10, c(5L, 2L))
   expect_identical(
-    rray_mean(x, 1L, na_rm = TRUE),
-    rray_mean(x, 1L)
+    rray_mean(x, axes = 1L, na_rm = TRUE),
+    rray_mean(x, axes = 1L)
   )
 })
 
@@ -466,9 +505,12 @@ test_that("na_rm works over every combination of axes", {
   x[c(1L, 5L, 9L, 20L)] <- NA
   x[c(2L, 6L)] <- NaN
 
-  expect_identical(rray_mean(x, 1L, na_rm = TRUE), replace(x, is.na(x), NaN))
   expect_identical(
-    rray_mean(x, 2L, na_rm = TRUE),
+    rray_mean(x, axes = 1L, na_rm = TRUE),
+    replace(x, is.na(x), NaN)
+  )
+  expect_identical(
+    rray_mean(x, axes = 2L, na_rm = TRUE),
     array(
       c(
         -3,
@@ -484,26 +526,26 @@ test_that("na_rm works over every combination of axes", {
     )
   )
   expect_identical(
-    rray_mean(x, 3L, na_rm = TRUE),
+    rray_mean(x, axes = 3L, na_rm = TRUE),
     array(
       c(7e15, NaN, -3, 8.5e15, 1, 1, 8.5e15, 1, -1, 8.5e15, 1, -1),
       c(1L, 3L, 1L, 4L)
     )
   )
   expect_identical(
-    rray_mean(x, 4L, na_rm = TRUE),
+    rray_mean(x, axes = 4L, na_rm = TRUE),
     array(c(1e16, 1, -3, 7e15, 1, 1), c(1L, 3L, 2L, 1L))
   )
   expect_identical(
-    rray_mean(x, c(1L, 3L), na_rm = TRUE),
-    rray_mean(x, 3L, na_rm = TRUE)
+    rray_mean(x, axes = c(1L, 3L), na_rm = TRUE),
+    rray_mean(x, axes = 3L, na_rm = TRUE)
   )
   expect_identical(
-    rray_mean(x, c(2L, 4L), na_rm = TRUE),
+    rray_mean(x, axes = c(2L, 4L), na_rm = TRUE),
     array(c(7499999999999999 / 2, 5600000000000001 / 2), c(1L, 1L, 2L, 1L))
   )
   expect_identical(
-    rray_mean(x, 1:4, na_rm = TRUE),
+    rray_mean(x, axes = 1:4, na_rm = TRUE),
     array(3222222222222222, c(1L, 1L, 1L, 1L))
   )
 })
@@ -532,18 +574,18 @@ test_that("na_rm matches `mean()` over every combination of axes", {
   axes <- list(1L, 2L, 3L, 4L, c(1L, 3L), c(2L, 4L), 1:4)
 
   for (axis in axes) {
-    expect_identical(rray_mean(x, axis, na_rm = TRUE), expected(axis))
+    expect_identical(rray_mean(x, axes = axis, na_rm = TRUE), expected(axis))
   }
 })
 
 test_that("plain vector input works", {
-  out <- rray_mean(1:3, 1L)
+  out <- rray_mean(1:3, axes = 1L)
   expect_identical(as.vector(out), 2)
   expect_identical(rray_dimensions(out), 1L)
 })
 
 test_that("scalar reduction works", {
-  out <- rray_mean(5, 1L)
+  out <- rray_mean(5, axes = 1L)
   expect_identical(as.vector(out), 5)
   expect_identical(rray_dimensions(out), 1L)
 })
@@ -551,28 +593,28 @@ test_that("scalar reduction works", {
 test_that("axes are coerced to integer", {
   x <- array(1:4, c(2L, 2L))
   expect_identical(
-    rray_mean(x, 1),
-    rray_mean(x, 1L)
+    rray_mean(x, axes = 1),
+    rray_mean(x, axes = 1L)
   )
 })
 
 test_that("the mean of no values is `NaN`", {
   x <- matrix(numeric(), 0L, 2L)
-  out <- rray_mean(x, 1L)
+  out <- rray_mean(x, axes = 1L)
   expect_identical(rray_dimensions(out), c(1L, 2L))
   expect_identical(as.vector(out), c(NaN, NaN))
 })
 
 test_that("reducing over a non-zero-length axis with a zero-length axis", {
   x <- matrix(numeric(), 0L, 2L)
-  out <- rray_mean(x, 2L)
+  out <- rray_mean(x, axes = 2L)
   expect_identical(rray_dimensions(out), c(0L, 1L))
   expect_identical(as.vector(out), numeric())
 })
 
 test_that("reducing all axes of a zero-length array", {
   x <- matrix(numeric(), 0L, 2L)
-  out <- rray_mean(x, c(1L, 2L))
+  out <- rray_mean(x, axes = c(1L, 2L))
   expect_identical(rray_dimensions(out), c(1L, 1L))
   expect_identical(as.vector(out), NaN)
 })
@@ -580,69 +622,73 @@ test_that("reducing all axes of a zero-length array", {
 test_that("the empty reduction of each input type is `NaN`", {
   zero_size <- function(x) array(x, c(0L, 1L))
 
-  expect_identical(as.vector(rray_mean(zero_size(logical()), 1L)), NaN)
-  expect_identical(as.vector(rray_mean(zero_size(integer()), 1L)), NaN)
+  expect_identical(as.vector(rray_mean(zero_size(logical()), axes = 1L)), NaN)
+  expect_identical(as.vector(rray_mean(zero_size(integer()), axes = 1L)), NaN)
   expect_identical(
-    as.vector(rray_mean_forced_fallback(zero_size(integer()), 1L)),
+    as.vector(rray_mean_forced_fallback(zero_size(integer()), axes = 1L)),
     NaN
   )
   expect_identical(
     as.vector(rray_mean_forced_fallback(
       zero_size(integer()),
-      1L,
+      axes = 1L,
       na_rm = TRUE
     )),
     NaN
   )
-  expect_identical(as.vector(rray_mean(zero_size(double()), 1L)), NaN)
+  expect_identical(as.vector(rray_mean(zero_size(double()), axes = 1L)), NaN)
 })
 
 test_that("errors on axes out of range", {
   x <- array(1:4, c(2L, 2L))
-  expect_snapshot(rray_mean(x, 3L), error = TRUE)
+  expect_snapshot(rray_mean(x, axes = 3L), error = TRUE)
 })
 
 test_that("errors on axes not in strictly increasing order", {
   x <- array(1:24, c(2L, 3L, 4L))
-  expect_snapshot(rray_mean(x, c(1L, 1L)), error = TRUE)
-  expect_snapshot(rray_mean(x, c(2L, 1L)), error = TRUE)
+  expect_snapshot(rray_mean(x, axes = c(1L, 1L)), error = TRUE)
+  expect_snapshot(rray_mean(x, axes = c(2L, 1L)), error = TRUE)
 })
 
 test_that("errors on axes less than 1", {
   x <- array(1:4, c(2L, 2L))
-  expect_snapshot(rray_mean(x, 0L), error = TRUE)
+  expect_snapshot(rray_mean(x, axes = 0L), error = TRUE)
 })
 
 test_that("errors on axes with NA", {
   x <- array(1:4, c(2L, 2L))
-  expect_snapshot(rray_mean(x, NA_integer_), error = TRUE)
+  expect_snapshot(rray_mean(x, axes = NA_integer_), error = TRUE)
+})
+
+test_that("`axes` must be named", {
+  expect_snapshot(rray_mean(1:3, 1), error = TRUE)
 })
 
 test_that("`na_rm` must be `TRUE` or `FALSE`", {
   x <- array(1:4, c(2L, 2L))
-  expect_snapshot(rray_mean(x, 1L, na_rm = NA), error = TRUE)
-  expect_snapshot(rray_mean(x, 1L, na_rm = logical()), error = TRUE)
-  expect_snapshot(rray_mean(x, 1L, na_rm = c(TRUE, FALSE)), error = TRUE)
-  expect_snapshot(rray_mean(x, 1L, na_rm = 1), error = TRUE)
+  expect_snapshot(rray_mean(x, axes = 1L, na_rm = NA), error = TRUE)
+  expect_snapshot(rray_mean(x, axes = 1L, na_rm = logical()), error = TRUE)
+  expect_snapshot(rray_mean(x, axes = 1L, na_rm = c(TRUE, FALSE)), error = TRUE)
+  expect_snapshot(rray_mean(x, axes = 1L, na_rm = 1), error = TRUE)
 })
 
 test_that("errors on complex input", {
   x <- array(c(1 + 2i, 3 + 4i, 5 + 6i, 7 + 8i), c(2L, 2L))
-  expect_snapshot(rray_mean(x, 1L), error = TRUE)
+  expect_snapshot(rray_mean(x, axes = 1L), error = TRUE)
 })
 
 test_that("errors on non-numeric input", {
   x <- array(letters[1:4], c(2L, 2L))
-  expect_snapshot(rray_mean(x, 1L), error = TRUE)
+  expect_snapshot(rray_mean(x, axes = 1L), error = TRUE)
 
   x <- array(as.raw(1:4), c(2L, 2L))
-  expect_snapshot(rray_mean(x, 1L), error = TRUE)
+  expect_snapshot(rray_mean(x, axes = 1L), error = TRUE)
 
   x <- array(list(1, 2, 3, 4), c(2L, 2L))
-  expect_snapshot(rray_mean(x, 1L), error = TRUE)
+  expect_snapshot(rray_mean(x, axes = 1L), error = TRUE)
 })
 
 test_that("errors on classed input", {
   x <- structure(array(1:4, c(2, 2)), class = "foo")
-  expect_snapshot(rray_mean(x, 1L), error = TRUE)
+  expect_snapshot(rray_mean(x, axes = 1L), error = TRUE)
 })

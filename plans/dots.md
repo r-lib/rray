@@ -147,7 +147,7 @@ All commits land in one pull request from `feature/dots`.
 
 - [x] `rray_prod()`
 
-- [ ] `rray_mean()`
+- [x] `rray_mean()`
 
 - [ ] `rray_all()`
 
