@@ -10,6 +10,8 @@
 
 - `rray_cumulative_min()` computes the minimum so far along `axis`.
 
+- `rray_cumulative_prod()` computes the product so far along `axis`.
+
 ## Usage
 
 ``` r
@@ -20,6 +22,8 @@ rray_cumulative_any(x, axis)
 rray_cumulative_max(x, axis)
 
 rray_cumulative_min(x, axis)
+
+rray_cumulative_prod(x, axis)
 ```
 
 ## Arguments
@@ -68,6 +72,18 @@ For logical `x`, a later `TRUE` or `FALSE` does not settle an earlier
     rray_cumulative_max(c(NA, TRUE), 1L) # NA, NA
     rray_cumulative_any(c(NA, TRUE), 1L) # NA, TRUE
 
+## Product
+
+`x` must be logical, integer, double, or complex. Logicals and integers
+are cast to double.
+
+When `NA` and `NaN` are both present, you get one of them, but which one
+depends on the platform and the order of the values. Either way,
+[`is.na()`](https://rdrr.io/r/base/NA.html) is `TRUE` from that point
+on:
+
+    rray_cumulative_prod(c(2, NA, NaN), 1L) # 2, NA, NA or NaN
+
 ## Examples
 
 ``` r
@@ -112,4 +128,10 @@ rray_cumulative_min(x, 2L)
 #>      [,1] [,2] [,3]
 #> [1,]    3    2    2
 #> [2,]    1    1    0
+
+# Running product down rows
+rray_cumulative_prod(x, 1L)
+#>      [,1] [,2] [,3]
+#> [1,]    3    2    4
+#> [2,]    3   10    0
 ```

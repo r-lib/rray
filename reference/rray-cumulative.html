@@ -7,6 +7,7 @@ rray_cumulative_any() checks if any value is TRUE so far along
 axis.
 rray_cumulative_max() computes the maximum so far along axis.
 rray_cumulative_min() computes the minimum so far along axis.
+rray_cumulative_prod() computes the product so far along axis.
 
 "><meta property="og:description" content="
 
@@ -16,6 +17,7 @@ rray_cumulative_any() checks if any value is TRUE so far along
 axis.
 rray_cumulative_max() computes the maximum so far along axis.
 rray_cumulative_min() computes the minimum so far along axis.
+rray_cumulative_prod() computes the product so far along axis.
 
 "><meta property="og:image" content="https://rray.r-lib.org/logo.png"></head><body>
     <a href="#container" class="visually-hidden-focusable">Skip to content</a>
@@ -62,6 +64,7 @@ rray_cumulative_min() computes the minimum so far along axis.
 <code>axis</code>.</p></li>
 <li><p><code>rray_cumulative_max()</code> computes the maximum so far along <code>axis</code>.</p></li>
 <li><p><code>rray_cumulative_min()</code> computes the minimum so far along <code>axis</code>.</p></li>
+<li><p><code>rray_cumulative_prod()</code> computes the product so far along <code>axis</code>.</p></li>
 </ul></div>
 
     <div class="section level2">
@@ -72,7 +75,9 @@ rray_cumulative_min() computes the minimum so far along axis.
 <span></span>
 <span><span class="fu">rray_cumulative_max</span><span class="op">(</span><span class="va">x</span>, <span class="va">axis</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">rray_cumulative_min</span><span class="op">(</span><span class="va">x</span>, <span class="va">axis</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">rray_cumulative_min</span><span class="op">(</span><span class="va">x</span>, <span class="va">axis</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">rray_cumulative_prod</span><span class="op">(</span><span class="va">x</span>, <span class="va">axis</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -119,6 +124,17 @@ unlike <code>rray_cumulative_any()</code> and <code>rray_cumulative_all()</code>
 <p></p><div class="sourceCode r"><pre><code><span><span class="fu"><a href="../reference/rray-cumulative.html">rray_cumulative_max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="cn">TRUE</span><span class="op">)</span>, <span class="fl">1L</span><span class="op">)</span> <span class="co"># NA, NA</span></span>
 <span><span class="fu"><a href="../reference/rray-cumulative.html">rray_cumulative_any</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="cn">TRUE</span><span class="op">)</span>, <span class="fl">1L</span><span class="op">)</span> <span class="co"># NA, TRUE</span></span></code></pre><p></p></div>
     </div>
+    <div class="section level2">
+    <h2 id="product">Product<a class="anchor" aria-label="anchor" href="#product"></a></h2>
+
+
+<p><code>x</code> must be logical, integer, double, or complex. Logicals and integers are
+cast to double.</p>
+<p>When <code>NA</code> and <code>NaN</code> are both present, you get one of them, but which one
+depends on the platform and the order of the values. Either way, <code><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na()</a></code>
+is <code>TRUE</code> from that point on:</p>
+<p></p><div class="sourceCode r"><pre><code><span><span class="fu"><a href="../reference/rray-cumulative.html">rray_cumulative_prod</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="cn">NA</span>, <span class="cn">NaN</span><span class="op">)</span>, <span class="fl">1L</span><span class="op">)</span> <span class="co"># 2, NA, NA or NaN</span></span></code></pre><p></p></div>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
@@ -163,6 +179,12 @@ unlike <code>rray_cumulative_any()</code> and <code>rray_cumulative_all()</code>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2] [,3]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1,]    3    2    2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [2,]    1    1    0</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Running product down rows</span></span></span>
+<span class="r-in"><span><span class="fu">rray_cumulative_prod</span><span class="op">(</span><span class="va">x</span>, <span class="fl">1L</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      [,1] [,2] [,3]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1,]    3    2    4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [2,]    3   10    0</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
