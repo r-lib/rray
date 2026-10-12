@@ -170,6 +170,12 @@ static r_obj* rray_equality_cpl_cpl(
   enum rray_equality_op op
 );
 
+static inline int rray_equal_lgl_one(int x, int y);
+static inline int rray_not_equal_lgl_one(int x, int y);
+static inline int rray_equal_lgl_int_one(int x, int y);
+static inline int rray_not_equal_lgl_int_one(int x, int y);
+static inline int rray_equal_int_lgl_one(int x, int y);
+static inline int rray_not_equal_int_lgl_one(int x, int y);
 static inline int rray_equal_int_one(int x, int y);
 static inline int rray_not_equal_int_one(int x, int y);
 static inline int rray_equal_dbl_one(double x, double y);

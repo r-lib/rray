@@ -107,6 +107,31 @@ static r_obj* rray_compare_dbl_dbl(
   enum rray_compare_op op
 );
 
+static inline int rray_greater_than_lgl_lgl_one(int x, int y);
+static inline int rray_greater_than_or_equal_lgl_lgl_one(int x, int y);
+static inline int rray_less_than_lgl_lgl_one(int x, int y);
+static inline int rray_less_than_or_equal_lgl_lgl_one(int x, int y);
+
+static inline int rray_greater_than_lgl_int_one(int x, int y);
+static inline int rray_greater_than_or_equal_lgl_int_one(int x, int y);
+static inline int rray_less_than_lgl_int_one(int x, int y);
+static inline int rray_less_than_or_equal_lgl_int_one(int x, int y);
+
+static inline int rray_greater_than_int_lgl_one(int x, int y);
+static inline int rray_greater_than_or_equal_int_lgl_one(int x, int y);
+static inline int rray_less_than_int_lgl_one(int x, int y);
+static inline int rray_less_than_or_equal_int_lgl_one(int x, int y);
+
+static inline int rray_greater_than_lgl_dbl_one(int x, double y);
+static inline int rray_greater_than_or_equal_lgl_dbl_one(int x, double y);
+static inline int rray_less_than_lgl_dbl_one(int x, double y);
+static inline int rray_less_than_or_equal_lgl_dbl_one(int x, double y);
+
+static inline int rray_greater_than_dbl_lgl_one(double x, int y);
+static inline int rray_greater_than_or_equal_dbl_lgl_one(double x, int y);
+static inline int rray_less_than_dbl_lgl_one(double x, int y);
+static inline int rray_less_than_or_equal_dbl_lgl_one(double x, int y);
+
 static inline int rray_greater_than_int_int_one(int x, int y);
 static inline int rray_greater_than_or_equal_int_int_one(int x, int y);
 static inline int rray_less_than_int_int_one(int x, int y);

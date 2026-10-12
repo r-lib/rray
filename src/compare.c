@@ -410,14 +410,14 @@ static r_obj* rray_compare_lgl_lgl(
   RRAY_COMPARE(
     int,
     r_lgl_cbegin,
-    rray_cast_lgl_to_int_one,
+    rray_cast_lgl_to_lgl_one,
     int,
     r_lgl_cbegin,
-    rray_cast_lgl_to_int_one,
-    rray_greater_than_int_int_one,
-    rray_greater_than_or_equal_int_int_one,
-    rray_less_than_int_int_one,
-    rray_less_than_or_equal_int_int_one
+    rray_cast_lgl_to_lgl_one,
+    rray_greater_than_lgl_lgl_one,
+    rray_greater_than_or_equal_lgl_lgl_one,
+    rray_less_than_lgl_lgl_one,
+    rray_less_than_or_equal_lgl_lgl_one
   );
 }
 
@@ -433,14 +433,14 @@ static r_obj* rray_compare_lgl_int(
   RRAY_COMPARE(
     int,
     r_lgl_cbegin,
-    rray_cast_lgl_to_int_one,
+    rray_cast_lgl_to_lgl_one,
     int,
     r_int_cbegin,
     rray_cast_int_to_int_one,
-    rray_greater_than_int_int_one,
-    rray_greater_than_or_equal_int_int_one,
-    rray_less_than_int_int_one,
-    rray_less_than_or_equal_int_int_one
+    rray_greater_than_lgl_int_one,
+    rray_greater_than_or_equal_lgl_int_one,
+    rray_less_than_lgl_int_one,
+    rray_less_than_or_equal_lgl_int_one
   );
 }
 
@@ -459,11 +459,11 @@ static r_obj* rray_compare_int_lgl(
     rray_cast_int_to_int_one,
     int,
     r_lgl_cbegin,
-    rray_cast_lgl_to_int_one,
-    rray_greater_than_int_int_one,
-    rray_greater_than_or_equal_int_int_one,
-    rray_less_than_int_int_one,
-    rray_less_than_or_equal_int_int_one
+    rray_cast_lgl_to_lgl_one,
+    rray_greater_than_int_lgl_one,
+    rray_greater_than_or_equal_int_lgl_one,
+    rray_less_than_int_lgl_one,
+    rray_less_than_or_equal_int_lgl_one
   );
 }
 
@@ -479,14 +479,14 @@ static r_obj* rray_compare_lgl_dbl(
   RRAY_COMPARE(
     int,
     r_lgl_cbegin,
-    rray_cast_lgl_to_int_one,
+    rray_cast_lgl_to_lgl_one,
     double,
     r_dbl_cbegin,
     rray_cast_dbl_to_dbl_one,
-    rray_greater_than_int_dbl_one,
-    rray_greater_than_or_equal_int_dbl_one,
-    rray_less_than_int_dbl_one,
-    rray_less_than_or_equal_int_dbl_one
+    rray_greater_than_lgl_dbl_one,
+    rray_greater_than_or_equal_lgl_dbl_one,
+    rray_less_than_lgl_dbl_one,
+    rray_less_than_or_equal_lgl_dbl_one
   );
 }
 
@@ -505,11 +505,11 @@ static r_obj* rray_compare_dbl_lgl(
     rray_cast_dbl_to_dbl_one,
     int,
     r_lgl_cbegin,
-    rray_cast_lgl_to_int_one,
-    rray_greater_than_dbl_int_one,
-    rray_greater_than_or_equal_dbl_int_one,
-    rray_less_than_dbl_int_one,
-    rray_less_than_or_equal_dbl_int_one
+    rray_cast_lgl_to_lgl_one,
+    rray_greater_than_dbl_lgl_one,
+    rray_greater_than_or_equal_dbl_lgl_one,
+    rray_less_than_dbl_lgl_one,
+    rray_less_than_or_equal_dbl_lgl_one
   );
 }
 
@@ -611,6 +611,71 @@ static r_obj* rray_compare_dbl_dbl(
   const bool missing = bool_bitwise_or(X_IS_MISSING(x), Y_IS_MISSING(y));      \
   const int elt = x OPERATOR y;                                                \
   return missing ? r_globals.na_lgl : elt;
+
+static inline int rray_greater_than_lgl_lgl_one(int x, int y) {
+  RRAY_COMPARE_ONE(rray_lgl_is_missing, rray_lgl_is_missing, >);
+}
+static inline int rray_greater_than_or_equal_lgl_lgl_one(int x, int y) {
+  RRAY_COMPARE_ONE(rray_lgl_is_missing, rray_lgl_is_missing, >=);
+}
+static inline int rray_less_than_lgl_lgl_one(int x, int y) {
+  RRAY_COMPARE_ONE(rray_lgl_is_missing, rray_lgl_is_missing, <);
+}
+static inline int rray_less_than_or_equal_lgl_lgl_one(int x, int y) {
+  RRAY_COMPARE_ONE(rray_lgl_is_missing, rray_lgl_is_missing, <=);
+}
+
+static inline int rray_greater_than_lgl_int_one(int x, int y) {
+  RRAY_COMPARE_ONE(rray_lgl_is_missing, rray_int_is_missing, >);
+}
+static inline int rray_greater_than_or_equal_lgl_int_one(int x, int y) {
+  RRAY_COMPARE_ONE(rray_lgl_is_missing, rray_int_is_missing, >=);
+}
+static inline int rray_less_than_lgl_int_one(int x, int y) {
+  RRAY_COMPARE_ONE(rray_lgl_is_missing, rray_int_is_missing, <);
+}
+static inline int rray_less_than_or_equal_lgl_int_one(int x, int y) {
+  RRAY_COMPARE_ONE(rray_lgl_is_missing, rray_int_is_missing, <=);
+}
+
+static inline int rray_greater_than_int_lgl_one(int x, int y) {
+  RRAY_COMPARE_ONE(rray_int_is_missing, rray_lgl_is_missing, >);
+}
+static inline int rray_greater_than_or_equal_int_lgl_one(int x, int y) {
+  RRAY_COMPARE_ONE(rray_int_is_missing, rray_lgl_is_missing, >=);
+}
+static inline int rray_less_than_int_lgl_one(int x, int y) {
+  RRAY_COMPARE_ONE(rray_int_is_missing, rray_lgl_is_missing, <);
+}
+static inline int rray_less_than_or_equal_int_lgl_one(int x, int y) {
+  RRAY_COMPARE_ONE(rray_int_is_missing, rray_lgl_is_missing, <=);
+}
+
+static inline int rray_greater_than_lgl_dbl_one(int x, double y) {
+  RRAY_COMPARE_ONE(rray_lgl_is_missing, rray_dbl_is_missing, >);
+}
+static inline int rray_greater_than_or_equal_lgl_dbl_one(int x, double y) {
+  RRAY_COMPARE_ONE(rray_lgl_is_missing, rray_dbl_is_missing, >=);
+}
+static inline int rray_less_than_lgl_dbl_one(int x, double y) {
+  RRAY_COMPARE_ONE(rray_lgl_is_missing, rray_dbl_is_missing, <);
+}
+static inline int rray_less_than_or_equal_lgl_dbl_one(int x, double y) {
+  RRAY_COMPARE_ONE(rray_lgl_is_missing, rray_dbl_is_missing, <=);
+}
+
+static inline int rray_greater_than_dbl_lgl_one(double x, int y) {
+  RRAY_COMPARE_ONE(rray_dbl_is_missing, rray_lgl_is_missing, >);
+}
+static inline int rray_greater_than_or_equal_dbl_lgl_one(double x, int y) {
+  RRAY_COMPARE_ONE(rray_dbl_is_missing, rray_lgl_is_missing, >=);
+}
+static inline int rray_less_than_dbl_lgl_one(double x, int y) {
+  RRAY_COMPARE_ONE(rray_dbl_is_missing, rray_lgl_is_missing, <);
+}
+static inline int rray_less_than_or_equal_dbl_lgl_one(double x, int y) {
+  RRAY_COMPARE_ONE(rray_dbl_is_missing, rray_lgl_is_missing, <=);
+}
 
 static inline int rray_greater_than_int_int_one(int x, int y) {
   RRAY_COMPARE_ONE(rray_int_is_missing, rray_int_is_missing, >);
