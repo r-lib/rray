@@ -151,13 +151,13 @@ test_that("last position matches the reducer", {
   x <- array(c(2, -1, 0.5, 4, -3, 0.25), c(2L, 3L))
   expect_identical(
     rray_cumulative_prod(x, 2L)[, 3L, drop = FALSE],
-    rray_prod(x, 2L)
+    rray_prod(x, axes = 2L)
   )
 
   x <- array(c(1 + 1i, 2i, -1 + 0i, 3 - 1i), c(2L, 2L))
   expect_identical(
     rray_cumulative_prod(x, 1L)[2L, , drop = FALSE],
-    rray_prod(x, 1L)
+    rray_prod(x, axes = 1L)
   )
 })
 

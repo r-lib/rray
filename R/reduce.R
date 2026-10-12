@@ -41,10 +41,10 @@
 #' `Inf` becomes `NaN` when multiplied by `0`:
 #'
 #' ```r
-#' rray_prod(c(NA, NaN), 1L) # NA or NaN
+#' rray_prod(c(NA, NaN), axes = 1L) # NA or NaN
 #'
 #' x <- c(rep(.Machine$integer.max, 40L), 0L, NA)
-#' rray_prod(x, 1L) # NA or NaN
+#' rray_prod(x, axes = 1L) # NA or NaN
 #' ```
 #'
 #' @section Mean:
@@ -104,7 +104,7 @@
 #' rray_sum(x, axes = c(1L, 2L))
 #'
 #' # Product along rows
-#' rray_prod(x, 1L)
+#' rray_prod(x, axes = 1L)
 #'
 #' # Mean along rows
 #' rray_mean(x, 1L)
@@ -128,7 +128,7 @@ rray_sum <- function(x, ..., axes, na_rm = FALSE) {
 
 #' @rdname rray-reduce
 #' @export
-rray_prod <- function(x, axes, ..., na_rm = FALSE) {
+rray_prod <- function(x, ..., axes, na_rm = FALSE) {
   check_dots_empty0(...)
   .Call(ffi_rray_prod, x, axes, na_rm, environment())
 }

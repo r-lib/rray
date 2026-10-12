@@ -13,7 +13,7 @@
 \usage{
 rray_sum(x, ..., axes, na_rm = FALSE)
 
-rray_prod(x, axes, ..., na_rm = FALSE)
+rray_prod(x, ..., axes, na_rm = FALSE)
 
 rray_mean(x, axes, ..., na_rm = FALSE)
 
@@ -77,10 +77,10 @@ depends on the platform and the order of the values. Either way, \code{is.na()}
 is \code{TRUE}. Integers can hit this too, since a product that overflows to
 \code{Inf} becomes \code{NaN} when multiplied by \code{0}:
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_prod(c(NA, NaN), 1L) # NA or NaN
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_prod(c(NA, NaN), axes = 1L) # NA or NaN
 
 x <- c(rep(.Machine$integer.max, 40L), 0L, NA)
-rray_prod(x, 1L) # NA or NaN
+rray_prod(x, axes = 1L) # NA or NaN
 }\if{html}{\out{</div>}}
 }
 
@@ -129,7 +129,7 @@ rray_sum(x, axes = 2L)
 rray_sum(x, axes = c(1L, 2L))
 
 # Product along rows
-rray_prod(x, 1L)
+rray_prod(x, axes = 1L)
 
 # Mean along rows
 rray_mean(x, 1L)
