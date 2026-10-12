@@ -133,6 +133,14 @@ over an overflow:</p>
 
 
 <p>Logicals and integers are cast to double.</p>
+<p>When <code>NA</code> and <code>NaN</code> are both present, you get one of them, but which one
+depends on the platform and the order of the values. Either way, <code><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na()</a></code>
+is <code>TRUE</code>. Integers can hit this too, since a product that overflows to
+<code>Inf</code> becomes <code>NaN</code> when multiplied by <code>0</code>:</p>
+<p></p><div class="sourceCode r"><pre><code><span><span class="fu"><a href="../reference/rray-reduce.html">rray_prod</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="cn">NaN</span><span class="op">)</span>, <span class="fl">1L</span><span class="op">)</span> <span class="co"># NA or NaN</span></span>
+<span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">.Machine</span><span class="op">$</span><span class="va">integer.max</span>, <span class="fl">40L</span><span class="op">)</span>, <span class="fl">0L</span>, <span class="cn">NA</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/rray-reduce.html">rray_prod</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">1L</span><span class="op">)</span> <span class="co"># NA or NaN</span></span></code></pre><p></p></div>
     </div>
     <div class="section level2">
     <h2 id="mean">Mean<a class="anchor" aria-label="anchor" href="#mean"></a></h2>
