@@ -21,7 +21,7 @@ static inline int rray_add_int_one(int x, int y, struct r_lazy error_call) {
     return r_globals.na_int;
   }
 
-  const int64_t out = (int64_t) x + y;
+  const int64_t out = (int64_t) x + (int64_t) y;
 
   if (out > INT_MAX || out < -INT_MAX) {
     stop_int_overflow(error_call);

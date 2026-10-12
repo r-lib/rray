@@ -506,7 +506,7 @@ static inline int rray_subtract_int_one(
     return r_globals.na_int;
   }
 
-  const int64_t out = (int64_t) x - y;
+  const int64_t out = (int64_t) x - (int64_t) y;
 
   if (out > INT_MAX || out < -INT_MAX) {
     stop_int_overflow(error_call);
