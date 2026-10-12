@@ -116,7 +116,7 @@
 #'
 #' # Maximum and minimum along columns
 #' rray_max(x, axes = 2L)
-#' rray_min(x, 2L)
+#' rray_min(x, axes = 2L)
 NULL
 
 #' @rdname rray-reduce
@@ -163,7 +163,7 @@ rray_max <- function(x, ..., axes, na_rm = FALSE) {
 
 #' @rdname rray-reduce
 #' @export
-rray_min <- function(x, axes, ..., na_rm = FALSE) {
+rray_min <- function(x, ..., axes, na_rm = FALSE) {
   check_dots_empty0(...)
   .Call(ffi_rray_min, x, axes, na_rm, environment())
 }

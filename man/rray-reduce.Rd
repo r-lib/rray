@@ -23,7 +23,7 @@ rray_any(x, ..., axes, na_rm = FALSE)
 
 rray_max(x, ..., axes, na_rm = FALSE)
 
-rray_min(x, axes, ..., na_rm = FALSE)
+rray_min(x, ..., axes, na_rm = FALSE)
 }
 \arguments{
 \item{x}{An array.}
@@ -141,5 +141,5 @@ rray_any(y, axes = 1L)
 
 # Maximum and minimum along columns
 rray_max(x, axes = 2L)
-rray_min(x, 2L)
+rray_min(x, axes = 2L)
 }

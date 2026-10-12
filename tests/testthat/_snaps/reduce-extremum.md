@@ -9,7 +9,7 @@
 ---
 
     Code
-      rray_min(x, 3L)
+      rray_min(x, axes = 3L)
     Condition
       Error in `rray_min()`:
       ! `axes` must contain values less than or equal to the dimensionality of 2, not 3.
@@ -20,6 +20,17 @@
       rray_max(1:3, 1)
     Condition
       Error in `rray_max()`:
+      ! `...` must be empty.
+      x Problematic argument:
+      * ..1 = 1
+      i Did you forget to name an argument?
+
+---
+
+    Code
+      rray_min(1:3, 1)
+    Condition
+      Error in `rray_min()`:
       ! `...` must be empty.
       x Problematic argument:
       * ..1 = 1
@@ -36,7 +47,7 @@
 ---
 
     Code
-      rray_min(x, 1L, na_rm = 1)
+      rray_min(x, axes = 1L, na_rm = 1)
     Condition
       Error in `rray_min()`:
       ! `na_rm` must be `TRUE` or `FALSE`.
@@ -76,7 +87,7 @@
 ---
 
     Code
-      rray_min(array(0+1i, c(2L, 2L)), 1L)
+      rray_min(array(0+1i, c(2L, 2L)), axes = 1L)
     Condition
       Error in `rray_min()`:
       ! Can't compute the minimum of `x` <complex>.
@@ -92,7 +103,7 @@
 ---
 
     Code
-      rray_min(quote(x), 1L)
+      rray_min(quote(x), axes = 1L)
     Condition
       Error in `rray_min()`:
       ! `x` must be an array, not a symbol.
@@ -108,7 +119,7 @@
 ---
 
     Code
-      rray_min(x, 1L)
+      rray_min(x, axes = 1L)
     Condition
       Error in `rray_min()`:
       ! `x` must be a bare array, not a <foo> object.
