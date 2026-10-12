@@ -50,7 +50,7 @@
 #' rray_locate_max(x, axis = 1L)
 #'
 #' # Position of the minimum going across the columns
-#' rray_locate_min(x, 2L)
+#' rray_locate_min(x, axis = 2L)
 NULL
 
 #' @rdname rray-locate
@@ -62,7 +62,7 @@ rray_locate_max <- function(x, ..., axis, na_rm = FALSE) {
 
 #' @rdname rray-locate
 #' @export
-rray_locate_min <- function(x, axis, ..., na_rm = FALSE) {
+rray_locate_min <- function(x, ..., axis, na_rm = FALSE) {
   check_dots_empty0(...)
   .Call(ffi_rray_locate_min, x, axis, na_rm, environment())
 }

@@ -161,7 +161,7 @@ All commits land in one pull request from `feature/dots`.
 
 - [x] `rray_locate_max()`
 
-- [ ] `rray_locate_min()`
+- [x] `rray_locate_min()`
 
 ### Cumulative
 

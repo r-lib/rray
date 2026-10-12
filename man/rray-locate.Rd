@@ -8,7 +8,7 @@
 \usage{
 rray_locate_max(x, ..., axis, na_rm = FALSE)
 
-rray_locate_min(x, axis, ..., na_rm = FALSE)
+rray_locate_min(x, ..., axis, na_rm = FALSE)
 }
 \arguments{
 \item{x}{An array.}
@@ -58,5 +58,5 @@ x <- array(c(3L, 1L, 2L, 4L, 6L, 5L), c(3L, 2L))
 rray_locate_max(x, axis = 1L)
 
 # Position of the minimum going across the columns
-rray_locate_min(x, 2L)
+rray_locate_min(x, axis = 2L)
 }
