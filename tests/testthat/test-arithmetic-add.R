@@ -123,6 +123,10 @@ test_that("missing values win over integer overflow", {
     rray_add(NA_integer_, .Machine$integer.max),
     array(NA_integer_, 1L)
   )
+  expect_identical(
+    rray_add(-.Machine$integer.max, NA_integer_),
+    array(NA_integer_, 1L)
+  )
 })
 
 test_that("broadcasting carries through alternating singleton axes", {
@@ -248,6 +252,21 @@ test_that("errors on integer overflow", {
 
 test_that("errors on integer underflow", {
   expect_snapshot(rray_add(-.Machine$integer.max, -1L), error = TRUE)
+})
+
+test_that("can reach the integer limits without overflowing", {
+  expect_identical(
+    rray_add(.Machine$integer.max - 1L, 1L),
+    array(.Machine$integer.max, 1L)
+  )
+  expect_identical(
+    rray_add(-.Machine$integer.max + 1L, -1L),
+    array(-.Machine$integer.max, 1L)
+  )
+  expect_identical(
+    rray_add(.Machine$integer.max, -.Machine$integer.max),
+    array(0L, 1L)
+  )
 })
 
 test_that("errors on scalar input", {

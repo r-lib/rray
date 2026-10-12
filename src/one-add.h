@@ -2,6 +2,7 @@
 #define RRAY_ONE_ADD_H
 
 #include <limits.h>
+#include <stdint.h>
 
 #include "rlang.h"
 
@@ -20,11 +21,13 @@ static inline int rray_add_int_one(int x, int y, struct r_lazy error_call) {
     return r_globals.na_int;
   }
 
-  if ((y > 0 && x > INT_MAX - y) || (y < 0 && x < -INT_MAX - y)) {
+  const int64_t out = (int64_t) x + (int64_t) y;
+
+  if (out > INT_MAX || out < -INT_MAX) {
     stop_int_overflow(error_call);
   }
 
-  return x + y;
+  return (int) out;
 }
 
 // For `c(NA, NaN)` behavior, match `+` and let the order be "implementation
