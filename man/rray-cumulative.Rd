@@ -16,7 +16,7 @@ rray_cumulative_any(x, ..., axis)
 
 rray_cumulative_max(x, ..., axis)
 
-rray_cumulative_min(x, axis)
+rray_cumulative_min(x, ..., axis)
 
 rray_cumulative_prod(x, axis)
 
@@ -130,7 +130,7 @@ x
 
 # Running maximum and minimum across columns
 rray_cumulative_max(x, axis = 2L)
-rray_cumulative_min(x, 2L)
+rray_cumulative_min(x, axis = 2L)
 
 # Running product down rows
 rray_cumulative_prod(x, 1L)

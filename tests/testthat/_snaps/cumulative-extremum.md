@@ -65,7 +65,7 @@
 ---
 
     Code
-      rray_cumulative_min(x, "a")
+      rray_cumulative_min(x, axis = "a")
     Condition
       Error in `rray_cumulative_min()`:
       ! `axis` must be an integer or double vector, not the string "a".
@@ -76,6 +76,17 @@
       rray_cumulative_max(1:3, 1)
     Condition
       Error in `rray_cumulative_max()`:
+      ! `...` must be empty.
+      x Problematic argument:
+      * ..1 = 1
+      i Did you forget to name an argument?
+
+---
+
+    Code
+      rray_cumulative_min(1:3, 1)
+    Condition
+      Error in `rray_cumulative_min()`:
       ! `...` must be empty.
       x Problematic argument:
       * ..1 = 1
@@ -92,7 +103,7 @@
 ---
 
     Code
-      rray_cumulative_min(0+1i, 1L)
+      rray_cumulative_min(0+1i, axis = 1L)
     Condition
       Error in `rray_cumulative_min()`:
       ! Can't compute the cumulative minimum of `x` <complex>.
@@ -108,7 +119,7 @@
 ---
 
     Code
-      rray_cumulative_min(as.raw(1L), 1L)
+      rray_cumulative_min(as.raw(1L), axis = 1L)
     Condition
       Error in `rray_cumulative_min()`:
       ! Can't compute the cumulative minimum of `x` <raw>.
@@ -132,7 +143,7 @@
 ---
 
     Code
-      rray_cumulative_min(x, 1L)
+      rray_cumulative_min(x, axis = 1L)
     Condition
       Error in `rray_cumulative_min()`:
       ! `x` must be a bare array, not a <foo> object.
