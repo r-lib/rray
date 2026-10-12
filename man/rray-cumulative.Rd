@@ -14,7 +14,7 @@ rray_cumulative_all(x, ..., axis)
 
 rray_cumulative_any(x, ..., axis)
 
-rray_cumulative_max(x, axis)
+rray_cumulative_max(x, ..., axis)
 
 rray_cumulative_min(x, axis)
 
@@ -65,13 +65,13 @@ rray_cumulative_any(c(FALSE, NA, TRUE), axis = 1L) # FALSE, NA, TRUE
 \code{x}. Once a line hits \code{NA} or \code{NaN}, the rest of it stays missing. A later
 \code{NA} replaces an earlier \code{NaN}, like \code{\link[=max]{max()}} and \code{\link[=min]{min()}}:
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_cumulative_max(c(1, NaN, 2, NA, 3), 1L) # 1, NaN, NaN, NA, NA
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_cumulative_max(c(1, NaN, 2, NA, 3), axis = 1L) # 1, NaN, NaN, NA, NA
 }\if{html}{\out{</div>}}
 
 For logical \code{x}, a later \code{TRUE} or \code{FALSE} does not settle an earlier \code{NA},
 unlike \code{rray_cumulative_any()} and \code{rray_cumulative_all()}:
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_cumulative_max(c(NA, TRUE), 1L) # NA, NA
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_cumulative_max(c(NA, TRUE), axis = 1L) # NA, NA
 rray_cumulative_any(c(NA, TRUE), axis = 1L) # NA, TRUE
 }\if{html}{\out{</div>}}
 }
@@ -129,7 +129,7 @@ x <- array(c(3L, 1L, 2L, 5L, 4L, 0L), c(2L, 3L))
 x
 
 # Running maximum and minimum across columns
-rray_cumulative_max(x, 2L)
+rray_cumulative_max(x, axis = 2L)
 rray_cumulative_min(x, 2L)
 
 # Running product down rows

@@ -34,14 +34,14 @@
 #' `NA` replaces an earlier `NaN`, like [max()] and [min()]:
 #'
 #' ```r
-#' rray_cumulative_max(c(1, NaN, 2, NA, 3), 1L) # 1, NaN, NaN, NA, NA
+#' rray_cumulative_max(c(1, NaN, 2, NA, 3), axis = 1L) # 1, NaN, NaN, NA, NA
 #' ```
 #'
 #' For logical `x`, a later `TRUE` or `FALSE` does not settle an earlier `NA`,
 #' unlike `rray_cumulative_any()` and `rray_cumulative_all()`:
 #'
 #' ```r
-#' rray_cumulative_max(c(NA, TRUE), 1L) # NA, NA
+#' rray_cumulative_max(c(NA, TRUE), axis = 1L) # NA, NA
 #' rray_cumulative_any(c(NA, TRUE), axis = 1L) # NA, TRUE
 #' ```
 #'
@@ -108,7 +108,7 @@
 #' x
 #'
 #' # Running maximum and minimum across columns
-#' rray_cumulative_max(x, 2L)
+#' rray_cumulative_max(x, axis = 2L)
 #' rray_cumulative_min(x, 2L)
 #'
 #' # Running product down rows
@@ -134,7 +134,8 @@ rray_cumulative_any <- function(x, ..., axis) {
 
 #' @rdname rray-cumulative
 #' @export
-rray_cumulative_max <- function(x, axis) {
+rray_cumulative_max <- function(x, ..., axis) {
+  check_dots_empty0(...)
   .Call(ffi_rray_cumulative_max, x, axis, environment())
 }
 

@@ -2,7 +2,7 @@ test_that("can accumulate along axis 1", {
   x <- array(c(2L, 3L, 1L, 6L, 4L, 5L), c(3L, 2L))
 
   expect_identical(
-    rray_cumulative_max(x, 1L),
+    rray_cumulative_max(x, axis = 1L),
     array(c(2L, 3L, 3L, 6L, 6L, 6L), c(3L, 2L))
   )
   expect_identical(
@@ -15,7 +15,7 @@ test_that("can accumulate along axis 2", {
   x <- array(c(2L, 6L, 3L, 4L, 1L, 5L), c(2L, 3L))
 
   expect_identical(
-    rray_cumulative_max(x, 2L),
+    rray_cumulative_max(x, axis = 2L),
     array(c(2L, 6L, 3L, 6L, 3L, 6L), c(2L, 3L))
   )
   expect_identical(
@@ -29,7 +29,7 @@ test_that("can accumulate along every axis of a 3D array", {
 
   for (axis in 1:3) {
     expect_identical(
-      rray_cumulative_max(x, axis),
+      rray_cumulative_max(x, axis = axis),
       cumulative_reference(x, axis, max)
     )
     expect_identical(
@@ -42,7 +42,7 @@ test_that("can accumulate along every axis of a 3D array", {
 test_that("each line starts fresh", {
   x <- array(c(5, 1, 2, 3), c(2L, 2L))
   expect_identical(
-    rray_cumulative_max(x, 1L),
+    rray_cumulative_max(x, axis = 1L),
     array(c(5, 5, 2, 3), c(2L, 2L))
   )
   expect_identical(
@@ -53,16 +53,22 @@ test_that("each line starts fresh", {
 
 test_that("output type is the input type", {
   expect_identical(
-    rray_cumulative_max(c(FALSE, TRUE), 1L),
+    rray_cumulative_max(c(FALSE, TRUE), axis = 1L),
     array(c(FALSE, TRUE), 2L)
   )
   expect_identical(
     rray_cumulative_min(c(TRUE, FALSE), 1L),
     array(c(TRUE, FALSE), 2L)
   )
-  expect_identical(rray_cumulative_max(c(1L, 2L), 1L), array(c(1L, 2L), 2L))
+  expect_identical(
+    rray_cumulative_max(c(1L, 2L), axis = 1L),
+    array(c(1L, 2L), 2L)
+  )
   expect_identical(rray_cumulative_min(c(2L, 1L), 1L), array(c(2L, 1L), 2L))
-  expect_identical(rray_cumulative_max(c(1, 2), 1L), array(c(1, 2), 2L))
+  expect_identical(
+    rray_cumulative_max(c(1, 2), axis = 1L),
+    array(c(1, 2), 2L)
+  )
   expect_identical(rray_cumulative_min(c(2, 1), 1L), array(c(2, 1), 2L))
 })
 
@@ -75,7 +81,7 @@ test_that("matches base R for rising and falling lines", {
   )
 
   for (x in lines) {
-    expect_identical(as.vector(rray_cumulative_max(x, 1L)), cummax(x))
+    expect_identical(as.vector(rray_cumulative_max(x, axis = 1L)), cummax(x))
     expect_identical(as.vector(rray_cumulative_min(x, 1L)), cummin(x))
   }
 })
@@ -97,7 +103,7 @@ test_that("matches repeated `pmax()` and `pmin()` across special values", {
       x <- unlist(lines[i, ], use.names = FALSE)
 
       expect_identical(
-        as.vector(rray_cumulative_max(x, 1L)),
+        as.vector(rray_cumulative_max(x, axis = 1L)),
         case$cast(Reduce(pmax_na, x, accumulate = TRUE))
       )
       expect_identical(
@@ -110,7 +116,7 @@ test_that("matches repeated `pmax()` and `pmin()` across special values", {
 
 test_that("missing values persist through the rest of a line", {
   expect_identical(
-    as.vector(rray_cumulative_max(c(1L, NA, 2L), 1L)),
+    as.vector(rray_cumulative_max(c(1L, NA, 2L), axis = 1L)),
     c(1L, NA, NA)
   )
   expect_identical(
@@ -118,7 +124,7 @@ test_that("missing values persist through the rest of a line", {
     c(TRUE, NA, NA)
   )
   expect_identical(
-    as.vector(rray_cumulative_max(c(1, NaN, 2, NA, 3), 1L)),
+    as.vector(rray_cumulative_max(c(1, NaN, 2, NA, 3), axis = 1L)),
     c(1, NaN, NaN, NA, NA)
   )
   expect_identical(
@@ -129,7 +135,7 @@ test_that("missing values persist through the rest of a line", {
 
 test_that("a later `TRUE` or `FALSE` does not settle an earlier `NA`", {
   expect_identical(
-    as.vector(rray_cumulative_max(c(NA, TRUE), 1L)),
+    as.vector(rray_cumulative_max(c(NA, TRUE), axis = 1L)),
     c(NA, NA)
   )
   expect_identical(
@@ -142,7 +148,7 @@ test_that("last position matches the reducer", {
   x <- array(c(3, -1, Inf, 2, 0, -Inf), c(2L, 3L))
 
   expect_identical(
-    rray_cumulative_max(x, 2L)[, 3L, drop = FALSE],
+    rray_cumulative_max(x, axis = 2L)[, 3L, drop = FALSE],
     rray_max(x, axes = 2L)
   )
   expect_identical(
@@ -153,15 +159,15 @@ test_that("last position matches the reducer", {
 
 test_that("an axis of dimension 1 returns `x`", {
   x <- array(c(TRUE, FALSE, NA), c(1L, 3L))
-  expect_identical(rray_cumulative_max(x, 1L), x)
+  expect_identical(rray_cumulative_max(x, axis = 1L), x)
   expect_identical(rray_cumulative_min(x, 1L), x)
 
   x <- array(c(-.Machine$integer.max, .Machine$integer.max, NA), c(1L, 3L))
-  expect_identical(rray_cumulative_max(x, 1L), x)
+  expect_identical(rray_cumulative_max(x, axis = 1L), x)
   expect_identical(rray_cumulative_min(x, 1L), x)
 
   x <- array(c(-Inf, Inf, NA, NaN), c(1L, 4L))
-  expect_identical(rray_cumulative_max(x, 1L), x)
+  expect_identical(rray_cumulative_max(x, axis = 1L), x)
   expect_identical(rray_cumulative_min(x, 1L), x)
 })
 
@@ -170,7 +176,7 @@ test_that("zero-size arrays keep their shape", {
     x <- array(x, c(2L, 0L, 3L))
 
     for (axis in 1:3) {
-      expect_identical(rray_cumulative_max(x, axis), x)
+      expect_identical(rray_cumulative_max(x, axis = axis), x)
       expect_identical(rray_cumulative_min(x, axis), x)
     }
   }
@@ -182,15 +188,15 @@ test_that("names are kept on every axis", {
     c(2L, 2L),
     dimnames = list(c("a", "b"), c("c", "d"))
   )
-  expect_identical(dimnames(rray_cumulative_max(x, 1L)), dimnames(x))
+  expect_identical(dimnames(rray_cumulative_max(x, axis = 1L)), dimnames(x))
   expect_identical(dimnames(rray_cumulative_min(x, 2L)), dimnames(x))
 
   x <- array(1L, c(2L, 2L), dimnames = list(NULL, c("c", "d")))
-  expect_identical(dimnames(rray_cumulative_max(x, 2L)), dimnames(x))
+  expect_identical(dimnames(rray_cumulative_max(x, axis = 2L)), dimnames(x))
   expect_identical(dimnames(rray_cumulative_min(x, 2L)), dimnames(x))
 
   x <- array(1L, c(2L, 2L))
-  expect_null(dimnames(rray_cumulative_max(x, 1L)))
+  expect_null(dimnames(rray_cumulative_max(x, axis = 1L)))
   expect_null(dimnames(rray_cumulative_min(x, 1L)))
 })
 
@@ -200,13 +206,16 @@ test_that("titles are kept", {
     c(2L, 2L),
     dimnames = list(Row = c("a", "b"), Column = NULL)
   )
-  expect_identical(rray_titles(rray_cumulative_max(x, 1L)), c("Row", "Column"))
+  expect_identical(
+    rray_titles(rray_cumulative_max(x, axis = 1L)),
+    c("Row", "Column")
+  )
   expect_identical(rray_titles(rray_cumulative_min(x, 2L)), c("Row", "Column"))
 })
 
 test_that("vectors become 1D arrays", {
   expect_identical(
-    rray_cumulative_max(c(a = 1, b = 3, c = 2), 1L),
+    rray_cumulative_max(c(a = 1, b = 3, c = 2), axis = 1L),
     array(c(1, 3, 3), 3L, dimnames = list(c("a", "b", "c")))
   )
   expect_identical(
@@ -217,34 +226,44 @@ test_that("vectors become 1D arrays", {
 
 test_that("`axis` can be a whole double", {
   x <- array(c(1L, 2L), c(2L, 2L))
-  expect_identical(rray_cumulative_max(x, 2), rray_cumulative_max(x, 2L))
+  expect_identical(
+    rray_cumulative_max(x, axis = 2),
+    rray_cumulative_max(x, axis = 2L)
+  )
   expect_identical(rray_cumulative_min(x, 2), rray_cumulative_min(x, 2L))
 })
 
 test_that("`axis` is validated", {
   x <- array(1L, c(2L, 2L))
 
-  expect_snapshot(rray_cumulative_max(x, integer()), error = TRUE)
-  expect_snapshot(rray_cumulative_max(x, 1:2), error = TRUE)
-  expect_snapshot(rray_cumulative_max(x, NA_integer_), error = TRUE)
-  expect_snapshot(rray_cumulative_max(x, 0L), error = TRUE)
-  expect_snapshot(rray_cumulative_max(x, -1L), error = TRUE)
-  expect_snapshot(rray_cumulative_max(x, 1.5), error = TRUE)
-  expect_snapshot(rray_cumulative_max(x, 3L), error = TRUE)
-  expect_snapshot(rray_cumulative_max(x, structure(1L, foo = 1)), error = TRUE)
+  expect_snapshot(rray_cumulative_max(x, axis = integer()), error = TRUE)
+  expect_snapshot(rray_cumulative_max(x, axis = 1:2), error = TRUE)
+  expect_snapshot(rray_cumulative_max(x, axis = NA_integer_), error = TRUE)
+  expect_snapshot(rray_cumulative_max(x, axis = 0L), error = TRUE)
+  expect_snapshot(rray_cumulative_max(x, axis = -1L), error = TRUE)
+  expect_snapshot(rray_cumulative_max(x, axis = 1.5), error = TRUE)
+  expect_snapshot(rray_cumulative_max(x, axis = 3L), error = TRUE)
+  expect_snapshot(
+    rray_cumulative_max(x, axis = structure(1L, foo = 1)),
+    error = TRUE
+  )
   expect_snapshot(rray_cumulative_min(x, "a"), error = TRUE)
 })
 
+test_that("`axis` must be named", {
+  expect_snapshot(rray_cumulative_max(1:3, 1), error = TRUE)
+})
+
 test_that("errors on unsupported input types", {
-  expect_snapshot(rray_cumulative_max(1i, 1L), error = TRUE)
+  expect_snapshot(rray_cumulative_max(1i, axis = 1L), error = TRUE)
   expect_snapshot(rray_cumulative_min(1i, 1L), error = TRUE)
-  expect_snapshot(rray_cumulative_max("a", 1L), error = TRUE)
+  expect_snapshot(rray_cumulative_max("a", axis = 1L), error = TRUE)
   expect_snapshot(rray_cumulative_min(as.raw(1L), 1L), error = TRUE)
-  expect_snapshot(rray_cumulative_max(list(1), 1L), error = TRUE)
+  expect_snapshot(rray_cumulative_max(list(1), axis = 1L), error = TRUE)
 })
 
 test_that("errors on classed input", {
   x <- structure(1L, class = "foo")
-  expect_snapshot(rray_cumulative_max(x, 1L), error = TRUE)
+  expect_snapshot(rray_cumulative_max(x, axis = 1L), error = TRUE)
   expect_snapshot(rray_cumulative_min(x, 1L), error = TRUE)
 })
