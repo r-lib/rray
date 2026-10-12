@@ -629,33 +629,47 @@ static r_obj* rray_equality_cpl_cpl(
 
 #undef RRAY_EQUALITY
 
-#define RRAY_EQUALITY_ONE(X_IS_MISSING, Y_IS_MISSING, OPERATOR)                \
-  const bool missing = bool_bitwise_or(X_IS_MISSING(x), Y_IS_MISSING(y));      \
-  const int elt = x OPERATOR y;                                                \
-  return missing ? r_globals.na_lgl : elt;
-
 static inline int rray_equal_lgl_one(int x, int y) {
-  RRAY_EQUALITY_ONE(rray_lgl_is_missing, rray_lgl_is_missing, ==);
+  const bool missing =
+    bool_bitwise_or(rray_lgl_is_missing(x), rray_lgl_is_missing(y));
+  const int elt = x == y;
+  return missing ? r_globals.na_lgl : elt;
 }
+
 static inline int rray_not_equal_lgl_one(int x, int y) {
-  RRAY_EQUALITY_ONE(rray_lgl_is_missing, rray_lgl_is_missing, !=);
+  const bool missing =
+    bool_bitwise_or(rray_lgl_is_missing(x), rray_lgl_is_missing(y));
+  const int elt = x != y;
+  return missing ? r_globals.na_lgl : elt;
 }
 
 static inline int rray_equal_int_one(int x, int y) {
-  RRAY_EQUALITY_ONE(rray_int_is_missing, rray_int_is_missing, ==);
+  const bool missing =
+    bool_bitwise_or(rray_int_is_missing(x), rray_int_is_missing(y));
+  const int elt = x == y;
+  return missing ? r_globals.na_lgl : elt;
 }
+
 static inline int rray_not_equal_int_one(int x, int y) {
-  RRAY_EQUALITY_ONE(rray_int_is_missing, rray_int_is_missing, !=);
+  const bool missing =
+    bool_bitwise_or(rray_int_is_missing(x), rray_int_is_missing(y));
+  const int elt = x != y;
+  return missing ? r_globals.na_lgl : elt;
 }
 
 static inline int rray_equal_dbl_one(double x, double y) {
-  RRAY_EQUALITY_ONE(rray_dbl_is_missing, rray_dbl_is_missing, ==);
-}
-static inline int rray_not_equal_dbl_one(double x, double y) {
-  RRAY_EQUALITY_ONE(rray_dbl_is_missing, rray_dbl_is_missing, !=);
+  const bool missing =
+    bool_bitwise_or(rray_dbl_is_missing(x), rray_dbl_is_missing(y));
+  const int elt = x == y;
+  return missing ? r_globals.na_lgl : elt;
 }
 
-#undef RRAY_EQUALITY_ONE
+static inline int rray_not_equal_dbl_one(double x, double y) {
+  const bool missing =
+    bool_bitwise_or(rray_dbl_is_missing(x), rray_dbl_is_missing(y));
+  const int elt = x != y;
+  return missing ? r_globals.na_lgl : elt;
+}
 
 // Purposeful usage of bitwise operators to encourage loop vectorization
 static inline int rray_equal_cpl_one(r_complex x, r_complex y) {
