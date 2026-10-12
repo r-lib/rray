@@ -24,7 +24,7 @@
 #' `FALSE` or `TRUE` can settle an earlier `NA`:
 #'
 #' ```r
-#' rray_cumulative_all(c(TRUE, NA, FALSE), 1L) # TRUE, NA, FALSE
+#' rray_cumulative_all(c(TRUE, NA, FALSE), axis = 1L) # TRUE, NA, FALSE
 #' rray_cumulative_any(c(FALSE, NA, TRUE), 1L) # FALSE, NA, TRUE
 #' ```
 #'
@@ -81,6 +81,8 @@
 #' rray_cumulative_sum(c(2, NA, NaN), 1L) # 2, NA, NA or NaN
 #' ```
 #'
+#' @inheritParams rlang::args_dots_empty
+#'
 #' @param x An array.
 #'
 #' @param axis A single integer. The axis to accumulate along. `1`
@@ -95,11 +97,11 @@
 #' x
 #'
 #' # Down rows
-#' rray_cumulative_all(x, 1L)
+#' rray_cumulative_all(x, axis = 1L)
 #' rray_cumulative_any(x, 1L)
 #'
 #' # Across columns
-#' rray_cumulative_all(x, 2L)
+#' rray_cumulative_all(x, axis = 2L)
 #' rray_cumulative_any(x, 2L)
 #'
 #' x <- array(c(3L, 1L, 2L, 5L, 4L, 0L), c(2L, 3L))
@@ -118,7 +120,8 @@ NULL
 
 #' @rdname rray-cumulative
 #' @export
-rray_cumulative_all <- function(x, axis) {
+rray_cumulative_all <- function(x, ..., axis) {
+  check_dots_empty0(...)
   .Call(ffi_rray_cumulative_all, x, axis, environment())
 }
 

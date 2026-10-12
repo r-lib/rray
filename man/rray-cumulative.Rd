@@ -10,7 +10,7 @@
 \alias{rray_cumulative_sum}
 \title{Accumulate along an axis}
 \usage{
-rray_cumulative_all(x, axis)
+rray_cumulative_all(x, ..., axis)
 
 rray_cumulative_any(x, axis)
 
@@ -24,6 +24,8 @@ rray_cumulative_sum(x, axis)
 }
 \arguments{
 \item{x}{An array.}
+
+\item{...}{These dots are for future extensions and must be empty.}
 
 \item{axis}{A single integer. The axis to accumulate along. \code{1}
 accumulates down rows, \code{2} accumulates across columns, and so on.}
@@ -52,7 +54,7 @@ it.
 \code{x} must be logical. Missing values follow \code{\link[=all]{all()}} and \code{\link[=any]{any()}}, so a later
 \code{FALSE} or \code{TRUE} can settle an earlier \code{NA}:
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_cumulative_all(c(TRUE, NA, FALSE), 1L) # TRUE, NA, FALSE
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_cumulative_all(c(TRUE, NA, FALSE), axis = 1L) # TRUE, NA, FALSE
 rray_cumulative_any(c(FALSE, NA, TRUE), 1L) # FALSE, NA, TRUE
 }\if{html}{\out{</div>}}
 }
@@ -116,11 +118,11 @@ x <- array(c(TRUE, TRUE, FALSE, TRUE, NA, TRUE), c(2L, 3L))
 x
 
 # Down rows
-rray_cumulative_all(x, 1L)
+rray_cumulative_all(x, axis = 1L)
 rray_cumulative_any(x, 1L)
 
 # Across columns
-rray_cumulative_all(x, 2L)
+rray_cumulative_all(x, axis = 2L)
 rray_cumulative_any(x, 2L)
 
 x <- array(c(3L, 1L, 2L, 5L, 4L, 0L), c(2L, 3L))
