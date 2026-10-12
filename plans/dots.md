@@ -159,7 +159,7 @@ All commits land in one pull request from `feature/dots`.
 
 ### Locate
 
-- [ ] `rray_locate_max()`
+- [x] `rray_locate_max()`
 
 - [ ] `rray_locate_min()`
 
