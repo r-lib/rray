@@ -6,6 +6,7 @@
 \alias{rray_cumulative_any}
 \alias{rray_cumulative_max}
 \alias{rray_cumulative_min}
+\alias{rray_cumulative_prod}
 \title{Accumulate along an axis}
 \usage{
 rray_cumulative_all(x, axis)
@@ -15,6 +16,8 @@ rray_cumulative_any(x, axis)
 rray_cumulative_max(x, axis)
 
 rray_cumulative_min(x, axis)
+
+rray_cumulative_prod(x, axis)
 }
 \arguments{
 \item{x}{An array.}
@@ -33,6 +36,7 @@ An array with the same dimensions and names as \code{x}.
 \code{axis}.
 \item \code{rray_cumulative_max()} computes the maximum so far along \code{axis}.
 \item \code{rray_cumulative_min()} computes the minimum so far along \code{axis}.
+\item \code{rray_cumulative_prod()} computes the product so far along \code{axis}.
 }
 }
 \details{
@@ -66,6 +70,19 @@ rray_cumulative_any(c(NA, TRUE), 1L) # NA, TRUE
 }\if{html}{\out{</div>}}
 }
 
+\section{Product}{
+
+\code{x} must be logical, integer, double, or complex. Logicals and integers are
+cast to double.
+
+When \code{NA} and \code{NaN} are both present, you get one of them, but which one
+depends on the platform and the order of the values. Either way, \code{is.na()}
+is \code{TRUE} from that point on:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_cumulative_prod(c(2, NA, NaN), 1L) # 2, NA, NA or NaN
+}\if{html}{\out{</div>}}
+}
+
 \examples{
 x <- array(c(TRUE, TRUE, FALSE, TRUE, NA, TRUE), c(2L, 3L))
 x
@@ -84,4 +101,7 @@ x
 # Running maximum and minimum across columns
 rray_cumulative_max(x, 2L)
 rray_cumulative_min(x, 2L)
+
+# Running product down rows
+rray_cumulative_prod(x, 1L)
 }

@@ -13,6 +13,10 @@ operations <- list(
   min = list(
     fn = rray_cumulative_min,
     types = c("logical", "integer", "double")
+  ),
+  prod = list(
+    fn = rray_cumulative_prod,
+    types = c("logical", "integer", "double", "complex")
   )
 )
 
@@ -34,7 +38,8 @@ make_array <- function(dimensions, type) {
     type,
     logical = sample(c(TRUE, FALSE, NA), n, replace = TRUE),
     integer = sample(100L, n, replace = TRUE),
-    double = runif(n)
+    double = runif(n),
+    complex = complex(real = runif(n), imaginary = runif(n))
   )
 
   array(values, dimensions)
