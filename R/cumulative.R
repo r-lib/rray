@@ -13,6 +13,8 @@
 #'
 #' - `rray_cumulative_prod()` computes the product so far along `axis`.
 #'
+#' - `rray_cumulative_sum()` computes the sum so far along `axis`.
+#'
 #' @details
 #' Each position along `axis` summarizes every position up to and including
 #' it.
@@ -55,6 +57,30 @@
 #' rray_cumulative_prod(c(2, NA, NaN), 1L) # 2, NA, NA or NaN
 #' ```
 #'
+#' @section Sum:
+#' `x` must be logical, integer, double, or complex. Logicals are cast to
+#' integer.
+#'
+#' An integer sum errors as soon as a running total overflows, even if a
+#' later value would bring it back in range. This differs from [rray_sum()],
+#' which only checks the final total:
+#'
+#' ```r
+#' x <- c(.Machine$integer.max, 1L, -1L)
+#' rray_sum(x, 1L) # .Machine$integer.max
+#' rray_cumulative_sum(x, 1L) # Error
+#' ```
+#'
+#' Once a line is `NA`, it stays `NA`, and a later overflow does not error.
+#'
+#' When `NA` and `NaN` are both present, you get one of them, but which one
+#' depends on the platform and the order of the values. Either way, `is.na()`
+#' is `TRUE` from that point on:
+#'
+#' ```r
+#' rray_cumulative_sum(c(2, NA, NaN), 1L) # 2, NA, NA or NaN
+#' ```
+#'
 #' @param x An array.
 #'
 #' @param axis A single integer. The axis to accumulate along. `1`
@@ -85,6 +111,9 @@
 #'
 #' # Running product down rows
 #' rray_cumulative_prod(x, 1L)
+#'
+#' # Running sum across columns
+#' rray_cumulative_sum(x, 2L)
 NULL
 
 #' @rdname rray-cumulative
@@ -115,4 +144,10 @@ rray_cumulative_min <- function(x, axis) {
 #' @export
 rray_cumulative_prod <- function(x, axis) {
   .Call(ffi_rray_cumulative_prod, x, axis, environment())
+}
+
+#' @rdname rray-cumulative
+#' @export
+rray_cumulative_sum <- function(x, axis) {
+  .Call(ffi_rray_cumulative_sum, x, axis, environment())
 }

@@ -29,6 +29,9 @@ r_obj* rray_cumulative(
   struct r_lazy error_call
 );
 
+#define RRAY_CUMULATIVE_ARGS(...) , __VA_ARGS__
+#define RRAY_CUMULATIVE_NO_ARGS
+
 #define RRAY_CUMULATIVE(                                                       \
   X_CTYPE,                                                                     \
   X_CONST_DEREF,                                                               \
@@ -36,7 +39,8 @@ r_obj* rray_cumulative(
   OUT_CTYPE,                                                                   \
   OUT_DEREF,                                                                   \
   OUT_INIT,                                                                    \
-  ONE                                                                          \
+  ONE,                                                                         \
+  ONE_ARGS                                                                     \
 )                                                                              \
   struct rray_run_iterator it;                                                 \
   rray_run_iterator_init1(                                                     \
@@ -69,14 +73,14 @@ r_obj* rray_cumulative(
       OUT_CTYPE elt = v_state[state_loc];                                      \
                                                                                \
       for (r_ssize i = start; i < end; ++i) {                                  \
-        elt = ONE(elt, v_x[i]);                                                \
+        elt = ONE(elt, v_x[i] ONE_ARGS);                                       \
         v_out[i] = elt;                                                        \
       }                                                                        \
                                                                                \
       v_state[state_loc] = elt;                                                \
     } else {                                                                   \
       for (r_ssize i = start; i < end; ++i) {                                  \
-        const OUT_CTYPE elt = ONE(v_state[state_loc], v_x[i]);                 \
+        const OUT_CTYPE elt = ONE(v_state[state_loc], v_x[i] ONE_ARGS);        \
         v_state[state_loc] = elt;                                              \
         v_out[i] = elt;                                                        \
         state_loc += state_stride;                                             \

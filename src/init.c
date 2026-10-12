@@ -299,6 +299,11 @@ extern r_obj* ffi_rray_cumulative_prod(
   r_obj* ffi_axis,
   r_obj* ffi_frame
 );
+extern r_obj* ffi_rray_cumulative_sum(
+  r_obj* ffi_x,
+  r_obj* ffi_axis,
+  r_obj* ffi_frame
+);
 extern r_obj* ffi_rray_ptype(r_obj* ffi_x, r_obj* ffi_frame);
 extern r_obj* ffi_rray_ptype2(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame);
 extern r_obj* ffi_rray_ptype_common(
@@ -449,6 +454,7 @@ static const R_CallMethodDef CallEntries[] = {
   {"ffi_rray_cumulative_max", (DL_FUNC) &ffi_rray_cumulative_max, 3},
   {"ffi_rray_cumulative_min", (DL_FUNC) &ffi_rray_cumulative_min, 3},
   {"ffi_rray_cumulative_prod", (DL_FUNC) &ffi_rray_cumulative_prod, 3},
+  {"ffi_rray_cumulative_sum", (DL_FUNC) &ffi_rray_cumulative_sum, 3},
   {"ffi_rray_ptype", (DL_FUNC) &ffi_rray_ptype, 2},
   {"ffi_rray_ptype2", (DL_FUNC) &ffi_rray_ptype2, 3},
   {"ffi_rray_ptype_common", (DL_FUNC) &ffi_rray_ptype_common, 3},
