@@ -12,6 +12,8 @@
 
 - `rray_cumulative_prod()` computes the product so far along `axis`.
 
+- `rray_cumulative_sum()` computes the sum so far along `axis`.
+
 ## Usage
 
 ``` r
@@ -24,6 +26,8 @@ rray_cumulative_max(x, axis)
 rray_cumulative_min(x, axis)
 
 rray_cumulative_prod(x, axis)
+
+rray_cumulative_sum(x, axis)
 ```
 
 ## Arguments
@@ -84,6 +88,29 @@ on:
 
     rray_cumulative_prod(c(2, NA, NaN), 1L) # 2, NA, NA or NaN
 
+## Sum
+
+`x` must be logical, integer, double, or complex. Logicals are cast to
+integer.
+
+An integer sum errors as soon as a running total overflows, even if a
+later value would bring it back in range. This differs from
+[`rray_sum()`](https://rray.r-lib.org/reference/rray-reduce.md), which
+only checks the final total:
+
+    x <- c(.Machine$integer.max, 1L, -1L)
+    rray_sum(x, 1L) # .Machine$integer.max
+    rray_cumulative_sum(x, 1L) # Error
+
+Once a line is `NA`, it stays `NA`, and a later overflow does not error.
+
+When `NA` and `NaN` are both present, you get one of them, but which one
+depends on the platform and the order of the values. Either way,
+[`is.na()`](https://rdrr.io/r/base/NA.html) is `TRUE` from that point
+on:
+
+    rray_cumulative_sum(c(2, NA, NaN), 1L) # 2, NA, NA or NaN
+
 ## Examples
 
 ``` r
@@ -134,4 +161,10 @@ rray_cumulative_prod(x, 1L)
 #>      [,1] [,2] [,3]
 #> [1,]    3    2    4
 #> [2,]    3   10    0
+
+# Running sum across columns
+rray_cumulative_sum(x, 2L)
+#>      [,1] [,2] [,3]
+#> [1,]    3    5    9
+#> [2,]    1    6    6
 ```

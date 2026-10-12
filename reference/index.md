@@ -47,6 +47,7 @@
   [`rray_cumulative_max()`](https://rray.r-lib.org/reference/rray-cumulative.md)
   [`rray_cumulative_min()`](https://rray.r-lib.org/reference/rray-cumulative.md)
   [`rray_cumulative_prod()`](https://rray.r-lib.org/reference/rray-cumulative.md)
+  [`rray_cumulative_sum()`](https://rray.r-lib.org/reference/rray-cumulative.md)
   : Accumulate along an axis
 
 ## Combining and Splitting
