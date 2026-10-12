@@ -54,7 +54,7 @@
 #' is `TRUE` from that point on:
 #'
 #' ```r
-#' rray_cumulative_prod(c(2, NA, NaN), 1L) # 2, NA, NA or NaN
+#' rray_cumulative_prod(c(2, NA, NaN), axis = 1L) # 2, NA, NA or NaN
 #' ```
 #'
 #' @section Sum:
@@ -112,7 +112,7 @@
 #' rray_cumulative_min(x, axis = 2L)
 #'
 #' # Running product down rows
-#' rray_cumulative_prod(x, 1L)
+#' rray_cumulative_prod(x, axis = 1L)
 #'
 #' # Running sum across columns
 #' rray_cumulative_sum(x, 2L)
@@ -148,7 +148,8 @@ rray_cumulative_min <- function(x, ..., axis) {
 
 #' @rdname rray-cumulative
 #' @export
-rray_cumulative_prod <- function(x, axis) {
+rray_cumulative_prod <- function(x, ..., axis) {
+  check_dots_empty0(...)
   .Call(ffi_rray_cumulative_prod, x, axis, environment())
 }
 

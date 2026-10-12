@@ -18,7 +18,7 @@ rray_cumulative_max(x, ..., axis)
 
 rray_cumulative_min(x, ..., axis)
 
-rray_cumulative_prod(x, axis)
+rray_cumulative_prod(x, ..., axis)
 
 rray_cumulative_sum(x, axis)
 }
@@ -85,7 +85,7 @@ When \code{NA} and \code{NaN} are both present, you get one of them, but which o
 depends on the platform and the order of the values. Either way, \code{is.na()}
 is \code{TRUE} from that point on:
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_cumulative_prod(c(2, NA, NaN), 1L) # 2, NA, NA or NaN
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_cumulative_prod(c(2, NA, NaN), axis = 1L) # 2, NA, NA or NaN
 }\if{html}{\out{</div>}}
 }
 
@@ -133,7 +133,7 @@ rray_cumulative_max(x, axis = 2L)
 rray_cumulative_min(x, axis = 2L)
 
 # Running product down rows
-rray_cumulative_prod(x, 1L)
+rray_cumulative_prod(x, axis = 1L)
 
 # Running sum across columns
 rray_cumulative_sum(x, 2L)
