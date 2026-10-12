@@ -106,6 +106,11 @@ test_that("double NA / NaN propagates", {
   expect_identical(is.na(rray_prod(x, 1L)), array(TRUE, 1L))
 })
 
+test_that("integer NA after an overflow to NaN is missing", {
+  x <- c(rep(.Machine$integer.max, 40L), 0L, NA)
+  expect_identical(is.na(rray_prod(x, 1L)), array(TRUE, 1L))
+})
+
 test_that("Inf matches base R prod", {
   expect_identical(
     as.vector(rray_prod(c(Inf, 1), 1L)),
@@ -208,6 +213,26 @@ test_that("na_rm removes double NA and NaN", {
 
   x <- c(NA_real_, NaN)
   expect_identical(as.vector(rray_prod(x, 1L, na_rm = TRUE)), 1)
+})
+
+test_that("na_rm keeps the running product exactly", {
+  x <- c(-1, 0, NA)
+  expect_identical(1 / as.vector(rray_prod(x, 1L, na_rm = TRUE)), -Inf)
+
+  x <- c(-1L, 0L, NA)
+  expect_identical(1 / as.vector(rray_prod(x, 1L, na_rm = TRUE)), -Inf)
+
+  x <- c(Inf, NA)
+  expect_identical(as.vector(rray_prod(x, 1L, na_rm = TRUE)), Inf)
+
+  x <- c(rep(.Machine$integer.max, 40L), NA)
+  expect_identical(as.vector(rray_prod(x, 1L, na_rm = TRUE)), Inf)
+
+  x <- c(Inf, 0, NA)
+  expect_identical(as.vector(rray_prod(x, 1L, na_rm = TRUE)), NaN)
+
+  x <- c(rep(.Machine$integer.max, 40L), 0L, NA)
+  expect_identical(as.vector(rray_prod(x, 1L, na_rm = TRUE)), NaN)
 })
 
 test_that("na_rm removes logical NA", {

@@ -4,6 +4,7 @@ iterations <- as.integer(Sys.getenv("RRAY_BENCH_ITERATIONS", "20"))
 output <- Sys.getenv("RRAY_BENCH_OUTPUT", "")
 
 operations <- list(
+  multiply = list(fn = rray_multiply, types = c("integer", "double")),
   greater_than = list(fn = rray_greater_than, types = c("integer", "double")),
   equal = list(fn = rray_equal, types = c("integer", "double")),
   pmax = list(fn = rray_pmax, types = c("integer", "double")),

@@ -35,6 +35,18 @@
 #' @section Product:
 #' Logicals and integers are cast to double.
 #'
+#' When `NA` and `NaN` are both present, you get one of them, but which one
+#' depends on the platform and the order of the values. Either way, `is.na()`
+#' is `TRUE`. Integers can hit this too, since a product that overflows to
+#' `Inf` becomes `NaN` when multiplied by `0`:
+#'
+#' ```r
+#' rray_prod(c(NA, NaN), 1L) # NA or NaN
+#'
+#' x <- c(rep(.Machine$integer.max, 40L), 0L, NA)
+#' rray_prod(x, 1L) # NA or NaN
+#' ```
+#'
 #' @section Mean:
 #' Logicals and integers are cast to double.
 #'

@@ -139,6 +139,12 @@ test_that("`NA` and `NaN` together are missing in either order", {
     is.na(as.vector(rray_cumulative_prod(c(2, NaN, NA, 3), 1L))),
     c(FALSE, TRUE, TRUE, TRUE)
   )
+
+  x <- c(rep(.Machine$integer.max, 40L), 0L, NA)
+  expect_identical(
+    is.na(as.vector(rray_cumulative_prod(x, 1L))),
+    c(rep(FALSE, 40L), TRUE, TRUE)
+  )
 })
 
 test_that("last position matches the reducer", {
