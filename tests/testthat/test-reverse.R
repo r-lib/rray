@@ -152,6 +152,10 @@ test_that("`axes` is validated", {
   expect_snapshot(rray_reverse(x, axes = "a"), error = TRUE)
 })
 
+test_that("`axes` must be named", {
+  expect_snapshot(rray_reverse(1:3, 1), error = TRUE)
+})
+
 test_that("errors on invalid input", {
   expect_snapshot(rray_reverse(NULL, axes = 1), error = TRUE)
 
