@@ -106,6 +106,12 @@ test_that("a missing value cast into complex reaches both parts", {
   expect_identical(Im(out), NA_real_)
 })
 
+test_that("logical missing values propagate", {
+  expect_identical(rray_multiply(NA, TRUE), array(NA_integer_, 1L))
+  expect_identical(rray_multiply(TRUE, NA), array(NA_integer_, 1L))
+  expect_identical(rray_multiply(2L, NA), array(NA_integer_, 1L))
+})
+
 test_that("integer missing values propagate", {
   expect_identical(rray_multiply(NA_integer_, 2L), array(NA_integer_, 1L))
   expect_identical(rray_multiply(2L, NA_integer_), array(NA_integer_, 1L))

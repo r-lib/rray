@@ -91,6 +91,12 @@ test_that("casting into complex zeroes the imaginary part", {
   expect_identical(Im(out), 1)
 })
 
+test_that("logical missing values propagate", {
+  expect_identical(rray_add(NA, TRUE), array(NA_integer_, 1L))
+  expect_identical(rray_add(TRUE, NA), array(NA_integer_, 1L))
+  expect_identical(rray_add(1L, NA), array(NA_integer_, 1L))
+})
+
 test_that("integer missing values propagate", {
   expect_identical(rray_add(NA_integer_, 1L), array(NA_integer_, 1L))
   expect_identical(rray_add(1L, NA_integer_), array(NA_integer_, 1L))

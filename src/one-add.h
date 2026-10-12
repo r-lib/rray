@@ -6,6 +6,7 @@
 
 #include "rlang.h"
 
+#include "cast.h"
 #include "missing.h"
 #include "utils.h"
 
@@ -28,6 +29,10 @@ static inline int rray_add_int_one(int x, int y, struct r_lazy error_call) {
   }
 
   return (int) out;
+}
+
+static inline int rray_add_lgl_one(int out, int x, struct r_lazy error_call) {
+  return rray_add_int_one(out, rray_cast_lgl_to_int_one(x), error_call);
 }
 
 // For `c(NA, NaN)` behavior, match `+` and let the order be "implementation

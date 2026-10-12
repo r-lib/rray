@@ -68,7 +68,7 @@ static r_obj* rray_cumulative_sum_lgl(
     int,
     r_int_begin,
     0,
-    rray_add_int_one,
+    rray_add_lgl_one,
     RRAY_CUMULATIVE_ARGS(error_call)
   );
 }
