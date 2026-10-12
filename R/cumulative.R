@@ -68,7 +68,7 @@
 #' ```r
 #' x <- c(.Machine$integer.max, 1L, -1L)
 #' rray_sum(x, axes = 1L) # .Machine$integer.max
-#' rray_cumulative_sum(x, 1L) # Error
+#' rray_cumulative_sum(x, axis = 1L) # Error
 #' ```
 #'
 #' Once a line is `NA`, it stays `NA`, and a later overflow does not error.
@@ -78,7 +78,7 @@
 #' is `TRUE` from that point on:
 #'
 #' ```r
-#' rray_cumulative_sum(c(2, NA, NaN), 1L) # 2, NA, NA or NaN
+#' rray_cumulative_sum(c(2, NA, NaN), axis = 1L) # 2, NA, NA or NaN
 #' ```
 #'
 #' @inheritParams rlang::args_dots_empty
@@ -115,7 +115,7 @@
 #' rray_cumulative_prod(x, axis = 1L)
 #'
 #' # Running sum across columns
-#' rray_cumulative_sum(x, 2L)
+#' rray_cumulative_sum(x, axis = 2L)
 NULL
 
 #' @rdname rray-cumulative
@@ -155,6 +155,7 @@ rray_cumulative_prod <- function(x, ..., axis) {
 
 #' @rdname rray-cumulative
 #' @export
-rray_cumulative_sum <- function(x, axis) {
+rray_cumulative_sum <- function(x, ..., axis) {
+  check_dots_empty0(...)
   .Call(ffi_rray_cumulative_sum, x, axis, environment())
 }

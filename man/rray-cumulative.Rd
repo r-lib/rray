@@ -20,7 +20,7 @@ rray_cumulative_min(x, ..., axis)
 
 rray_cumulative_prod(x, ..., axis)
 
-rray_cumulative_sum(x, axis)
+rray_cumulative_sum(x, ..., axis)
 }
 \arguments{
 \item{x}{An array.}
@@ -100,7 +100,7 @@ which only checks the final total:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{x <- c(.Machine$integer.max, 1L, -1L)
 rray_sum(x, axes = 1L) # .Machine$integer.max
-rray_cumulative_sum(x, 1L) # Error
+rray_cumulative_sum(x, axis = 1L) # Error
 }\if{html}{\out{</div>}}
 
 Once a line is \code{NA}, it stays \code{NA}, and a later overflow does not error.
@@ -109,7 +109,7 @@ When \code{NA} and \code{NaN} are both present, you get one of them, but which o
 depends on the platform and the order of the values. Either way, \code{is.na()}
 is \code{TRUE} from that point on:
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_cumulative_sum(c(2, NA, NaN), 1L) # 2, NA, NA or NaN
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_cumulative_sum(c(2, NA, NaN), axis = 1L) # 2, NA, NA or NaN
 }\if{html}{\out{</div>}}
 }
 
@@ -136,5 +136,5 @@ rray_cumulative_min(x, axis = 2L)
 rray_cumulative_prod(x, axis = 1L)
 
 # Running sum across columns
-rray_cumulative_sum(x, 2L)
+rray_cumulative_sum(x, axis = 2L)
 }
