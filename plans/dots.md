@@ -85,8 +85,20 @@ For each function:
    `check_dots_empty0(...)` as the first line if the function doesn't already
    have it.
 
-2. Add `@inheritParams rlang::args_dots_empty` to the roxygen block if it isn't
-   already there.
+2. Document `...` with `@inheritParams rlang::args_dots_empty`, like
+   `R/rep.R` and `R/roll.R` do. Put it above every `@param`, with a blank
+   line on either side:
+
+   ```r
+   #' @inheritParams rlang::args_dots_empty
+   #'
+   #' @param x An array.
+   #'
+   #' @param axis A single integer representing the axis to unstack along.
+   ```
+
+   `R/reduce.R` and `R/locate.R` already have it in the right place, so
+   reduce and locate functions skip this step.
 
 3. Name the axis at every call site of the function:
 
