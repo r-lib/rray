@@ -51,6 +51,7 @@ static inline r_complex rray_add_cpl_one(r_complex x, r_complex y) {
 // --------------------------------------------------------------------------
 // Cumulative
 
+// Integer `out` with logical `x`
 static inline int rray_cumulative_sum_lgl_one(int out, int x) {
   const bool missing =
     bool_bitwise_or(rray_int_is_missing(out), rray_lgl_is_missing(x));
