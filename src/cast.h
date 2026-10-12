@@ -44,7 +44,7 @@ static inline r_complex rray_cast_cpl_to_cpl_one(r_complex x) {
 }
 
 static inline int rray_cast_lgl_to_int_one(int x) {
-  return x;
+  return (x == r_globals.na_lgl) ? r_globals.na_int : x;
 }
 
 static inline double rray_cast_lgl_to_dbl_one(int x) {

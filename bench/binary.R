@@ -4,7 +4,16 @@ iterations <- as.integer(Sys.getenv("RRAY_BENCH_ITERATIONS", "20"))
 output <- Sys.getenv("RRAY_BENCH_OUTPUT", "")
 
 operations <- list(
-  add = list(fn = rray_add, types = c("integer", "integer_mixed", "double")),
+  add = list(
+    fn = rray_add,
+    types = c(
+      "logical",
+      "logical:integer",
+      "integer",
+      "integer_mixed",
+      "double"
+    )
+  ),
   subtract = list(
     fn = rray_subtract,
     types = c("integer", "integer_mixed", "double")
@@ -13,9 +22,18 @@ operations <- list(
     fn = rray_multiply,
     types = c("integer", "integer_mixed", "double")
   ),
-  greater_than = list(fn = rray_greater_than, types = c("integer", "double")),
-  equal = list(fn = rray_equal, types = c("integer", "double")),
-  pmax = list(fn = rray_pmax, types = c("integer", "double")),
+  greater_than = list(
+    fn = rray_greater_than,
+    types = c("logical", "logical:integer", "integer", "double")
+  ),
+  equal = list(
+    fn = rray_equal,
+    types = c("logical", "logical:integer", "integer", "double")
+  ),
+  pmax = list(
+    fn = rray_pmax,
+    types = c("logical", "logical:integer", "integer", "double")
+  ),
   pmax_na_rm = list(
     fn = \(x, y) rray_pmax(x, y, na_rm = TRUE),
     types = c("integer", "double")
@@ -56,8 +74,9 @@ for (operation in names(operations)) {
 
   for (type in operations[[operation]]$types) {
     for (shape in names(shapes)) {
-      x <- make_array(shapes[[shape]][[1L]], type)
-      y <- make_array(shapes[[shape]][[2L]], type)
+      types <- strsplit(type, ":", fixed = TRUE)[[1L]]
+      x <- make_array(shapes[[shape]][[1L]], types[[1L]])
+      y <- make_array(shapes[[shape]][[2L]], types[[length(types)]])
 
       measurement <- bench::mark(
         fn(x, y),

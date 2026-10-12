@@ -61,6 +61,7 @@ test_that("`NA` wins over `NaN`, unlike `pmax()` and `pmin()`", {
 })
 
 test_that("native extrema match base R across special values", {
+  logical_values <- c(NA, FALSE, TRUE)
   integer_values <- c(NA_integer_, -1L, 0L, 1L)
   double_values <- c(NA_real_, NaN, -Inf, -1, -0, 0, 1, Inf)
 
@@ -73,7 +74,11 @@ test_that("native extrema match base R across special values", {
   }
 
   cases <- list(
-    logical = make_case(c(NA, FALSE, TRUE), cast = as.logical),
+    logical = make_case(logical_values, cast = as.logical),
+    logical_integer = make_case(logical_values, integer_values),
+    integer_logical = make_case(integer_values, logical_values),
+    logical_double = make_case(logical_values, double_values),
+    double_logical = make_case(double_values, logical_values),
     integer = make_case(integer_values),
     double = make_case(double_values),
     integer_double = make_case(integer_values, double_values),

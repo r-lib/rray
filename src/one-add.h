@@ -12,6 +12,12 @@
 // --------------------------------------------------------------------------
 // Elementwise
 
+static inline int rray_add_lgl_one(int x, int y) {
+  const bool missing =
+    bool_bitwise_or(rray_lgl_is_missing(x), rray_lgl_is_missing(y));
+  return missing ? r_globals.na_int : x + y;
+}
+
 // - `x = 1`, `y = 1`: returns `2`.
 // - `x = 1`, `y = NA`: returns `NA`.
 // - `x = NA`, `y = INT_MAX`: returns `NA`.
@@ -40,6 +46,35 @@ static inline double rray_add_dbl_one(double x, double y) {
 
 static inline r_complex rray_add_cpl_one(r_complex x, r_complex y) {
   return (r_complex) {.r = x.r + y.r, .i = x.i + y.i};
+}
+
+// --------------------------------------------------------------------------
+// Cumulative
+
+// Integer `out` with logical `x`
+static inline int rray_cumulative_sum_lgl_one(int out, int x) {
+  const bool missing =
+    bool_bitwise_or(rray_int_is_missing(out), rray_lgl_is_missing(x));
+  return missing ? r_globals.na_int : out + x;
+}
+
+static inline int rray_cumulative_sum_int_one(
+  int out,
+  int x,
+  struct r_lazy error_call
+) {
+  return rray_add_int_one(out, x, error_call);
+}
+
+static inline double rray_cumulative_sum_dbl_one(double out, double x) {
+  return rray_add_dbl_one(out, x);
+}
+
+static inline r_complex rray_cumulative_sum_cpl_one(
+  r_complex out,
+  r_complex x
+) {
+  return rray_add_cpl_one(out, x);
 }
 
 #endif

@@ -68,8 +68,8 @@ static r_obj* rray_cumulative_sum_lgl(
     int,
     r_int_begin,
     0,
-    rray_add_int_one,
-    RRAY_CUMULATIVE_ARGS(error_call)
+    rray_cumulative_sum_lgl_one,
+    RRAY_CUMULATIVE_NO_ARGS
   );
 }
 
@@ -88,7 +88,7 @@ static r_obj* rray_cumulative_sum_int(
     int,
     r_int_begin,
     0,
-    rray_add_int_one,
+    rray_cumulative_sum_int_one,
     RRAY_CUMULATIVE_ARGS(error_call)
   );
 }
@@ -108,7 +108,7 @@ static r_obj* rray_cumulative_sum_dbl(
     double,
     r_dbl_begin,
     0.0,
-    rray_add_dbl_one,
+    rray_cumulative_sum_dbl_one,
     RRAY_CUMULATIVE_NO_ARGS
   );
 }
@@ -128,7 +128,7 @@ static r_obj* rray_cumulative_sum_cpl(
     r_complex,
     r_cpl_begin,
     ((r_complex){.r = 0, .i = 0}),
-    rray_add_cpl_one,
+    rray_cumulative_sum_cpl_one,
     RRAY_CUMULATIVE_NO_ARGS
   );
 }

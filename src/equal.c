@@ -303,12 +303,12 @@ static r_obj* rray_equality_lgl_lgl(
   RRAY_EQUALITY(
     int,
     r_lgl_cbegin,
-    rray_cast_lgl_to_int_one,
+    rray_cast_lgl_to_lgl_one,
     int,
     r_lgl_cbegin,
-    rray_cast_lgl_to_int_one,
-    rray_equal_int_one,
-    rray_not_equal_int_one
+    rray_cast_lgl_to_lgl_one,
+    rray_equal_lgl_one,
+    rray_not_equal_lgl_one
   );
 }
 
@@ -628,6 +628,20 @@ static r_obj* rray_equality_cpl_cpl(
 }
 
 #undef RRAY_EQUALITY
+
+static inline int rray_equal_lgl_one(int x, int y) {
+  const bool missing =
+    bool_bitwise_or(rray_lgl_is_missing(x), rray_lgl_is_missing(y));
+  const int elt = x == y;
+  return missing ? r_globals.na_lgl : elt;
+}
+
+static inline int rray_not_equal_lgl_one(int x, int y) {
+  const bool missing =
+    bool_bitwise_or(rray_lgl_is_missing(x), rray_lgl_is_missing(y));
+  const int elt = x != y;
+  return missing ? r_globals.na_lgl : elt;
+}
 
 static inline int rray_equal_int_one(int x, int y) {
   const bool missing =
