@@ -62,6 +62,17 @@
       Error in `rray_reverse()`:
       ! `axes` must be an integer or double vector, not the string "a".
 
+# `axes` must be named
+
+    Code
+      rray_reverse(1:3, 1)
+    Condition
+      Error in `rray_reverse()`:
+      ! `...` must be empty.
+      x Problematic argument:
+      * ..1 = 1
+      i Did you forget to name an argument?
+
 # errors on invalid input
 
     Code

@@ -7,6 +7,8 @@
 #' Names on a reversed axis move with the data. Every other axis keeps its names
 #' untouched.
 #'
+#' @inheritParams rlang::args_dots_empty
+#'
 #' @param x An array.
 #'
 #' @param axes An integer vector of axes to reverse along.
@@ -28,6 +30,7 @@
 #'
 #' # Reverse both axes
 #' rray_reverse(x, axes = c(1, 2))
-rray_reverse <- function(x, axes) {
+rray_reverse <- function(x, ..., axes) {
+  check_dots_empty0(...)
   .Call(ffi_rray_reverse, x, axes, environment())
 }

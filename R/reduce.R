@@ -26,10 +26,10 @@
 #'
 #' ```r
 #' x <- c(.Machine$integer.max, 1L, -1L)
-#' rray_sum(x, 1L) # .Machine$integer.max
+#' rray_sum(x, axes = 1L) # .Machine$integer.max
 #'
 #' x <- c(.Machine$integer.max, 1L, NA)
-#' rray_sum(x, 1L) # NA
+#' rray_sum(x, axes = 1L) # NA
 #' ```
 #'
 #' @section Product:
@@ -41,10 +41,10 @@
 #' `Inf` becomes `NaN` when multiplied by `0`:
 #'
 #' ```r
-#' rray_prod(c(NA, NaN), 1L) # NA or NaN
+#' rray_prod(c(NA, NaN), axes = 1L) # NA or NaN
 #'
 #' x <- c(rep(.Machine$integer.max, 40L), 0L, NA)
-#' rray_prod(x, 1L) # NA or NaN
+#' rray_prod(x, axes = 1L) # NA or NaN
 #' ```
 #'
 #' @section Mean:
@@ -55,8 +55,8 @@
 #' way, `is.na()` is `TRUE`:
 #'
 #' ```r
-#' rray_mean(c(NA, NaN), 1L) # NA or NaN
-#' rray_mean(c(NaN, NA), 1L) # NA or NaN
+#' rray_mean(c(NA, NaN), axes = 1L) # NA or NaN
+#' rray_mean(c(NaN, NA), axes = 1L) # NA or NaN
 #' ```
 #'
 #' @section Min / Max:
@@ -73,8 +73,8 @@
 #' When `NA` and `NaN` are both present, `NA` wins, like [max()] and [min()]:
 #'
 #' ```r
-#' rray_max(c(NA, NaN), 1L) # NA
-#' rray_max(c(NaN, NA), 1L) # NA
+#' rray_max(c(NA, NaN), axes = 1L) # NA
+#' rray_max(c(NaN, NA), axes = 1L) # NA
 #' ```
 #'
 #' @inheritParams rlang::args_dots_empty
@@ -95,75 +95,75 @@
 #' x <- array(1:10, c(5L, 2L))
 #'
 #' # Sum along rows
-#' rray_sum(x, 1L)
+#' rray_sum(x, axes = 1L)
 #'
 #' # Sum along columns
-#' rray_sum(x, 2L)
+#' rray_sum(x, axes = 2L)
 #'
 #' # Sum along both axes
-#' rray_sum(x, c(1L, 2L))
+#' rray_sum(x, axes = c(1L, 2L))
 #'
 #' # Product along rows
-#' rray_prod(x, 1L)
+#' rray_prod(x, axes = 1L)
 #'
 #' # Mean along rows
-#' rray_mean(x, 1L)
+#' rray_mean(x, axes = 1L)
 #'
 #' y <- array(c(TRUE, TRUE, FALSE, TRUE), c(2L, 2L))
 #'
-#' rray_all(y, 1L)
-#' rray_any(y, 1L)
+#' rray_all(y, axes = 1L)
+#' rray_any(y, axes = 1L)
 #'
 #' # Maximum and minimum along columns
-#' rray_max(x, 2L)
-#' rray_min(x, 2L)
+#' rray_max(x, axes = 2L)
+#' rray_min(x, axes = 2L)
 NULL
 
 #' @rdname rray-reduce
 #' @export
-rray_sum <- function(x, axes, ..., na_rm = FALSE) {
+rray_sum <- function(x, ..., axes, na_rm = FALSE) {
   check_dots_empty0(...)
   .Call(ffi_rray_sum, x, axes, na_rm, environment())
 }
 
 #' @rdname rray-reduce
 #' @export
-rray_prod <- function(x, axes, ..., na_rm = FALSE) {
+rray_prod <- function(x, ..., axes, na_rm = FALSE) {
   check_dots_empty0(...)
   .Call(ffi_rray_prod, x, axes, na_rm, environment())
 }
 
 #' @rdname rray-reduce
 #' @export
-rray_mean <- function(x, axes, ..., na_rm = FALSE) {
+rray_mean <- function(x, ..., axes, na_rm = FALSE) {
   check_dots_empty0(...)
   .Call(ffi_rray_mean, x, axes, na_rm, environment())
 }
 
 #' @rdname rray-reduce
 #' @export
-rray_all <- function(x, axes, ..., na_rm = FALSE) {
+rray_all <- function(x, ..., axes, na_rm = FALSE) {
   check_dots_empty0(...)
   .Call(ffi_rray_all, x, axes, na_rm, environment())
 }
 
 #' @rdname rray-reduce
 #' @export
-rray_any <- function(x, axes, ..., na_rm = FALSE) {
+rray_any <- function(x, ..., axes, na_rm = FALSE) {
   check_dots_empty0(...)
   .Call(ffi_rray_any, x, axes, na_rm, environment())
 }
 
 #' @rdname rray-reduce
 #' @export
-rray_max <- function(x, axes, ..., na_rm = FALSE) {
+rray_max <- function(x, ..., axes, na_rm = FALSE) {
   check_dots_empty0(...)
   .Call(ffi_rray_max, x, axes, na_rm, environment())
 }
 
 #' @rdname rray-reduce
 #' @export
-rray_min <- function(x, axes, ..., na_rm = FALSE) {
+rray_min <- function(x, ..., axes, na_rm = FALSE) {
   check_dots_empty0(...)
   .Call(ffi_rray_min, x, axes, na_rm, environment())
 }

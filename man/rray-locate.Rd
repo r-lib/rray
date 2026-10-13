@@ -6,16 +6,16 @@
 \alias{rray_locate_min}
 \title{Locate the maximum or minimum along an axis}
 \usage{
-rray_locate_max(x, axis, ..., na_rm = FALSE)
+rray_locate_max(x, ..., axis, na_rm = FALSE)
 
-rray_locate_min(x, axis, ..., na_rm = FALSE)
+rray_locate_min(x, ..., axis, na_rm = FALSE)
 }
 \arguments{
 \item{x}{An array.}
 
-\item{axis}{A single integer giving the axis to locate along.}
-
 \item{...}{These dots are for future extensions and must be empty.}
+
+\item{axis}{A single integer giving the axis to locate along.}
 
 \item{na_rm}{If \code{TRUE}, missing values are skipped.}
 }
@@ -35,28 +35,28 @@ of 1.
 
 Ties return the first position, like \code{\link[=which.max]{which.max()}} and \code{\link[=which.min]{which.min()}}:
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_locate_max(c(1, 3, 3), 1L) # 2
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_locate_max(c(1, 3, 3), axis = 1L) # 2
 }\if{html}{\out{</div>}}
 
 Missing values are infectious, so the result is \code{NA} if any value along
 \code{axis} is \code{NA} or \code{NaN}. Use \code{na_rm = TRUE} to skip them:
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_locate_max(c(1, NaN, 3), 1L) # NA
-rray_locate_max(c(1, NaN, 3), 1L, na_rm = TRUE) # 3
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_locate_max(c(1, NaN, 3), axis = 1L) # NA
+rray_locate_max(c(1, NaN, 3), axis = 1L, na_rm = TRUE) # 3
 }\if{html}{\out{</div>}}
 
 When there is no position to return, the result is \code{NA}. This happens when
 \code{axis} has dimension 0, or when every value is missing and \code{na_rm = TRUE}:
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_locate_max(c(NA, NA), 1L, na_rm = TRUE) # NA
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_locate_max(c(NA, NA), axis = 1L, na_rm = TRUE) # NA
 }\if{html}{\out{</div>}}
 }
 \examples{
 x <- array(c(3L, 1L, 2L, 4L, 6L, 5L), c(3L, 2L))
 
 # Position of the maximum going down the rows
-rray_locate_max(x, 1L)
+rray_locate_max(x, axis = 1L)
 
 # Position of the minimum going across the columns
-rray_locate_min(x, 2L)
+rray_locate_min(x, axis = 2L)
 }

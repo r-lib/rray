@@ -10,20 +10,22 @@
 \alias{rray_cumulative_sum}
 \title{Accumulate along an axis}
 \usage{
-rray_cumulative_all(x, axis)
+rray_cumulative_all(x, ..., axis)
 
-rray_cumulative_any(x, axis)
+rray_cumulative_any(x, ..., axis)
 
-rray_cumulative_max(x, axis)
+rray_cumulative_max(x, ..., axis)
 
-rray_cumulative_min(x, axis)
+rray_cumulative_min(x, ..., axis)
 
-rray_cumulative_prod(x, axis)
+rray_cumulative_prod(x, ..., axis)
 
-rray_cumulative_sum(x, axis)
+rray_cumulative_sum(x, ..., axis)
 }
 \arguments{
 \item{x}{An array.}
+
+\item{...}{These dots are for future extensions and must be empty.}
 
 \item{axis}{A single integer. The axis to accumulate along. \code{1}
 accumulates down rows, \code{2} accumulates across columns, and so on.}
@@ -52,8 +54,8 @@ it.
 \code{x} must be logical. Missing values follow \code{\link[=all]{all()}} and \code{\link[=any]{any()}}, so a later
 \code{FALSE} or \code{TRUE} can settle an earlier \code{NA}:
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_cumulative_all(c(TRUE, NA, FALSE), 1L) # TRUE, NA, FALSE
-rray_cumulative_any(c(FALSE, NA, TRUE), 1L) # FALSE, NA, TRUE
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_cumulative_all(c(TRUE, NA, FALSE), axis = 1L) # TRUE, NA, FALSE
+rray_cumulative_any(c(FALSE, NA, TRUE), axis = 1L) # FALSE, NA, TRUE
 }\if{html}{\out{</div>}}
 }
 
@@ -63,14 +65,14 @@ rray_cumulative_any(c(FALSE, NA, TRUE), 1L) # FALSE, NA, TRUE
 \code{x}. Once a line hits \code{NA} or \code{NaN}, the rest of it stays missing. A later
 \code{NA} replaces an earlier \code{NaN}, like \code{\link[=max]{max()}} and \code{\link[=min]{min()}}:
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_cumulative_max(c(1, NaN, 2, NA, 3), 1L) # 1, NaN, NaN, NA, NA
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_cumulative_max(c(1, NaN, 2, NA, 3), axis = 1L) # 1, NaN, NaN, NA, NA
 }\if{html}{\out{</div>}}
 
 For logical \code{x}, a later \code{TRUE} or \code{FALSE} does not settle an earlier \code{NA},
 unlike \code{rray_cumulative_any()} and \code{rray_cumulative_all()}:
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_cumulative_max(c(NA, TRUE), 1L) # NA, NA
-rray_cumulative_any(c(NA, TRUE), 1L) # NA, TRUE
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_cumulative_max(c(NA, TRUE), axis = 1L) # NA, NA
+rray_cumulative_any(c(NA, TRUE), axis = 1L) # NA, TRUE
 }\if{html}{\out{</div>}}
 }
 
@@ -83,7 +85,7 @@ When \code{NA} and \code{NaN} are both present, you get one of them, but which o
 depends on the platform and the order of the values. Either way, \code{is.na()}
 is \code{TRUE} from that point on:
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_cumulative_prod(c(2, NA, NaN), 1L) # 2, NA, NA or NaN
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_cumulative_prod(c(2, NA, NaN), axis = 1L) # 2, NA, NA or NaN
 }\if{html}{\out{</div>}}
 }
 
@@ -97,8 +99,8 @@ later value would bring it back in range. This differs from \code{\link[=rray_su
 which only checks the final total:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{x <- c(.Machine$integer.max, 1L, -1L)
-rray_sum(x, 1L) # .Machine$integer.max
-rray_cumulative_sum(x, 1L) # Error
+rray_sum(x, axes = 1L) # .Machine$integer.max
+rray_cumulative_sum(x, axis = 1L) # Error
 }\if{html}{\out{</div>}}
 
 Once a line is \code{NA}, it stays \code{NA}, and a later overflow does not error.
@@ -107,7 +109,7 @@ When \code{NA} and \code{NaN} are both present, you get one of them, but which o
 depends on the platform and the order of the values. Either way, \code{is.na()}
 is \code{TRUE} from that point on:
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_cumulative_sum(c(2, NA, NaN), 1L) # 2, NA, NA or NaN
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_cumulative_sum(c(2, NA, NaN), axis = 1L) # 2, NA, NA or NaN
 }\if{html}{\out{</div>}}
 }
 
@@ -116,23 +118,23 @@ x <- array(c(TRUE, TRUE, FALSE, TRUE, NA, TRUE), c(2L, 3L))
 x
 
 # Down rows
-rray_cumulative_all(x, 1L)
-rray_cumulative_any(x, 1L)
+rray_cumulative_all(x, axis = 1L)
+rray_cumulative_any(x, axis = 1L)
 
 # Across columns
-rray_cumulative_all(x, 2L)
-rray_cumulative_any(x, 2L)
+rray_cumulative_all(x, axis = 2L)
+rray_cumulative_any(x, axis = 2L)
 
 x <- array(c(3L, 1L, 2L, 5L, 4L, 0L), c(2L, 3L))
 x
 
 # Running maximum and minimum across columns
-rray_cumulative_max(x, 2L)
-rray_cumulative_min(x, 2L)
+rray_cumulative_max(x, axis = 2L)
+rray_cumulative_min(x, axis = 2L)
 
 # Running product down rows
-rray_cumulative_prod(x, 1L)
+rray_cumulative_prod(x, axis = 1L)
 
 # Running sum across columns
-rray_cumulative_sum(x, 2L)
+rray_cumulative_sum(x, axis = 2L)
 }

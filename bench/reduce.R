@@ -10,12 +10,12 @@ operations <- list(
     types = c("logical", "integer", "double", "complex")
   ),
   prod_na_rm = list(
-    fn = \(x, axes) rray_prod(x, axes, na_rm = TRUE),
+    fn = \(x, axes) rray_prod(x, axes = axes, na_rm = TRUE),
     types = c("logical", "integer", "double", "complex")
   ),
   max = list(fn = rray_max, types = c("integer", "double")),
   max_na_rm = list(
-    fn = \(x, axes) rray_max(x, axes, na_rm = TRUE),
+    fn = \(x, axes) rray_max(x, axes = axes, na_rm = TRUE),
     types = c("integer", "double")
   ),
   min = list(fn = rray_min, types = c("integer", "double")),
@@ -23,7 +23,7 @@ operations <- list(
   any = list(fn = rray_any, types = "logical"),
   mean = list(fn = rray_mean, types = c("logical", "integer", "double")),
   mean_na_rm = list(
-    fn = \(x, axes) rray_mean(x, axes, na_rm = TRUE),
+    fn = \(x, axes) rray_mean(x, axes = axes, na_rm = TRUE),
     types = c("logical", "integer", "double")
   )
 )
@@ -68,7 +68,7 @@ for (operation in names(operations)) {
       axes <- shapes[[shape]][[2L]]
 
       measurement <- bench::mark(
-        fn(x, axes),
+        fn(x, axes = axes),
         iterations = iterations,
         check = FALSE,
         memory = FALSE,

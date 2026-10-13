@@ -4,10 +4,12 @@
 \alias{rray_reverse}
 \title{Reverse elements along axes}
 \usage{
-rray_reverse(x, axes)
+rray_reverse(x, ..., axes)
 }
 \arguments{
 \item{x}{An array.}
+
+\item{...}{These dots are for future extensions and must be empty.}
 
 \item{axes}{An integer vector of axes to reverse along.}
 }
