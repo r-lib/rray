@@ -6,7 +6,7 @@ more `axes`.
 ## Usage
 
 ``` r
-rray_reverse(x, axes)
+rray_reverse(x, ..., axes)
 ```
 
 ## Arguments
@@ -14,6 +14,10 @@ rray_reverse(x, axes)
 - x:
 
   An array.
+
+- ...:
+
+  These dots are for future extensions and must be empty.
 
 - axes:
 

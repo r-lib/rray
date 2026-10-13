@@ -18,19 +18,19 @@
 ## Usage
 
 ``` r
-rray_sum(x, axes, ..., na_rm = FALSE)
+rray_sum(x, ..., axes, na_rm = FALSE)
 
-rray_prod(x, axes, ..., na_rm = FALSE)
+rray_prod(x, ..., axes, na_rm = FALSE)
 
-rray_mean(x, axes, ..., na_rm = FALSE)
+rray_mean(x, ..., axes, na_rm = FALSE)
 
-rray_all(x, axes, ..., na_rm = FALSE)
+rray_all(x, ..., axes, na_rm = FALSE)
 
-rray_any(x, axes, ..., na_rm = FALSE)
+rray_any(x, ..., axes, na_rm = FALSE)
 
-rray_max(x, axes, ..., na_rm = FALSE)
+rray_max(x, ..., axes, na_rm = FALSE)
 
-rray_min(x, axes, ..., na_rm = FALSE)
+rray_min(x, ..., axes, na_rm = FALSE)
 ```
 
 ## Arguments
@@ -39,14 +39,14 @@ rray_min(x, axes, ..., na_rm = FALSE)
 
   An array.
 
+- ...:
+
+  These dots are for future extensions and must be empty.
+
 - axes:
 
   An integer vector of axes to reduce over. `1` reduces rows, `2`
   reduces columns, and so on.
-
-- ...:
-
-  These dots are for future extensions and must be empty.
 
 - na_rm:
 
@@ -69,10 +69,10 @@ integer, an error is thrown. Only the final sum is checked, and `NA`
 wins over an overflow:
 
     x <- c(.Machine$integer.max, 1L, -1L)
-    rray_sum(x, 1L) # .Machine$integer.max
+    rray_sum(x, axes = 1L) # .Machine$integer.max
 
     x <- c(.Machine$integer.max, 1L, NA)
-    rray_sum(x, 1L) # NA
+    rray_sum(x, axes = 1L) # NA
 
 ## Product
 
@@ -84,10 +84,10 @@ depends on the platform and the order of the values. Either way,
 this too, since a product that overflows to `Inf` becomes `NaN` when
 multiplied by `0`:
 
-    rray_prod(c(NA, NaN), 1L) # NA or NaN
+    rray_prod(c(NA, NaN), axes = 1L) # NA or NaN
 
     x <- c(rep(.Machine$integer.max, 40L), 0L, NA)
-    rray_prod(x, 1L) # NA or NaN
+    rray_prod(x, axes = 1L) # NA or NaN
 
 ## Mean
 
@@ -98,8 +98,8 @@ depends on the platform and the order of the values, like
 [`mean()`](https://rdrr.io/r/base/mean.html). Either way,
 [`is.na()`](https://rdrr.io/r/base/NA.html) is `TRUE`:
 
-    rray_mean(c(NA, NaN), 1L) # NA or NaN
-    rray_mean(c(NaN, NA), 1L) # NA or NaN
+    rray_mean(c(NA, NaN), axes = 1L) # NA or NaN
+    rray_mean(c(NaN, NA), axes = 1L) # NA or NaN
 
 ## Min / Max
 
@@ -118,8 +118,8 @@ When `NA` and `NaN` are both present, `NA` wins, like
 [`max()`](https://rdrr.io/r/base/Extremes.html) and
 [`min()`](https://rdrr.io/r/base/Extremes.html):
 
-    rray_max(c(NA, NaN), 1L) # NA
-    rray_max(c(NaN, NA), 1L) # NA
+    rray_max(c(NA, NaN), axes = 1L) # NA
+    rray_max(c(NaN, NA), axes = 1L) # NA
 
 ## Examples
 
@@ -127,12 +127,12 @@ When `NA` and `NaN` are both present, `NA` wins, like
 x <- array(1:10, c(5L, 2L))
 
 # Sum along rows
-rray_sum(x, 1L)
+rray_sum(x, axes = 1L)
 #>      [,1] [,2]
 #> [1,]   15   40
 
 # Sum along columns
-rray_sum(x, 2L)
+rray_sum(x, axes = 2L)
 #>      [,1]
 #> [1,]    7
 #> [2,]    9
@@ -141,38 +141,38 @@ rray_sum(x, 2L)
 #> [5,]   15
 
 # Sum along both axes
-rray_sum(x, c(1L, 2L))
+rray_sum(x, axes = c(1L, 2L))
 #>      [,1]
 #> [1,]   55
 
 # Product along rows
-rray_prod(x, 1L)
+rray_prod(x, axes = 1L)
 #>      [,1]  [,2]
 #> [1,]  120 30240
 
 # Mean along rows
-rray_mean(x, 1L)
+rray_mean(x, axes = 1L)
 #>      [,1] [,2]
 #> [1,]    3    8
 
 y <- array(c(TRUE, TRUE, FALSE, TRUE), c(2L, 2L))
 
-rray_all(y, 1L)
+rray_all(y, axes = 1L)
 #>      [,1]  [,2]
 #> [1,] TRUE FALSE
-rray_any(y, 1L)
+rray_any(y, axes = 1L)
 #>      [,1] [,2]
 #> [1,] TRUE TRUE
 
 # Maximum and minimum along columns
-rray_max(x, 2L)
+rray_max(x, axes = 2L)
 #>      [,1]
 #> [1,]    6
 #> [2,]    7
 #> [3,]    8
 #> [4,]    9
 #> [5,]   10
-rray_min(x, 2L)
+rray_min(x, axes = 2L)
 #>      [,1]
 #> [1,]    1
 #> [2,]    2

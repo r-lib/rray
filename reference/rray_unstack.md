@@ -10,7 +10,7 @@ along the same `axis` reconstructs `x`.
 ## Usage
 
 ``` r
-rray_unstack(x, axis)
+rray_unstack(x, ..., axis)
 ```
 
 ## Arguments
@@ -18,6 +18,10 @@ rray_unstack(x, axis)
 - x:
 
   An array.
+
+- ...:
+
+  These dots are for future extensions and must be empty.
 
 - axis:
 
@@ -46,7 +50,7 @@ dimensionality of at least 2 to begin with.
 x <- array(1:6, c(2, 3))
 
 # One array per row
-rray_unstack(x, 1)
+rray_unstack(x, axis = 1)
 #> [[1]]
 #> [1] 1 3 5
 #> 
@@ -55,7 +59,7 @@ rray_unstack(x, 1)
 #> 
 
 # One array per column
-rray_unstack(x, 2)
+rray_unstack(x, axis = 2)
 #> [[1]]
 #> [1] 1 2
 #> 
@@ -68,7 +72,7 @@ rray_unstack(x, 2)
 
 # Names along the axis become list names
 y <- array(1:4, c(2, 2), dimnames = list(c("a", "b"), c("x", "y")))
-rray_unstack(y, 2)
+rray_unstack(y, axis = 2)
 #> $x
 #> a b 
 #> 1 2 
@@ -79,7 +83,7 @@ rray_unstack(y, 2)
 #> 
 
 # Unstacking and stacking along the same axis are inverses
-rray_stack(!!!rray_unstack(x, 2), .axis = 2)
+rray_stack(!!!rray_unstack(x, axis = 2), .axis = 2)
 #>      [,1] [,2] [,3]
 #> [1,]    1    3    5
 #> [2,]    2    4    6
