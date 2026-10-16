@@ -255,9 +255,11 @@ test_that("a temporary wrapper is never reused as an output", {
   expect_identical(out, array(-c(1L, 2L, 3L, 4L, 5L, 6L), c(2L, 3L)))
 })
 
-test_that("wrapping an ALTREP vector copies it", {
-  w <- wrap(1:100)
-  expect_identical(is_altrep(wrapper_data(w)), FALSE)
+test_that("wrapping an ALTREP vector shares it", {
+  x <- 1:100
+  w <- wrap(x)
+  expect_identical(is_altrep(wrapper_data(w)), TRUE)
+  expect_wraps(w, x)
   expect_identical(w, 1:100)
 })
 

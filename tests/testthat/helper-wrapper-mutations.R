@@ -7,7 +7,9 @@ mutation_vector <- function(type) {
     complex = complex(real = 1:100, imaginary = 100:1),
     raw = as.raw(1:100),
     character = paste0("s", 1:100),
-    list = as.list(1:100 + 0L)
+    list = as.list(1:100 + 0L),
+    altrep_integer = 1:100,
+    altrep_character = as.character(1:100)
   )
 }
 
@@ -20,7 +22,9 @@ mutation_cases <- function(type) {
     complex = mutation_cases_complex(),
     raw = mutation_cases_raw(),
     character = mutation_cases_character(),
-    list = mutation_cases_list()
+    list = mutation_cases_list(),
+    altrep_integer = mutation_cases_numeric(),
+    altrep_character = mutation_cases_character()
   )
 
   cases <- c(cases, mutation_cases_any())

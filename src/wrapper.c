@@ -27,7 +27,7 @@ r_obj* r_wrap(r_obj* x) {
   // by always cloning it before giving out a writable handle if it is ever
   // `MAYBE_SHARED()` (i.e. a ref count >1), meaning that we aren't the sole
   // owner of it at that time.
-  r_obj* data = KEEP(wrapper_data_from(x));
+  r_obj* data = is_wrapper(x) ? wrapper_data(x) : x;
 
   // Reference count on `data` is bumped when we wrap it here.
   // It now looks at least "referenced", but not necessarily "shared".
@@ -39,7 +39,7 @@ r_obj* r_wrap(r_obj* x) {
 
   MARK_NOT_MUTABLE(out);
 
-  FREE(2);
+  FREE(1);
   return out;
 }
 
@@ -105,18 +105,6 @@ static inline R_altrep_class_t wrapper_class(enum r_type type) {
 
 static inline r_obj* wrapper_data(r_obj* x) {
   return R_altrep_data1(x);
-}
-
-static r_obj* wrapper_data_from(r_obj* x) {
-  if (is_wrapper(x)) {
-    return wrapper_data(x);
-  }
-
-  if (ALTREP(x)) {
-    return r_clone_data(x);
-  }
-
-  return x;
 }
 
 // -----------------------------------------------------------------------------

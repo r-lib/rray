@@ -54,10 +54,13 @@ calling `REAL_RO()` does not expect that, and IDEs like RStudio and Positron
    into it stays valid for as long as the wrapper is reachable, because the
    wrapper keeps `data1` alive.
 
-2. **`data1` is a plain vector, never ALTREP.** `r_wrap()` copies an ALTREP
-   input into a plain vector, unless it is one of our wrappers, whose `data1`
-   is already plain. So no method ever has to ask another ALTREP class for a
-   pointer.
+2. **`data1` is the input itself**, or the `data1` of a wrapper input. An
+   ALTREP input from another class (a compact sequence like `1:n`, a
+   deferred string, an arrow or vroom vector) is wrapped as is. We rely on
+   that class keeping its data pointer stable, which is the basic contract of
+   an ALTREP `Dataptr` method. Base R's own wrapper breaks that contract in
+   released R versions, but that is base R's bug, every `dim<-` user is
+   already exposed to it, and it is fixed in R-devel.
 
 3. **Every wrapper is marked not mutable**, with `MARK_NOT_MUTABLE()`. R then
    treats the wrapper as shared, so it duplicates the wrapper before changing
@@ -110,12 +113,17 @@ A prototype of this design was tested against R 4.6:
 
 Part 4 turns this into a permanent test file, run on every CI platform.
 
-## What rule 2 and rule 5 buy
+## Allocation
 
-No method of the wrapper allocates, apart from `Duplicate`, which R expects
-to allocate. Dataptr, Dataptr_or_null, Elt, Get_region and Length only read
-`data1`, a plain vector. So `REAL_RO()` and friends on a wrapper never
-allocate and never longjmp.
+The wrapper's own methods never allocate, apart from `Duplicate`, which R
+expects to allocate. Dataptr, Dataptr_or_null, Elt, Get_region and Length only
+read `data1`.
+
+When `data1` is a plain vector, `REAL_RO()` and friends on a wrapper never
+allocate and never longjmp. When `data1` is an ALTREP vector, its own
+`Dataptr` may allocate on the first request, the way a compact sequence
+expands itself. That is exactly what reading the input directly would do, so
+the wrapper adds no new allocation point.
 
 ## Costs
 
@@ -123,10 +131,6 @@ allocate and never longjmp.
   data. `y <- rray_set_dimensions(x, d); y[1] <- 0` copies `y` once, and
   later changes to `y` happen in place. Base R's `dim<-` would usually have
   copied at the reshape instead, so overall this is no worse than base R.
-
-- **ALTREP inputs are copied when wrapped.** `rray_set_dimensions(1:100, d)`
-  copies the compact sequence into a plain vector. Reading a compact
-  sequence's data would have expanded it anyway.
 
 - **Code that breaks R's rules writes through to the original.** C code that
   writes into an object through `REAL()` without checking whether it is
@@ -147,7 +151,7 @@ data, generic, dataptr, element, and test helper sections, as today.
 r_obj* r_wrap(r_obj* x) {
   R_altrep_class_t cls = wrapper_class(r_typeof(x));
 
-  r_obj* data = KEEP(wrapper_data_from(x));
+  r_obj* data = is_wrapper(x) ? wrapper_data(x) : x;
 
   r_obj* out = KEEP(R_new_altrep(cls, data, r_null));
 
@@ -155,13 +159,10 @@ r_obj* r_wrap(r_obj* x) {
 
   MARK_NOT_MUTABLE(out);
 
-  FREE(2);
+  FREE(1);
   return out;
 }
 ```
-
-`data` needs the `KEEP()` now, because `wrapper_data_from()` can allocate and
-`R_new_altrep()` allocates after it.
 
 ## Data section
 
@@ -171,26 +172,10 @@ Replace `wrapper_readonly()` and `wrapper_writable()` with:
 static inline r_obj* wrapper_data(r_obj* x) {
   return R_altrep_data1(x);
 }
-
-static r_obj* wrapper_data_from(r_obj* x) {
-  if (is_wrapper(x)) {
-    return wrapper_data(x);
-  }
-
-  if (ALTREP(x)) {
-    return r_clone_data(x);
-  }
-
-  return x;
-}
 ```
 
 Wrapping a wrapper shares its `data1`, as today. Since `data1` never changes,
 sharing it between wrappers is safe.
-
-`r_clone_data()` reads the ALTREP input with `r_*_cbegin()`, which may
-allocate inside that ALTREP class. That happens in `r_wrap()`, an ordinary
-rray C call where allocation is expected.
 
 Update the declarations in `src/decl/wrapper-decl.h`.
 
@@ -330,8 +315,9 @@ tests, with `wrapper_readonly()` replaced by `wrapper_data()`.
   duplicate of wrapper produces another wrapper". `y <- w; dim(y) <- d`, then
   `is_wrapper(y)` is `FALSE` and `x` is unchanged.
 
-- "wrapping an ALTREP vector copies it": `w <- wrap(1:100)`, then
-  `is_altrep(wrapper_data(w))` is `FALSE` and `w` equals `1:100`.
+- "wrapping an ALTREP vector shares it": `x <- 1:100; w <- wrap(x)`, then
+  `is_altrep(wrapper_data(w))` is `TRUE`, `expect_wraps(w, x)`, and `w`
+  equals `1:100`.
 
 - "wrapping a wrapper shares its data": `expect_wraps(wrap(wrap(x)), x)`.
 
@@ -379,9 +365,11 @@ writable pointer or called `Set_elt` would error, and fail the case.
 
 `tests/testthat/helper-wrapper-mutations.R` holds:
 
-- `mutation_vector(type)`: a length 100 vector for each of the seven types.
-  Plain vectors, not ALTREP, so `x` is exactly the wrapper's data: for
-  example `as.double(1:100) + 0.5` and `1:100 + 0L`, not `1:100`.
+- `mutation_vector(type)`: a length 100 vector for each of the seven types,
+  as plain vectors (for example `as.double(1:100) + 0.5` and `1:100 + 0L`).
+  Two more types cover wrapped ALTREP data: `altrep_integer` (`1:100`, a
+  compact sequence) and `altrep_character` (`as.character(1:100)`, a
+  deferred string). They reuse the integer and character cases.
 
 - `mutation_cases(type)`: a named list of one-argument functions for that
   type. It combines the cases for the type with the cases that apply to
@@ -471,9 +459,8 @@ List: `lapply()`, `unlist()`, `rapply()`, `sapply()`, `vapply()`, `mapply()`,
    files.
 
 4. The protection pass from AGENTS.md, as a separate step. In particular,
-   `data` in `r_wrap()` is `KEEP()`ed before `R_new_altrep()`, and every
-   method other than `Duplicate` and the aborting ones does no allocation at
-   all.
+   every method other than `Duplicate` and the aborting ones does no
+   allocation of its own.
 
 5. No new comments anywhere in `src/` or `tests/`. The stale comments from
    Part 3 are quoted in the pull request description.

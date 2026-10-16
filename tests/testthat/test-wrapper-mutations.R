@@ -25,3 +25,15 @@ test_that("character wrappers are never mutated", {
 test_that("list wrappers are never mutated", {
   expect_no_mutation("list")
 })
+
+test_that("wrappers of ALTREP integers are never mutated", {
+  x <- mutation_vector("altrep_integer")
+  expect_identical(is_altrep(x), TRUE)
+  expect_no_mutation("altrep_integer")
+})
+
+test_that("wrappers of ALTREP characters are never mutated", {
+  x <- mutation_vector("altrep_character")
+  expect_identical(is_altrep(x), TRUE)
+  expect_no_mutation("altrep_character")
+})
