@@ -125,7 +125,7 @@ test_that("wrapper provides read access to list data", {
 # Ownership
 
 test_that("wrapper starts out sharing data", {
-  x <- c(1L, 2L, 3L)
+  x <- 1:3
   w <- wrap(x)
   expect_wraps(w, x)
 })
@@ -169,12 +169,12 @@ test_that("a read-only pointer stays valid after a writable request", {
 })
 
 test_that("changing a wrapper gives a plain vector", {
-  x <- c(1L, 2L, 3L)
+  x <- 1:3
   w <- wrap(x)
   w[1] <- 99L
   expect_identical(is_wrapper(w), FALSE)
   expect_identical(w[1], 99L)
-  expect_identical(x, c(1L, 2L, 3L))
+  expect_identical(x, 1:3)
 
   x <- c(1, 2, 3)
   w <- wrap(x)
@@ -197,12 +197,12 @@ test_that("changing a wrapper gives a plain vector", {
   expect_identical(w[1], 99 + 0i)
   expect_identical(x, c(1 + 0i, 2 + 0i))
 
-  x <- as.raw(c(1, 2, 3))
+  x <- as.raw(1:3)
   w <- wrap(x)
   w[1] <- as.raw(99)
   expect_identical(is_wrapper(w), FALSE)
   expect_identical(w[1], as.raw(99))
-  expect_identical(x, as.raw(c(1, 2, 3)))
+  expect_identical(x, as.raw(1:3))
 
   x <- c("a", "b", "c")
   w <- wrap(x)
@@ -220,7 +220,7 @@ test_that("changing a wrapper gives a plain vector", {
 })
 
 test_that("a second change happens in place", {
-  x <- c(1L, 2L, 3L)
+  x <- 1:3
   w <- wrap(x)
 
   w[1] <- 10L
@@ -229,9 +229,9 @@ test_that("a second change happens in place", {
   w[2] <- 20L
   expect_identical(obj_address(w), address)
   expect_identical(w, c(10L, 20L, 3L))
-  expect_identical(x, c(1L, 2L, 3L))
+  expect_identical(x, 1:3)
 
-  x <- list(1L, 2L, 3L)
+  x <- as.list(1:3)
   w <- wrap(x)
 
   w[1] <- list(10L)
@@ -240,7 +240,7 @@ test_that("a second change happens in place", {
   w[2] <- list(20L)
   expect_identical(obj_address(w), address)
   expect_identical(w, list(10L, 20L, 3L))
-  expect_identical(x, list(1L, 2L, 3L))
+  expect_identical(x, as.list(1:3))
 })
 
 test_that("a temporary wrapper is never reused as an output", {
@@ -249,10 +249,10 @@ test_that("a temporary wrapper is never reused as an output", {
   expect_identical(x, c(1, 2, 3, 4, 5, 6))
   expect_identical(out, array(c(2, 3, 4, 5, 6, 7), c(2L, 3L)))
 
-  x <- c(1L, 2L, 3L, 4L, 5L, 6L)
+  x <- 1:6
   out <- -rray_set_dimensions(x, c(2L, 3L))
-  expect_identical(x, c(1L, 2L, 3L, 4L, 5L, 6L))
-  expect_identical(out, array(-c(1L, 2L, 3L, 4L, 5L, 6L), c(2L, 3L)))
+  expect_identical(x, 1:6)
+  expect_identical(out, array(-(1:6), c(2L, 3L)))
 })
 
 test_that("wrapping an ALTREP vector shares it", {
@@ -274,7 +274,7 @@ test_that("setting an element of a character or list wrapper errors", {
 # Wrapping a wrapper
 
 test_that("wrapping a wrapper does not create nested wrappers", {
-  x <- c(1L, 2L, 3L)
+  x <- 1:3
   w1 <- wrap(x)
   w2 <- wrap(w1)
 
@@ -308,12 +308,12 @@ test_that("wrapping a wrapper gives independent attributes", {
 # Duplication
 
 test_that("shallow duplicate of a wrapper is a plain vector", {
-  x <- c(1L, 2L, 3L)
+  x <- 1:3
   w <- wrap(x)
   w2 <- w
   dim(w2) <- c(1L, 3L)
   expect_identical(is_wrapper(w2), FALSE)
-  expect_identical(w2, array(c(1L, 2L, 3L), c(1L, 3L)))
+  expect_identical(w2, array(1:3, c(1L, 3L)))
   expect_null(dim(w))
   expect_wraps(w, x)
 })
@@ -383,7 +383,7 @@ test_that("rray_set_dimensions returns a wrapper", {
 })
 
 test_that("rray_set_dimensions wrapper shares the underlying data", {
-  x <- c(1L, 2L, 3L, 4L, 5L, 6L)
+  x <- 1:6
   y <- rray_set_dimensions(x, c(2L, 3L))
   expect_wraps(y, x)
 })
