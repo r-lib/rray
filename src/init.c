@@ -362,10 +362,12 @@ extern r_obj* ffi_rray_or(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame);
 extern r_obj* ffi_rray_xor(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame);
 
 extern r_obj* ffi_test_wrap(r_obj* ffi_x);
-extern r_obj* ffi_test_wrapper_readonly(r_obj* ffi_x);
-extern r_obj* ffi_test_wrapper_writable(r_obj* ffi_x);
+extern r_obj* ffi_test_wrapper_data(r_obj* ffi_x);
 extern r_obj* ffi_test_is_wrapper(r_obj* ffi_x);
+extern r_obj* ffi_test_is_altrep(r_obj* ffi_x);
 extern r_obj* ffi_test_wrapper_read_access(r_obj* ffi_x);
+extern r_obj* ffi_test_wrapper_pointer_is_stable(r_obj* ffi_x);
+extern r_obj* ffi_test_wrapper_set_elt(r_obj* ffi_x);
 extern r_obj* ffi_test_rray_sum_forced_fallback(
   r_obj* ffi_x,
   r_obj* ffi_axes,
@@ -479,10 +481,14 @@ static const R_CallMethodDef CallEntries[] = {
   {"ffi_rray_or", (DL_FUNC) &ffi_rray_or, 3},
   {"ffi_rray_xor", (DL_FUNC) &ffi_rray_xor, 3},
   {"ffi_test_wrap", (DL_FUNC) &ffi_test_wrap, 1},
-  {"ffi_test_wrapper_readonly", (DL_FUNC) &ffi_test_wrapper_readonly, 1},
-  {"ffi_test_wrapper_writable", (DL_FUNC) &ffi_test_wrapper_writable, 1},
+  {"ffi_test_wrapper_data", (DL_FUNC) &ffi_test_wrapper_data, 1},
   {"ffi_test_is_wrapper", (DL_FUNC) &ffi_test_is_wrapper, 1},
+  {"ffi_test_is_altrep", (DL_FUNC) &ffi_test_is_altrep, 1},
   {"ffi_test_wrapper_read_access", (DL_FUNC) &ffi_test_wrapper_read_access, 1},
+  {"ffi_test_wrapper_pointer_is_stable",
+   (DL_FUNC) &ffi_test_wrapper_pointer_is_stable,
+   1},
+  {"ffi_test_wrapper_set_elt", (DL_FUNC) &ffi_test_wrapper_set_elt, 1},
   {"ffi_test_rray_sum_forced_fallback",
    (DL_FUNC) &ffi_test_rray_sum_forced_fallback,
    4},
