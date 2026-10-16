@@ -153,7 +153,8 @@ at most one copy per wrapper, and then get a pointer that stays valid.
 
 ## Rules for `x_data`
 
-These hold everywhere in `src/`.
+These hold everywhere in `src/` except `src/wrapper.c` itself, whose
+internal helpers (Part 4) hand the wrapped data between each other.
 
 1. Name the unwrapped object `<name>_data`: `x_data`, `y_data`,
    `value_data`, `index_data`, `n_data`, `true_data`, and so on. Never
@@ -162,17 +163,18 @@ These hold everywhere in `src/`.
 2. Always `KEEP()` the result of `r_unwrap()`, even when it looks reachable
    through `x`.
 
-3. Read only data from `x_data`: `r_*_cbegin()`, `r_length()`,
-   `r_typeof()`. Never read attributes from it. The wrapped vector still
-   carries its own original attributes, which can be out of date. Dimensions
-   and names always come from `x`.
+3. Create `x_data` on the line right before the `r_*_cbegin()` that reads
+   it, and use it for nothing else. `r_length()`, `r_typeof()`, and every
+   attribute read stay on `x`. The wrapped vector still carries its own
+   original attributes, which can be out of date.
 
-4. Never let `x_data` reach an R object: never `r_list_poke()` it, never set
-   it as an attribute, never return it to R. That would raise its refcount
-   for good (refcounts do not go down when a list is garbage collected), and
-   a locked wrapper's data must keep a refcount of 1. Passing `x_data`
-   between C functions, or returning it from one C function to another, is
-   fine as long as it stays protected.
+4. `x_data` never leaves the function that creates it. Functions keep taking
+   and returning `x`. Never pass `x_data` to another function (the one
+   exception is `Rf_match()` in `rray_as_subscript_names()`), never return
+   it, never store it in a struct. In particular, never let it reach an R
+   object: no `r_list_poke()`, no attribute, no return to R. That would raise
+   its refcount for good (refcounts do not go down when a list is garbage
+   collected), and a locked wrapper's data must keep a refcount of 1.
 
 5. Never write through `x_data`. Only `r_*_cbegin()` on it, never
    `r_*_begin()`.
@@ -207,18 +209,24 @@ Out of scope, with the reason:
 
 ## Where to unwrap
 
-Two patterns cover every site.
+At the `r_*_cbegin()` call, and nowhere else. Every site becomes:
 
-Driver and kernel. A driver reads attributes from `x`, then hands `x` to a
-kernel that only reads data. The driver creates `x_data` right before the
-dispatch and passes it to the kernel. The kernel's parameter is renamed from
-`x` to `x_data`, along with its macro body and its prototype in
-`src/decl/*-decl.h`. The name then says what the kernel gets.
+```c
+r_obj* x_data = KEEP(r_unwrap(x));
+const double* v_x = r_dbl_cbegin(x_data);
+```
 
-Inline read. A function reads data from an object itself. It unwraps right
-before the read, in the same function.
+plus one more in the `FREE()` that ends the function or block. In a kernel
+macro, these two lines replace the `CONST_DEREF(x)` line, and the macro's
+`FREE()` goes up by one.
 
-Subscripts are a special case of the inline pattern, covered in Part 3.
+So drivers, kernel signatures, typedefs, and `src/decl/*-decl.h` headers do
+not change. Drivers keep passing `x` and `y`, and only the kernel bodies
+change. A driver changes only where it calls `r_*_cbegin()` itself.
+
+Subscripts follow the same rule: `struct rray_subscript` keeps the original
+`index` in `.index`, and each reader unwraps it right before its own
+`r_*_cbegin()`.
 
 ## Existing comments
 
@@ -272,103 +280,89 @@ This returns the address as a string, in the same format as
 
 `r_clone_data()` reads its input. It is called from `wrapper.c` (on data that
 is never a wrapper) and from `rray_extract_assign()` and
-`rray_slice_assign()` (on `x`, which is often a wrapper). Unwrap inside it:
+`rray_slice_assign()` (on `x`, which is often a wrapper).
+
+In each `case`, right before the `r_*_cbegin()`:
 
 ```c
-r_obj* r_clone_data(r_obj* x) {
+case R_TYPE_double: {
   r_obj* x_data = KEEP(r_unwrap(x));
-  r_obj* out = r_clone_data_impl(x_data);
-  FREE(1);
+  const double* v_x = r_dbl_cbegin(x_data);
+  const r_ssize size = r_length(x);
+  r_obj* out = KEEP(r_alloc_double(size));
+  double* v_out = r_dbl_begin(out);
+  r_memcpy(v_out, v_x, sizeof(double) * size);
+  FREE(2);
   return out;
 }
 ```
 
-Move the current body into a `static r_obj* r_clone_data_impl(r_obj* x_data)`
-below it, declared in a new `src/decl/clone-decl.h`, with `x` renamed to
-`x_data` in the body. Include `wrapper.h` from `clone.c`.
+`r_length(x)` stays on `x`. Every `FREE(1)` becomes `FREE(2)`. Include
+`wrapper.h` from `clone.c`.
 
 ## Binary operations
 
-Files: `src/binary.h`, `src/arithmetic.h`, `src/arithmetic.c`,
-`src/arithmetic-add.c`, `src/arithmetic-subtract.c`,
-`src/arithmetic-multiply.c`, `src/arithmetic-divide.c`,
-`src/arithmetic-exponentiate.c`, `src/compare.c`, `src/equal.c`,
-`src/extremum.c`, `src/logical.c`.
+File: `src/binary.h`.
 
-- `RRAY_BINARY()` in `src/binary.h`: `X_CONST_DEREF(x)` becomes
-  `X_CONST_DEREF(x_data)`, and `Y_CONST_DEREF(y)` becomes
-  `Y_CONST_DEREF(y_data)`.
+`RRAY_BINARY()` is the only place the binary kernels read data. Replace
 
-- The kernel typedefs rename their first two parameters to `x_data` and
-  `y_data`: `rray_binary_arithmetic_fn` (`src/arithmetic.h`),
-  `rray_compare_fn` (`src/compare.c`), `rray_equality_fn` (`src/equal.c`),
-  `rray_extremum_fn` (`src/extremum.c`).
+```c
+const X_CTYPE* v_x = X_CONST_DEREF(x);
+const Y_CTYPE* v_y = Y_CONST_DEREF(y);
+```
 
-- Every kernel (`rray_add_lgl_lgl()` through `rray_add_cpl_cpl()`, the same
-  for subtract, multiply, divide, exponentiate, compare, equality, pmax,
-  pmin, and `rray_logical_lgl_lgl()`) renames `x` and `y` to `x_data` and
-  `y_data`, in the definition and in the decl header.
+with
 
-- The five drivers, `rray_binary_arithmetic()`, `rray_compare()`,
-  `rray_equality()`, `rray_extremum()`, and `rray_logical()` (which calls
-  `rray_logical_lgl_lgl()` directly): right before the kernel call, add
+```c
+r_obj* x_data = KEEP(r_unwrap(x));
+const X_CTYPE* v_x = X_CONST_DEREF(x_data);
 
-  ```c
-  r_obj* x_data = KEEP(r_unwrap(x));
-  r_obj* y_data = KEEP(r_unwrap(y));
-  ```
+r_obj* y_data = KEEP(r_unwrap(y));
+const Y_CTYPE* v_y = Y_CONST_DEREF(y_data);
+```
 
-  pass `x_data` and `y_data` to the kernel, and raise the final `FREE(5)` to
-  `FREE(7)` (all five drivers end with `FREE(5)` today). Keep passing `x`
-  and `y` to the `fn_switch()` call and to `rray_broadcast_names2()`.
+and change the final `FREE(1)` to `FREE(3)`. Include `wrapper.h` from
+`binary.h`.
 
-- The switch functions (`rray_add_switch()` and friends) keep `x` and `y`.
-  They only read the type.
+Nothing else changes. Every arithmetic, compare, equality, extremum, and
+logical kernel goes through `RRAY_BINARY()`, and the drivers, typedefs, and
+kernel signatures keep `x` and `y`.
 
 ## Cast
 
 File: `src/cast.c`.
 
-`RRAY_CAST()` and `RRAY_CAST_LOSSY()` read both data and attributes from `x`
-inside the macro. After `x = KEEP(vec_as_array(x));` add
+In `RRAY_CAST()` and `RRAY_CAST_LOSSY()`, replace
+`const FROM_CTYPE* v_x = FROM_CBEGIN(x);` with
 
 ```c
 r_obj* x_data = KEEP(r_unwrap(x));
+const FROM_CTYPE* v_x = FROM_CBEGIN(x_data);
 ```
 
-read with `FROM_CBEGIN(x_data)`, and change `FREE(2)` to `FREE(3)`. Keep
-`r_dim(x)` and `r_dim_names(x)` on `x`.
+and change `FREE(2)` to `FREE(3)`. `r_length(x)`, `r_dim(x)`, and
+`r_dim_names(x)` stay on `x`.
 
 ## Broadcast
 
 File: `src/broadcast.c`.
 
-- `rray_broadcast()`: after the equal-dimensions early return (which returns
-  `x` itself, untouched), add `r_obj* x_data = KEEP(r_unwrap(x));` before the
-  `switch`, pass `x_data` to the `rray_broadcast_lgl()` family, and raise
-  `FREE(5)` to `FREE(6)`. `rray_broadcast_names(x, dimensions)` keeps `x`.
+In `RRAY_BROADCAST_ATOMIC()` and `RRAY_BROADCAST_BARRIER()`, replace the
+`CONST_DEREF(x)` line with the unwrap and a read of `x_data`, and change
+`FREE(1)` to `FREE(2)`.
 
-- `rray_broadcast_lgl()` through `rray_broadcast_list()`: rename `x` to
-  `x_data`. In `RRAY_BROADCAST_ATOMIC()` and `RRAY_BROADCAST_BARRIER()`,
-  `CONST_DEREF(x)` becomes `CONST_DEREF(x_data)`.
-
-`rray_broadcast_common()` only calls `rray_broadcast()`. No change.
+`rray_broadcast()` and `rray_broadcast_common()` do not change.
 
 ## Combine and stack
 
 File: `src/combine.c`.
 
-- `rray_combine()`, in the second loop over `xs` (the one that calls
-  `rray_combine_fill()`): add `r_obj* x_data = KEEP(r_unwrap(x));` before the
-  call, pass `x_data`, and `FREE(1)` at the end of each iteration. The
-  attribute reads above it stay on `x`.
+In `RRAY_COMBINE_FILL_ATOMIC()` and `RRAY_COMBINE_FILL_BARRIER()`, replace
+the `CONST_DEREF(x)` line with the unwrap and a read of `x_data`, and add
+`FREE(1)` after the `RRAY_COMBINE_FILL_LOOP()`. These macros are `void`
+function bodies with no protection of their own today.
 
-- `rray_combine_fill()` and `rray_combine_fill_lgl()` through
-  `rray_combine_fill_list()`: rename `x` to `x_data`. In
-  `RRAY_COMBINE_FILL_ATOMIC()` and `RRAY_COMBINE_FILL_BARRIER()`,
-  `CONST_DEREF(x)` becomes `CONST_DEREF(x_data)`.
-
-- `rray_combine_axis_names()` reads names only. No change.
+`rray_combine()` and `rray_combine_fill()` do not change.
 
 This is what fixes `rray_stack()`. `rray_stack_prepare()` wraps every input
 with `rray_insert_axes()`, and those wrappers share the user's data. Today
@@ -380,31 +374,38 @@ underneath, with no copy. `src/stack.c` itself needs no change for this.
 
 File: `src/if-else.c`.
 
-- `rray_if_else()`: right before the `rray_if_else_fill()` call, add
+In `RRAY_IF_ELSE_FILL()`, the three reads at the top become
 
-  ```c
-  r_obj* condition_data = KEEP_N(r_unwrap(condition), &n_prot);
-  r_obj* true_data = KEEP_N(r_unwrap(true_), &n_prot);
-  r_obj* false_data = KEEP_N(r_unwrap(false_), &n_prot);
-  r_obj* missing_data = KEEP_N(r_unwrap(missing), &n_prot);
-  ```
+```c
+r_obj* condition_data = KEEP(r_unwrap(condition));
+const int* v_condition = r_lgl_cbegin(condition_data);
 
-  and pass these to `rray_if_else_fill()`. `missing` may be `r_null`, and
-  `r_unwrap()` returns it unchanged.
+r_obj* true_data = KEEP(r_unwrap(true_));
+CTYPE const* v_true = CBEGIN(true_data);
 
-- `rray_if_else_fill()`: rename its parameters to `condition_data`,
-  `true_data`, `false_data`, `missing_data`. In `RRAY_IF_ELSE_FILL()`, the
-  reads become `r_lgl_cbegin(condition_data)`, `CBEGIN(true_data)`,
-  `CBEGIN(false_data)`, `CBEGIN(missing_data)`, and the check becomes
-  `missing_data != r_null`. The `switch (r_typeof(true_))` becomes
-  `switch (r_typeof(true_data))`.
+r_obj* false_data = KEEP(r_unwrap(false_));
+CTYPE const* v_false = CBEGIN(false_data);
+```
+
+Inside the `missing != r_null` branch, the read becomes
+
+```c
+r_obj* missing_data = KEEP(r_unwrap(missing));
+CTYPE const* v_missing = CBEGIN(missing_data);
+```
+
+with a `FREE(1)` at the end of that branch. The final `FREE(1)` becomes
+`FREE(4)`.
+
+`rray_if_else()` and the `rray_if_else_fill()` signature do not change.
 
 ## Index
 
 File: `src/index.c`.
 
-- `rray_index()`: move the `v_v_index` loop up, so it runs before
-  `rray_any_missing_index()`, and unwrap each index array as it goes:
+- `rray_index()`: the `v_v_index` loop unwraps each index array as it goes.
+  The pointers outlive the loop, so every `index_data` stays protected until
+  the end of the function:
 
   ```c
   int n_index_prot = 0;
@@ -417,240 +418,243 @@ File: `src/index.c`.
 
   Add `FREE(n_index_prot)` next to the final `FREE(5)`. The index arrays come
   from `vec_as_array()`, so they are usually our wrappers. The existing
-  comment above the loop ("`...` can have up to ...") moves with it, word for
-  word.
+  comment above the loop stays where it is.
 
-- `rray_any_missing_index()`: take `const int* const* v_v_index` as well as
-  `v_indices`, and read through `v_v_index[i]` instead of calling
-  `r_int_cbegin(index)`. Keep using `r_length(v_indices[i])` for the size.
+- `rray_any_missing_index()`: in its loop, unwrap `index` right before
+  `r_int_cbegin()`, read `index_data`, and `FREE(1)` at the end of each
+  iteration, before the `break` check. `r_length(index)` stays on `index`.
 
-- `rray_as_index_array()`: after `x = KEEP(vec_as_array(x));` add
-  `r_obj* x_data = KEEP(r_unwrap(x));`, read `r_int_cbegin(x_data)`, and
-  change `FREE(1)` to `FREE(2)`. It still returns `x`, never `x_data`.
+- `rray_as_index_array()`: replace `const int* v_x = r_int_cbegin(x);` with
+  the unwrap and a read of `x_data`, and change `FREE(1)` to `FREE(2)`.
+  `stop_index_array_problem()` takes `v_x`, not `x_data`, so that is fine. It
+  still returns `x`.
 
-- `rray_index()`: before the `switch (r_typeof(x))`, add
-  `r_obj* x_data = KEEP(r_unwrap(x));`, pass `x_data` to the
-  `rray_index_lgl()` family, and add one to the final `FREE()`.
-
-- `rray_index_lgl()` through `rray_index_list()`: rename `x` to `x_data`. In
-  `RRAY_INDEX_ATOMIC()` and `RRAY_INDEX_BARRIER()`, `CONST_DEREF(x)` becomes
-  `CONST_DEREF(x_data)`.
+- In `RRAY_INDEX_ATOMIC()` and `RRAY_INDEX_BARRIER()`, replace the
+  `CONST_DEREF(x)` line with the unwrap and a read of `x_data`, and change
+  `FREE(1)` to `FREE(2)`.
 
 ## Subscripts
 
 Files: `src/subscript.c`, `src/extract-subscript.c`,
 `src/slice-subscript.c`.
 
-`struct rray_subscript` carries a subscript from where it is checked to where
-it is read. The readers (the loops in `src/extract.c`,
-`src/extract-assign.c`, `rray_slice_as_locations()`) only ever read data from
-`.index`. So the constructors unwrap, and `.index` holds the unwrapped vector
-from then on. The readers need no change.
+`struct rray_subscript` keeps the original `index` in `.index`. Every
+function that reads its data unwraps right before the read:
 
-The constructors still read attributes (`r_dim(index)`) from the original
-`index`, before unwrapping.
+- `rray_as_subscript_complement()` and `rray_as_subscript_nonzero()`: in each
+  `case`, unwrap `index` right before `r_int_cbegin()` or `r_dbl_cbegin()`.
+  In `rray_as_subscript_nonzero()`, change that case's `FREE(1)` to
+  `FREE(2)`. In `rray_as_subscript_complement()`, the cases end with
+  `break`, so add `FREE(1)` before each `break`.
 
-- `rray_as_subscript_locations()`: unwrap first:
-  `r_obj* index_data = KEEP(r_unwrap(index));`. Use `index_data` for
-  `rray_subscript_summarise()`, `rray_as_subscript_complement()`,
-  `rray_as_subscript_nonzero()`, and `.index`. `FREE(1)` before each
-  `return`.
+- `rray_mask_size()`: unwrap `mask` before `r_lgl_cbegin()`, `FREE(1)`
+  before `return`. `r_length(mask)` stays on `mask`.
 
-- `rray_as_subscript_mask()`: same, using `index_data` for
-  `rray_mask_size()` and `.index`.
+- `rray_subscript_summarise()`: each `case` returns straight from the call.
+  Store the result in a local instead, so the unwrap can be freed:
 
-- `rray_as_extract_mask()`: keep the `r_dim(index)` checks on `index`. In
-  the array path, unwrap after the dimensions check and use `index_data` for
-  `rray_mask_size()` and `.index`.
+  ```c
+  struct rray_subscript_summary out;
 
-- `rray_as_extract_points()`: keep `r_dim(index)` on `index`. Unwrap after
-  reading the dimensions and use `index_data` for
-  `rray_subscript_summarise()`, `r_typeof()`, and `.index`.
+  switch (r_typeof(index)) {
+  case R_TYPE_integer: {
+    r_obj* index_data = KEEP(r_unwrap(index));
+    out = rray_subscript_summarise_int(r_int_cbegin(index_data) + start, size);
+    FREE(1);
+    break;
+  }
+  case R_TYPE_double: {
+    r_obj* index_data = KEEP(r_unwrap(index));
+    out = rray_subscript_summarise_dbl(r_dbl_cbegin(index_data) + start, size);
+    FREE(1);
+    break;
+  }
+  default:
+    r_stop_unreachable();
+  }
 
-- `rray_as_subscript_names()`: unwrap first and use `index_data` for
-  `r_chr_cbegin()` and for `Rf_match(names, index_data, 0)`.
+  return out;
+  ```
 
-- `rray_subscript_summarise()`, `rray_mask_size()`,
-  `rray_as_subscript_complement()`, `rray_as_subscript_nonzero()`: no code
-  change, but their callers now always pass unwrapped data.
+- `rray_as_subscript_names()`: unwrap right before `r_chr_cbegin()`, and pass
+  `index_data` to `Rf_match()` too, since base R may take a data pointer
+  there, which would lock the wrapper. Change `FREE(1)` to `FREE(2)`.
 
-- `rray_subscript_as_list()`: this is the only place a subscript goes back to
-  R, through the internal test helpers `rray_as_extract_subscript()` and
-  `rray_as_slice_subscript()`. Poke `r_clone_data(subscript.index)` instead
-  of `subscript.index`, so the unwrapped vector never reaches R (rule 4).
-  Poke it directly, the way the other two elements are poked.
+- `rray_slice_as_locations()`: in the `locations_dbl` and `mask` cases,
+  unwrap `subscript.index` right before the read, and change `FREE(1)` to
+  `FREE(2)`. `r_length(subscript.index)` stays as is. The `locations_int`
+  case still returns `subscript.index`, which may be a wrapper. Its callers
+  unwrap it (see Slice and slice assign).
 
-Every caller already does `KEEP(subscript.index)` (or `KEEP_N()`) right after
-building a subscript, so the unwrapped vector is protected from there on.
-Inside the constructors, nothing allocates between the final `FREE()` and the
-caller's `KEEP()`, which is the same pattern the code already relies on for
-the allocated cases.
+- The constructors (`rray_as_subscript_locations()`,
+  `rray_as_subscript_mask()`, `rray_as_extract_mask()`,
+  `rray_as_extract_points()`) and `rray_subscript_as_list()` do not change.
+  They pass `index` along, and the functions above do the reads.
 
 ## Extract and extract assign
 
 Files: `src/extract.c`, `src/extract-assign.c`.
 
-- `rray_extract()`: before the `switch (r_typeof(x))`, add
-  `r_obj* x_data = KEEP(r_unwrap(x));`, pass `x_data` to the
-  `rray_extract_lgl()` family, and change `FREE(3)` to `FREE(4)`.
+- In `RRAY_EXTRACT_ATOMIC()` and `RRAY_EXTRACT_BARRIER()`, replace the
+  `CONST_DEREF(x)` line with the unwrap and a read of `x_data`, and change
+  `FREE(1)` to `FREE(2)`.
 
-- `rray_extract_lgl()` through `rray_extract_list()`: rename `x` to
-  `x_data`. In `RRAY_EXTRACT_ATOMIC()`, `RRAY_EXTRACT_BARRIER()`, and
-  `RRAY_EXTRACT_BARRIER_MASK_LOOP()`, every `x` becomes `x_data` (including
-  `r_length(x)`).
+- The subscript loop macros are `RRAY_EXTRACT_LOCATIONS_LOOP()`,
+  `RRAY_EXTRACT_ATOMIC_MASK_LOOP()`, `RRAY_EXTRACT_BARRIER_MASK_LOOP()`,
+  `RRAY_EXTRACT_POINTS_LOOP()`, and the three `RRAY_EXTRACT_ASSIGN_*_LOOP()`
+  macros. In each one, the `v_index` line becomes
 
-- The subscript loops read `subscript.index`, which is already unwrapped. No
-  change.
+  ```c
+  r_obj* index_data = KEEP(r_unwrap(subscript.index));
+  const INDEX_CTYPE* v_index = INDEX_CONST_DEREF(index_data);
+  ```
 
-- `rray_extract_assign()`: `r_clone_data(x)` now unwraps internally. After
-  `value = KEEP(rray_cast(...))`, add
-  `r_obj* value_data = KEEP(r_unwrap(value));` right before the `switch`,
-  pass `value_data` to the `rray_extract_assign_lgl()` family, and change
-  `FREE(4)` to `FREE(5)`. `r_dim(value)` stays on `value`.
+  (`r_lgl_cbegin(index_data)` in the mask loops), and the `do { } while (0)`
+  block ends with `FREE(1)`.
 
-- `rray_extract_assign_lgl()` through `rray_extract_assign_list()`: rename
-  `value` to `value_data`. In `RRAY_EXTRACT_ASSIGN_ATOMIC()`,
-  `RRAY_EXTRACT_ASSIGN_BARRIER()`, and the three loop macros, `value`
-  becomes `value_data` (including `r_length(value)`).
+- In `RRAY_EXTRACT_ASSIGN_ATOMIC()` and `RRAY_EXTRACT_ASSIGN_BARRIER()`,
+  replace the `CONST_DEREF(value)` line with
+
+  ```c
+  r_obj* value_data = KEEP(r_unwrap(value));
+  const CTYPE* v_value = CONST_DEREF(value_data);
+  ```
+
+  and add `FREE(1)` after the `RRAY_EXTRACT_ASSIGN_ITERATE()`.
+
+- `r_length(x)`, `r_length(value)`, and `r_length(subscript.index)` in these
+  macros stay as they are.
+
+- `rray_extract()` and `rray_extract_assign()` do not change.
+  `r_clone_data(x)` unwraps internally.
 
 ## Slice and slice assign
 
-Files: `src/slice.c`, `src/slice-assign.c`, `src/slice-subscript.c`.
+Files: `src/slice.c`, `src/slice-assign.c`.
 
-- `rray_slice_as_locations()`: no change. For `locations_int` it returns
-  `subscript.index`, which is now unwrapped data. The callers only read it
-  with `r_int_cbegin()` and keep it protected with `KEEP_N()`. It never
-  reaches an R object.
+- `rray_slice()` and `rray_slice_assign()`: `rray_slice_as_locations()` can
+  return `subscript.index` itself, which may be a wrapper. Unwrap before the
+  read:
 
-- `rray_slice()`: before the `switch (r_typeof(x))`, add
-  `r_obj* x_data = KEEP_N(r_unwrap(x), &n_prot);` and pass `x_data` to the
-  `rray_slice_lgl()` family.
+  ```c
+  r_obj* locations = KEEP_N(rray_slice_as_locations(subscript), &n_prot);
+  r_obj* locations_data = KEEP_N(r_unwrap(locations), &n_prot);
+  v_v_locations[i] = r_int_cbegin(locations_data);
+  ```
 
-- `rray_slice_lgl()` through `rray_slice_list()`: rename `x` to `x_data`. In
-  `RRAY_SLICE_ATOMIC()` and `RRAY_SLICE_BARRIER()`, `CONST_DEREF(x)` becomes
-  `CONST_DEREF(x_data)`.
+  The pointer outlives the loop, so `locations_data` stays protected until
+  the final `FREE(n_prot)`, like `locations` already does.
 
-- `rray_slice_assign()`: `r_clone_data(x)` now unwraps internally. Before the
-  `switch (r_typeof(out))`, add
-  `r_obj* value_data = KEEP_N(r_unwrap(value), &n_prot);` and pass it to the
-  `rray_slice_assign_lgl()` family.
+- In `RRAY_SLICE_ATOMIC()` and `RRAY_SLICE_BARRIER()`, replace the
+  `CONST_DEREF(x)` line with the unwrap and a read of `x_data`, and change
+  `FREE(1)` to `FREE(2)`.
 
-- `rray_slice_assign_lgl()` through `rray_slice_assign_list()`: rename
-  `value` to `value_data`. In `RRAY_SLICE_ASSIGN_ATOMIC()` and
-  `RRAY_SLICE_ASSIGN_BARRIER()`, `CONST_DEREF(value)` becomes
-  `CONST_DEREF(value_data)`.
+- In `RRAY_SLICE_ASSIGN_ATOMIC()` and `RRAY_SLICE_ASSIGN_BARRIER()`, replace
+  the `CONST_DEREF(value)` line with the unwrap and a read of `value_data`,
+  and add `FREE(1)` at the end.
 
 These callers of `rray_slice()` and `rray_slice_assign()` need no change:
 `rray_reverse()`, `rray_rep()`, `rray_rep_each()`, `rray_roll()`,
-`rray_slice_axis()`, `rray_slice_assign_axis()`. The location vectors they
-build are freshly allocated.
+`rray_slice_axis()`, `rray_slice_assign_axis()`.
 
 ## Split and unstack
 
 File: `src/split.c`.
 
-- `rray_split()`: before the loop, add `r_obj* x_data = KEEP(r_unwrap(x));`,
-  pass `x_data` to `rray_split_fill()`, and change `FREE(5)` to `FREE(6)`.
-  `r_typeof(x)` and the names reads stay on `x`.
+In `RRAY_SPLIT_FILL_ATOMIC()` and `RRAY_SPLIT_FILL_BARRIER()`, replace the
+`CONST_DEREF(x)` line with the unwrap and a read of `x_data`, and add
+`FREE(1)` after the `RRAY_SPLIT_FILL_LOOP()`.
 
-- `rray_split_fill()` and `rray_split_fill_lgl()` through
-  `rray_split_fill_list()`: rename `x` to `x_data`. In
-  `RRAY_SPLIT_FILL_ATOMIC()` and `RRAY_SPLIT_FILL_BARRIER()`,
-  `CONST_DEREF(x)` becomes `CONST_DEREF(x_data)`.
-
-`rray_unstack()` calls `rray_split()` and is covered by it. Its wrapping of
-the results is Part 5.
+`rray_split()` and `rray_split_fill()` do not change. `rray_unstack()` calls
+`rray_split()` and is covered by it. Its wrapping of the results is Part 5.
 
 ## Permute axes and move axes
 
 File: `src/permute-axes.c`.
 
-- `rray_permute_axes()`: before the `switch (r_typeof(x))`, add
-  `r_obj* x_data = KEEP(r_unwrap(x));`, pass it to the
-  `rray_permute_axes_lgl()` family, and change `FREE(6)` to `FREE(7)`.
-  `rray_permute_axes_names(x, ...)` keeps `x`.
+In `RRAY_PERMUTE_AXES_ATOMIC()` and `RRAY_PERMUTE_AXES_BARRIER()`, replace
+the `CONST_DEREF(x)` line with the unwrap and a read of `x_data`, and change
+`FREE(1)` to `FREE(2)`.
 
-- `rray_permute_axes_lgl()` through `rray_permute_axes_list()`: rename `x` to
-  `x_data`. In `RRAY_PERMUTE_AXES_ATOMIC()` and
-  `RRAY_PERMUTE_AXES_BARRIER()`, `CONST_DEREF(x)` becomes
-  `CONST_DEREF(x_data)`.
-
-`rray_move_axes()` calls `rray_permute_axes()`. No change.
+`rray_permute_axes()` and `rray_move_axes()` do not change.
 
 ## Locate
 
 File: `src/locate.c`.
 
-- `rray_locate_fn`: rename `x` to `x_data`.
-
-- `rray_locate()`: right before `fn(...)`, add
-  `r_obj* x_data = KEEP(r_unwrap(x));`, pass `x_data`, and change `FREE(6)` to
-  `FREE(7)`. `rray_locate_switch(x, ...)` and `rray_reduce_names(x, axes)`
-  keep `x`.
-
-- `rray_locate_max_lgl()` and the other kernels: rename `x` to `x_data`. In
-  `RRAY_LOCATE()`, `CONST_DEREF(x)` and `r_typeof(x)` use `x_data`.
+In `RRAY_LOCATE()`, replace the `CONST_DEREF(x)` line with the unwrap and a
+read of `x_data`, and change the final `FREE(2)` to `FREE(3)`. The early
+`FREE(1); return out;` for an empty axis comes before the unwrap and does
+not change. `r_typeof(x)` stays on `x`.
 
 ## Reduce
 
-Files: `src/reduce.h`, `src/reduce.c`, `src/reduce-sum.c`,
-`src/reduce-mean.c`, `src/reduce-prod.c`, `src/reduce-extremum.c`,
-`src/reduce-logical.c`.
+Files: `src/reduce.h`, `src/reduce-sum.c`, `src/reduce-mean.c`.
 
-- `rray_reduce_fn` in `src/reduce.h`: rename `x` to `x_data`.
-  `rray_reduce_fn_switch` keeps `x`.
+- In `RRAY_REDUCE()`, replace the `X_CONST_DEREF(x)` line with the unwrap and
+  a read of `x_data`, and change `FREE(1)` to `FREE(2)`. Include `wrapper.h`
+  from `reduce.h`.
 
-- `RRAY_REDUCE()`: `X_CONST_DEREF(x)` becomes `X_CONST_DEREF(x_data)`.
+- The hand-written kernels that return straight from a helper call
+  (`rray_sum_lgl()`, `rray_sum_int()`, `rray_sum_int_forced_fallback()`,
+  `rray_mean_lgl()`, `rray_mean_int()`, `rray_mean_int_forced_fallback()`)
+  unwrap right before their `r_*_cbegin()`, store the helper's result in
+  `out`, then `FREE(1)` and return it:
 
-- `rray_reduce()`: right before `fn(...)`, add
-  `r_obj* x_data = KEEP(r_unwrap(x));`, pass `x_data`, and change `FREE(6)` to
-  `FREE(7)`. `fn_switch(x, ...)` and `rray_reduce_names(x, axes)` keep `x`.
+  ```c
+  r_obj* x_data = KEEP(r_unwrap(x));
+  const int* v_x = r_lgl_cbegin(x_data);
 
-- Every kernel passed through `rray_reduce_fn`: rename `x` to `x_data`. This
-  includes the hand-written ones that call `r_*_cbegin(x)` and `r_length(x)`
-  directly: `rray_sum_lgl()`, `rray_sum_int()`, `rray_sum_dbl()`,
-  `rray_sum_cpl()`, `rray_sum_int_forced_fallback()`, `rray_mean_lgl()`,
-  `rray_mean_int()`, `rray_mean_dbl()`, `rray_mean_int_forced_fallback()`.
+  r_obj* out = rray_sum_lgl_or_int(
+    v_x,
+    ...
+  );
 
-- `ffi_test_rray_sum_forced_fallback()` and its mean twin call
-  `rray_reduce()`, so they are covered.
+  FREE(1);
+  return out;
+  ```
+
+  `rray_sum_int()` and `rray_mean_int()` have two return paths (the fallback
+  and the normal case), and both do this.
+
+- `rray_sum_dbl()` and `rray_sum_cpl()`: unwrap before the read, and change
+  their `FREE(1)` to `FREE(2)`. `rray_mean_dbl()`: move the
+  `int n_prot = 0;` above the read, and unwrap with
+  `KEEP_N(r_unwrap(x), &n_prot)`.
+
+- `r_length(x)` stays on `x` everywhere. `rray_reduce()` does not change.
 
 ## Cumulative
 
-Files: `src/cumulative.h`, `src/cumulative.c`, and the four
-`src/cumulative-*.c` files.
+File: `src/cumulative.h`.
 
-- `rray_cumulative_fn`: rename `x` to `x_data`. `rray_cumulative_fn_switch`
-  keeps `x`.
+In `RRAY_CUMULATIVE()`, replace the `X_CONST_DEREF(x)` line with the unwrap
+and a read of `x_data`, and change `FREE(2)` to `FREE(3)`. `r_length(x)`
+stays on `x`. Include `wrapper.h` from `cumulative.h`.
 
-- `RRAY_CUMULATIVE()`: `r_length(x)` and `X_CONST_DEREF(x)` use `x_data`.
-
-- `rray_cumulative()`: right before `fn(...)`, add
-  `r_obj* x_data = KEEP(r_unwrap(x));`, pass `x_data`, and change `FREE(2)` to
-  `FREE(3)`. `r_dim_names(x)` keeps `x`.
-
-- Every cumulative kernel: rename `x` to `x_data`.
+`rray_cumulative()` and the kernels do not change.
 
 ## Roll each
 
 File: `src/roll-each.c`, and `check_roll_n_not_missing()` in
 `src/roll.c`.
 
-- `rray_roll_each()`: after `n` is broadcast, add
-  `r_obj* n_data = KEEP(r_unwrap(n));` and read `r_int_cbegin(n_data)`. Before
-  `rray_roll_each_fill()`, add `r_obj* x_data = KEEP(r_unwrap(x));` and pass
-  it. Change `FREE(8)` to `FREE(10)`.
+- `rray_roll_each()`: replace `const int* v_n = r_int_cbegin(n);` with the
+  unwrap and a read of `n_data`, and change `FREE(8)` to `FREE(9)`.
 
-- `rray_roll_each_normalize()`: unwrap `n` before reading it. It still
-  returns `n` (not `n_data`) when nothing changes, and reads `r_dim(n)` from
-  `n`.
+- `rray_roll_each_normalize()`: unwrap `n` right before `r_int_cbegin()`.
+  Add `FREE(1)` before the early `return n;`, and change the final `FREE(1)`
+  to `FREE(2)`. It still returns `n`, never `n_data`, and reads `r_dim(n)`
+  from `n`.
 
-- `check_roll_n_not_missing()` in `src/roll.c`: unwrap `n` before reading.
-  This also covers `rray_roll()`, where `n` is small, at no extra cost.
+- `check_roll_n_not_missing()` in `src/roll.c`: unwrap `n` right before
+  `r_int_cbegin()`, and `FREE(1)` after the loop. This also covers
+  `rray_roll()`, where `n` is small, at no extra cost.
 
-- `rray_roll_each_fill()` and its typed kernels: rename `x` to `x_data`. In
-  `RRAY_ROLL_EACH_FILL_ATOMIC()` and `RRAY_ROLL_EACH_FILL_BARRIER()`,
-  `CONST_DEREF(x)` becomes `CONST_DEREF(x_data)`.
+- In `RRAY_ROLL_EACH_FILL_ATOMIC()` and `RRAY_ROLL_EACH_FILL_BARRIER()`,
+  replace the `CONST_DEREF(x)` line with the unwrap and a read of `x_data`,
+  and add `FREE(1)` after the `RRAY_ROLL_EACH_FILL_LOOP()`.
+  `rray_roll_each_fill()` does not change.
 
 ## Files with nothing to do
 
@@ -711,7 +715,7 @@ Part 4 replaces `wrapper_readonly()` and rewrites the last test along with the
 others that use it.
 
 The full test suite is the main check here. Every function's existing tests
-exercise the renamed kernels.
+exercise the changed kernels.
 
 ---
 
@@ -1267,8 +1271,13 @@ Run these before calling a pull request done.
    - every `r_unwrap()` result is `KEEP()`ed before the next allocation,
 
    - every changed `FREE()` count matches the new `KEEP()`s on every path,
-     including early returns (`rray_broadcast()` returns before its new
-     `KEEP()`, the subscript constructors return from several places),
+     including early returns (`RRAY_LOCATE()` returns before its new
+     `KEEP()`, `rray_roll_each_normalize()` and the reduce kernels return
+     from two places), and in the `void` fill macros, which had no `FREE()`
+     before,
+
+   - every `x_data` is created on the line before its `r_*_cbegin()` and
+     never passed to another function (rule 4 in Part 2),
 
    - `KEEP_N()` counters include the new protections.
 
