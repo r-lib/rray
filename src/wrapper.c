@@ -31,12 +31,10 @@ static char* package = "rray";
 r_obj* r_wrap(r_obj* x) {
   R_altrep_class_t cls = wrapper_class(r_typeof(x));
 
-  // If `x` is a wrapper, unwrap it to gain access to the underlying data. This
-  // is what we wrap and bump the reference count of. This avoids a
-  // proliferation of wrappers. We manage writable access to the underlying data
-  // by always cloning it before giving out a writable handle if it is ever
-  // `MAYBE_SHARED()` (i.e. a ref count >1), meaning that we aren't the sole
-  // owner of it at that time.
+  // If `x` is a wrapper, unwrap it to gain access to the original data and wrap
+  // that instead. This avoids a proliferation of nested wrappers. Refcounts on
+  // `x` itself should also still be correct - each wrapper looks like an
+  // individual user of `x`.
   r_obj* data = is_wrapper(x) ? wrapper_data(x) : x;
 
   // Reference count on `data` is bumped when we wrap it here.
