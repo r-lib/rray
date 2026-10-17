@@ -102,6 +102,14 @@ test_that("a bare vector becomes a one dimensional array", {
   )
 })
 
+test_that("a bare vector drops other attributes", {
+  x <- structure(c(a = 1L, b = 2L), foo = 1)
+  expect_identical(
+    rray_cast(x, integer()),
+    array(1:2, 2L, dimnames = list(c("a", "b")))
+  )
+})
+
 test_that("dimensions and names are kept", {
   x <- array(1:6, c(1L, 2L, 3L), dimnames = list("a", c("b", "c"), NULL))
   out <- rray_cast(x, double())

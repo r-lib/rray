@@ -106,6 +106,7 @@ r_obj* rray_set_names(
   }
 
   r_obj* out = KEEP(r_wrap(x));
+  r_attrib_poke_dim(out, r_dim(x));
   r_attrib_poke_dim_names(out, names);
 
   FREE(2);
@@ -169,6 +170,7 @@ r_obj* rray_set_axis_names(
   r_list_poke(new_names, axis - 1, names);
 
   r_obj* out = KEEP(r_wrap(x));
+  r_attrib_poke_dim(out, r_dim(x));
   r_attrib_poke_dim_names(out, new_names);
 
   FREE(4);

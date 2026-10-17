@@ -92,8 +92,6 @@ r_obj* rray_set_dimensions(
   }
 
   r_obj* out = KEEP(r_wrap(x));
-
-  r_attrib_poke_dim_names(out, r_null);
   r_attrib_poke_dim(out, dimensions);
 
   FREE(3);

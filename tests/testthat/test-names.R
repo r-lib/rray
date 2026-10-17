@@ -134,6 +134,19 @@ test_that("rray_set_names() doesn't touch the data", {
   expect_identical(unname(out), x)
 })
 
+test_that("rray_set_names() drops other attributes", {
+  x <- array(1:4, c(2L, 2L))
+  attr(x, "foo") <- 1
+  names(x) <- letters[1:4]
+
+  names <- list(c("a", "b"), c("c", "d"))
+  expect_identical(
+    rray_set_names(x, names),
+    array(1:4, c(2L, 2L), dimnames = names)
+  )
+  expect_identical(rray_set_names(x, NULL), array(1:4, c(2L, 2L)))
+})
+
 test_that("rray_set_names() works with zero-size axes", {
   x <- array(integer(), c(0, 3))
   # A zero-length character vector is normalized to `NULL` by R itself
@@ -187,6 +200,16 @@ test_that("rray_set_axis_names() leaves other axes untouched", {
   )
   out <- rray_set_axis_names(x, 1, c("a", "b"))
   expect_identical(dimnames(out), list(c("a", "b"), c("c1", "c2", "c3")))
+})
+
+test_that("rray_set_axis_names() drops other attributes", {
+  x <- array(1:4, c(2L, 2L))
+  attr(x, "foo") <- 1
+  names(x) <- letters[1:4]
+  expect_identical(
+    rray_set_axis_names(x, 1L, c("a", "b")),
+    array(1:4, c(2L, 2L), dimnames = list(c("a", "b"), NULL))
+  )
 })
 
 test_that("rray_set_axis_names() with `NULL` clears just that axis", {

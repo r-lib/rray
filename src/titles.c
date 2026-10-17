@@ -99,6 +99,7 @@ r_obj* rray_set_titles(
   r_attrib_poke_names(new_names, titles);
 
   r_obj* out = KEEP(r_wrap(x));
+  r_attrib_poke_dim(out, r_dim(x));
   r_attrib_poke_dim_names(out, new_names);
 
   FREE(3);
@@ -184,6 +185,7 @@ static r_obj* rray_clear_titles(r_obj* x) {
   r_attrib_poke_names(new_names, r_null);
 
   r_obj* out = KEEP(r_wrap(x));
+  r_attrib_poke_dim(out, r_dim(x));
   r_attrib_poke_dim_names(out, new_names);
 
   FREE(2);

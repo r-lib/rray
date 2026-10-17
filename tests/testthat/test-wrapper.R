@@ -42,23 +42,12 @@ test_that("wrapper preserves type", {
 # ------------------------------------------------------------------------------
 # Attributes
 
-test_that("wrapper clones attributes from the original", {
-  x <- array(
-    1:6,
-    c(2L, 3L),
-    dimnames = list(c("r1", "r2"), c("c1", "c2", "c3"))
-  )
+test_that("wrapper starts with no attributes", {
+  x <- array(1:4, c(2L, 2L), dimnames = list(c("a", "b"), NULL))
+  attr(x, "foo") <- 1
   w <- wrap(x)
-  expect_identical(dim(w), dim(x))
-  expect_identical(dimnames(w), dimnames(x))
-})
-
-test_that("wrapper gets its own attribute pairlist", {
-  x <- c(a = 1L, b = 2L)
-  w <- wrap(x)
-  names(w) <- c("x", "y")
-  expect_identical(names(x), c("a", "b"))
-  expect_identical(names(w), c("x", "y"))
+  expect_null(attributes(w))
+  expect_wraps(w, x)
 })
 
 test_that("modifying dim on wrapper does not affect original", {
@@ -139,8 +128,7 @@ test_that("read-only access to a dimensioned wrapper shares data", {
   )
 
   for (x in xs) {
-    dim(x) <- c(1L, 2L)
-    w <- wrap(x)
+    w <- rray_set_dimensions(x, c(1L, 2L))
 
     expect_identical(wrapper_read_access(w), TRUE)
     expect_wraps(w, x)
@@ -284,24 +272,13 @@ test_that("wrapping a wrapper does not create nested wrappers", {
   expect_wraps(w2, x)
 })
 
-test_that("wrapping a wrapper uses the wrapper's attributes", {
-  # (even though it actually wraps `x`)
-
-  x <- structure(1:3, foo = "bar")
-
-  w1 <- structure(wrap(x), a = "b")
-  expect_mapequal(attributes(w1), list(foo = "bar", a = "b"))
-
+test_that("wrapping a wrapper drops its attributes", {
+  x <- 1:4
+  w1 <- rray_set_dimensions(x, c(2L, 2L))
   w2 <- wrap(w1)
-  expect_mapequal(attributes(w2), list(foo = "bar", a = "b"))
-})
-
-test_that("wrapping a wrapper gives independent attributes", {
-  x <- c(a = 1L, b = 2L, c = 3L)
-  w1 <- wrap(x)
-  w2 <- wrap(w1)
-  names(w1) <- c("x", "y", "z")
-  expect_identical(names(w2), c("a", "b", "c"))
+  expect_null(attributes(w2))
+  expect_identical(dim(w1), c(2L, 2L))
+  expect_wraps(w2, x)
 })
 
 # ------------------------------------------------------------------------------
@@ -322,13 +299,12 @@ test_that("duplicating a wrapper keeps the wrapper's attributes", {
   x <- structure(
     1:6,
     dim = c(2L, 3L),
-    dimnames = list(c("a", "b"), c("c", "d", "e")),
-    foo = "bar"
+    dimnames = list(c("a", "b"), c("c", "d", "e"))
   )
   w <- rray_set_dimensions(x, c(3L, 2L))
   expect_wraps(w, x)
 
-  expected <- structure(1:6, foo = "bar", dim = c(3L, 2L))
+  expected <- array(1:6, c(3L, 2L))
 
   shallow <- rlang::duplicate(w, shallow = TRUE)
   expect_identical(is_wrapper(shallow), FALSE)
@@ -353,12 +329,12 @@ test_that("deep copy via c() produces a regular non-wrapper vector", {
 # Serialization
 
 test_that("serialization round-trips wrapper to plain vector", {
-  w <- wrap(1:5)
-  attr(w, "custom") <- "hello"
+  w <- rray_set_dimensions(1:5, 5L)
+  expect_identical(is_wrapper(w), TRUE)
   rt <- unserialize(serialize(w, NULL))
-  expect_false(is_wrapper(rt))
+  expect_identical(is_wrapper(rt), FALSE)
   expect_identical(as.integer(rt), 1:5)
-  expect_identical(attr(rt, "custom"), "hello")
+  expect_identical(dim(rt), 5L)
 })
 
 test_that("serialization round-trips all types", {
