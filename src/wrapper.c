@@ -8,16 +8,26 @@
 
 static char* package = "rray";
 
-// Wrap an R object in a lightweight ALTREP wrapper
+// Wrap an R object's data in a read-only ALTREP wrapper
 //
-// Useful when only modifying the attributes of an object,
-// without touching the underlying data.
+// Useful when ONLY modifying the attributes of the new object, and NEVER the
+// underlying data.
 //
-// - Read only accesses to the data are "passed through" to the wrapped object
-// - Writable access forces a shallow duplication of the wrapped object if it
-//   EVER looks shared, which happens if we are wrapping a basic R object
-//   supplied from the R side by a user, or if we rewrap a wrapper's underlying
-//   data (because the original wrapper also shares it).
+// The ALTREP wrapper itself is immediately marked as immutable with
+// `MARK_NOT_MUTABLE()`. This is extremely important! It ensures that R won't
+// ever ask for a writable `DATAPTR()` without first calling `Duplicate()`.
+//
+// Note that R will VERY often use `REAL()` instead of `REAL_RO()` when it only
+// needs a read-only pointer. This is due to `REAL_RO()` being a newer idea that
+// was only introduced with ALTREP, and a lot of historical code hasn't been
+// ported over. Because of that, our `DATAPTR()` ALTREP methods must return a
+// pointer even in the `writable` case, but we expect that R (and all packages)
+// hold up their side of the bargain by only actually writing to this pointer
+// when they fully own it or when there are `NO_REFERENCES()`, which won't be
+// the case since we've used `MARK_NOT_MUTABLE()`. The `NO_REFERENCES()` case is
+// relevant for `x + y + 1` where R will attempt to reuse `x + y`'s temporary
+// result since there aren't any other owners. We don't want
+// `rray_set_dimensions(x) + 1` to look reusable!
 r_obj* r_wrap(r_obj* x) {
   R_altrep_class_t cls = wrapper_class(r_typeof(x));
 
