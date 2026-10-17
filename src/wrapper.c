@@ -8,26 +8,34 @@
 
 static char* package = "rray";
 
-// Wrap an R object in a lightweight ALTREP wrapper
+// Wrap an R object's data in a read-only ALTREP wrapper
 //
-// Useful when only modifying the attributes of an object,
-// without touching the underlying data.
+// Useful when ONLY modifying the attributes of the new object, and NEVER the
+// underlying data.
 //
-// - Read only accesses to the data are "passed through" to the wrapped object
-// - Writable access forces a shallow duplication of the wrapped object if it
-//   EVER looks shared, which happens if we are wrapping a basic R object
-//   supplied from the R side by a user, or if we rewrap a wrapper's underlying
-//   data (because the original wrapper also shares it).
+// The ALTREP wrapper itself is immediately marked as immutable with
+// `MARK_NOT_MUTABLE()`. This is extremely important! It ensures that R won't
+// ever ask for a writable `DATAPTR()` without first calling `Duplicate()`.
+//
+// Note that R will VERY often use `REAL()` instead of `REAL_RO()` when it only
+// needs a read-only pointer. This is due to `REAL_RO()` being a newer idea that
+// was only introduced with ALTREP, and a lot of historical code hasn't been
+// ported over. Because of that, our `DATAPTR()` ALTREP methods must return a
+// pointer even in the `writable` case, but we expect that R (and all packages)
+// hold up their side of the bargain by only actually writing to this pointer
+// when they fully own it or when there are `NO_REFERENCES()`, which won't be
+// the case since we've used `MARK_NOT_MUTABLE()`. The `NO_REFERENCES()` case is
+// relevant for `x + y + 1` where R will attempt to reuse `x + y`'s temporary
+// result since there aren't any other owners. We don't want
+// `rray_set_dimensions(x) + 1` to look reusable!
 r_obj* r_wrap(r_obj* x) {
   R_altrep_class_t cls = wrapper_class(r_typeof(x));
 
-  // If `x` is a wrapper, unwrap it to gain access to the underlying data. This
-  // is what we wrap and bump the reference count of. This avoids a
-  // proliferation of wrappers. We manage writable access to the underlying data
-  // by always cloning it before giving out a writable handle if it is ever
-  // `MAYBE_SHARED()` (i.e. a ref count >1), meaning that we aren't the sole
-  // owner of it at that time.
-  r_obj* data = is_wrapper(x) ? wrapper_readonly(x) : x;
+  // If `x` is a wrapper, unwrap it to gain access to the original data and wrap
+  // that instead. This avoids a proliferation of nested wrappers. Refcounts on
+  // `x` itself should also still be correct - each wrapper looks like an
+  // individual user of `x`.
+  r_obj* data = is_wrapper(x) ? wrapper_data(x) : x;
 
   // Reference count on `data` is bumped when we wrap it here.
   // It now looks at least "referenced", but not necessarily "shared".
@@ -36,6 +44,10 @@ r_obj* r_wrap(r_obj* x) {
   // Creates a fresh attribute pairlist!
   // Note that we always use `x` here, not `data`.
   r_attrib_clone_from(out, x);
+
+  // The all important immutable marking of `out`, preventing any downstream C
+  // code from requesting a writable pointer without duplicating first.
+  MARK_NOT_MUTABLE(out);
 
   FREE(1);
   return out;
@@ -101,21 +113,8 @@ static inline R_altrep_class_t wrapper_class(enum r_type type) {
 // -----------------------------------------------------------------------------
 // Data
 
-static inline r_obj* wrapper_readonly(r_obj* x) {
+static inline r_obj* wrapper_data(r_obj* x) {
   return R_altrep_data1(x);
-}
-
-static inline r_obj* wrapper_writable(r_obj* x) {
-  r_obj* data = R_altrep_data1(x);
-
-  // If ANYONE besides us shares the wrapped data, clone it
-  // before giving out a writable handle.
-  if (MAYBE_SHARED(data)) {
-    data = r_clone_data(data);
-    R_set_altrep_data1(x, data);
-  }
-
-  return data;
 }
 
 // -----------------------------------------------------------------------------
@@ -127,15 +126,14 @@ static r_obj* wrapper_serialized_state(r_obj* x) {
 }
 
 // Powers `Rf_duplicate()` and `Rf_shallow_duplicate()`
+//
+// We only need to handle the data. Base R covers the attributes for us.
+// https://github.com/wch/r-source/blob/trunk/src/main/altrep.c#L740
 static r_obj* wrapper_duplicate(r_obj* x, Rboolean deep) {
   if (deep) {
-    // Wrapper only guarantees shallow ownership.
-    // No need to return another wrapper if we fully duplicate.
-    return Rf_duplicate(wrapper_readonly(x));
+    return Rf_duplicate(wrapper_data(x));
   } else {
-    // Perform shallow duplication by rewrapping the wrapped
-    // data in a new wrapper. This won't wrap the wrapper itself.
-    return r_wrap(x);
+    return r_clone_data(wrapper_data(x));
   }
 }
 
@@ -147,62 +145,42 @@ static Rboolean wrapper_inspect(
   void (*inspect_subtree)(r_obj*, int, int, int)
 ) {
   Rprintf("<wrapper>\n");
-  inspect_subtree(wrapper_readonly(x), pre, deep, pvec);
+  inspect_subtree(wrapper_data(x), pre, deep, pvec);
   return TRUE;
 }
 
 static r_ssize wrapper_length(r_obj* x) {
-  return r_length(wrapper_readonly(x));
+  return r_length(wrapper_data(x));
 }
 
 // -----------------------------------------------------------------------------
 // Dataptr
 
 static void* wrapper_logical_dataptr(r_obj* x, Rboolean writeable) {
-  if (writeable) {
-    return r_lgl_begin(wrapper_writable(x));
-  } else {
-    return (void*) r_lgl_cbegin(wrapper_readonly(x));
-  }
+  return (void*) r_lgl_cbegin(wrapper_data(x));
 }
 
 static void* wrapper_integer_dataptr(r_obj* x, Rboolean writeable) {
-  if (writeable) {
-    return r_int_begin(wrapper_writable(x));
-  } else {
-    return (void*) r_int_cbegin(wrapper_readonly(x));
-  }
+  return (void*) r_int_cbegin(wrapper_data(x));
 }
 
 static void* wrapper_double_dataptr(r_obj* x, Rboolean writeable) {
-  if (writeable) {
-    return r_dbl_begin(wrapper_writable(x));
-  } else {
-    return (void*) r_dbl_cbegin(wrapper_readonly(x));
-  }
+  return (void*) r_dbl_cbegin(wrapper_data(x));
 }
 
 static void* wrapper_complex_dataptr(r_obj* x, Rboolean writeable) {
-  if (writeable) {
-    return r_cpl_begin(wrapper_writable(x));
-  } else {
-    return (void*) r_cpl_cbegin(wrapper_readonly(x));
-  }
+  return (void*) r_cpl_cbegin(wrapper_data(x));
 }
 
 static void* wrapper_raw_dataptr(r_obj* x, Rboolean writeable) {
-  if (writeable) {
-    return r_raw_begin(wrapper_writable(x));
-  } else {
-    return (void*) r_raw_cbegin(wrapper_readonly(x));
-  }
+  return (void*) r_raw_cbegin(wrapper_data(x));
 }
 
 static void* wrapper_character_dataptr(r_obj* x, Rboolean writeable) {
   if (writeable) {
     r_abort("Can't request a writable dataptr to a character wrapper.");
   } else {
-    return (void*) r_chr_cbegin(wrapper_readonly(x));
+    return (void*) r_chr_cbegin(wrapper_data(x));
   }
 }
 
@@ -210,7 +188,7 @@ static void* wrapper_list_dataptr(r_obj* x, Rboolean writeable) {
   if (writeable) {
     r_abort("Can't request a writable dataptr to a list wrapper.");
   } else {
-    return (void*) r_list_cbegin(wrapper_readonly(x));
+    return (void*) r_list_cbegin(wrapper_data(x));
   }
 }
 
@@ -218,64 +196,64 @@ static void* wrapper_list_dataptr(r_obj* x, Rboolean writeable) {
 // Dataptr_or_null
 
 static const void* wrapper_logical_dataptr_or_null(r_obj* x) {
-  return LOGICAL_OR_NULL(wrapper_readonly(x));
+  return LOGICAL_OR_NULL(wrapper_data(x));
 }
 
 static const void* wrapper_integer_dataptr_or_null(r_obj* x) {
-  return INTEGER_OR_NULL(wrapper_readonly(x));
+  return INTEGER_OR_NULL(wrapper_data(x));
 }
 
 static const void* wrapper_double_dataptr_or_null(r_obj* x) {
-  return REAL_OR_NULL(wrapper_readonly(x));
+  return REAL_OR_NULL(wrapper_data(x));
 }
 
 static const void* wrapper_complex_dataptr_or_null(r_obj* x) {
-  return COMPLEX_OR_NULL(wrapper_readonly(x));
+  return COMPLEX_OR_NULL(wrapper_data(x));
 }
 
 static const void* wrapper_raw_dataptr_or_null(r_obj* x) {
-  return RAW_OR_NULL(wrapper_readonly(x));
+  return RAW_OR_NULL(wrapper_data(x));
 }
 
 static const void* wrapper_character_dataptr_or_null(r_obj* x) {
   // There is no `STRING_PTR_RO_OR_NULL`
-  return r_chr_cbegin(wrapper_readonly(x));
+  return r_chr_cbegin(wrapper_data(x));
 }
 
 static const void* wrapper_list_dataptr_or_null(r_obj* x) {
   // There is no `VECTOR_PTR_RO_OR_NULL`
-  return r_list_cbegin(wrapper_readonly(x));
+  return r_list_cbegin(wrapper_data(x));
 }
 
 // -----------------------------------------------------------------------------
 // Elt
 
 static int wrapper_logical_elt(r_obj* x, r_ssize i) {
-  return r_lgl_get(wrapper_readonly(x), i);
+  return r_lgl_get(wrapper_data(x), i);
 }
 
 static int wrapper_integer_elt(r_obj* x, r_ssize i) {
-  return r_int_get(wrapper_readonly(x), i);
+  return r_int_get(wrapper_data(x), i);
 }
 
 static double wrapper_double_elt(r_obj* x, r_ssize i) {
-  return r_dbl_get(wrapper_readonly(x), i);
+  return r_dbl_get(wrapper_data(x), i);
 }
 
 static r_complex wrapper_complex_elt(r_obj* x, r_ssize i) {
-  return r_cpl_get(wrapper_readonly(x), i);
+  return r_cpl_get(wrapper_data(x), i);
 }
 
 static Rbyte wrapper_raw_elt(r_obj* x, r_ssize i) {
-  return r_raw_get(wrapper_readonly(x), i);
+  return r_raw_get(wrapper_data(x), i);
 }
 
 static r_obj* wrapper_character_elt(r_obj* x, r_ssize i) {
-  return r_chr_get(wrapper_readonly(x), i);
+  return r_chr_get(wrapper_data(x), i);
 }
 
 static r_obj* wrapper_list_elt(r_obj* x, r_ssize i) {
-  return r_list_get(wrapper_readonly(x), i);
+  return r_list_get(wrapper_data(x), i);
 }
 
 // -----------------------------------------------------------------------------
@@ -287,7 +265,7 @@ static r_ssize wrapper_logical_get_region(
   r_ssize n,
   int* buf
 ) {
-  return LOGICAL_GET_REGION(wrapper_readonly(x), i, n, buf);
+  return LOGICAL_GET_REGION(wrapper_data(x), i, n, buf);
 }
 
 static r_ssize wrapper_integer_get_region(
@@ -296,7 +274,7 @@ static r_ssize wrapper_integer_get_region(
   r_ssize n,
   int* buf
 ) {
-  return INTEGER_GET_REGION(wrapper_readonly(x), i, n, buf);
+  return INTEGER_GET_REGION(wrapper_data(x), i, n, buf);
 }
 
 static r_ssize wrapper_double_get_region(
@@ -305,7 +283,7 @@ static r_ssize wrapper_double_get_region(
   r_ssize n,
   double* buf
 ) {
-  return REAL_GET_REGION(wrapper_readonly(x), i, n, buf);
+  return REAL_GET_REGION(wrapper_data(x), i, n, buf);
 }
 
 static r_ssize wrapper_complex_get_region(
@@ -314,7 +292,7 @@ static r_ssize wrapper_complex_get_region(
   r_ssize n,
   Rcomplex* buf
 ) {
-  return COMPLEX_GET_REGION(wrapper_readonly(x), i, n, buf);
+  return COMPLEX_GET_REGION(wrapper_data(x), i, n, buf);
 }
 
 static r_ssize wrapper_raw_get_region(
@@ -323,18 +301,18 @@ static r_ssize wrapper_raw_get_region(
   r_ssize n,
   Rbyte* buf
 ) {
-  return RAW_GET_REGION(wrapper_readonly(x), i, n, buf);
+  return RAW_GET_REGION(wrapper_data(x), i, n, buf);
 }
 
 // -----------------------------------------------------------------------------
 // Set_elt
 
 static void wrapper_character_set_elt(r_obj* x, r_ssize i, r_obj* v) {
-  r_chr_poke(wrapper_writable(x), i, v);
+  r_abort("Can't set an element of a character wrapper.");
 }
 
 static void wrapper_list_set_elt(r_obj* x, r_ssize i, r_obj* v) {
-  r_list_poke(wrapper_writable(x), i, v);
+  r_abort("Can't set an element of a list wrapper.");
 }
 
 // -----------------------------------------------------------------------------
@@ -344,16 +322,80 @@ r_obj* ffi_test_wrap(r_obj* ffi_x) {
   return r_wrap(ffi_x);
 }
 
-r_obj* ffi_test_wrapper_readonly(r_obj* ffi_x) {
-  return wrapper_readonly(ffi_x);
-}
-
-r_obj* ffi_test_wrapper_writable(r_obj* ffi_x) {
-  return wrapper_writable(ffi_x);
+r_obj* ffi_test_wrapper_data(r_obj* ffi_x) {
+  if (!is_wrapper(ffi_x)) {
+    r_abort("`x` must be a wrapper.");
+  }
+  return wrapper_data(ffi_x);
 }
 
 r_obj* ffi_test_is_wrapper(r_obj* ffi_x) {
   return r_lgl(is_wrapper(ffi_x));
+}
+
+r_obj* ffi_test_is_altrep(r_obj* ffi_x) {
+  return r_lgl(ALTREP(ffi_x));
+}
+
+r_obj* ffi_test_wrapper_pointer_is_stable(r_obj* ffi_x) {
+  if (!is_wrapper(ffi_x)) {
+    r_abort("`x` must be a wrapper.");
+  }
+
+  r_obj* data = wrapper_data(ffi_x);
+
+  switch (r_typeof(ffi_x)) {
+  case R_TYPE_logical: {
+    const int* v_read = r_lgl_cbegin(ffi_x);
+    const int* v_write = r_lgl_begin(ffi_x);
+    return r_lgl(v_read == v_write && v_read == r_lgl_cbegin(data));
+  }
+  case R_TYPE_integer: {
+    const int* v_read = r_int_cbegin(ffi_x);
+    const int* v_write = r_int_begin(ffi_x);
+    return r_lgl(v_read == v_write && v_read == r_int_cbegin(data));
+  }
+  case R_TYPE_double: {
+    const double* v_read = r_dbl_cbegin(ffi_x);
+    const double* v_write = r_dbl_begin(ffi_x);
+    return r_lgl(v_read == v_write && v_read == r_dbl_cbegin(data));
+  }
+  case R_TYPE_complex: {
+    const r_complex* v_read = r_cpl_cbegin(ffi_x);
+    const r_complex* v_write = r_cpl_begin(ffi_x);
+    return r_lgl(v_read == v_write && v_read == r_cpl_cbegin(data));
+  }
+  case R_TYPE_raw: {
+    const void* v_read = r_raw_cbegin(ffi_x);
+    const void* v_write = r_raw_begin(ffi_x);
+    return r_lgl(v_read == v_write && v_read == r_raw_cbegin(data));
+  }
+  case R_TYPE_character: {
+    r_obj* const* v_read = r_chr_cbegin(ffi_x);
+    r_obj* const* v_read2 = r_chr_cbegin(ffi_x);
+    return r_lgl(v_read == v_read2 && v_read == r_chr_cbegin(data));
+  }
+  case R_TYPE_list: {
+    r_obj* const* v_read = r_list_cbegin(ffi_x);
+    r_obj* const* v_read2 = r_list_cbegin(ffi_x);
+    return r_lgl(v_read == v_read2 && v_read == r_list_cbegin(data));
+  }
+  default:
+    r_stop_unimplemented_type(r_typeof(ffi_x));
+  }
+}
+
+r_obj* ffi_test_wrapper_set_elt(r_obj* ffi_x) {
+  switch (r_typeof(ffi_x)) {
+  case R_TYPE_character:
+    SET_STRING_ELT(ffi_x, 0, r_globals.na_str);
+    return r_null;
+  case R_TYPE_list:
+    SET_VECTOR_ELT(ffi_x, 0, r_null);
+    return r_null;
+  default:
+    r_stop_unimplemented_type(r_typeof(ffi_x));
+  }
 }
 
 r_obj* ffi_test_wrapper_read_access(r_obj* ffi_x) {
