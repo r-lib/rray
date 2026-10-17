@@ -45,6 +45,8 @@ r_obj* r_wrap(r_obj* x) {
   // Note that we always use `x` here, not `data`.
   r_attrib_clone_from(out, x);
 
+  // The all important immutable marking of `out`, preventing any downstream C
+  // code from requesting a writable pointer without duplicating first.
   MARK_NOT_MUTABLE(out);
 
   FREE(1);
