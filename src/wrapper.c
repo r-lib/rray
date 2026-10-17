@@ -126,6 +126,9 @@ static r_obj* wrapper_serialized_state(r_obj* x) {
 }
 
 // Powers `Rf_duplicate()` and `Rf_shallow_duplicate()`
+//
+// We only need to handle the data. Base R covers the attributes for us.
+// https://github.com/wch/r-source/blob/trunk/src/main/altrep.c#L740
 static r_obj* wrapper_duplicate(r_obj* x, Rboolean deep) {
   if (deep) {
     return Rf_duplicate(wrapper_data(x));

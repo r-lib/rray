@@ -318,6 +318,30 @@ test_that("shallow duplicate of a wrapper is a plain vector", {
   expect_wraps(w, x)
 })
 
+test_that("duplicating a wrapper keeps the wrapper's attributes", {
+  x <- structure(
+    1:6,
+    dim = c(2L, 3L),
+    dimnames = list(c("a", "b"), c("c", "d", "e")),
+    foo = "bar"
+  )
+  w <- rray_set_dimensions(x, c(3L, 2L))
+  expect_wraps(w, x)
+
+  expected <- structure(1:6, foo = "bar", dim = c(3L, 2L))
+
+  shallow <- rlang::duplicate(w, shallow = TRUE)
+  expect_identical(is_wrapper(shallow), FALSE)
+  expect_identical(shallow, expected)
+
+  deep <- rlang::duplicate(w, shallow = FALSE)
+  expect_identical(is_wrapper(deep), FALSE)
+  expect_identical(deep, expected)
+
+  expect_identical(attributes(w), attributes(expected))
+  expect_identical(attr(x, "dimnames"), list(c("a", "b"), c("c", "d", "e")))
+})
+
 test_that("deep copy via c() produces a regular non-wrapper vector", {
   w <- wrap(1:3)
   d <- c(w)
