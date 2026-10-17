@@ -128,8 +128,6 @@ static r_obj* wrapper_serialized_state(r_obj* x) {
 // Powers `Rf_duplicate()` and `Rf_shallow_duplicate()`
 static r_obj* wrapper_duplicate(r_obj* x, Rboolean deep) {
   if (deep) {
-    // Wrapper only guarantees shallow ownership.
-    // No need to return another wrapper if we fully duplicate.
     return Rf_duplicate(wrapper_data(x));
   } else {
     return r_clone_data(wrapper_data(x));
