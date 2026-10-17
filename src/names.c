@@ -4,7 +4,7 @@
 #include "dimensionality.h"
 #include "dimensions.h"
 #include "utils.h"
-#include "wrapper.h"
+#include "view.h"
 
 #include "decl/names-decl.h"
 
@@ -105,7 +105,7 @@ r_obj* rray_set_names(
     FREE(1);
   }
 
-  r_obj* out = KEEP(r_wrap(x));
+  r_obj* out = KEEP(r_view(x));
   r_attrib_poke_dim(out, r_dim(x));
   r_attrib_poke_dim_names(out, names);
 
@@ -169,7 +169,7 @@ r_obj* rray_set_axis_names(
   }
   r_list_poke(new_names, axis - 1, names);
 
-  r_obj* out = KEEP(r_wrap(x));
+  r_obj* out = KEEP(r_view(x));
   r_attrib_poke_dim(out, r_dim(x));
   r_attrib_poke_dim_names(out, new_names);
 

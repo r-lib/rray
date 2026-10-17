@@ -4,7 +4,7 @@
 #include "dimensionality.h"
 #include "names.h"
 #include "utils.h"
-#include "wrapper.h"
+#include "view.h"
 
 #include "decl/titles-decl.h"
 
@@ -98,7 +98,7 @@ r_obj* rray_set_titles(
 
   r_attrib_poke_names(new_names, titles);
 
-  r_obj* out = KEEP(r_wrap(x));
+  r_obj* out = KEEP(r_view(x));
   r_attrib_poke_dim(out, r_dim(x));
   r_attrib_poke_dim_names(out, new_names);
 
@@ -184,7 +184,7 @@ static r_obj* rray_clear_titles(r_obj* x) {
   r_obj* new_names = KEEP(r_clone(names));
   r_attrib_poke_names(new_names, r_null);
 
-  r_obj* out = KEEP(r_wrap(x));
+  r_obj* out = KEEP(r_view(x));
   r_attrib_poke_dim(out, r_dim(x));
   r_attrib_poke_dim_names(out, new_names);
 

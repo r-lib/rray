@@ -4,7 +4,7 @@
 #include "dimensionality.h"
 #include "dimensions.h"
 #include "utils.h"
-#include "wrapper.h"
+#include "view.h"
 
 r_obj* ffi_rray_remove_axes(r_obj* ffi_x, r_obj* ffi_axes, r_obj* ffi_frame) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
@@ -79,7 +79,7 @@ r_obj* rray_remove_axes(
     ++out_i;
   }
 
-  r_obj* out = KEEP(r_wrap(x));
+  r_obj* out = KEEP(r_view(x));
   r_attrib_poke_dim(out, out_dimensions);
 
   if (out_names != r_null) {

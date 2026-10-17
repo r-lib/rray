@@ -3,7 +3,7 @@
 #include "dimensionality.h"
 #include "size.h"
 #include "utils.h"
-#include "wrapper.h"
+#include "view.h"
 
 #include "decl/dimensions-decl.h"
 
@@ -91,7 +91,7 @@ r_obj* rray_set_dimensions(
     );
   }
 
-  r_obj* out = KEEP(r_wrap(x));
+  r_obj* out = KEEP(r_view(x));
   r_attrib_poke_dim(out, dimensions);
 
   FREE(3);
