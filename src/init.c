@@ -361,13 +361,13 @@ extern r_obj* ffi_rray_and(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame);
 extern r_obj* ffi_rray_or(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame);
 extern r_obj* ffi_rray_xor(r_obj* ffi_x, r_obj* ffi_y, r_obj* ffi_frame);
 
-extern r_obj* ffi_test_wrap(r_obj* ffi_x);
-extern r_obj* ffi_test_wrapper_data(r_obj* ffi_x);
-extern r_obj* ffi_test_is_wrapper(r_obj* ffi_x);
+extern r_obj* ffi_test_view(r_obj* ffi_x);
+extern r_obj* ffi_test_view_data(r_obj* ffi_x);
+extern r_obj* ffi_test_is_view(r_obj* ffi_x);
 extern r_obj* ffi_test_is_altrep(r_obj* ffi_x);
-extern r_obj* ffi_test_wrapper_read_access(r_obj* ffi_x);
-extern r_obj* ffi_test_wrapper_pointer_is_stable(r_obj* ffi_x);
-extern r_obj* ffi_test_wrapper_set_elt(r_obj* ffi_x);
+extern r_obj* ffi_test_view_read_access(r_obj* ffi_x);
+extern r_obj* ffi_test_view_pointer_is_stable(r_obj* ffi_x);
+extern r_obj* ffi_test_view_set_elt(r_obj* ffi_x);
 extern r_obj* ffi_test_rray_sum_forced_fallback(
   r_obj* ffi_x,
   r_obj* ffi_axes,
@@ -480,15 +480,15 @@ static const R_CallMethodDef CallEntries[] = {
   {"ffi_rray_and", (DL_FUNC) &ffi_rray_and, 3},
   {"ffi_rray_or", (DL_FUNC) &ffi_rray_or, 3},
   {"ffi_rray_xor", (DL_FUNC) &ffi_rray_xor, 3},
-  {"ffi_test_wrap", (DL_FUNC) &ffi_test_wrap, 1},
-  {"ffi_test_wrapper_data", (DL_FUNC) &ffi_test_wrapper_data, 1},
-  {"ffi_test_is_wrapper", (DL_FUNC) &ffi_test_is_wrapper, 1},
+  {"ffi_test_view", (DL_FUNC) &ffi_test_view, 1},
+  {"ffi_test_view_data", (DL_FUNC) &ffi_test_view_data, 1},
+  {"ffi_test_is_view", (DL_FUNC) &ffi_test_is_view, 1},
   {"ffi_test_is_altrep", (DL_FUNC) &ffi_test_is_altrep, 1},
-  {"ffi_test_wrapper_read_access", (DL_FUNC) &ffi_test_wrapper_read_access, 1},
-  {"ffi_test_wrapper_pointer_is_stable",
-   (DL_FUNC) &ffi_test_wrapper_pointer_is_stable,
+  {"ffi_test_view_read_access", (DL_FUNC) &ffi_test_view_read_access, 1},
+  {"ffi_test_view_pointer_is_stable",
+   (DL_FUNC) &ffi_test_view_pointer_is_stable,
    1},
-  {"ffi_test_wrapper_set_elt", (DL_FUNC) &ffi_test_wrapper_set_elt, 1},
+  {"ffi_test_view_set_elt", (DL_FUNC) &ffi_test_view_set_elt, 1},
   {"ffi_test_rray_sum_forced_fallback",
    (DL_FUNC) &ffi_test_rray_sum_forced_fallback,
    4},
@@ -499,12 +499,12 @@ static const R_CallMethodDef CallEntries[] = {
   {NULL, NULL, 0}
 };
 
-extern void r_init_wrapper(DllInfo* dll);
+extern void r_init_view(DllInfo* dll);
 
 void R_init_rray(DllInfo* dll) {
   R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
   R_useDynamicSymbols(dll, FALSE);
-  r_init_wrapper(dll);
+  r_init_view(dll);
 }
 
 extern void rray_init_args(r_obj* ns);

@@ -3,7 +3,7 @@
 #include <limits.h>
 #include <math.h>
 
-#include "wrapper.h"
+#include "view.h"
 
 #include "decl/utils-decl.h"
 
@@ -14,13 +14,13 @@
 // - Clears `names`
 //
 // Since we are only modifying attributes,
-// we use a lightweight wrapper
+// we use a lightweight view
 r_obj* vec_as_array(r_obj* x) {
   if (r_dim(x) != r_null) {
     return x;
   }
 
-  r_obj* out = KEEP(r_wrap(x));
+  r_obj* out = KEEP(r_view(x));
 
   const r_ssize size = r_length(x);
   r_obj* dimensions = r_int(r_ssize_as_integer(size));

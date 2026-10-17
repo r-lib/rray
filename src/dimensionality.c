@@ -2,7 +2,7 @@
 
 #include "dimensions.h"
 #include "utils.h"
-#include "wrapper.h"
+#include "view.h"
 
 r_obj* ffi_rray_dimensionality(r_obj* ffi_x, r_obj* ffi_frame) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
@@ -56,7 +56,7 @@ r_obj* rray_expand_dimensionality(
     v_out_dimensions[i] = 1;
   }
 
-  r_obj* out = KEEP(r_wrap(x));
+  r_obj* out = KEEP(r_view(x));
   r_attrib_poke_dim(out, out_dimensions);
 
   r_obj* x_names = r_dim_names(x);
