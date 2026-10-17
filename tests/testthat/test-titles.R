@@ -72,6 +72,28 @@ test_that("title setters keep element names and do not change the input", {
   expect_identical(dimnames(x), original)
 })
 
+test_that("title setters drop other attributes", {
+  x <- array(1:4, c(2L, 2L))
+  attr(x, "foo") <- 1
+  names(x) <- letters[1:4]
+
+  expect_identical(
+    rray_set_titles(x, c("a", "b")),
+    array(1:4, c(2L, 2L), dimnames = list(a = NULL, b = NULL))
+  )
+  expect_identical(
+    rray_set_axis_title(x, 1L, "a"),
+    array(1:4, c(2L, 2L), dimnames = list(a = NULL, NULL))
+  )
+
+  x <- array(1:4, c(2L, 2L), dimnames = list(a = c("r1", "r2"), b = NULL))
+  attr(x, "foo") <- 1
+  expect_identical(
+    rray_set_titles(x, NULL),
+    array(1:4, c(2L, 2L), dimnames = list(c("r1", "r2"), NULL))
+  )
+})
+
 test_that("title setters handle plain vectors and one-dimensional arrays", {
   x <- c(a = 1, b = 2)
   out <- rray_set_axis_title(x, 1, "Entry")

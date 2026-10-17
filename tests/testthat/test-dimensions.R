@@ -269,6 +269,13 @@ test_that("drops names from a named vector", {
   expect_null(dimnames(out))
 })
 
+test_that("drops other attributes", {
+  x <- array(1:4, c(2L, 2L))
+  attr(x, "foo") <- 1
+  names(x) <- letters[1:4]
+  expect_identical(rray_set_dimensions(x, c(4L, 1L)), array(1:4, c(4L, 1L)))
+})
+
 test_that("errors when size would change", {
   expect_snapshot(rray_set_dimensions(1:6, c(6L, 2L)), error = TRUE)
 })

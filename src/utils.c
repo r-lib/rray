@@ -3,7 +3,6 @@
 #include <limits.h>
 #include <math.h>
 
-#include "syms.h"
 #include "wrapper.h"
 
 #include "decl/utils-decl.h"
@@ -33,7 +32,6 @@ r_obj* vec_as_array(r_obj* x) {
     r_obj* names = KEEP(r_alloc_list(1));
     r_list_poke(names, 0, axis_names);
     r_attrib_poke_dim_names(out, names);
-    r_attrib_zap(out, r_syms.names);
     FREE(2);
   }
 

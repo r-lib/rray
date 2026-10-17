@@ -94,6 +94,13 @@ test_that("does not modify the input", {
   expect_identical(x, expected)
 })
 
+test_that("drops other attributes", {
+  x <- array(1:4, c(1L, 2L, 2L))
+  attr(x, "foo") <- 1
+  names(x) <- letters[1:4]
+  expect_identical(rray_remove_axes(x, 1L), array(1:4, c(2L, 2L)))
+})
+
 test_that("axes are coerced to integer", {
   x <- array(1:3, c(3L, 1L))
   expect_identical(rray_remove_axes(x, 2), array(1:3, 3L))
