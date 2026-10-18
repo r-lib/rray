@@ -77,11 +77,6 @@ dropped even with a single input.
   `rray_expand_dimensionality()` in `src/dimensionality.c`. The new axis should
   get the title `""`.
 
-## Conditional
-
-- `rray_if_else()`: drops all names today, not just titles. It needs a names
-  design first, and titles come with it.
-
 ## Not on this list
 
 These drop titles on purpose, because they drop all names. They are pinned by
@@ -92,3 +87,5 @@ tests and need no further work:
 - `rray_index()`
 
 - `rray_set_dimensions()`
+
+- `rray_if_else()`
