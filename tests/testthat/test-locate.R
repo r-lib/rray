@@ -218,6 +218,20 @@ test_that("dimension names are dropped when only `axis` is named", {
   expect_null(dimnames(rray_locate_min(x, axis = 1L)))
 })
 
+test_that("titles are kept", {
+  x <- array(
+    1:24,
+    c(2L, 3L, 4L),
+    dimnames = list(A = c("a", "b"), B = NULL, C = NULL)
+  )
+  y <- array(1:24, c(2L, 3L, 4L), dimnames = list(A = NULL, B = NULL, C = NULL))
+
+  expect_identical(rray_titles(rray_locate_max(x, axis = 1L)), c("A", "B", "C"))
+  expect_identical(rray_titles(rray_locate_min(x, axis = 1L)), c("A", "B", "C"))
+  expect_identical(dimnames(rray_locate_max(y, axis = 1L)), dimnames(y))
+  expect_identical(dimnames(rray_locate_min(y, axis = 1L)), dimnames(y))
+})
+
 test_that("plain vector input works", {
   expect_identical(rray_locate_max(c(1L, 3L, 2L), axis = 1L), array(2L, 1L))
   expect_identical(rray_locate_min(c(1L, 3L, 2L), axis = 1L), array(1L, 1L))

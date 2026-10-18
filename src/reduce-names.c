@@ -24,6 +24,7 @@ r_obj* rray_reduce_names(r_obj* x, r_obj* axes) {
   KEEP(x_names);
 
   r_obj* const* v_x_names = r_list_cbegin(x_names);
+  r_obj* x_titles = r_names(x_names);
 
   r_obj* x_dimensions = KEEP(rray_dimensions(x, rray_args.x, r_lazy_null));
   const int dimensionality = rray_dimensionality_from_dimensions(x_dimensions);
@@ -34,6 +35,12 @@ r_obj* rray_reduce_names(r_obj* x, r_obj* axes) {
   r_obj* out = r_null;
   r_keep_loc out_loc;
   KEEP_HERE(out, &out_loc);
+
+  if (x_titles != r_null) {
+    out = r_alloc_list(dimensionality);
+    KEEP_AT(out, out_loc);
+    r_attrib_poke_names(out, x_titles);
+  }
 
   for (int i = 0; i < dimensionality; ++i) {
     if (v_x_names[i] == r_null) {

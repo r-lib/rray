@@ -78,6 +78,20 @@ test_that("dimension names are dropped when all named axes are reduced", {
   expect_null(dimnames(rray_any(x, axes = 1L)))
 })
 
+test_that("titles are kept", {
+  x <- array(
+    TRUE,
+    c(2L, 3L, 4L),
+    dimnames = list(A = c("a", "b"), B = NULL, C = NULL)
+  )
+  y <- array(TRUE, c(2L, 3L, 4L), dimnames = list(A = NULL, B = NULL, C = NULL))
+
+  expect_identical(rray_titles(rray_all(x, axes = 1L)), c("A", "B", "C"))
+  expect_identical(rray_titles(rray_any(x, axes = 1L)), c("A", "B", "C"))
+  expect_identical(dimnames(rray_all(y, axes = 1L)), dimnames(y))
+  expect_identical(dimnames(rray_any(y, axes = 1L)), dimnames(y))
+})
+
 test_that("output type is always logical", {
   expect_identical(storage.mode(rray_all(array(TRUE), axes = 1L)), "logical")
   expect_identical(storage.mode(rray_any(array(TRUE), axes = 1L)), "logical")

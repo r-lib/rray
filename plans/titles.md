@@ -344,7 +344,7 @@ Drop all titles along with all names:
 
 - [x] 1. Slice names
 
-- [ ] 2. Reduce names
+- [x] 2. Reduce names
 
 - [ ] 3. Axis reshaping
 
