@@ -35,7 +35,8 @@ been removed.
 ## Details
 
 Names along `axis` become the names of the returned list. Names on the
-surviving axes are carried over to their new locations.
+surviving axes are carried over to their new locations, as are their
+titles.
 
 Because the dimensionality is reduced by 1, `x` must have a
 dimensionality of at least 2 to begin with.
