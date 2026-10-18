@@ -5,7 +5,7 @@
 #'
 #' @details
 #' Names on a reversed axis move with the data. Every other axis keeps its names
-#' untouched.
+#' untouched. The titles of `x` are kept.
 #'
 #' @inheritParams rlang::args_dots_empty
 #'

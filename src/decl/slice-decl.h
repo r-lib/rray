@@ -1,5 +1,5 @@
 static r_obj* rray_slice_names(
-  r_obj* const* v_x_names,
+  r_obj* x_names,
   const int* v_dimensions,
   int dimensionality,
   const int* const* v_v_locations

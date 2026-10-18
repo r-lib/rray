@@ -75,7 +75,7 @@ each rolled axis and \code{TRUE} on the rest.
 
 Since a uniform roll is a slice, names on a rolled axis move with the data,
 just like they do in \code{rray_slice()}. Every other axis keeps its names
-untouched.
+untouched. The titles of \code{x} are kept.
 }
 
 \section{Roll each}{

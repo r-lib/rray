@@ -342,7 +342,7 @@ Drop all titles along with all names:
 
 ## Progress
 
-- [ ] 1. Slice names
+- [x] 1. Slice names
 
 - [ ] 2. Reduce names
 
