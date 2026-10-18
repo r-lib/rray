@@ -75,3 +75,25 @@ test_that("rray_reduce_names() works with zero-size axes", {
   expect_identical(rray_reduce_names(x, 1L), list(NULL, c("c1", "c2", "c3")))
   expect_null(rray_reduce_names(x, 2L))
 })
+
+test_that("rray_reduce_names() keeps titles, including on reduced axes", {
+  x <- array(1:6, c(2L, 3L), dimnames = list(A = c("r1", "r2"), B = NULL))
+  expect_identical(
+    rray_reduce_names(x, 2L),
+    list(A = c("r1", "r2"), B = NULL)
+  )
+  expect_identical(
+    rray_reduce_names(x, integer()),
+    list(A = c("r1", "r2"), B = NULL)
+  )
+})
+
+test_that("rray_reduce_names() keeps titles when no names are left", {
+  x <- array(1:6, c(2L, 3L), dimnames = list(A = c("r1", "r2"), B = NULL))
+  expect_identical(rray_reduce_names(x, 1L), list(A = NULL, B = NULL))
+  expect_identical(rray_reduce_names(x, c(1L, 2L)), list(A = NULL, B = NULL))
+
+  y <- array(1:6, c(2L, 3L), dimnames = list(A = NULL, B = NULL))
+  expect_identical(rray_reduce_names(y, 1L), list(A = NULL, B = NULL))
+  expect_identical(rray_reduce_names(y, integer()), list(A = NULL, B = NULL))
+})

@@ -474,6 +474,21 @@ test_that("has no names when only `axis` had names", {
   expect_null(dimnames(rray_roll_each(x, n = 1, axis = 2)))
 })
 
+test_that("keeps titles, including on `axis`", {
+  x <- array(
+    1:24,
+    c(2L, 3L, 4L),
+    dimnames = list(A = c("a", "b"), B = NULL, C = NULL)
+  )
+  y <- array(1:24, c(2L, 3L, 4L), dimnames = list(A = NULL, B = NULL, C = NULL))
+
+  expect_identical(
+    rray_titles(rray_roll_each(x, n = 1, axis = 1)),
+    c("A", "B", "C")
+  )
+  expect_identical(dimnames(rray_roll_each(y, n = 1, axis = 1)), dimnames(y))
+})
+
 test_that("ignores names on `n`", {
   x <- matrix(1:6, nrow = 2)
 

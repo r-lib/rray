@@ -78,6 +78,18 @@ test_that("dimension names are dropped when all named axes are reduced", {
   expect_null(dimnames(rray_sum(x, axes = 1L)))
 })
 
+test_that("titles are kept", {
+  x <- array(
+    1:24,
+    c(2L, 3L, 4L),
+    dimnames = list(A = c("a", "b"), B = NULL, C = NULL)
+  )
+  y <- array(1:24, c(2L, 3L, 4L), dimnames = list(A = NULL, B = NULL, C = NULL))
+
+  expect_identical(rray_titles(rray_sum(x, axes = 1L)), c("A", "B", "C"))
+  expect_identical(dimnames(rray_sum(y, axes = 1L)), dimnames(y))
+})
+
 test_that("output type matches input type", {
   expect_identical(storage.mode(rray_sum(array(1L), axes = 1L)), "integer")
   expect_identical(storage.mode(rray_sum(array(1), axes = 1L)), "double")

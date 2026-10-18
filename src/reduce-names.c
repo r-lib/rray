@@ -35,6 +35,13 @@ r_obj* rray_reduce_names(r_obj* x, r_obj* axes) {
   r_keep_loc out_loc;
   KEEP_HERE(out, &out_loc);
 
+  r_obj* x_titles = r_names(x_names);
+  if (x_titles != r_null) {
+    out = r_alloc_list(dimensionality);
+    KEEP_AT(out, out_loc);
+    r_attrib_poke_names(out, x_titles);
+  }
+
   for (int i = 0; i < dimensionality; ++i) {
     if (v_x_names[i] == r_null) {
       // No names to contribute on this axis
