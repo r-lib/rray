@@ -226,6 +226,24 @@ test_that("partial and missing dimension names are handled", {
   )
 })
 
+test_that("titles are kept", {
+  x <- array(
+    1:24,
+    c(2L, 3L, 4L),
+    dimnames = list(A = c("a", "b"), B = NULL, C = NULL)
+  )
+  y <- array(1:24, c(2L, 3L, 4L), dimnames = list(A = NULL, B = NULL, C = NULL))
+
+  expect_identical(
+    rray_titles(rray_rep(x, times = 2, axes = 1)),
+    c("A", "B", "C")
+  )
+  expect_identical(
+    dimnames(rray_rep(y, times = 2, axes = 1)),
+    dimnames(y)
+  )
+})
+
 test_that("`x` is not modified", {
   x <- array(1:6, c(3, 2), dimnames = list(c("a", "b", "c"), c("x", "y")))
   before <- x
@@ -508,6 +526,24 @@ test_that("partial and missing dimension names are handled", {
   )
 
   expect_null(dimnames(rray_rep_each(array(1:6, c(3, 2)), times = 2, axis = 1)))
+})
+
+test_that("titles are kept", {
+  x <- array(
+    1:24,
+    c(2L, 3L, 4L),
+    dimnames = list(A = c("a", "b"), B = NULL, C = NULL)
+  )
+  y <- array(1:24, c(2L, 3L, 4L), dimnames = list(A = NULL, B = NULL, C = NULL))
+
+  expect_identical(
+    rray_titles(rray_rep_each(x, times = 2, axis = 1)),
+    c("A", "B", "C")
+  )
+  expect_identical(
+    dimnames(rray_rep_each(y, times = 2, axis = 1)),
+    dimnames(y)
+  )
 })
 
 test_that("matches a reference implementation", {

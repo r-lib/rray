@@ -106,6 +106,18 @@ test_that("partial and missing dimension names are handled", {
   expect_null(dimnames(rray_reverse(matrix(1:6, nrow = 2), axes = 1)))
 })
 
+test_that("titles are kept", {
+  x <- array(
+    1:24,
+    c(2L, 3L, 4L),
+    dimnames = list(A = c("a", "b"), B = NULL, C = NULL)
+  )
+  y <- array(1:24, c(2L, 3L, 4L), dimnames = list(A = NULL, B = NULL, C = NULL))
+
+  expect_identical(rray_titles(rray_reverse(x, axes = 1)), c("A", "B", "C"))
+  expect_identical(dimnames(rray_reverse(y, axes = 1)), dimnames(y))
+})
+
 test_that("returns `x` when nothing moves", {
   x <- matrix(1:3, nrow = 1, dimnames = list("r1", c("a", "b", "c")))
 

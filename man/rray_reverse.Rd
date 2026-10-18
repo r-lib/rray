@@ -22,7 +22,7 @@ An array with the same type and dimensions as \code{x}.
 }
 \details{
 Names on a reversed axis move with the data. Every other axis keeps its names
-untouched.
+untouched. The titles of \code{x} are kept.
 }
 \examples{
 rray_reverse(1:5, axes = 1)

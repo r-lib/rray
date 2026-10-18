@@ -189,7 +189,7 @@ r_obj* rray_slice(
   r_attrib_poke_dim(out, dimensions);
 
   r_obj* names = KEEP_N(
-    rray_slice_names(v_x_names, v_dimensions, dimensionality, v_v_locations),
+    rray_slice_names(x_names, v_dimensions, dimensionality, v_v_locations),
     &n_prot
   );
 
@@ -202,16 +202,19 @@ r_obj* rray_slice(
 }
 
 static r_obj* rray_slice_names(
-  r_obj* const* v_x_names,
+  r_obj* x_names,
   const int* v_dimensions,
   int dimensionality,
   const int* const* v_v_locations
 ) {
-  if (v_x_names == NULL) {
+  if (x_names == r_null) {
     return r_null;
   }
 
+  r_obj* const* v_x_names = r_list_cbegin(x_names);
+
   r_obj* out = KEEP(r_alloc_list(dimensionality));
+  r_attrib_poke_names(out, r_names(x_names));
 
   for (int axis = 0; axis < dimensionality; ++axis) {
     r_obj* x_axis_names = v_x_names[axis];

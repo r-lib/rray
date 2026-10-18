@@ -45,7 +45,7 @@
 #'
 #' Since a uniform roll is a slice, names on a rolled axis move with the data,
 #' just like they do in `rray_slice()`. Every other axis keeps its names
-#' untouched.
+#' untouched. The titles of `x` are kept.
 #'
 #' @section Roll each:
 #' `rray_roll_each()` rolls along a single `axis`, but each row, column, and so

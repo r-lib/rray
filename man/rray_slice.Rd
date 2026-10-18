@@ -59,7 +59,7 @@ the type of \code{x}, then broadcast to the dimensions of the selection.}
 \code{rray_slice_columns()} return an array with the same type and
 dimensionality as \code{x}. The dimension of each axis is the number of
 positions selected on it. The names of each axis are selected along with
-the values.
+the values. The titles of \code{x} are kept.
 \item The \verb{_assign} versions return \code{x} with the selected positions replaced.
 The type, dimensions, and names of \code{x} are kept.
 }

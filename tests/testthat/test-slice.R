@@ -258,6 +258,24 @@ test_that("an empty selection has no names", {
   expect_identical(rray_slice(x, numeric(), TRUE), slice_base(x, numeric(), ))
 })
 
+test_that("titles are kept", {
+  x <- array(
+    1:24,
+    c(2L, 3L, 4L),
+    dimnames = list(A = c("a", "b"), B = NULL, C = NULL)
+  )
+  y <- array(1:24, c(2L, 3L, 4L), dimnames = list(A = NULL, B = NULL, C = NULL))
+
+  expect_identical(
+    rray_titles(rray_slice(x, 2L, c(3L, NA), TRUE)),
+    c("A", "B", "C")
+  )
+  expect_identical(
+    dimnames(rray_slice(y, 2L, c(3L, NA), TRUE)),
+    dimnames(y)
+  )
+})
+
 test_that("subscripts can be spliced into `...`", {
   x <- array(1:24, c(2L, 3L, 4L))
   indices <- list(TRUE, 2L, c(4L, 1L))
@@ -384,6 +402,24 @@ test_that("selects names of `axis` and keeps names of every other axis", {
   )
 })
 
+test_that("`rray_slice_axis()` keeps titles", {
+  x <- array(
+    1:24,
+    c(2L, 3L, 4L),
+    dimnames = list(A = c("a", "b"), B = NULL, C = NULL)
+  )
+  y <- array(1:24, c(2L, 3L, 4L), dimnames = list(A = NULL, B = NULL, C = NULL))
+
+  expect_identical(
+    rray_titles(rray_slice_axis(x, c(2L, 1L), axis = 1)),
+    c("A", "B", "C")
+  )
+  expect_identical(
+    dimnames(rray_slice_axis(y, c(2L, 1L), axis = 1)),
+    dimnames(y)
+  )
+})
+
 test_that("`rray_slice_axis()` works with a bare vector", {
   expect_identical(
     rray_slice_axis(c(a = 1L, b = 2L), c(2L, 1L), axis = 1),
@@ -443,6 +479,18 @@ test_that("is `rray_slice_axis()` with `axis = 1`", {
   )
 })
 
+test_that("`rray_slice_rows()` keeps titles", {
+  x <- array(
+    1:24,
+    c(2L, 3L, 4L),
+    dimnames = list(A = c("a", "b"), B = NULL, C = NULL)
+  )
+  y <- array(1:24, c(2L, 3L, 4L), dimnames = list(A = NULL, B = NULL, C = NULL))
+
+  expect_identical(rray_titles(rray_slice_rows(x, "b")), c("A", "B", "C"))
+  expect_identical(dimnames(rray_slice_rows(y, 2L)), dimnames(y))
+})
+
 test_that("reports errors from `rray_slice_rows()`", {
   expect_snapshot(error = TRUE, {
     rray_slice_rows(array(1:6, c(2L, 3L)), 3L)
@@ -463,6 +511,18 @@ test_that("is `rray_slice_axis()` with `axis = 2`", {
     rray_slice_columns(x, c("c", "a")),
     rray_slice_axis(x, c("c", "a"), axis = 2)
   )
+})
+
+test_that("`rray_slice_columns()` keeps titles", {
+  x <- array(
+    1:24,
+    c(2L, 3L, 4L),
+    dimnames = list(A = c("a", "b"), B = NULL, C = NULL)
+  )
+  y <- array(1:24, c(2L, 3L, 4L), dimnames = list(A = NULL, B = NULL, C = NULL))
+
+  expect_identical(rray_titles(rray_slice_columns(x, -2L)), c("A", "B", "C"))
+  expect_identical(dimnames(rray_slice_columns(y, -2L)), dimnames(y))
 })
 
 test_that("errors if `x` doesn't have a second axis", {
