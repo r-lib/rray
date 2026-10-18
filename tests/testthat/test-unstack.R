@@ -94,6 +94,26 @@ test_that("names on the surviving axes move to their new locations", {
   expect_identical(dimnames(out[[1]]), list(c("a", "b"), c("x", "y", "z")))
 })
 
+test_that("titles on the surviving axes are kept", {
+  x <- array(
+    1:24,
+    c(2L, 3L, 4L),
+    dimnames = list(A = c("a", "b"), B = NULL, C = NULL)
+  )
+  y <- array(1:24, c(2L, 3L, 4L), dimnames = list(A = NULL, B = NULL, C = NULL))
+
+  out <- rray_unstack(x, axis = 1)
+  expect_named(out, c("a", "b"))
+  expect_identical(dimnames(out$a), list(B = NULL, C = NULL))
+  expect_identical(dimnames(out$b), list(B = NULL, C = NULL))
+
+  out <- rray_unstack(x, axis = 2)
+  expect_identical(dimnames(out[[1]]), list(A = c("a", "b"), C = NULL))
+
+  out <- rray_unstack(y, axis = 1)
+  expect_identical(dimnames(out[[1]]), list(B = NULL, C = NULL))
+})
+
 test_that("partial dimension names are handled", {
   x <- array(1:6, c(2, 3), dimnames = list(c("a", "b"), NULL))
 

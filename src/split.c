@@ -127,7 +127,7 @@ r_obj* rray_split(
 
     if (v_x_axis_names != NULL) {
       r_obj* out_elt_names = KEEP(rray_split_elt_names(
-        v_x_names,
+        x_names,
         dimensionality,
         axis,
         v_x_axis_names,
@@ -326,14 +326,17 @@ static void rray_split_fill_list(
 #undef RRAY_SPLIT_FILL_BARRIER
 
 static r_obj* rray_split_elt_names(
-  r_obj* const* v_x_names,
+  r_obj* x_names,
   int dimensionality,
   int axis,
   r_obj* const* v_x_axis_names,
   int x_axis_start,
   int dimension
 ) {
+  r_obj* const* v_x_names = r_list_cbegin(x_names);
+
   r_obj* out = KEEP(r_alloc_list(dimensionality));
+  r_attrib_poke_names(out, r_names(x_names));
 
   for (int i = 0; i < dimensionality; ++i) {
     r_list_poke(out, i, v_x_names[i]);
