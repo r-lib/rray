@@ -267,10 +267,25 @@ static r_obj* rray_permute_axes_names(
 
   r_obj* const* v_x_names = r_list_cbegin(x_names);
 
+  r_obj* x_titles = r_names(x_names);
+  r_obj* const* v_x_titles = x_titles == r_null ? NULL : r_chr_cbegin(x_titles);
+
   r_obj* out = KEEP(r_alloc_list(dimensionality));
 
+  r_obj* out_titles = r_null;
+  if (v_x_titles != NULL) {
+    out_titles = r_alloc_character(dimensionality);
+    r_attrib_poke_names(out, out_titles);
+  }
+
   for (int i = 0; i < dimensionality; ++i) {
-    r_list_poke(out, i, v_x_names[v_axes[i] - 1]);
+    const int axis = v_axes[i] - 1;
+
+    r_list_poke(out, i, v_x_names[axis]);
+
+    if (v_x_titles != NULL) {
+      r_chr_poke(out_titles, i, v_x_titles[axis]);
+    }
   }
 
   FREE(1);

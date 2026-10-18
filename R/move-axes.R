@@ -5,7 +5,7 @@
 #' locations that are left over.
 #'
 #' @details
-#' Names travel with their axis to its new position.
+#' Names and titles travel with their axis to its new position.
 #'
 #' @inheritParams rlang::args_dots_empty
 #'

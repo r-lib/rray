@@ -58,6 +58,24 @@ test_that("names travel with their axis", {
   expect_identical(rray_names(out), list(c("d", "e", "f"), "a", c("b", "c")))
 })
 
+test_that("titles travel with their axis", {
+  x <- array(
+    1:24,
+    c(2L, 3L, 4L),
+    dimnames = list(A = c("a", "b"), B = NULL, C = NULL)
+  )
+  y <- array(1:24, c(2L, 3L, 4L), dimnames = list(A = NULL, B = NULL, C = NULL))
+
+  expect_identical(
+    rray_titles(rray_move_axes(x, from = 1L, to = 3L)),
+    c("B", "C", "A")
+  )
+  expect_identical(
+    dimnames(rray_move_axes(y, from = 1L, to = 3L)),
+    list(B = NULL, C = NULL, A = NULL)
+  )
+})
+
 test_that("works with zero-size arrays", {
   x <- array(integer(), c(0L, 3L, 2L))
 

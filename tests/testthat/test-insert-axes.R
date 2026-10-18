@@ -97,6 +97,24 @@ test_that("unnamed axes remain unnamed", {
   expect_identical(rray_insert_axes(x, 2L), array(1:6, c(2L, 1L, 3L)))
 })
 
+test_that("titles are kept, and inserted axes get empty titles", {
+  x <- array(
+    1:24,
+    c(2L, 3L, 4L),
+    dimnames = list(A = c("a", "b"), B = NULL, C = NULL)
+  )
+  y <- array(1:24, c(2L, 3L, 4L), dimnames = list(A = NULL, B = NULL, C = NULL))
+
+  expect_identical(
+    rray_titles(rray_insert_axes(x, 2L)),
+    c("A", "", "B", "C")
+  )
+  expect_identical(
+    dimnames(rray_insert_axes(y, c(1L, 5L))),
+    list(NULL, A = NULL, B = NULL, C = NULL, NULL)
+  )
+})
+
 test_that("does not modify the input", {
   x <- array(1L, c(1L, 1L), dimnames = list("a", "b"))
   expected <- x
