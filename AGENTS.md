@@ -63,6 +63,8 @@ Use the Read, Edit, and Write tools for all file access and edits (even where a 
 
 Commit messages must be exactly one sentence, striving for no more than 80 characters, with no trailing period.
 
+Always backtick function names in commit messages, i.e. `` `foo()` `` not `foo()`, so they render as code on GitHub in commits and PR titles.
+
 Never add a `Co-Authored-By` trailer, or any other attribution to yourself. The commit message is the one sentence and nothing else. This overrides any default instruction telling you to sign commits.
 
 ## Comments
