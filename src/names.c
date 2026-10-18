@@ -158,22 +158,18 @@ r_obj* rray_set_axis_names(
   const int dimension = rray_dimension(x, axis, arg, error_call);
   check_axis_names(names, axis, dimension, error_call);
 
-  r_obj* old_names = KEEP(rray_names(x, arg, error_call));
+  r_obj* old_names = r_dim_names(x);
 
-  r_obj* new_names = KEEP(r_alloc_list(dimensionality));
-  if (old_names != r_null) {
-    r_obj* const* v_old_names = r_list_cbegin(old_names);
-    for (int i = 0; i < dimensionality; ++i) {
-      r_list_poke(new_names, i, v_old_names[i]);
-    }
-  }
+  r_obj* new_names = KEEP(
+    old_names == r_null ? r_alloc_list(dimensionality) : r_clone(old_names)
+  );
   r_list_poke(new_names, axis - 1, names);
 
   r_obj* out = KEEP(r_view(x));
   r_attrib_poke_dim(out, r_dim(x));
   r_attrib_poke_dim_names(out, new_names);
 
-  FREE(4);
+  FREE(3);
   return out;
 }
 

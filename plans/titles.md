@@ -350,6 +350,6 @@ Drop all titles along with all names:
 
 - [x] 4. Split and unstack
 
-- [ ] 5. Names setters
+- [x] 5. Names setters
 
 - [ ] 6. Pin the remaining single-array functions
