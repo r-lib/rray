@@ -12,7 +12,7 @@ rray_set_names(x, names)
 \item{names}{A list with length equal to the dimensionality of \code{x}, where
 each element is either a character vector of names for that axis or
 \code{NULL}. Can also be \code{NULL} to remove all names from \code{x}. The names of
-\code{names} become the titles of \code{x}, so an unnamed list removes them.}
+\code{names} become the titles of \code{x}.}
 }
 \value{
 \code{x} with new names.
