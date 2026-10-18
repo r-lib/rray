@@ -146,8 +146,3 @@ served as a nice benchmark for rray.
   `x + y` together, what should the resulting dimension names be? Turns out
   there is no obvious answer, so we haven't settled on the handling for these
   yet.
-
-- Dimension name names, i.e. the names on the `dimnames()` list. We do intend to
-  support these, at least by propagating them through manipulation functions
-  like `rray_insert_axes()` where appropriate. Currently they are dropped
-  entirely.
