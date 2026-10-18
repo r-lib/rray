@@ -128,6 +128,26 @@ test_that("rray_set_names() with `NULL` clears all names", {
   expect_null(dimnames(out))
 })
 
+test_that("rray_set_names() takes titles from `names`", {
+  x <- array(
+    1:24,
+    c(2L, 3L, 4L),
+    dimnames = list(A = c("a", "b"), B = NULL, C = NULL)
+  )
+  y <- array(1:24, c(2L, 3L, 4L), dimnames = list(A = NULL, B = NULL, C = NULL))
+
+  out <- rray_set_names(x, list(NULL, NULL, NULL))
+  expect_null(rray_titles(out))
+
+  out <- rray_set_names(x, list(D = NULL, E = NULL, F = NULL))
+  expect_identical(dimnames(out), list(D = NULL, E = NULL, F = NULL))
+
+  out <- rray_set_names(y, list(c("a", "b"), NULL, NULL))
+  expect_identical(dimnames(out), list(c("a", "b"), NULL, NULL))
+
+  expect_null(dimnames(rray_set_names(y, NULL)))
+})
+
 test_that("rray_set_names() doesn't touch the data", {
   x <- array(1:6, c(2, 3))
   out <- rray_set_names(x, list(c("r1", "r2"), NULL))
@@ -202,6 +222,36 @@ test_that("rray_set_axis_names() leaves other axes untouched", {
   expect_identical(dimnames(out), list(c("a", "b"), c("c1", "c2", "c3")))
 })
 
+test_that("rray_set_axis_names() keeps titles", {
+  x <- array(
+    1:24,
+    c(2L, 3L, 4L),
+    dimnames = list(A = c("a", "b"), B = NULL, C = NULL)
+  )
+  y <- array(1:24, c(2L, 3L, 4L), dimnames = list(A = NULL, B = NULL, C = NULL))
+
+  out <- rray_set_axis_names(x, 2, c("c", "d", "e"))
+  expect_identical(
+    dimnames(out),
+    list(A = c("a", "b"), B = c("c", "d", "e"), C = NULL)
+  )
+
+  out <- rray_set_axis_names(x, 1, NULL)
+  expect_identical(dimnames(out), list(A = NULL, B = NULL, C = NULL))
+
+  out <- rray_set_axis_names(y, 3, c("f", "g", "h", "i"))
+  expect_identical(
+    dimnames(out),
+    list(A = NULL, B = NULL, C = c("f", "g", "h", "i"))
+  )
+})
+
+test_that("rray_set_axis_names() doesn't modify `x`", {
+  x <- array(1:6, c(2L, 3L), dimnames = list(A = c("a", "b"), B = NULL))
+  rray_set_axis_names(x, 1, c("c", "d"))
+  expect_identical(dimnames(x), list(A = c("a", "b"), B = NULL))
+})
+
 test_that("rray_set_axis_names() drops other attributes", {
   x <- array(1:4, c(2L, 2L))
   attr(x, "foo") <- 1
@@ -261,6 +311,16 @@ test_that("rray_set_row_names() and rray_set_column_names() are axis shortcuts",
     rray_set_column_names(x, c("c1", "c2", "c3")),
     rray_set_axis_names(x, 2, c("c1", "c2", "c3"))
   )
+})
+
+test_that("rray_set_row_names() and rray_set_column_names() keep titles", {
+  x <- array(1:6, c(2L, 3L), dimnames = list(A = NULL, B = NULL))
+
+  out <- rray_set_row_names(x, c("a", "b"))
+  expect_identical(dimnames(out), list(A = c("a", "b"), B = NULL))
+
+  out <- rray_set_column_names(x, c("c", "d", "e"))
+  expect_identical(dimnames(out), list(A = NULL, B = c("c", "d", "e")))
 })
 
 test_that("rray_set_row_names() and rray_set_column_names() error on classed input", {

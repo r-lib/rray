@@ -75,7 +75,8 @@ rray_column_names <- function(x) {
 #'
 #' @param names A list with length equal to the dimensionality of `x`, where
 #'   each element is either a character vector of names for that axis or
-#'   `NULL`. Can also be `NULL` to remove all names from `x`.
+#'   `NULL`. Can also be `NULL` to remove all names from `x`. The names of
+#'   `names` become the titles of `x`, so an unnamed list removes them.
 #'
 #' @returns
 #' `x` with new names.
@@ -97,7 +98,7 @@ rray_set_names <- function(x, names) {
 #'
 #' @description
 #' - `rray_set_axis_names()` sets the names for a single `axis` of an array,
-#'   leaving every other axis untouched.
+#'   leaving every other axis untouched. The titles of `x` are kept.
 #'
 #' - `rray_set_row_names()` and `rray_set_column_names()` are shortcuts for
 #'   `rray_set_axis_names(x, 1, names)` and `rray_set_axis_names(x, 2, names)`.

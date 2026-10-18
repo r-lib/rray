@@ -26,7 +26,7 @@ the dimension of \code{axis}. Can also be \code{NULL} to remove names from \code
 \description{
 \itemize{
 \item \code{rray_set_axis_names()} sets the names for a single \code{axis} of an array,
-leaving every other axis untouched.
+leaving every other axis untouched. The titles of \code{x} are kept.
 \item \code{rray_set_row_names()} and \code{rray_set_column_names()} are shortcuts for
 \code{rray_set_axis_names(x, 1, names)} and \code{rray_set_axis_names(x, 2, names)}.
 }
