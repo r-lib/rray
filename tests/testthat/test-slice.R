@@ -786,6 +786,24 @@ test_that("empty targets accept a value that broadcasts to them", {
   )
 })
 
+test_that("`rray_slice_assign()` keeps titles", {
+  x <- array(
+    1:24,
+    c(2L, 3L, 4L),
+    dimnames = list(A = c("a", "b"), B = NULL, C = NULL)
+  )
+  y <- array(1:24, c(2L, 3L, 4L), dimnames = list(A = NULL, B = NULL, C = NULL))
+
+  expect_identical(
+    dimnames(rray_slice_assign(x, "b", c(3L, 1L), TRUE, value = 0L)),
+    dimnames(x)
+  )
+  expect_identical(
+    dimnames(rray_slice_assign(y, 2L, c(3L, 1L), TRUE, value = 0L)),
+    dimnames(y)
+  )
+})
+
 test_that("keeps the type, dimensions, and names of `x`", {
   x <- array(
     c(1, 2, 3, 4),
@@ -950,6 +968,24 @@ test_that("`rray_slice_assign_axis()` keeps the names of `x`", {
   )
 })
 
+test_that("`rray_slice_assign_axis()` keeps titles", {
+  x <- array(
+    1:24,
+    c(2L, 3L, 4L),
+    dimnames = list(A = c("a", "b"), B = NULL, C = NULL)
+  )
+  y <- array(1:24, c(2L, 3L, 4L), dimnames = list(A = NULL, B = NULL, C = NULL))
+
+  expect_identical(
+    dimnames(rray_slice_assign_axis(x, "b", axis = 1, value = 0L)),
+    dimnames(x)
+  )
+  expect_identical(
+    dimnames(rray_slice_assign_axis(y, 2L, axis = 1, value = 0L)),
+    dimnames(y)
+  )
+})
+
 test_that("reports subscript errors from `rray_slice_assign_axis()` as `i`", {
   x <- array(1:6, c(2L, 3L), dimnames = list(c("a", "b"), NULL))
 
@@ -993,6 +1029,18 @@ test_that("is `rray_slice_assign_axis()` with `axis = 1`", {
   )
 })
 
+test_that("`rray_slice_assign_rows()` keeps titles", {
+  x <- array(
+    1:24,
+    c(2L, 3L, 4L),
+    dimnames = list(A = c("a", "b"), B = NULL, C = NULL)
+  )
+  y <- array(1:24, c(2L, 3L, 4L), dimnames = list(A = NULL, B = NULL, C = NULL))
+
+  expect_identical(dimnames(rray_slice_assign_rows(x, "b", 0L)), dimnames(x))
+  expect_identical(dimnames(rray_slice_assign_rows(y, 2L, 0L)), dimnames(y))
+})
+
 test_that("reports errors from `rray_slice_assign_rows()`", {
   expect_snapshot(error = TRUE, {
     rray_slice_assign_rows(array(1:6, c(2L, 3L)), 3L, 0L)
@@ -1009,6 +1057,18 @@ test_that("is `rray_slice_assign_axis()` with `axis = 2`", {
     rray_slice_assign_columns(x, c(3L, 1L), 0L),
     rray_slice_assign_axis(x, c(3L, 1L), axis = 2, value = 0L)
   )
+})
+
+test_that("`rray_slice_assign_columns()` keeps titles", {
+  x <- array(
+    1:24,
+    c(2L, 3L, 4L),
+    dimnames = list(A = c("a", "b"), B = NULL, C = NULL)
+  )
+  y <- array(1:24, c(2L, 3L, 4L), dimnames = list(A = NULL, B = NULL, C = NULL))
+
+  expect_identical(dimnames(rray_slice_assign_columns(x, -2L, 0L)), dimnames(x))
+  expect_identical(dimnames(rray_slice_assign_columns(y, -2L, 0L)), dimnames(y))
 })
 
 test_that("`rray_slice_assign_columns()` errors without a second axis", {

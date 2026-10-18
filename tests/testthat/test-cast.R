@@ -117,6 +117,18 @@ test_that("dimensions and names are kept", {
   expect_identical(rray_names(out), list("a", c("b", "c"), NULL))
 })
 
+test_that("titles are kept", {
+  x <- array(
+    1:24,
+    c(2L, 3L, 4L),
+    dimnames = list(A = c("a", "b"), B = NULL, C = NULL)
+  )
+  y <- array(1:24, c(2L, 3L, 4L), dimnames = list(A = NULL, B = NULL, C = NULL))
+
+  expect_identical(dimnames(rray_cast(x, double())), dimnames(x))
+  expect_identical(dimnames(rray_cast(y, double())), dimnames(y))
+})
+
 test_that("zero size arrays cast", {
   expect_identical(
     rray_cast(array(integer(), c(0L, 2L)), double()),
