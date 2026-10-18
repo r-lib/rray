@@ -25,8 +25,8 @@ An array with the selected `axes` removed.
 
 ## Details
 
-Removed axes lose their names. Surviving axes keep their names and carry
-them to their new locations.
+Removed axes lose their names and titles. Surviving axes keep their
+names and titles and carry them to their new locations.
 
 ## Examples
 

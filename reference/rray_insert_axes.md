@@ -47,8 +47,8 @@ This allows you to insert two axes side by side:
     result  (x, 1, 1, x, x)
           = (2, 1, 1, 3, 4)
 
-Inserted axes have no names. The axes of `x` keep their names and carry
-them to their new locations.
+Inserted axes have no names and an empty title. The axes of `x` keep
+their names and titles and carry them to their new locations.
 
 ## See also
 

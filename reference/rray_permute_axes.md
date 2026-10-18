@@ -24,7 +24,7 @@ An array with the axes of `x` reordered by `axes`.
 
 ## Details
 
-Names travel with their axis to its new position.
+Names and titles travel with their axis to its new position.
 
 `rray_permute_axes(x, c(2, 1))` transposes a matrix, like
 [`t()`](https://rdrr.io/r/base/t.html).

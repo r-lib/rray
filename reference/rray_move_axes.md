@@ -34,7 +34,7 @@ An array.
 
 ## Details
 
-Names travel with their axis to its new position.
+Names and titles travel with their axis to its new position.
 
 ## See also
 
