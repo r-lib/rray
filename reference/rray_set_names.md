@@ -18,7 +18,8 @@ rray_set_names(x, names)
 
   A list with length equal to the dimensionality of `x`, where each
   element is either a character vector of names for that axis or `NULL`.
-  Can also be `NULL` to remove all names from `x`.
+  Can also be `NULL` to remove all names from `x`. The names of `names`
+  become the titles of `x`.
 
 ## Value
 

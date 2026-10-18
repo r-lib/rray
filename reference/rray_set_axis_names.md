@@ -1,7 +1,7 @@
 # Set names for a single axis of an array
 
 - `rray_set_axis_names()` sets the names for a single `axis` of an
-  array, leaving every other axis untouched.
+  array, leaving every other axis untouched. The titles of `x` are kept.
 
 - `rray_set_row_names()` and `rray_set_column_names()` are shortcuts for
   `rray_set_axis_names(x, 1, names)` and
