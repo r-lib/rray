@@ -48,12 +48,6 @@ r_obj* rray_insert_axes(
   KEEP_HERE(out_names, &out_names_loc);
 
   r_obj* out_titles = r_null;
-  if (v_x_titles != NULL) {
-    out_names = r_alloc_list(out_dimensionality);
-    KEEP_AT(out_names, out_names_loc);
-    out_titles = r_alloc_character(out_dimensionality);
-    r_attrib_poke_names(out_names, out_titles);
-  }
 
   r_ssize axes_i = 0;
   r_ssize x_i = 0;
@@ -68,6 +62,16 @@ r_obj* rray_insert_axes(
     v_out_dimensions[i] = v_x_dimensions[x_i];
 
     if (v_x_titles != NULL) {
+      if (out_names == r_null) {
+        out_names = r_alloc_list(out_dimensionality);
+        KEEP_AT(out_names, out_names_loc);
+      }
+
+      if (out_titles == r_null) {
+        out_titles = r_alloc_character(out_dimensionality);
+        r_attrib_poke_names(out_names, out_titles);
+      }
+
       r_chr_poke(out_titles, i, v_x_titles[x_i]);
     }
 

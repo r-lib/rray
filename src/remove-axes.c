@@ -48,12 +48,6 @@ r_obj* rray_remove_axes(
   KEEP_HERE(out_names, &out_names_loc);
 
   r_obj* out_titles = r_null;
-  if (v_x_titles != NULL) {
-    out_names = r_alloc_list(out_dimensionality);
-    KEEP_AT(out_names, out_names_loc);
-    out_titles = r_alloc_character(out_dimensionality);
-    r_attrib_poke_names(out_names, out_titles);
-  }
 
   r_ssize axes_i = 0;
   int out_i = 0;
@@ -79,6 +73,16 @@ r_obj* rray_remove_axes(
     v_out_dimensions[out_i] = v_x_dimensions[i];
 
     if (v_x_titles != NULL) {
+      if (out_names == r_null) {
+        out_names = r_alloc_list(out_dimensionality);
+        KEEP_AT(out_names, out_names_loc);
+      }
+
+      if (out_titles == r_null) {
+        out_titles = r_alloc_character(out_dimensionality);
+        r_attrib_poke_names(out_names, out_titles);
+      }
+
       r_chr_poke(out_titles, out_i, v_x_titles[i]);
     }
 
