@@ -346,7 +346,7 @@ Drop all titles along with all names:
 
 - [x] 2. Reduce names
 
-- [ ] 3. Axis reshaping
+- [x] 3. Axis reshaping
 
 - [ ] 4. Split and unstack
 

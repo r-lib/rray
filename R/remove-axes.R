@@ -3,8 +3,9 @@
 #' `rray_remove_axes()` removes axes with a dimension of 1.
 #'
 #' @details
-#' Removed axes lose their names.
-#' Surviving axes keep their names and carry them to their new locations.
+#' Removed axes lose their names and titles.
+#' Surviving axes keep their names and titles and carry them to their new
+#' locations.
 #'
 #' @param x An array.
 #'

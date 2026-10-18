@@ -24,7 +24,7 @@ output. The axes that don't move keep their relative order, and fill in the
 locations that are left over.
 }
 \details{
-Names travel with their axis to its new position.
+Names and titles travel with their axis to its new position.
 }
 \examples{
 x <- array(1:24, c(2, 3, 4))

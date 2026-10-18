@@ -40,9 +40,21 @@ r_obj* rray_insert_axes(
   r_obj* x_names = r_dim_names(x);
   r_obj* const* v_x_names = x_names == r_null ? NULL : r_list_cbegin(x_names);
 
+  r_obj* x_titles = x_names == r_null ? r_null : r_names(x_names);
+  r_obj* const* v_x_titles = x_titles == r_null ? NULL : r_chr_cbegin(x_titles);
+
   r_obj* out_names = r_null;
   r_keep_loc out_names_loc;
   KEEP_HERE(out_names, &out_names_loc);
+
+  r_obj* out_titles = r_null;
+
+  if (v_x_titles != NULL) {
+    out_names = r_alloc_list(out_dimensionality);
+    KEEP_AT(out_names, out_names_loc);
+    out_titles = r_alloc_character(out_dimensionality);
+    r_attrib_poke_names(out_names, out_titles);
+  }
 
   r_ssize axes_i = 0;
   r_ssize x_i = 0;
@@ -55,6 +67,10 @@ r_obj* rray_insert_axes(
     }
 
     v_out_dimensions[i] = v_x_dimensions[x_i];
+
+    if (v_x_titles != NULL) {
+      r_chr_poke(out_titles, i, v_x_titles[x_i]);
+    }
 
     if (v_x_names != NULL && v_x_names[x_i] != r_null) {
       if (out_names == r_null) {

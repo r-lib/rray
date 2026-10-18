@@ -86,6 +86,28 @@ test_that("removed axes drop their names", {
   expect_identical(rray_remove_axes(x, 1L), array(1:2, 2L))
 })
 
+test_that("titles are kept, and removed axes lose theirs", {
+  x <- array(
+    1:24,
+    c(2L, 1L, 3L, 4L),
+    dimnames = list(A = c("a", "b"), Z = "z", B = NULL, C = NULL)
+  )
+  y <- array(
+    1:24,
+    c(2L, 1L, 3L, 4L),
+    dimnames = list(A = NULL, Z = NULL, B = NULL, C = NULL)
+  )
+
+  expect_identical(rray_titles(rray_remove_axes(x, 2L)), c("A", "B", "C"))
+  expect_identical(
+    dimnames(rray_remove_axes(y, 2L)),
+    list(A = NULL, B = NULL, C = NULL)
+  )
+
+  z <- array(1:2, c(1L, 2L), dimnames = list(A = "a", NULL))
+  expect_identical(rray_titles(rray_remove_axes(z, 1L)), "")
+})
+
 test_that("does not modify the input", {
   x <- array(1L, c(1L, 1L), dimnames = list("a", "b"))
   expected <- x

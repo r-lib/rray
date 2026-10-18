@@ -66,14 +66,22 @@ test_that("unnamed axes remain unnamed", {
   expect_identical(rray_names(out), list(NULL, c("a", "b")))
 })
 
-test_that("outer names of `dimnames()` are dropped", {
+test_that("titles travel with their axis", {
   x <- array(
-    1:6,
-    c(2L, 3L),
-    dimnames = list(rows = c("a", "b"), cols = c("x", "y", "z"))
+    1:24,
+    c(2L, 3L, 4L),
+    dimnames = list(A = c("a", "b"), B = NULL, C = NULL)
   )
+  y <- array(1:24, c(2L, 3L, 4L), dimnames = list(A = NULL, B = NULL, C = NULL))
 
-  expect_named(dimnames(rray_permute_axes(x, c(2L, 1L))), NULL)
+  expect_identical(
+    rray_titles(rray_permute_axes(x, c(3L, 1L, 2L))),
+    c("C", "A", "B")
+  )
+  expect_identical(
+    dimnames(rray_permute_axes(y, c(3L, 1L, 2L))),
+    list(C = NULL, A = NULL, B = NULL)
+  )
 })
 
 test_that("works with every native type", {
