@@ -172,13 +172,6 @@ and has served as a nice benchmark for rray.
   be? Turns out there is no obvious answer, so we haven’t settled on the
   handling for these yet.
 
-- Dimension name names, i.e. the names on the
-  [`dimnames()`](https://rdrr.io/r/base/dimnames.html) list. We do
-  intend to support these, at least by propagating them through
-  manipulation functions like
-  [`rray_insert_axes()`](https://rray.r-lib.org/reference/rray_insert_axes.md)
-  where appropriate. Currently they are dropped entirely.
-
 # Package index
 
 ## Elementwise

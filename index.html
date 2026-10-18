@@ -184,7 +184,6 @@
 <ul>
 <li><p>No S3 support. rray is currently a closed system and only works on base R arrays. This allows us to get the API right without having to worry about extensibility.</p></li>
 <li><p>Dimension name handling is currently still a bit experimental. When you add <code>x + y</code> together, what should the resulting dimension names be? Turns out there is no obvious answer, so we haven’t settled on the handling for these yet.</p></li>
-<li><p>Dimension name names, i.e. the names on the <code><a href="https://rdrr.io/r/base/dimnames.html" class="external-link">dimnames()</a></code> list. We do intend to support these, at least by propagating them through manipulation functions like <code><a href="reference/rray_insert_axes.html">rray_insert_axes()</a></code> where appropriate. Currently they are dropped entirely.</p></li>
 </ul>
 </div>
 </div>
