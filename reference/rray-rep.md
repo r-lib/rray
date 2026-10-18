@@ -57,7 +57,8 @@ axes.
 ## Details
 
 Names repeat alongside the data, so a repeated axis can come back with
-duplicate names. Every other axis keeps its names untouched.
+duplicate names. Every other axis keeps its names untouched. The titles
+of `x` are kept.
 
 ## Examples
 

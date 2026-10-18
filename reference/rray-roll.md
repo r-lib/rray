@@ -87,7 +87,7 @@ these locations on each rolled axis and `TRUE` on the rest.
 Since a uniform roll is a slice, names on a rolled axis move with the
 data, just like they do in
 [`rray_slice()`](https://rray.r-lib.org/reference/rray_slice.md). Every
-other axis keeps its names untouched.
+other axis keeps its names untouched. The titles of `x` are kept.
 
 ## Roll each
 

@@ -30,7 +30,7 @@ An array with the same type and dimensions as `x`.
 ## Details
 
 Names on a reversed axis move with the data. Every other axis keeps its
-names untouched.
+names untouched. The titles of `x` are kept.
 
 ## Examples
 

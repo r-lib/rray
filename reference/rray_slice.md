@@ -76,7 +76,7 @@ rray_slice_assign_columns(x, i, value)
   `rray_slice_columns()` return an array with the same type and
   dimensionality as `x`. The dimension of each axis is the number of
   positions selected on it. The names of each axis are selected along
-  with the values.
+  with the values. The titles of `x` are kept.
 
 - The `_assign` versions return `x` with the selected positions
   replaced. The type, dimensions, and names of `x` are kept.
