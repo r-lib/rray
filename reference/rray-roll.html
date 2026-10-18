@@ -152,10 +152,10 @@ holds one <code>n</code> for every row, column, and so on that gets rolled.</p>
 <code>(i - 1 - n) %% d + 1</code> formula as <code>rray_roll()</code>, with a different <code>n</code> for
 each row, column, and so on. Along every other axis, the coordinates are
 just the positions themselves.</p>
-<p><code>rray_roll_each()</code> drops names along <code>axis</code>, but keeps all other names. When
-rows move by different amounts, the output's column 1 can hold data from
-column <code>c</code> in one row and from column <code>b</code> in another, so the original column
-names are unlikely to make sense:</p>
+<p><code>rray_roll_each()</code> drops names along <code>axis</code>, but keeps all other names and
+all titles. When rows move by different amounts, the output's column 1 can
+hold data from column <code>c</code> in one row and from column <code>b</code> in another, so the
+original column names are unlikely to make sense:</p>
 <p></p><div class="sourceCode r"><pre><code><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span>, nrow <span class="op">=</span> <span class="fl">2</span>, dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"r1"</span>, <span class="st">"r2"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"c"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/rray-roll.html">rray_roll_each</a></span><span class="op">(</span><span class="va">x</span>, n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, axis <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>

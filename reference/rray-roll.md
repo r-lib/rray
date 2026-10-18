@@ -104,10 +104,10 @@ formula as `rray_roll()`, with a different `n` for each row, column, and
 so on. Along every other axis, the coordinates are just the positions
 themselves.
 
-`rray_roll_each()` drops names along `axis`, but keeps all other names.
-When rows move by different amounts, the output's column 1 can hold data
-from column `c` in one row and from column `b` in another, so the
-original column names are unlikely to make sense:
+`rray_roll_each()` drops names along `axis`, but keeps all other names
+and all titles. When rows move by different amounts, the output's column
+1 can hold data from column `c` in one row and from column `b` in
+another, so the original column names are unlikely to make sense:
 
     x <- matrix(1:6, nrow = 2, dimnames = list(c("r1", "r2"), c("a", "b", "c")))
 
