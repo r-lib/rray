@@ -273,7 +273,6 @@ static r_obj* rray_permute_axes_names(
   r_obj* out = KEEP(r_alloc_list(dimensionality));
 
   r_obj* out_titles = r_null;
-
   if (v_x_titles != NULL) {
     out_titles = r_alloc_character(dimensionality);
     r_attrib_poke_names(out, out_titles);

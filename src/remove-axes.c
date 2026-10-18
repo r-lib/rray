@@ -48,7 +48,6 @@ r_obj* rray_remove_axes(
   KEEP_HERE(out_names, &out_names_loc);
 
   r_obj* out_titles = r_null;
-
   if (v_x_titles != NULL) {
     out_names = r_alloc_list(out_dimensionality);
     KEEP_AT(out_names, out_names_loc);
