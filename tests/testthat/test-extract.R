@@ -197,6 +197,20 @@ test_that("drops all names", {
   expect_identical(rray_extract(x, matrix(2L)), array(2L, 1L))
 })
 
+test_that("drops all titles", {
+  x <- array(
+    1:24,
+    c(2L, 3L, 4L),
+    dimnames = list(A = c("a", "b"), B = NULL, C = NULL)
+  )
+  y <- array(1:24, c(2L, 3L, 4L), dimnames = list(A = NULL, B = NULL, C = NULL))
+
+  expect_null(dimnames(rray_extract(x, c(2L, 1L))))
+  expect_null(dimnames(rray_extract(y, c(2L, 1L))))
+  expect_null(dimnames(rray_extract(y, y > 20L)))
+  expect_null(dimnames(rray_extract(y, rbind(c(2L, 3L, 4L)))))
+})
+
 test_that("reports subscript errors from `rray_extract()`", {
   x <- array(1:6, c(2L, 3L))
 
@@ -483,6 +497,23 @@ test_that("keeps the type, dimensions, and names of `x`", {
       c(2L, 2L),
       dimnames = list(c("r1", "r2"), c("c1", "c2"))
     )
+  )
+})
+
+test_that("`rray_extract_assign()` keeps titles", {
+  x <- array(
+    1:24,
+    c(2L, 3L, 4L),
+    dimnames = list(A = c("a", "b"), B = NULL, C = NULL)
+  )
+  y <- array(1:24, c(2L, 3L, 4L), dimnames = list(A = NULL, B = NULL, C = NULL))
+
+  expect_identical(dimnames(rray_extract_assign(x, 1L, 0L)), dimnames(x))
+  expect_identical(dimnames(rray_extract_assign(y, 1L, 0L)), dimnames(y))
+  expect_identical(dimnames(rray_extract_assign(y, y > 20L, 0L)), dimnames(y))
+  expect_identical(
+    dimnames(rray_extract_assign(y, rbind(c(2L, 3L, 4L)), 0L)),
+    dimnames(y)
   )
 })
 

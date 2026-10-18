@@ -324,6 +324,18 @@ test_that("drops all names", {
   expect_null(dimnames(rray_index(x, rows, columns)))
 })
 
+test_that("drops all titles", {
+  x <- array(
+    1:24,
+    c(2L, 3L, 4L),
+    dimnames = list(A = c("a", "b"), B = NULL, C = NULL)
+  )
+  y <- array(1:24, c(2L, 3L, 4L), dimnames = list(A = NULL, B = NULL, C = NULL))
+
+  expect_null(dimnames(rray_index(x, 2L, 1:3, 4L)))
+  expect_null(dimnames(rray_index(y, 2L, 1:3, 4L)))
+})
+
 test_that("errors on unsupported `x` inputs", {
   expect_snapshot(error = TRUE, {
     rray_index(NULL, 1L)

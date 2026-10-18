@@ -263,6 +263,20 @@ test_that("drops dimension names", {
   expect_null(dimnames(out))
 })
 
+test_that("drops dimension titles, even if dimensions don't change", {
+  x <- array(
+    1:24,
+    c(2L, 3L, 4L),
+    dimnames = list(A = c("a", "b"), B = NULL, C = NULL)
+  )
+  y <- array(1:24, c(2L, 3L, 4L), dimnames = list(A = NULL, B = NULL, C = NULL))
+
+  expect_null(dimnames(rray_set_dimensions(x, c(6L, 4L))))
+  expect_null(dimnames(rray_set_dimensions(y, c(6L, 4L))))
+  expect_null(dimnames(rray_set_dimensions(x, c(2L, 3L, 4L))))
+  expect_null(dimnames(rray_set_dimensions(y, c(2L, 3L, 4L))))
+})
+
 test_that("drops names from a named vector", {
   x <- c(a = 1L, b = 2L)
   out <- rray_set_dimensions(x, c(1L, 2L))
