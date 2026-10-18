@@ -348,7 +348,7 @@ Drop all titles along with all names:
 
 - [x] 3. Axis reshaping
 
-- [ ] 4. Split and unstack
+- [x] 4. Split and unstack
 
 - [ ] 5. Names setters
 

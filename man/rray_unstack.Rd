@@ -26,7 +26,7 @@ Using \code{\link[=rray_stack]{rray_stack()}} along the same \code{axis} reconst
 }
 \details{
 Names along \code{axis} become the names of the returned list. Names on the
-surviving axes are carried over to their new locations.
+surviving axes are carried over to their new locations, as are their titles.
 
 Because the dimensionality is reduced by 1, \code{x} must have a dimensionality
 of at least 2 to begin with.

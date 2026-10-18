@@ -226,6 +226,26 @@ test_that("NULL dimension names are handled", {
   )
 })
 
+test_that("titles are kept", {
+  x <- array(
+    1:24,
+    c(2L, 3L, 4L),
+    dimnames = list(A = c("a", "b"), B = NULL, C = NULL)
+  )
+  y <- array(1:24, c(2L, 3L, 4L), dimnames = list(A = NULL, B = NULL, C = NULL))
+
+  out <- rray_split(x, axis = 1, dimensions = 1)
+  expect_identical(dimnames(out[[1]]), list(A = "a", B = NULL, C = NULL))
+  expect_identical(dimnames(out[[2]]), list(A = "b", B = NULL, C = NULL))
+
+  out <- rray_split(x, axis = 2, dimensions = c(0, 3))
+  expect_identical(rray_titles(out[[1]]), c("A", "B", "C"))
+  expect_identical(rray_titles(out[[2]]), c("A", "B", "C"))
+
+  out <- rray_split(y, axis = 1, dimensions = 1)
+  expect_identical(dimnames(out[[1]]), list(A = NULL, B = NULL, C = NULL))
+})
+
 test_that("the result list is unnamed", {
   x <- array(1:6, c(2, 3), dimnames = list(c("a", "b"), c("x", "y", "z")))
   expect_null(names(rray_split(x, axis = 1, dimensions = 1)))
