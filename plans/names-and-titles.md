@@ -24,17 +24,37 @@ does not copy the data.
 
 At the same time, titles stop being dropped by these functions.
 
+## Which functions keep names
+
+A function that takes values and returns the same kind of value keeps names.
+A function that returns a verdict about its inputs drops them.
+
+- `rray_add()` takes numbers and returns numbers. The result is a new value at
+  the same labeled position, so the names still describe it.
+
+- `rray_and()` takes logicals and returns logicals. Two masks over rows `a`
+  and `b` combine into a mask over rows `a` and `b`.
+
+- `rray_equal()` takes anything and returns logicals. The result answers a
+  question about how the inputs relate, so it is not labeled like either one.
+
+The rule also decides what a name conflict means. Two masks with different
+row names are misaligned, so `rray_and()` errors. Comparing two arrays whose
+names differ is an ordinary question, so `rray_equal()` answers it.
+
+`rray_if_else()` is left out of this rule and keeps dropping names.
+
 ## Functions in scope
 
 | Function | Names | Titles |
 |---|---|---|
 | `rray_add()`, `rray_subtract()`, `rray_multiply()`, `rray_divide()`, `rray_exponentiate()` | Must agree | Must agree, kept |
+| `rray_and()`, `rray_or()`, `rray_xor()` | Must agree | Must agree, kept |
 | `rray_pmax()`, `rray_pmin()` | Must agree | Must agree, kept |
 | `rray_combine()` | Must agree, except on `.axis` | Must agree, kept |
 | `rray_stack()` | Must agree, new axis from the names of `...` | Must agree, kept, `""` on the new axis |
 | `rray_broadcast()`, `rray_broadcast_common()` | One input at a time, never errors | Kept, including on broadcast axes |
 | `rray_equal()`, `rray_not_equal()`, `rray_greater_than()`, `rray_greater_than_or_equal()`, `rray_less_than()`, `rray_less_than_or_equal()` | Dropped | Dropped |
-| `rray_and()`, `rray_or()`, `rray_xor()` | Dropped | Dropped |
 | `rray_if_else()` | Already dropped, unchanged | Already dropped, unchanged |
 
 ## Names rules
@@ -250,19 +270,27 @@ rray_stack(jan = jan, feb = feb, .axis = 2)
 
 The new axis gets its names from the names of `...`, which are never checked.
 
-### 10. Comparisons drop names instead of checking them
+### 10. Logical functions check names, comparisons drop them
 
 ```r
-x <- array(1:2, 2, dimnames = list(c("r1", "r2")))
-y <- array(1:2, 2, dimnames = list(c("a", "b")))
+x <- array(c(TRUE, FALSE), 2, dimnames = list(c("r1", "r2")))
+y <- array(c(TRUE, TRUE), 2, dimnames = list(c("a", "b")))
+
+rray_and(x, x)
+#>    r1    r2
+#>  TRUE FALSE
+
+rray_and(x, y)
+#> Error in `rray_and()`:
+#> ! Can't find common names at axis 1. `x` and `y` have different names at position 1: "r1" and "a".
 
 rray_equal(x, y)
-#> [1] TRUE TRUE
+#> [1]  TRUE FALSE
 ```
 
-Comparison and logical functions return no names and no titles, like
-`vctrs::vec_equal()` and `rray_if_else()`. Their result is a statement about
-the inputs, not a relabeled copy of them, so there is nothing to conflict.
+`rray_and()` returns the same kind of value it takes, so it follows the same
+rules as `rray_add()`. `rray_equal()` returns a verdict about `x` and `y`, so
+it returns no names and no titles, like `vctrs::vec_equal()`.
 
 ## Implementation
 
@@ -271,8 +299,8 @@ the inputs, not a relabeled copy of them, so there is nothing to conflict.
 | Caller | Helper |
 |---|---|
 | `rray_broadcast()` in `src/broadcast.c` | `rray_broadcast_names()` |
-| `src/arithmetic.c`, `src/extremum.c` | `rray_broadcast_names2()` |
-| `src/compare.c`, `src/equal.c`, `src/logical.c` | `rray_broadcast_names2()`, to be removed |
+| `src/arithmetic.c`, `src/extremum.c`, `src/logical.c` | `rray_broadcast_names2()` |
+| `src/compare.c`, `src/equal.c` | `rray_broadcast_names2()`, to be removed |
 | `rray_combine_names()` in `src/combine.c` | `rray_broadcast_names_common_opts()` |
 
 All of these live in `src/broadcast-names.c`. Today they implement first wins
@@ -320,12 +348,12 @@ inputs in order, remember per axis which input set the current value
   `r_alloc_character()` so untitled axes are already `""`, and are poked onto
   the output list with `r_attrib_poke_names()`.
 
-- In `src/arithmetic.c` and `src/extremum.c`, compute the names right after
-  the dimensions and before allocating and filling the result, so a conflict
-  fails fast. `KEEP()` them until they are poked onto the result.
+- In `src/arithmetic.c`, `src/extremum.c`, and `src/logical.c`, compute the
+  names right after the dimensions and before allocating and filling the
+  result, so a conflict fails fast. `KEEP()` them until they are poked onto the result.
 
-- In `src/compare.c`, `src/equal.c`, and `src/logical.c`, remove the
-  `rray_broadcast_names2()` call and its include.
+- In `src/compare.c` and `src/equal.c`, remove the `rray_broadcast_names2()`
+  call and its include.
 
 - `rray_combine_names()` keeps pasting names on the combine axis. When it
   pokes them into the list, the titles already on that list must survive.
@@ -342,8 +370,11 @@ The internal R wrappers in `R/broadcast-names.R` exist for tests. They pass
 - `test-arithmetic-*.R`: `"\`x\` wins over \`y\` on an axis they both name"`
   becomes an error snapshot.
 
-- `test-compare.R`, `test-equal.R`, `test-logical.R`: `"coalesces names across
-  inputs"` becomes a test that names and titles are dropped.
+- `test-logical.R`: `"coalesces names across inputs"` becomes an error
+  snapshot.
+
+- `test-compare.R`, `test-equal.R`: `"coalesces names across inputs"` becomes
+  a test that names and titles are dropped.
 
 - `test-combine.R`: the `z` case in `"names on the combine axis never come
   from broadcasting"` has columns `c("c", "d")` against `c("a", "b")`, and
@@ -361,12 +392,11 @@ input with no names at all.
 
 ### Documentation that changes
 
-- `R/arithmetic.R`, `R/extremum.R`, `R/combine.R`, `R/stack.R`: describe the
-  rule in `@details` in a few plain sentences, and show the
-  `rray_set_names()` fix in an example.
+- `R/arithmetic.R`, `R/extremum.R`, `R/logical.R`, `R/combine.R`,
+  `R/stack.R`: describe the rule in `@details` in a few plain sentences, and
+  show the `rray_set_names()` fix in an example.
 
-- `R/compare.R`, `R/equal.R`, `R/logical.R`: `@returns` says the result has no
-  names.
+- `R/compare.R`, `R/equal.R`: `@returns` says the result has no names.
 
 - `README.Rmd`: the limitation bullet about dimension name handling being
   experimental is replaced with the rule, then `README.md` is re-rendered.
@@ -391,15 +421,14 @@ Each item is one pull request, merged before the next starts.
 
 - [ ] 1. `rray_expand_dimensionality()` keeps titles, with `""` on new axes.
 
-- [ ] 2. Comparison and logical functions drop names and titles, with docs
-  and tests.
+- [ ] 2. Comparison functions drop names and titles, with docs and tests.
 
 - [ ] 3. Names must agree. Rework `src/broadcast-names.c` around the merge
   step, thread `rray_arg`s and `error_call` through every caller, compute
-  names before the result in arithmetic and extremum, and update tests, docs,
-  and the README.
+  names before the result in arithmetic, extremum, and logical, and update
+  tests, docs, and the README.
 
 - [ ] 4. Titles must agree and are kept. Add titles to the merge step for
-  `rray_broadcast()`, `rray_broadcast_common()`, arithmetic, `rray_pmax()`,
-  `rray_pmin()`, `rray_combine()`, and `rray_stack()`. Rewrite the broadcast
+  `rray_broadcast()`, `rray_broadcast_common()`, arithmetic, logical,
+  `rray_pmax()`, `rray_pmin()`, `rray_combine()`, and `rray_stack()`. Rewrite the broadcast
   titles test, then delete `plans/titles.md` and this plan.
