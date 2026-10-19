@@ -83,10 +83,9 @@ static r_obj* rray_stack_prepare(
     r_obj* x = v_xs[i];
     const int x_dimensionality = rray_dimensionality(x, x_arg, error_call);
 
-    r_obj* axes = axis_axes;
-    if (x_dimensionality < axis - 1) {
-      axes = rray_stack_axes(x_dimensionality, axis);
-    }
+    r_obj* axes = x_dimensionality < axis - 1
+      ? rray_stack_axes(x_dimensionality, axis)
+      : axis_axes;
     KEEP(axes);
 
     r_list_poke(out, i, rray_insert_axes(x, axes, x_arg, error_call));
