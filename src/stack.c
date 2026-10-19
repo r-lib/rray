@@ -77,20 +77,35 @@ static r_obj* rray_stack_prepare(
   struct rray_arg* x_arg = new_subscript_arg(arg, xs_names, xs_size, &i);
   KEEP(x_arg->shelter);
 
-  r_obj* axes = KEEP(r_int(axis));
+  r_obj* axis_axes = KEEP(r_int(axis));
 
   for (; i < xs_size; ++i) {
     r_obj* x = v_xs[i];
+    const int x_dimensionality = rray_dimensionality(x, x_arg, error_call);
 
-    if (rray_dimensionality(x, x_arg, error_call) < axis - 1) {
-      x = rray_expand_dimensionality(x, axis - 1, x_arg, error_call);
+    r_obj* axes = axis_axes;
+    if (x_dimensionality < axis - 1) {
+      axes = rray_stack_axes(x_dimensionality, axis);
     }
-    KEEP(x);
+    KEEP(axes);
 
     r_list_poke(out, i, rray_insert_axes(x, axes, x_arg, error_call));
     FREE(1);
   }
 
   FREE(4);
+  return out;
+}
+
+static r_obj* rray_stack_axes(int x_dimensionality, int axis) {
+  const int size = axis - x_dimensionality;
+
+  r_obj* out = r_alloc_integer(size);
+  int* v_out = r_int_begin(out);
+
+  for (int i = 0; i < size; ++i) {
+    v_out[i] = x_dimensionality + 1 + i;
+  }
+
   return out;
 }
