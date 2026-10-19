@@ -100,12 +100,13 @@ static r_obj* rray_stack_prepare(
 static r_obj* rray_stack_axes(int x_dimensionality, int axis) {
   const int size = axis - x_dimensionality;
 
-  r_obj* out = r_alloc_integer(size);
+  r_obj* out = KEEP(r_alloc_integer(size));
   int* v_out = r_int_begin(out);
 
   for (int i = 0; i < size; ++i) {
     v_out[i] = x_dimensionality + 1 + i;
   }
 
+  FREE(1);
   return out;
 }
