@@ -126,9 +126,9 @@ rray_stack(jan = jan, feb = feb, .axis = 2)
 
 \section{Comparisons}{
 Comparison functions like \code{\link[=rray_equal]{rray_equal()}} and
-\code{\link[=rray_greater_than]{rray_greater_than()}} return a verdict about
-their inputs rather than a new value, so they return no names and never
-check them:
+\code{\link[=rray_greater_than]{rray_greater_than()}} return a logical relation
+about their inputs rather than a new value of the input type, so they
+don’t return names on the result and aren’t subject to these checks:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{x <- array(c(TRUE, FALSE), 2, dimnames = list(c("r1", "r2")))
 y <- array(c(TRUE, TRUE), 2, dimnames = list(c("a", "b")))

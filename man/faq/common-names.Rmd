@@ -105,8 +105,8 @@ rray_stack(jan = jan, feb = feb, .axis = 2)
 # Comparisons
 
 Comparison functions like [rray_equal()] and [rray_greater_than()] return a
-verdict about their inputs rather than a new value, so they return no names
-and never check them:
+logical relation about their inputs rather than a new value of the input type,
+so they don't return names on the result and aren't subject to these checks:
 
 ```{r}
 x <- array(c(TRUE, FALSE), 2, dimnames = list(c("r1", "r2")))
