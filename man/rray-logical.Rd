@@ -32,10 +32,8 @@ applied.
 
 Missing values are handled the same way as \code{&}, \code{|}, and \code{\link[=xor]{xor()}}.
 
-Names are kept. If \code{x} and \code{y} both name an axis, the names must be the
-same. Names on an axis of dimension 1 that gets broadcast are dropped, so
-they are never compared. To resolve a conflict, remove the names from one
-input with \code{\link[=rray_set_names]{rray_set_names()}}.
+These functions participate in rray's
+\link[=faq-common-names]{common name determination rules}.
 }
 \examples{
 x <- array(c(TRUE, FALSE, TRUE), c(3L, 1L))
@@ -48,12 +46,4 @@ rray_xor(x, y)
 rray_and(NA, FALSE)
 rray_or(NA, TRUE)
 rray_xor(NA, TRUE)
-
-# Names on a shared axis must match
-x <- array(c(TRUE, FALSE), 2L, dimnames = list(c("r1", "r2")))
-y <- array(c(TRUE, TRUE), 2L, dimnames = list(c("a", "b")))
-try(rray_and(x, y))
-
-# Remove the names from one input to resolve the conflict
-rray_and(x, rray_set_names(y, NULL))
 }

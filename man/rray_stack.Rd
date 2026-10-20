@@ -29,11 +29,9 @@ preexisting axes are broadcast to their common dimension.
 The new axis has a dimension equal to the number of arrays you are stacking.
 }
 \details{
-Names of \code{...} become the names of the new axis. Names on every other axis
-are kept, and must be the same across all inputs that name that axis. Names
-on an axis of dimension 1 that gets broadcast are dropped, so they are never
-compared. To resolve a conflict, remove the names from one input with
-\code{\link[=rray_set_names]{rray_set_names()}}.
+This function participates in rray's
+\link[=faq-common-names]{common name determination rules} on every existing axis.
+Names of \code{...} become the names of the new axis.
 }
 \examples{
 x <- array(1:12, c(3, 4))
@@ -53,14 +51,6 @@ rray_dimensions(rray_stack(a, b, .axis = 1))
 
 # Names of `...` name the new axis
 rray_stack(first = 1:2, second = 3:4, .axis = 2)
-
-# Names on existing axes must match
-jan <- array(1:2, 2, dimnames = list(c("north", "south")))
-feb <- array(3:4, 2, dimnames = list(c("N", "S")))
-try(rray_stack(jan = jan, feb = feb, .axis = 2))
-
-# Remove the names from one input to resolve the conflict
-rray_stack(jan = jan, feb = rray_set_names(feb, NULL), .axis = 2)
 }
 \seealso{
 \code{\link[=rray_unstack]{rray_unstack()}}, \code{\link[=rray_combine]{rray_combine()}}

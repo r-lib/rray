@@ -1,0 +1,14 @@
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+options(
+  cli.unicode = FALSE,
+  rlang_call_format_srcrefs = FALSE
+)
+
+library(rray)
+```

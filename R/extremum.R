@@ -20,10 +20,8 @@
 #' pmax(NA, NaN) # NaN
 #' ```
 #'
-#' Names are kept. If `x` and `y` both name an axis, the names must be the
-#' same. Names on an axis of dimension 1 that gets broadcast are dropped, so
-#' they are never compared. To resolve a conflict, remove the names from one
-#' input with [rray_set_names()].
+#' These functions participate in rray's
+#' [common name determination rules][faq-common-names].
 #'
 #' @inheritParams rlang::args_dots_empty
 #'
@@ -46,14 +44,6 @@
 #'
 #' # Compare each column with a different value through broadcasting
 #' rray_pmax(x, array(c(2L, 5L), c(1L, 2L)))
-#'
-#' # Names on a shared axis must match
-#' x <- array(1:2, 2L, dimnames = list(c("r1", "r2")))
-#' y <- array(3:4, 2L, dimnames = list(c("a", "b")))
-#' try(rray_pmax(x, y))
-#'
-#' # Remove the names from one input to resolve the conflict
-#' rray_pmax(x, rray_set_names(y, NULL))
 NULL
 
 #' @rdname rray-extremum

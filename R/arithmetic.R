@@ -18,10 +18,8 @@
 #'
 #' If the result of an integer operation would overflow, an error is thrown.
 #'
-#' Names are kept. If `x` and `y` both name an axis, the names must be the
-#' same. Names on an axis of dimension 1 that gets broadcast are dropped, so
-#' they are never compared. To resolve a conflict, remove the names from one
-#' input with [rray_set_names()].
+#' These functions participate in rray's
+#' [common name determination rules][faq-common-names].
 #'
 #' @section Casting:
 #' Certain inputs are upcast, changing the return type:
@@ -63,14 +61,6 @@
 #' rows <- array(1:3, c(3L, 1L), dimnames = list(c("r1", "r2", "r3")))
 #' cols <- array(c(10L, 20L), c(1L, 2L), dimnames = list(NULL, c("c1", "c2")))
 #' rray_add(rows, cols)
-#'
-#' # Names on a shared axis must match
-#' x <- array(1:2, 2L, dimnames = list(c("r1", "r2")))
-#' y <- array(3:4, 2L, dimnames = list(c("a", "b")))
-#' try(rray_add(x, y))
-#'
-#' # Remove the names from one input to resolve the conflict
-#' rray_add(x, rray_set_names(y, NULL))
 #'
 #' # A broadcast axis loses its names, because they no longer describe the
 #' # result. `only` names a single row, but the result has three.

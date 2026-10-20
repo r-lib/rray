@@ -394,14 +394,16 @@ input with no names at all.
 
 ### Documentation that changes
 
+- `man/faq/common-names.Rmd`: the rules and examples, documented as
+  `faq-common-names` from `R/faq.R`.
+
 - `R/arithmetic.R`, `R/extremum.R`, `R/logical.R`, `R/combine.R`,
-  `R/stack.R`: describe the rule in `@details` in a few plain sentences, and
-  show the `rray_set_names()` fix in an example.
+  `R/stack.R`: link to `faq-common-names` in `@details`.
 
 - `R/compare.R`, `R/equal.R`: `@returns` says the result has no names.
 
 - `README.Rmd`: the limitation bullet about dimension name handling being
-  experimental is replaced with the rule, then `README.md` is re-rendered.
+  experimental is removed, then `README.md` is re-rendered.
 
 - `plans/titles.md` and this plan are deleted in the last pull request.
 
@@ -432,4 +434,5 @@ Each item is one pull request, merged before the next starts.
 - [ ] 4. Titles must agree and are kept. Add titles to the merge step for
   `rray_broadcast()`, `rray_broadcast_common()`, arithmetic, logical,
   `rray_pmax()`, `rray_pmin()`, `rray_combine()`, and `rray_stack()`. Rewrite the broadcast
-  titles test, then delete `plans/titles.md` and this plan.
+  titles test, update `man/faq/common-names.Rmd` to cover titles, then delete
+  `plans/titles.md` and this plan.
