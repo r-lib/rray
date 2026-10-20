@@ -53,8 +53,8 @@ rray_add(x, rray_set_names(y, NULL))
 #>  2  4
 }\if{html}{\out{</div>}}
 
-An input without names on an axis has no say there. Here, each input
-names a different axis, so both sets of names are kept:
+An input without names on an axis doesn’t participate there. Here, each
+input names a different axis, so both sets of names are kept:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{x <- array(1:4, c(2, 2), dimnames = list(c("r1", "r2"), NULL))
 y <- array(5:8, c(2, 2), dimnames = list(NULL, c("c1", "c2")))

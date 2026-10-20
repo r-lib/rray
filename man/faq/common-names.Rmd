@@ -45,8 +45,8 @@ rray_add(x, y)
 rray_add(x, rray_set_names(y, NULL))
 ```
 
-An input without names on an axis has no say there. Here, each input names a
-different axis, so both sets of names are kept:
+An input without names on an axis doesn't participate there. Here, each input
+names a different axis, so both sets of names are kept:
 
 ```{r}
 x <- array(1:4, c(2, 2), dimnames = list(c("r1", "r2"), NULL))
