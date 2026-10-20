@@ -87,20 +87,6 @@ rray_add(x, y)
 #> Error in `rray_add()`:
 #> ! Can't find common names at axis 1. `x` and `y` have different names at position 2: "" and "r2".
 }\if{html}{\out{</div>}}
-
-A named vector is a 1D array with names, so its names are checked too:
-
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{x <- array(1:4, c(2, 2), dimnames = list(c("r1", "r2"), c("c1", "c2")))
-
-rray_multiply(x, c(a = 10, b = 20))
-#> Error in `rray_multiply()`:
-#> ! Can't find common names at axis 1. `x` and `y` have different names at position 1: "r1" and "a".
-
-rray_multiply(x, c(10, 20))
-#>    c1 c2
-#> r1 10 30
-#> r2 40 80
-}\if{html}{\out{</div>}}
 }
 
 \section{Combining and stacking}{

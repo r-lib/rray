@@ -74,16 +74,6 @@ y <- array(1:2, 2, dimnames = list(c("r1", "r2")))
 rray_add(x, y)
 ```
 
-A named vector is a 1D array with names, so its names are checked too:
-
-```{r, error = TRUE}
-x <- array(1:4, c(2, 2), dimnames = list(c("r1", "r2"), c("c1", "c2")))
-
-rray_multiply(x, c(a = 10, b = 20))
-
-rray_multiply(x, c(10, 20))
-```
-
 # Combining and stacking
 
 [rray_combine()] never checks names on `.axis`. They are pasted together from
