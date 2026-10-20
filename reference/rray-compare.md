@@ -34,7 +34,7 @@ rray_less_than_or_equal(x, y)
 
 ## Value
 
-A logical array with the common dimensions of `x` and `y`.
+A logical array with the common dimensions of `x` and `y`, and no names.
 
 ## Details
 

@@ -24,7 +24,7 @@ rray_not_equal(x, y)
 
 ## Value
 
-A logical array with the common dimensions of `x` and `y`.
+A logical array with the common dimensions of `x` and `y`, and no names.
 
 ## Details
 
