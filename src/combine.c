@@ -139,8 +139,14 @@ r_obj* rray_combine(
 
   r_attrib_poke_dim(out, out_dimensions);
 
-  r_obj* out_names =
-    KEEP(rray_combine_names(xs, out_dimensions, axis, axis_dimension));
+  r_obj* out_names = KEEP(rray_combine_names(
+    xs,
+    out_dimensions,
+    axis,
+    axis_dimension,
+    arg,
+    error_call
+  ));
 
   if (out_names != r_null) {
     r_attrib_poke_dim_names(out, out_names);
@@ -154,9 +160,12 @@ static r_obj* rray_combine_names(
   r_obj* xs,
   r_obj* dimensions,
   int axis,
-  int axis_dimension
+  int axis_dimension,
+  struct rray_arg* arg,
+  struct r_lazy error_call
 ) {
-  r_obj* out = rray_broadcast_names_common_opts(xs, dimensions, &axis, 1);
+  r_obj* out =
+    rray_broadcast_names_common_opts(xs, dimensions, &axis, 1, arg, error_call);
   r_keep_loc out_loc;
   KEEP_HERE(out, &out_loc);
 

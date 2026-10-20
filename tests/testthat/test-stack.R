@@ -190,6 +190,17 @@ test_that("keeps existing axis names under broadcasting", {
   )
 })
 
+test_that("names must agree, with axes numbered as in the inputs", {
+  jan <- array(1:2, 2L, dimnames = list(c("north", "south")))
+  feb <- array(3:4, 2L, dimnames = list(c("south", "north")))
+
+  expect_snapshot(error = TRUE, {
+    rray_stack(jan = jan, feb = feb, .axis = 2L)
+    rray_stack(jan = jan, feb = feb, .axis = 1L)
+    rray_stack(c(a = 1L, b = 2L), c(b = 1L, a = 2L), .axis = 1L)
+  })
+})
+
 test_that("does not modify inputs", {
   x <- array(1:2, c(2L, 1L), dimnames = list(c("a", "b"), "x"))
   y <- array(3:8, c(2L, 3L))

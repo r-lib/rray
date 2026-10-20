@@ -1,6 +1,7 @@
 #include "stack.h"
 
 #include "axes.h"
+#include "broadcast-names.h"
 #include "combine.h"
 #include "dimensionality.h"
 #include "dimensions.h"
@@ -46,6 +47,8 @@ r_obj* rray_stack(
   check_dimensionality(dimensionality);
 
   check_axis(axis, dimensionality, rray_args.dot_axis, error_call);
+
+  rray_broadcast_names_common_opts(xs, dimensions, NULL, 0, arg, error_call);
 
   xs = KEEP(rray_stack_prepare(xs, axis, arg, error_call));
 

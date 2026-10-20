@@ -144,11 +144,13 @@ extern r_obj* ffi_rray_broadcast_names(r_obj* ffi_x, r_obj* ffi_dimensions);
 extern r_obj* ffi_rray_broadcast_names2(
   r_obj* ffi_x,
   r_obj* ffi_y,
-  r_obj* ffi_dimensions
+  r_obj* ffi_dimensions,
+  r_obj* ffi_frame
 );
 extern r_obj* ffi_rray_broadcast_names_common(
   r_obj* ffi_xs,
-  r_obj* ffi_dimensions
+  r_obj* ffi_dimensions,
+  r_obj* ffi_frame
 );
 extern r_obj* ffi_rray_reduce_names(r_obj* ffi_x, r_obj* ffi_axes);
 extern r_obj* ffi_rray_dimensions_common(
@@ -423,10 +425,10 @@ static const R_CallMethodDef CallEntries[] = {
   {"ffi_rray_set_row_names", (DL_FUNC) &ffi_rray_set_row_names, 3},
   {"ffi_rray_set_column_names", (DL_FUNC) &ffi_rray_set_column_names, 3},
   {"ffi_rray_broadcast_names", (DL_FUNC) &ffi_rray_broadcast_names, 2},
-  {"ffi_rray_broadcast_names2", (DL_FUNC) &ffi_rray_broadcast_names2, 3},
+  {"ffi_rray_broadcast_names2", (DL_FUNC) &ffi_rray_broadcast_names2, 4},
   {"ffi_rray_broadcast_names_common",
    (DL_FUNC) &ffi_rray_broadcast_names_common,
-   2},
+   3},
   {"ffi_rray_reduce_names", (DL_FUNC) &ffi_rray_reduce_names, 2},
   {"ffi_rray_set_dimensions", (DL_FUNC) &ffi_rray_set_dimensions, 3},
   {"ffi_rray_combine", (DL_FUNC) &ffi_rray_combine, 3},

@@ -7,8 +7,11 @@
 #' The new axis has a dimension equal to the number of arrays you are stacking.
 #'
 #' @details
-#' Names of `...` become the names of the new axis. Existing axis names are
-#' otherwise carried over.
+#' Names of `...` become the names of the new axis. Names on every other axis
+#' are kept, and must be the same across all inputs that name that axis. Names
+#' on an axis of dimension 1 that gets broadcast are dropped, so they are never
+#' compared. To resolve a conflict, remove the names from one input with
+#' [rray_set_names()].
 #'
 #' @param ... Arrays to stack.
 #'
@@ -44,6 +47,14 @@
 #'
 #' # Names of `...` name the new axis
 #' rray_stack(first = 1:2, second = 3:4, .axis = 2)
+#'
+#' # Names on existing axes must match
+#' jan <- array(1:2, 2, dimnames = list(c("north", "south")))
+#' feb <- array(3:4, 2, dimnames = list(c("N", "S")))
+#' try(rray_stack(jan = jan, feb = feb, .axis = 2))
+#'
+#' # Remove the names from one input to resolve the conflict
+#' rray_stack(jan = jan, feb = rray_set_names(feb, NULL), .axis = 2)
 rray_stack <- function(..., .axis) {
   .Call(ffi_rray_stack, list2(...), .axis, environment())
 }

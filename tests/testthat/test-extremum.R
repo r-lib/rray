@@ -113,6 +113,18 @@ test_that("names are coalesced across inputs", {
   )
 })
 
+test_that("names must agree on an axis both inputs name", {
+  x <- array(1:3, 3L, dimnames = list(c("a", "b", "c")))
+  y <- array(1:3, 3L, dimnames = list(c("x", "y", "z")))
+
+  expect_identical(rray_names(rray_pmax(x, x)), list(c("a", "b", "c")))
+
+  expect_snapshot(error = TRUE, {
+    rray_pmax(x, y)
+    rray_pmin(x, y)
+  })
+})
+
 test_that("zero dimensions broadcast against dimensions of 1", {
   x <- array(1L, c(1L, 2L))
   y <- array(integer(), c(0L, 2L))

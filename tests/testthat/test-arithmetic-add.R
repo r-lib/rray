@@ -189,16 +189,45 @@ test_that("names are kept for axes that aren't broadcast", {
   )
 })
 
-test_that("`x` wins over `y` on an axis they both name", {
+test_that("names must agree on an axis both inputs name", {
   x <- array(1:3, 3L, dimnames = list(c("a", "b", "c")))
   y <- array(1:3, 3L, dimnames = list(c("x", "y", "z")))
-  expect_identical(rray_names(rray_add(x, y)), list(c("a", "b", "c")))
+  expect_identical(rray_names(rray_add(x, x)), list(c("a", "b", "c")))
+  expect_snapshot(error = TRUE, rray_add(x, y))
+})
+
+test_that("removing names from one input resolves a conflict", {
+  x <- array(1:2, 2L, dimnames = list(c("r1", "r2")))
+  y <- array(1:2, 2L, dimnames = list(c("a", "b")))
+  expect_identical(
+    rray_add(x, rray_set_names(y, NULL)),
+    array(c(2L, 4L), 2L, dimnames = list(c("r1", "r2")))
+  )
+})
+
+test_that("names of a named vector must agree", {
+  x <- array(1:4, c(2L, 2L), dimnames = list(c("r1", "r2"), c("c1", "c2")))
+  expect_snapshot(error = TRUE, rray_add(x, c(a = 10L, b = 20L)))
+  expect_identical(
+    rray_names(rray_add(x, c(r1 = 10L, r2 = 20L))),
+    rray_names(x)
+  )
 })
 
 test_that("names are dropped for a broadcast axis", {
   x <- array(1L, c(1L, 2L), dimnames = list("z", NULL))
   y <- array(1:6, c(3L, 2L))
   expect_null(rray_names(rray_add(x, y)))
+})
+
+test_that("a broadcast axis has no say on names", {
+  x <- array(1:3, c(1L, 3L), dimnames = list("total", c("a", "b", "c")))
+  y <- array(
+    1:6,
+    c(2L, 3L),
+    dimnames = list(c("r1", "r2"), c("a", "b", "c"))
+  )
+  expect_identical(rray_names(rray_add(x, y)), rray_names(y))
 })
 
 test_that("names travel to a new axis of a larger input", {

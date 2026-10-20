@@ -13,6 +13,24 @@
         raw  NA        NA  NA  NA  NA  NA  NA  
         list NA        NA  NA  NA  NA  NA  NA  
 
+# names must agree on an axis both inputs name
+
+    Code
+      rray_and(x, y)
+    Condition
+      Error in `rray_and()`:
+      ! Can't find common names at axis 1. `x` and `y` have different names at position 1: "r1" and "a".
+    Code
+      rray_or(x, y)
+    Condition
+      Error in `rray_or()`:
+      ! Can't find common names at axis 1. `x` and `y` have different names at position 1: "r1" and "a".
+    Code
+      rray_xor(x, y)
+    Condition
+      Error in `rray_xor()`:
+      ! Can't find common names at axis 1. `x` and `y` have different names at position 1: "r1" and "a".
+
 # errors on incompatible dimensions
 
     Code
