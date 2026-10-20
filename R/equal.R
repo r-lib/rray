@@ -13,7 +13,7 @@
 #' @param y An array.
 #'
 #' @returns
-#' A logical array with the common dimensions of `x` and `y`.
+#' A logical array with the common dimensions of `x` and `y`, and no names.
 #'
 #' @name rray-equal
 #' @examples

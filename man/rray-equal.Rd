@@ -16,7 +16,7 @@ rray_not_equal(x, y)
 \item{y}{An array.}
 }
 \value{
-A logical array with the common dimensions of \code{x} and \code{y}.
+A logical array with the common dimensions of \code{x} and \code{y}, and no names.
 }
 \description{
 \itemize{

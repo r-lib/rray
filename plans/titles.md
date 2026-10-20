@@ -36,18 +36,6 @@ even for `rray_add(x, x)`, where nothing broadcasts.
 
 - `rray_exponentiate()`
 
-## Comparison
-
-Built on `rray_broadcast_names2()` in `src/compare.c`.
-
-- `rray_greater_than()`, `rray_greater_than_or_equal()`
-
-- `rray_less_than()`, `rray_less_than_or_equal()`
-
-- `rray_not_equal()`
-
-- `rray_equal()`, in `src/equal.c`
-
 ## Logical
 
 Built on `rray_broadcast_names2()` in `src/logical.c`.
@@ -89,3 +77,9 @@ tests and need no further work:
 - `rray_set_dimensions()`
 
 - `rray_if_else()`
+
+- `rray_equal()`, `rray_not_equal()`
+
+- `rray_greater_than()`, `rray_greater_than_or_equal()`
+
+- `rray_less_than()`, `rray_less_than_or_equal()`

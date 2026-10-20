@@ -81,29 +81,16 @@ test_that("missing values and complex edge cases match base R", {
   }
 })
 
-test_that("coalesces names across inputs", {
-  x <- array(
-    1:3,
-    c(3L, 1L),
-    dimnames = list(c("r1", "r2", "r3"), "x")
-  )
-  y <- array(
-    1:2,
-    c(1L, 2L),
-    dimnames = list("y", c("c1", "c2"))
-  )
+test_that("drops names and titles", {
+  x <- array(1:3, c(3L, 1L), dimnames = list(R = c("r1", "r2", "r3"), "x"))
+  y <- array(1:2, c(1L, 2L), dimnames = list(S = "y", C = c("c1", "c2")))
+  z <- array(1:4, c(2L, 2L), dimnames = list(A = NULL, B = NULL))
 
-  expect_identical(
-    rray_names(rray_equal(x, y)),
-    list(c("r1", "r2", "r3"), c("c1", "c2"))
-  )
-
-  x <- array(1:3, 3L, dimnames = list(c("a", "b", "c")))
-  y <- array(1:3, 3L, dimnames = list(c("x", "y", "z")))
-  expect_identical(
-    rray_names(rray_not_equal(x, y)),
-    list(c("a", "b", "c"))
-  )
+  for (fn in list(rray_equal, rray_not_equal)) {
+    expect_null(dimnames(fn(x, x)))
+    expect_null(dimnames(fn(x, y)))
+    expect_null(dimnames(fn(z, z)))
+  }
 })
 
 test_that("zero dimensions broadcast against dimensions of 1", {
