@@ -1,7 +1,6 @@
 #include "equal.h"
 
 #include "binary.h"
-#include "broadcast-names.h"
 #include "cast.h"
 #include "dimensionality.h"
 #include "dimensions.h"
@@ -127,13 +126,7 @@ static r_obj* rray_equality(
   ));
   r_attrib_poke_dim(out, dimensions);
 
-  r_obj* out_names = KEEP(rray_broadcast_names2(x, y, dimensions));
-
-  if (out_names != r_null) {
-    r_attrib_poke_dim_names(out, out_names);
-  }
-
-  FREE(5);
+  FREE(4);
   return out;
 }
 

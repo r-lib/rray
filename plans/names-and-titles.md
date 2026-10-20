@@ -300,7 +300,6 @@ it returns no names and no titles, like `vctrs::vec_equal()`.
 |---|---|
 | `rray_broadcast()` in `src/broadcast.c` | `rray_broadcast_names()` |
 | `src/arithmetic.c`, `src/extremum.c`, `src/logical.c` | `rray_broadcast_names2()` |
-| `src/compare.c`, `src/equal.c` | `rray_broadcast_names2()`, to be removed |
 | `rray_combine_names()` in `src/combine.c` | `rray_broadcast_names_common_opts()` |
 
 All of these live in `src/broadcast-names.c`. Today they implement first wins
@@ -420,7 +419,7 @@ Each item is one pull request, merged before the next starts.
 
 - [x] 1. `rray_expand_dimensionality()` keeps titles, with `""` on new axes.
 
-- [ ] 2. Comparison functions drop names and titles, with docs and tests.
+- [x] 2. Comparison functions drop names and titles, with docs and tests.
 
 - [ ] 3. Names must agree. Rework `src/broadcast-names.c` around the merge
   step, thread `rray_arg`s and `error_call` through every caller, compute
