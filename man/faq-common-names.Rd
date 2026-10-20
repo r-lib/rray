@@ -30,8 +30,8 @@ thrown to avoid arbitrarily picking between the inputs. If an input is
 broadcast or has no names, it is excluded from common name
 determination.
 
-To resolve a conflict, remove the names from one input with
-\code{\link[=rray_set_names]{rray_set_names()}}. This does not copy the data.
+To resolve a conflict, preemptively remove the names from one input with
+\code{\link[=rray_set_names]{rray_set_names()}}.
 }
 
 \section{Examples}{
