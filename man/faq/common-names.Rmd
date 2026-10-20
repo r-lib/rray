@@ -55,8 +55,8 @@ y <- array(5:8, c(2, 2), dimnames = list(NULL, c("c1", "c2")))
 rray_add(x, y)
 ```
 
-A broadcast axis has no say either. `"total"` names a single row that gets
-repeated, so it no longer describes the result and is dropped:
+A broadcast axis doesn't participate either. `"total"` names a single row that
+gets repeated, so it no longer describes the result and is dropped:
 
 ```{r}
 x <- array(1:3, c(1, 3), dimnames = list("total", c("a", "b", "c")))

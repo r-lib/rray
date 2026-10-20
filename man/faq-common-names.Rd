@@ -65,8 +65,9 @@ rray_add(x, y)
 #> r2  8 12
 }\if{html}{\out{</div>}}
 
-A broadcast axis has no say either. \code{"total"} names a single row that
-gets repeated, so it no longer describes the result and is dropped:
+A broadcast axis doesn’t participate either. \code{"total"} names a single
+row that gets repeated, so it no longer describes the result and is
+dropped:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{x <- array(1:3, c(1, 3), dimnames = list("total", c("a", "b", "c")))
 y <- array(1:6, c(2, 3), dimnames = list(c("r1", "r2"), c("a", "b", "c")))
