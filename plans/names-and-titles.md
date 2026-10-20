@@ -307,7 +307,8 @@ All of these live in `src/broadcast-names.c`. Today they implement first wins
 per axis through `rray_broadcast_names_fill()`, and drop titles.
 
 `rray_stack()` goes through `rray_combine()`, after passing each input through
-`rray_insert_axes()`, which already keeps titles.
+`rray_expand_dimensionality()` in `src/dimensionality.c` and
+`rray_insert_axes()`. Both keep titles.
 
 `rray_broadcast_common()` calls `rray_broadcast()` once per input.
 
@@ -355,6 +356,9 @@ inputs in order, remember per axis which input set the current value
 
 - `rray_combine_names()` keeps pasting names on the combine axis. When it
   pokes them into the list, the titles already on that list must survive.
+
+- `rray_expand_dimensionality()` copies the titles of `x`, with `""` on the
+  new axes.
 
 The internal R wrappers in `R/broadcast-names.R` exist for tests. They pass
 `environment()` so errors have a call, and their FFI wrappers build the
@@ -414,9 +418,7 @@ input with no names at all.
 
 Each item is one pull request, merged before the next starts.
 
-- [x] 1. `rray_stack()` keeps titles while preparing inputs, with `""` on new
-  axes. `rray_expand_dimensionality()` is replaced by one `rray_insert_axes()`
-  call per input.
+- [x] 1. `rray_expand_dimensionality()` keeps titles, with `""` on new axes.
 
 - [ ] 2. Comparison functions drop names and titles, with docs and tests.
 

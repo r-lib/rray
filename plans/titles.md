@@ -73,7 +73,9 @@ dropped even with a single input.
 
 - `rray_combine()`
 
-- `rray_stack()`. The new axis should get the title `""`.
+- `rray_stack()`, which also goes through the internal
+  `rray_expand_dimensionality()` in `src/dimensionality.c`. The new axis should
+  get the title `""`.
 
 ## Not on this list
 
