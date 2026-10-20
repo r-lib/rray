@@ -52,8 +52,17 @@ test_that("works with long vectors", {
   like. Name it `"works with long vectors"`, or something more specific when a
   file has more than one.
 
-- Memory below is the peak for one test. The heaviest is
-  `rray_cumulative_prod()` at 24 GiB.
+- Build the marker array inline in each test. There is no shared helper.
+
+- Memory below is the peak for one test. Keep every test at 16 GiB or less.
+  The one exception is `rray_cumulative_prod()` at 24 GiB. It takes a single
+  input and always returns a double of the same size, so it can't go lower.
+
+## Pull requests
+
+One stacked PR per fix, each with its own test, in the order below. Then one
+PR with the rest of the checklist. The wording of each new error message is
+proposed in its PR and reviewed in the snapshot.
 
 ## Fixes needed first
 
@@ -64,7 +73,8 @@ Each one ends in rlang's internal error
 1. Plain vectors with no `dim`. `vec_as_array()` in `src/utils.c` turns the
    length into a 1D `dim` with `r_ssize_as_integer()`. A 1D array can't have
    more than `.Machine$integer.max` elements, so this must become a clear
-   error. It affects every function, through `arg_as_array()`, and also the
+   error. `rray_size()` errors too, rather than falling back to `length()`,
+   so every function treats input the same way. It affects every function, through `arg_as_array()`, and also the
    coordinate arrays of `rray_index()`, which go through `vec_as_array()`
    directly.
 
@@ -466,5 +476,5 @@ l[length(l)] <- TRUE
 - Exported functions only. `rray_cast()`, `rray_ptype()`, and the other
   internal helpers are covered by the exported functions that call them.
 
-- Running these on CI. GitHub's standard runners have 16 GiB of memory, which
-  isn't enough for most of these tests.
+- Running these on CI. They run locally only. GitHub's standard runners have
+  16 GiB of memory, which isn't enough for most of these tests.
