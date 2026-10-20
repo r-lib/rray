@@ -308,8 +308,7 @@ per axis through `rray_broadcast_names_fill()`, and drop titles.
 
 `rray_stack()` goes through `rray_combine()`, after passing each input through
 `rray_expand_dimensionality()` in `src/dimensionality.c` and
-`rray_insert_axes()`. `rray_insert_axes()` already keeps titles.
-`rray_expand_dimensionality()` drops them.
+`rray_insert_axes()`. Both keep titles.
 
 `rray_broadcast_common()` calls `rray_broadcast()` once per input.
 
@@ -419,7 +418,7 @@ input with no names at all.
 
 Each item is one pull request, merged before the next starts.
 
-- [ ] 1. `rray_expand_dimensionality()` keeps titles, with `""` on new axes.
+- [x] 1. `rray_expand_dimensionality()` keeps titles, with `""` on new axes.
 
 - [ ] 2. Comparison functions drop names and titles, with docs and tests.
 

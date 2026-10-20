@@ -69,6 +69,19 @@ r_obj* rray_expand_dimensionality(
       r_list_poke(out_names, i, v_x_names[i]);
     }
 
+    r_obj* x_titles = r_names(x_names);
+
+    if (x_titles != r_null) {
+      r_obj* out_titles = r_alloc_character(dimensionality);
+      r_attrib_poke_names(out_names, out_titles);
+
+      r_obj* const* v_x_titles = r_chr_cbegin(x_titles);
+
+      for (int i = 0; i < x_dimensionality; ++i) {
+        r_chr_poke(out_titles, i, v_x_titles[i]);
+      }
+    }
+
     r_attrib_poke_dim_names(out, out_names);
     FREE(1);
   }
