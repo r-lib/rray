@@ -140,23 +140,6 @@ rray_combine(a, b, .axis = 2)
 #> [2,]    2    3    4
 ```
 
-Names are kept through these operations. When two inputs name the same
-axis, the names must match, so misaligned data can’t be combined by
-accident:
-
-``` r
-jan <- array(1:2, dim = 2, dimnames = list(c("north", "south")))
-feb <- array(3:4, dim = 2, dimnames = list(c("south", "north")))
-
-rray_stack(jan = jan, feb = feb, .axis = 2)
-#> Error in `rray_stack()`:
-#> ! Can't find common names at axis 1. `jan` and `feb` have different names at position 1: "north" and "south".
-```
-
-Names on an axis of dimension 1 that gets broadcast are dropped, so they
-are never compared. To resolve a conflict, remove the names from one
-input with `rray_set_names()`.
-
 ## Acknowledgements
 
 rray was originally written in 2018 and was backed by
