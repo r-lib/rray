@@ -91,8 +91,8 @@ rray_add(x, y)
 
 \section{Combining and stacking}{
 \code{\link[=rray_combine]{rray_combine()}} never checks names on \code{.axis}. They
-are pasted together from every input, with \code{""} for inputs that have
-none. Every other axis follows the rules above:
+are combined from every input, with \code{""} for inputs that have none.
+Every other axis follows the rules above:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{a <- array(1:2, c(1, 2), dimnames = list("r1", c("x", "y")))
 b <- array(3:4, c(1, 2))
