@@ -22,13 +22,13 @@ These functions follow the rules:
 }
 \section{Rules}{
 For each axis of the result:
-\itemize{
-\item An input has a say only if it has names on that axis, and that axis is
-not broadcast.
-\item Every input with a say must have exactly the same names.
-\item If they agree, the result has those names. If no input has a say, the
-axis has no names.
-}
+
+All inputs with names along that axis must have exactly the same names.
+If all names are the same, the result has those names. If no input is
+named, the result is not named. If any names are different, an error is
+thrown to avoid arbitrarily picking between the inputs. If an input is
+broadcast or has no names, it is excluded from common name
+determination.
 
 To resolve a conflict, remove the names from one input with
 \code{\link[=rray_set_names]{rray_set_names()}}. This does not copy the data.
