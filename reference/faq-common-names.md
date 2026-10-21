@@ -1,8 +1,8 @@
-# FAQ - How are common names determined?
+# FAQ - How are common names and titles determined?
 
 When a function builds one result from several inputs, the inputs must
-agree on their names. If they don’t, the function errors instead of
-silently picking one input’s names.
+agree on their names and titles. If they don’t, the function errors
+instead of silently picking one input’s names or titles.
 
 These functions follow the rules:
 
@@ -88,12 +88,47 @@ Empty names count, so `c("r1", "")` and `c("r1", "r2")` are different:
     #> Error in `rray_add()`:
     #> ! Can't find common names at axis 1. `x` and `y` have different names at position 2: "" and "r2".
 
+## Titles
+
+Titles are the names of the dimension names list, like `Row` in
+`list(Row = c("r1", "r2"))`. They label an axis rather than its
+positions.
+
+For each axis of the result, all inputs with a title on that axis must
+have the same title, and the result gets that title. An empty title `""`
+counts as no title. If any titles are different, an error is thrown.
+
+    x <- array(1:2, 2, dimnames = list(Row = c("r1", "r2")))
+    y <- array(1:2, 2, dimnames = list(Sample = c("r1", "r2")))
+    z <- array(1:2, 2, dimnames = list(c("r1", "r2")))
+
+    rray_add(x, y)
+    #> Error in `rray_add()`:
+    #> ! Can't find common titles at axis 1. `x` has title "Row" and `y` has title "Sample".
+
+    rray_titles(rray_add(x, z))
+    #> [1] "Row"
+
+Unlike names, a title survives broadcasting, so a broadcast input still
+has to agree. Here the names on axis 1 are fine because `x` is broadcast
+there, but the titles are not:
+
+    x <- array(1:3, c(1, 3), dimnames = list(Row = "total", Col = c("a", "b", "c")))
+    y <- array(1:6, c(2, 3), dimnames = list(Sample = c("r1", "r2"), Col = c("a", "b", "c")))
+
+    rray_multiply(x, y)
+    #> Error in `rray_multiply()`:
+    #> ! Can't find common titles at axis 1. `x` has title "Row" and `y` has title "Sample".
+
+To resolve a conflict, remove the titles from one input with
+[`rray_set_titles()`](https://rray.r-lib.org/reference/rray-titles.md).
+
 ## Combining and stacking
 
 [`rray_combine()`](https://rray.r-lib.org/reference/rray_combine.md)
 never checks names on `.axis`. They are combined from every input, with
-`""` for inputs that have none. Every other axis follows the rules
-above:
+`""` for inputs that have none. Titles on `.axis` are checked like any
+other axis. Every other axis follows the rules above:
 
     a <- array(1:2, c(1, 2), dimnames = list("r1", c("x", "y")))
     b <- array(3:4, c(1, 2))
@@ -112,8 +147,8 @@ above:
     #> r3 5 6
 
 [`rray_stack()`](https://rray.r-lib.org/reference/rray_stack.md) names
-the new axis with the names of `...`. Every other axis follows the rules
-above, which catches data that was reordered:
+the new axis with the names of `...`, and gives it no title. Every other
+axis follows the rules above, which catches data that was reordered:
 
     jan <- array(1:2, 2, dimnames = list(c("north", "south")))
     feb <- array(3:4, 2, dimnames = list(c("south", "north")))
@@ -128,8 +163,8 @@ Comparison functions like
 [`rray_equal()`](https://rray.r-lib.org/reference/rray-equal.md) and
 [`rray_greater_than()`](https://rray.r-lib.org/reference/rray-compare.md)
 return a logical relation about their inputs rather than a new value of
-the input type, so they don’t return names on the result and aren’t
-subject to these checks:
+the input type, so they don’t return names or titles on the result and
+aren’t subject to these checks:
 
     x <- array(c(TRUE, FALSE), 2, dimnames = list(c("r1", "r2")))
     y <- array(c(TRUE, TRUE), 2, dimnames = list(c("a", "b")))

@@ -31,9 +31,9 @@ An array with the following dimensions:
 ## Details
 
 This function participates in rray's [common name determination
-rules](https://rray.r-lib.org/reference/faq-common-names.md) on every
-axis except `.axis`. Names on `.axis` are pasted together from every
-input, with `""` for inputs that have none.
+rules](https://rray.r-lib.org/reference/faq-common-names.md). Names on
+`.axis` are never checked. They are pasted together from every input,
+with `""` for inputs that have none.
 
 ## Examples
 

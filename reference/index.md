@@ -143,4 +143,4 @@
 ## FAQ
 
 - [`faq-common-names`](https://rray.r-lib.org/reference/faq-common-names.md)
-  : FAQ - How are common names determined?
+  : FAQ - How are common names and titles determined?
