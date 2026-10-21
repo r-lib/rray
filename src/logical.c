@@ -130,7 +130,8 @@ static r_obj* rray_logical(
   ));
   r_attrib_poke_dim(out, dimensions);
 
-  r_obj* out_names = KEEP(rray_broadcast_names2(x, y, dimensions));
+  r_obj* out_names =
+    KEEP(rray_broadcast_names2(x, y, dimensions, x_arg, y_arg, error_call));
 
   if (out_names != r_null) {
     r_attrib_poke_dim_names(out, out_names);

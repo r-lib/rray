@@ -1,6 +1,7 @@
 #include "stack.h"
 
 #include "axes.h"
+#include "broadcast-names.h"
 #include "combine.h"
 #include "dimensionality.h"
 #include "dimensions.h"
@@ -40,6 +41,9 @@ r_obj* rray_stack(
   // - Throws broadcast errors before axes have been inserted, so the error
   //   message numbering is meaningful
   r_obj* dimensions = KEEP(rray_dimensions_common(xs, r_null, arg, error_call));
+
+  // Similarly, this throws names errors early with the right indexing
+  rray_broadcast_names_common(xs, dimensions, arg, error_call);
 
   const int dimensionality =
     int_add_checked(rray_dimensionality_from_dimensions(dimensions), 1);

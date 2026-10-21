@@ -18,6 +18,9 @@
 #'
 #' If the result of an integer operation would overflow, an error is thrown.
 #'
+#' These functions participate in rray's
+#' [common name determination rules][faq-common-names].
+#'
 #' @section Casting:
 #' Certain inputs are upcast, changing the return type:
 #'

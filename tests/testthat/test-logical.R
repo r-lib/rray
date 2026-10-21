@@ -46,7 +46,7 @@ test_that("missing values match base R", {
   expect_identical(as.vector(rray_xor(x, y)), xor(x, y))
 })
 
-test_that("coalesces names across inputs", {
+test_that("names are kept for axes that aren't broadcast", {
   x <- array(
     TRUE,
     c(3L, 1L),
@@ -62,13 +62,19 @@ test_that("coalesces names across inputs", {
     rray_names(rray_and(x, y)),
     list(c("r1", "r2", "r3"), c("c1", "c2"))
   )
+})
 
-  x <- array(TRUE, 3L, dimnames = list(c("a", "b", "c")))
-  y <- array(TRUE, 3L, dimnames = list(c("x", "y", "z")))
-  expect_identical(
-    rray_names(rray_xor(x, y)),
-    list(c("a", "b", "c"))
-  )
+test_that("names must agree on an axis both inputs name", {
+  x <- array(c(TRUE, FALSE), 2L, dimnames = list(c("r1", "r2")))
+  y <- array(c(TRUE, TRUE), 2L, dimnames = list(c("a", "b")))
+
+  expect_identical(rray_names(rray_and(x, x)), list(c("r1", "r2")))
+
+  expect_snapshot(error = TRUE, {
+    rray_and(x, y)
+    rray_or(x, y)
+    rray_xor(x, y)
+  })
 })
 
 test_that("zero dimensions broadcast against dimensions of 1", {

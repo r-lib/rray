@@ -7,8 +7,9 @@
 #' The new axis has a dimension equal to the number of arrays you are stacking.
 #'
 #' @details
-#' Names of `...` become the names of the new axis. Existing axis names are
-#' otherwise carried over.
+#' This function participates in rray's
+#' [common name determination rules][faq-common-names] on every existing axis.
+#' Names of `...` become the names of the new axis.
 #'
 #' @param ... Arrays to stack.
 #'

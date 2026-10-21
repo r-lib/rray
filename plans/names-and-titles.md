@@ -346,9 +346,13 @@ inputs in order, remember per axis which input set the current value
   `r_alloc_character()` so untitled axes are already `""`, and are poked onto
   the output list with `r_attrib_poke_names()`.
 
-- In `src/arithmetic.c`, `src/extremum.c`, and `src/logical.c`, compute the
-  names right after the dimensions and before allocating and filling the
-  result, so a conflict fails fast. `KEEP()` them until they are poked onto the result.
+- In `src/arithmetic.c`, `src/extremum.c`, `src/logical.c`, and
+  `src/combine.c`, the names are still computed after the result is filled.
+  Failing fast is not worth breaking the shared ordering of these functions.
+
+- `rray_stack()` checks names on its original inputs, before the new axis is
+  inserted, so the axis in the error matches the axis in the dimension errors.
+  The check inside `rray_combine()` then can't fail.
 
 - In `src/compare.c` and `src/equal.c`, remove the `rray_broadcast_names2()`
   call and its include.
@@ -390,14 +394,16 @@ input with no names at all.
 
 ### Documentation that changes
 
+- `man/faq/common-names.Rmd`: the rules and examples, documented as
+  `faq-common-names` from `R/faq.R`.
+
 - `R/arithmetic.R`, `R/extremum.R`, `R/logical.R`, `R/combine.R`,
-  `R/stack.R`: describe the rule in `@details` in a few plain sentences, and
-  show the `rray_set_names()` fix in an example.
+  `R/stack.R`: link to `faq-common-names` in `@details`.
 
 - `R/compare.R`, `R/equal.R`: `@returns` says the result has no names.
 
 - `README.Rmd`: the limitation bullet about dimension name handling being
-  experimental is replaced with the rule, then `README.md` is re-rendered.
+  experimental is removed, then `README.md` is re-rendered.
 
 - `plans/titles.md` and this plan are deleted in the last pull request.
 
@@ -421,12 +427,12 @@ Each item is one pull request, merged before the next starts.
 
 - [x] 2. Comparison functions drop names and titles, with docs and tests.
 
-- [ ] 3. Names must agree. Rework `src/broadcast-names.c` around the merge
-  step, thread `rray_arg`s and `error_call` through every caller, compute
-  names before the result in arithmetic, extremum, and logical, and update
+- [x] 3. Names must agree. Rework `src/broadcast-names.c` around the merge
+  step, thread `rray_arg`s and `error_call` through every caller, and update
   tests, docs, and the README.
 
 - [ ] 4. Titles must agree and are kept. Add titles to the merge step for
   `rray_broadcast()`, `rray_broadcast_common()`, arithmetic, logical,
   `rray_pmax()`, `rray_pmin()`, `rray_combine()`, and `rray_stack()`. Rewrite the broadcast
-  titles test, then delete `plans/titles.md` and this plan.
+  titles test, update `man/faq/common-names.Rmd` to cover titles, then delete
+  `plans/titles.md` and this plan.

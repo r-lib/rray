@@ -65,22 +65,61 @@ test_that("rray_broadcast_names() works with zero-size axes", {
 # ------------------------------------------------------------------------------
 # rray_broadcast_names2()
 
-test_that("rray_broadcast_names2() prefers `x` where its dimension is kept", {
+test_that("rray_broadcast_names2() keeps names that agree", {
   x <- array(
     1:6,
     c(2L, 3L),
     dimnames = list(c("r1", "r2"), c("c1", "c2", "c3"))
   )
-  y <- array(1:6, c(2L, 3L), dimnames = list(c("a", "b"), c("d", "e", "g")))
+  y <- array(
+    1:6,
+    c(2L, 3L),
+    dimnames = list(c("r1", "r2"), c("c1", "c2", "c3"))
+  )
   expect_identical(
     rray_broadcast_names2(x, y, c(2L, 3L)),
     list(c("r1", "r2"), c("c1", "c2", "c3"))
   )
 })
 
+test_that("rray_broadcast_names2() errors on names that disagree", {
+  x <- array(
+    1:6,
+    c(2L, 3L),
+    dimnames = list(c("r1", "r2"), c("c1", "c2", "c3"))
+  )
+  y <- array(
+    1:6,
+    c(2L, 3L),
+    dimnames = list(c("r1", "r2"), c("c1", "c9", "c3"))
+  )
+  expect_snapshot(error = TRUE, rray_broadcast_names2(x, y, c(2L, 3L)))
+})
+
+test_that("rray_broadcast_names2() treats empty names like any other name", {
+  x <- array(1:2, 2L, dimnames = list(c("r1", "")))
+  y <- array(1:2, 2L, dimnames = list(c("r1", "r2")))
+  expect_identical(rray_broadcast_names2(x, x, 2L), list(c("r1", "")))
+  expect_snapshot(error = TRUE, rray_broadcast_names2(x, y, 2L))
+})
+
+test_that("rray_broadcast_names2() only matches `NA` with `NA`", {
+  x <- array(1:2, 2L, dimnames = list(c("r1", NA)))
+  y <- array(1:2, 2L, dimnames = list(c("r1", "NA")))
+  expect_identical(rray_broadcast_names2(x, x, 2L), list(c("r1", NA)))
+  expect_snapshot(error = TRUE, {
+    rray_broadcast_names2(x, y, 2L)
+    rray_broadcast_names2(y, x, 2L)
+  })
+})
+
 test_that("rray_broadcast_names2() falls through to `y` where `x` broadcasts", {
   x <- array(1:3, c(1L, 3L), dimnames = list("only", c("c1", "c2", "c3")))
-  y <- array(1:6, c(2L, 3L), dimnames = list(c("a", "b"), c("d", "e", "g")))
+  y <- array(
+    1:6,
+    c(2L, 3L),
+    dimnames = list(c("a", "b"), c("c1", "c2", "c3"))
+  )
   expect_identical(
     rray_broadcast_names2(x, y, c(2L, 3L)),
     list(c("a", "b"), c("c1", "c2", "c3"))
@@ -89,7 +128,11 @@ test_that("rray_broadcast_names2() falls through to `y` where `x` broadcasts", {
 
 test_that("rray_broadcast_names2() falls through to `y` on an unnamed axis", {
   x <- array(1:6, c(2L, 3L), dimnames = list(c("r1", "r2"), NULL))
-  y <- array(1:6, c(2L, 3L), dimnames = list(c("a", "b"), c("d", "e", "g")))
+  y <- array(
+    1:6,
+    c(2L, 3L),
+    dimnames = list(c("r1", "r2"), c("d", "e", "g"))
+  )
   expect_identical(
     rray_broadcast_names2(x, y, c(2L, 3L)),
     list(c("r1", "r2"), c("d", "e", "g"))
@@ -130,16 +173,34 @@ test_that("rray_broadcast_names2() works with differing dimensionality", {
 # ------------------------------------------------------------------------------
 # rray_broadcast_names_common()
 
-test_that("rray_broadcast_names_common() lets the first input to keep an axis win", {
+test_that("rray_broadcast_names_common() errors on names that disagree", {
   x <- array(
     1:6,
     c(2L, 3L),
     dimnames = list(c("r1", "r2"), c("c1", "c2", "c3"))
   )
   y <- array(1:6, c(2L, 3L), dimnames = list(c("a", "b"), c("d", "e", "g")))
-  expect_identical(
-    rray_broadcast_names_common(x, y, .dimensions = c(2L, 3L)),
-    list(c("r1", "r2"), c("c1", "c2", "c3"))
+  expect_snapshot(error = TRUE, {
+    rray_broadcast_names_common(x, y, .dimensions = c(2L, 3L))
+    rray_broadcast_names_common(x = x, y = y, .dimensions = c(2L, 3L))
+  })
+})
+
+test_that("rray_broadcast_names_common() reports the input that set the names", {
+  x <- array(1:2, c(1L, 2L), dimnames = list("r1", c("a", "b")))
+  y <- array(1:2, c(1L, 2L))
+  z <- array(1:2, c(1L, 2L), dimnames = list("r1", c("a", "c")))
+  expect_snapshot(
+    error = TRUE,
+    rray_broadcast_names_common(x, y, z, .dimensions = c(1L, 2L))
+  )
+
+  x <- array(1:2, c(2L, 1L), dimnames = list(c("a", "b"), NULL))
+  y <- array(1:2, c(1L, 2L), dimnames = list(NULL, c("c", "d")))
+  z <- array(1:4, c(2L, 2L), dimnames = list(c("a", "b"), c("c", "e")))
+  expect_snapshot(
+    error = TRUE,
+    rray_broadcast_names_common(x, y, z, .dimensions = c(2L, 2L))
   )
 })
 

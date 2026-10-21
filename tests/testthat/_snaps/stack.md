@@ -1,3 +1,21 @@
+# names must agree, with axes numbered as in the inputs
+
+    Code
+      rray_stack(jan = jan, feb = feb, .axis = 2L)
+    Condition
+      Error in `rray_stack()`:
+      ! Can't find common names at axis 1. `jan` and `feb` have different names at position 1: "north" and "south".
+    Code
+      rray_stack(jan = jan, feb = feb, .axis = 1L)
+    Condition
+      Error in `rray_stack()`:
+      ! Can't find common names at axis 1. `jan` and `feb` have different names at position 1: "north" and "south".
+    Code
+      rray_stack(c(a = 1L, b = 2L), c(b = 1L, a = 2L), .axis = 1L)
+    Condition
+      Error in `rray_stack()`:
+      ! Can't find common names at axis 1. `..1` and `..2` have different names at position 1: "a" and "b".
+
 # validates inputs and axis
 
     Code

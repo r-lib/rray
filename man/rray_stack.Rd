@@ -29,8 +29,9 @@ preexisting axes are broadcast to their common dimension.
 The new axis has a dimension equal to the number of arrays you are stacking.
 }
 \details{
-Names of \code{...} become the names of the new axis. Existing axis names are
-otherwise carried over.
+This function participates in rray's
+\link[=faq-common-names]{common name determination rules} on every existing axis.
+Names of \code{...} become the names of the new axis.
 }
 \examples{
 x <- array(1:12, c(3, 4))

@@ -157,7 +157,7 @@ test_that("combines axis names and broadcasts other names", {
   y <- array(
     5:6,
     c(1L, 2L),
-    dimnames = list(NULL, c("c", "d"))
+    dimnames = list(NULL, c("a", "b"))
   )
 
   out <- rray_combine(first = x, second = y, .axis = 1L)
@@ -191,10 +191,25 @@ test_that("names on the combine axis never come from broadcasting", {
   )
 
   z <- array(integer(), c(0L, 2L), dimnames = list(character(), c("c", "d")))
+  expect_snapshot(error = TRUE, rray_combine(z, x, .axis = 1L))
+})
+
+test_that("names must agree off the combine axis", {
+  a <- array(1:2, c(1L, 2L), dimnames = list("r1", c("x", "y")))
+  b <- array(3:4, c(1L, 2L))
+  c <- array(5:6, c(1L, 2L), dimnames = list("r3", c("x", "y")))
+
   expect_identical(
-    dimnames(rray_combine(z, x, .axis = 1L)),
-    list(c("x1", "x2"), c("c", "d"))
+    dimnames(rray_combine(a, b, c, .axis = 1L)),
+    list(c("r1", "", "r3"), c("x", "y"))
   )
+
+  c <- array(5:6, c(1L, 2L), dimnames = list("r3", c("x", "z")))
+
+  expect_snapshot(error = TRUE, {
+    rray_combine(a, b, c, .axis = 1L)
+    rray_combine(a = a, b = b, c = c, .axis = 1L)
+  })
 })
 
 test_that("does not modify inputs", {

@@ -42,6 +42,9 @@ The arrays are broadcast to common dimensions first, so they do not have to
 be the same shape.
 
 If the result of an integer operation would overflow, an error is thrown.
+
+These functions participate in rray's
+\link[=faq-common-names]{common name determination rules}.
 }
 \section{Casting}{
 

@@ -13,6 +13,22 @@
         raw  NA        NA        NA        NA        NA  NA  NA  
         list NA        NA        NA        NA        NA  NA  NA  
 
+# names must agree on an axis both inputs name
+
+    Code
+      rray_add(x, y)
+    Condition
+      Error in `rray_add()`:
+      ! Can't find common names at axis 1. `x` and `y` have different names at position 1: "a" and "x".
+
+# names of a named vector must agree
+
+    Code
+      rray_add(x, c(a = 10L, b = 20L))
+    Condition
+      Error in `rray_add()`:
+      ! Can't find common names at axis 1. `x` and `y` have different names at position 1: "r1" and "a".
+
 # errors on incompatible dimensions
 
     Code

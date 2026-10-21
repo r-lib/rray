@@ -124,10 +124,14 @@ test_that("names are kept for axes that aren't broadcast", {
   )
 })
 
-test_that("`x` wins over `y` on an axis they both name", {
+test_that("names must agree on an axis both inputs name", {
   x <- array(1:3, 3L, dimnames = list(c("a", "b", "c")))
   y <- array(1:3, 3L, dimnames = list(c("x", "y", "z")))
-  expect_identical(rray_names(rray_exponentiate(x, y)), list(c("a", "b", "c")))
+  expect_identical(
+    rray_names(rray_exponentiate(x, x)),
+    list(c("a", "b", "c"))
+  )
+  expect_snapshot(error = TRUE, rray_exponentiate(x, y))
 })
 
 test_that("names are dropped for a broadcast axis", {

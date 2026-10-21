@@ -1,3 +1,24 @@
+# names on the combine axis never come from broadcasting
+
+    Code
+      rray_combine(z, x, .axis = 1L)
+    Condition
+      Error in `rray_combine()`:
+      ! Can't find common names at axis 2. `..1` and `..2` have different names at position 1: "c" and "a".
+
+# names must agree off the combine axis
+
+    Code
+      rray_combine(a, b, c, .axis = 1L)
+    Condition
+      Error in `rray_combine()`:
+      ! Can't find common names at axis 2. `..1` and `..3` have different names at position 2: "y" and "z".
+    Code
+      rray_combine(a = a, b = b, c = c, .axis = 1L)
+    Condition
+      Error in `rray_combine()`:
+      ! Can't find common names at axis 2. `a` and `c` have different names at position 2: "y" and "z".
+
 # validates inputs and axis
 
     Code

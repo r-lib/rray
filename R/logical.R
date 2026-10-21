@@ -13,6 +13,9 @@
 #'
 #' Missing values are handled the same way as `&`, `|`, and [xor()].
 #'
+#' These functions participate in rray's
+#' [common name determination rules][faq-common-names].
+#'
 #' @param x,y Logical arrays.
 #'
 #' @returns

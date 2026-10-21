@@ -42,6 +42,9 @@ rray_pmax(NaN, NA) # NA
 
 pmax(NA, NaN) # NaN
 }\if{html}{\out{</div>}}
+
+These functions participate in rray's
+\link[=faq-common-names]{common name determination rules}.
 }
 \examples{
 x <- array(1:6, c(3L, 2L))

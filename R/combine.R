@@ -3,6 +3,12 @@
 #' `rray_combine()` joins one or more arrays along `.axis`. Dimensions on every
 #' other axis are broadcast to common dimensions.
 #'
+#' @details
+#' This function participates in rray's
+#' [common name determination rules][faq-common-names] on every axis except
+#' `.axis`. Names on `.axis` are pasted together from every input, with `""`
+#' for inputs that have none.
+#'
 #' @param ... Arrays to combine.
 #'
 #' @param .axis A single integer between 1 and the greatest input

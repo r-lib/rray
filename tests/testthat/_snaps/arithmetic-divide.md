@@ -13,6 +13,14 @@
         raw  NA        NA        NA        NA        NA  NA  NA  
         list NA        NA        NA        NA        NA  NA  NA  
 
+# names must agree on an axis both inputs name
+
+    Code
+      rray_divide(x, y)
+    Condition
+      Error in `rray_divide()`:
+      ! Can't find common names at axis 1. `x` and `y` have different names at position 1: "a" and "x".
+
 # errors on incompatible dimensions
 
     Code

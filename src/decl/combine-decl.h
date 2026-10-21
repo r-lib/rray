@@ -2,7 +2,9 @@ static r_obj* rray_combine_names(
   r_obj* xs,
   r_obj* dimensions,
   int axis,
-  int axis_dimension
+  int axis_dimension,
+  struct rray_arg* arg,
+  struct r_lazy error_call
 );
 static r_obj* rray_combine_axis_names(r_obj* xs, int axis, int axis_dimension);
 static void rray_combine_fill(

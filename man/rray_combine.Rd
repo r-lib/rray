@@ -23,6 +23,12 @@ An array with the following dimensions:
 \code{rray_combine()} joins one or more arrays along \code{.axis}. Dimensions on every
 other axis are broadcast to common dimensions.
 }
+\details{
+This function participates in rray's
+\link[=faq-common-names]{common name determination rules} on every axis except
+\code{.axis}. Names on \code{.axis} are pasted together from every input, with \code{""}
+for inputs that have none.
+}
 \examples{
 x <- array(1:6, c(2, 3))
 y <- array(7:12, c(2, 3))

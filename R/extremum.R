@@ -20,6 +20,9 @@
 #' pmax(NA, NaN) # NaN
 #' ```
 #'
+#' These functions participate in rray's
+#' [common name determination rules][faq-common-names].
+#'
 #' @inheritParams rlang::args_dots_empty
 #'
 #' @param x An array.

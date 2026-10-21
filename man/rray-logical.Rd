@@ -31,6 +31,9 @@ The arrays are broadcast to common dimensions before the operation is
 applied.
 
 Missing values are handled the same way as \code{&}, \code{|}, and \code{\link[=xor]{xor()}}.
+
+These functions participate in rray's
+\link[=faq-common-names]{common name determination rules}.
 }
 \examples{
 x <- array(c(TRUE, FALSE, TRUE), c(3L, 1L))
