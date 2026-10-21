@@ -5,9 +5,9 @@
 #'
 #' @details
 #' This function participates in rray's
-#' [common name determination rules][faq-common-names] on every axis except
-#' `.axis`. Names on `.axis` are pasted together from every input, with `""`
-#' for inputs that have none.
+#' [common name determination rules][faq-common-names]. Names on `.axis` are
+#' never checked. They are pasted together from every input, with `""` for
+#' inputs that have none.
 #'
 #' @param ... Arrays to combine.
 #'

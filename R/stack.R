@@ -9,7 +9,7 @@
 #' @details
 #' This function participates in rray's
 #' [common name determination rules][faq-common-names] on every existing axis.
-#' Names of `...` become the names of the new axis.
+#' Names of `...` become the names of the new axis, which has no title.
 #'
 #' @param ... Arrays to stack.
 #'

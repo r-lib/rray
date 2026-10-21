@@ -25,9 +25,9 @@ other axis are broadcast to common dimensions.
 }
 \details{
 This function participates in rray's
-\link[=faq-common-names]{common name determination rules} on every axis except
-\code{.axis}. Names on \code{.axis} are pasted together from every input, with \code{""}
-for inputs that have none.
+\link[=faq-common-names]{common name determination rules}. Names on \code{.axis} are
+never checked. They are pasted together from every input, with \code{""} for
+inputs that have none.
 }
 \examples{
 x <- array(1:6, c(2, 3))

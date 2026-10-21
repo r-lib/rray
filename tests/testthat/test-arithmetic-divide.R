@@ -168,6 +168,14 @@ test_that("names must agree on an axis both inputs name", {
   expect_snapshot(error = TRUE, rray_divide(x, y))
 })
 
+test_that("titles must agree on an axis", {
+  x <- array(1:2, 2L, dimnames = list(Row = c("r1", "r2")))
+  y <- array(1:2, 2L, dimnames = list(Row = NULL))
+  z <- array(1:2, 2L, dimnames = list(Sample = c("r1", "r2")))
+  expect_identical(rray_names(rray_divide(x, y)), list(Row = c("r1", "r2")))
+  expect_snapshot(error = TRUE, rray_divide(x, z))
+})
+
 test_that("names are dropped for a broadcast axis", {
   x <- array(1L, c(1L, 2L), dimnames = list("z", NULL))
   y <- array(1:6, c(3L, 2L))

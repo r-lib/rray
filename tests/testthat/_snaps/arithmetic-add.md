@@ -21,6 +21,22 @@
       Error in `rray_add()`:
       ! Can't find common names at axis 1. `x` and `y` have different names at position 1: "a" and "x".
 
+# titles must agree on an axis
+
+    Code
+      rray_add(x, z)
+    Condition
+      Error in `rray_add()`:
+      ! Can't find common titles at axis 1. `x` has title "Row" and `y` has title "Sample".
+
+# a broadcast axis still has a say on titles
+
+    Code
+      rray_add(x, y)
+    Condition
+      Error in `rray_add()`:
+      ! Can't find common titles at axis 1. `x` has title "Row" and `y` has title "Sample".
+
 # names of a named vector must agree
 
     Code

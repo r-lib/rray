@@ -2,11 +2,11 @@
 % Please edit documentation in R/faq.R
 \name{faq-common-names}
 \alias{faq-common-names}
-\title{FAQ - How are common names determined?}
+\title{FAQ - How are common names and titles determined?}
 \description{
 When a function builds one result from several inputs, the inputs must
-agree on their names. If they don’t, the function errors instead of
-silently picking one input’s names.
+agree on their names and titles. If they don’t, the function errors
+instead of silently picking one input’s names or titles.
 
 These functions follow the rules:
 \itemize{
@@ -89,10 +89,48 @@ rray_add(x, y)
 }\if{html}{\out{</div>}}
 }
 
+\section{Titles}{
+Titles are the names of the dimension names list, like \code{Row} in
+\code{list(Row = c("r1", "r2"))}. They label an axis rather than its
+positions.
+
+For each axis of the result, all inputs with a title on that axis must
+have the same title, and the result gets that title. An empty title \code{""}
+counts as no title. If any titles are different, an error is thrown.
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{x <- array(1:2, 2, dimnames = list(Row = c("r1", "r2")))
+y <- array(1:2, 2, dimnames = list(Sample = c("r1", "r2")))
+z <- array(1:2, 2, dimnames = list(c("r1", "r2")))
+
+rray_add(x, y)
+#> Error in `rray_add()`:
+#> ! Can't find common titles at axis 1. `x` has title "Row" and `y` has title "Sample".
+
+rray_titles(rray_add(x, z))
+#> [1] "Row"
+}\if{html}{\out{</div>}}
+
+Unlike names, a title survives broadcasting, so a broadcast input still
+has to agree. Here the names on axis 1 are fine because \code{x} is broadcast
+there, but the titles are not:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{x <- array(1:3, c(1, 3), dimnames = list(Row = "total", Col = c("a", "b", "c")))
+y <- array(1:6, c(2, 3), dimnames = list(Sample = c("r1", "r2"), Col = c("a", "b", "c")))
+
+rray_multiply(x, y)
+#> Error in `rray_multiply()`:
+#> ! Can't find common titles at axis 1. `x` has title "Row" and `y` has title "Sample".
+}\if{html}{\out{</div>}}
+
+To resolve a conflict, remove the titles from one input with
+\code{\link[=rray_set_titles]{rray_set_titles()}}.
+}
+
 \section{Combining and stacking}{
 \code{\link[=rray_combine]{rray_combine()}} never checks names on \code{.axis}. They
 are combined from every input, with \code{""} for inputs that have none.
-Every other axis follows the rules above:
+Titles on \code{.axis} are checked like any other axis. Every other axis
+follows the rules above:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{a <- array(1:2, c(1, 2), dimnames = list("r1", c("x", "y")))
 b <- array(3:4, c(1, 2))
@@ -112,8 +150,8 @@ rray_combine(a, b, c, .axis = 1)
 }\if{html}{\out{</div>}}
 
 \code{\link[=rray_stack]{rray_stack()}} names the new axis with the names of
-\code{...}. Every other axis follows the rules above, which catches data that
-was reordered:
+\code{...}, and gives it no title. Every other axis follows the rules above,
+which catches data that was reordered:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{jan <- array(1:2, 2, dimnames = list(c("north", "south")))
 feb <- array(3:4, 2, dimnames = list(c("south", "north")))
@@ -128,7 +166,8 @@ rray_stack(jan = jan, feb = feb, .axis = 2)
 Comparison functions like \code{\link[=rray_equal]{rray_equal()}} and
 \code{\link[=rray_greater_than]{rray_greater_than()}} return a logical relation
 about their inputs rather than a new value of the input type, so they
-don’t return names on the result and aren’t subject to these checks:
+don’t return names or titles on the result and aren’t subject to these
+checks:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{x <- array(c(TRUE, FALSE), 2, dimnames = list(c("r1", "r2")))
 y <- array(c(TRUE, TRUE), 2, dimnames = list(c("a", "b")))

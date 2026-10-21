@@ -204,24 +204,23 @@ test_that("handles partially named dimnames during broadcast", {
   expect_identical(dimnames(out), list(NULL, c("c1", "c2", "c3")))
 })
 
-test_that("dimension titles are lost", {
+test_that("dimension titles are kept, including on broadcast axes", {
   x <- array(1L, c(1L, 1L), dimnames = list(rows = "r1", cols = "c1"))
 
-  # When we actually perform any broadcasting, the titles are cleared
   out <- rray_broadcast(x, c(2L, 1L))
-  expect_identical(rray_names(out), list(NULL, "c1"))
+  expect_identical(rray_names(out), list(rows = NULL, cols = "c1"))
 
   out <- rray_broadcast(x, c(2L, 2L))
-  expect_null(rray_names(out))
+  expect_identical(rray_names(out), list(rows = NULL, cols = NULL))
 
-  # If we no-op due to same dimensions, they aren't cleared.
-  # We accept this irregularity in favor of performance, since it is fairly
-  # common to want to broadcast to no-op common dimensions.
   out <- rray_broadcast(x, c(1L, 1L))
-  expect_identical(
-    rray_names(out),
-    list(rows = "r1", cols = "c1")
-  )
+  expect_identical(rray_names(out), list(rows = "r1", cols = "c1"))
+})
+
+test_that("new dimensions get empty titles", {
+  x <- array(1:2, 2L, dimnames = list(rows = NULL))
+  out <- rray_broadcast(x, c(2L, 3L))
+  expect_identical(rray_names(out), list(rows = NULL, NULL))
 })
 
 test_that("errors on non-array input", {
@@ -342,6 +341,14 @@ test_that("follows the dimension names rule", {
   x <- array(1:2, c(2L, 1L), dimnames = list(c("r1", "r2"), "c1"))
   out <- rray_broadcast_common(x, array(1L, c(2L, 3L)))
   expect_identical(dimnames(out[[1]]), list(c("r1", "r2"), NULL))
+})
+
+test_that("keeps the titles of each input, even when they disagree", {
+  x <- array(1:2, c(2L, 1L), dimnames = list(A = c("r1", "r2"), NULL))
+  y <- array(1:3, c(1L, 3L), dimnames = list(B = NULL, NULL))
+  out <- rray_broadcast_common(x, y)
+  expect_identical(rray_titles(out[[1]]), c("A", ""))
+  expect_identical(rray_titles(out[[2]]), c("B", ""))
 })
 
 test_that("`.dimensions` overrides the common dimensions", {

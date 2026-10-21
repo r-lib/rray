@@ -31,7 +31,7 @@ The new axis has a dimension equal to the number of arrays you are stacking.
 \details{
 This function participates in rray's
 \link[=faq-common-names]{common name determination rules} on every existing axis.
-Names of \code{...} become the names of the new axis.
+Names of \code{...} become the names of the new axis, which has no title.
 }
 \examples{
 x <- array(1:12, c(3, 4))

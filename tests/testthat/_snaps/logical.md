@@ -31,6 +31,24 @@
       Error in `rray_xor()`:
       ! Can't find common names at axis 1. `x` and `y` have different names at position 1: "r1" and "a".
 
+# titles must agree on an axis
+
+    Code
+      rray_and(x, z)
+    Condition
+      Error in `rray_and()`:
+      ! Can't find common titles at axis 1. `x` has title "Row" and `y` has title "Sample".
+    Code
+      rray_or(x, z)
+    Condition
+      Error in `rray_or()`:
+      ! Can't find common titles at axis 1. `x` has title "Row" and `y` has title "Sample".
+    Code
+      rray_xor(x, z)
+    Condition
+      Error in `rray_xor()`:
+      ! Can't find common titles at axis 1. `x` has title "Row" and `y` has title "Sample".
+
 # errors on incompatible dimensions
 
     Code
