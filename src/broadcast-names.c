@@ -247,10 +247,13 @@ static void check_axis_names_equal(
   r_obj* const* v_y_names = r_chr_cbegin(y_names);
 
   for (r_ssize i = 0; i < size; ++i) {
-    if (v_x_names[i] != v_y_names[i]) {
+    r_obj* x_name = v_x_names[i];
+    r_obj* y_name = v_y_names[i];
+
+    if (x_name != y_name) {
       stop_incompatible_names(
-        v_x_names[i],
-        v_y_names[i],
+        x_name,
+        y_name,
         axis,
         i + 1,
         x_arg,
