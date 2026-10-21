@@ -203,6 +203,8 @@ static r_obj* rray_broadcast_names_merge(
 
   r_obj* const* v_x_names = r_list_cbegin(x_names);
 
+  r_obj* x_titles = r_names(x_names);
+
   r_obj* x_dimensions = KEEP(rray_dimensions(x, x_arg, error_call));
   const int* v_x_dimensions = r_int_cbegin(x_dimensions);
   const int x_dimensionality =
@@ -210,8 +212,6 @@ static r_obj* rray_broadcast_names_merge(
 
   const int* v_dimensions = r_int_cbegin(dimensions);
   const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
-
-  r_obj* x_titles = r_names(x_names);
 
   r_keep_loc out_loc;
   KEEP_HERE(out, &out_loc);
