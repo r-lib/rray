@@ -19,8 +19,8 @@ r_obj* rray_broadcast_names(r_obj* x, r_obj* dimensions) {
   return rray_broadcast_names_merge(
     r_null,
     v_out_args,
-    V_IGNORED_FALSE,
     &out_i,
+    V_IGNORED_FALSE,
     x,
     0,
     dimensions,
@@ -61,8 +61,8 @@ r_obj* rray_broadcast_names2(
   r_obj* out = KEEP(rray_broadcast_names_merge(
     r_null,
     v_out_args,
-    V_IGNORED_FALSE,
     &out_i,
+    V_IGNORED_FALSE,
     x,
     0,
     dimensions,
@@ -74,8 +74,8 @@ r_obj* rray_broadcast_names2(
   out = rray_broadcast_names_merge(
     out,
     v_out_args,
-    V_IGNORED_FALSE,
     &out_i,
+    V_IGNORED_FALSE,
     y,
     1,
     dimensions,
@@ -141,8 +141,8 @@ r_obj* rray_broadcast_names_common_opts(
     out = rray_broadcast_names_merge(
       out,
       v_out_args,
-      v_ignored,
       &out_i,
+      v_ignored,
       v_xs[x_i],
       x_i,
       dimensions,
@@ -164,8 +164,8 @@ r_obj* rray_broadcast_names_common_opts(
 static r_obj* rray_broadcast_names_merge(
   r_obj* out,
   r_ssize* v_out_args,
-  const bool* v_ignored,
   r_ssize* p_out_i,
+  const bool* v_ignored,
   r_obj* x,
   r_ssize x_i,
   r_obj* dimensions,

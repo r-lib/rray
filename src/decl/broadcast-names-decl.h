@@ -1,8 +1,8 @@
 static r_obj* rray_broadcast_names_merge(
   r_obj* out,
   r_ssize* v_out_args,
-  const bool* v_ignored,
   r_ssize* p_out_i,
+  const bool* v_ignored,
   r_obj* x,
   r_ssize x_i,
   r_obj* dimensions,
