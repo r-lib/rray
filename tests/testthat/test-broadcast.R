@@ -343,7 +343,7 @@ test_that("follows the dimension names rule", {
   expect_identical(dimnames(out[[1]]), list(c("r1", "r2"), NULL))
 })
 
-test_that("keeps the titles of each input, even when they disagree", {
+test_that("keeps the titles of each input", {
   x <- array(1:2, c(2L, 1L), dimnames = list(A = c("r1", "r2"), NULL))
   y <- array(1:3, c(1L, 3L), dimnames = list(B = NULL, NULL))
   out <- rray_broadcast_common(x, y)
