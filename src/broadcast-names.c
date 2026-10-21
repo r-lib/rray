@@ -214,19 +214,18 @@ static r_obj* rray_broadcast_names_merge(
     if (out_names == r_null) {
       r_list_poke(out, i, v_x_names[i]);
       v_out_args[i] = x_i;
-      continue;
+    } else {
+      *p_out_i = v_out_args[i];
+
+      check_axis_names_equal(
+        out_names,
+        v_x_names[i],
+        i + 1,
+        out_arg,
+        x_arg,
+        error_call
+      );
     }
-
-    *p_out_i = v_out_args[i];
-
-    check_axis_names_equal(
-      out_names,
-      v_x_names[i],
-      i + 1,
-      out_arg,
-      x_arg,
-      error_call
-    );
   }
 
   FREE(3);
