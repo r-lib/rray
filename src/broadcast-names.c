@@ -258,11 +258,12 @@ static r_obj* rray_broadcast_names_merge(
       out = r_alloc_list(dimensionality);
       KEEP_AT(out, out_loc);
     }
-    if (r_names(out) == r_null) {
-      r_attrib_poke_names(out, r_alloc_character(dimensionality));
-    }
 
     r_obj* out_titles = r_names(out);
+    if (out_titles == r_null) {
+      out_titles = r_alloc_character(dimensionality);
+      r_attrib_poke_names(out, out_titles);
+    }
     r_obj* const* v_out_titles = r_chr_cbegin(out_titles);
 
     for (int i = 0; i < x_dimensionality; ++i) {
