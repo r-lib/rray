@@ -216,16 +216,6 @@ static r_obj* rray_broadcast_names_merge(
   r_keep_loc out_loc;
   KEEP_HERE(out, &out_loc);
 
-  if (x_titles != r_null) {
-    if (out == r_null) {
-      out = r_alloc_list(dimensionality);
-      KEEP_AT(out, out_loc);
-    }
-    if (r_names(out) == r_null) {
-      r_attrib_poke_names(out, r_alloc_character(dimensionality));
-    }
-  }
-
   for (int i = 0; i < x_dimensionality; ++i) {
     if (v_ignored[i]) {
       continue;
@@ -263,6 +253,14 @@ static r_obj* rray_broadcast_names_merge(
   }
 
   if (x_titles != r_null) {
+    if (out == r_null) {
+      out = r_alloc_list(dimensionality);
+      KEEP_AT(out, out_loc);
+    }
+    if (r_names(out) == r_null) {
+      r_attrib_poke_names(out, r_alloc_character(dimensionality));
+    }
+
     r_obj* out_titles = r_names(out);
     r_obj* const* v_out_titles = r_chr_cbegin(out_titles);
     r_obj* const* v_x_titles = r_chr_cbegin(x_titles);
