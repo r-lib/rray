@@ -20,12 +20,12 @@
       rray_broadcast_names2(x, y, 2L)
     Condition
       Error in `rray_broadcast_names2()`:
-      ! Can't find common names at axis 1. `x` and `y` have different names at position 2: `NA_character_` and "NA".
+      ! Can't find common names at axis 1. `x` and `y` have different names at position 2: `NA` and "NA".
     Code
       rray_broadcast_names2(y, x, 2L)
     Condition
       Error in `rray_broadcast_names2()`:
-      ! Can't find common names at axis 1. `x` and `y` have different names at position 2: "NA" and `NA_character_`.
+      ! Can't find common names at axis 1. `x` and `y` have different names at position 2: "NA" and `NA`.
 
 # rray_broadcast_names_common() errors on names that disagree
 

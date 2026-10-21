@@ -273,14 +273,8 @@ static r_no_return void stop_incompatible_names(
   struct rray_arg* y_arg,
   struct r_lazy error_call
 ) {
-  const bool x_na = x_name == r_globals.na_str;
-  const bool y_na = y_name == r_globals.na_str;
-
-  const char* x_quote = x_na ? "`" : "\"";
-  const char* y_quote = y_na ? "`" : "\"";
-
-  const char* x_string = x_na ? "NA_character_" : r_str_c_string(x_name);
-  const char* y_string = y_na ? "NA_character_" : r_str_c_string(y_name);
+  const char* x_quote = (x_name == r_globals.na_str) ? "`" : "\"";
+  const char* y_quote = (y_name == r_globals.na_str) ? "`" : "\"";
 
   r_abort_lazy_call(
     error_call,
@@ -292,10 +286,10 @@ static r_no_return void stop_incompatible_names(
     rray_arg_format(y_arg),
     position,
     x_quote,
-    x_string,
+    r_str_c_string(x_name),
     x_quote,
     y_quote,
-    y_string,
+    r_str_c_string(y_name),
     y_quote
   );
 }
