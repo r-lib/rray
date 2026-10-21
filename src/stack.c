@@ -42,13 +42,14 @@ r_obj* rray_stack(
   //   message numbering is meaningful
   r_obj* dimensions = KEEP(rray_dimensions_common(xs, r_null, arg, error_call));
 
+  // Similarly, this throws names errors early with the right indexing
+  rray_broadcast_names_common_opts(xs, dimensions, NULL, 0, arg, error_call);
+
   const int dimensionality =
     int_add_checked(rray_dimensionality_from_dimensions(dimensions), 1);
   check_dimensionality(dimensionality);
 
   check_axis(axis, dimensionality, rray_args.dot_axis, error_call);
-
-  rray_broadcast_names_common_opts(xs, dimensions, NULL, 0, arg, error_call);
 
   xs = KEEP(rray_stack_prepare(xs, axis, arg, error_call));
 
