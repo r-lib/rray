@@ -212,6 +212,7 @@ static r_obj* rray_broadcast_names_merge(
     r_obj* out_names = r_list_get(out, i);
 
     if (out_names == r_null) {
+      // Accept the names
       r_list_poke(out, i, v_x_names[i]);
       v_out_args[i] = x_i;
     } else {
