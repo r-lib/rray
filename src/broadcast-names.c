@@ -232,6 +232,8 @@ static r_obj* rray_broadcast_names_merge(
   return out;
 }
 
+// Pointer based equality of the CHARSXPs. Treats different encodings as
+// different which we are fine with.
 static void check_axis_names_equal(
   r_obj* x_names,
   r_obj* y_names,
