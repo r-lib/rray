@@ -274,6 +274,7 @@ static r_obj* rray_broadcast_names_merge(
       }
 
       if (out_title == r_strs.empty) {
+        // Accept the title
         r_chr_poke(out_titles, i, x_title);
         v_titles_args[i] = x_i;
       } else {
