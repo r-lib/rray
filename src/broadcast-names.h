@@ -16,6 +16,13 @@ r_obj* rray_broadcast_names2(
   struct r_lazy error_call
 );
 
+r_obj* rray_broadcast_names_common(
+  r_obj* xs,
+  r_obj* dimensions,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+);
+
 r_obj* rray_broadcast_names_common_opts(
   r_obj* xs,
   r_obj* dimensions,

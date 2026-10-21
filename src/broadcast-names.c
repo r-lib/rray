@@ -94,12 +94,26 @@ r_obj* ffi_rray_broadcast_names_common(
   r_obj* ffi_frame
 ) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  return rray_broadcast_names_common_opts(
+  return rray_broadcast_names_common(
     ffi_xs,
     ffi_dimensions,
+    rray_args.empty,
+    error_call
+  );
+}
+
+r_obj* rray_broadcast_names_common(
+  r_obj* xs,
+  r_obj* dimensions,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+) {
+  return rray_broadcast_names_common_opts(
+    xs,
+    dimensions,
     NULL,
     0,
-    rray_args.empty,
+    arg,
     error_call
   );
 }
