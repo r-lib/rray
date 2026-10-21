@@ -21,6 +21,14 @@
       Error in `rray_divide()`:
       ! Can't find common names at axis 1. `x` and `y` have different names at position 1: "a" and "x".
 
+# titles must agree on an axis
+
+    Code
+      rray_divide(x, z)
+    Condition
+      Error in `rray_divide()`:
+      ! Can't find common titles at axis 1. `x` has title "Row" and `y` has title "Sample".
+
 # errors on incompatible dimensions
 
     Code

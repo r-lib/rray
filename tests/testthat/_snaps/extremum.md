@@ -41,6 +41,19 @@
       Error in `rray_pmin()`:
       ! Can't find common names at axis 1. `x` and `y` have different names at position 1: "a" and "x".
 
+# titles must agree on an axis
+
+    Code
+      rray_pmax(x, z)
+    Condition
+      Error in `rray_pmax()`:
+      ! Can't find common titles at axis 1. `x` has title "Row" and `y` has title "Sample".
+    Code
+      rray_pmin(x, z)
+    Condition
+      Error in `rray_pmin()`:
+      ! Can't find common titles at axis 1. `x` has title "Row" and `y` has title "Sample".
+
 # errors on incompatible dimensions
 
     Code

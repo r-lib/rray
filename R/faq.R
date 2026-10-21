@@ -1,4 +1,4 @@
-#' FAQ - How are common names determined?
+#' FAQ - How are common names and titles determined?
 #'
 #' @includeRmd man/faq/common-names.Rmd description
 #'

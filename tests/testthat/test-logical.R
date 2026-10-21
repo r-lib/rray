@@ -77,6 +77,20 @@ test_that("names must agree on an axis both inputs name", {
   })
 })
 
+test_that("titles must agree on an axis", {
+  x <- array(c(TRUE, FALSE), 2L, dimnames = list(Row = c("r1", "r2")))
+  y <- array(c(TRUE, TRUE), 2L, dimnames = list(Row = NULL))
+  z <- array(c(TRUE, TRUE), 2L, dimnames = list(Sample = c("r1", "r2")))
+
+  expect_identical(rray_names(rray_and(x, y)), list(Row = c("r1", "r2")))
+
+  expect_snapshot(error = TRUE, {
+    rray_and(x, z)
+    rray_or(x, z)
+    rray_xor(x, z)
+  })
+})
+
 test_that("zero dimensions broadcast against dimensions of 1", {
   x <- array(TRUE, c(1L, 2L))
 

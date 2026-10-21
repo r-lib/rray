@@ -212,6 +212,29 @@ test_that("names must agree off the combine axis", {
   })
 })
 
+test_that("titles are kept, including on the combine axis", {
+  x <- array(1:4, c(2L, 2L), dimnames = list(A = c("x1", "x2"), NULL))
+  y <- array(5:6, c(1L, 2L), dimnames = list(NULL, B = NULL))
+
+  out <- rray_combine(x, y, .axis = 1L)
+  expect_identical(dimnames(out), list(A = c("x1", "x2", ""), B = NULL))
+
+  out <- rray_combine(y, y, .axis = 1L)
+  expect_identical(dimnames(out), list(NULL, B = NULL))
+})
+
+test_that("titles must agree, including on the combine axis", {
+  x <- array(1:4, c(2L, 2L), dimnames = list(A = NULL, NULL))
+  y <- array(5:6, c(1L, 2L), dimnames = list(B = NULL, NULL))
+  z <- array(5:6, c(1L, 2L), dimnames = list(NULL, C = NULL))
+  w <- array(5:6, c(1L, 2L), dimnames = list(NULL, D = NULL))
+
+  expect_snapshot(error = TRUE, {
+    rray_combine(x, y, .axis = 1L)
+    rray_combine(x = x, z = z, w = w, .axis = 1L)
+  })
+})
+
 test_that("does not modify inputs", {
   x <- array(1:2, c(2L, 1L), dimnames = list(c("a", "b"), "x"))
   y <- array(3:8, c(2L, 3L))

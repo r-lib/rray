@@ -16,6 +16,19 @@
       Error in `rray_stack()`:
       ! Can't find common names at axis 1. `..1` and `..2` have different names at position 1: "a" and "b".
 
+# titles must agree, with axes numbered as in the inputs
+
+    Code
+      rray_stack(x = x, y = y, .axis = 1L)
+    Condition
+      Error in `rray_stack()`:
+      ! Can't find common titles at axis 2. `x` has title "A" and `y` has title "B".
+    Code
+      rray_stack(x = x, y = y, .axis = 3L)
+    Condition
+      Error in `rray_stack()`:
+      ! Can't find common titles at axis 2. `x` has title "A" and `y` has title "B".
+
 # validates inputs and axis
 
     Code

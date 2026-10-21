@@ -62,6 +62,30 @@ test_that("rray_broadcast_names() works with zero-size axes", {
   )
 })
 
+test_that("rray_broadcast_names() keeps titles, including on broadcast axes", {
+  x <- array(1L, c(1L, 1L), dimnames = list(A = "a", B = "b"))
+  expect_identical(
+    rray_broadcast_names(x, c(2L, 1L, 3L)),
+    list(A = NULL, B = "b", NULL)
+  )
+})
+
+test_that("rray_broadcast_names() keeps titles when `x` has no names", {
+  x <- array(1:6, c(2L, 3L), dimnames = list(A = NULL, B = NULL))
+  expect_identical(
+    rray_broadcast_names(x, c(2L, 3L)),
+    list(A = NULL, B = NULL)
+  )
+})
+
+test_that("rray_broadcast_names() keeps titles that are all empty", {
+  x <- rray_set_titles(array(1:6, c(2L, 3L)), c("", ""))
+  expect_identical(
+    rray_broadcast_names(x, c(2L, 3L)),
+    structure(list(NULL, NULL), names = c("", ""))
+  )
+})
+
 # ------------------------------------------------------------------------------
 # rray_broadcast_names2()
 
@@ -170,6 +194,77 @@ test_that("rray_broadcast_names2() works with differing dimensionality", {
   )
 })
 
+test_that("rray_broadcast_names2() keeps titles that agree", {
+  x <- array(1:2, 2L, dimnames = list(A = c("a", "b")))
+  y <- array(1:2, 2L, dimnames = list(A = NULL))
+  expect_identical(rray_broadcast_names2(x, y, 2L), list(A = c("a", "b")))
+})
+
+test_that("rray_broadcast_names2() errors on titles that disagree", {
+  x <- array(1:2, 2L, dimnames = list(A = c("a", "b")))
+  y <- array(1:2, 2L, dimnames = list(B = c("a", "b")))
+  expect_snapshot(error = TRUE, rray_broadcast_names2(x, y, 2L))
+})
+
+test_that("rray_broadcast_names2() gives empty titles no say", {
+  x <- array(1:4, c(2L, 2L), dimnames = list(A = NULL, NULL))
+  y <- array(1:4, c(2L, 2L), dimnames = list(NULL, B = NULL))
+  z <- array(1:4, c(2L, 2L), dimnames = list(c("a", "b"), NULL))
+  expect_identical(
+    rray_broadcast_names2(x, y, c(2L, 2L)),
+    list(A = NULL, B = NULL)
+  )
+  expect_identical(
+    rray_broadcast_names2(z, x, c(2L, 2L)),
+    list(A = c("a", "b"), NULL)
+  )
+})
+
+test_that("rray_broadcast_names2() checks titles where an input broadcasts", {
+  x <- array(1L, c(1L, 2L), dimnames = list(A = "total", NULL))
+  y <- array(1:4, c(2L, 2L), dimnames = list(B = c("a", "b"), NULL))
+  expect_snapshot(error = TRUE, rray_broadcast_names2(x, y, c(2L, 2L)))
+})
+
+test_that("rray_broadcast_names2() keeps titles where an input broadcasts", {
+  x <- array(1L, c(1L, 2L), dimnames = list(A = "total", NULL))
+  y <- array(1:4, c(2L, 2L), dimnames = list(c("a", "b"), NULL))
+  expect_identical(
+    rray_broadcast_names2(x, y, c(2L, 2L)),
+    list(A = c("a", "b"), NULL)
+  )
+})
+
+test_that("rray_broadcast_names2() only matches `NA` titles with `NA`", {
+  x <- array(1:2, 2L, dimnames = list(c("a", "b")))
+  names(dimnames(x)) <- NA_character_
+  y <- array(1:2, 2L, dimnames = list("NA" = c("a", "b")))
+  expect_identical(rray_titles(x), NA_character_)
+  expect_identical(
+    rray_broadcast_names2(x, x, 2L),
+    structure(list(c("a", "b")), names = NA_character_)
+  )
+  expect_snapshot(error = TRUE, {
+    rray_broadcast_names2(x, y, 2L)
+    rray_broadcast_names2(y, x, 2L)
+  })
+})
+
+test_that("rray_broadcast_names2() checks names before titles", {
+  x <- array(1:2, 2L, dimnames = list(A = c("a", "b")))
+  y <- array(1:2, 2L, dimnames = list(B = c("c", "d")))
+  expect_snapshot(error = TRUE, rray_broadcast_names2(x, y, 2L))
+})
+
+test_that("rray_broadcast_names2() gives a missing axis no title", {
+  x <- array(1:2, 2L, dimnames = list(A = NULL))
+  y <- array(1:6, c(2L, 3L), dimnames = list(NULL, B = NULL))
+  expect_identical(
+    rray_broadcast_names2(x, y, c(2L, 3L)),
+    list(A = NULL, B = NULL)
+  )
+})
+
 # ------------------------------------------------------------------------------
 # rray_broadcast_names_common()
 
@@ -201,6 +296,25 @@ test_that("rray_broadcast_names_common() reports the input that set the names", 
   expect_snapshot(
     error = TRUE,
     rray_broadcast_names_common(x, y, z, .dimensions = c(2L, 2L))
+  )
+})
+
+test_that("rray_broadcast_names_common() reports the input that set the title", {
+  x <- array(1:2, 2L, dimnames = list(A = NULL))
+  y <- array(1:2, 2L)
+  z <- array(1:2, 2L, dimnames = list(B = NULL))
+  expect_snapshot(error = TRUE, {
+    rray_broadcast_names_common(x, y, z, .dimensions = 2L)
+    rray_broadcast_names_common(x = x, y = y, z = z, .dimensions = 2L)
+  })
+})
+
+test_that("rray_broadcast_names_common() takes each title from a different input", {
+  x <- array(1:2, c(2L, 1L), dimnames = list(A = NULL, NULL))
+  y <- array(1:2, c(1L, 2L), dimnames = list(NULL, B = NULL))
+  expect_identical(
+    rray_broadcast_names_common(x, y, .dimensions = c(2L, 2L)),
+    list(A = NULL, B = NULL)
   )
 })
 

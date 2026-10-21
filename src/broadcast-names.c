@@ -13,12 +13,14 @@ r_obj* ffi_rray_broadcast_names(r_obj* ffi_x, r_obj* ffi_dimensions) {
 }
 
 r_obj* rray_broadcast_names(r_obj* x, r_obj* dimensions) {
-  r_ssize v_out_args[RRAY_MAX_DIMENSIONALITY];
+  r_ssize v_names_args[RRAY_MAX_DIMENSIONALITY];
+  r_ssize v_titles_args[RRAY_MAX_DIMENSIONALITY];
   r_ssize out_i = 0;
 
   return rray_broadcast_names_merge(
     r_null,
-    v_out_args,
+    v_names_args,
+    v_titles_args,
     &out_i,
     V_IGNORED_FALSE,
     x,
@@ -55,12 +57,14 @@ r_obj* rray_broadcast_names2(
   struct rray_arg* y_arg,
   struct r_lazy error_call
 ) {
-  r_ssize v_out_args[RRAY_MAX_DIMENSIONALITY];
+  r_ssize v_names_args[RRAY_MAX_DIMENSIONALITY];
+  r_ssize v_titles_args[RRAY_MAX_DIMENSIONALITY];
   r_ssize out_i = 0;
 
   r_obj* out = KEEP(rray_broadcast_names_merge(
     r_null,
-    v_out_args,
+    v_names_args,
+    v_titles_args,
     &out_i,
     V_IGNORED_FALSE,
     x,
@@ -73,7 +77,8 @@ r_obj* rray_broadcast_names2(
 
   out = rray_broadcast_names_merge(
     out,
-    v_out_args,
+    v_names_args,
+    v_titles_args,
     &out_i,
     V_IGNORED_FALSE,
     y,
@@ -138,7 +143,8 @@ r_obj* rray_broadcast_names_common_opts(
   struct rray_arg* out_arg = new_subscript_arg(arg, xs_names, n, &out_i);
   KEEP(out_arg->shelter);
 
-  r_ssize v_out_args[RRAY_MAX_DIMENSIONALITY];
+  r_ssize v_names_args[RRAY_MAX_DIMENSIONALITY];
+  r_ssize v_titles_args[RRAY_MAX_DIMENSIONALITY];
 
   bool v_ignored[RRAY_MAX_DIMENSIONALITY];
   r_memset(v_ignored, 0, sizeof(bool) * RRAY_MAX_DIMENSIONALITY);
@@ -154,7 +160,8 @@ r_obj* rray_broadcast_names_common_opts(
   for (; x_i < n; ++x_i) {
     out = rray_broadcast_names_merge(
       out,
-      v_out_args,
+      v_names_args,
+      v_titles_args,
       &out_i,
       v_ignored,
       v_xs[x_i],
@@ -177,7 +184,8 @@ r_obj* rray_broadcast_names_common_opts(
 // `dimensions`. The caller typically checks all of this already.
 static r_obj* rray_broadcast_names_merge(
   r_obj* out,
-  r_ssize* v_out_args,
+  r_ssize* v_names_args,
+  r_ssize* v_titles_args,
   r_ssize* p_out_i,
   const bool* v_ignored,
   r_obj* x,
@@ -194,6 +202,9 @@ static r_obj* rray_broadcast_names_merge(
   KEEP(x_names);
 
   r_obj* const* v_x_names = r_list_cbegin(x_names);
+
+  r_obj* x_titles = r_names(x_names);
+  r_obj* const* v_x_titles = x_titles == r_null ? NULL : r_chr_cbegin(x_titles);
 
   r_obj* x_dimensions = KEEP(rray_dimensions(x, x_arg, error_call));
   const int* v_x_dimensions = r_int_cbegin(x_dimensions);
@@ -228,9 +239,9 @@ static r_obj* rray_broadcast_names_merge(
     if (out_names == r_null) {
       // Accept the names
       r_list_poke(out, i, v_x_names[i]);
-      v_out_args[i] = x_i;
+      v_names_args[i] = x_i;
     } else {
-      *p_out_i = v_out_args[i];
+      *p_out_i = v_names_args[i];
       check_axis_names_equal(
         out_names,
         v_x_names[i],
@@ -239,6 +250,45 @@ static r_obj* rray_broadcast_names_merge(
         x_arg,
         error_call
       );
+    }
+  }
+
+  if (x_titles != r_null) {
+    if (out == r_null) {
+      out = r_alloc_list(dimensionality);
+      KEEP_AT(out, out_loc);
+    }
+
+    r_obj* out_titles = r_names(out);
+    if (out_titles == r_null) {
+      out_titles = r_alloc_character(dimensionality);
+      r_attrib_poke_names(out, out_titles);
+    }
+    r_obj* const* v_out_titles = r_chr_cbegin(out_titles);
+
+    for (int i = 0; i < x_dimensionality; ++i) {
+      r_obj* out_title = v_out_titles[i];
+      r_obj* x_title = v_x_titles[i];
+
+      if (x_title == r_strs.empty || x_title == out_title) {
+        continue;
+      }
+
+      if (out_title == r_strs.empty) {
+        // Accept the title
+        r_chr_poke(out_titles, i, x_title);
+        v_titles_args[i] = x_i;
+      } else {
+        *p_out_i = v_titles_args[i];
+        stop_incompatible_titles(
+          out_title,
+          x_title,
+          i + 1,
+          out_arg,
+          x_arg,
+          error_call
+        );
+      }
     }
   }
 
@@ -304,6 +354,33 @@ static r_no_return void stop_incompatible_names(
     x_quote,
     y_quote,
     r_str_c_string(y_name),
+    y_quote
+  );
+}
+
+static r_no_return void stop_incompatible_titles(
+  r_obj* x_title,
+  r_obj* y_title,
+  int axis,
+  struct rray_arg* x_arg,
+  struct rray_arg* y_arg,
+  struct r_lazy error_call
+) {
+  const char* x_quote = (x_title == r_globals.na_str) ? "`" : "\"";
+  const char* y_quote = (y_title == r_globals.na_str) ? "`" : "\"";
+
+  r_abort_lazy_call(
+    error_call,
+    "Can't find common titles at axis %d. "
+    "%s has title %s%s%s and %s has title %s%s%s.",
+    axis,
+    rray_arg_format(x_arg),
+    x_quote,
+    r_str_c_string(x_title),
+    x_quote,
+    rray_arg_format(y_arg),
+    y_quote,
+    r_str_c_string(y_title),
     y_quote
   );
 }

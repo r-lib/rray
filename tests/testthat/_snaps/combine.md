@@ -19,6 +19,19 @@
       Error in `rray_combine()`:
       ! Can't find common names at axis 2. `a` and `c` have different names at position 2: "y" and "z".
 
+# titles must agree, including on the combine axis
+
+    Code
+      rray_combine(x, y, .axis = 1L)
+    Condition
+      Error in `rray_combine()`:
+      ! Can't find common titles at axis 1. `..1` has title "A" and `..2` has title "B".
+    Code
+      rray_combine(x = x, z = z, w = w, .axis = 1L)
+    Condition
+      Error in `rray_combine()`:
+      ! Can't find common titles at axis 2. `z` has title "C" and `w` has title "D".
+
 # validates inputs and axis
 
     Code

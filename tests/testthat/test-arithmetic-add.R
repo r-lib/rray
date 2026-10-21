@@ -196,6 +196,35 @@ test_that("names must agree on an axis both inputs name", {
   expect_snapshot(error = TRUE, rray_add(x, y))
 })
 
+test_that("titles must agree on an axis", {
+  x <- array(1:2, 2L, dimnames = list(Row = c("r1", "r2")))
+  y <- array(1:2, 2L, dimnames = list(Row = NULL))
+  z <- array(1:2, 2L, dimnames = list(Sample = c("r1", "r2")))
+  expect_identical(rray_names(rray_add(x, y)), list(Row = c("r1", "r2")))
+  expect_snapshot(error = TRUE, rray_add(x, z))
+})
+
+test_that("an input without a title has no say on titles", {
+  x <- array(1:2, 2L, dimnames = list(Row = c("r1", "r2")))
+  y <- array(1:2, 2L, dimnames = list(c("r1", "r2")))
+  expect_identical(rray_titles(rray_add(x, y)), "Row")
+  expect_identical(rray_titles(rray_add(y, x)), "Row")
+})
+
+test_that("a broadcast axis still has a say on titles", {
+  x <- array(
+    1:3,
+    c(1L, 3L),
+    dimnames = list(Row = "total", Col = c("a", "b", "c"))
+  )
+  y <- array(
+    1:6,
+    c(2L, 3L),
+    dimnames = list(Sample = c("r1", "r2"), Col = c("a", "b", "c"))
+  )
+  expect_snapshot(error = TRUE, rray_add(x, y))
+})
+
 test_that("removing names from one input resolves a conflict", {
   x <- array(1:2, 2L, dimnames = list(c("r1", "r2")))
   y <- array(1:2, 2L, dimnames = list(c("a", "b")))

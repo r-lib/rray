@@ -201,6 +201,30 @@ test_that("names must agree, with axes numbered as in the inputs", {
   })
 })
 
+test_that("titles are kept, and the new axis gets an empty title", {
+  x <- array(1:4, c(2L, 2L), dimnames = list(A = c("a", "b"), NULL))
+  y <- array(1:2, c(1L, 2L), dimnames = list(NULL, B = NULL))
+
+  out <- rray_stack(p = x, q = y, .axis = 2L)
+  expect_identical(
+    dimnames(out),
+    list(A = c("a", "b"), c("p", "q"), B = NULL)
+  )
+
+  out <- rray_stack(y, y, .axis = 3L)
+  expect_identical(dimnames(out), list(NULL, B = NULL, NULL))
+})
+
+test_that("titles must agree, with axes numbered as in the inputs", {
+  x <- array(1:2, c(1L, 2L), dimnames = list(NULL, A = NULL))
+  y <- array(1:2, c(1L, 2L), dimnames = list(NULL, B = NULL))
+
+  expect_snapshot(error = TRUE, {
+    rray_stack(x = x, y = y, .axis = 1L)
+    rray_stack(x = x, y = y, .axis = 3L)
+  })
+})
+
 test_that("does not modify inputs", {
   x <- array(1:2, c(2L, 1L), dimnames = list(c("a", "b"), "x"))
   y <- array(3:8, c(2L, 3L))
