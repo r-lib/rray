@@ -217,7 +217,6 @@ static r_obj* rray_broadcast_names_merge(
       v_out_args[i] = x_i;
     } else {
       *p_out_i = v_out_args[i];
-
       check_axis_names_equal(
         out_names,
         v_x_names[i],
