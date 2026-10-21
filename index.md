@@ -166,8 +166,3 @@ and has served as a nice benchmark for rray.
 - No S3 support. rray is currently a closed system and only works on
   base R arrays. This allows us to get the API right without having to
   worry about extensibility.
-
-- Dimension name handling is currently still a bit experimental. When
-  you add `x + y` together, what should the resulting dimension names
-  be? Turns out there is no obvious answer, so we haven’t settled on the
-  handling for these yet.

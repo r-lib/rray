@@ -28,6 +28,13 @@ An array with the following dimensions:
 - Along all other axes, the common dimensions are taken via
   broadcasting.
 
+## Details
+
+This function participates in rray's [common name determination
+rules](https://rray.r-lib.org/reference/faq-common-names.md) on every
+axis except `.axis`. Names on `.axis` are pasted together from every
+input, with `""` for inputs that have none.
+
 ## Examples
 
 ``` r

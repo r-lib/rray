@@ -167,11 +167,6 @@ and has served as a nice benchmark for rray.
   base R arrays. This allows us to get the API right without having to
   worry about extensibility.
 
-- Dimension name handling is currently still a bit experimental. When
-  you add `x + y` together, what should the resulting dimension names
-  be? Turns out there is no obvious answer, so we haven’t settled on the
-  handling for these yet.
-
 # Package index
 
 ## Elementwise
@@ -313,6 +308,11 @@ and has served as a nice benchmark for rray.
   [`rray_set_titles()`](https://rray.r-lib.org/reference/rray-titles.md)
   [`rray_set_axis_title()`](https://rray.r-lib.org/reference/rray-titles.md)
   : Array titles
+
+## FAQ
+
+- [`faq-common-names`](https://rray.r-lib.org/reference/faq-common-names.md)
+  : FAQ - How are common names determined?
 
 # Articles
 

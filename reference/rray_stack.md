@@ -36,8 +36,9 @@ An array with the following dimensions:
 
 ## Details
 
-Names of `...` become the names of the new axis. Existing axis names are
-otherwise carried over.
+This function participates in rray's [common name determination
+rules](https://rray.r-lib.org/reference/faq-common-names.md) on every
+existing axis. Names of `...` become the names of the new axis.
 
 ## See also
 

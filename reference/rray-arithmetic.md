@@ -47,6 +47,9 @@ to be the same shape.
 If the result of an integer operation would overflow, an error is
 thrown.
 
+These functions participate in rray's [common name determination
+rules](https://rray.r-lib.org/reference/faq-common-names.md).
+
 ## Casting
 
 Certain inputs are upcast, changing the return type:

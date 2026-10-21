@@ -139,3 +139,8 @@
   [`rray_set_titles()`](https://rray.r-lib.org/reference/rray-titles.md)
   [`rray_set_axis_title()`](https://rray.r-lib.org/reference/rray-titles.md)
   : Array titles
+
+## FAQ
+
+- [`faq-common-names`](https://rray.r-lib.org/reference/faq-common-names.md)
+  : FAQ - How are common names determined?

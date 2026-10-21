@@ -66,6 +66,13 @@ dimensionality.</p></dd>
     <p>An array with the following dimensions:</p><ul><li><p>Along <code>.axis</code>, the input dimensions are added together.</p></li>
 <li><p>Along all other axes, the common dimensions are taken via broadcasting.</p></li>
 </ul></div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>This function participates in rray's
+<a href="faq-common-names.html">common name determination rules</a> on every axis except
+<code>.axis</code>. Names on <code>.axis</code> are pasted together from every input, with <code>""</code>
+for inputs that have none.</p>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>

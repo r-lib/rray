@@ -54,6 +54,9 @@ comes last:
 
     pmax(NA, NaN) # NaN
 
+These functions participate in rray's [common name determination
+rules](https://rray.r-lib.org/reference/faq-common-names.md).
+
 ## Examples
 
 ``` r
