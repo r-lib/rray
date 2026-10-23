@@ -23,8 +23,7 @@ r_obj* axes_normalize(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  bool v_seen[RRAY_MAX_DIMENSIONALITY] = {false};
-  check_axes_unique(axes, dimensionality, v_seen, arg, error_call);
+  check_axes_unique(axes, dimensionality, arg, error_call);
 
   const r_ssize axes_size = r_length(axes);
   const int* v_axes = r_int_cbegin(axes);
@@ -40,6 +39,12 @@ r_obj* axes_normalize(
 
   if (increasing) {
     return axes;
+  }
+
+  bool v_seen[RRAY_MAX_DIMENSIONALITY] = {false};
+
+  for (r_ssize i = 0; i < axes_size; ++i) {
+    v_seen[v_axes[i] - 1] = true;
   }
 
   r_obj* out = KEEP(r_alloc_integer(axes_size));
@@ -65,10 +70,7 @@ r_obj* arg_as_axes_unsorted(
   struct r_lazy error_call
 ) {
   axes = KEEP(arg_as_bare_integer(axes, arg, error_call));
-
-  bool v_seen[RRAY_MAX_DIMENSIONALITY] = {false};
-  check_axes_unique(axes, dimensionality, v_seen, arg, error_call);
-
+  check_axes_unique(axes, dimensionality, arg, error_call);
   FREE(1);
   return axes;
 }
@@ -94,8 +96,7 @@ r_obj* arg_as_axes_permutation(
     );
   }
 
-  bool v_seen[RRAY_MAX_DIMENSIONALITY] = {false};
-  check_axes_unique(axes, dimensionality, v_seen, arg, error_call);
+  check_axes_unique(axes, dimensionality, arg, error_call);
 
   FREE(1);
   return axes;
@@ -104,11 +105,12 @@ r_obj* arg_as_axes_permutation(
 static void check_axes_unique(
   r_obj* axes,
   int dimensionality,
-  bool* v_seen,
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
   check_dimensionality(dimensionality);
+
+  bool v_seen[RRAY_MAX_DIMENSIONALITY] = {false};
 
   const r_ssize axes_size = r_length(axes);
   const int* v_axes = r_int_cbegin(axes);
