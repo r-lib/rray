@@ -30,8 +30,8 @@ rray_min(x, ..., axes, na_rm = FALSE)
 
 \item{...}{These dots are for future extensions and must be empty.}
 
-\item{axes}{An integer or character vector. The axes to reduce along, given
-by position or by \link[=faq-axes]{title}.}
+\item{axes}{The axes to reduce along, given
+\link[=faq-axes]{by position or by title}.}
 
 \item{na_rm}{If \code{TRUE}, missing values are removed before reducing.}
 }

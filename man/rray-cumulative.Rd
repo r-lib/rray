@@ -27,8 +27,8 @@ rray_cumulative_sum(x, ..., axis)
 
 \item{...}{These dots are for future extensions and must be empty.}
 
-\item{axis}{A single integer or string. The axis to accumulate along, given
-by position or by \link[=faq-axes]{title}.}
+\item{axis}{The axis to accumulate along, given
+\link[=faq-axes]{by position or by title}.}
 }
 \value{
 An array with the same dimensions and names as \code{x}.

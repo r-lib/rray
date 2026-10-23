@@ -81,8 +81,8 @@
 #'
 #' @param x An array.
 #'
-#' @param axes An integer or character vector. The axes to reduce along, given
-#'   by position or by [title][faq-axes].
+#' @param axes The axes to reduce along, given
+#'   [by position or by title][faq-axes].
 #'
 #' @param na_rm If `TRUE`, missing values are removed before reducing.
 #'

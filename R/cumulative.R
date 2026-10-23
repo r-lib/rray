@@ -85,8 +85,8 @@
 #'
 #' @param x An array.
 #'
-#' @param axis A single integer or string. The axis to accumulate along, given
-#'   by position or by [title][faq-axes].
+#' @param axis The axis to accumulate along, given
+#'   [by position or by title][faq-axes].
 #'
 #' @returns
 #' An array with the same dimensions and names as `x`.
