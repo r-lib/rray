@@ -36,17 +36,6 @@ identical(rray_sum(x, axes = "row"), rray_sum(x, axes = 1))
 identical(rray_sum(x, axes = c("page", "row")), rray_sum(x, axes = c(1, 3)))
 #> [1] TRUE
 }\if{html}{\out{</div>}}
-
-If several axes share a title, the title refers to the first of them.
-\code{""} and \code{NA} never refer to an axis.
-
-You can’t mix positions and titles. R turns \code{c(1, "page")} into
-\code{c("1", "page")}, and there is no axis titled \code{"1"}:
-
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_sum(x, axes = c(1, "page"))
-#> Error in `rray_sum()`:
-#> ! Can't find an axis of `x` titled "1".
-}\if{html}{\out{</div>}}
 }
 
 \section{Positions in the result}{
