@@ -4,8 +4,8 @@
 \alias{faq-axes}
 \title{FAQ - How do I refer to an axis?}
 \description{
-Functions that work along an axis take it as \code{axis} or \code{axes}. You can
-give an axis by its position or by its title.
+Functions that work along an axis typically allow you to provide it by
+position or by title.
 }
 \section{Positions}{
 A position counts axes from \code{1}. Axis \code{1} runs down the rows, axis \code{2}
