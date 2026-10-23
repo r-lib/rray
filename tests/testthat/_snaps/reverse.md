@@ -4,7 +4,7 @@
       rray_reverse(x, axes = TRUE)
     Condition
       Error in `rray_reverse()`:
-      ! `axes` must be an integer or double vector, not `TRUE`.
+      ! `axes` must be an integer, double, or character vector, not `TRUE`.
 
 ---
 
@@ -36,7 +36,7 @@
       rray_reverse(x, axes = NA)
     Condition
       Error in `rray_reverse()`:
-      ! `axes` must be an integer or double vector, not `NA`.
+      ! `axes` must be an integer, double, or character vector, not `NA`.
 
 ---
 
@@ -52,7 +52,7 @@
       rray_reverse(x, axes = "a")
     Condition
       Error in `rray_reverse()`:
-      ! `axes` must be an integer or double vector, not the string "a".
+      ! Can't use a title in `axes` because `x` has no titles.
 
 # `axes` must be named
 

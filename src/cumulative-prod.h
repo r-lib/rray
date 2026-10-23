@@ -7,7 +7,7 @@
 
 r_obj* rray_cumulative_prod(
   r_obj* x,
-  int axis,
+  r_obj* axis,
   struct rray_arg* arg,
   struct r_lazy error_call
 );

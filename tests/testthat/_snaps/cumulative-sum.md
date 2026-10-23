@@ -36,7 +36,7 @@
       rray_cumulative_sum(x, axis = integer())
     Condition
       Error in `rray_cumulative_sum()`:
-      ! `axis` must be a single integer, not length 0.
+      ! `axis` must be a single integer or string, not length 0.
 
 ---
 
@@ -44,7 +44,7 @@
       rray_cumulative_sum(x, axis = 1:2)
     Condition
       Error in `rray_cumulative_sum()`:
-      ! `axis` must be a single integer, not length 2.
+      ! `axis` must be a single integer or string, not length 2.
 
 ---
 
@@ -100,7 +100,47 @@
       rray_cumulative_sum(x, axis = "a")
     Condition
       Error in `rray_cumulative_sum()`:
-      ! `axis` must be an integer or double vector, not the string "a".
+      ! Can't use a title in `axis` because `x` has no titles.
+
+---
+
+    Code
+      rray_cumulative_sum(x, axis = list(1))
+    Condition
+      Error in `rray_cumulative_sum()`:
+      ! `axis` must be an integer, double, or character vector, not a list.
+
+# `axis` titles are validated
+
+    Code
+      rray_cumulative_sum(x, axis = "nope")
+    Condition
+      Error in `rray_cumulative_sum()`:
+      ! Can't find an axis of `x` titled "nope".
+
+---
+
+    Code
+      rray_cumulative_sum(x, axis = NA_character_)
+    Condition
+      Error in `rray_cumulative_sum()`:
+      ! `axis` must not be missing.
+
+---
+
+    Code
+      rray_cumulative_sum(x, axis = "")
+    Condition
+      Error in `rray_cumulative_sum()`:
+      ! `axis` can't be an empty string.
+
+---
+
+    Code
+      rray_cumulative_sum(x, axis = c("row", "col"))
+    Condition
+      Error in `rray_cumulative_sum()`:
+      ! `axis` must be a single integer or string, not length 2.
 
 # `axis` must be named
 

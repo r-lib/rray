@@ -13,13 +13,12 @@ r_obj* ffi_rray_cumulative_prod(
   r_obj* ffi_frame
 ) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  const int axis = arg_as_int(ffi_axis, rray_args.axis, error_call);
-  return rray_cumulative_prod(ffi_x, axis, rray_args.x, error_call);
+  return rray_cumulative_prod(ffi_x, ffi_axis, rray_args.x, error_call);
 }
 
 r_obj* rray_cumulative_prod(
   r_obj* x,
-  int axis,
+  r_obj* axis,
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {

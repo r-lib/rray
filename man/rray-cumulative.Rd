@@ -27,8 +27,8 @@ rray_cumulative_sum(x, ..., axis)
 
 \item{...}{These dots are for future extensions and must be empty.}
 
-\item{axis}{A single integer. The axis to accumulate along. \code{1}
-accumulates down rows, \code{2} accumulates across columns, and so on.}
+\item{axis}{A single integer or string. The axis to accumulate along, given
+by position or by \link[=faq-axes]{title}.}
 }
 \value{
 An array with the same dimensions and names as \code{x}.
@@ -137,4 +137,7 @@ rray_cumulative_prod(x, axis = 1L)
 
 # Running sum across columns
 rray_cumulative_sum(x, axis = 2L)
+
+# Running sum across columns, by title
+rray_cumulative_sum(rray_set_titles(x, c("row", "col")), axis = "col")
 }

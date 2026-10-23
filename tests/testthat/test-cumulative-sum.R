@@ -276,6 +276,24 @@ test_that("`axis` is validated", {
     error = TRUE
   )
   expect_snapshot(rray_cumulative_sum(x, axis = "a"), error = TRUE)
+  expect_snapshot(rray_cumulative_sum(x, axis = list(1)), error = TRUE)
+})
+
+test_that("`axis` can be a title", {
+  x <- array(1:6, c(2L, 3L), dimnames = list(row = NULL, col = NULL))
+  expect_identical(
+    rray_cumulative_sum(x, axis = "col"),
+    rray_cumulative_sum(x, axis = 2L)
+  )
+})
+
+test_that("`axis` titles are validated", {
+  x <- array(1, c(2L, 2L), dimnames = list(row = NULL, col = NULL))
+
+  expect_snapshot(rray_cumulative_sum(x, axis = "nope"), error = TRUE)
+  expect_snapshot(rray_cumulative_sum(x, axis = NA_character_), error = TRUE)
+  expect_snapshot(rray_cumulative_sum(x, axis = ""), error = TRUE)
+  expect_snapshot(rray_cumulative_sum(x, axis = c("row", "col")), error = TRUE)
 })
 
 test_that("`axis` must be named", {

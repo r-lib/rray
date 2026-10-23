@@ -4,12 +4,13 @@
 #include "dimensionality.h"
 #include "size.h"
 #include "strides.h"
+#include "titles.h"
 #include "type.h"
 #include "utils.h"
 
 r_obj* rray_cumulative(
   r_obj* x,
-  int axis,
+  r_obj* axis,
   rray_cumulative_fn_switch fn_switch,
   struct rray_arg* arg,
   struct r_lazy error_call
@@ -22,11 +23,14 @@ r_obj* rray_cumulative(
   const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
   check_dimensionality(dimensionality);
 
-  check_axis(axis, dimensionality, rray_args.axis, error_call);
+  r_obj* titles = KEEP(rray_titles(x, arg, error_call));
+
+  const int c_axis =
+    arg_as_axis(axis, titles, dimensionality, rray_args.axis, arg, error_call);
 
   int v_state_dimensions[RRAY_MAX_DIMENSIONALITY];
   r_memcpy(v_state_dimensions, v_dimensions, sizeof(int) * dimensionality);
-  v_state_dimensions[axis - 1] = 1;
+  v_state_dimensions[c_axis - 1] = 1;
 
   const r_ssize state_size =
     rray_size_from_dimensions(v_state_dimensions, dimensionality);
@@ -57,7 +61,7 @@ r_obj* rray_cumulative(
     r_attrib_poke_dim_names(out, names);
   }
 
-  FREE(2);
+  FREE(3);
   return out;
 }
 

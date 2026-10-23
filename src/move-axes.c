@@ -24,10 +24,15 @@ r_obj* rray_move_axes(
   const int dimensionality = rray_dimensionality(x, arg, error_call);
   check_dimensionality(dimensionality);
 
-  from = KEEP(
-    arg_as_axes_unsorted(from, dimensionality, rray_args.from, error_call)
+  from = KEEP(arg_as_axes_unsorted_integer(
+    from,
+    dimensionality,
+    rray_args.from,
+    error_call
+  ));
+  to = KEEP(
+    arg_as_axes_unsorted_integer(to, dimensionality, rray_args.to, error_call)
   );
-  to = KEEP(arg_as_axes_unsorted(to, dimensionality, rray_args.to, error_call));
 
   const r_ssize from_size = r_length(from);
   const r_ssize to_size = r_length(to);

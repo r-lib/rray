@@ -1,0 +1,60 @@
+
+```{r, child = "setup.Rmd", include = FALSE}
+```
+
+Functions that work along an axis take it as `axis` or `axes`. You can give an
+axis by its position or by its title.
+
+# Positions
+
+A position counts axes from `1`. Axis `1` runs down the rows, axis `2` runs
+across the columns, and so on.
+
+```{r}
+x <- array(
+  1:24,
+  dim = c(2, 3, 4),
+  dimnames = list(row = NULL, col = NULL, page = NULL)
+)
+
+rray_dimensions(rray_sum(x, axes = 1))
+```
+
+# Titles
+
+Titles are the names of the dimension names list, like `row` in
+`list(row = NULL)`. [rray_titles()] returns them. A title works anywhere a
+position does:
+
+```{r}
+rray_titles(x)
+
+identical(rray_sum(x, axes = "row"), rray_sum(x, axes = 1))
+
+identical(rray_sum(x, axes = c("page", "row")), rray_sum(x, axes = c(1, 3)))
+```
+
+If several axes share a title, the title refers to the first of them. `""` and
+`NA` never refer to an axis.
+
+You can't mix positions and titles. R turns `c(1, "page")` into
+`c("1", "page")`, and there is no axis titled `"1"`:
+
+```{r, error = TRUE}
+rray_sum(x, axes = c(1, "page"))
+```
+
+# Positions in the result
+
+Some arguments give a position in the result rather than an axis of `x`, like
+`axes` in [rray_insert_axes()] and `.axis` in [rray_stack()]. That axis doesn't
+exist yet, so it has no title, and these arguments only take positions:
+
+```{r, error = TRUE}
+rray_dimensions(rray_insert_axes(x, axes = 1))
+
+rray_insert_axes(x, axes = "row")
+```
+
+[rray_move_axes()] only takes positions too. `to` is a position in the result,
+and `from` pairs with it.

@@ -6,6 +6,7 @@
 #include "reduce-names.h"
 #include "size.h"
 #include "strides.h"
+#include "titles.h"
 #include "type.h"
 #include "utils.h"
 
@@ -26,7 +27,11 @@ r_obj* rray_reduce(
   const int dimensionality = rray_dimensionality_from_dimensions(x_dimensions);
   check_dimensionality(dimensionality);
 
-  axes = KEEP(arg_as_axes(axes, dimensionality, rray_args.axes, error_call));
+  r_obj* titles = KEEP(rray_titles(x, arg, error_call));
+
+  axes = KEEP(
+    arg_as_axes(axes, titles, dimensionality, rray_args.axes, arg, error_call)
+  );
   const int* v_axes = r_int_cbegin(axes);
   const r_ssize axes_size = r_length(axes);
 
@@ -67,7 +72,7 @@ r_obj* rray_reduce(
     r_attrib_poke_dim_names(out, out_names);
   }
 
-  FREE(6);
+  FREE(7);
   return out;
 }
 

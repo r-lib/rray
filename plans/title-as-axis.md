@@ -246,7 +246,7 @@ is added.
 
 ## Shared helpers
 
-Files: `src/axes.c`, `src/axes.h`, `src/decl/axes-decl.h` (new).
+Files: `src/axes.c`, `src/axes.h`, `src/decl/axes-decl.h`.
 
 New and changed functions:
 
@@ -256,6 +256,7 @@ int arg_as_axis(
   r_obj* titles,
   int dimensionality,
   struct rray_arg* arg,
+  struct rray_arg* x_arg,
   struct r_lazy error_call
 );
 
@@ -264,12 +265,21 @@ r_obj* arg_as_axes(
   r_obj* titles,
   int dimensionality,
   struct rray_arg* arg,
+  struct rray_arg* x_arg,
   struct r_lazy error_call
 );
 
 r_obj* arg_as_axes_unsorted(
   r_obj* axes,
   r_obj* titles,
+  int dimensionality,
+  struct rray_arg* arg,
+  struct rray_arg* x_arg,
+  struct r_lazy error_call
+);
+
+r_obj* arg_as_axes_unsorted_integer(
+  r_obj* axes,
   int dimensionality,
   struct rray_arg* arg,
   struct r_lazy error_call
@@ -280,17 +290,25 @@ r_obj* arg_as_axes_permutation(
   r_obj* titles,
   int dimensionality,
   struct rray_arg* arg,
+  struct rray_arg* x_arg,
   struct r_lazy error_call
 );
 ```
 
-`rray_move_axes()` calls `arg_as_axes_unsorted()` with `r_null` titles, but a
-character `from` or `to` must still give today's type error, not "`x` has no
-titles". So the numeric only path stays reachable on its own: keep the
-current body as a static `arg_as_axes_unsorted_integer()` and have
-`rray_move_axes()` call that.
+`rray_move_axes()` must still give today's type error for a character `from`
+or `to`, not "`x` has no titles". So the numeric only path stays reachable on
+its own: `arg_as_axes_unsorted_integer()` is public in `src/axes.h` and
+`rray_move_axes()` calls it.
 
 - `titles` is `rray_titles(x)`, which may be `r_null`.
+
+- `x_arg` names `x` in the "can't find" and "no titles" errors.
+
+- For a single `axis`, `NA` and `""` use scalar wording: `` `axis` must not be
+  missing. `` and `` `axis` can't be an empty string. ``
+
+- Until PR 4, reverse, remove axes, rep, roll, and permute axes pass `r_null`
+  titles. A character `axes` there errors with "`x` has no titles".
 
 - A numeric input goes through the existing path. `arg_as_axis()` is
   `arg_as_int()` plus `check_axis()`.
@@ -541,21 +559,21 @@ Each top level item is one PR. Each PR runs `clang-format`, `air format .`,
 
   - [x] Remove ordering wording from `@param axes` docs, if any.
 
-- [ ] PR 2: Title lookup helpers, used by reduce and cumulative.
+- [x] PR 2: Title lookup helpers, used by reduce and cumulative.
 
-  - [ ] `arg_as_axis()`, `axes_from_titles()`, title aware `arg_as_axes()`,
+  - [x] `arg_as_axis()`, `axes_from_titles()`, title aware `arg_as_axes()`,
     `arg_as_axes_unsorted()`, and `arg_as_axes_permutation()`. Point
     `rray_move_axes()` at the integer only variant. Add
     `src/decl/axes-decl.h`.
 
-  - [ ] Reduce: pass titles in `rray_reduce()`. Full `axes` error snapshots in
+  - [x] Reduce: pass titles in `rray_reduce()`. Full `axes` error snapshots in
     `test-reduce-sum.R`.
 
-  - [ ] Cumulative: `r_obj* axis` in `rray_cumulative()`, drop `arg_as_int()`
+  - [x] Cumulative: `r_obj* axis` in `rray_cumulative()`, drop `arg_as_int()`
     from the six wrappers. Full `axis` error snapshots in
     `test-cumulative-sum.R`.
 
-  - [ ] Add `faq-axes` and update the reduce and cumulative docs.
+  - [x] Add `faq-axes` and update the reduce and cumulative docs.
 
 - [ ] PR 3: Titles for one axis functions.
 
@@ -574,6 +592,8 @@ Each top level item is one PR. Each PR runs `clang-format`, `air format .`,
   - [ ] Docs for each.
 
 - [ ] PR 4: Titles for multi axis functions.
+
+  - [ ] Swap the `r_null` titles from PR 2 for `rray_titles(x)`.
 
   - [ ] Rep, roll, reverse.
 

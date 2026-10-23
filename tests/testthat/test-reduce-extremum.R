@@ -34,6 +34,18 @@ test_that("axes can be in any order", {
   expect_identical(rray_min(x, axes = c(3L, 1L)), rray_min(x, axes = c(1L, 3L)))
 })
 
+test_that("axes can be titles", {
+  x <- array(1:24, c(2L, 3L, 4L), dimnames = list(A = NULL, B = NULL, C = NULL))
+  expect_identical(
+    rray_max(x, axes = c("C", "A")),
+    rray_max(x, axes = c(1L, 3L))
+  )
+  expect_identical(
+    rray_min(x, axes = c("C", "A")),
+    rray_min(x, axes = c(1L, 3L))
+  )
+})
+
 test_that("coalesces reduction axes", {
   x <- array((1:24 * 7L) %% 11L, c(1L, 3L, 2L, 4L))
 

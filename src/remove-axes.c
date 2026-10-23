@@ -24,7 +24,9 @@ r_obj* rray_remove_axes(
   const int* v_x_dimensions = r_int_cbegin(x_dimensions);
   const int dimensionality = rray_dimensionality_from_dimensions(x_dimensions);
 
-  axes = KEEP(arg_as_axes(axes, dimensionality, rray_args.axes, error_call));
+  axes = KEEP(
+    arg_as_axes(axes, r_null, dimensionality, rray_args.axes, arg, error_call)
+  );
   const int* v_axes = r_int_cbegin(axes);
   const r_ssize axes_size = r_length(axes);
 

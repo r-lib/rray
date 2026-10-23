@@ -30,8 +30,8 @@ rray_min(x, ..., axes, na_rm = FALSE)
 
 \item{...}{These dots are for future extensions and must be empty.}
 
-\item{axes}{An integer vector of axes to reduce over. \code{1} reduces
-rows, \code{2} reduces columns, and so on.}
+\item{axes}{An integer or character vector. The axes to reduce along, given
+by position or by \link[=faq-axes]{title}.}
 
 \item{na_rm}{If \code{TRUE}, missing values are removed before reducing.}
 }
@@ -127,6 +127,9 @@ rray_sum(x, axes = 2L)
 
 # Sum along both axes
 rray_sum(x, axes = c(1L, 2L))
+
+# Sum along rows, by title
+rray_sum(rray_set_titles(x, c("row", "col")), axes = "row")
 
 # Product along rows
 rray_prod(x, axes = 1L)

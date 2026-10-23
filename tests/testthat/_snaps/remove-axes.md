@@ -60,7 +60,7 @@
       rray_remove_axes(x, "x")
     Condition
       Error in `rray_remove_axes()`:
-      ! `axes` must be an integer or double vector, not the string "x".
+      ! Can't use a title in `axes` because `x` has no titles.
 
 # errors on non-array input
 
