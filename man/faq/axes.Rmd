@@ -36,9 +36,9 @@ identical(rray_sum(x, axes = c("page", "row")), rray_sum(x, axes = c(1, 3)))
 
 # Positions in the result
 
-Some arguments give a position in the result rather than an axis of `x`, like
-`axes` in [rray_insert_axes()] and `.axis` in [rray_stack()]. That axis doesn't
-exist yet, so it has no title, and these arguments only take positions:
+Some arguments specify a position in the result rather than an axis of `x`,
+like `axes` in [rray_insert_axes()] and `.axis` in [rray_stack()]. That axis
+doesn't exist yet, so it has no title, and these arguments only take positions:
 
 ```{r, error = TRUE}
 rray_dimensions(rray_insert_axes(x, axes = 1))

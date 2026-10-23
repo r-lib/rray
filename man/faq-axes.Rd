@@ -39,10 +39,10 @@ identical(rray_sum(x, axes = c("page", "row")), rray_sum(x, axes = c(1, 3)))
 }
 
 \section{Positions in the result}{
-Some arguments give a position in the result rather than an axis of \code{x},
-like \code{axes} in \code{\link[=rray_insert_axes]{rray_insert_axes()}} and \code{.axis} in
-\code{\link[=rray_stack]{rray_stack()}}. That axis doesn’t exist yet, so it has
-no title, and these arguments only take positions:
+Some arguments specify a position in the result rather than an axis of
+\code{x}, like \code{axes} in \code{\link[=rray_insert_axes]{rray_insert_axes()}} and
+\code{.axis} in \code{\link[=rray_stack]{rray_stack()}}. That axis doesn’t exist yet,
+so it has no title, and these arguments only take positions:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_dimensions(rray_insert_axes(x, axes = 1))
 #> [1] 1 2 3 4
