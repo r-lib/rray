@@ -531,8 +531,9 @@ input errors, so a later change can't add title support by accident.
 - Every `@param axes` that takes titles reads: "The axes to `<verb>` along,
   given [by position or by title][faq-axes]."
 
-- Integer only params link the same topic: "A single integer. A position in
-  the output, see [faq-axes]."
+- Integer only params read: "The axis to `<verb>`, given
+  [by position in the output][faq-axes]." `from` in `rray_move_axes()` names
+  an axis of `x`, so it reads "given [by position][faq-axes]" instead.
 
 - One title example per help topic, next to the integer one.
 
