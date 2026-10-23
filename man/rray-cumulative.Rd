@@ -139,5 +139,6 @@ rray_cumulative_prod(x, axis = 1L)
 rray_cumulative_sum(x, axis = 2L)
 
 # Running sum across columns, by title
-rray_cumulative_sum(rray_set_titles(x, c("row", "col")), axis = "col")
+y <- rray_set_titles(x, c("row", "col"))
+rray_cumulative_sum(y, axis = "col")
 }

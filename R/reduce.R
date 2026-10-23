@@ -104,7 +104,8 @@
 #' rray_sum(x, axes = c(1L, 2L))
 #'
 #' # Sum along rows, by title
-#' rray_sum(rray_set_titles(x, c("row", "col")), axes = "row")
+#' y <- rray_set_titles(x, c("row", "col"))
+#' rray_sum(y, axes = "row")
 #'
 #' # Product along rows
 #' rray_prod(x, axes = 1L)
