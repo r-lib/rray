@@ -17,6 +17,50 @@ r_obj* arg_as_axes(
   return axes;
 }
 
+r_obj* arg_as_axes_unsorted(
+  r_obj* axes,
+  int dimensionality,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+) {
+  check_dimensionality(dimensionality);
+
+  axes = KEEP(arg_as_bare_integer(axes, arg, error_call));
+  check_axes_unique(axes, dimensionality, arg, error_call);
+
+  FREE(1);
+  return axes;
+}
+
+r_obj* arg_as_axes_permutation(
+  r_obj* axes,
+  int dimensionality,
+  struct rray_arg* arg,
+  struct r_lazy error_call
+) {
+  check_dimensionality(dimensionality);
+
+  axes = KEEP(arg_as_bare_integer(axes, arg, error_call));
+
+  const r_ssize axes_size = r_length(axes);
+
+  if (axes_size != dimensionality) {
+    r_abort_lazy_call(
+      error_call,
+      "%s must have length %d to match the dimensionality of the array, "
+      "not length %" R_PRI_SSIZE ".",
+      rray_arg_format(arg),
+      dimensionality,
+      axes_size
+    );
+  }
+
+  check_axes_unique(axes, dimensionality, arg, error_call);
+
+  FREE(1);
+  return axes;
+}
+
 r_obj* axes_normalize(
   r_obj* axes,
   int dimensionality,
@@ -61,50 +105,6 @@ r_obj* axes_normalize(
 
   FREE(1);
   return out;
-}
-
-r_obj* arg_as_axes_unsorted(
-  r_obj* axes,
-  int dimensionality,
-  struct rray_arg* arg,
-  struct r_lazy error_call
-) {
-  check_dimensionality(dimensionality);
-
-  axes = KEEP(arg_as_bare_integer(axes, arg, error_call));
-  check_axes_unique(axes, dimensionality, arg, error_call);
-
-  FREE(1);
-  return axes;
-}
-
-r_obj* arg_as_axes_permutation(
-  r_obj* axes,
-  int dimensionality,
-  struct rray_arg* arg,
-  struct r_lazy error_call
-) {
-  check_dimensionality(dimensionality);
-
-  axes = KEEP(arg_as_bare_integer(axes, arg, error_call));
-
-  const r_ssize axes_size = r_length(axes);
-
-  if (axes_size != dimensionality) {
-    r_abort_lazy_call(
-      error_call,
-      "%s must have length %d to match the dimensionality of the array, "
-      "not length %" R_PRI_SSIZE ".",
-      rray_arg_format(arg),
-      dimensionality,
-      axes_size
-    );
-  }
-
-  check_axes_unique(axes, dimensionality, arg, error_call);
-
-  FREE(1);
-  return axes;
 }
 
 static void check_axes_unique(
