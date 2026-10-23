@@ -53,6 +53,14 @@ test_that("`n[[i]]` is the shift for `axes[[i]]`", {
   )
 })
 
+test_that("`axes` can be in any order, and `n` follows it", {
+  x <- array(1:24, c(2, 3, 4))
+  expect_identical(
+    rray_roll(x, n = c(1, -1), axes = c(3, 1)),
+    rray_roll(x, n = c(-1, 1), axes = c(1, 3))
+  )
+})
+
 test_that("rolling several axes is rolling them one at a time", {
   x <- array(1:60, c(3, 4, 5))
 
@@ -246,7 +254,6 @@ test_that("`axes` is validated", {
   x <- array(1:6, c(2, 3))
   expect_snapshot(rray_roll(x, n = 1, axes = TRUE), error = TRUE)
   expect_snapshot(rray_roll(x, n = 1, axes = c(1, 1)), error = TRUE)
-  expect_snapshot(rray_roll(x, n = 1, axes = c(2, 1)), error = TRUE)
   expect_snapshot(rray_roll(x, n = 1, axes = 3), error = TRUE)
   expect_snapshot(rray_roll(x, n = 1, axes = 0), error = TRUE)
   expect_snapshot(rray_roll(x, n = 1, axes = NA), error = TRUE)

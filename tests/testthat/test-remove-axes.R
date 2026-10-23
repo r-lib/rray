@@ -5,6 +5,18 @@ test_that("removes selected axes", {
   expect_identical(rray_remove_axes(x, c(2L, 3L)), array(1:10, 10L))
 })
 
+test_that("`axes` can be in any order", {
+  x <- array(
+    1:3,
+    c(1L, 3L, 1L),
+    dimnames = list(A = "a", B = c("x", "y", "z"), C = "c")
+  )
+  expect_identical(
+    rray_remove_axes(x, c(3L, 1L)),
+    rray_remove_axes(x, c(1L, 3L))
+  )
+})
+
 test_that("removing no axes returns the input unchanged", {
   x <- array(
     1:6,
@@ -150,7 +162,6 @@ test_that("errors on invalid axes", {
     rray_remove_axes(x, 0L)
     rray_remove_axes(x, NA_integer_)
     rray_remove_axes(x, c(1L, 1L))
-    rray_remove_axes(x, c(2L, 1L))
     rray_remove_axes(x, structure(1L, foo = "bar"))
     rray_remove_axes(x, 1.5)
     rray_remove_axes(x, "x")

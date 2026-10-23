@@ -39,15 +39,7 @@
       rray_rep(x, times = 2, axes = c(1, 1))
     Condition
       Error in `rray_rep()`:
-      ! `axes` must be in strictly increasing order.
-
----
-
-    Code
-      rray_rep(x, times = 2, axes = c(2, 1))
-    Condition
-      Error in `rray_rep()`:
-      ! `axes` must be in strictly increasing order.
+      ! `axes` must not contain axis 1 more than once.
 
 ---
 

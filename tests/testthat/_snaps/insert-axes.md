@@ -19,12 +19,7 @@
       rray_insert_axes(x, c(1L, 1L))
     Condition
       Error in `rray_insert_axes()`:
-      ! `axes` must be in strictly increasing order.
-    Code
-      rray_insert_axes(x, c(2L, 1L))
-    Condition
-      Error in `rray_insert_axes()`:
-      ! `axes` must be in strictly increasing order.
+      ! `axes` must not contain axis 1 more than once.
     Code
       rray_insert_axes(x, structure(1L, foo = "bar"))
     Condition

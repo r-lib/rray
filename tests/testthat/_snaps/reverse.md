@@ -12,15 +12,7 @@
       rray_reverse(x, axes = c(1, 1))
     Condition
       Error in `rray_reverse()`:
-      ! `axes` must be in strictly increasing order.
-
----
-
-    Code
-      rray_reverse(x, axes = c(2, 1))
-    Condition
-      Error in `rray_reverse()`:
-      ! `axes` must be in strictly increasing order.
+      ! `axes` must not contain axis 1 more than once.
 
 ---
 

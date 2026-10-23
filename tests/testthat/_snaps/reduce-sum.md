@@ -6,21 +6,21 @@
       Error in `rray_sum()`:
       ! `axes` must contain values less than or equal to the dimensionality of 2, not 3.
 
-# errors on axes not in strictly increasing order
+# errors on duplicate axes
 
     Code
       rray_sum(x, axes = c(1L, 1L))
     Condition
       Error in `rray_sum()`:
-      ! `axes` must be in strictly increasing order.
+      ! `axes` must not contain axis 1 more than once.
 
 ---
 
     Code
-      rray_sum(x, axes = c(2L, 1L))
+      rray_sum(x, axes = c(2L, 1L, 2L))
     Condition
       Error in `rray_sum()`:
-      ! `axes` must be in strictly increasing order.
+      ! `axes` must not contain axis 2 more than once.
 
 # errors on axes less than 1
 

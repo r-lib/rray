@@ -53,6 +53,14 @@ test_that("`times[[i]]` is used for `axes[[i]]`", {
   expect_identical(out, x[rep.int(1:2, 3), , rep.int(1:4, 2), drop = FALSE])
 })
 
+test_that("`axes` can be in any order, and `times` follows it", {
+  x <- array(1:24, c(2, 3, 4))
+  expect_identical(
+    rray_rep(x, times = c(2, 3), axes = c(3, 1)),
+    rray_rep(x, times = c(3, 2), axes = c(1, 3))
+  )
+})
+
 test_that("repeating several axes is repeating them one at a time", {
   x <- array(1:24, c(2, 3, 4))
 
@@ -306,7 +314,6 @@ test_that("`axes` is validated", {
   x <- array(1:6, c(3, 2))
   expect_snapshot(rray_rep(x, times = 2, axes = TRUE), error = TRUE)
   expect_snapshot(rray_rep(x, times = 2, axes = c(1, 1)), error = TRUE)
-  expect_snapshot(rray_rep(x, times = 2, axes = c(2, 1)), error = TRUE)
   expect_snapshot(rray_rep(x, times = 2, axes = 0), error = TRUE)
   expect_snapshot(rray_rep(x, times = 2, axes = 3), error = TRUE)
   expect_snapshot(rray_rep(x, times = 2, axes = NA), error = TRUE)

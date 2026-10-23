@@ -59,12 +59,21 @@ test_that("coalesces reduction axes", {
     array(values, dimensions)
   }
 
-  axes <- list(1L, 2L, 3L, 4L, c(1L, 3L), c(2L, 4L), 1:4)
+  axes <- list(1L, 2L, 3L, 4L, c(1L, 3L), c(2L, 4L), c(4L, 2L), 1:4)
 
   for (axis in axes) {
     expect_identical(rray_sum(x, axes = axis), expected(axis))
     expect_identical(rray_sum_forced_fallback(x, axes = axis), expected(axis))
   }
+})
+
+test_that("axes can be in any order", {
+  x <- array(
+    1:24,
+    c(2L, 3L, 4L),
+    dimnames = list(A = c("a", "b"), B = c("c", "d", "e"), C = NULL)
+  )
+  expect_identical(rray_sum(x, axes = c(3L, 1L)), rray_sum(x, axes = c(1L, 3L)))
 })
 
 test_that("dimension names are kept for non-reduced axes", {
@@ -353,10 +362,10 @@ test_that("errors on axes out of range", {
   expect_snapshot(rray_sum(x, axes = 3L), error = TRUE)
 })
 
-test_that("errors on axes not in strictly increasing order", {
+test_that("errors on duplicate axes", {
   x <- array(1:24, c(2L, 3L, 4L))
   expect_snapshot(rray_sum(x, axes = c(1L, 1L)), error = TRUE)
-  expect_snapshot(rray_sum(x, axes = c(2L, 1L)), error = TRUE)
+  expect_snapshot(rray_sum(x, axes = c(2L, 1L, 2L)), error = TRUE)
 })
 
 test_that("errors on axes less than 1", {

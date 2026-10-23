@@ -527,19 +527,19 @@ input errors, so a later change can't add title support by accident.
 Each top level item is one PR. Each PR runs `clang-format`, `air format .`,
 `devtools::document()`, `devtools::test()`, and the protection reading pass.
 
-- [ ] PR 1: Relax integer `axes` ordering.
+- [x] PR 1: Relax integer `axes` ordering.
 
-  - [ ] `axes_normalize()` in place of `check_axes()`, returning sorted axes.
+  - [x] `axes_normalize()` in place of `check_axes()`, returning sorted axes.
     Build `arg_as_axes()` on it. Unify the duplicate message.
 
-  - [ ] `rray_insert_axes()` keeps the result of `axes_normalize()`.
+  - [x] `rray_insert_axes()` keeps the result of `axes_normalize()`.
 
-  - [ ] `rray_rep()` and `rray_roll()` switch to `arg_as_axes_unsorted()`.
+  - [x] `rray_rep()` and `rray_roll()` switch to `arg_as_axes_unsorted()`.
 
-  - [ ] Tests for reduce, rep, roll, reverse, remove axes, insert axes, move
+  - [x] Tests for reduce, rep, roll, reverse, remove axes, insert axes, move
     axes.
 
-  - [ ] Update `@param axes` docs and add the reduce example.
+  - [x] Update `@param axes` docs and add the reduce example.
 
 - [ ] PR 2: Title lookup helpers, used by reduce and cumulative.
 

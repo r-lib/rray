@@ -37,6 +37,14 @@ test_that("can reduce over multiple axes of a 3D array", {
   expect_identical(rray_dimensions(out), c(1L, 1L, 4L))
 })
 
+test_that("axes can be in any order", {
+  x <- array(1:24, c(2L, 3L, 4L))
+  expect_identical(
+    rray_prod(x, axes = c(3L, 1L)),
+    rray_prod(x, axes = c(1L, 3L))
+  )
+})
+
 test_that("can reduce axis 3", {
   x <- array(1:24, c(2L, 3L, 4L))
   out <- rray_prod(x, axes = 3L)
@@ -347,10 +355,9 @@ test_that("errors on axes out of range", {
   expect_snapshot(rray_prod(x, axes = 3L), error = TRUE)
 })
 
-test_that("errors on axes not in strictly increasing order", {
+test_that("errors on duplicate axes", {
   x <- array(1:24, c(2L, 3L, 4L))
   expect_snapshot(rray_prod(x, axes = c(1L, 1L)), error = TRUE)
-  expect_snapshot(rray_prod(x, axes = c(2L, 1L)), error = TRUE)
 })
 
 test_that("errors on axes less than 1", {

@@ -128,6 +128,9 @@ rray_sum(x, axes = 2L)
 # Sum along both axes
 rray_sum(x, axes = c(1L, 2L))
 
+# Axes can be in any order
+rray_sum(x, axes = c(2L, 1L))
+
 # Product along rows
 rray_prod(x, axes = 1L)
 

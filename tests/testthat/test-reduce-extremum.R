@@ -28,6 +28,12 @@ test_that("can reduce axis 3", {
   expect_identical(rray_min(x, axes = 3L), array(1:6, c(2L, 3L, 1L)))
 })
 
+test_that("axes can be in any order", {
+  x <- array(1:24, c(2L, 3L, 4L))
+  expect_identical(rray_max(x, axes = c(3L, 1L)), rray_max(x, axes = c(1L, 3L)))
+  expect_identical(rray_min(x, axes = c(3L, 1L)), rray_min(x, axes = c(1L, 3L)))
+})
+
 test_that("coalesces reduction axes", {
   x <- array((1:24 * 7L) %% 11L, c(1L, 3L, 2L, 4L))
 
