@@ -31,7 +31,8 @@ r_obj* rray_insert_axes(
     int_add_checked(dimensionality, (int) axes_size);
   check_dimensionality(out_dimensionality);
 
-  check_axes(axes, out_dimensionality, rray_args.axes, error_call);
+  axes =
+    KEEP(axes_normalize(axes, out_dimensionality, rray_args.axes, error_call));
   const int* v_axes = r_int_cbegin(axes);
 
   r_obj* out_dimensions = KEEP(r_alloc_integer(out_dimensionality));
@@ -94,6 +95,6 @@ r_obj* rray_insert_axes(
     r_attrib_poke_dim_names(out, out_names);
   }
 
-  FREE(6);
+  FREE(7);
   return out;
 }

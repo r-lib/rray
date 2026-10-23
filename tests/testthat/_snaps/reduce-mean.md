@@ -6,21 +6,13 @@
       Error in `rray_mean()`:
       ! `axes` must contain values less than or equal to the dimensionality of 2, not 3.
 
-# errors on axes not in strictly increasing order
+# errors on duplicate axes
 
     Code
       rray_mean(x, axes = c(1L, 1L))
     Condition
       Error in `rray_mean()`:
-      ! `axes` must be in strictly increasing order.
-
----
-
-    Code
-      rray_mean(x, axes = c(2L, 1L))
-    Condition
-      Error in `rray_mean()`:
-      ! `axes` must be in strictly increasing order.
+      ! `axes` must not contain axis 1 more than once.
 
 # errors on axes less than 1
 

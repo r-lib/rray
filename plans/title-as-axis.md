@@ -237,8 +237,8 @@ Tests (`test-insert-axes.R`): `axes = c(3, 1)` equals `axes = c(1, 3)`.
 
 ## Docs
 
-Remove "in increasing order" (or similar) from each `@param axes`. Add one
-example with unsorted `axes` to `rray-reduce`.
+Remove "in increasing order" (or similar) from each `@param axes`. No example
+is added.
 
 ---
 
@@ -527,19 +527,19 @@ input errors, so a later change can't add title support by accident.
 Each top level item is one PR. Each PR runs `clang-format`, `air format .`,
 `devtools::document()`, `devtools::test()`, and the protection reading pass.
 
-- [ ] PR 1: Relax integer `axes` ordering.
+- [x] PR 1: Relax integer `axes` ordering.
 
-  - [ ] `axes_normalize()` in place of `check_axes()`, returning sorted axes.
+  - [x] `axes_normalize()` in place of `check_axes()`, returning sorted axes.
     Build `arg_as_axes()` on it. Unify the duplicate message.
 
-  - [ ] `rray_insert_axes()` keeps the result of `axes_normalize()`.
+  - [x] `rray_insert_axes()` keeps the result of `axes_normalize()`.
 
-  - [ ] `rray_rep()` and `rray_roll()` switch to `arg_as_axes_unsorted()`.
+  - [x] `rray_rep()` and `rray_roll()` switch to `arg_as_axes_unsorted()`.
 
-  - [ ] Tests for reduce, rep, roll, reverse, remove axes, insert axes, move
+  - [x] Tests for reduce, rep, roll, reverse, remove axes, insert axes, move
     axes.
 
-  - [ ] Update `@param axes` docs and add the reduce example.
+  - [x] Remove ordering wording from `@param axes` docs, if any.
 
 - [ ] PR 2: Title lookup helpers, used by reduce and cumulative.
 

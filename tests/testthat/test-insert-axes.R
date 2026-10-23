@@ -23,6 +23,14 @@ test_that("inserts multiple axes at once", {
   )
 })
 
+test_that("`axes` can be in any order", {
+  x <- array(1:6, c(2L, 3L), dimnames = list(A = c("a", "b"), B = NULL))
+  expect_identical(
+    rray_insert_axes(x, c(3L, 1L)),
+    rray_insert_axes(x, c(1L, 3L))
+  )
+})
+
 test_that("inserting no axes returns the input unchanged", {
   x <- array(
     1:6,
@@ -154,7 +162,6 @@ test_that("errors on invalid axes", {
     rray_insert_axes(x, 0L)
     rray_insert_axes(x, NA_integer_)
     rray_insert_axes(x, c(1L, 1L))
-    rray_insert_axes(x, c(2L, 1L))
     rray_insert_axes(x, structure(1L, foo = "bar"))
     rray_insert_axes(x, 1.5)
     rray_insert_axes(x, "x")

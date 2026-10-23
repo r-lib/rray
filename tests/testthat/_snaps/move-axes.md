@@ -24,7 +24,7 @@
       rray_move_axes(x, from = c(1L, 1L), to = c(1L, 2L))
     Condition
       Error in `rray_move_axes()`:
-      ! `from` must not contain 1 more than once.
+      ! `from` must not contain axis 1 more than once.
     Code
       rray_move_axes(x, from = 4L, to = 1L)
     Condition
@@ -62,7 +62,7 @@
       rray_move_axes(x, from = c(1L, 2L), to = c(3L, 3L))
     Condition
       Error in `rray_move_axes()`:
-      ! `to` must not contain 3 more than once.
+      ! `to` must not contain axis 3 more than once.
     Code
       rray_move_axes(x, from = 1L, to = 4L)
     Condition

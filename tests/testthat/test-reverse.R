@@ -28,6 +28,14 @@ test_that("reverses several axes at once", {
   )
 })
 
+test_that("`axes` can be in any order", {
+  x <- array(1:24, c(2, 3, 4))
+  expect_identical(
+    rray_reverse(x, axes = c(3, 1)),
+    rray_reverse(x, axes = c(1, 3))
+  )
+})
+
 test_that("reversing several axes is reversing them one at a time", {
   x <- array(1:60, c(3, 4, 5))
 
@@ -156,7 +164,6 @@ test_that("`axes` is validated", {
   x <- array(1:6, c(2, 3))
   expect_snapshot(rray_reverse(x, axes = TRUE), error = TRUE)
   expect_snapshot(rray_reverse(x, axes = c(1, 1)), error = TRUE)
-  expect_snapshot(rray_reverse(x, axes = c(2, 1)), error = TRUE)
   expect_snapshot(rray_reverse(x, axes = 3), error = TRUE)
   expect_snapshot(rray_reverse(x, axes = 0), error = TRUE)
   expect_snapshot(rray_reverse(x, axes = NA), error = TRUE)

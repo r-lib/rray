@@ -28,6 +28,12 @@ test_that("can reduce over all axes", {
   expect_identical(rray_dimensions(out), c(1L, 1L))
 })
 
+test_that("axes can be in any order", {
+  x <- array(c(TRUE, FALSE), c(2L, 3L, 4L))
+  expect_identical(rray_all(x, axes = c(3L, 1L)), rray_all(x, axes = c(1L, 3L)))
+  expect_identical(rray_any(x, axes = c(3L, 1L)), rray_any(x, axes = c(1L, 3L)))
+})
+
 test_that("reducing over no axes returns the input unchanged", {
   x <- array(c(TRUE, FALSE, NA, TRUE), c(2L, 2L))
   expect_identical(rray_all(x, axes = integer()), x)
