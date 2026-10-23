@@ -69,8 +69,11 @@ r_obj* arg_as_axes_unsorted(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
+  check_dimensionality(dimensionality);
+
   axes = KEEP(arg_as_bare_integer(axes, arg, error_call));
   check_axes_unique(axes, dimensionality, arg, error_call);
+
   FREE(1);
   return axes;
 }
@@ -81,6 +84,8 @@ r_obj* arg_as_axes_permutation(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
+  check_dimensionality(dimensionality);
+
   axes = KEEP(arg_as_bare_integer(axes, arg, error_call));
 
   const r_ssize axes_size = r_length(axes);
@@ -108,8 +113,6 @@ static void check_axes_unique(
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
-  check_dimensionality(dimensionality);
-
   bool v_seen[RRAY_MAX_DIMENSIONALITY] = {false};
 
   const r_ssize axes_size = r_length(axes);
