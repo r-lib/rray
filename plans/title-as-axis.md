@@ -525,13 +525,11 @@ input errors, so a later change can't add title support by accident.
   `man/faq/axes.Rmd`. It shows a position, a title, and an output position
   argument side by side. Add it to the FAQ section of `_pkgdown.yml`.
 
-- Every `@param axis` that takes a title reads: "A single integer or string.
-  The axis to `<verb>` along, given by position or by
-  [title][faq-axes]."
+- Every `@param axis` that takes a title reads: "The axis to `<verb>` along,
+  given [by position or by title][faq-axes]."
 
-- Every `@param axes` that takes titles reads: "An integer or character
-  vector. The axes to `<verb>` along, given by position or by
-  [title][faq-axes]."
+- Every `@param axes` that takes titles reads: "The axes to `<verb>` along,
+  given [by position or by title][faq-axes]."
 
 - Integer only params link the same topic: "A single integer. A position in
   the output, see [faq-axes]."
