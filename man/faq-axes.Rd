@@ -51,8 +51,5 @@ rray_insert_axes(x, axes = "row")
 #> Error in `rray_insert_axes()`:
 #> ! `axes` must be an integer or double vector, not the string "row".
 }\if{html}{\out{</div>}}
-
-\code{\link[=rray_move_axes]{rray_move_axes()}} only takes positions too. \code{to} is
-a position in the result, and \code{from} pairs with it.
 }
 

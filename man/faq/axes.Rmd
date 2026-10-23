@@ -45,6 +45,3 @@ rray_dimensions(rray_insert_axes(x, axes = 1))
 
 rray_insert_axes(x, axes = "row")
 ```
-
-[rray_move_axes()] only takes positions too. `to` is a position in the result,
-and `from` pairs with it.
