@@ -237,8 +237,8 @@ Tests (`test-insert-axes.R`): `axes = c(3, 1)` equals `axes = c(1, 3)`.
 
 ## Docs
 
-Remove "in increasing order" (or similar) from each `@param axes`. Add one
-example with unsorted `axes` to `rray-reduce`.
+Remove "in increasing order" (or similar) from each `@param axes`. No example
+is added.
 
 ---
 
@@ -539,7 +539,7 @@ Each top level item is one PR. Each PR runs `clang-format`, `air format .`,
   - [x] Tests for reduce, rep, roll, reverse, remove axes, insert axes, move
     axes.
 
-  - [x] Update `@param axes` docs and add the reduce example.
+  - [x] Remove ordering wording from `@param axes` docs, if any.
 
 - [ ] PR 2: Title lookup helpers, used by reduce and cumulative.
 
