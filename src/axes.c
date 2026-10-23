@@ -13,6 +13,7 @@ int arg_as_axis(
   struct rray_arg* x_arg,
   struct r_lazy error_call
 ) {
+  check_dimensionality(dimensionality);
   check_axes_type(axis, arg, error_call);
 
   if (r_length(axis) != 1) {
@@ -59,6 +60,8 @@ r_obj* arg_as_axes(
   struct rray_arg* x_arg,
   struct r_lazy error_call
 ) {
+  check_dimensionality(dimensionality);
+
   r_obj* out =
     KEEP(arg_as_axes_positions(axes, titles, arg, x_arg, error_call));
   check_axes_unique(out, axes, dimensionality, arg, error_call);

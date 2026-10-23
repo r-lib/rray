@@ -62,6 +62,14 @@
       Error in `rray_remove_axes()`:
       ! Can't use a title in `axes` because `x` has no titles.
 
+# errors above the maximum dimensionality
+
+    Code
+      rray_remove_axes(x, 65L)
+    Condition
+      Error in `rray_remove_axes()`:
+      ! rray can't support arrays with a dimensionality greater than 64. A dimensionality of 65 was requested.
+
 # errors on non-array input
 
     Code
