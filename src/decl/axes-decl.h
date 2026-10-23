@@ -12,6 +12,13 @@ static int axis_from_title(
   struct r_lazy error_call
 );
 
+static void check_has_titles(
+  r_obj* titles,
+  struct rray_arg* arg,
+  struct rray_arg* x_arg,
+  struct r_lazy error_call
+);
+
 static r_obj* arg_as_axes_positions(
   r_obj* axes,
   r_obj* titles,

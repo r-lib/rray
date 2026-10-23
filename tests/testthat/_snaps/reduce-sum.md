@@ -62,6 +62,14 @@
       Error in `rray_sum()`:
       ! Can't use a title in `axes` because `x` has no titles.
 
+---
+
+    Code
+      rray_sum(x, axes = character())
+    Condition
+      Error in `rray_sum()`:
+      ! Can't use a title in `axes` because `x` has no titles.
+
 # errors on missing or empty titles
 
     Code

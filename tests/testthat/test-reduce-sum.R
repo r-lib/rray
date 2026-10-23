@@ -89,11 +89,6 @@ test_that("axes can be titles", {
   )
 })
 
-test_that("empty character `axes` work when `x` has no titles", {
-  x <- array(1:4, c(2L, 2L))
-  expect_identical(rray_sum(x, axes = character()), x)
-})
-
 test_that("a title matches the first axis with that title", {
   x <- array(1:6, c(2L, 3L), dimnames = list(a = NULL, a = NULL))
   expect_identical(rray_sum(x, axes = "a"), rray_sum(x, axes = 1L))
@@ -410,6 +405,7 @@ test_that("errors on titles that aren't found", {
 test_that("errors on titles when `x` has no titles", {
   x <- array(1:4, c(2L, 2L))
   expect_snapshot(rray_sum(x, axes = "row"), error = TRUE)
+  expect_snapshot(rray_sum(x, axes = character()), error = TRUE)
 })
 
 test_that("errors on missing or empty titles", {

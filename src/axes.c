@@ -212,14 +212,7 @@ static int axis_from_title(
   struct rray_arg* x_arg,
   struct r_lazy error_call
 ) {
-  if (titles == r_null) {
-    r_abort_lazy_call(
-      error_call,
-      "Can't use a title in %s because %s has no titles.",
-      rray_arg_format(arg),
-      rray_arg_format(x_arg)
-    );
-  }
+  check_has_titles(titles, arg, x_arg, error_call);
 
   const r_ssize titles_size = r_length(titles);
   r_obj* const* v_titles = r_chr_cbegin(titles);
@@ -236,6 +229,22 @@ static int axis_from_title(
     rray_arg_format(x_arg),
     r_str_c_string(title)
   );
+}
+
+static void check_has_titles(
+  r_obj* titles,
+  struct rray_arg* arg,
+  struct rray_arg* x_arg,
+  struct r_lazy error_call
+) {
+  if (titles == r_null) {
+    r_abort_lazy_call(
+      error_call,
+      "Can't use a title in %s because %s has no titles.",
+      rray_arg_format(arg),
+      rray_arg_format(x_arg)
+    );
+  }
 }
 
 static r_obj* arg_as_axes_positions(
@@ -261,6 +270,8 @@ static r_obj* axes_from_titles(
   struct rray_arg* x_arg,
   struct r_lazy error_call
 ) {
+  check_has_titles(titles, arg, x_arg, error_call);
+
   const r_ssize axes_size = r_length(axes);
   r_obj* const* v_axes = r_chr_cbegin(axes);
 
