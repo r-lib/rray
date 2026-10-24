@@ -42,7 +42,8 @@ rray_roll_each(x, ..., n, axis)
 
 - axis:
 
-  A single integer representing the axis to roll along.
+  The axis to roll along, given [by position or by
+  title](https://rray.r-lib.org/reference/faq-axes.md).
 
 ## Value
 
@@ -294,6 +295,15 @@ rray_roll_each(y, n = matrix(c(1, 0, -1), ncol = 1), axis = 2)
 #> [1,]    4    1    2    3
 #> [2,]    5    6    7    8
 #> [3,]   10   11   12    9
+
+# Roll each row by its own `n`, by title
+z <- rray_set_titles(y, c("row", "col"))
+rray_roll_each(z, n = matrix(c(1, 0, -1), ncol = 1), axis = "col")
+#>       col
+#> row    [,1] [,2] [,3] [,4]
+#>   [1,]    4    1    2    3
+#>   [2,]    5    6    7    8
+#>   [3,]   10   11   12    9
 
 # Roll each column by its own `n`, given as a one row matrix
 rray_roll_each(y, n = matrix(c(0, 1, 2, 3), nrow = 1), axis = 1)

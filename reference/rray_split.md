@@ -24,7 +24,8 @@ rray_split(x, ..., axis, dimensions)
 
 - axis:
 
-  A single integer representing the axis to split on.
+  The axis to split along, given [by position or by
+  title](https://rray.r-lib.org/reference/faq-axes.md).
 
 - dimensions:
 
@@ -99,6 +100,30 @@ rray_split(x, axis = 2, dimensions = 1)
 #> [4,]   10
 #> [5,]   11
 #> [6,]   12
+#> 
+
+# One array per column, by title
+y <- rray_set_titles(x, c("row", "col"))
+rray_split(y, axis = "col", dimensions = 1)
+#> [[1]]
+#>       col
+#> row    [,1]
+#>   [1,]    1
+#>   [2,]    2
+#>   [3,]    3
+#>   [4,]    4
+#>   [5,]    5
+#>   [6,]    6
+#> 
+#> [[2]]
+#>       col
+#> row    [,1]
+#>   [1,]    7
+#>   [2,]    8
+#>   [3,]    9
+#>   [4,]   10
+#>   [5,]   11
+#>   [6,]   12
 #> 
 
 # Arrays of dimension zero are allowed in the explicit form

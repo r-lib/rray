@@ -47,7 +47,8 @@ rray_rep_each(x, ..., times, axis)
 
 - axis:
 
-  A single integer representing the axis to repeat along.
+  The axis to repeat along, given [by position or by
+  title](https://rray.r-lib.org/reference/faq-axes.md).
 
 ## Value
 
@@ -121,6 +122,18 @@ rray_rep_each(x, times = c(1, 2, 3), axis = 1)
 #> [4,]    3    6
 #> [5,]    3    6
 #> [6,]    3    6
+
+# A different number of repeats per row, by title
+z <- rray_set_titles(x, c("row", "col"))
+rray_rep_each(z, times = c(1, 2, 3), axis = "row")
+#>       col
+#> row    [,1] [,2]
+#>   [1,]    1    4
+#>   [2,]    2    5
+#>   [3,]    2    5
+#>   [4,]    3    6
+#>   [5,]    3    6
+#>   [6,]    3    6
 
 # Zeroes drop slices entirely
 rray_rep_each(x, times = c(1, 0, 2), axis = 1)

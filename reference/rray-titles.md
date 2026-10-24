@@ -31,7 +31,13 @@ rray_set_axis_title(x, axis, title)
 
 - axis:
 
-  A single integer. The axis to get or set the title for.
+  The axis to get or set the title for.
+
+  - For `rray_set_axis_title()`, given [by position or by
+    title](https://rray.r-lib.org/reference/faq-axes.md).
+
+  - For `rray_axis_title()`, given [by
+    position](https://rray.r-lib.org/reference/faq-axes.md).
 
 - titles:
 
@@ -66,6 +72,11 @@ rray_axis_title(x, 2)
 rray_set_axis_title(x, 1, NULL)
 #>       Column
 #>        [,1] [,2] [,3]
+#>   [1,]    1    3    5
+#>   [2,]    2    4    6
+rray_set_axis_title(x, "Row", "R")
+#>       Column
+#> R      [,1] [,2] [,3]
 #>   [1,]    1    3    5
 #>   [2,]    2    4    6
 ```

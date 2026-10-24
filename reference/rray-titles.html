@@ -78,7 +78,9 @@ array print output.</p><ul><li><p><code>rray_titles()</code> returns the titles 
 
 
 <dt id="arg-axis">axis<a class="anchor" aria-label="anchor" href="#arg-axis"></a></dt>
-<dd><p>A single integer. The axis to get or set the title for.</p></dd>
+<dd><p>The axis to get or set the title for.</p><ul><li><p>For <code>rray_set_axis_title()</code>, given <a href="faq-axes.html">by position or by title</a>.</p></li>
+<li><p>For <code>rray_axis_title()</code>, given <a href="faq-axes.html">by position</a>.</p></li>
+</ul></dd>
 
 
 <dt id="arg-titles">titles<a class="anchor" aria-label="anchor" href="#arg-titles"></a></dt>
@@ -114,6 +116,11 @@ one-dimensional arrays.</p></li>
 <span class="r-in"><span><span class="fu">rray_set_axis_title</span><span class="op">(</span><span class="va">x</span>, <span class="fl">1</span>, <span class="cn">NULL</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       Column</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>        [,1] [,2] [,3]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1,]    1    3    5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [2,]    2    4    6</span>
+<span class="r-in"><span><span class="fu">rray_set_axis_title</span><span class="op">(</span><span class="va">x</span>, <span class="st">"Row"</span>, <span class="st">"R"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       Column</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> R      [,1] [,2] [,3]</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   [1,]    1    3    5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   [2,]    2    4    6</span>
 </code></pre></div>

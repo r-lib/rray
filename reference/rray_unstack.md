@@ -25,7 +25,8 @@ rray_unstack(x, ..., axis)
 
 - axis:
 
-  A single integer representing the axis to unstack along.
+  The axis to unstack along, given [by position or by
+  title](https://rray.r-lib.org/reference/faq-axes.md).
 
 ## Value
 
@@ -61,6 +62,19 @@ rray_unstack(x, axis = 1)
 
 # One array per column
 rray_unstack(x, axis = 2)
+#> [[1]]
+#> [1] 1 2
+#> 
+#> [[2]]
+#> [1] 3 4
+#> 
+#> [[3]]
+#> [1] 5 6
+#> 
+
+# One array per column, by title
+z <- rray_set_titles(x, c("row", "col"))
+rray_unstack(z, axis = "col")
 #> [[1]]
 #> [1] 1 2
 #> 

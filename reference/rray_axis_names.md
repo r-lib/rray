@@ -24,7 +24,8 @@ rray_column_names(x)
 
 - axis:
 
-  A single integer. The axis to get names for.
+  The axis to get names for, given [by position or by
+  title](https://rray.r-lib.org/reference/faq-axes.md).
 
 ## Value
 
@@ -38,6 +39,11 @@ x <- array(1:6, c(2, 3), dimnames = list(c("r1", "r2"), c("c1", "c2", "c3")))
 rray_axis_names(x, 1)
 #> [1] "r1" "r2"
 rray_axis_names(x, 2)
+#> [1] "c1" "c2" "c3"
+
+# By title
+y <- rray_set_titles(x, c("row", "col"))
+rray_axis_names(y, "col")
 #> [1] "c1" "c2" "c3"
 
 rray_row_names(x)

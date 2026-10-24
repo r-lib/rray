@@ -63,7 +63,8 @@ rray_slice_assign_columns(x, i, value)
 
 - axis:
 
-  A single integer. The axis to slice along.
+  The axis to slice along, given [by position or by
+  title](https://rray.r-lib.org/reference/faq-axes.md).
 
 - value:
 
@@ -223,6 +224,14 @@ rray_slice_columns(x, -2)
 #> [1,]   19   23
 #> [2,]   20   24
 #> 
+
+# Slice a single axis, by title
+z <- rray_set_titles(y, c("row", "col"))
+rray_slice_axis(z, c("e", "c"), axis = "col")
+#>    col
+#> row e c
+#>   a 5 1
+#>   b 6 2
 
 # Assign one value to every first row
 rray_slice_assign(x, 1, TRUE, TRUE, value = 0L)

@@ -24,7 +24,8 @@ rray_locate_min(x, ..., axis, na_rm = FALSE)
 
 - axis:
 
-  A single integer giving the axis to locate along.
+  The axis to locate along, given [by position or by
+  title](https://rray.r-lib.org/reference/faq-axes.md).
 
 - na_rm:
 
@@ -74,4 +75,13 @@ rray_locate_min(x, axis = 2L)
 #> [1,]    1
 #> [2,]    1
 #> [3,]    1
+
+# Position of the minimum going across the columns, by title
+y <- rray_set_titles(x, c("row", "col"))
+rray_locate_min(y, axis = "col")
+#>       col
+#> row    [,1]
+#>   [1,]    1
+#>   [2,]    1
+#>   [3,]    1
 ```

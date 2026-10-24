@@ -72,7 +72,8 @@ rray_locate_min() finds the position of the minimum along axis.
 
 
 <dt id="arg-axis">axis<a class="anchor" aria-label="anchor" href="#arg-axis"></a></dt>
-<dd><p>A single integer giving the axis to locate along.</p></dd>
+<dd><p>The axis to locate along, given
+<a href="faq-axes.html">by position or by title</a>.</p></dd>
 
 
 <dt id="arg-na-rm">na_rm<a class="anchor" aria-label="anchor" href="#arg-na-rm"></a></dt>
@@ -114,6 +115,15 @@ of 1.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1,]    1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [2,]    1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [3,]    1</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Position of the minimum going across the columns, by title</span></span></span>
+<span class="r-in"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="rray-titles.html">rray_set_titles</a></span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"row"</span>, <span class="st">"col"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">rray_locate_min</span><span class="op">(</span><span class="va">y</span>, axis <span class="op">=</span> <span class="st">"col"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       col</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> row    [,1]</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [1,]    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [2,]    1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   [3,]    1</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
