@@ -17,6 +17,19 @@ test_that("`axes` can be in any order", {
   )
 })
 
+test_that("`axes` can be titles", {
+  x <- array(
+    1:3,
+    c(1L, 3L, 1L),
+    dimnames = list(A = "a", B = c("x", "y", "z"), C = "c")
+  )
+  expect_identical(rray_remove_axes(x, "C"), rray_remove_axes(x, 3L))
+  expect_identical(
+    rray_remove_axes(x, c("C", "A")),
+    rray_remove_axes(x, c(1L, 3L))
+  )
+})
+
 test_that("removing no axes returns the input unchanged", {
   x <- array(
     1:6,
@@ -145,6 +158,9 @@ test_that("errors when a selected axis does not have dimension 1", {
     rray_remove_axes(array(1:2, c(2L, 1L)), 1L)
     rray_remove_axes(array(integer(), c(0L, 1L)), 1L)
   })
+
+  x <- array(1:2, c(2L, 1L), dimnames = list(row = NULL, col = NULL))
+  expect_snapshot(rray_remove_axes(x, "row"), error = TRUE)
 })
 
 test_that("errors when every axis is removed", {

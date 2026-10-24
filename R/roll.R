@@ -224,7 +224,8 @@
 #'   each row, column, etc., as determined by `axis`. It is broadcast to the
 #'   dimensions of `x` with `axis` set to 1.
 #'
-#' @param axes An integer vector of axes to roll along.
+#' @param axes The axes to roll along, given
+#'   [by position or by title][faq-axes].
 #'
 #' @param axis The axis to roll along, given
 #'   [by position or by title][faq-axes].

@@ -9,7 +9,9 @@
 #'
 #' @param x An array.
 #'
-#' @param axes An integer vector. It must use each axis of `x` exactly once.
+#' @param axes The axes of `x` in their new order, given
+#'   [by position or by title][faq-axes]. It must use each axis of `x` exactly
+#'   once.
 #'
 #' @returns
 #' An array with the axes of `x` reordered by `axes`.
@@ -22,6 +24,10 @@
 #'
 #' # Transpose a matrix
 #' rray_permute_axes(x, c(2, 1))
+#'
+#' # Transpose a matrix, by title
+#' z <- rray_set_titles(x, c("row", "col"))
+#' rray_permute_axes(z, c("col", "row"))
 #'
 #' y <- array(1:24, c(4, 3, 2))
 #'

@@ -11,7 +11,8 @@
 #'
 #' @param x An array.
 #'
-#' @param axes An integer vector of axes to reverse along.
+#' @param axes The axes to reverse along, given
+#'   [by position or by title][faq-axes].
 #'
 #' @returns
 #' An array with the same type and dimensions as `x`.
@@ -30,6 +31,10 @@
 #'
 #' # Reverse both axes
 #' rray_reverse(x, axes = c(1, 2))
+#'
+#' # Reverse the columns, by title
+#' y <- rray_set_titles(x, c("row", "col"))
+#' rray_reverse(y, axes = "col")
 rray_reverse <- function(x, ..., axes) {
   check_dots_empty0(...)
   .Call(ffi_rray_reverse, x, axes, environment())

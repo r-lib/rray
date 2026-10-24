@@ -11,6 +11,14 @@
       Error in `rray_remove_axes()`:
       ! Can't remove axis 1 of `x` because it has dimension 0, not 1.
 
+---
+
+    Code
+      rray_remove_axes(x, "row")
+    Condition
+      Error in `rray_remove_axes()`:
+      ! Can't remove axis 1 of `x` because it has dimension 2, not 1.
+
 # errors when every axis is removed
 
     Code

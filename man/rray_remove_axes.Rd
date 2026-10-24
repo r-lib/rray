@@ -9,8 +9,9 @@ rray_remove_axes(x, axes)
 \arguments{
 \item{x}{An array.}
 
-\item{axes}{An integer vector of axes to remove. Each selected axis must
-have a dimension of 1. At least one axis must remain.}
+\item{axes}{The axes to remove, given \link[=faq-axes]{by position or by title}.
+Each selected axis must have a dimension of 1. At least one axis must
+remain.}
 }
 \value{
 An array with the selected \code{axes} removed.
@@ -28,4 +29,7 @@ x <- array(1:10, c(10, 1, 1))
 
 rray_remove_axes(x, 2)
 rray_remove_axes(x, c(2, 3))
+
+y <- rray_set_titles(x, c("row", "col", "page"))
+rray_remove_axes(y, c("col", "page"))
 }

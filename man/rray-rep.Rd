@@ -21,7 +21,8 @@ to 0, either size 1 or the size of \code{axes}.
 For \code{rray_rep_each()}, a vector of integers greater than or equal to
 0. It is recycled to the dimension of \code{x} along \code{axis}.}
 
-\item{axes}{An integer vector of axes to repeat along.}
+\item{axes}{The axes to repeat along, given
+\link[=faq-axes]{by position or by title}.}
 
 \item{axis}{The axis to repeat along, given
 \link[=faq-axes]{by position or by title}.}

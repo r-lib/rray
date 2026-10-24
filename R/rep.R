@@ -29,7 +29,8 @@
 #'   For `rray_rep_each()`, a vector of integers greater than or equal to
 #'   0. It is recycled to the dimension of `x` along `axis`.
 #'
-#' @param axes An integer vector of axes to repeat along.
+#' @param axes The axes to repeat along, given
+#'   [by position or by title][faq-axes].
 #'
 #' @param axis The axis to repeat along, given
 #'   [by position or by title][faq-axes].

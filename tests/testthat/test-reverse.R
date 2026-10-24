@@ -36,6 +36,19 @@ test_that("`axes` can be in any order", {
   )
 })
 
+test_that("`axes` can be titles", {
+  x <- array(
+    1:24,
+    c(2, 3, 4),
+    dimnames = list(row = NULL, col = NULL, page = NULL)
+  )
+  expect_identical(rray_reverse(x, axes = "col"), rray_reverse(x, axes = 2))
+  expect_identical(
+    rray_reverse(x, axes = c("page", "row")),
+    rray_reverse(x, axes = c(1, 3))
+  )
+})
+
 test_that("reversing several axes is reversing them one at a time", {
   x <- array(1:60, c(3, 4, 5))
 

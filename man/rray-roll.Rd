@@ -22,7 +22,8 @@ For \code{rray_roll_each()}, an integer array indicating the amount to roll for
 each row, column, etc., as determined by \code{axis}. It is broadcast to the
 dimensions of \code{x} with \code{axis} set to 1.}
 
-\item{axes}{An integer vector of axes to roll along.}
+\item{axes}{The axes to roll along, given
+\link[=faq-axes]{by position or by title}.}
 
 \item{axis}{The axis to roll along, given
 \link[=faq-axes]{by position or by title}.}
