@@ -65,6 +65,14 @@
       Error in `rray_rep()`:
       ! `axes` must be an integer, double, or character vector, not `NA`.
 
+---
+
+    Code
+      rray_rep(x, times = 2, axes = "row")
+    Condition
+      Error in `rray_rep()`:
+      ! Can't use a title in `axes` because `x` has no titles.
+
 # `times` is validated
 
     Code

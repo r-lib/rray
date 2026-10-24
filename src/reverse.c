@@ -3,6 +3,7 @@
 #include "axes.h"
 #include "dimensionality.h"
 #include "slice.h"
+#include "titles.h"
 #include "utils.h"
 
 #include "decl/reverse-decl.h"
@@ -26,8 +27,10 @@ r_obj* rray_reverse(
   const int dimensionality = rray_dimensionality_from_dimensions(x_dimensions);
   check_dimensionality(dimensionality);
 
+  r_obj* titles = KEEP(rray_titles(x, x_arg, error_call));
+
   axes = KEEP(
-    arg_as_axes(axes, r_null, dimensionality, rray_args.axes, x_arg, error_call)
+    arg_as_axes(axes, titles, dimensionality, rray_args.axes, x_arg, error_call)
   );
   const int* v_axes = r_int_cbegin(axes);
   const r_ssize axes_size = r_length(axes);
@@ -46,7 +49,7 @@ r_obj* rray_reverse(
 
   r_obj* out = rray_slice(x, indices, x_arg, rray_args.empty, error_call);
 
-  FREE(3);
+  FREE(4);
   return out;
 }
 

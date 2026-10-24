@@ -61,6 +61,18 @@ test_that("`axes` can be in any order, and `n` follows it", {
   )
 })
 
+test_that("`axes` can be titles, and `n` follows them", {
+  x <- array(
+    1:24,
+    c(2, 3, 4),
+    dimnames = list(row = NULL, col = NULL, page = NULL)
+  )
+  expect_identical(
+    rray_roll(x, n = c(1, -1), axes = c("page", "row")),
+    rray_roll(x, n = c(-1, 1), axes = c(1, 3))
+  )
+})
+
 test_that("rolling several axes is rolling them one at a time", {
   x <- array(1:60, c(3, 4, 5))
 
@@ -257,6 +269,7 @@ test_that("`axes` is validated", {
   expect_snapshot(rray_roll(x, n = 1, axes = 3), error = TRUE)
   expect_snapshot(rray_roll(x, n = 1, axes = 0), error = TRUE)
   expect_snapshot(rray_roll(x, n = 1, axes = NA), error = TRUE)
+  expect_snapshot(rray_roll(x, n = 1, axes = "row"), error = TRUE)
 })
 
 test_that("`n` is validated", {

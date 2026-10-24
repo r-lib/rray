@@ -61,6 +61,18 @@ test_that("`axes` can be in any order, and `times` follows it", {
   )
 })
 
+test_that("`axes` can be titles, and `times` follows them", {
+  x <- array(
+    1:24,
+    c(2, 3, 4),
+    dimnames = list(row = NULL, col = NULL, page = NULL)
+  )
+  expect_identical(
+    rray_rep(x, times = c(2, 3), axes = c("col", "row")),
+    rray_rep(x, times = c(3, 2), axes = c(1, 2))
+  )
+})
+
 test_that("repeating several axes is repeating them one at a time", {
   x <- array(1:24, c(2, 3, 4))
 
@@ -317,6 +329,7 @@ test_that("`axes` is validated", {
   expect_snapshot(rray_rep(x, times = 2, axes = 0), error = TRUE)
   expect_snapshot(rray_rep(x, times = 2, axes = 3), error = TRUE)
   expect_snapshot(rray_rep(x, times = 2, axes = NA), error = TRUE)
+  expect_snapshot(rray_rep(x, times = 2, axes = "row"), error = TRUE)
 })
 
 test_that("`times` is validated", {

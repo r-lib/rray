@@ -11,7 +11,8 @@ rray_reverse(x, ..., axes)
 
 \item{...}{These dots are for future extensions and must be empty.}
 
-\item{axes}{An integer vector of axes to reverse along.}
+\item{axes}{The axes to reverse along, given
+\link[=faq-axes]{by position or by title}.}
 }
 \value{
 An array with the same type and dimensions as \code{x}.
@@ -37,4 +38,8 @@ rray_reverse(x, axes = 2)
 
 # Reverse both axes
 rray_reverse(x, axes = c(1, 2))
+
+# Reverse the columns, by title
+y <- rray_set_titles(x, c("row", "col"))
+rray_reverse(y, axes = "col")
 }

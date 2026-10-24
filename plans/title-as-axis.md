@@ -590,17 +590,17 @@ Each top level item is one PR. Each PR runs `clang-format`, `air format .`,
 
   - [x] Docs for each.
 
-- [ ] PR 4: Titles for multi axis functions.
+- [x] PR 4: Titles for multi axis functions.
 
-  - [ ] Swap the `r_null` titles from PR 2 for `rray_titles(x)`.
+  - [x] Swap the `r_null` titles from PR 2 for `rray_titles(x)`.
 
-  - [ ] Rep, roll, reverse.
+  - [x] Rep, roll, reverse.
 
-  - [ ] Remove axes.
+  - [x] Remove axes.
 
-  - [ ] Permute axes.
+  - [x] Permute axes.
 
-  - [ ] Docs for each.
+  - [x] Docs for each.
 
 - [ ] PR 5: Titles for `rray_combine()`.
 

@@ -58,6 +58,14 @@
       Error in `rray_roll()`:
       ! `axes` must be an integer, double, or character vector, not `NA`.
 
+---
+
+    Code
+      rray_roll(x, n = 1, axes = "row")
+    Condition
+      Error in `rray_roll()`:
+      ! Can't use a title in `axes` because `x` has no titles.
+
 # `n` is validated
 
     Code

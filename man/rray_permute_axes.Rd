@@ -9,7 +9,9 @@ rray_permute_axes(x, axes)
 \arguments{
 \item{x}{An array.}
 
-\item{axes}{An integer vector. It must use each axis of \code{x} exactly once.}
+\item{axes}{The axes of \code{x} in their new order, given
+\link[=faq-axes]{by position or by title}. It must use each axis of \code{x} exactly
+once.}
 }
 \value{
 An array with the axes of \code{x} reordered by \code{axes}.
@@ -27,6 +29,10 @@ x <- array(1:6, c(2, 3))
 
 # Transpose a matrix
 rray_permute_axes(x, c(2, 1))
+
+# Transpose a matrix, by title
+z <- rray_set_titles(x, c("row", "col"))
+rray_permute_axes(z, c("col", "row"))
 
 y <- array(1:24, c(4, 3, 2))
 

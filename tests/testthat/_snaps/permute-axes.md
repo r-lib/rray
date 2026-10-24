@@ -51,6 +51,14 @@
       Error in `rray_permute_axes()`:
       ! Can't use a title in `axes` because `x` has no titles.
 
+---
+
+    Code
+      rray_permute_axes(x, "col")
+    Condition
+      Error in `rray_permute_axes()`:
+      ! `axes` must have length 2 to match the dimensionality of the array, not length 1.
+
 # errors on non-array input
 
     Code

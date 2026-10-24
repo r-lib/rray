@@ -5,6 +5,7 @@
 #include "dimensions.h"
 #include "strided-iterator.h"
 #include "strides.h"
+#include "titles.h"
 #include "utils.h"
 
 #include "decl/permute-axes-decl.h"
@@ -36,9 +37,11 @@ r_obj* rray_permute_axes(
     v_x_strides
   );
 
+  r_obj* titles = KEEP(rray_titles(x, arg, error_call));
+
   axes = KEEP(arg_as_axes_permutation(
     axes,
-    r_null,
+    titles,
     dimensionality,
     rray_args.axes,
     arg,
@@ -129,7 +132,7 @@ r_obj* rray_permute_axes(
     r_attrib_poke_dim_names(out, names);
   }
 
-  FREE(6);
+  FREE(7);
   return out;
 }
 

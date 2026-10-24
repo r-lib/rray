@@ -3,6 +3,7 @@
 #include "axes.h"
 #include "dimensionality.h"
 #include "dimensions.h"
+#include "titles.h"
 #include "utils.h"
 #include "view.h"
 
@@ -25,8 +26,10 @@ r_obj* rray_remove_axes(
   const int dimensionality = rray_dimensionality_from_dimensions(x_dimensions);
   check_dimensionality(dimensionality);
 
+  r_obj* x_titles = KEEP(rray_titles(x, arg, error_call));
+
   axes = KEEP(
-    arg_as_axes(axes, r_null, dimensionality, rray_args.axes, arg, error_call)
+    arg_as_axes(axes, x_titles, dimensionality, rray_args.axes, arg, error_call)
   );
   const int* v_axes = r_int_cbegin(axes);
   const r_ssize axes_size = r_length(axes);
@@ -43,7 +46,6 @@ r_obj* rray_remove_axes(
   r_obj* x_names = r_dim_names(x);
   r_obj* const* v_x_names = x_names == r_null ? NULL : r_list_cbegin(x_names);
 
-  r_obj* x_titles = x_names == r_null ? r_null : r_names(x_names);
   r_obj* const* v_x_titles = x_titles == r_null ? NULL : r_chr_cbegin(x_titles);
 
   r_obj* out_names = r_null;
@@ -108,6 +110,6 @@ r_obj* rray_remove_axes(
     r_attrib_poke_dim_names(out, out_names);
   }
 
-  FREE(6);
+  FREE(7);
   return out;
 }

@@ -5,6 +5,14 @@ test_that("transposes a matrix", {
   expect_identical(rray_permute_axes(x, c(2L, 1L)), expected)
 })
 
+test_that("`axes` can be titles", {
+  x <- array(1:6, c(2L, 3L), dimnames = list(row = NULL, col = NULL))
+  expect_identical(
+    rray_permute_axes(x, c("col", "row")),
+    rray_permute_axes(x, c(2L, 1L))
+  )
+})
+
 test_that("axis `i` of the result comes from axis `axes[i]` of `x`", {
   x <- array(1:24, c(4L, 3L, 2L))
   out <- rray_permute_axes(x, c(2L, 3L, 1L))
@@ -136,6 +144,9 @@ test_that("errors on invalid `axes`", {
     rray_permute_axes(x, c(1.5, 2))
     rray_permute_axes(x, "x")
   })
+
+  x <- array(1:6, c(2L, 3L), dimnames = list(row = NULL, col = NULL))
+  expect_snapshot(rray_permute_axes(x, "col"), error = TRUE)
 })
 
 test_that("errors on non-array input", {

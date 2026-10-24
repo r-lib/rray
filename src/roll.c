@@ -3,6 +3,7 @@
 #include "axes.h"
 #include "dimensionality.h"
 #include "slice.h"
+#include "titles.h"
 #include "utils.h"
 
 #include "decl/roll-decl.h"
@@ -32,9 +33,11 @@ r_obj* rray_roll(
   const int dimensionality = rray_dimensionality_from_dimensions(x_dimensions);
   check_dimensionality(dimensionality);
 
+  r_obj* titles = KEEP(rray_titles(x, x_arg, error_call));
+
   axes = KEEP(arg_as_axes_unsorted(
     axes,
-    r_null,
+    titles,
     dimensionality,
     rray_args.axes,
     x_arg,
@@ -62,7 +65,7 @@ r_obj* rray_roll(
 
   r_obj* out = rray_slice(x, indices, x_arg, rray_args.empty, error_call);
 
-  FREE(4);
+  FREE(5);
   return out;
 }
 
