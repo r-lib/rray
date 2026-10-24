@@ -85,8 +85,8 @@
 #'
 #' @param x An array.
 #'
-#' @param axis A single integer. The axis to accumulate along. `1`
-#'   accumulates down rows, `2` accumulates across columns, and so on.
+#' @param axis The axis to accumulate along, given
+#'   [by position or by title][faq-axes].
 #'
 #' @returns
 #' An array with the same dimensions and names as `x`.
@@ -116,6 +116,10 @@
 #'
 #' # Running sum across columns
 #' rray_cumulative_sum(x, axis = 2L)
+#'
+#' # Running sum across columns, by title
+#' y <- rray_set_titles(x, c("row", "col"))
+#' rray_cumulative_sum(y, axis = "col")
 NULL
 
 #' @rdname rray-cumulative

@@ -31,7 +31,7 @@
       rray_rep(x, times = 2, axes = TRUE)
     Condition
       Error in `rray_rep()`:
-      ! `axes` must be an integer or double vector, not `TRUE`.
+      ! `axes` must be an integer, double, or character vector, not `TRUE`.
 
 ---
 
@@ -63,7 +63,7 @@
       rray_rep(x, times = 2, axes = NA)
     Condition
       Error in `rray_rep()`:
-      ! `axes` must be an integer or double vector, not `NA`.
+      ! `axes` must be an integer, double, or character vector, not `NA`.
 
 # `times` is validated
 

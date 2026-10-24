@@ -4,7 +4,7 @@
       rray_permute_axes(x, NULL)
     Condition
       Error in `rray_permute_axes()`:
-      ! `axes` must be an integer or double vector, not `NULL`.
+      ! `axes` must be an integer, double, or character vector, not `NULL`.
     Code
       rray_permute_axes(x, 1L)
     Condition
@@ -49,7 +49,7 @@
       rray_permute_axes(x, "x")
     Condition
       Error in `rray_permute_axes()`:
-      ! `axes` must be an integer or double vector, not the string "x".
+      ! Can't use a title in `axes` because `x` has no titles.
 
 # errors on non-array input
 

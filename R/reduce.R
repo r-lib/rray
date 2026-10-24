@@ -81,8 +81,8 @@
 #'
 #' @param x An array.
 #'
-#' @param axes An integer vector of axes to reduce over. `1` reduces
-#'   rows, `2` reduces columns, and so on.
+#' @param axes The axes to reduce along, given
+#'   [by position or by title][faq-axes].
 #'
 #' @param na_rm If `TRUE`, missing values are removed before reducing.
 #'
@@ -102,6 +102,10 @@
 #'
 #' # Sum along both axes
 #' rray_sum(x, axes = c(1L, 2L))
+#'
+#' # Sum along rows, by title
+#' y <- rray_set_titles(x, c("row", "col"))
+#' rray_sum(y, axes = "row")
 #'
 #' # Product along rows
 #' rray_prod(x, axes = 1L)

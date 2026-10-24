@@ -24,7 +24,7 @@
       rray_roll(x, n = 1, axes = TRUE)
     Condition
       Error in `rray_roll()`:
-      ! `axes` must be an integer or double vector, not `TRUE`.
+      ! `axes` must be an integer, double, or character vector, not `TRUE`.
 
 ---
 
@@ -56,7 +56,7 @@
       rray_roll(x, n = 1, axes = NA)
     Condition
       Error in `rray_roll()`:
-      ! `axes` must be an integer or double vector, not `NA`.
+      ! `axes` must be an integer, double, or character vector, not `NA`.
 
 # `n` is validated
 

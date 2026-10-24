@@ -168,6 +168,11 @@ test_that("errors on invalid axes", {
   })
 })
 
+test_that("errors above the maximum dimensionality", {
+  x <- array(1L, rep(1L, 65L))
+  expect_snapshot(rray_remove_axes(x, 65L), error = TRUE)
+})
+
 test_that("errors on non-array input", {
   expect_snapshot(error = TRUE, {
     rray_remove_axes(NULL, 1L)

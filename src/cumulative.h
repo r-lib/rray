@@ -23,7 +23,7 @@ typedef rray_cumulative_fn (*rray_cumulative_fn_switch)(
 
 r_obj* rray_cumulative(
   r_obj* x,
-  int axis,
+  r_obj* axis,
   rray_cumulative_fn_switch fn_switch,
   struct rray_arg* arg,
   struct r_lazy error_call

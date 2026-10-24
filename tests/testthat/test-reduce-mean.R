@@ -57,6 +57,14 @@ test_that("axes can be in any order", {
   )
 })
 
+test_that("axes can be titles", {
+  x <- array(1:24, c(2L, 3L, 4L), dimnames = list(A = NULL, B = NULL, C = NULL))
+  expect_identical(
+    rray_mean(x, axes = c("C", "A")),
+    rray_mean(x, axes = c(1L, 3L))
+  )
+})
+
 test_that("can reduce axis 3", {
   x <- array(1:24, c(2L, 3L, 4L))
   out <- rray_mean(x, axes = 3L)

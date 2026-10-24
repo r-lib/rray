@@ -38,6 +38,78 @@
       Error in `rray_sum()`:
       ! `axes` must not contain missing values.
 
+# errors on titles that aren't found
+
+    Code
+      rray_sum(x, axes = "nope")
+    Condition
+      Error in `rray_sum()`:
+      ! Can't find an axis of `x` titled "nope".
+
+---
+
+    Code
+      rray_sum(x, axes = c("row", "nope"))
+    Condition
+      Error in `rray_sum()`:
+      ! Can't find an axis of `x` titled "nope".
+
+# errors on titles when `x` has no titles
+
+    Code
+      rray_sum(x, axes = "row")
+    Condition
+      Error in `rray_sum()`:
+      ! Can't use a title in `axes` because `x` has no titles.
+
+---
+
+    Code
+      rray_sum(x, axes = character())
+    Condition
+      Error in `rray_sum()`:
+      ! Can't use a title in `axes` because `x` has no titles.
+
+# errors on missing or empty titles
+
+    Code
+      rray_sum(x, axes = c("row", NA))
+    Condition
+      Error in `rray_sum()`:
+      ! `axes` must not contain missing values.
+
+---
+
+    Code
+      rray_sum(x, axes = "")
+    Condition
+      Error in `rray_sum()`:
+      ! `axes` can't contain empty strings.
+
+# errors on duplicate titles
+
+    Code
+      rray_sum(x, axes = c("row", "row"))
+    Condition
+      Error in `rray_sum()`:
+      ! `axes` must not contain "row" more than once.
+
+# errors on axes of the wrong type
+
+    Code
+      rray_sum(x, axes = list(1))
+    Condition
+      Error in `rray_sum()`:
+      ! `axes` must be an integer, double, or character vector, not a list.
+
+---
+
+    Code
+      rray_sum(x, axes = factor("row"))
+    Condition
+      Error in `rray_sum()`:
+      ! `axes` can't have attributes.
+
 # errors on integer overflow
 
     Code

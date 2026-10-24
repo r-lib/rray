@@ -4,7 +4,7 @@
       rray_cumulative_prod(x, axis = integer())
     Condition
       Error in `rray_cumulative_prod()`:
-      ! `axis` must be a single integer, not length 0.
+      ! `axis` must be length 1, not length 0.
 
 ---
 
@@ -12,7 +12,7 @@
       rray_cumulative_prod(x, axis = 1:2)
     Condition
       Error in `rray_cumulative_prod()`:
-      ! `axis` must be a single integer, not length 2.
+      ! `axis` must be length 1, not length 2.
 
 ---
 
@@ -68,7 +68,7 @@
       rray_cumulative_prod(x, axis = "a")
     Condition
       Error in `rray_cumulative_prod()`:
-      ! `axis` must be an integer or double vector, not the string "a".
+      ! Can't use a title in `axis` because `x` has no titles.
 
 # `axis` must be named
 

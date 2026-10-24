@@ -76,6 +76,24 @@ test_that("axes can be in any order", {
   expect_identical(rray_sum(x, axes = c(3L, 1L)), rray_sum(x, axes = c(1L, 3L)))
 })
 
+test_that("axes can be titles", {
+  x <- array(
+    1:24,
+    c(2L, 3L, 4L),
+    dimnames = list(row = c("a", "b"), col = NULL, page = NULL)
+  )
+  expect_identical(rray_sum(x, axes = "row"), rray_sum(x, axes = 1L))
+  expect_identical(
+    rray_sum(x, axes = c("page", "row")),
+    rray_sum(x, axes = c(1L, 3L))
+  )
+})
+
+test_that("a title matches the first axis with that title", {
+  x <- array(1:6, c(2L, 3L), dimnames = list(a = NULL, a = NULL))
+  expect_identical(rray_sum(x, axes = "a"), rray_sum(x, axes = 1L))
+})
+
 test_that("dimension names are kept for non-reduced axes", {
   x <- array(1:10, c(5L, 2L), dimnames = list(letters[1:5], c("c1", "c2")))
   expect_identical(dimnames(rray_sum(x, axes = 1L)), list(NULL, c("c1", "c2")))
@@ -376,6 +394,35 @@ test_that("errors on axes less than 1", {
 test_that("errors on axes with NA", {
   x <- array(1:4, c(2L, 2L))
   expect_snapshot(rray_sum(x, axes = NA_integer_), error = TRUE)
+})
+
+test_that("errors on titles that aren't found", {
+  x <- array(1:4, c(2L, 2L), dimnames = list(row = NULL, NULL))
+  expect_snapshot(rray_sum(x, axes = "nope"), error = TRUE)
+  expect_snapshot(rray_sum(x, axes = c("row", "nope")), error = TRUE)
+})
+
+test_that("errors on titles when `x` has no titles", {
+  x <- array(1:4, c(2L, 2L))
+  expect_snapshot(rray_sum(x, axes = "row"), error = TRUE)
+  expect_snapshot(rray_sum(x, axes = character()), error = TRUE)
+})
+
+test_that("errors on missing or empty titles", {
+  x <- array(1:4, c(2L, 2L), dimnames = list(row = NULL, NULL))
+  expect_snapshot(rray_sum(x, axes = c("row", NA)), error = TRUE)
+  expect_snapshot(rray_sum(x, axes = ""), error = TRUE)
+})
+
+test_that("errors on duplicate titles", {
+  x <- array(1:4, c(2L, 2L), dimnames = list(row = NULL, col = NULL))
+  expect_snapshot(rray_sum(x, axes = c("row", "row")), error = TRUE)
+})
+
+test_that("errors on axes of the wrong type", {
+  x <- array(1:4, c(2L, 2L), dimnames = list(row = NULL, col = NULL))
+  expect_snapshot(rray_sum(x, axes = list(1)), error = TRUE)
+  expect_snapshot(rray_sum(x, axes = factor("row")), error = TRUE)
 })
 
 test_that("errors on integer overflow", {

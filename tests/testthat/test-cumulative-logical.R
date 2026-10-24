@@ -176,6 +176,22 @@ test_that("`axis` can be a whole double", {
   )
 })
 
+test_that("`axis` can be a title", {
+  x <- array(
+    c(TRUE, FALSE),
+    c(2L, 3L),
+    dimnames = list(row = NULL, col = NULL)
+  )
+  expect_identical(
+    rray_cumulative_all(x, axis = "col"),
+    rray_cumulative_all(x, axis = 2L)
+  )
+  expect_identical(
+    rray_cumulative_any(x, axis = "col"),
+    rray_cumulative_any(x, axis = 2L)
+  )
+})
+
 test_that("`axis` is validated", {
   x <- array(TRUE, c(2L, 2L))
 

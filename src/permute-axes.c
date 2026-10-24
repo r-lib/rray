@@ -36,9 +36,14 @@ r_obj* rray_permute_axes(
     v_x_strides
   );
 
-  axes = KEEP(
-    arg_as_axes_permutation(axes, dimensionality, rray_args.axes, error_call)
-  );
+  axes = KEEP(arg_as_axes_permutation(
+    axes,
+    r_null,
+    dimensionality,
+    rray_args.axes,
+    arg,
+    error_call
+  ));
   const int* v_axes = r_int_cbegin(axes);
 
   r_obj* dimensions = KEEP(r_alloc_integer(dimensionality));
