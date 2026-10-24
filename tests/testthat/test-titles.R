@@ -127,6 +127,21 @@ test_that("title setters remove one or all titles", {
   expect_identical(dimnames(out), unname(dimnames(x)))
 })
 
+test_that("`rray_set_axis_title()` takes a title for `axis`", {
+  x <- matrix(
+    1:6,
+    2,
+    3,
+    dimnames = list(Row = c("a", "b"), Column = c("x", "y", "z"))
+  )
+
+  out <- rray_set_axis_title(x, "Row", "R")
+  expect_identical(rray_titles(out), c("R", "Column"))
+
+  out <- rray_set_axis_title(x, "Column", NULL)
+  expect_identical(rray_titles(out), c("Row", ""))
+})
+
 test_that("title setters keep empty titles", {
   x <- matrix(
     1:6,
@@ -166,6 +181,7 @@ test_that("title getters reject invalid input and axes", {
   expect_snapshot(rray_axis_title(x, 3), error = TRUE)
   expect_snapshot(rray_axis_title(x, NA_integer_), error = TRUE)
   expect_snapshot(rray_axis_title(x, c(1, 2)), error = TRUE)
+  expect_snapshot(rray_axis_title(x, "Row"), error = TRUE)
 })
 
 test_that("title setters reject invalid input and values", {
@@ -176,6 +192,7 @@ test_that("title setters reject invalid input and values", {
   expect_snapshot(rray_set_titles(x, 1:2), error = TRUE)
   expect_snapshot(rray_set_titles(x, "Row"), error = TRUE)
   expect_snapshot(rray_set_axis_title(x, 0, "Row"), error = TRUE)
+  expect_snapshot(rray_set_axis_title(x, "Row", "R"), error = TRUE)
   expect_snapshot(rray_set_axis_title(x, 1, 1L), error = TRUE)
   expect_snapshot(rray_set_axis_title(x, 1, character()), error = TRUE)
   expect_snapshot(rray_set_axis_title(x, 1, c("Row", "Column")), error = TRUE)

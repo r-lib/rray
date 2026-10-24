@@ -34,7 +34,8 @@
 #'
 #' @param x An array.
 #'
-#' @param axis A single integer giving the axis to locate along.
+#' @param axis The axis to locate along, given
+#'   [by position or by title][faq-axes].
 #'
 #' @param na_rm If `TRUE`, missing values are skipped.
 #'
@@ -51,6 +52,10 @@
 #'
 #' # Position of the minimum going across the columns
 #' rray_locate_min(x, axis = 2L)
+#'
+#' # Position of the minimum going across the columns, by title
+#' y <- rray_set_titles(x, c("row", "col"))
+#' rray_locate_min(y, axis = "col")
 NULL
 
 #' @rdname rray-locate

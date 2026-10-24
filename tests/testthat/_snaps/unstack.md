@@ -20,7 +20,7 @@
       rray_unstack(x, axis = c(1, 2))
     Condition
       Error in `rray_unstack()`:
-      ! `axis` must be a single integer, not length 2.
+      ! `axis` must be length 1, not length 2.
 
 ---
 
@@ -37,6 +37,14 @@
     Condition
       Error in `rray_unstack()`:
       ! `axis` must contain whole numbers that fit in an integer. Problem at location 1.
+
+---
+
+    Code
+      rray_unstack(x, axis = "row")
+    Condition
+      Error in `rray_unstack()`:
+      ! Can't use a title in `axis` because `x` has no titles.
 
 ---
 

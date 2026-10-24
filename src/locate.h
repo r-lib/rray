@@ -7,7 +7,7 @@
 
 r_obj* rray_locate_max(
   r_obj* x,
-  int axis,
+  r_obj* axis,
   bool na_rm,
   struct rray_arg* arg,
   struct r_lazy error_call
@@ -15,7 +15,7 @@ r_obj* rray_locate_max(
 
 r_obj* rray_locate_min(
   r_obj* x,
-  int axis,
+  r_obj* axis,
   bool na_rm,
   struct rray_arg* arg,
   struct r_lazy error_call

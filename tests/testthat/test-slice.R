@@ -420,6 +420,23 @@ test_that("`rray_slice_axis()` keeps titles", {
   )
 })
 
+test_that("`axis` can be a title", {
+  x <- array(
+    1:6,
+    c(2L, 3L),
+    dimnames = list(row = c("a", "b"), col = c("c", "d", "e"))
+  )
+
+  expect_identical(
+    rray_slice_axis(x, 1L, axis = "col"),
+    rray_slice_axis(x, 1L, axis = 2)
+  )
+  expect_identical(
+    rray_slice_axis(x, c("e", "c"), axis = "col"),
+    rray_slice_axis(x, c(3L, 1L), axis = 2)
+  )
+})
+
 test_that("`rray_slice_axis()` works with a bare vector", {
   expect_identical(
     rray_slice_axis(c(a = 1L, b = 2L), c(2L, 1L), axis = 1),
@@ -457,6 +474,7 @@ test_that("`axis` is validated", {
     rray_slice_axis(x, 1L, axis = 3)
     rray_slice_axis(x, 1L, axis = c(1, 2))
     rray_slice_axis(x, 1L, axis = NA_integer_)
+    rray_slice_axis(x, 1L, axis = "row")
   })
 })
 
@@ -986,6 +1004,23 @@ test_that("`rray_slice_assign_axis()` keeps titles", {
   )
 })
 
+test_that("`axis` can be a title in `rray_slice_assign_axis()`", {
+  x <- array(
+    1:6,
+    c(2L, 3L),
+    dimnames = list(row = c("a", "b"), col = c("c", "d", "e"))
+  )
+
+  expect_identical(
+    rray_slice_assign_axis(x, 1L, axis = "col", value = 0L),
+    rray_slice_assign_axis(x, 1L, axis = 2, value = 0L)
+  )
+  expect_identical(
+    rray_slice_assign_axis(x, c("e", "c"), axis = "col", value = 0L),
+    rray_slice_assign_axis(x, c(3L, 1L), axis = 2, value = 0L)
+  )
+})
+
 test_that("reports subscript errors from `rray_slice_assign_axis()` as `i`", {
   x <- array(1:6, c(2L, 3L), dimnames = list(c("a", "b"), NULL))
 
@@ -1000,6 +1035,7 @@ test_that("`axis` and `value` are validated by `rray_slice_assign_axis()`", {
 
   expect_snapshot(error = TRUE, {
     rray_slice_assign_axis(x, 1L, axis = 3, value = 0L)
+    rray_slice_assign_axis(x, 1L, axis = "row", value = 0L)
     rray_slice_assign_axis(x, 1L, axis = 1, value = "a")
     rray_slice_assign_axis(x, 1L, axis = 1, value = 1:2)
   })

@@ -510,10 +510,12 @@ void R_init_rray(DllInfo* dll) {
 }
 
 extern void rray_init_args(r_obj* ns);
+extern void rray_init_globals(r_obj* ns);
 extern void rray_init_syms(r_obj* ns);
 
 r_obj* ffi_rray_init_library(r_obj* ffi_ns) {
   r_init_library(ffi_ns);
+  rray_init_globals(ffi_ns);
   rray_init_syms(ffi_ns);
   rray_init_args(ffi_ns);
   return r_null;

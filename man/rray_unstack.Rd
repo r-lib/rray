@@ -11,7 +11,8 @@ rray_unstack(x, ..., axis)
 
 \item{...}{These dots are for future extensions and must be empty.}
 
-\item{axis}{A single integer representing the axis to unstack along.}
+\item{axis}{The axis to unstack along, given
+\link[=faq-axes]{by position or by title}.}
 }
 \value{
 A list of arrays with the same dimensions as \code{x}, except that \code{axis} has
@@ -39,6 +40,10 @@ rray_unstack(x, axis = 1)
 
 # One array per column
 rray_unstack(x, axis = 2)
+
+# One array per column, by title
+z <- rray_set_titles(x, c("row", "col"))
+rray_unstack(z, axis = "col")
 
 # Names along the axis become list names
 y <- array(1:4, c(2, 2), dimnames = list(c("a", "b"), c("x", "y")))

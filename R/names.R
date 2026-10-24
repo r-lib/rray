@@ -37,7 +37,8 @@ rray_names <- function(x) {
 #'
 #' @param x An array.
 #'
-#' @param axis A single integer. The axis to get names for.
+#' @param axis The axis to get names for, given
+#'   [by position or by title][faq-axes].
 #'
 #' @returns
 #' A character vector of names, or `NULL` if that axis has no names.
@@ -48,6 +49,10 @@ rray_names <- function(x) {
 #'
 #' rray_axis_names(x, 1)
 #' rray_axis_names(x, 2)
+#'
+#' # By title
+#' y <- rray_set_titles(x, c("row", "col"))
+#' rray_axis_names(y, "col")
 #'
 #' rray_row_names(x)
 #' rray_column_names(x)
@@ -105,7 +110,8 @@ rray_set_names <- function(x, names) {
 #'
 #' @param x An array.
 #'
-#' @param axis A single integer. The axis to set names for.
+#' @param axis The axis to set names for, given
+#'   [by position or by title][faq-axes].
 #'
 #' @param names A character vector of names for `axis`, the same length as
 #'   the dimension of `axis`. Can also be `NULL` to remove names from `axis`.
@@ -119,6 +125,10 @@ rray_set_names <- function(x, names) {
 #'
 #' rray_set_axis_names(x, 1, c("r1", "r2"))
 #' rray_set_axis_names(x, 2, c("c1", "c2", "c3"))
+#'
+#' # By title
+#' y <- rray_set_titles(x, c("row", "col"))
+#' rray_set_axis_names(y, "col", c("c1", "c2", "c3"))
 #'
 #' rray_set_row_names(x, c("r1", "r2"))
 #' rray_set_column_names(x, c("c1", "c2", "c3"))

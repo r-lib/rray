@@ -15,7 +15,8 @@ rray_locate_min(x, ..., axis, na_rm = FALSE)
 
 \item{...}{These dots are for future extensions and must be empty.}
 
-\item{axis}{A single integer giving the axis to locate along.}
+\item{axis}{The axis to locate along, given
+\link[=faq-axes]{by position or by title}.}
 
 \item{na_rm}{If \code{TRUE}, missing values are skipped.}
 }
@@ -59,4 +60,8 @@ rray_locate_max(x, axis = 1L)
 
 # Position of the minimum going across the columns
 rray_locate_min(x, axis = 2L)
+
+# Position of the minimum going across the columns, by title
+y <- rray_set_titles(x, c("row", "col"))
+rray_locate_min(y, axis = "col")
 }

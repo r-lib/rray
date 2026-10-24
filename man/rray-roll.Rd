@@ -24,7 +24,8 @@ dimensions of \code{x} with \code{axis} set to 1.}
 
 \item{axes}{An integer vector of axes to roll along.}
 
-\item{axis}{A single integer representing the axis to roll along.}
+\item{axis}{The axis to roll along, given
+\link[=faq-axes]{by position or by title}.}
 }
 \value{
 An array with the same type and dimensions as \code{x}.
@@ -268,6 +269,10 @@ y <- matrix(1:12, nrow = 3, byrow = TRUE)
 
 # Roll each row by its own `n`, given as a one column matrix
 rray_roll_each(y, n = matrix(c(1, 0, -1), ncol = 1), axis = 2)
+
+# Roll each row by its own `n`, by title
+z <- rray_set_titles(y, c("row", "col"))
+rray_roll_each(z, n = matrix(c(1, 0, -1), ncol = 1), axis = "col")
 
 # Roll each column by its own `n`, given as a one row matrix
 rray_roll_each(y, n = matrix(c(0, 1, 2, 3), nrow = 1), axis = 1)

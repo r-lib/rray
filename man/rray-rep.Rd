@@ -23,7 +23,8 @@ For \code{rray_rep_each()}, a vector of integers greater than or equal to
 
 \item{axes}{An integer vector of axes to repeat along.}
 
-\item{axis}{A single integer representing the axis to repeat along.}
+\item{axis}{The axis to repeat along, given
+\link[=faq-axes]{by position or by title}.}
 }
 \value{
 An array with the same dimensions as \code{x}, except along the repeated axes.
@@ -68,6 +69,10 @@ rray_rep(x, times = c(2, 3), axes = c(1, 2))
 
 # A different number of repeats per row
 rray_rep_each(x, times = c(1, 2, 3), axis = 1)
+
+# A different number of repeats per row, by title
+z <- rray_set_titles(x, c("row", "col"))
+rray_rep_each(z, times = c(1, 2, 3), axis = "row")
 
 # Zeroes drop slices entirely
 rray_rep_each(x, times = c(1, 0, 2), axis = 1)

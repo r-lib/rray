@@ -6,6 +6,7 @@
 #include "dimensionality.h"
 #include "rep.h"
 #include "slice.h"
+#include "titles.h"
 #include "utils.h"
 
 #include "decl/rep-each-decl.h"
@@ -17,14 +18,13 @@ r_obj* ffi_rray_rep_each(
   r_obj* ffi_frame
 ) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  const int axis = arg_as_int(ffi_axis, rray_args.axis, error_call);
-  return rray_rep_each(ffi_x, ffi_times, axis, rray_args.x, error_call);
+  return rray_rep_each(ffi_x, ffi_times, ffi_axis, rray_args.x, error_call);
 }
 
 r_obj* rray_rep_each(
   r_obj* x,
   r_obj* times,
-  int axis,
+  r_obj* axis,
   struct rray_arg* x_arg,
   struct r_lazy error_call
 ) {
@@ -36,8 +36,17 @@ r_obj* rray_rep_each(
   const int dimensionality = rray_dimensionality_from_dimensions(x_dimensions);
   check_dimensionality(dimensionality);
 
-  check_axis(axis, dimensionality, rray_args.axis, error_call);
-  const int axis_dimension = v_x_dimensions[axis - 1];
+  r_obj* titles = KEEP(rray_titles(x, x_arg, error_call));
+
+  const int c_axis = arg_as_axis(
+    axis,
+    titles,
+    dimensionality,
+    rray_args.axis,
+    x_arg,
+    error_call
+  );
+  const int axis_dimension = v_x_dimensions[c_axis - 1];
 
   times = KEEP(
     arg_as_rep_each_times(times, axis_dimension, rray_args.times, error_call)
@@ -56,13 +65,13 @@ r_obj* rray_rep_each(
 
   r_list_poke(
     indices,
-    axis - 1,
+    c_axis - 1,
     rray_rep_each_locations(axis_dimension, out_dimension, v_times, times_size)
   );
 
   r_obj* out = rray_slice(x, indices, x_arg, rray_args.empty, error_call);
 
-  FREE(3);
+  FREE(4);
   return out;
 }
 

@@ -185,6 +185,14 @@ test_that("names on non-split axes are kept", {
   expect_identical(dimnames(out[[3]]), list(c("a", "b"), "z"))
 })
 
+test_that("`axis` can be a title", {
+  x <- array(1:6, c(2, 3), dimnames = list(row = NULL, col = c("x", "y", "z")))
+  expect_identical(
+    rray_split(x, axis = "col", dimensions = c(2, 1)),
+    rray_split(x, axis = 2, dimensions = c(2, 1))
+  )
+})
+
 test_that("names on the split axis are sliced", {
   x <- array(1:6, c(2, 3), dimnames = list(c("a", "b"), c("x", "y", "z")))
 
@@ -307,6 +315,7 @@ test_that("`axis` is validated", {
     error = TRUE
   )
   expect_snapshot(rray_split(x, axis = 1.5, dimensions = 1), error = TRUE)
+  expect_snapshot(rray_split(x, axis = "row", dimensions = 1), error = TRUE)
   expect_snapshot(
     rray_split(x, axis = structure(1L, class = "foo"), dimensions = 1),
     error = TRUE

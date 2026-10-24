@@ -11,7 +11,8 @@ rray_split(x, ..., axis, dimensions)
 
 \item{...}{These dots are for future extensions and must be empty.}
 
-\item{axis}{A single integer representing the axis to split on.}
+\item{axis}{The axis to split along, given
+\link[=faq-axes]{by position or by title}.}
 
 \item{dimensions}{One of:
 \itemize{
@@ -40,6 +41,10 @@ rray_split(x, axis = 1, dimensions = c(1, 5))
 
 # One array per column
 rray_split(x, axis = 2, dimensions = 1)
+
+# One array per column, by title
+y <- rray_set_titles(x, c("row", "col"))
+rray_split(y, axis = "col", dimensions = 1)
 
 # Arrays of dimension zero are allowed in the explicit form
 rray_split(x, axis = 2, dimensions = c(0, 2))

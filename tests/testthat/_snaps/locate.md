@@ -20,7 +20,7 @@
       rray_locate_max(x, axis = c(1L, 2L))
     Condition
       Error in `rray_locate_max()`:
-      ! `axis` must be a single integer, not length 2.
+      ! `axis` must be length 1, not length 2.
 
 ---
 
@@ -37,6 +37,22 @@
     Condition
       Error in `rray_locate_min()`:
       ! `axis` must contain whole numbers that fit in an integer. Problem at location 1.
+
+---
+
+    Code
+      rray_locate_min(x, axis = "row")
+    Condition
+      Error in `rray_locate_min()`:
+      ! Can't use a title in `axis` because `x` has no titles.
+
+# errors on an unknown `axis` title
+
+    Code
+      rray_locate_max(x, axis = "nope")
+    Condition
+      Error in `rray_locate_max()`:
+      ! Can't find an axis of `x` titled "nope".
 
 # `axis` must be named
 

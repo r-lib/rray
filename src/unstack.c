@@ -2,20 +2,21 @@
 
 #include "axes.h"
 #include "dimensionality.h"
+#include "globals.h"
 #include "names.h"
 #include "remove-axes.h"
 #include "split.h"
+#include "titles.h"
 #include "utils.h"
 
 r_obj* ffi_rray_unstack(r_obj* ffi_x, r_obj* ffi_axis, r_obj* ffi_frame) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  const int axis = arg_as_int(ffi_axis, rray_args.axis, error_call);
-  return rray_unstack(ffi_x, axis, rray_args.x, error_call);
+  return rray_unstack(ffi_x, ffi_axis, rray_args.x, error_call);
 }
 
 r_obj* rray_unstack(
   r_obj* x,
-  int axis,
+  r_obj* axis,
   struct rray_arg* arg,
   struct r_lazy error_call
 ) {
@@ -34,12 +35,15 @@ r_obj* rray_unstack(
     );
   }
 
-  check_axis(axis, dimensionality, rray_args.axis, error_call);
+  r_obj* titles = KEEP(rray_titles(x, arg, error_call));
 
-  r_obj* dimensions = KEEP(r_int(1));
-  r_obj* out = KEEP(rray_split(x, axis, dimensions, arg, error_call));
+  const int c_axis =
+    arg_as_axis(axis, titles, dimensionality, rray_args.axis, arg, error_call);
 
-  r_obj* axes = KEEP(r_int(axis));
+  r_obj* axes = KEEP(r_int(c_axis));
+
+  r_obj* out = KEEP(rray_split(x, axes, rray_globals.one_int, arg, error_call));
+
   const r_ssize out_size = r_length(out);
 
   for (r_ssize i = 0; i < out_size; ++i) {
@@ -47,7 +51,7 @@ r_obj* rray_unstack(
     r_list_poke(out, i, rray_remove_axes(elt, axes, arg, error_call));
   }
 
-  r_obj* names = KEEP(rray_axis_names(x, axis, arg, error_call));
+  r_obj* names = KEEP(rray_axis_names(x, axes, arg, error_call));
   if (names != r_null) {
     r_attrib_poke_names(out, names);
   }

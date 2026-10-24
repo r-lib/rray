@@ -1,6 +1,6 @@
 static r_obj* rray_locate(
   r_obj* x,
-  int axis,
+  r_obj* axis,
   bool na_rm,
   enum rray_locate_op op,
   struct rray_arg* arg,

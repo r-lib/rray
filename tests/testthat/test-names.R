@@ -70,6 +70,16 @@ test_that("rray_axis_names() coerces axis to integer", {
   expect_identical(rray_axis_names(x, 1), rray_axis_names(x, 1L))
 })
 
+test_that("rray_axis_names() takes a title for axis", {
+  x <- array(
+    1:6,
+    c(2, 3),
+    dimnames = list(row = NULL, col = c("c1", "c2", "c3"))
+  )
+  expect_identical(rray_axis_names(x, "col"), c("c1", "c2", "c3"))
+  expect_null(rray_axis_names(x, "row"))
+})
+
 test_that("rray_axis_names() errors on an invalid axis", {
   x <- array(1:6, c(2, 3))
   expect_snapshot(rray_axis_names(x, 0), error = TRUE)
@@ -77,6 +87,12 @@ test_that("rray_axis_names() errors on an invalid axis", {
   expect_snapshot(rray_axis_names(x, NA_integer_), error = TRUE)
   expect_snapshot(rray_axis_names(x, c(1, 2)), error = TRUE)
   expect_snapshot(rray_axis_names(x, integer()), error = TRUE)
+  expect_snapshot(rray_axis_names(x, "row"), error = TRUE)
+})
+
+test_that("rray_axis_names() errors on an unknown title", {
+  x <- array(1:6, c(2, 3), dimnames = list(row = NULL, col = NULL))
+  expect_snapshot(rray_axis_names(x, "nope"), error = TRUE)
 })
 
 test_that("rray_axis_names() errors on classed input", {
@@ -280,10 +296,24 @@ test_that("rray_set_axis_names() coerces axis to integer", {
   )
 })
 
+test_that("rray_set_axis_names() takes a title for axis", {
+  x <- array(1:6, c(2, 3), dimnames = list(row = NULL, col = NULL))
+  expect_identical(
+    rray_set_axis_names(x, "col", c("c1", "c2", "c3")),
+    rray_set_axis_names(x, 2, c("c1", "c2", "c3"))
+  )
+})
+
 test_that("rray_set_axis_names() errors on an invalid axis", {
   x <- array(1:6, c(2, 3))
   expect_snapshot(rray_set_axis_names(x, 0, "a"), error = TRUE)
   expect_snapshot(rray_set_axis_names(x, 3, "a"), error = TRUE)
+  expect_snapshot(rray_set_axis_names(x, "row", "a"), error = TRUE)
+})
+
+test_that("rray_set_axis_names() errors on an unknown title", {
+  x <- array(1:6, c(2, 3), dimnames = list(row = NULL, col = NULL))
+  expect_snapshot(rray_set_axis_names(x, "nope", "a"), error = TRUE)
 })
 
 test_that("rray_set_axis_names() errors if names aren't character or NULL", {

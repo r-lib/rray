@@ -23,7 +23,7 @@ r_obj* rray_set_titles(
 
 r_obj* rray_set_axis_title(
   r_obj* x,
-  int axis,
+  r_obj* axis,
   r_obj* title,
   struct rray_arg* arg,
   struct r_lazy error_call
