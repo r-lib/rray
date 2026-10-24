@@ -4,17 +4,16 @@ static void check_axes_type(
   struct r_lazy error_call
 );
 
-static int axis_from_title(
-  r_obj* title,
+static void check_has_titles(
   r_obj* titles,
   struct rray_arg* arg,
   struct rray_arg* x_arg,
   struct r_lazy error_call
 );
 
-static void check_has_titles(
+static int axis_from_title(
+  r_obj* title,
   r_obj* titles,
-  struct rray_arg* arg,
   struct rray_arg* x_arg,
   struct r_lazy error_call
 );
