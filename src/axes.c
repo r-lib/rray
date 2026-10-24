@@ -19,7 +19,7 @@ int arg_as_axis(
   if (r_length(axis) != 1) {
     r_abort_lazy_call(
       error_call,
-      "%s must be a single integer or string, not length %" R_PRI_SSIZE ".",
+      "%s must be length 1, not length %" R_PRI_SSIZE ".",
       rray_arg_format(arg),
       r_length(axis)
     );

@@ -36,7 +36,7 @@
       rray_cumulative_sum(x, axis = integer())
     Condition
       Error in `rray_cumulative_sum()`:
-      ! `axis` must be a single integer or string, not length 0.
+      ! `axis` must be length 1, not length 0.
 
 ---
 
@@ -44,7 +44,7 @@
       rray_cumulative_sum(x, axis = 1:2)
     Condition
       Error in `rray_cumulative_sum()`:
-      ! `axis` must be a single integer or string, not length 2.
+      ! `axis` must be length 1, not length 2.
 
 ---
 
@@ -140,7 +140,7 @@
       rray_cumulative_sum(x, axis = c("row", "col"))
     Condition
       Error in `rray_cumulative_sum()`:
-      ! `axis` must be a single integer or string, not length 2.
+      ! `axis` must be length 1, not length 2.
 
 # `axis` must be named
 

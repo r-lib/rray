@@ -4,7 +4,7 @@
       rray_cumulative_max(x, axis = integer())
     Condition
       Error in `rray_cumulative_max()`:
-      ! `axis` must be a single integer or string, not length 0.
+      ! `axis` must be length 1, not length 0.
 
 ---
 
@@ -12,7 +12,7 @@
       rray_cumulative_max(x, axis = 1:2)
     Condition
       Error in `rray_cumulative_max()`:
-      ! `axis` must be a single integer or string, not length 2.
+      ! `axis` must be length 1, not length 2.
 
 ---
 
