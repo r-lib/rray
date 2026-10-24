@@ -45,8 +45,8 @@ rray_min(x, ..., axes, na_rm = FALSE)
 
 - axes:
 
-  An integer vector of axes to reduce over. `1` reduces rows, `2`
-  reduces columns, and so on.
+  The axes to reduce along, given [by position or by
+  title](https://rray.r-lib.org/reference/faq-axes.md).
 
 - na_rm:
 
@@ -144,6 +144,13 @@ rray_sum(x, axes = 2L)
 rray_sum(x, axes = c(1L, 2L))
 #>      [,1]
 #> [1,]   55
+
+# Sum along rows, by title
+y <- rray_set_titles(x, c("row", "col"))
+rray_sum(y, axes = "row")
+#>       col
+#> row    [,1] [,2]
+#>   [1,]   15   40
 
 # Product along rows
 rray_prod(x, axes = 1L)

@@ -144,3 +144,5 @@
 
 - [`faq-common-names`](https://rray.r-lib.org/reference/faq-common-names.md)
   : FAQ - How are common names and titles determined?
+- [`faq-axes`](https://rray.r-lib.org/reference/faq-axes.md) : FAQ - How
+  do I refer to an axis?

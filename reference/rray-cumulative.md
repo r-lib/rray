@@ -42,8 +42,8 @@ rray_cumulative_sum(x, ..., axis)
 
 - axis:
 
-  A single integer. The axis to accumulate along. `1` accumulates down
-  rows, `2` accumulates across columns, and so on.
+  The axis to accumulate along, given [by position or by
+  title](https://rray.r-lib.org/reference/faq-axes.md).
 
 ## Value
 
@@ -171,4 +171,12 @@ rray_cumulative_sum(x, axis = 2L)
 #>      [,1] [,2] [,3]
 #> [1,]    3    5    9
 #> [2,]    1    6    6
+
+# Running sum across columns, by title
+y <- rray_set_titles(x, c("row", "col"))
+rray_cumulative_sum(y, axis = "col")
+#>       col
+#> row    [,1] [,2] [,3]
+#>   [1,]    3    5    9
+#>   [2,]    1    6    6
 ```
