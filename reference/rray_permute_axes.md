@@ -16,7 +16,9 @@ rray_permute_axes(x, axes)
 
 - axes:
 
-  An integer vector. It must use each axis of `x` exactly once.
+  The axes of `x` in their new order, given [by position or by
+  title](https://rray.r-lib.org/reference/faq-axes.md). It must use each
+  axis of `x` exactly once.
 
 ## Value
 
@@ -44,6 +46,15 @@ rray_permute_axes(x, c(2, 1))
 #> [1,]    1    2
 #> [2,]    3    4
 #> [3,]    5    6
+
+# Transpose a matrix, by title
+z <- rray_set_titles(x, c("row", "col"))
+rray_permute_axes(z, c("col", "row"))
+#>       row
+#> col    [,1] [,2]
+#>   [1,]    1    2
+#>   [2,]    3    4
+#>   [3,]    5    6
 
 y <- array(1:24, c(4, 3, 2))
 

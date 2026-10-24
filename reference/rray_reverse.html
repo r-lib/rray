@@ -61,7 +61,8 @@ axes."><meta property="og:image" content="https://rray.r-lib.org/logo.png"></hea
 
 
 <dt id="arg-axes">axes<a class="anchor" aria-label="anchor" href="#arg-axes"></a></dt>
-<dd><p>An integer vector of axes to reverse along.</p></dd>
+<dd><p>The axes to reverse along, given
+<a href="faq-axes.html">by position or by title</a>.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -98,6 +99,14 @@ untouched. The titles of <code>x</code> are kept.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    c b a</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> r2 6 4 2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> r1 5 3 1</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Reverse the columns, by title</span></span></span>
+<span class="r-in"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="rray-titles.html">rray_set_titles</a></span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"row"</span>, <span class="st">"col"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">rray_reverse</span><span class="op">(</span><span class="va">y</span>, axes <span class="op">=</span> <span class="st">"col"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     col</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> row  c b a</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   r1 5 3 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   r2 6 4 2</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

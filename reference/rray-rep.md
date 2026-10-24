@@ -43,7 +43,8 @@ rray_rep_each(x, ..., times, axis)
 
 - axes:
 
-  An integer vector of axes to repeat along.
+  The axes to repeat along, given [by position or by
+  title](https://rray.r-lib.org/reference/faq-axes.md).
 
 - axis:
 

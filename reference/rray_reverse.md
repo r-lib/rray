@@ -21,7 +21,8 @@ rray_reverse(x, ..., axes)
 
 - axes:
 
-  An integer vector of axes to reverse along.
+  The axes to reverse along, given [by position or by
+  title](https://rray.r-lib.org/reference/faq-axes.md).
 
 ## Value
 
@@ -57,4 +58,12 @@ rray_reverse(x, axes = c(1, 2))
 #>    c b a
 #> r2 6 4 2
 #> r1 5 3 1
+
+# Reverse the columns, by title
+y <- rray_set_titles(x, c("row", "col"))
+rray_reverse(y, axes = "col")
+#>     col
+#> row  c b a
+#>   r1 5 3 1
+#>   r2 6 4 2
 ```

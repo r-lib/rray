@@ -38,7 +38,8 @@ rray_roll_each(x, ..., n, axis)
 
 - axes:
 
-  An integer vector of axes to roll along.
+  The axes to roll along, given [by position or by
+  title](https://rray.r-lib.org/reference/faq-axes.md).
 
 - axis:
 

@@ -16,8 +16,9 @@ rray_remove_axes(x, axes)
 
 - axes:
 
-  An integer vector of axes to remove. Each selected axis must have a
-  dimension of 1. At least one axis must remain.
+  The axes to remove, given [by position or by
+  title](https://rray.r-lib.org/reference/faq-axes.md). Each selected
+  axis must have a dimension of 1. At least one axis must remain.
 
 ## Value
 
@@ -46,5 +47,9 @@ rray_remove_axes(x, 2)
 #>  [9,]    9
 #> [10,]   10
 rray_remove_axes(x, c(2, 3))
+#>  [1]  1  2  3  4  5  6  7  8  9 10
+
+y <- rray_set_titles(x, c("row", "col", "page"))
+rray_remove_axes(y, c("col", "page"))
 #>  [1]  1  2  3  4  5  6  7  8  9 10
 ```
