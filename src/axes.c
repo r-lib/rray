@@ -25,7 +25,14 @@ int arg_as_axis(
     );
   }
 
-  if (r_typeof(axis) == R_TYPE_character) {
+  switch (r_typeof(axis)) {
+  case R_TYPE_integer:
+  case R_TYPE_double: {
+    const int out = arg_as_int(axis, arg, error_call);
+    check_axis(out, dimensionality, arg, error_call);
+    return out;
+  }
+  case R_TYPE_character: {
     check_has_titles(titles, arg, x_arg, error_call);
 
     r_obj* title = r_chr_get(axis, 0);
@@ -48,10 +55,9 @@ int arg_as_axis(
 
     return axis_from_title(title, titles, x_arg, error_call);
   }
-
-  const int out = arg_as_int(axis, arg, error_call);
-  check_axis(out, dimensionality, arg, error_call);
-  return out;
+  default:
+    r_stop_unreachable();
+  }
 }
 
 r_obj* arg_as_axes(
