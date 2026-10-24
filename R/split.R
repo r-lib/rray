@@ -9,7 +9,8 @@
 #'
 #' @param x An array.
 #'
-#' @param axis A single integer representing the axis to split on.
+#' @param axis The axis to split along, given
+#'   [by position or by title][faq-axes].
 #'
 #' @param dimensions One of:
 #'
@@ -34,6 +35,10 @@
 #'
 #' # One array per column
 #' rray_split(x, axis = 2, dimensions = 1)
+#'
+#' # One array per column, by title
+#' y <- rray_set_titles(x, c("row", "col"))
+#' rray_split(y, axis = "col", dimensions = 1)
 #'
 #' # Arrays of dimension zero are allowed in the explicit form
 #' rray_split(x, axis = 2, dimensions = c(0, 2))

@@ -525,6 +525,14 @@ test_that("`n` can be integerish doubles or logicals", {
   )
 })
 
+test_that("`axis` can be a title", {
+  x <- matrix(1:12, nrow = 3, dimnames = list(row = NULL, col = NULL))
+  expect_identical(
+    rray_roll_each(x, n = c(0, 1, 2), axis = "col"),
+    rray_roll_each(x, n = c(0, 1, 2), axis = 2)
+  )
+})
+
 test_that("works with a zero dimension", {
   x <- array(integer(), c(2, 0))
   expect_identical(rray_roll_each(x, n = c(1, 2), axis = 2), x)
@@ -588,6 +596,7 @@ test_that("`axis` is validated", {
   expect_snapshot(rray_roll_each(x, n = 1, axis = 3), error = TRUE)
   expect_snapshot(rray_roll_each(x, n = 1, axis = 0), error = TRUE)
   expect_snapshot(rray_roll_each(x, n = 1, axis = NA_integer_), error = TRUE)
+  expect_snapshot(rray_roll_each(x, n = 1, axis = "row"), error = TRUE)
 })
 
 test_that("`n` must broadcast to `x` with `axis` set to 1", {

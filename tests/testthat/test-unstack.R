@@ -74,6 +74,11 @@ test_that("names on the axis become the list names", {
   expect_identical(out$x, array(1:2, 2, dimnames = list(c("a", "b"))))
 })
 
+test_that("`axis` can be a title", {
+  x <- array(1:6, c(2, 3), dimnames = list(row = NULL, col = c("x", "y", "z")))
+  expect_identical(rray_unstack(x, axis = "col"), rray_unstack(x, axis = 2))
+})
+
 test_that("names on the surviving axes move to their new locations", {
   x <- array(
     1:24,
@@ -184,6 +189,7 @@ test_that("`axis` is validated", {
   expect_snapshot(rray_unstack(x, axis = c(1, 2)), error = TRUE)
   expect_snapshot(rray_unstack(x, axis = NA_integer_), error = TRUE)
   expect_snapshot(rray_unstack(x, axis = 1.5), error = TRUE)
+  expect_snapshot(rray_unstack(x, axis = "row"), error = TRUE)
   expect_snapshot(
     rray_unstack(x, axis = structure(1L, class = "foo")),
     error = TRUE

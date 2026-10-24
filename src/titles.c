@@ -113,13 +113,18 @@ r_obj* ffi_rray_set_axis_title(
   r_obj* ffi_frame
 ) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  const int axis = arg_as_int(ffi_axis, rray_args.axis, error_call);
-  return rray_set_axis_title(ffi_x, axis, ffi_title, rray_args.x, error_call);
+  return rray_set_axis_title(
+    ffi_x,
+    ffi_axis,
+    ffi_title,
+    rray_args.x,
+    error_call
+  );
 }
 
 r_obj* rray_set_axis_title(
   r_obj* x,
-  int axis,
+  r_obj* axis,
   r_obj* title,
   struct rray_arg* arg,
   struct r_lazy error_call
@@ -128,10 +133,21 @@ r_obj* rray_set_axis_title(
   x = KEEP(arg_as_array(x, arg, error_call));
 
   const int dimensionality = rray_dimensionality(x, arg, error_call);
-  check_axis(axis, dimensionality, rray_args.axis, error_call);
+
+  r_obj* names = r_dim_names(x);
+  r_obj* old_titles = names == r_null ? r_null : r_names(names);
+
+  const int c_axis = arg_as_axis(
+    axis,
+    old_titles,
+    dimensionality,
+    rray_args.axis,
+    arg,
+    error_call
+  );
 
   if (title == r_null) {
-    r_obj* out = rray_clear_axis_title(x, axis, arg, error_call);
+    r_obj* out = rray_clear_axis_title(x, c_axis, arg, error_call);
     FREE(1);
     return out;
   }
@@ -154,9 +170,6 @@ r_obj* rray_set_axis_title(
     );
   }
 
-  r_obj* names = r_dim_names(x);
-  r_obj* old_titles = names == r_null ? r_null : r_names(names);
-
   r_obj* new_titles = KEEP(r_alloc_character(dimensionality));
 
   if (old_titles != r_null) {
@@ -166,7 +179,7 @@ r_obj* rray_set_axis_title(
     }
   }
 
-  r_chr_poke(new_titles, axis - 1, r_chr_get(title, 0));
+  r_chr_poke(new_titles, c_axis - 1, r_chr_get(title, 0));
 
   r_obj* out = KEEP(rray_set_titles(x, new_titles, arg, error_call));
 

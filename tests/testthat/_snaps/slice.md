@@ -124,12 +124,17 @@
       rray_slice_axis(x, 1L, axis = c(1, 2))
     Condition
       Error in `rray_slice_axis()`:
-      ! `axis` must be a single integer, not length 2.
+      ! `axis` must be length 1, not length 2.
     Code
       rray_slice_axis(x, 1L, axis = NA_integer_)
     Condition
       Error in `rray_slice_axis()`:
       ! `axis` must not be missing.
+    Code
+      rray_slice_axis(x, 1L, axis = "row")
+    Condition
+      Error in `rray_slice_axis()`:
+      ! Can't use a title in `axis` because `x` has no titles.
 
 # errors on unsupported `x` inputs to `rray_slice_axis()`
 
@@ -275,6 +280,11 @@
     Condition
       Error in `rray_slice_assign_axis()`:
       ! `axis` must be less than or equal to the dimensionality of 2, not 3.
+    Code
+      rray_slice_assign_axis(x, 1L, axis = "row", value = 0L)
+    Condition
+      Error in `rray_slice_assign_axis()`:
+      ! Can't use a title in `axis` because `x` has no titles.
     Code
       rray_slice_assign_axis(x, 1L, axis = 1, value = "a")
     Condition

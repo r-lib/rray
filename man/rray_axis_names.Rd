@@ -15,7 +15,8 @@ rray_column_names(x)
 \arguments{
 \item{x}{An array.}
 
-\item{axis}{A single integer. The axis to get names for.}
+\item{axis}{The axis to get names for, given
+\link[=faq-axes]{by position or by title}.}
 }
 \value{
 A character vector of names, or \code{NULL} if that axis has no names.
@@ -33,6 +34,10 @@ x <- array(1:6, c(2, 3), dimnames = list(c("r1", "r2"), c("c1", "c2", "c3")))
 
 rray_axis_names(x, 1)
 rray_axis_names(x, 2)
+
+# By title
+y <- rray_set_titles(x, c("row", "col"))
+rray_axis_names(y, "col")
 
 rray_row_names(x)
 rray_column_names(x)

@@ -512,6 +512,14 @@ test_that("`times` can be a double", {
   )
 })
 
+test_that("`axis` can be a title", {
+  x <- array(1:6, c(3L, 2L), dimnames = list(row = NULL, col = NULL))
+  expect_identical(
+    rray_rep_each(x, times = c(1, 2, 3), axis = "row"),
+    rray_rep_each(x, times = c(1, 2, 3), axis = 1)
+  )
+})
+
 test_that("names on the repeated axis repeat, and can be duplicated", {
   x <- array(1:6, c(3, 2), dimnames = list(c("a", "b", "c"), c("x", "y")))
 
@@ -603,6 +611,7 @@ test_that("`axis` is validated", {
   x <- array(1:6, c(3, 2))
   expect_snapshot(rray_rep_each(x, times = 2, axis = 0), error = TRUE)
   expect_snapshot(rray_rep_each(x, times = 2, axis = 3), error = TRUE)
+  expect_snapshot(rray_rep_each(x, times = 2, axis = "row"), error = TRUE)
 })
 
 test_that("`times` is validated", {

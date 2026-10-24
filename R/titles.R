@@ -14,7 +14,11 @@
 #'
 #' @param x An array.
 #'
-#' @param axis A single integer. The axis to get or set the title for.
+#' @param axis The axis to get or set the title for.
+#'
+#'   - For `rray_set_axis_title()`, given [by position or by title][faq-axes].
+#'
+#'   - For `rray_axis_title()`, given [by position][faq-axes].
 #'
 #' @param titles A character vector with one title per axis, or `NULL` to
 #'   remove all titles.
@@ -38,6 +42,7 @@
 #' rray_titles(x)
 #' rray_axis_title(x, 2)
 #' rray_set_axis_title(x, 1, NULL)
+#' rray_set_axis_title(x, "Row", "R")
 NULL
 
 #' @rdname rray-titles

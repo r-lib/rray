@@ -243,6 +243,18 @@ test_that("`axis` is coerced to integer", {
   expect_identical(rray_locate_min(x, axis = 1), rray_locate_min(x, axis = 1L))
 })
 
+test_that("`axis` can be a title", {
+  x <- array(1:6, c(2L, 3L), dimnames = list(row = NULL, col = NULL))
+  expect_identical(
+    rray_locate_max(x, axis = "col"),
+    rray_locate_max(x, axis = 2L)
+  )
+  expect_identical(
+    rray_locate_min(x, axis = "col"),
+    rray_locate_min(x, axis = 2L)
+  )
+})
+
 test_that("`axis` is validated", {
   x <- array(1:4, c(2L, 2L))
   expect_snapshot(rray_locate_max(x, axis = 0L), error = TRUE)
@@ -250,6 +262,12 @@ test_that("`axis` is validated", {
   expect_snapshot(rray_locate_max(x, axis = c(1L, 2L)), error = TRUE)
   expect_snapshot(rray_locate_max(x, axis = NA_integer_), error = TRUE)
   expect_snapshot(rray_locate_min(x, axis = 1.5), error = TRUE)
+  expect_snapshot(rray_locate_min(x, axis = "row"), error = TRUE)
+})
+
+test_that("errors on an unknown `axis` title", {
+  x <- array(1:6, c(2L, 3L), dimnames = list(row = NULL, col = NULL))
+  expect_snapshot(rray_locate_max(x, axis = "nope"), error = TRUE)
 })
 
 test_that("`axis` must be named", {

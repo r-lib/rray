@@ -8,7 +8,7 @@
 r_obj* rray_rep_each(
   r_obj* x,
   r_obj* times,
-  int axis,
+  r_obj* axis,
   struct rray_arg* x_arg,
   struct r_lazy error_call
 );

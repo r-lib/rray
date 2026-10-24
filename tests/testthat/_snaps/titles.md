@@ -46,6 +46,14 @@
       Error in `rray_axis_title()`:
       ! `axis` must be a single integer, not length 2.
 
+---
+
+    Code
+      rray_axis_title(x, "Row")
+    Condition
+      Error in `rray_axis_title()`:
+      ! `axis` must be an integer or double vector, not the string "Row".
+
 # title setters reject invalid input and values
 
     Code
@@ -77,6 +85,14 @@
     Condition
       Error in `rray_set_axis_title()`:
       ! `axis` must be greater than or equal to 1, not 0.
+
+---
+
+    Code
+      rray_set_axis_title(x, "Row", "R")
+    Condition
+      Error in `rray_set_axis_title()`:
+      ! Can't use a title in `axis` because `x` has no titles.
 
 ---
 

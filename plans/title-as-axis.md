@@ -574,21 +574,21 @@ Each top level item is one PR. Each PR runs `clang-format`, `air format .`,
 
   - [x] Add `faq-axes` and update the reduce and cumulative docs.
 
-- [ ] PR 3: Titles for one axis functions.
+- [x] PR 3: Titles for one axis functions.
 
-  - [ ] Locate.
+  - [x] Locate.
 
-  - [ ] Rep each and roll each.
+  - [x] Rep each and roll each.
 
-  - [ ] Slice axis and slice assign axis.
+  - [x] Slice axis and slice assign axis.
 
-  - [ ] Split and unstack.
+  - [x] Split and unstack.
 
-  - [ ] Names: `rray_axis_names()`, `rray_set_axis_names()`.
+  - [x] Names: `rray_axis_names()`, `rray_set_axis_names()`.
 
-  - [ ] Titles: `rray_set_axis_title()`.
+  - [x] Titles: `rray_set_axis_title()`.
 
-  - [ ] Docs for each.
+  - [x] Docs for each.
 
 - [ ] PR 4: Titles for multi axis functions.
 

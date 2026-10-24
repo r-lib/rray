@@ -11,6 +11,7 @@
 #include "size.h"
 #include "strided-iterator.h"
 #include "strides.h"
+#include "titles.h"
 #include "type.h"
 #include "utils.h"
 
@@ -37,14 +38,13 @@ r_obj* ffi_rray_locate_max(
   r_obj* ffi_frame
 ) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  const int axis = arg_as_int(ffi_axis, rray_args.axis, error_call);
   const bool na_rm = r_arg_as_bool(ffi_na_rm, "na_rm");
-  return rray_locate_max(ffi_x, axis, na_rm, rray_args.x, error_call);
+  return rray_locate_max(ffi_x, ffi_axis, na_rm, rray_args.x, error_call);
 }
 
 r_obj* rray_locate_max(
   r_obj* x,
-  int axis,
+  r_obj* axis,
   bool na_rm,
   struct rray_arg* arg,
   struct r_lazy error_call
@@ -59,14 +59,13 @@ r_obj* ffi_rray_locate_min(
   r_obj* ffi_frame
 ) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  const int axis = arg_as_int(ffi_axis, rray_args.axis, error_call);
   const bool na_rm = r_arg_as_bool(ffi_na_rm, "na_rm");
-  return rray_locate_min(ffi_x, axis, na_rm, rray_args.x, error_call);
+  return rray_locate_min(ffi_x, ffi_axis, na_rm, rray_args.x, error_call);
 }
 
 r_obj* rray_locate_min(
   r_obj* x,
-  int axis,
+  r_obj* axis,
   bool na_rm,
   struct rray_arg* arg,
   struct r_lazy error_call
@@ -76,7 +75,7 @@ r_obj* rray_locate_min(
 
 static r_obj* rray_locate(
   r_obj* x,
-  int axis,
+  r_obj* axis,
   bool na_rm,
   enum rray_locate_op op,
   struct rray_arg* arg,
@@ -91,28 +90,32 @@ static r_obj* rray_locate(
   const int dimensionality = rray_dimensionality_from_dimensions(x_dimensions);
   check_dimensionality(dimensionality);
 
-  check_axis(axis, dimensionality, rray_args.axis, error_call);
+  r_obj* titles = KEEP(rray_titles(x, arg, error_call));
+
+  const int c_axis =
+    arg_as_axis(axis, titles, dimensionality, rray_args.axis, arg, error_call);
 
   const rray_locate_fn fn = rray_locate_switch(x, op, arg, error_call);
 
   r_obj* out_dimensions = KEEP(r_alloc_integer(dimensionality));
   int* v_out_dimensions = r_int_begin(out_dimensions);
   r_memcpy(v_out_dimensions, v_x_dimensions, sizeof(int) * dimensionality);
-  v_out_dimensions[axis - 1] = 1;
+  v_out_dimensions[c_axis - 1] = 1;
 
-  r_obj* out =
-    KEEP(fn(x, na_rm, v_x_dimensions, v_out_dimensions, dimensionality, axis));
+  r_obj* out = KEEP(
+    fn(x, na_rm, v_x_dimensions, v_out_dimensions, dimensionality, c_axis)
+  );
 
   r_attrib_poke_dim(out, out_dimensions);
 
-  r_obj* axes = KEEP(r_int(axis));
+  r_obj* axes = KEEP(r_int(c_axis));
   r_obj* out_names = KEEP(rray_reduce_names(x, axes));
 
   if (out_names != r_null) {
     r_attrib_poke_dim_names(out, out_names);
   }
 
-  FREE(6);
+  FREE(7);
   return out;
 }
 

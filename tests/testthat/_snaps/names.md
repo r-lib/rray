@@ -52,7 +52,7 @@
       rray_axis_names(x, c(1, 2))
     Condition
       Error in `rray_axis_names()`:
-      ! `axis` must be a single integer, not length 2.
+      ! `axis` must be length 1, not length 2.
 
 ---
 
@@ -60,7 +60,23 @@
       rray_axis_names(x, integer())
     Condition
       Error in `rray_axis_names()`:
-      ! `axis` must be a single integer, not length 0.
+      ! `axis` must be length 1, not length 0.
+
+---
+
+    Code
+      rray_axis_names(x, "row")
+    Condition
+      Error in `rray_axis_names()`:
+      ! Can't use a title in `axis` because `x` has no titles.
+
+# rray_axis_names() errors on an unknown title
+
+    Code
+      rray_axis_names(x, "nope")
+    Condition
+      Error in `rray_axis_names()`:
+      ! Can't find an axis of `x` titled "nope".
 
 # rray_axis_names() errors on classed input
 
@@ -157,6 +173,22 @@
     Condition
       Error in `rray_set_axis_names()`:
       ! `axis` must be less than or equal to the dimensionality of 2, not 3.
+
+---
+
+    Code
+      rray_set_axis_names(x, "row", "a")
+    Condition
+      Error in `rray_set_axis_names()`:
+      ! Can't use a title in `axis` because `x` has no titles.
+
+# rray_set_axis_names() errors on an unknown title
+
+    Code
+      rray_set_axis_names(x, "nope", "a")
+    Condition
+      Error in `rray_set_axis_names()`:
+      ! Can't find an axis of `x` titled "nope".
 
 # rray_set_axis_names() errors if names aren't character or NULL
 

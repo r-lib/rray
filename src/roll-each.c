@@ -7,6 +7,7 @@
 #include "reduce-names.h"
 #include "roll.h"
 #include "size.h"
+#include "titles.h"
 #include "utils.h"
 
 #include "decl/roll-each-decl.h"
@@ -18,14 +19,13 @@ r_obj* ffi_rray_roll_each(
   r_obj* ffi_frame
 ) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  const int axis = arg_as_int(ffi_axis, rray_args.axis, error_call);
-  return rray_roll_each(ffi_x, ffi_n, axis, rray_args.x, error_call);
+  return rray_roll_each(ffi_x, ffi_n, ffi_axis, rray_args.x, error_call);
 }
 
 r_obj* rray_roll_each(
   r_obj* x,
   r_obj* n,
-  int axis,
+  r_obj* axis,
   struct rray_arg* x_arg,
   struct r_lazy error_call
 ) {
@@ -37,15 +37,24 @@ r_obj* rray_roll_each(
   const int dimensionality = rray_dimensionality_from_dimensions(x_dimensions);
   check_dimensionality(dimensionality);
 
-  check_axis(axis, dimensionality, rray_args.axis, error_call);
-  const int axis_dimension = v_x_dimensions[axis - 1];
+  r_obj* titles = KEEP(rray_titles(x, x_arg, error_call));
+
+  const int c_axis = arg_as_axis(
+    axis,
+    titles,
+    dimensionality,
+    rray_args.axis,
+    x_arg,
+    error_call
+  );
+  const int axis_dimension = v_x_dimensions[c_axis - 1];
 
   n = KEEP(arg_as_roll_each_n(n, rray_args.n, error_call));
   n = KEEP(rray_roll_each_normalize(n, axis_dimension));
 
   r_obj* n_broadcast_dimensions = KEEP(r_clone(x_dimensions));
   int* v_n_broadcast_dimensions = r_int_begin(n_broadcast_dimensions);
-  v_n_broadcast_dimensions[axis - 1] = 1;
+  v_n_broadcast_dimensions[c_axis - 1] = 1;
 
   // Nicely simplifies the loop to explicitly broadcast `n`. Cost is fairly
   // cheap, since one dimension of `x` is set to 1.
@@ -59,12 +68,12 @@ r_obj* rray_roll_each(
   r_attrib_poke_dim(out, x_dimensions);
 
   r_ssize block_size = 1;
-  for (int i = 0; i < axis - 1; ++i) {
+  for (int i = 0; i < c_axis - 1; ++i) {
     block_size *= v_x_dimensions[i];
   }
 
   r_ssize n_groups = 1;
-  for (int i = axis; i < dimensionality; ++i) {
+  for (int i = c_axis; i < dimensionality; ++i) {
     n_groups *= v_x_dimensions[i];
   }
 
@@ -72,14 +81,14 @@ r_obj* rray_roll_each(
 
   // Using `rray_reduce_names()` is an easy way to clear the `axis` names, which
   // likely no longer make sense
-  r_obj* axes = KEEP(r_int(axis));
+  r_obj* axes = KEEP(r_int(c_axis));
   r_obj* out_names = KEEP(rray_reduce_names(x, axes));
 
   if (out_names != r_null) {
     r_attrib_poke_dim_names(out, out_names);
   }
 
-  FREE(8);
+  FREE(9);
   return out;
 }
 

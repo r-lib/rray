@@ -226,7 +226,8 @@
 #'
 #' @param axes An integer vector of axes to roll along.
 #'
-#' @param axis A single integer representing the axis to roll along.
+#' @param axis The axis to roll along, given
+#'   [by position or by title][faq-axes].
 #'
 #' @returns
 #' An array with the same type and dimensions as `x`.
@@ -260,6 +261,10 @@
 #'
 #' # Roll each row by its own `n`, given as a one column matrix
 #' rray_roll_each(y, n = matrix(c(1, 0, -1), ncol = 1), axis = 2)
+#'
+#' # Roll each row by its own `n`, by title
+#' z <- rray_set_titles(y, c("row", "col"))
+#' rray_roll_each(z, n = matrix(c(1, 0, -1), ncol = 1), axis = "col")
 #'
 #' # Roll each column by its own `n`, given as a one row matrix
 #' rray_roll_each(y, n = matrix(c(0, 1, 2, 3), nrow = 1), axis = 1)

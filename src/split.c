@@ -16,13 +16,12 @@ r_obj* ffi_rray_split(
   r_obj* ffi_frame
 ) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  const int axis = arg_as_int(ffi_axis, rray_args.axis, error_call);
-  return rray_split(ffi_x, axis, ffi_dimensions, rray_args.x, error_call);
+  return rray_split(ffi_x, ffi_axis, ffi_dimensions, rray_args.x, error_call);
 }
 
 r_obj* rray_split(
   r_obj* x,
-  int axis,
+  r_obj* axis,
   r_obj* dimensions,
   struct rray_arg* arg,
   struct r_lazy error_call
@@ -35,8 +34,19 @@ r_obj* rray_split(
   const int dimensionality = rray_dimensionality_from_dimensions(x_dimensions);
   check_dimensionality(dimensionality);
 
-  check_axis(axis, dimensionality, rray_args.axis, error_call);
-  const int axis_dimension = v_x_dimensions[axis - 1];
+  r_obj* x_names = r_dim_names(x);
+  r_obj* const* v_x_names = (x_names == r_null) ? NULL : r_list_cbegin(x_names);
+  r_obj* x_titles = (x_names == r_null) ? r_null : r_names(x_names);
+
+  const int c_axis = arg_as_axis(
+    axis,
+    x_titles,
+    dimensionality,
+    rray_args.axis,
+    arg,
+    error_call
+  );
+  const int axis_dimension = v_x_dimensions[c_axis - 1];
 
   dimensions = KEEP(arg_as_non_negative_bare_integer(
     dimensions,
@@ -59,11 +69,7 @@ r_obj* rray_split(
 
   r_obj* out = KEEP(r_alloc_list(out_size));
 
-  r_obj* x_names = r_dim_names(x);
-  r_obj* const* v_x_names = (x_names == r_null) ? NULL : r_list_cbegin(x_names);
-  r_obj* x_titles = (x_names == r_null) ? r_null : r_names(x_names);
-
-  r_obj* x_axis_names = (v_x_names == NULL) ? r_null : v_x_names[axis - 1];
+  r_obj* x_axis_names = (v_x_names == NULL) ? r_null : v_x_names[c_axis - 1];
   r_obj* const* v_x_axis_names =
     (x_axis_names == r_null) ? NULL : r_chr_cbegin(x_axis_names);
 
@@ -73,7 +79,7 @@ r_obj* rray_split(
     dimensionality,
     v_x_strides
   );
-  const r_ssize x_axis_stride = v_x_strides[axis - 1];
+  const r_ssize x_axis_stride = v_x_strides[c_axis - 1];
 
   const enum r_type type = r_typeof(x);
 
@@ -109,7 +115,7 @@ r_obj* rray_split(
         v_x_dimensions,
         sizeof(int) * dimensionality
       );
-      v_out_elt_dimensions[axis - 1] = dimension;
+      v_out_elt_dimensions[c_axis - 1] = dimension;
 
       rray_run_iterator_init1(
         &it,
@@ -131,7 +137,7 @@ r_obj* rray_split(
         v_x_names,
         x_titles,
         dimensionality,
-        axis,
+        c_axis,
         v_x_axis_names,
         x_axis_start,
         dimension

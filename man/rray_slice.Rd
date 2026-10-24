@@ -48,7 +48,8 @@ empty.}
 \item{i}{A subscript for the selected axis. It takes any of the forms
 allowed in \code{...}.}
 
-\item{axis}{A single integer. The axis to slice along.}
+\item{axis}{The axis to slice along, given
+\link[=faq-axes]{by position or by title}.}
 
 \item{value}{An array to assign to the selected positions. It is cast to
 the type of \code{x}, then broadcast to the dimensions of the selection.}
@@ -123,6 +124,10 @@ rray_slice(x, !!!subscripts)
 rray_slice_axis(x, c(4, 1), axis = 3)
 rray_slice_rows(y, c("b", "a"))
 rray_slice_columns(x, -2)
+
+# Slice a single axis, by title
+z <- rray_set_titles(y, c("row", "col"))
+rray_slice_axis(z, c("e", "c"), axis = "col")
 
 # Assign one value to every first row
 rray_slice_assign(x, 1, TRUE, TRUE, value = 0L)

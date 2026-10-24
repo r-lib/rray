@@ -15,7 +15,8 @@ rray_set_column_names(x, names)
 \arguments{
 \item{x}{An array.}
 
-\item{axis}{A single integer. The axis to set names for.}
+\item{axis}{The axis to set names for, given
+\link[=faq-axes]{by position or by title}.}
 
 \item{names}{A character vector of names for \code{axis}, the same length as
 the dimension of \code{axis}. Can also be \code{NULL} to remove names from \code{axis}.}
@@ -36,6 +37,10 @@ x <- array(1:6, c(2, 3))
 
 rray_set_axis_names(x, 1, c("r1", "r2"))
 rray_set_axis_names(x, 2, c("c1", "c2", "c3"))
+
+# By title
+y <- rray_set_titles(x, c("row", "col"))
+rray_set_axis_names(y, "col", c("c1", "c2", "c3"))
 
 rray_set_row_names(x, c("r1", "r2"))
 rray_set_column_names(x, c("c1", "c2", "c3"))

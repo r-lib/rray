@@ -180,7 +180,7 @@
       rray_roll_each(x, n = 1, axis = c(1, 2))
     Condition
       Error in `rray_roll_each()`:
-      ! `axis` must be a single integer, not length 2.
+      ! `axis` must be length 1, not length 2.
 
 ---
 
@@ -205,6 +205,14 @@
     Condition
       Error in `rray_roll_each()`:
       ! `axis` must not be missing.
+
+---
+
+    Code
+      rray_roll_each(x, n = 1, axis = "row")
+    Condition
+      Error in `rray_roll_each()`:
+      ! Can't use a title in `axis` because `x` has no titles.
 
 # `n` must broadcast to `x` with `axis` set to 1
 

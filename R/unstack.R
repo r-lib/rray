@@ -18,7 +18,8 @@
 #'
 #' @param x An array.
 #'
-#' @param axis A single integer representing the axis to unstack along.
+#' @param axis The axis to unstack along, given
+#'   [by position or by title][faq-axes].
 #'
 #' @returns
 #' A list of arrays with the same dimensions as `x`, except that `axis` has
@@ -35,6 +36,10 @@
 #'
 #' # One array per column
 #' rray_unstack(x, axis = 2)
+#'
+#' # One array per column, by title
+#' z <- rray_set_titles(x, c("row", "col"))
+#' rray_unstack(z, axis = "col")
 #'
 #' # Names along the axis become list names
 #' y <- array(1:4, c(2, 2), dimnames = list(c("a", "b"), c("x", "y")))

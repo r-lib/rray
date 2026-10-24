@@ -31,7 +31,8 @@
 #'
 #' @param axes An integer vector of axes to repeat along.
 #'
-#' @param axis A single integer representing the axis to repeat along.
+#' @param axis The axis to repeat along, given
+#'   [by position or by title][faq-axes].
 #'
 #' @returns
 #' An array with the same dimensions as `x`, except along the repeated axes.
@@ -57,6 +58,10 @@
 #'
 #' # A different number of repeats per row
 #' rray_rep_each(x, times = c(1, 2, 3), axis = 1)
+#'
+#' # A different number of repeats per row, by title
+#' z <- rray_set_titles(x, c("row", "col"))
+#' rray_rep_each(z, times = c(1, 2, 3), axis = "row")
 #'
 #' # Zeroes drop slices entirely
 #' rray_rep_each(x, times = c(1, 0, 2), axis = 1)

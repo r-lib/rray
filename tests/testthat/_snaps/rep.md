@@ -301,3 +301,11 @@
       Error in `rray_rep_each()`:
       ! `axis` must be less than or equal to the dimensionality of 2, not 3.
 
+---
+
+    Code
+      rray_rep_each(x, times = 2, axis = "row")
+    Condition
+      Error in `rray_rep_each()`:
+      ! Can't use a title in `axis` because `x` has no titles.
+

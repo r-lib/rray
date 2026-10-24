@@ -8,7 +8,7 @@
 r_obj* rray_roll_each(
   r_obj* x,
   r_obj* n,
-  int axis,
+  r_obj* axis,
   struct rray_arg* x_arg,
   struct r_lazy error_call
 );

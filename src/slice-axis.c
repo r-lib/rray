@@ -2,8 +2,10 @@
 
 #include "axes.h"
 #include "dimensionality.h"
+#include "globals.h"
 #include "slice-assign.h"
 #include "slice.h"
+#include "titles.h"
 #include "utils.h"
 
 #include "decl/slice-axis-decl.h"
@@ -15,11 +17,10 @@ r_obj* ffi_rray_slice_axis(
   r_obj* ffi_frame
 ) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  const int axis = arg_as_int(ffi_axis, rray_args.axis, error_call);
   return rray_slice_axis(
     ffi_x,
     ffi_i,
-    axis,
+    ffi_axis,
     rray_args.x,
     rray_args.i,
     error_call
@@ -28,18 +29,32 @@ r_obj* ffi_rray_slice_axis(
 
 r_obj* ffi_rray_slice_rows(r_obj* ffi_x, r_obj* ffi_i, r_obj* ffi_frame) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  return rray_slice_axis(ffi_x, ffi_i, 1, rray_args.x, rray_args.i, error_call);
+  return rray_slice_axis(
+    ffi_x,
+    ffi_i,
+    rray_globals.one_int,
+    rray_args.x,
+    rray_args.i,
+    error_call
+  );
 }
 
 r_obj* ffi_rray_slice_columns(r_obj* ffi_x, r_obj* ffi_i, r_obj* ffi_frame) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  return rray_slice_axis(ffi_x, ffi_i, 2, rray_args.x, rray_args.i, error_call);
+  return rray_slice_axis(
+    ffi_x,
+    ffi_i,
+    rray_globals.two_int,
+    rray_args.x,
+    rray_args.i,
+    error_call
+  );
 }
 
 r_obj* rray_slice_axis(
   r_obj* x,
   r_obj* i,
-  int axis,
+  r_obj* axis,
   struct rray_arg* x_arg,
   struct rray_arg* i_arg,
   struct r_lazy error_call
@@ -48,14 +63,24 @@ r_obj* rray_slice_axis(
   x = KEEP(arg_as_array(x, x_arg, error_call));
 
   const int dimensionality = rray_dimensionality(x, x_arg, error_call);
-  check_axis(axis, dimensionality, rray_args.axis, error_call);
+
+  r_obj* titles = KEEP(rray_titles(x, x_arg, error_call));
+
+  const int c_axis = arg_as_axis(
+    axis,
+    titles,
+    dimensionality,
+    rray_args.axis,
+    x_arg,
+    error_call
+  );
 
   r_obj* indices =
-    KEEP(rray_slice_axis_indices(i, axis, dimensionality, i_arg));
+    KEEP(rray_slice_axis_indices(i, c_axis, dimensionality, i_arg));
 
   r_obj* out = rray_slice(x, indices, x_arg, rray_args.empty, error_call);
 
-  FREE(2);
+  FREE(3);
   return out;
 }
 
@@ -67,11 +92,10 @@ r_obj* ffi_rray_slice_assign_axis(
   r_obj* ffi_frame
 ) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  const int axis = arg_as_int(ffi_axis, rray_args.axis, error_call);
   return rray_slice_assign_axis(
     ffi_x,
     ffi_i,
-    axis,
+    ffi_axis,
     ffi_value,
     rray_args.x,
     rray_args.i,
@@ -90,7 +114,7 @@ r_obj* ffi_rray_slice_assign_rows(
   return rray_slice_assign_axis(
     ffi_x,
     ffi_i,
-    1,
+    rray_globals.one_int,
     ffi_value,
     rray_args.x,
     rray_args.i,
@@ -109,7 +133,7 @@ r_obj* ffi_rray_slice_assign_columns(
   return rray_slice_assign_axis(
     ffi_x,
     ffi_i,
-    2,
+    rray_globals.two_int,
     ffi_value,
     rray_args.x,
     rray_args.i,
@@ -121,7 +145,7 @@ r_obj* ffi_rray_slice_assign_columns(
 r_obj* rray_slice_assign_axis(
   r_obj* x,
   r_obj* i,
-  int axis,
+  r_obj* axis,
   r_obj* value,
   struct rray_arg* x_arg,
   struct rray_arg* i_arg,
@@ -132,10 +156,20 @@ r_obj* rray_slice_assign_axis(
   x = KEEP(arg_as_array(x, x_arg, error_call));
 
   const int dimensionality = rray_dimensionality(x, x_arg, error_call);
-  check_axis(axis, dimensionality, rray_args.axis, error_call);
+
+  r_obj* titles = KEEP(rray_titles(x, x_arg, error_call));
+
+  const int c_axis = arg_as_axis(
+    axis,
+    titles,
+    dimensionality,
+    rray_args.axis,
+    x_arg,
+    error_call
+  );
 
   r_obj* indices =
-    KEEP(rray_slice_axis_indices(i, axis, dimensionality, i_arg));
+    KEEP(rray_slice_axis_indices(i, c_axis, dimensionality, i_arg));
 
   r_obj* out = rray_slice_assign(
     x,
@@ -147,7 +181,7 @@ r_obj* rray_slice_assign_axis(
     error_call
   );
 
-  FREE(2);
+  FREE(3);
   return out;
 }
 

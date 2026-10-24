@@ -19,7 +19,11 @@ rray_set_axis_title(x, axis, title)
 \arguments{
 \item{x}{An array.}
 
-\item{axis}{A single integer. The axis to get or set the title for.}
+\item{axis}{The axis to get or set the title for.
+\itemize{
+\item For \code{rray_set_axis_title()}, given \link[=faq-axes]{by position or by title}.
+\item For \code{rray_axis_title()}, given \link[=faq-axes]{by position}.
+}}
 
 \item{titles}{A character vector with one title per axis, or \code{NULL} to
 remove all titles.}
@@ -54,4 +58,5 @@ x <- rray_set_titles(x, c("Row", "Column"))
 rray_titles(x)
 rray_axis_title(x, 2)
 rray_set_axis_title(x, 1, NULL)
+rray_set_axis_title(x, "Row", "R")
 }
