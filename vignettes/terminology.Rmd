@@ -217,7 +217,7 @@ rray_sum(z, axes = "col")
 
 *Broadcasting* is how rray works with inputs that have different [dimensions](#dimensions).
 Axes with a dimension of 1 are repeated to match the other inputs.
-Here, `b` has 1 column, so it is repeated across the 2 columns of `a`:
+Here, `b` has 1 column, so it is repeated to match the 2 columns of `a`:
 
 ```{r}
 a <- matrix(1:6, nrow = 3)
