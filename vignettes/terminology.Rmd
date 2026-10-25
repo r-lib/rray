@@ -103,7 +103,8 @@ rray_set_dimensions(1:6, c(2, 3))
 
 ## Dimensionality
 
-The *dimensionality* is the number of axes, which is the length of the [dimensions](#dimensions).
+The *dimensionality* of an array is the length of the [dimensions](#dimensions) vector.
+This also corresponds with the number of axes it has.
 
 ```{r}
 rray_dimensions(x)
