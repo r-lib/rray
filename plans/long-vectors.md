@@ -135,7 +135,7 @@ Already done:
 
 Fixes first, in the order above:
 
-- [ ] Fix 1, dimensionless long vectors. Test in `test-size.R`:
+- [x] Fix 1, dimensionless long vectors. Test in `test-size.R`:
 
   ```r
   expect_snapshot(rray_size(raw(2^31)), error = TRUE)

@@ -15,15 +15,25 @@
 //
 // Since we are only modifying attributes,
 // we use a lightweight view
-r_obj* vec_as_array(r_obj* x) {
+r_obj* vec_as_array(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
   if (r_dim(x) != r_null) {
     return x;
   }
 
+  const r_ssize size = r_length(x);
+
+  if (size > INT_MAX) {
+    r_abort_lazy_call(
+      error_call,
+      "Can't convert long vector %s (size %" R_PRI_SSIZE ") to a 1D array.",
+      rray_arg_format(arg),
+      size
+    );
+  }
+
   r_obj* out = KEEP(r_view(x));
 
-  const r_ssize size = r_length(x);
-  r_obj* dimensions = r_int(r_ssize_as_integer(size));
+  r_obj* dimensions = r_int((int) size);
   r_attrib_poke_dim(out, dimensions);
 
   r_obj* axis_names = r_names(x);
@@ -55,7 +65,7 @@ r_obj* arg_as_array(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
     stop_scalar_input(x, arg, error_call);
   }
 
-  return vec_as_array(x);
+  return vec_as_array(x, arg, error_call);
 }
 
 r_no_return void stop_scalar_input(

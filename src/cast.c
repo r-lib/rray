@@ -35,7 +35,7 @@ r_obj* rray_cast(
   case RRAY_TYPE_logical:
     switch (to_type) {
     case RRAY_TYPE_logical:
-      return vec_as_array(x);
+      return vec_as_array(x, x_arg, error_call);
     case RRAY_TYPE_integer:
       return rray_cast_lgl_to_int(x, x_arg, error_call);
     case RRAY_TYPE_double:
@@ -52,7 +52,7 @@ r_obj* rray_cast(
     case RRAY_TYPE_logical:
       return rray_cast_int_to_lgl(x, x_arg, error_call);
     case RRAY_TYPE_integer:
-      return vec_as_array(x);
+      return vec_as_array(x, x_arg, error_call);
     case RRAY_TYPE_double:
       return rray_cast_int_to_dbl(x, x_arg, error_call);
     case RRAY_TYPE_complex:
@@ -69,7 +69,7 @@ r_obj* rray_cast(
     case RRAY_TYPE_integer:
       return rray_cast_dbl_to_int(x, x_arg, error_call);
     case RRAY_TYPE_double:
-      return vec_as_array(x);
+      return vec_as_array(x, x_arg, error_call);
     case RRAY_TYPE_complex:
       return rray_cast_dbl_to_cpl(x, x_arg, error_call);
     case RRAY_TYPE_scalar:
@@ -80,7 +80,7 @@ r_obj* rray_cast(
   case RRAY_TYPE_complex:
     switch (to_type) {
     case RRAY_TYPE_complex:
-      return vec_as_array(x);
+      return vec_as_array(x, x_arg, error_call);
     case RRAY_TYPE_scalar:
       stop_scalar_input(to, to_arg, error_call);
     default:
@@ -89,7 +89,7 @@ r_obj* rray_cast(
   case RRAY_TYPE_character:
     switch (to_type) {
     case RRAY_TYPE_character:
-      return vec_as_array(x);
+      return vec_as_array(x, x_arg, error_call);
     case RRAY_TYPE_scalar:
       stop_scalar_input(to, to_arg, error_call);
     default:
@@ -98,7 +98,7 @@ r_obj* rray_cast(
   case RRAY_TYPE_raw:
     switch (to_type) {
     case RRAY_TYPE_raw:
-      return vec_as_array(x);
+      return vec_as_array(x, x_arg, error_call);
     case RRAY_TYPE_scalar:
       stop_scalar_input(to, to_arg, error_call);
     default:
@@ -107,7 +107,7 @@ r_obj* rray_cast(
   case RRAY_TYPE_list:
     switch (to_type) {
     case RRAY_TYPE_list:
-      return vec_as_array(x);
+      return vec_as_array(x, x_arg, error_call);
     case RRAY_TYPE_scalar:
       stop_scalar_input(to, to_arg, error_call);
     default:
@@ -121,7 +121,7 @@ r_obj* rray_cast(
 }
 
 #define RRAY_CAST(FROM_CTYPE, FROM_CBEGIN, TO_RTYPE, TO_CTYPE, TO_BEGIN, ONE)  \
-  x = KEEP(vec_as_array(x));                                                   \
+  x = KEEP(vec_as_array(x, x_arg, error_call));                                \
                                                                                \
   const r_ssize size = r_length(x);                                            \
   const FROM_CTYPE* v_x = FROM_CBEGIN(x);                                      \
@@ -152,7 +152,7 @@ r_obj* rray_cast(
   TO_BEGIN,                                                                    \
   ONE                                                                          \
 )                                                                              \
-  x = KEEP(vec_as_array(x));                                                   \
+  x = KEEP(vec_as_array(x, x_arg, error_call));                                \
                                                                                \
   const r_ssize size = r_length(x);                                            \
   const FROM_CTYPE* v_x = FROM_CBEGIN(x);                                      \
