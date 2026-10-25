@@ -181,6 +181,12 @@ just as much here.
   [`gctorture2()`](https://rdrr.io/r/base/gctorture.html) to look for
   protection problems. They are far too slow to be practical, even on a
   single call. The reading pass described above is the check.
+- rray supports long vectors throughout. Before calling any C change
+  done, also do a separate long vector pass over the diff: for every new
+  or touched size, location, stride, or count, check that it is held in
+  `r_ssize`, not `int`. Look hardest at `(int)` casts, `int` loop
+  counters, and products of dimensions. A single dimension fits in an
+  `int`, but their product may not.
 - When looping over a vector, obtain a pointer to the underlying data
   first, e.g., `const int* v_dimensions = r_int_cbegin(dimensions)`,
   then index into that directly.
@@ -234,6 +240,11 @@ just as much here.
 - Helpers for `tests/testthat/test-{name}.R` go in
   `tests/testthat/helper-{name}.R`.
 - All new code should have an accompanying test.
+- New exported functions and new C code paths also get a long vector
+  test, guarded by `skip_if_not_testing_long_vectors()`. Use raw arrays
+  with dimensions like `c(2^16, 2^15)` to keep memory low, and check the
+  last element. Run these tests with
+  `RRAY_TESTING_LONG_VECTORS=true Rscript -e "devtools::test()"`.
 - If there are existing tests, place new tests next to similar existing
   tests.
 - Strive to keep your tests minimal with few comments.
