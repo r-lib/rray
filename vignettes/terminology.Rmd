@@ -1,0 +1,229 @@
+---
+title: "Terminology"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Terminology}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+---
+
+```{r}
+#| include: false
+
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r}
+#| label: setup
+
+library(rray)
+```
+
+## Introduction
+
+Words like "dimension" and "size" get used loosely when talking about arrays.
+rray gives each of them one precise meaning, and uses that meaning everywhere, from function names to argument names to error messages.
+This vignette defines each term, building on the ones before it.
+
+Most examples use this 3-D array:
+
+```{r}
+x <- array(1:12, dim = c(2, 3, 2))
+x
+```
+
+## Axis
+
+An *axis* is a single integer that picks a direction along the array.
+Axis 1 runs down the rows, axis 2 runs across the columns, and axis 3 runs across the pages.
+
+Many rray functions work "along an axis".
+Summing along axis 1 adds up the rows, so only 1 row is left:
+
+```{r}
+rray_sum(x, axes = 1)
+```
+
+Summing along axis 3 adds the two pages together, so only 1 page is left:
+
+```{r}
+rray_sum(x, axes = 3)
+```
+
+Notice that only the axis you pick changes.
+Every other axis keeps its original shape.
+
+You can also give an axis by its [title](#titles) rather than its position.
+See `?faq-axes` for more.
+
+## Dimension
+
+A *dimension* is the number of elements along one axis.
+`x` has 2 rows, 3 columns, and 2 pages, so:
+
+- Axis 1 has a dimension of 2.
+
+- Axis 2 has a dimension of 3.
+
+- Axis 3 has a dimension of 2.
+
+To get the dimension of one axis, index into the [dimensions](#dimensions):
+
+```{r}
+axis <- 2
+rray_dimensions(x)[[axis]]
+```
+
+## Dimensions
+
+The *dimensions* are an integer vector holding the dimension of every axis.
+They describe the shape of the array.
+
+```{r}
+rray_dimensions(x)
+```
+
+This is like `dim()`, except that it also works on plain vectors, which act like 1-D arrays:
+
+```{r}
+dim(1:5)
+
+rray_dimensions(1:5)
+```
+
+In the other vignettes, dimensions are often written out in parentheses, like `(2, 3, 2)` for `x`.
+
+You can change the dimensions of an array with `rray_set_dimensions()`, as long as the total number of elements stays the same:
+
+```{r}
+rray_set_dimensions(1:6, c(2, 3))
+```
+
+## Dimensionality
+
+The *dimensionality* is the number of axes, which is the length of the [dimensions](#dimensions).
+
+```{r}
+rray_dimensions(x)
+
+rray_dimensionality(x)
+```
+
+A vector has a dimensionality of 1, and a matrix has a dimensionality of 2:
+
+```{r}
+rray_dimensionality(1:5)
+
+rray_dimensionality(matrix(1:6, nrow = 2))
+```
+
+The terms so far fit together like this:
+
+```{r}
+for (axis in seq_len(rray_dimensionality(x))) {
+  dimension <- rray_dimensions(x)[[axis]]
+  print(dimension)
+}
+```
+
+## Size
+
+The *size* is the total number of elements in the array.
+It is the product of the [dimensions](#dimensions):
+
+```{r}
+rray_dimensions(x)
+
+2 * 3 * 2
+
+rray_size(x)
+```
+
+For an array, this is the same as `length(x)`:
+
+```{r}
+length(x)
+```
+
+Be careful not to mix up size and [dimension](#dimension).
+Axis 2 of `x` has a dimension of 3, but `x` has a size of 12.
+
+## Names
+
+The *names* are a list with one element per axis.
+Each element is either a character vector naming the elements along that axis, or `NULL`.
+This is the same as `dimnames()`.
+
+```{r}
+y <- rray_set_names(
+  x,
+  list(
+    c("a", "b"),
+    c("c", "d", "e"),
+    c("f", "g")
+  )
+)
+y
+
+rray_names(y)
+```
+
+To get the names along one axis, use `rray_axis_names()`:
+
+```{r}
+rray_axis_names(y, axis = 3)
+```
+
+The first two axes are common enough to get their own helpers:
+
+```{r}
+rray_row_names(y)
+
+rray_column_names(y)
+```
+
+An array without any names has `NULL` names:
+
+```{r}
+rray_names(x)
+```
+
+## Titles
+
+The *titles* are the names on the list of [names](#names).
+There is one title per axis, and they show up when the array is printed.
+
+```{r}
+z <- rray_set_titles(y, c("row", "col", "page"))
+z
+
+rray_titles(z)
+```
+
+Titles are useful because you can refer to an [axis](#axis) by its title rather than its position:
+
+```{r}
+rray_sum(z, axes = "col")
+```
+
+## Broadcasting
+
+*Broadcasting* is how rray works with inputs that have different [dimensions](#dimensions).
+Axes with a dimension of 1 are repeated to match the other inputs.
+Here, `b` has 1 column, so it is repeated across the 2 columns of `a`:
+
+```{r}
+a <- matrix(1:6, nrow = 3)
+a
+
+b <- matrix(c(10L, 20L, 30L))
+b
+
+rray_add(a, b)
+```
+
+Broadcasting is important enough to get its own vignette.
+See `vignette("broadcasting")` to learn more.
