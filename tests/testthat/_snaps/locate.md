@@ -1,3 +1,19 @@
+# errors when located dimensions overflow
+
+    Code
+      rray_locate_max(x, axis = 1L)
+    Condition
+      Error in `rray_locate_max()`:
+      ! Size (1.84467e+19) computed from dimensions `(1, 65536, 65536, 65536, 65536)` is too large.
+
+---
+
+    Code
+      rray_locate_min(x, axis = 1L)
+    Condition
+      Error in `rray_locate_min()`:
+      ! Size (1.84467e+19) computed from dimensions `(1, 65536, 65536, 65536, 65536)` is too large.
+
 # `axis` is validated
 
     Code
