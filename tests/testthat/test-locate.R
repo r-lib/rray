@@ -193,6 +193,26 @@ test_that("locating along a non-zero-length axis with a zero-length axis", {
   expect_identical(rray_locate_min(x, axis = 2L), array(integer(), c(0L, 1L)))
 })
 
+test_that("`rray_locate_max()` works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(FALSE, c(2^16, 2^15))
+  x[length(x)] <- TRUE
+
+  out <- rray_locate_max(x, axis = 2)
+  expect_identical(as.vector(out)[c(1, 2^16)], c(1L, 32768L))
+})
+
+test_that("`rray_locate_min()` works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(TRUE, c(2^16, 2^15))
+  x[length(x)] <- FALSE
+
+  out <- rray_locate_min(x, axis = 2)
+  expect_identical(as.vector(out)[c(1, 2^16)], c(1L, 32768L))
+})
+
 test_that("works along an axis with a dimension of `.Machine$integer.max`", {
   skip_if_not_testing_long_vectors()
 

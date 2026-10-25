@@ -211,6 +211,19 @@ test_that("drops all titles", {
   expect_null(dimnames(rray_extract(y, rbind(c(2L, 3L, 4L)))))
 })
 
+test_that("works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(2^16, 2^15))
+  x[length(x)] <- as.raw(1)
+
+  expect_identical(as.vector(rray_extract(x, 2^31)), as.raw(1))
+  expect_identical(
+    as.vector(rray_extract(x, cbind(65536L, 32768L))),
+    as.raw(1)
+  )
+})
+
 test_that("reports subscript errors from `rray_extract()`", {
   x <- array(1:6, c(2L, 3L))
 
@@ -605,6 +618,18 @@ test_that("broadcasts `value` to the number of selected values", {
     rray_extract_assign(x, c(1L, NA_integer_, 6L), c(10L, 60L))
     rray_extract_assign(x, rep(NA, 6L), 1:2)
   })
+})
+
+test_that("`rray_extract_assign()` works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(2^16, 2^15))
+
+  out <- rray_extract_assign(x, 2^31, as.raw(1))
+  expect_identical(out[length(out)], as.raw(1))
+
+  out <- rray_extract_assign(x, cbind(65536L, 32768L), as.raw(1))
+  expect_identical(out[length(out)], as.raw(1))
 })
 
 test_that("errors when assigning more values than a 1D array can hold", {

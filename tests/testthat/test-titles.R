@@ -176,6 +176,21 @@ test_that("removing absent titles does not make a dimension names list", {
   expect_null(dimnames(rray_set_axis_title(x, 1, NULL)))
 })
 
+test_that("titles work with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(2^16, 2^15))
+  x[length(x)] <- as.raw(1)
+
+  out <- rray_set_titles(x, c("Row", "Column"))
+  expect_identical(rray_titles(out), c("Row", "Column"))
+  expect_identical(out[length(out)], as.raw(1))
+
+  out <- rray_set_axis_title(x, 2, "Column")
+  expect_identical(rray_axis_title(out, 2), "Column")
+  expect_identical(out[length(out)], as.raw(1))
+})
+
 test_that("title getters reject invalid input and axes", {
   x <- matrix(1:6, 2, 3)
   classed <- structure(x, class = "foo")

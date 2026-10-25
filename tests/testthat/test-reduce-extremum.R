@@ -293,6 +293,28 @@ test_that("reducing all axes of a zero-length array", {
   expect_identical(rray_min(x, axes = c(1L, 2L)), array(Inf, c(1L, 1L)))
 })
 
+test_that("`rray_max()` works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(FALSE, c(2^16, 2^15))
+  x[length(x)] <- TRUE
+
+  out <- rray_max(x, axes = 1)
+  expect_identical(as.vector(out)[c(1, 2^15)], c(FALSE, TRUE))
+  expect_identical(as.vector(rray_max(x, axes = 1:2)), TRUE)
+})
+
+test_that("`rray_min()` works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(TRUE, c(2^16, 2^15))
+  x[length(x)] <- FALSE
+
+  out <- rray_min(x, axes = 1)
+  expect_identical(as.vector(out)[c(1, 2^15)], c(TRUE, FALSE))
+  expect_identical(as.vector(rray_min(x, axes = 1:2)), FALSE)
+})
+
 test_that("errors on axes out of range", {
   x <- array(1:4, c(2L, 2L))
   expect_snapshot(rray_max(x, axes = 3L), error = TRUE)

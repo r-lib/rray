@@ -124,6 +124,15 @@ test_that("result dimensions come from coordinates", {
   )
 })
 
+test_that("works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(2^16, 2^15))
+  x[length(x)] <- as.raw(1)
+
+  expect_identical(as.vector(rray_index(x, 65536L, 32768L)), as.raw(1))
+})
+
 test_that("supports the maximum source dimensionality", {
   dimensions <- rep(1L, 64L)
   x <- array(42L, dimensions)

@@ -85,6 +85,17 @@ test_that("works with zero-size arrays", {
   )
 })
 
+test_that("works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(2^16, 2^15))
+  x[length(x)] <- as.raw(1)
+
+  out <- rray_move_axes(x, from = 1, to = 2)
+  expect_identical(dim(out), c(32768L, 65536L))
+  expect_identical(out[length(out)], as.raw(1))
+})
+
 test_that("1D arrays come back unchanged", {
   expect_identical(
     rray_move_axes(array(1:3, 3L), from = 1L, to = 1L),

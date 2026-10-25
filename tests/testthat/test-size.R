@@ -25,6 +25,13 @@ test_that("returns 0 for arrays with a zero dimension", {
   expect_identical(rray_size(array(integer(), c(2, 0, 4))), 0)
 })
 
+test_that("works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(2^16, 2^15))
+  expect_identical(rray_size(x), 2^31)
+})
+
 test_that("errors on non-vector types", {
   expect_snapshot(rray_size(NULL), error = TRUE)
   expect_snapshot(rray_size(mean), error = TRUE)

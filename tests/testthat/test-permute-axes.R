@@ -122,6 +122,17 @@ test_that("works with zero-size arrays", {
   )
 })
 
+test_that("works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(2^16, 2^15))
+  x[length(x)] <- as.raw(1)
+
+  out <- rray_permute_axes(x, c(2, 1))
+  expect_identical(dim(out), c(32768L, 65536L))
+  expect_identical(out[length(out)], as.raw(1))
+})
+
 test_that("1D arrays come back unchanged", {
   expect_identical(rray_permute_axes(array(1:3, 3L), 1L), array(1:3, 3L))
 

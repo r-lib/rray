@@ -70,6 +70,17 @@ test_that("works with zero-size arrays", {
   expect_identical(rray_remove_axes(x, integer()), x)
 })
 
+test_that("works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(1, 2^16, 2^15))
+  x[length(x)] <- as.raw(1)
+
+  out <- rray_remove_axes(x, axes = 1)
+  expect_identical(dim(out), c(65536L, 32768L))
+  expect_identical(out[length(out)], as.raw(1))
+})
+
 test_that("surviving axes keep their names", {
   x <- array(
     1:6,

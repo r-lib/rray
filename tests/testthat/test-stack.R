@@ -160,6 +160,18 @@ test_that("handles zero dimensions", {
   expect_identical(out, array(integer(), c(0L, 2L, 2L)))
 })
 
+test_that("works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(2^16, 2^14))
+  y <- x
+  y[length(y)] <- as.raw(1)
+
+  out <- rray_stack(x, y, .axis = 3)
+  expect_identical(dim(out), c(65536L, 16384L, 2L))
+  expect_identical(out[length(out)], as.raw(1))
+})
+
 test_that("names of `...` name the new axis", {
   out <- rray_stack(first = 1:2, second = 3:4, .axis = 2L)
   expect_identical(dimnames(out), list(NULL, c("first", "second")))

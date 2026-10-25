@@ -169,6 +169,16 @@ test_that("works with every type", {
   }
 })
 
+test_that("works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(2^16, 1))
+  x[2^16] <- as.raw(1)
+
+  out <- rray_rep(x, times = 2^15, axes = 2)
+  expect_identical(out[c(1, length(out))], as.raw(c(0, 1)))
+})
+
 test_that("`times = 0` gives a zero dimension", {
   x <- array(1:6, c(3, 2))
 
@@ -493,6 +503,16 @@ test_that("works with every type", {
       expected_rep_each(x, c(2, 3), 2)
     )
   }
+})
+
+test_that("`rray_rep_each()` works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(2^16, 1))
+  x[2^16] <- as.raw(1)
+
+  out <- rray_rep_each(x, times = 2^15, axis = 2)
+  expect_identical(out[c(1, length(out))], as.raw(c(0, 1)))
 })
 
 test_that("`times = 1` returns the input", {

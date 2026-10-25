@@ -118,6 +118,25 @@ test_that("zero dimensions broadcast against dimensions of 1", {
   expect_identical(rray_greater_than(integer(), 1L), array(logical(), 0L))
 })
 
+test_that("works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(FALSE, c(2^16, 2^15))
+  x[length(x)] <- TRUE
+
+  out <- rray_greater_than(x, FALSE)
+  expect_identical(out[c(1, length(out))], c(FALSE, TRUE))
+
+  out <- rray_greater_than_or_equal(x, TRUE)
+  expect_identical(out[c(1, length(out))], c(FALSE, TRUE))
+
+  out <- rray_less_than(x, TRUE)
+  expect_identical(out[c(1, length(out))], c(TRUE, FALSE))
+
+  out <- rray_less_than_or_equal(x, FALSE)
+  expect_identical(out[c(1, length(out))], c(TRUE, FALSE))
+})
+
 test_that("errors on incompatible dimensions", {
   x <- array(1:6, c(3L, 2L))
   y <- array(1L, c(2L, 2L))

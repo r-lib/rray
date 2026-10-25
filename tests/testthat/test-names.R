@@ -353,6 +353,32 @@ test_that("rray_set_row_names() and rray_set_column_names() keep titles", {
   expect_identical(dimnames(out), list(A = NULL, B = c("c", "d", "e")))
 })
 
+test_that("names work with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(2^16, 2^15))
+  x[length(x)] <- as.raw(1)
+
+  rows <- paste0("r", seq_len(2^16))
+  columns <- paste0("c", seq_len(2^15))
+
+  out <- rray_set_names(x, list(rows, columns))
+  expect_identical(rray_names(out), list(rows, columns))
+  expect_identical(out[length(out)], as.raw(1))
+
+  out <- rray_set_axis_names(x, 2, columns)
+  expect_identical(rray_axis_names(out, 2), columns)
+  expect_identical(out[length(out)], as.raw(1))
+
+  out <- rray_set_row_names(x, rows)
+  expect_identical(rray_row_names(out), rows)
+  expect_identical(out[length(out)], as.raw(1))
+
+  out <- rray_set_column_names(x, columns)
+  expect_identical(rray_column_names(out), columns)
+  expect_identical(out[length(out)], as.raw(1))
+})
+
 test_that("rray_set_row_names() and rray_set_column_names() error on classed input", {
   x <- structure(array(1:4, c(2, 2)), class = "foo")
   expect_snapshot(rray_set_row_names(x, NULL), error = TRUE)

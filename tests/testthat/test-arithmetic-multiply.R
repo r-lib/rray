@@ -233,6 +233,16 @@ test_that("zero size 1D arrays work", {
   expect_identical(as.vector(out), integer())
 })
 
+test_that("works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(FALSE, c(2^16, 2^15))
+  x[length(x)] <- TRUE
+
+  out <- rray_multiply(x, 2L)
+  expect_identical(out[c(1, length(out))], c(0L, 2L))
+})
+
 test_that("errors on incompatible dimensions", {
   x <- array(1:6, c(3L, 2L))
   expect_snapshot(rray_multiply(x, array(1L, c(2L, 2L))), error = TRUE)

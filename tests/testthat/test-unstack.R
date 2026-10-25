@@ -59,6 +59,16 @@ test_that("works with an axis of dimension 1", {
   expect_identical(rray_unstack(x, axis = 1), list(array(1:3, 3)))
 })
 
+test_that("works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(2^16, 2^15))
+  x[length(x)] <- as.raw(1)
+
+  out <- rray_unstack(x, axis = 2)
+  expect_identical(out[[2^15]][2^16], as.raw(1))
+})
+
 test_that("names on the axis become the list names", {
   x <- array(1:6, c(2, 3), dimnames = list(c("a", "b"), c("x", "y", "z")))
 

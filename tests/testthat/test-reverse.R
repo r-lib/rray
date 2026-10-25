@@ -95,6 +95,15 @@ test_that("works with bare vectors", {
   )
 })
 
+test_that("works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(2^16, 2^15))
+  x[length(x)] <- as.raw(1)
+
+  expect_identical(rray_reverse(x, axes = 2)[2^16], as.raw(1))
+})
+
 test_that("names reverse on reversed axes and are untouched elsewhere", {
   x <- matrix(1:6, nrow = 2, dimnames = list(c("r1", "r2"), c("a", "b", "c")))
 

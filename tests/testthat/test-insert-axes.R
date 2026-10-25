@@ -71,6 +71,17 @@ test_that("works with zero-size arrays", {
   )
 })
 
+test_that("works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(2^16, 2^15))
+  x[length(x)] <- as.raw(1)
+
+  out <- rray_insert_axes(x, axes = 1)
+  expect_identical(dim(out), c(1L, 65536L, 32768L))
+  expect_identical(out[length(out)], as.raw(1))
+})
+
 test_that("inserts into a bare vector", {
   expect_identical(rray_insert_axes(1:3, 1L), array(1:3, c(1L, 3L)))
   expect_identical(rray_insert_axes(1:3, 2L), array(1:3, c(3L, 1L)))
