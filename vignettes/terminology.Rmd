@@ -80,7 +80,6 @@ rray_dimensions(x)[[axis]]
 ## Dimensions
 
 The *dimensions* are an integer vector holding the dimension of every axis.
-They describe the shape of the array.
 
 ```{r}
 rray_dimensions(x)
