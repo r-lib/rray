@@ -38,7 +38,7 @@ x
 ## Axis
 
 An *axis* is a single integer that picks a direction along the array.
-Axis 1 runs down the rows, axis 2 runs across the columns, and axis 3 runs across the pages.
+Axis 1 runs down the rows, axis 2 runs across the columns, and so on.
 
 Many rray functions work "along an axis".
 Summing along axis 1 adds up the rows, so only 1 row is left:
