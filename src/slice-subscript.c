@@ -58,20 +58,27 @@ struct rray_subscript rray_as_slice_subscript(
     }
   }
 
+  struct rray_subscript subscript;
+
   switch (r_typeof(index)) {
   case R_TYPE_null:
-    return (struct rray_subscript){
+    subscript = (struct rray_subscript){
       .index = r_globals.empty_int,
       .kind = RRAY_SUBSCRIPT_KIND_locations_int,
       .size = 0
     };
+    break;
   case R_TYPE_logical:
-    return rray_as_subscript_mask(index, dimension, index_arg, error_call);
+    subscript = rray_as_subscript_mask(index, dimension, index_arg, error_call);
+    break;
   case R_TYPE_integer:
   case R_TYPE_double:
-    return rray_as_subscript_locations(index, dimension, index_arg, error_call);
+    subscript =
+      rray_as_subscript_locations(index, dimension, index_arg, error_call);
+    break;
   case R_TYPE_character:
-    return rray_as_subscript_names(index, names, index_arg, error_call);
+    subscript = rray_as_subscript_names(index, names, index_arg, error_call);
+    break;
   default:
     r_abort_lazy_call(
       error_call,
@@ -80,6 +87,17 @@ struct rray_subscript rray_as_slice_subscript(
       r_obj_type_friendly(index)
     );
   }
+
+  if (subscript.size > INT_MAX) {
+    r_abort_lazy_call(
+      error_call,
+      "%s can't select %" R_PRI_SSIZE " locations on one axis.",
+      rray_arg_format(index_arg),
+      subscript.size
+    );
+  }
+
+  return subscript;
 }
 
 static struct rray_subscript rray_as_subscript_names(

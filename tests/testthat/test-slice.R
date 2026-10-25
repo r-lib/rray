@@ -150,6 +150,15 @@ test_that("empty selections give a dimension of zero", {
   expect_identical(rray_slice(x, numeric(), TRUE), array(integer(), c(0L, 3L)))
 })
 
+test_that("errors when an axis selects more locations than it can hold", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(1, 1))
+  i <- rep(1L, 2^31)
+  expect_snapshot(rray_slice(x, i, 1L), error = TRUE)
+  expect_snapshot(rray_slice_assign(x, i, 1L, value = as.raw(1)), error = TRUE)
+})
+
 test_that("works with the maximum dimensionality", {
   x <- array(1:4, c(rep(1L, 62L), 2L, 2L))
   indices <- c(rep(list(TRUE), 62L), list(2L, c(2L, 1L)))

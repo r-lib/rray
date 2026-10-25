@@ -110,7 +110,9 @@ Each one ends in rlang's internal error
    than `.Machine$integer.max` positions on one axis. That axis can't hold
    them, so this must become a clear error. Both functions call
    `r_ssize_as_integer()` on each axis subscript size (`src/slice.c` and
-   `src/slice-assign.c`). The `rray_slice_*()` helpers, `rray_rep()`,
+   `src/slice-assign.c`). Both get each subscript from
+   `rray_as_slice_subscript()` in `src/slice-subscript.c`, so the check goes
+   there, once. The `rray_slice_*()` helpers, `rray_rep()`,
    `rray_rep_each()`, `rray_roll()`, and `rray_reverse()` all go through
    `rray_slice()`, but they build their own indices, which always fit.
 
@@ -162,7 +164,7 @@ Fixes first, in the order above:
 
   2 GiB.
 
-- [ ] Fix 4, `rray_slice()` and `rray_slice_assign()` with a long index. Test
+- [x] Fix 4, `rray_slice()` and `rray_slice_assign()` with a long index. Test
   in `test-slice.R`:
 
   ```r

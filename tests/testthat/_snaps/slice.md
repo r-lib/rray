@@ -1,3 +1,19 @@
+# errors when an axis selects more locations than it can hold
+
+    Code
+      rray_slice(x, i, 1L)
+    Condition
+      Error in `rray_slice()`:
+      ! `..1` can't select 2147483648 locations on one axis.
+
+---
+
+    Code
+      rray_slice_assign(x, i, 1L, value = as.raw(1))
+    Condition
+      Error in `rray_slice_assign()`:
+      ! `..1` can't select 2147483648 locations on one axis.
+
 # requires one subscript per axis
 
     Code
