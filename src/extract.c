@@ -74,7 +74,7 @@ r_obj* rray_extract(
   }
 
   KEEP(out);
-  r_attrib_poke_dim(out, r_int((int) subscript.size));
+  r_attrib_poke_dim(out, r_int(r_ssize_as_integer(subscript.size)));
 
   FREE(3);
   return out;

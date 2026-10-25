@@ -88,8 +88,9 @@ Each one ends in rlang's internal error
    result is a 1D array, so this can't work. The fix is a clear error, raised
    before the result is allocated. The `r_ssize_as_integer()` call is in
    `rray_extract()` in `src/extract.c`. The test helper
-   `rray_subscript_as_list()` in `src/subscript.c` has the same call, but it
-   stays as is.
+   `rray_subscript_as_list()` in `src/subscript.c` has the same call. A
+   subscript that large is valid, so it reports the size with `r_len()`
+   instead.
 
    ```r
    rray_extract(x, TRUE)
