@@ -25,9 +25,9 @@ r_obj* vec_as_array(r_obj* x, struct rray_arg* arg, struct r_lazy error_call) {
   if (size > INT_MAX) {
     r_abort_lazy_call(
       error_call,
-      "%s can't have more than %d elements without a `dim`.",
-      rray_arg_format_input(arg),
-      INT_MAX
+      "Can't convert long vector %s (size %" R_PRI_SSIZE ") to a 1D array.",
+      rray_arg_format(arg),
+      size
     );
   }
 

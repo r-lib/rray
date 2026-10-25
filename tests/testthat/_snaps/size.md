@@ -20,7 +20,7 @@
       rray_size(raw(2^31))
     Condition
       Error in `rray_size()`:
-      ! `x` can't have more than 2147483647 elements without a `dim`.
+      ! Can't convert long vector `x` (size 2147483648) to a 1D array.
 
 # errors on classed input
 
