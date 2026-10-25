@@ -28,7 +28,7 @@ Words like "dimension" and "size" get used loosely when talking about arrays.
 rray gives each of them one precise meaning, and uses that meaning everywhere, from function names to argument names to error messages.
 This vignette defines each term.
 
-Most examples use this 3-D array:
+We'll use this array for most examples:
 
 ```{r}
 x <- array(1:12, dim = c(2, 3, 2))
