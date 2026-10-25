@@ -313,7 +313,7 @@ r_obj* rray_subscript_as_list(struct rray_subscript subscript) {
 
   r_list_poke(out, 0, subscript.index);
   r_list_poke(out, 1, r_chr(rray_subscript_kind_name(subscript.kind)));
-  r_list_poke(out, 2, r_len(subscript.size));
+  r_list_poke(out, 2, r_int(r_ssize_as_integer(subscript.size)));
 
   FREE(2);
   return out;

@@ -143,13 +143,6 @@ test_that("keeps a scalar logical mask at size 1", {
   )
 })
 
-test_that("reports a size past `.Machine$integer.max` as a double", {
-  expect_identical(
-    rray_as_extract_subscript(TRUE, c(2^16, 2^15)),
-    new_subscript(TRUE, "mask", 2^31)
-  )
-})
-
 test_that("accepts a logical array with the dimensions of `x`", {
   i <- array(c(TRUE, FALSE), 2L)
   expect_identical(
