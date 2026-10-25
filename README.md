@@ -12,16 +12,7 @@ coverage](https://codecov.io/gh/r-lib/rray/graph/badge.svg)](https://app.codecov
 
 rray (said: “r-ray”) is an array manipulation library for R. rray’s goal
 is to provide a consistent, powerful toolkit for array manipulation,
-usable on base R arrays. It supports broadcasting throughout the entire
-package, which allows for novel array operations popularized by
-[NumPy](https://numpy.org/) that have been missing from the R ecosystem.
-
-View [the website](https://rray.r-lib.org/) to learn more about how to
-use rray.
-
-``` r
-library(rray)
-```
+usable on base R arrays.
 
 ## Installation
 
@@ -37,6 +28,45 @@ You can install the development version of rray from
 ``` r
 # install.packages("pak")
 pak::pak("r-lib/rray")
+```
+
+## Why use rray?
+
+- It is *consistent*! Talking about arrays is hard! Dimensions, axes,
+  and margins are all terms that are thrown around loosely when refering
+  to arrays. rray has been thoughtfully designed to use a very
+  consistent set of
+  [terminology](https://r-lib.github.io/rray/articles/terminology.html)
+  throughout the entire package. Once you learn a few key terms, using
+  the package should feel pretty natural.
+
+- It is *fast*! rray is written entirely in C. Reduction functions like
+  `rray_sum()` and accumulators such as `rray_cumulative_max()` are
+  often significantly faster than their base R equivalents.
+  Additionally, while base R has fast variants like `rowSums()` and
+  `colSums()`, rray equivalents like `rray_sum()` can sum over any axis
+  (like the 3rd axis), and over multiple axes at once (summing up the
+  rows and columns in a 3D array).
+
+- It implements *broadcasting*! Popularized by Python’s
+  [NumPy](https://numpy.org/), broadcasting is a technique that recycles
+  an axis of dimension 1 against any other dimension. This allows for
+  novel yet intuitive array operations, which you can read more about
+  below, or in the
+  [broadcasting](https://r-lib.github.io/rray/articles/broadcasting.html)
+  vignette.
+
+- It supports *long vectors*! A “long” vector in R is any vector greater
+  than ~2 billion elements in length. R requires that each array axis
+  have a dimension less than that limit, but the total size of the array
+  (the product of each dimension) can be “long”. rray fully supports
+  these long arrays throughout the entire package.
+
+View [the website](https://r-lib.github.io/rray/) to learn more about
+how to use rray, or read on for a quick overview.
+
+``` r
+library(rray)
 ```
 
 ## What can it do?
