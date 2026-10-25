@@ -8,7 +8,7 @@
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-A toolkit for broadcasting, reshaping, reducing, and indexing arrays.
+Broadcast, reshape, reduce, and index base R arrays. Broadcasting repeats axes with a dimension of one so that arrays with different dimensions can be flexibly combined. Every function broadcasts its inputs, so operations such as arithmetic, comparison, and combining work consistently across axes.
 }
 \seealso{
 Useful links:
