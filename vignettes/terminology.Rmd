@@ -26,7 +26,7 @@ library(rray)
 
 Words like "dimension" and "size" get used loosely when talking about arrays.
 rray gives each of them one precise meaning, and uses that meaning everywhere, from function names to argument names to error messages.
-This vignette defines each term, building on the ones before it.
+This vignette defines each term.
 
 Most examples use this 3-D array:
 
