@@ -12,7 +12,7 @@ You also have read only access to the R sources, located at `/Users/davis/files/
 
 ### Terminology
 
-- Size: Total number of elements in the array.
+The full definitions, with worked examples, live in `vignettes/terminology.Rmd`. Keep this list in sync with it.
 
 - Axis: A single integer used to specify a direction along the array (i.e. reduce along the second axis).
 
@@ -22,6 +22,14 @@ You also have read only access to the R sources, located at `/Users/davis/files/
 
 - Dimensionality: The length of dimensions.
 
+- Size: Total number of elements in the array.
+
+- Names: A list with one character vector (or `NULL`) per axis, like `dimnames()`.
+
+- Titles: The names on the list of names, one per axis.
+
+- Broadcasting: Repeating axes with a dimension of 1 so that inputs with different dimensions match.
+
 This terminology makes names consistent while coding:
 
 ```r
@@ -29,30 +37,6 @@ for (axis in axes) {
   dimension <- dimensions[[axis]]
   # do stuff
 }
-```
-
-```r
-x <- array(
-  1:24,
-  dim = c(2, 3, 4),
-  dimnames = list(
-    c("a", "b"),
-    c("c", "d", "e"),
-    c("f", "g", "h", "i")
-  )
-)
-
-rray_dimensions(x) # c(2, 3, 4)
-rray_axis_dimension(x, axis)
-
-rray_names(x) # list(c("a", "b"), c("c", "d", "e"), ...)
-rray_axis_names(x, axis) # c("a", "b") for axis = 1
-rray_row_names(x)
-rray_column_names(x)
-
-rray_size(x) # 2*3*4, shortcut as length(x)
-
-rray_dimensionality(x) # length(rray_dimensions(x))
 ```
 
 ## Editing files
