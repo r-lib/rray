@@ -176,7 +176,7 @@ Fixes first, in the order above:
 
   8 GiB, all of it the index.
 
-- [ ] Fix 5, `rray_locate_max()` and `rray_locate_min()` on an
+- [x] Fix 5, `rray_locate_max()` and `rray_locate_min()` on an
   `.Machine$integer.max` axis. Test in `test-locate.R`:
 
   ```r

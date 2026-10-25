@@ -233,8 +233,8 @@ static r_no_return void stop_unsupported_locate(
     r_ssize out_loc = rray_run_iterator_loc(&it, 0);                           \
     const r_ssize out_stride = rray_run_iterator_stride(&it, 0);               \
                                                                                \
-    int position = (int) rray_run_iterator_loc(&it, 1) + 1;                    \
-    const int position_stride = (int) rray_run_iterator_stride(&it, 1);        \
+    r_ssize position = rray_run_iterator_loc(&it, 1) + 1;                      \
+    const r_ssize position_stride = rray_run_iterator_stride(&it, 1);          \
                                                                                \
     if (out_stride == 0) {                                                     \
       CTYPE best_elt = v_best[out_loc];                                        \
@@ -244,7 +244,7 @@ static r_no_return void stop_unsupported_locate(
         const CTYPE x_elt = v_x[i];                                            \
         const bool is_better = ONE(x_elt, best_elt);                           \
         best_elt = is_better ? x_elt : best_elt;                               \
-        best_position = is_better ? position : best_position;                  \
+        best_position = is_better ? (int) position : best_position;            \
         position += position_stride;                                           \
       }                                                                        \
                                                                                \
@@ -257,7 +257,7 @@ static r_no_return void stop_unsupported_locate(
         const int out_elt = v_out[out_loc];                                    \
         const bool is_better = ONE(x_elt, best_elt);                           \
         v_best[out_loc] = is_better ? x_elt : best_elt;                        \
-        v_out[out_loc] = is_better ? position : out_elt;                       \
+        v_out[out_loc] = is_better ? (int) position : out_elt;                 \
       }                                                                        \
     }                                                                          \
   }                                                                            \
