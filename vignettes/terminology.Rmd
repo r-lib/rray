@@ -56,7 +56,7 @@ rray_sum(x, axes = 3)
 Notice that only the axis you pick changes.
 Every other axis keeps its original shape.
 
-You can also give an axis by its [title](#titles) rather than its position.
+You can also provide an axis by its [title](#titles) rather than its position.
 See `?faq-axes` for more.
 
 ## Dimension
