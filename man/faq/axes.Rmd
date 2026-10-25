@@ -23,8 +23,8 @@ rray_dimensions(rray_sum(x, axes = 1))
 # Titles
 
 Titles are the names of the dimension names list, like `row` in
-`list(row = NULL)`. [rray_titles()] returns them. An argument documented as
-taking an axis "by position or by title" takes a title in place of a position:
+`list(row = NULL)`. [rray_titles()] returns them. A title works most anywhere a
+position does:
 
 ```{r}
 rray_titles(x)

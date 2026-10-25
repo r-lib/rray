@@ -24,9 +24,8 @@ rray_dimensions(rray_sum(x, axes = 1))
 
 \section{Titles}{
 Titles are the names of the dimension names list, like \code{row} in
-\code{list(row = NULL)}. \code{\link[=rray_titles]{rray_titles()}} returns them. An
-argument documented as taking an axis “by position or by title” takes a
-title in place of a position:
+\code{list(row = NULL)}. \code{\link[=rray_titles]{rray_titles()}} returns them. A
+title works most anywhere a position does:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_titles(x)
 #> [1] "row"  "col"  "page"
