@@ -256,7 +256,7 @@ r_obj* rray_as_index_array(
     );
   }
 
-  x = KEEP(vec_as_array(x));
+  x = KEEP(vec_as_array(x, arg, error_call));
 
   const r_ssize size = r_length(x);
   const int* v_x = r_int_cbegin(x);

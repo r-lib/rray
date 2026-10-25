@@ -48,7 +48,7 @@ r_no_return void stop_scalar_input(
 
 r_no_return void stop_int_overflow(struct r_lazy error_call);
 
-r_obj* vec_as_array(r_obj* x);
+r_obj* vec_as_array(r_obj* x, struct rray_arg* arg, struct r_lazy error_call);
 
 r_obj* arg_as_array(r_obj* x, struct rray_arg* arg, struct r_lazy error_call);
 

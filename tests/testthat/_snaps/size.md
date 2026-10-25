@@ -14,6 +14,14 @@
       Error in `rray_size()`:
       ! `x` must be an array, not a function.
 
+# errors on long vectors without `dim`
+
+    Code
+      rray_size(raw(2^31))
+    Condition
+      Error in `rray_size()`:
+      ! `x` can't have more than 2147483647 elements without a `dim`.
+
 # errors on classed input
 
     Code

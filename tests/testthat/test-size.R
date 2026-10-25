@@ -30,6 +30,12 @@ test_that("errors on non-vector types", {
   expect_snapshot(rray_size(mean), error = TRUE)
 })
 
+test_that("errors on long vectors without `dim`", {
+  skip_if_not_testing_long_vectors()
+
+  expect_snapshot(rray_size(raw(2^31)), error = TRUE)
+})
+
 test_that("errors on classed input", {
   x <- structure(array(1:4, c(2, 2)), class = "foo")
   expect_snapshot(rray_size(x), error = TRUE)
