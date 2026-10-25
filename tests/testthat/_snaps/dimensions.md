@@ -150,6 +150,14 @@
       Error in `rray_set_dimensions()`:
       ! Can't set these dimensions. Can't change from a size of 6 to a size of 12.
 
+# errors when dimensions overflow the maximum size
+
+    Code
+      rray_set_dimensions(integer(), rep(65536L, 4))
+    Condition
+      Error in `rray_set_dimensions()`:
+      ! Size (1.84467e+19) computed from dimensions `(65536, 65536, 65536, 65536)` is too large.
+
 # errors on non-array input
 
     Code
