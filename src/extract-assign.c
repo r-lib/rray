@@ -70,7 +70,7 @@ r_obj* rray_extract_assign(
   const int value_dimensionality =
     rray_dimensionality_from_dimensions(value_dimensions);
 
-  const int size = (int) subscript.size;
+  const int size = r_ssize_as_integer(subscript.size);
 
   check_broadcastable(
     v_value_dimensions,
