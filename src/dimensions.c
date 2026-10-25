@@ -78,7 +78,8 @@ r_obj* rray_set_dimensions(
   const int dimensionality = rray_dimensionality_from_dimensions(dimensions);
   const int* v_dimensions = r_int_cbegin(dimensions);
 
-  const r_ssize size = rray_size_from_dimensions(v_dimensions, dimensionality);
+  const r_ssize size =
+    rray_size_from_dimensions_checked(v_dimensions, dimensionality, error_call);
 
   if (x_size != size) {
     r_abort_lazy_call(

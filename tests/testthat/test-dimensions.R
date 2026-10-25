@@ -320,6 +320,13 @@ test_that("errors when size would change", {
   expect_snapshot(rray_set_dimensions(1:6, c(6L, 2L)), error = TRUE)
 })
 
+test_that("errors when dimensions overflow the maximum size", {
+  expect_snapshot(
+    rray_set_dimensions(integer(), rep(65536L, 4)),
+    error = TRUE
+  )
+})
+
 test_that("errors on non-array input", {
   expect_snapshot(rray_set_dimensions(NULL, 1L), error = TRUE)
   expect_snapshot(rray_set_dimensions(mean, 1L), error = TRUE)
