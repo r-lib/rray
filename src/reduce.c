@@ -42,8 +42,11 @@ r_obj* rray_reduce(
     v_out_dimensions[v_axes[i] - 1] = 1;
   }
 
-  const r_ssize out_size =
-    rray_size_from_dimensions(v_out_dimensions, dimensionality);
+  const r_ssize out_size = rray_size_from_dimensions_checked(
+    v_out_dimensions,
+    dimensionality,
+    error_call
+  );
 
   r_ssize v_out_broadcast_strides[RRAY_MAX_DIMENSIONALITY];
   rray_fill_broadcast_strides_from_dimensions(

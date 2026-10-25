@@ -23,6 +23,7 @@ enum rray_locate_op {
 typedef r_obj* (*rray_locate_fn)(
   r_obj* x,
   bool na_rm,
+  r_ssize out_size,
   const int* v_x_dimensions,
   const int* v_out_dimensions,
   int dimensionality,
@@ -102,9 +103,21 @@ static r_obj* rray_locate(
   r_memcpy(v_out_dimensions, v_x_dimensions, sizeof(int) * dimensionality);
   v_out_dimensions[c_axis - 1] = 1;
 
-  r_obj* out = KEEP(
-    fn(x, na_rm, v_x_dimensions, v_out_dimensions, dimensionality, c_axis)
+  const r_ssize out_size = rray_size_from_dimensions_checked(
+    v_out_dimensions,
+    dimensionality,
+    error_call
   );
+
+  r_obj* out = KEEP(fn(
+    x,
+    na_rm,
+    out_size,
+    v_x_dimensions,
+    v_out_dimensions,
+    dimensionality,
+    c_axis
+  ));
 
   r_attrib_poke_dim(out, out_dimensions);
 
@@ -181,9 +194,6 @@ static r_no_return void stop_unsupported_locate(
 }
 
 #define RRAY_LOCATE(CTYPE, CONST_DEREF, DEREF, IS_MISSING, INIT, ONE)          \
-  const r_ssize out_size =                                                     \
-    rray_size_from_dimensions(v_out_dimensions, dimensionality);               \
-                                                                               \
   r_obj* out = KEEP(r_alloc_integer(out_size));                                \
   int* v_out = r_int_begin(out);                                               \
                                                                                \
@@ -273,6 +283,7 @@ static r_no_return void stop_unsupported_locate(
 static r_obj* rray_locate_max_lgl(
   r_obj* x,
   bool na_rm,
+  r_ssize out_size,
   const int* v_x_dimensions,
   const int* v_out_dimensions,
   int dimensionality,
@@ -302,6 +313,7 @@ static r_obj* rray_locate_max_lgl(
 static r_obj* rray_locate_max_int(
   r_obj* x,
   bool na_rm,
+  r_ssize out_size,
   const int* v_x_dimensions,
   const int* v_out_dimensions,
   int dimensionality,
@@ -331,6 +343,7 @@ static r_obj* rray_locate_max_int(
 static r_obj* rray_locate_max_dbl(
   r_obj* x,
   bool na_rm,
+  r_ssize out_size,
   const int* v_x_dimensions,
   const int* v_out_dimensions,
   int dimensionality,
@@ -360,6 +373,7 @@ static r_obj* rray_locate_max_dbl(
 static r_obj* rray_locate_min_lgl(
   r_obj* x,
   bool na_rm,
+  r_ssize out_size,
   const int* v_x_dimensions,
   const int* v_out_dimensions,
   int dimensionality,
@@ -389,6 +403,7 @@ static r_obj* rray_locate_min_lgl(
 static r_obj* rray_locate_min_int(
   r_obj* x,
   bool na_rm,
+  r_ssize out_size,
   const int* v_x_dimensions,
   const int* v_out_dimensions,
   int dimensionality,
@@ -418,6 +433,7 @@ static r_obj* rray_locate_min_int(
 static r_obj* rray_locate_min_dbl(
   r_obj* x,
   bool na_rm,
+  r_ssize out_size,
   const int* v_x_dimensions,
   const int* v_out_dimensions,
   int dimensionality,

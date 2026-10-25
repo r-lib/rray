@@ -1,3 +1,11 @@
+# errors when reduced dimensions overflow
+
+    Code
+      rray_sum(x, axes = 1L)
+    Condition
+      Error in `rray_sum()`:
+      ! Size (1.84467e+19) computed from dimensions `(1, 65536, 65536, 65536, 65536)` is too large.
+
 # errors on axes out of range
 
     Code

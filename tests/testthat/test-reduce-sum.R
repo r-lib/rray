@@ -350,6 +350,12 @@ test_that("reducing over a non-zero-length axis with a zero-length axis", {
   expect_identical(as.vector(out), numeric())
 })
 
+test_that("errors when reduced dimensions overflow", {
+  # A special case when a 0 dimension becomes 1 via reduction
+  x <- array(integer(), c(0L, rep(65536L, 4)))
+  expect_snapshot(rray_sum(x, axes = 1L), error = TRUE)
+})
+
 test_that("reducing all axes of a zero-length array", {
   x <- matrix(numeric(), 0L, 2L)
   out <- rray_sum(x, axes = c(1L, 2L))

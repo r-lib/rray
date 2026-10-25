@@ -193,6 +193,13 @@ test_that("locating along a non-zero-length axis with a zero-length axis", {
   expect_identical(rray_locate_min(x, axis = 2L), array(integer(), c(0L, 1L)))
 })
 
+test_that("errors when located dimensions overflow", {
+  # A special case when a 0 dimension becomes 1 via reduction
+  x <- array(integer(), c(0L, rep(65536L, 4)))
+  expect_snapshot(rray_locate_max(x, axis = 1L), error = TRUE)
+  expect_snapshot(rray_locate_min(x, axis = 1L), error = TRUE)
+})
+
 test_that("`rray_locate_max()` works with long vectors", {
   skip_if_not_testing_long_vectors()
 
