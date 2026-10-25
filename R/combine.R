@@ -11,8 +11,8 @@
 #'
 #' @param ... Arrays to combine.
 #'
-#' @param .axis A single integer between 1 and the greatest input
-#'   dimensionality.
+#' @param .axis The axis to combine along, given [by position][faq-axes]. Must
+#'   be between 1 and the greatest input dimensionality.
 #'
 #' @returns
 #' An array with the following dimensions:

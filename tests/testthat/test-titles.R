@@ -142,6 +142,11 @@ test_that("`rray_set_axis_title()` takes a title for `axis`", {
   expect_identical(rray_titles(out), c("Row", ""))
 })
 
+test_that("`rray_axis_title()` can't take a title for `axis`", {
+  x <- matrix(1:6, 2, 3, dimnames = list(Row = NULL, Column = NULL))
+  expect_snapshot(rray_axis_title(x, "Row"), error = TRUE)
+})
+
 test_that("title setters keep empty titles", {
   x <- matrix(
     1:6,

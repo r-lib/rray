@@ -1,3 +1,11 @@
+# `rray_axis_title()` can't take a title for `axis`
+
+    Code
+      rray_axis_title(x, "Row")
+    Condition
+      Error in `rray_axis_title()`:
+      ! `axis` must be an integer or double vector, not the string "Row".
+
 # title getters reject invalid input and axes
 
     Code

@@ -36,6 +36,14 @@
       Error in `rray_insert_axes()`:
       ! `axes` must be an integer or double vector, not the string "x".
 
+# `axes` can't be a title
+
+    Code
+      rray_insert_axes(x, "row")
+    Condition
+      Error in `rray_insert_axes()`:
+      ! `axes` must be an integer or double vector, not the string "row".
+
 # errors on dimensionality upper bound
 
     Code

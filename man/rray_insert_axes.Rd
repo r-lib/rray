@@ -9,8 +9,7 @@ rray_insert_axes(x, axes)
 \arguments{
 \item{x}{An array.}
 
-\item{axes}{An integer vector referring to axes in the \emph{result} that are
-newly inserted.}
+\item{axes}{The axes to insert, given \link[=faq-axes]{by position in the output}.}
 }
 \value{
 An array with new axes of dimension 1 at \code{axes}.

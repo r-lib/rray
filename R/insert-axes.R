@@ -34,8 +34,7 @@
 #'
 #' @param x An array.
 #'
-#' @param axes An integer vector referring to axes in the _result_ that are
-#'   newly inserted.
+#' @param axes The axes to insert, given [by position in the output][faq-axes].
 #'
 #' @returns
 #' An array with new axes of dimension 1 at `axes`.

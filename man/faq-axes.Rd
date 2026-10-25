@@ -24,8 +24,9 @@ rray_dimensions(rray_sum(x, axes = 1))
 
 \section{Titles}{
 Titles are the names of the dimension names list, like \code{row} in
-\code{list(row = NULL)}. \code{\link[=rray_titles]{rray_titles()}} returns them. A
-title works anywhere a position does:
+\code{list(row = NULL)}. \code{\link[=rray_titles]{rray_titles()}} returns them. An
+argument documented as taking an axis “by position or by title” takes a
+title in place of a position:
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{rray_titles(x)
 #> [1] "row"  "col"  "page"
@@ -38,8 +39,8 @@ identical(rray_sum(x, axes = c("page", "row")), rray_sum(x, axes = c(1, 3)))
 }\if{html}{\out{</div>}}
 }
 
-\section{Positions in the result}{
-Some arguments specify a position in the result rather than an axis of
+\section{Positions in the output}{
+Some arguments specify a position in the output rather than an axis of
 \code{x}, like \code{axes} in \code{\link[=rray_insert_axes]{rray_insert_axes()}} and
 \code{.axis} in \code{\link[=rray_stack]{rray_stack()}}. That axis doesn’t exist yet,
 so it has no title, and these arguments only take positions:

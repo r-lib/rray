@@ -9,8 +9,8 @@ rray_combine(..., .axis)
 \arguments{
 \item{...}{Arrays to combine.}
 
-\item{.axis}{A single integer between 1 and the greatest input
-dimensionality.}
+\item{.axis}{The axis to combine along, given \link[=faq-axes]{by position}. Must
+be between 1 and the greatest input dimensionality.}
 }
 \value{
 An array with the following dimensions:
