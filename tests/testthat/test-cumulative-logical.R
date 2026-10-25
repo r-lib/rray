@@ -119,6 +119,26 @@ test_that("zero-size arrays keep their shape", {
   }
 })
 
+test_that("`rray_cumulative_all()` works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(TRUE, c(2^16, 2^15))
+  x[length(x)] <- FALSE
+
+  out <- rray_cumulative_all(x, axis = 2)
+  expect_identical(out[c(1, length(out))], c(TRUE, FALSE))
+})
+
+test_that("`rray_cumulative_any()` works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(FALSE, c(2^16, 2^15))
+  x[length(x)] <- TRUE
+
+  out <- rray_cumulative_any(x, axis = 2)
+  expect_identical(out[c(1, length(out))], c(FALSE, TRUE))
+})
+
 test_that("names are kept on every axis", {
   x <- array(
     c(TRUE, FALSE, NA, TRUE),

@@ -188,6 +188,26 @@ test_that("zero-size arrays keep their shape", {
   }
 })
 
+test_that("`rray_cumulative_max()` works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(FALSE, c(2^16, 2^15))
+  x[length(x)] <- TRUE
+
+  out <- rray_cumulative_max(x, axis = 2)
+  expect_identical(out[c(1, length(out))], c(FALSE, TRUE))
+})
+
+test_that("`rray_cumulative_min()` works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(TRUE, c(2^16, 2^15))
+  x[length(x)] <- FALSE
+
+  out <- rray_cumulative_min(x, axis = 2)
+  expect_identical(out[c(1, length(out))], c(TRUE, FALSE))
+})
+
 test_that("names are kept on every axis", {
   x <- array(
     c(1L, 2L, 3L, 4L),

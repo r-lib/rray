@@ -150,6 +150,18 @@ test_that("empty selections give a dimension of zero", {
   expect_identical(rray_slice(x, numeric(), TRUE), array(integer(), c(0L, 3L)))
 })
 
+test_that("slicing works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(2^16, 2^15))
+  x[length(x)] <- as.raw(1)
+
+  expect_identical(as.vector(rray_slice(x, 65536L, 32768L)), as.raw(1))
+  expect_identical(rray_slice_axis(x, 32768L, axis = 2)[2^16], as.raw(1))
+  expect_identical(rray_slice_rows(x, 65536L)[2^15], as.raw(1))
+  expect_identical(rray_slice_columns(x, 32768L)[2^16], as.raw(1))
+})
+
 test_that("errors when an axis selects more locations than it can hold", {
   skip_if_not_testing_long_vectors()
 
@@ -795,6 +807,24 @@ test_that("assigns with the maximum dimensionality", {
     ),
     array(c(1L, 20L, 3L, 10L), dim(x))
   )
+})
+
+test_that("slice assignment works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(2^16, 2^15))
+
+  out <- rray_slice_assign(x, 65536L, 32768L, value = as.raw(1))
+  expect_identical(out[length(out)], as.raw(1))
+
+  out <- rray_slice_assign_axis(x, 32768L, axis = 2, value = as.raw(1))
+  expect_identical(out[length(out)], as.raw(1))
+
+  out <- rray_slice_assign_rows(x, 65536L, value = as.raw(1))
+  expect_identical(out[length(out)], as.raw(1))
+
+  out <- rray_slice_assign_columns(x, 32768L, value = as.raw(1))
+  expect_identical(out[length(out)], as.raw(1))
 })
 
 test_that("empty targets accept a value that broadcasts to them", {

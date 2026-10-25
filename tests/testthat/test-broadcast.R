@@ -138,6 +138,16 @@ test_that("broadcasts list arrays", {
   expect_identical(out[, 3], list("a", 1L))
 })
 
+test_that("works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(2^16, 1))
+  x[2^16] <- as.raw(1)
+
+  out <- rray_broadcast(x, c(2^16, 2^15))
+  expect_identical(out[c(1, length(out))], as.raw(c(0, 1)))
+})
+
 test_that("preserves dimension names when sizes match", {
   x <- array(
     1:6,
@@ -317,6 +327,17 @@ test_that("works with zero size dimensions", {
   )
   expect_identical(rray_dimensions(out[[1]]), c(0L, 2L))
   expect_identical(rray_dimensions(out[[2]]), c(0L, 2L))
+})
+
+test_that("`rray_broadcast_common()` works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(2^16, 1))
+  x[2^16] <- as.raw(1)
+  y <- array(as.raw(0), c(1, 2^15))
+
+  out <- rray_broadcast_common(x, y)[[1]]
+  expect_identical(out[c(1, length(out))], as.raw(c(0, 1)))
 })
 
 test_that("doesn't touch types", {

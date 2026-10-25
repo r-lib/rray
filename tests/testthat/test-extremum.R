@@ -146,6 +146,19 @@ test_that("zero dimensions broadcast against dimensions of 1", {
   expect_identical(rray_pmin(x, y), y)
 })
 
+test_that("works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(FALSE, c(2^16, 2^15))
+  x[length(x)] <- TRUE
+
+  out <- rray_pmax(x, 0L)
+  expect_identical(out[c(1, length(out))], c(0L, 1L))
+
+  out <- rray_pmin(x, 1L)
+  expect_identical(out[c(1, length(out))], c(0L, 1L))
+})
+
 test_that("errors on incompatible dimensions", {
   x <- array(1:6, c(3L, 2L))
   y <- array(1L, c(2L, 2L))

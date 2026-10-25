@@ -175,6 +175,16 @@ test_that("zero-size conditions retain their dimensions", {
   )
 })
 
+test_that("works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(FALSE, c(2^16, 2^15))
+  x[length(x)] <- TRUE
+
+  out <- rray_if_else(x, as.raw(1), as.raw(0))
+  expect_identical(out[c(1, length(out))], as.raw(c(0, 1)))
+})
+
 test_that("condition must be an unclassed logical array", {
   expect_snapshot(rray_if_else(1:2, 1L, 2L), error = TRUE)
   expect_snapshot(

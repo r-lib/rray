@@ -148,6 +148,18 @@ test_that("handles zero dimensions", {
   )
 })
 
+test_that("works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(2^16, 2^14))
+  y <- x
+  y[length(y)] <- as.raw(1)
+
+  out <- rray_combine(x, y, .axis = 2)
+  expect_identical(dim(out), c(65536L, 32768L))
+  expect_identical(out[length(out)], as.raw(1))
+})
+
 test_that("combines axis names and broadcasts other names", {
   x <- array(
     1:4,

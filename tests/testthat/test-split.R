@@ -118,6 +118,16 @@ test_that("works with every type", {
   }
 })
 
+test_that("works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(2^16, 2^15 + 1))
+  x[length(x)] <- as.raw(1)
+
+  out <- rray_split(x, axis = 2, dimensions = c(2^15, 1))
+  expect_identical(out[[2]][2^16], as.raw(1))
+})
+
 test_that("matches a reference implementation", {
   expected_split <- function(x, axis, dimensions) {
     x_dimensions <- dim(x)

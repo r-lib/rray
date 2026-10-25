@@ -358,6 +358,17 @@ test_that("the identity of an empty reduction has the output type", {
   )
 })
 
+test_that("works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(TRUE, c(2^16, 2^15))
+  x[length(x)] <- FALSE
+
+  out <- rray_prod(x, axes = 1)
+  expect_identical(as.vector(out)[c(1, 2^15)], c(1, 0))
+  expect_identical(as.vector(rray_prod(x, axes = 1:2)), 0)
+})
+
 test_that("errors on axes out of range", {
   x <- array(1:4, c(2L, 2L))
   expect_snapshot(rray_prod(x, axes = 3L), error = TRUE)

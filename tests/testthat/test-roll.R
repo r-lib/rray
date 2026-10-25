@@ -153,6 +153,15 @@ test_that("works with bare vectors", {
   )
 })
 
+test_that("works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(2^16, 2^15))
+  x[length(x)] <- as.raw(1)
+
+  expect_identical(rray_roll(x, n = 1, axes = 2)[2^16], as.raw(1))
+})
+
 test_that("names roll on rolled axes and are untouched elsewhere", {
   x <- matrix(1:6, nrow = 2, dimnames = list(c("r1", "r2"), c("a", "b", "c")))
 
@@ -462,6 +471,15 @@ test_that("works with a bare vector `x` and a bare vector `n`", {
     rray_roll_each(c(a = 1L, b = 2L, c = 3L), n = c(z = 1L), axis = 1),
     array(c(3L, 1:2), 3)
   )
+})
+
+test_that("`rray_roll_each()` works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(2^16, 2^15))
+  x[length(x)] <- as.raw(1)
+
+  expect_identical(rray_roll_each(x, n = 1, axis = 2)[2^16], as.raw(1))
 })
 
 test_that("drops names on `axis` and keeps the rest", {

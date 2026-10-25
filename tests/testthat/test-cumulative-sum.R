@@ -214,6 +214,15 @@ test_that("zero-size arrays keep their shape", {
   }
 })
 
+test_that("works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(TRUE, c(2^16, 2^15))
+
+  out <- rray_cumulative_sum(x, axis = 2)
+  expect_identical(out[c(1, length(out))], c(1L, 32768L))
+})
+
 test_that("names are kept on every axis", {
   x <- array(
     c(1, 2, 3, 4),

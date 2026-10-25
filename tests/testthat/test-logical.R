@@ -101,6 +101,22 @@ test_that("zero dimensions broadcast against dimensions of 1", {
   )
 })
 
+test_that("works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(FALSE, c(2^16, 2^15))
+  x[length(x)] <- TRUE
+
+  out <- rray_and(x, TRUE)
+  expect_identical(out[c(1, length(out))], c(FALSE, TRUE))
+
+  out <- rray_or(x, FALSE)
+  expect_identical(out[c(1, length(out))], c(FALSE, TRUE))
+
+  out <- rray_xor(x, TRUE)
+  expect_identical(out[c(1, length(out))], c(TRUE, FALSE))
+})
+
 test_that("errors on incompatible dimensions", {
   x <- array(TRUE, c(1L, 2L))
   y <- array(logical(), c(1L, 0L))

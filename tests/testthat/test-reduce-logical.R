@@ -201,6 +201,28 @@ test_that("reducing all axes of a zero-length array", {
   expect_identical(as.vector(rray_any(x, axes = c(1L, 2L))), FALSE)
 })
 
+test_that("`rray_all()` works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(TRUE, c(2^16, 2^15))
+  x[length(x)] <- FALSE
+
+  out <- rray_all(x, axes = 1)
+  expect_identical(as.vector(out)[c(1, 2^15)], c(TRUE, FALSE))
+  expect_identical(as.vector(rray_all(x, axes = 1:2)), FALSE)
+})
+
+test_that("`rray_any()` works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(FALSE, c(2^16, 2^15))
+  x[length(x)] <- TRUE
+
+  out <- rray_any(x, axes = 1)
+  expect_identical(as.vector(out)[c(1, 2^15)], c(FALSE, TRUE))
+  expect_identical(as.vector(rray_any(x, axes = 1:2)), TRUE)
+})
+
 test_that("errors on axes out of range", {
   x <- array(TRUE, c(2L, 2L))
   expect_snapshot(rray_all(x, axes = 3L), error = TRUE)

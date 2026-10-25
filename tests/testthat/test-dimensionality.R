@@ -16,6 +16,13 @@ test_that("returns 2 for matrices", {
   expect_identical(rray_dimensionality(matrix(1, 2, 3)), 2L)
 })
 
+test_that("works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(2^16, 2^15))
+  expect_identical(rray_dimensionality(x), 2L)
+})
+
 test_that("errors on NULL", {
   expect_snapshot(rray_dimensionality(NULL), error = TRUE)
 })

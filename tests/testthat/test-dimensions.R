@@ -23,6 +23,13 @@ test_that("returns length for empty vectors", {
   expect_identical(rray_dimensions(character()), 0L)
 })
 
+test_that("works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(2^16, 2^15))
+  expect_identical(rray_dimensions(x), c(65536L, 32768L))
+})
+
 test_that("errors on NULL", {
   expect_snapshot(rray_dimensions(NULL), error = TRUE)
 })
@@ -104,6 +111,14 @@ test_that("more than two inputs work", {
     ),
     c(2L, 3L, 4L)
   )
+})
+
+test_that("`rray_dimensions_common()` works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(2^16, 2^15))
+  y <- array(as.raw(0), c(1, 2^15))
+  expect_identical(rray_dimensions_common(x, y), c(65536L, 32768L))
 })
 
 test_that("`.dimensions` overrides", {
@@ -250,6 +265,17 @@ test_that("works with zero-size arrays", {
   out <- rray_set_dimensions(integer(), c(0L, 5L))
   expect_identical(rray_dimensions(out), c(0L, 5L))
   expect_identical(rray_size(out), 0)
+})
+
+test_that("`rray_set_dimensions()` works with long vectors", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(2^16, 2^15))
+  x[length(x)] <- as.raw(1)
+
+  out <- rray_set_dimensions(x, c(2^15, 2^16))
+  expect_identical(dim(out), c(32768L, 65536L))
+  expect_identical(out[length(out)], as.raw(1))
 })
 
 test_that("drops dimension names", {
