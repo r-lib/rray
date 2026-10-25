@@ -1,3 +1,19 @@
+# errors when an axis selects more locations than it can hold
+
+    Code
+      rray_slice(x, i, 1L)
+    Condition
+      Error in `rray_slice()`:
+      ! `..1` can't select 2147483648 locations on one axis.
+
+---
+
+    Code
+      rray_slice_assign(x, i, 1L, value = as.raw(1))
+    Condition
+      Error in `rray_slice_assign()`:
+      ! `..1` can't select 2147483648 locations on one axis.
+
 # requires one subscript per axis
 
     Code
@@ -107,6 +123,14 @@
     Condition
       Error in `rray_slice_axis()`:
       ! `i` must be logical, integer, double, character, or `NULL`, not a list.
+
+# reports a long `i` as `i`
+
+    Code
+      rray_slice_axis(x, i, axis = 1)
+    Condition
+      Error in `rray_slice_axis()`:
+      ! `i` can't select 2147483648 locations on one axis.
 
 # `axis` is validated
 
@@ -272,6 +296,14 @@
     Condition
       Error in `rray_slice_assign_axis()`:
       ! `i` must only contain names of the axis, not "z".
+
+# reports a long `i` in `rray_slice_assign_axis()` as `i`
+
+    Code
+      rray_slice_assign_axis(x, i, axis = 1, value = as.raw(1))
+    Condition
+      Error in `rray_slice_assign_axis()`:
+      ! `i` can't select 2147483648 locations on one axis.
 
 # `axis` and `value` are validated by `rray_slice_assign_axis()`
 
