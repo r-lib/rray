@@ -12,6 +12,17 @@ static r_obj* rray_broadcast_names_merge(
   struct r_lazy error_call
 );
 
+static void rray_titles_merge(
+  r_obj* out_titles,
+  r_ssize* v_titles_args,
+  r_ssize* p_out_i,
+  r_obj* x_titles,
+  r_ssize x_i,
+  struct rray_arg* out_arg,
+  struct rray_arg* x_arg,
+  struct r_lazy error_call
+);
+
 static void check_axis_names_equal(
   r_obj* x_names,
   r_obj* y_names,

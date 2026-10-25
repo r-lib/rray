@@ -7,7 +7,7 @@
 
 r_obj* rray_combine(
   r_obj* xs,
-  int axis,
+  r_obj* axis,
   r_obj* ptype,
   struct rray_arg* arg,
   struct rray_arg* ptype_arg,

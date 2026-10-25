@@ -11,16 +11,14 @@
 #include "size.h"
 #include "strided-iterator.h"
 #include "strides.h"
-#include "utils.h"
 
 #include "decl/combine-decl.h"
 
 r_obj* ffi_rray_combine(r_obj* ffi_xs, r_obj* ffi_axis, r_obj* ffi_frame) {
   struct r_lazy error_call = {.x = ffi_frame, .env = r_null};
-  const int axis = arg_as_int(ffi_axis, rray_args.dot_axis, error_call);
   return rray_combine(
     ffi_xs,
-    axis,
+    ffi_axis,
     r_null,
     rray_args.empty,
     rray_args.empty,
@@ -30,7 +28,7 @@ r_obj* ffi_rray_combine(r_obj* ffi_xs, r_obj* ffi_axis, r_obj* ffi_frame) {
 
 r_obj* rray_combine(
   r_obj* xs,
-  int axis,
+  r_obj* axis,
   r_obj* ptype,
   struct rray_arg* arg,
   struct rray_arg* ptype_arg,
@@ -50,10 +48,22 @@ r_obj* rray_combine(
   const int out_dimensionality = list_max_dimensionality(xs, arg, error_call);
   check_dimensionality(out_dimensionality);
 
-  check_axis(axis, out_dimensionality, rray_args.dot_axis, error_call);
+  r_obj* titles = (r_typeof(axis) == R_TYPE_character)
+    ? rray_titles_common(xs, out_dimensionality, arg, error_call)
+    : r_null;
+  KEEP(titles);
+
+  const int c_axis = arg_as_axis(
+    axis,
+    titles,
+    out_dimensionality,
+    rray_args.dot_axis,
+    rray_args.dots,
+    error_call
+  );
 
   r_obj* out_dimensions =
-    KEEP(rray_dimensions_common_opts(xs, &axis, 1, arg, error_call));
+    KEEP(rray_dimensions_common_opts(xs, &c_axis, 1, arg, error_call));
   int* v_out_dimensions = r_int_begin(out_dimensions);
 
   int axis_dimension = 0;
@@ -64,7 +74,7 @@ r_obj* rray_combine(
     const int x_dimensionality =
       rray_dimensionality_from_dimensions(x_dimensions);
     const int x_axis_dimension =
-      (axis <= x_dimensionality) ? r_int_get(x_dimensions, axis - 1) : 1;
+      (c_axis <= x_dimensionality) ? r_int_get(x_dimensions, c_axis - 1) : 1;
 
     if (axis_dimension > INT_MAX - x_axis_dimension) {
       r_abort_lazy_call(
@@ -76,7 +86,7 @@ r_obj* rray_combine(
     axis_dimension += x_axis_dimension;
   }
 
-  v_out_dimensions[axis - 1] = axis_dimension;
+  v_out_dimensions[c_axis - 1] = axis_dimension;
 
   const r_ssize out_size = rray_size_from_dimensions_checked(
     v_out_dimensions,
@@ -111,9 +121,9 @@ r_obj* rray_combine(
     const int x_dimensionality =
       rray_dimensionality_from_dimensions(x_dimensions);
     const int x_axis_dimension =
-      (axis <= x_dimensionality) ? v_x_dimensions[axis - 1] : 1;
+      (c_axis <= x_dimensionality) ? v_x_dimensions[c_axis - 1] : 1;
 
-    v_x_broadcast_dimensions[axis - 1] = x_axis_dimension;
+    v_x_broadcast_dimensions[c_axis - 1] = x_axis_dimension;
 
     rray_fill_broadcast_strides_from_dimensions(
       v_x_dimensions,
@@ -122,7 +132,7 @@ r_obj* rray_combine(
       v_x_strides
     );
 
-    const r_ssize out_start = axis_offset * v_out_strides[axis - 1];
+    const r_ssize out_start = axis_offset * v_out_strides[c_axis - 1];
 
     rray_combine_fill(
       x,
@@ -142,7 +152,7 @@ r_obj* rray_combine(
   r_obj* out_names = KEEP(rray_combine_names(
     xs,
     out_dimensions,
-    axis,
+    c_axis,
     axis_dimension,
     arg,
     error_call
@@ -152,7 +162,7 @@ r_obj* rray_combine(
     r_attrib_poke_dim_names(out, out_names);
   }
 
-  FREE(5);
+  FREE(6);
   return out;
 }
 

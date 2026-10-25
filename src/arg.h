@@ -12,6 +12,7 @@ struct rray_arg {
 
 struct rray_args {
   struct rray_arg* empty;
+  struct rray_arg* dots;
   struct rray_arg* x;
   struct rray_arg* y;
   struct rray_arg* i;

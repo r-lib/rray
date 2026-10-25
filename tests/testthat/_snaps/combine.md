@@ -32,6 +32,24 @@
       Error in `rray_combine()`:
       ! Can't find common titles at axis 2. `z` has title "C" and `w` has title "D".
 
+# `.axis` title errors
+
+    Code
+      rray_combine(x, .axis = "nope")
+    Condition
+      Error in `rray_combine()`:
+      ! Can't find an axis of `...` titled "nope".
+    Code
+      rray_combine(z, z, .axis = "row")
+    Condition
+      Error in `rray_combine()`:
+      ! Can't use a title in `.axis` because `...` has no titles.
+    Code
+      rray_combine(x = x, y = y, .axis = "row")
+    Condition
+      Error in `rray_combine()`:
+      ! Can't find common titles at axis 1. `x` has title "row" and `y` has title "A".
+
 # validates inputs and axis
 
     Code
@@ -48,12 +66,12 @@
       rray_combine(x, .axis = integer())
     Condition
       Error in `rray_combine()`:
-      ! `.axis` must be a single integer, not length 0.
+      ! `.axis` must be length 1, not length 0.
     Code
       rray_combine(x, .axis = c(1L, 2L))
     Condition
       Error in `rray_combine()`:
-      ! `.axis` must be a single integer, not length 2.
+      ! `.axis` must be length 1, not length 2.
     Code
       rray_combine(x, .axis = NA_integer_)
     Condition

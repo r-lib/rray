@@ -11,8 +11,9 @@
 #'
 #' @param ... Arrays to combine.
 #'
-#' @param .axis A single integer between 1 and the greatest input
-#'   dimensionality.
+#' @param .axis The axis to combine along, given
+#'   [by position or by title][faq-axes]. A title is looked up in the common
+#'   titles of `...`.
 #'
 #' @returns
 #' An array with the following dimensions:
@@ -26,6 +27,10 @@
 #'
 #' rray_combine(x, y, .axis = 1)
 #' rray_combine(x, y, .axis = 2)
+#'
+#' # Along the columns, by title
+#' x <- rray_set_titles(x, c("row", "col"))
+#' rray_combine(x, y, .axis = "col")
 #'
 #' # Missing trailing axes have an implicit dimension of 1
 #' rray_combine(1:2, array(3:8, c(2, 3)), .axis = 2)
