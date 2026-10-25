@@ -475,6 +475,14 @@ test_that("reports subscript errors as `i`", {
   })
 })
 
+test_that("reports a long `i` as `i`", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(1, 1))
+  i <- rep(1L, 2^31)
+  expect_snapshot(rray_slice_axis(x, i, axis = 1), error = TRUE)
+})
+
 test_that("`axis` is validated", {
   x <- array(1:6, c(2L, 3L))
 
@@ -1037,6 +1045,17 @@ test_that("reports subscript errors from `rray_slice_assign_axis()` as `i`", {
     rray_slice_assign_axis(x, 4L, axis = 2, value = 0L)
     rray_slice_assign_axis(x, "z", axis = 1, value = 0L)
   })
+})
+
+test_that("reports a long `i` in `rray_slice_assign_axis()` as `i`", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(1, 1))
+  i <- rep(1L, 2^31)
+  expect_snapshot(
+    rray_slice_assign_axis(x, i, axis = 1, value = as.raw(1)),
+    error = TRUE
+  )
 })
 
 test_that("`axis` and `value` are validated by `rray_slice_assign_axis()`", {

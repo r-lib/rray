@@ -124,6 +124,14 @@
       Error in `rray_slice_axis()`:
       ! `i` must be logical, integer, double, character, or `NULL`, not a list.
 
+# reports a long `i` as `i`
+
+    Code
+      rray_slice_axis(x, i, axis = 1)
+    Condition
+      Error in `rray_slice_axis()`:
+      ! `i` can't select 2147483648 locations on one axis.
+
 # `axis` is validated
 
     Code
@@ -288,6 +296,14 @@
     Condition
       Error in `rray_slice_assign_axis()`:
       ! `i` must only contain names of the axis, not "z".
+
+# reports a long `i` in `rray_slice_assign_axis()` as `i`
+
+    Code
+      rray_slice_assign_axis(x, i, axis = 1, value = as.raw(1))
+    Condition
+      Error in `rray_slice_assign_axis()`:
+      ! `i` can't select 2147483648 locations on one axis.
 
 # `axis` and `value` are validated by `rray_slice_assign_axis()`
 
