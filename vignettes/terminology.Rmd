@@ -62,7 +62,7 @@ See `?faq-axes` for more.
 ## Dimension
 
 A *dimension* is the number of elements along one axis.
-`x` has 2 rows, 3 columns, and 2 pages, so:
+For `x`:
 
 - Axis 1 has a dimension of 2.
 
