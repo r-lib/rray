@@ -37,6 +37,14 @@ r_obj* rray_extract(
   );
   KEEP(subscript.index);
 
+  if (subscript.size > INT_MAX) {
+    r_abort_lazy_call(
+      error_call,
+      "Can't extract %" R_PRI_SSIZE " values into a 1D array.",
+      subscript.size
+    );
+  }
+
   r_obj* out;
 
   switch (r_typeof(x)) {

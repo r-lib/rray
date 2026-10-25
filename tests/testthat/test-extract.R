@@ -220,6 +220,13 @@ test_that("reports subscript errors from `rray_extract()`", {
   })
 })
 
+test_that("errors when selecting more values than a 1D array can hold", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(2^16, 2^15))
+  expect_snapshot(rray_extract(x, TRUE), error = TRUE)
+})
+
 test_that("errors on unsupported `x` inputs", {
   expect_snapshot(error = TRUE, {
     rray_extract(NULL, 1L)

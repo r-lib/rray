@@ -11,6 +11,14 @@
       Error in `rray_extract()`:
       ! Column 2 of `i` must not contain values greater than 3.
 
+# errors when selecting more values than a 1D array can hold
+
+    Code
+      rray_extract(x, TRUE)
+    Condition
+      Error in `rray_extract()`:
+      ! Can't extract 2147483648 values into a 1D array.
+
 # errors on unsupported `x` inputs
 
     Code
