@@ -202,6 +202,10 @@ test_that("works along an axis with a dimension of `.Machine$integer.max`", {
     as.vector(rray_locate_max(x, axis = 1)),
     .Machine$integer.max
   )
+  expect_identical(
+    as.vector(rray_locate_min(!x, axis = 1)),
+    .Machine$integer.max
+  )
 })
 
 test_that("output type is always integer", {
