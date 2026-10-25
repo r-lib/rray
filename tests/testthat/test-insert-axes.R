@@ -168,6 +168,11 @@ test_that("errors on invalid axes", {
   })
 })
 
+test_that("`axes` can't be a title", {
+  x <- array(1:4, c(2L, 2L), dimnames = list(row = NULL, col = NULL))
+  expect_snapshot(rray_insert_axes(x, "row"), error = TRUE)
+})
+
 test_that("errors on dimensionality upper bound", {
   expect_snapshot(error = TRUE, {
     rray_insert_axes(array(1, dim = rep(1L, 64)), 1L)

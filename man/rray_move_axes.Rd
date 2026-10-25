@@ -11,9 +11,9 @@ rray_move_axes(x, ..., from, to)
 
 \item{...}{These dots are for future extensions and must be empty.}
 
-\item{from}{An integer vector of axes in \code{x} to move.}
+\item{from}{The axes to move, given \link[=faq-axes]{by position}.}
 
-\item{to}{An integer vector of axes in the output to move to.}
+\item{to}{The axes to move to, given \link[=faq-axes]{by position in the output}.}
 }
 \value{
 An array.

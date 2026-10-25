@@ -72,6 +72,14 @@
       Error in `rray_stack()`:
       ! `.axis` must be less than or equal to the dimensionality of 3, not 4.
 
+# `.axis` can't be a title
+
+    Code
+      rray_stack(x, x, .axis = "row")
+    Condition
+      Error in `rray_stack()`:
+      ! `.axis` must be an integer or double vector, not the string "row".
+
 # rejects a dimensionality above the maximum
 
     Code

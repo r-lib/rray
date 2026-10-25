@@ -11,9 +11,9 @@
 #'
 #' @param x An array.
 #'
-#' @param from An integer vector of axes in `x` to move.
+#' @param from The axes to move, given [by position][faq-axes].
 #'
-#' @param to An integer vector of axes in the output to move to.
+#' @param to The axes to move to, given [by position in the output][faq-axes].
 #'
 #' @returns
 #' An array.

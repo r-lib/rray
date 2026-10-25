@@ -23,7 +23,7 @@ rray_dimensions(rray_sum(x, axes = 1))
 # Titles
 
 Titles are the names of the dimension names list, like `row` in
-`list(row = NULL)`. [rray_titles()] returns them. A title works anywhere a
+`list(row = NULL)`. [rray_titles()] returns them. A title works most anywhere a
 position does:
 
 ```{r}
@@ -34,9 +34,9 @@ identical(rray_sum(x, axes = "row"), rray_sum(x, axes = 1))
 identical(rray_sum(x, axes = c("page", "row")), rray_sum(x, axes = c(1, 3)))
 ```
 
-# Positions in the result
+# Positions in the output
 
-Some arguments specify a position in the result rather than an axis of `x`,
+Some arguments specify a position in the output rather than an axis of `x`,
 like `axes` in [rray_insert_axes()] and `.axis` in [rray_stack()]. That axis
 doesn't exist yet, so it has no title, and these arguments only take positions:
 

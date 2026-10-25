@@ -154,6 +154,15 @@ test_that("errors on invalid `to`", {
   })
 })
 
+test_that("`from` and `to` can't be titles", {
+  x <- array(1:4, c(2L, 2L), dimnames = list(row = NULL, col = NULL))
+
+  expect_snapshot(error = TRUE, {
+    rray_move_axes(x, from = "row", to = 2L)
+    rray_move_axes(x, from = 1L, to = "col")
+  })
+})
+
 test_that("`from` and `to` must be the same length", {
   x <- array(1:24, c(2L, 3L, 4L))
 

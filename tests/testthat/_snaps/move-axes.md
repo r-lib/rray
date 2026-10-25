@@ -94,6 +94,19 @@
       Error in `rray_move_axes()`:
       ! `to` must be an integer or double vector, not the string "x".
 
+# `from` and `to` can't be titles
+
+    Code
+      rray_move_axes(x, from = "row", to = 2L)
+    Condition
+      Error in `rray_move_axes()`:
+      ! `from` must be an integer or double vector, not the string "row".
+    Code
+      rray_move_axes(x, from = 1L, to = "col")
+    Condition
+      Error in `rray_move_axes()`:
+      ! `to` must be an integer or double vector, not the string "col".
+
 # `from` and `to` must be the same length
 
     Code

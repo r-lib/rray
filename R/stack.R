@@ -13,10 +13,10 @@
 #'
 #' @param ... Arrays to stack.
 #'
-#' @param .axis A single integer representing the axis in the _result_ to stack
-#'   along. Must be between 1 and one greater than the maximum dimensionality
-#'   of the input arrays. For example, you can stack 2D matrices along axis 3,
-#'   but not axis 4.
+#' @param .axis The axis to stack along, given
+#'   [by position in the output][faq-axes]. Must be between 1 and one greater
+#'   than the maximum dimensionality of the input arrays. For example, you can
+#'   stack 2D matrices along axis 3, but not axis 4.
 #'
 #' @returns
 #' An array with the following dimensions:

@@ -252,6 +252,11 @@ test_that("validates inputs and axis", {
   })
 })
 
+test_that("`.axis` can't be a title", {
+  x <- array(1:4, c(2L, 2L), dimnames = list(row = NULL, col = NULL))
+  expect_snapshot(rray_stack(x, x, .axis = "row"), error = TRUE)
+})
+
 test_that("rejects a dimensionality above the maximum", {
   x <- array(1, rep(1L, 64L))
   expect_snapshot(rray_stack(x, x, .axis = 1L), error = TRUE)

@@ -80,6 +80,14 @@
       Error in `rray_combine()`:
       ! `.axis` must be less than or equal to the dimensionality of 2, not 3.
 
+# `.axis` can't be a title
+
+    Code
+      rray_combine(x, x, .axis = "row")
+    Condition
+      Error in `rray_combine()`:
+      ! `.axis` must be an integer or double vector, not the string "row".
+
 # rejects a dimensionality above the maximum
 
     Code
