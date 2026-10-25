@@ -120,7 +120,7 @@ rray_dimensionality(1:5)
 rray_dimensionality(matrix(1:6, nrow = 2))
 ```
 
-The terms so far fit together like this:
+The terms so far have been carefully chosen so that programming with these concepts lends itself to object names that feel natural, like this:
 
 ```{r}
 for (axis in seq_len(rray_dimensionality(x))) {
