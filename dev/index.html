@@ -71,20 +71,30 @@
 </div>
 <!-- badges: start -->
 
-<p>rray (said: “r-ray”) is an array manipulation library for R. rray’s goal is to provide a consistent, powerful toolkit for array manipulation, usable on base R arrays. It supports broadcasting throughout the entire package, which allows for novel array operations popularized by <a href="https://numpy.org/" class="external-link">NumPy</a> that have been missing from the R ecosystem.</p>
-<p>View <a href="https://rray.r-lib.org/">the website</a> to learn more about how to use rray.</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-lib/rray" class="external-link">rray</a></span><span class="op">)</span></span></code></pre></div>
+<p>rray (said: “r-ray”) is an array manipulation library for R. rray’s goal is to provide a consistent, powerful toolkit for array manipulation, usable on base R arrays.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <p>You can install the CRAN version of rray with:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"rray"</span><span class="op">)</span></span></code></pre></div>
 <p>You can install the development version of rray from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"r-lib/rray"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="why-use-rray">Why use rray?<a class="anchor" aria-label="anchor" href="#why-use-rray"></a>
+</h2>
+<ul>
+<li><p>It is <em>consistent</em>! Talking about arrays is hard! Dimensions, axes, and margins are all terms that are thrown around loosely when refering to arrays. rray has been thoughtfully designed to use a very consistent set of <a href="https://r-lib.github.io/rray/articles/terminology.html" class="external-link">terminology</a> throughout the entire package. Once you learn a few key terms, using the package should feel pretty natural.</p></li>
+<li><p>It is <em>fast</em>! rray is written entirely in C. Reduction functions like <code><a href="reference/rray-reduce.html">rray_sum()</a></code> and accumulators such as <code><a href="reference/rray-cumulative.html">rray_cumulative_max()</a></code> are often significantly faster than their base R equivalents. Additionally, while base R has fast variants like <code><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums()</a></code> and <code><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colSums()</a></code>, rray equivalents like <code><a href="reference/rray-reduce.html">rray_sum()</a></code> can sum over any axis (like the 3rd axis), and over multiple axes at once (summing up the rows and columns in a 3D array).</p></li>
+<li><p>It implements <em>broadcasting</em>! Popularized by Python’s <a href="https://numpy.org/" class="external-link">NumPy</a>, broadcasting is a technique that recycles an axis of dimension 1 against any other dimension. This allows for novel yet intuitive array operations, which you can read more about below, or in the <a href="https://r-lib.github.io/rray/articles/broadcasting.html" class="external-link">broadcasting</a> vignette.</p></li>
+<li><p>It supports <em>long vectors</em>! A “long” vector in R is any vector greater than ~2 billion elements in length. R requires that each array axis have a dimension less than that limit, but the total size of the array (the product of each dimension) can be “long”. rray fully supports these long arrays throughout the entire package.</p></li>
+</ul>
+<p>View <a href="https://r-lib.github.io/rray/" class="external-link">the website</a> to learn more about how to use rray, or read on for a quick overview.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-lib/rray" class="external-link">rray</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="what-can-it-do">What can it do?<a class="anchor" aria-label="anchor" href="#what-can-it-do"></a>
