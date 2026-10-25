@@ -40,8 +40,10 @@ messages, and the same docs wording everywhere it applies.
   `rray_stack(.axis)`, `rray_insert_axes(axes)`, and both `from` and `to` of
   `rray_move_axes()`.
 
-- `rray_combine(.axis)` takes a title, resolved against the common titles of
-  the inputs.
+- `rray_combine(.axis)` stays integer only for now. A title would have to
+  resolve against the common titles of the inputs, and the long term rule for
+  merging names and titles isn't settled. Adding titles later is backward
+  compatible, removing them is not.
 
 - `rray_axis_names()`, `rray_set_axis_names()`, and `rray_set_axis_title()`
   take a title. `rray_axis_title()` does not, since the lookup would be
@@ -125,9 +127,8 @@ The rule: resolve where `check_axis()` or `arg_as_axes()` runs today.
 - FFI wrappers stop calling `arg_as_int()` and pass `ffi_axis` through.
 
 - Internal C callers that already hold a valid `int` wrap it with `r_int()`.
-  These are `rray_stack()` calling `rray_combine()` and
-  `rray_set_axis_names()`, and `rray_unstack()` calling `rray_split()` and
-  `rray_axis_names()`.
+  These are `rray_stack()` calling `rray_set_axis_names()`, and
+  `rray_unstack()` calling `rray_split()` and `rray_axis_names()`.
 
 This matches the `axes` functions, which already pass `r_obj* axes` down and
 resolve inside.
@@ -457,33 +458,14 @@ Tests (`test-split.R`, `test-unstack.R`): `axis = "col"` equals `axis = 2`.
 
 ## Combine
 
-Function: `rray_combine()`. File: `src/combine.c`, plus
-`src/broadcast-names.c`.
+Function: `rray_combine()`.
 
-`.axis` can be one past the dimensionality of some inputs, and titles must
-agree across inputs. A title resolves against the common titles of `xs`.
+Stays integer only, see "Decisions". It is covered under "Integer only".
 
-- Add `rray_titles_common(xs, dimensionality, arg, error_call)` to
-  `src/broadcast-names.c`. It shares the title merge loop with
-  `rray_broadcast_names_merge()`, so the incompatible titles error stays the
-  same. Split that loop into its own helper rather than copy it.
-
-- `rray_combine()` takes `r_obj* axis`. After `list_max_dimensionality()`, a
-  character `.axis` computes the common titles and resolves against them. A
-  numeric `.axis` skips this, so the integer path does no extra work.
-
-- `rray_stack()` passes `r_int(axis)`.
-
-Tests (`test-combine.R`):
-
-- `.axis = "col"` equals `.axis = 2`.
-
-- Inputs where only the second one has titles still resolve.
-
-- Inputs with clashing titles error with the existing incompatible titles
-  message, not "can't find".
-
-- `.axis = "nope"` snapshot.
+If titles are added later, `.axis` would resolve against the common titles of
+the inputs. That needs a `rray_titles_common()` that shares the title merge
+loop with `rray_broadcast_names_merge()`, so it must follow whatever rule
+merging ends up with.
 
 ## Names
 
@@ -514,7 +496,7 @@ Tests (`test-titles.R`):
 ## Integer only
 
 Functions: `rray_stack()`, `rray_insert_axes()`, `rray_move_axes()`,
-`rray_axis_title()`.
+`rray_axis_title()`, `rray_combine()`.
 
 No code changes. One snapshot each in their test files showing a character
 input errors, so a later change can't add title support by accident.
@@ -532,8 +514,9 @@ input errors, so a later change can't add title support by accident.
   given [by position or by title][faq-axes]."
 
 - Integer only params read: "The axis to `<verb>`, given
-  [by position in the output][faq-axes]." `from` in `rray_move_axes()` names
-  an axis of `x`, so it reads "given [by position][faq-axes]" instead.
+  [by position in the output][faq-axes]." `from` in `rray_move_axes()` and
+  `.axis` in `rray_combine()` name an existing axis, so they read "given
+  [by position][faq-axes]" instead.
 
 - One title example per help topic, next to the integer one.
 
@@ -602,19 +585,12 @@ Each top level item is one PR. Each PR runs `clang-format`, `air format .`,
 
   - [x] Docs for each.
 
-- [ ] PR 5: Titles for `rray_combine()`.
-
-  - [ ] Split the title merge loop out of `rray_broadcast_names_merge()`. Add
-    `rray_titles_common()`.
-
-  - [ ] `r_obj* axis` in `rray_combine()`, `r_int()` in `rray_stack()`.
-
-  - [ ] Tests and docs.
+- PR 5: Titles for `rray_combine()`. Dropped, see "Decisions".
 
 - [ ] PR 6: Integer only guards and wrap up.
 
   - [ ] Character input snapshots for `rray_stack()`, `rray_insert_axes()`,
-    `rray_move_axes()`, `rray_axis_title()`.
+    `rray_move_axes()`, `rray_axis_title()`, `rray_combine()`.
 
   - [ ] Integer only param docs link `faq-axes`.
 
