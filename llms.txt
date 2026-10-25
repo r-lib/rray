@@ -6,7 +6,7 @@ usable on base R arrays. It supports broadcasting throughout the entire
 package, which allows for novel array operations popularized by
 [NumPy](https://numpy.org/) that have been missing from the R ecosystem.
 
-View [the website](https://rray.r-lib.org) to learn more about how to
+View [the website](https://rray.r-lib.org/) to learn more about how to
 use rray.
 
 ``` r
@@ -15,6 +15,13 @@ library(rray)
 ```
 
 ## Installation
+
+You can install the CRAN version of rray with:
+
+``` r
+
+install.packages("rray")
+```
 
 You can install the development version of rray from
 [GitHub](https://github.com/) with:
@@ -140,7 +147,7 @@ rray_combine(a, b, .axis = 2)
 ## Acknowledgements
 
 rray was originally written in 2018 and was backed by
-[`xtensor`](https://github.com/QuantStack/xtensor). That original
+[`xtensor`](https://github.com/xtensor-stack/xtensor). That original
 implementation is archived as
 [DavisVaughan/rray1](https://github.com/DavisVaughan/rray1), but its API
 served as the foundation for this rewrite.
