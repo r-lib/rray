@@ -61,7 +61,7 @@ runs across the columns, and so on.</p>
     <h2 id="titles">Titles<a class="anchor" aria-label="anchor" href="#titles"></a></h2>
     <p>Titles are the names of the dimension names list, like <code>row</code> in
 <code>list(row = NULL)</code>. <code><a href="rray-titles.html">rray_titles()</a></code> returns them. A
-title works anywhere a position does:</p>
+title works most anywhere a position does:</p>
 <p></p><div class="sourceCode r"><pre><code><span><span class="fu"><a href="../reference/rray-titles.html">rray_titles</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "row"  "col"  "page"</span></span>
 <span></span>
@@ -72,8 +72,8 @@ title works anywhere a position does:</p>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre><p></p></div>
     </div>
     <div class="section level2">
-    <h2 id="positions-in-the-result">Positions in the result<a class="anchor" aria-label="anchor" href="#positions-in-the-result"></a></h2>
-    <p>Some arguments specify a position in the result rather than an axis of
+    <h2 id="positions-in-the-output">Positions in the output<a class="anchor" aria-label="anchor" href="#positions-in-the-output"></a></h2>
+    <p>Some arguments specify a position in the output rather than an axis of
 <code>x</code>, like <code>axes</code> in <code><a href="rray_insert_axes.html">rray_insert_axes()</a></code> and
 <code>.axis</code> in <code><a href="rray_stack.html">rray_stack()</a></code>. That axis doesn’t exist yet,
 so it has no title, and these arguments only take positions:</p>

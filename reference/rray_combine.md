@@ -17,7 +17,9 @@ rray_combine(..., .axis)
 
 - .axis:
 
-  A single integer between 1 and the greatest input dimensionality.
+  The axis to combine along, given [by
+  position](https://rray.r-lib.org/reference/faq-axes.md). Must be
+  between 1 and the greatest input dimensionality.
 
 ## Value
 

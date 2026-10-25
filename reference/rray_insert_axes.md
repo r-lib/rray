@@ -16,8 +16,8 @@ rray_insert_axes(x, axes)
 
 - axes:
 
-  An integer vector referring to axes in the *result* that are newly
-  inserted.
+  The axes to insert, given [by position in the
+  output](https://rray.r-lib.org/reference/faq-axes.md).
 
 ## Value
 

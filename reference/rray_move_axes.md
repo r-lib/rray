@@ -22,11 +22,13 @@ rray_move_axes(x, ..., from, to)
 
 - from:
 
-  An integer vector of axes in `x` to move.
+  The axes to move, given [by
+  position](https://rray.r-lib.org/reference/faq-axes.md).
 
 - to:
 
-  An integer vector of axes in the output to move to.
+  The axes to move to, given [by position in the
+  output](https://rray.r-lib.org/reference/faq-axes.md).
 
 ## Value
 

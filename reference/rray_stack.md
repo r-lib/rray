@@ -20,10 +20,10 @@ rray_stack(..., .axis)
 
 - .axis:
 
-  A single integer representing the axis in the *result* to stack along.
-  Must be between 1 and one greater than the maximum dimensionality of
-  the input arrays. For example, you can stack 2D matrices along axis 3,
-  but not axis 4.
+  The axis to stack along, given [by position in the
+  output](https://rray.r-lib.org/reference/faq-axes.md). Must be between
+  1 and one greater than the maximum dimensionality of the input arrays.
+  For example, you can stack 2D matrices along axis 3, but not axis 4.
 
 ## Value
 

@@ -22,7 +22,7 @@ runs across the columns, and so on.
 Titles are the names of the dimension names list, like `row` in
 `list(row = NULL)`.
 [`rray_titles()`](https://rray.r-lib.org/reference/rray-titles.md)
-returns them. A title works anywhere a position does:
+returns them. A title works most anywhere a position does:
 
     rray_titles(x)
     #> [1] "row"  "col"  "page"
@@ -33,9 +33,9 @@ returns them. A title works anywhere a position does:
     identical(rray_sum(x, axes = c("page", "row")), rray_sum(x, axes = c(1, 3)))
     #> [1] TRUE
 
-## Positions in the result
+## Positions in the output
 
-Some arguments specify a position in the result rather than an axis of
+Some arguments specify a position in the output rather than an axis of
 `x`, like `axes` in
 [`rray_insert_axes()`](https://rray.r-lib.org/reference/rray_insert_axes.md)
 and `.axis` in
