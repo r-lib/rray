@@ -47,7 +47,7 @@ Summing along axis 1 adds up the rows, so only 1 row is left:
 rray_sum(x, axes = 1)
 ```
 
-Summing along axis 3 adds the two pages together, so only 1 page is left:
+Summing along axis 3 conceptually adds the two matrices embedded in `x` together, so only one is left:
 
 ```{r}
 rray_sum(x, axes = 3)
