@@ -19,3 +19,4 @@
 ^pkgdown$
 ^codecov\.yml$
 ^panache.toml$
+^cran-comments\.md$
