@@ -97,11 +97,10 @@ Each one ends in rlang's internal error
    ```
 
 3. `rray_extract_assign()` with a selection of more than
-   `.Machine$integer.max` values. This one should work. The size only goes
-   through `int` so that it can be passed to `check_broadcastable()`, in
-   `rray_extract_assign()` in `src/extract-assign.c`. A selection that large
-   can only take a `value` of size 1, so check that directly when the size
-   doesn't fit in an `int`.
+   `.Machine$integer.max` values. `value` is broadcast to a 1D array of the
+   selection's size, which can't exist, so this must become a clear error,
+   the same as fix 2. The `r_ssize_as_integer()` call is in
+   `rray_extract_assign()` in `src/extract-assign.c`.
 
    ```r
    rray_extract_assign(x, TRUE, as.raw(2))
@@ -153,16 +152,15 @@ Fixes first, in the order above:
 
   2 GiB.
 
-- [ ] Fix 3, `rray_extract_assign()` past the limit. Test in
+- [x] Fix 3, `rray_extract_assign()` past the limit. Test in
   `test-extract.R`:
 
   ```r
   x <- array(as.raw(0), c(2^16, 2^15))
-  out <- rray_extract_assign(x, TRUE, as.raw(2))
-  expect_identical(out[c(1, length(out))], as.raw(c(2, 2)))
+  expect_snapshot(rray_extract_assign(x, TRUE, as.raw(2)), error = TRUE)
   ```
 
-  4 GiB.
+  2 GiB.
 
 - [ ] Fix 4, `rray_slice()` and `rray_slice_assign()` with a long index. Test
   in `test-slice.R`:

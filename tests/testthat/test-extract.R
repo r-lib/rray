@@ -607,6 +607,13 @@ test_that("broadcasts `value` to the number of selected values", {
   })
 })
 
+test_that("errors when assigning more values than a 1D array can hold", {
+  skip_if_not_testing_long_vectors()
+
+  x <- array(as.raw(0), c(2^16, 2^15))
+  expect_snapshot(rray_extract_assign(x, TRUE, as.raw(2)), error = TRUE)
+})
+
 test_that("reports subscript errors from `rray_extract_assign()`", {
   x <- array(1:6, c(2L, 3L))
 

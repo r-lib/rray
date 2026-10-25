@@ -55,6 +55,14 @@ r_obj* rray_extract_assign(
   );
   KEEP(subscript.index);
 
+  if (subscript.size > INT_MAX) {
+    r_abort_lazy_call(
+      error_call,
+      "Can't assign %" R_PRI_SSIZE " values from a 1D array.",
+      subscript.size
+    );
+  }
+
   value = KEEP(rray_cast(value, x, value_arg, x_arg, error_call));
 
   r_obj* value_dimensions = r_dim(value);
