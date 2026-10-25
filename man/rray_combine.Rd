@@ -9,9 +9,8 @@ rray_combine(..., .axis)
 \arguments{
 \item{...}{Arrays to combine.}
 
-\item{.axis}{The axis to combine along, given
-\link[=faq-axes]{by position or by title}. A title is looked up in the common
-titles of \code{...}.}
+\item{.axis}{A single integer between 1 and the greatest input
+dimensionality.}
 }
 \value{
 An array with the following dimensions:
@@ -36,10 +35,6 @@ y <- array(7:12, c(2, 3))
 
 rray_combine(x, y, .axis = 1)
 rray_combine(x, y, .axis = 2)
-
-# Along the columns, by title
-x <- rray_set_titles(x, c("row", "col"))
-rray_combine(x, y, .axis = "col")
 
 # Missing trailing axes have an implicit dimension of 1
 rray_combine(1:2, array(3:8, c(2, 3)), .axis = 2)

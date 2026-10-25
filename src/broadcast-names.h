@@ -32,11 +32,4 @@ r_obj* rray_broadcast_names_common_opts(
   struct r_lazy error_call
 );
 
-r_obj* rray_titles_common(
-  r_obj* xs,
-  int dimensionality,
-  struct rray_arg* arg,
-  struct r_lazy error_call
-);
-
 #endif

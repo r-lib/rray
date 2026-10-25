@@ -235,38 +235,6 @@ test_that("titles must agree, including on the combine axis", {
   })
 })
 
-test_that("`.axis` can be a title", {
-  x <- array(1:6, c(2L, 3L), dimnames = list(row = NULL, col = NULL))
-  y <- array(7:12, c(2L, 3L), dimnames = list(row = NULL, col = NULL))
-
-  expect_identical(
-    rray_combine(x, y, .axis = "col"),
-    rray_combine(x, y, .axis = 2L)
-  )
-})
-
-test_that("`.axis` title resolves against the titles of every input", {
-  x <- 1:2
-  y <- array(3:8, c(2L, 3L), dimnames = list(NULL, col = NULL))
-
-  expect_identical(
-    rray_combine(x, y, .axis = "col"),
-    rray_combine(x, y, .axis = 2L)
-  )
-})
-
-test_that("`.axis` title errors", {
-  x <- array(1:4, c(2L, 2L), dimnames = list(row = NULL, col = NULL))
-  y <- array(5:8, c(2L, 2L), dimnames = list(A = NULL, NULL))
-  z <- array(1:4, c(2L, 2L))
-
-  expect_snapshot(error = TRUE, {
-    rray_combine(x, .axis = "nope")
-    rray_combine(z, z, .axis = "row")
-    rray_combine(x = x, y = y, .axis = "row")
-  })
-})
-
 test_that("does not modify inputs", {
   x <- array(1:2, c(2L, 1L), dimnames = list(c("a", "b"), "x"))
   y <- array(3:8, c(2L, 3L))

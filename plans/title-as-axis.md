@@ -602,14 +602,14 @@ Each top level item is one PR. Each PR runs `clang-format`, `air format .`,
 
   - [x] Docs for each.
 
-- [x] PR 5: Titles for `rray_combine()`.
+- [ ] PR 5: Titles for `rray_combine()`.
 
-  - [x] Split the title merge loop out of `rray_broadcast_names_merge()`. Add
+  - [ ] Split the title merge loop out of `rray_broadcast_names_merge()`. Add
     `rray_titles_common()`.
 
-  - [x] `r_obj* axis` in `rray_combine()`, `r_int()` in `rray_stack()`.
+  - [ ] `r_obj* axis` in `rray_combine()`, `r_int()` in `rray_stack()`.
 
-  - [x] Tests and docs.
+  - [ ] Tests and docs.
 
 - [ ] PR 6: Integer only guards and wrap up.
 

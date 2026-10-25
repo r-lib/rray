@@ -3,7 +3,6 @@
 #include "dimensionality.h"
 #include "dimensions.h"
 #include "names.h"
-#include "titles.h"
 
 #include "decl/broadcast-names-decl.h"
 
@@ -179,58 +178,6 @@ r_obj* rray_broadcast_names_common_opts(
   return out;
 }
 
-r_obj* rray_titles_common(
-  r_obj* xs,
-  int dimensionality,
-  struct rray_arg* arg,
-  struct r_lazy error_call
-) {
-  const r_ssize n = r_length(xs);
-  r_obj* const* v_xs = r_list_cbegin(xs);
-  r_obj* xs_names = KEEP(r_names(xs));
-
-  r_ssize x_i = 0;
-  struct rray_arg* x_arg = new_subscript_arg(arg, xs_names, n, &x_i);
-  KEEP(x_arg->shelter);
-
-  r_ssize out_i = 0;
-  struct rray_arg* out_arg = new_subscript_arg(arg, xs_names, n, &out_i);
-  KEEP(out_arg->shelter);
-
-  r_ssize v_titles_args[RRAY_MAX_DIMENSIONALITY];
-
-  r_obj* out = r_null;
-  r_keep_loc out_loc;
-  KEEP_HERE(out, &out_loc);
-
-  for (; x_i < n; ++x_i) {
-    r_obj* x_titles = KEEP(rray_titles(v_xs[x_i], x_arg, error_call));
-
-    if (x_titles != r_null) {
-      if (out == r_null) {
-        out = r_alloc_character(dimensionality);
-        KEEP_AT(out, out_loc);
-      }
-
-      rray_titles_merge(
-        out,
-        v_titles_args,
-        &out_i,
-        x_titles,
-        x_i,
-        out_arg,
-        x_arg,
-        error_call
-      );
-    }
-
-    FREE(1);
-  }
-
-  FREE(4);
-  return out;
-}
-
 // Broadcasting of array names
 //
 // Assumes the inputs are validated arrays and are broadcastable to the
@@ -257,6 +204,7 @@ static r_obj* rray_broadcast_names_merge(
   r_obj* const* v_x_names = r_list_cbegin(x_names);
 
   r_obj* x_titles = r_names(x_names);
+  r_obj* const* v_x_titles = x_titles == r_null ? NULL : r_chr_cbegin(x_titles);
 
   r_obj* x_dimensions = KEEP(rray_dimensions(x, x_arg, error_call));
   const int* v_x_dimensions = r_int_cbegin(x_dimensions);
@@ -316,61 +264,36 @@ static r_obj* rray_broadcast_names_merge(
       out_titles = r_alloc_character(dimensionality);
       r_attrib_poke_names(out, out_titles);
     }
+    r_obj* const* v_out_titles = r_chr_cbegin(out_titles);
 
-    rray_titles_merge(
-      out_titles,
-      v_titles_args,
-      p_out_i,
-      x_titles,
-      x_i,
-      out_arg,
-      x_arg,
-      error_call
-    );
+    for (int i = 0; i < x_dimensionality; ++i) {
+      r_obj* out_title = v_out_titles[i];
+      r_obj* x_title = v_x_titles[i];
+
+      if (x_title == r_strs.empty || x_title == out_title) {
+        continue;
+      }
+
+      if (out_title == r_strs.empty) {
+        // Accept the title
+        r_chr_poke(out_titles, i, x_title);
+        v_titles_args[i] = x_i;
+      } else {
+        *p_out_i = v_titles_args[i];
+        stop_incompatible_titles(
+          out_title,
+          x_title,
+          i + 1,
+          out_arg,
+          x_arg,
+          error_call
+        );
+      }
+    }
   }
 
   FREE(3);
   return out;
-}
-
-static void rray_titles_merge(
-  r_obj* out_titles,
-  r_ssize* v_titles_args,
-  r_ssize* p_out_i,
-  r_obj* x_titles,
-  r_ssize x_i,
-  struct rray_arg* out_arg,
-  struct rray_arg* x_arg,
-  struct r_lazy error_call
-) {
-  const r_ssize x_dimensionality = r_length(x_titles);
-  r_obj* const* v_x_titles = r_chr_cbegin(x_titles);
-  r_obj* const* v_out_titles = r_chr_cbegin(out_titles);
-
-  for (r_ssize i = 0; i < x_dimensionality; ++i) {
-    r_obj* out_title = v_out_titles[i];
-    r_obj* x_title = v_x_titles[i];
-
-    if (x_title == r_strs.empty || x_title == out_title) {
-      continue;
-    }
-
-    if (out_title == r_strs.empty) {
-      // Accept the title
-      r_chr_poke(out_titles, i, x_title);
-      v_titles_args[i] = x_i;
-    } else {
-      *p_out_i = v_titles_args[i];
-      stop_incompatible_titles(
-        out_title,
-        x_title,
-        (int) i + 1,
-        out_arg,
-        x_arg,
-        error_call
-      );
-    }
-  }
 }
 
 // Pointer based equality of the CHARSXPs. Treats different encodings as

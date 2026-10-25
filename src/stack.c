@@ -53,17 +53,16 @@ r_obj* rray_stack(
 
   xs = KEEP(rray_stack_prepare(xs, axis, arg, error_call));
 
-  r_obj* axis_obj = KEEP(r_int(axis));
-
-  r_obj* out =
-    KEEP(rray_combine(xs, axis_obj, ptype, arg, ptype_arg, error_call));
+  r_obj* out = KEEP(rray_combine(xs, axis, ptype, arg, ptype_arg, error_call));
 
   r_obj* names = KEEP(r_names(xs));
   if (names != r_null) {
+    r_obj* axis_obj = KEEP(r_int(axis));
     out = rray_set_axis_names(out, axis_obj, names, arg, error_call);
+    FREE(1);
   }
 
-  FREE(5);
+  FREE(4);
   return out;
 }
 
