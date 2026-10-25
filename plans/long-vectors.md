@@ -153,7 +153,7 @@ Fixes first, in the order above:
 
   2 GiB.
 
-- [ ] Fix 3, `rray_extract_assign()` past the limit. Test in
+- [x] Fix 3, `rray_extract_assign()` past the limit. Test in
   `test-extract.R`:
 
   ```r

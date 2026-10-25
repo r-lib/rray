@@ -88,6 +88,19 @@
       Error in `rray_extract_assign()`:
       ! Can't broadcast axis 1 of `value` from dimension 2 to 6.
 
+# only broadcasts a size 1 `value` past `.Machine$integer.max`
+
+    Code
+      rray_extract_assign(x, TRUE, as.raw(1:2))
+    Condition
+      Error in `rray_extract_assign()`:
+      ! Can't broadcast `value` from size 2 to 2147483648.
+    Code
+      rray_extract_assign(x, TRUE, matrix(as.raw(1)))
+    Condition
+      Error in `rray_extract_assign()`:
+      ! Can't broadcast `value` from dimensionality 2 to 1. Can't decrease dimensionality.
+
 # reports subscript errors from `rray_extract_assign()`
 
     Code

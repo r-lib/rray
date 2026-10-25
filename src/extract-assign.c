@@ -62,7 +62,17 @@ r_obj* rray_extract_assign(
   const int value_dimensionality =
     rray_dimensionality_from_dimensions(value_dimensions);
 
-  const int size = r_ssize_as_integer(subscript.size);
+  if (subscript.size > INT_MAX && r_length(value) != 1) {
+    r_abort_lazy_call(
+      error_call,
+      "Can't broadcast %s from size %" R_PRI_SSIZE " to %" R_PRI_SSIZE ".",
+      rray_arg_format(value_arg),
+      r_length(value),
+      subscript.size
+    );
+  }
+
+  const int size = subscript.size > INT_MAX ? 1 : (int) subscript.size;
 
   check_broadcastable(
     v_value_dimensions,
