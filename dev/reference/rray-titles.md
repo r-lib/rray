@@ -34,10 +34,10 @@ rray_set_axis_title(x, axis, title)
   The axis to get or set the title for.
 
   - For `rray_set_axis_title()`, given [by position or by
-    title](https://rray.r-lib.org/dev/reference/faq-axes.md).
+    title](https://r-lib.github.io/rray/dev/reference/faq-axes.md).
 
   - For `rray_axis_title()`, given [by
-    position](https://rray.r-lib.org/dev/reference/faq-axes.md).
+    position](https://r-lib.github.io/rray/dev/reference/faq-axes.md).
 
 - titles:
 

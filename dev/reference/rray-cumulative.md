@@ -43,7 +43,7 @@ rray_cumulative_sum(x, ..., axis)
 - axis:
 
   The axis to accumulate along, given [by position or by
-  title](https://rray.r-lib.org/dev/reference/faq-axes.md).
+  title](https://r-lib.github.io/rray/dev/reference/faq-axes.md).
 
 ## Value
 
@@ -99,7 +99,7 @@ integer.
 
 An integer sum errors as soon as a running total overflows, even if a
 later value would bring it back in range. This differs from
-[`rray_sum()`](https://rray.r-lib.org/dev/reference/rray-reduce.md),
+[`rray_sum()`](https://r-lib.github.io/rray/dev/reference/rray-reduce.md),
 which only checks the final total:
 
     x <- c(.Machine$integer.max, 1L, -1L)

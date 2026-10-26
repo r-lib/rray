@@ -41,8 +41,8 @@ The arrays are broadcast to common dimensions first, so they do not have
 to be the same shape.
 
 When `NA` and `NaN` are both present, `NA` wins, like
-[`rray_max()`](https://rray.r-lib.org/dev/reference/rray-reduce.md),
-[`rray_min()`](https://rray.r-lib.org/dev/reference/rray-reduce.md),
+[`rray_max()`](https://r-lib.github.io/rray/dev/reference/rray-reduce.md),
+[`rray_min()`](https://r-lib.github.io/rray/dev/reference/rray-reduce.md),
 [`max()`](https://rdrr.io/r/base/Extremes.html), and
 [`min()`](https://rdrr.io/r/base/Extremes.html). This differs from
 [`pmax()`](https://rdrr.io/r/base/Extremes.html) and
@@ -55,7 +55,7 @@ comes last:
     pmax(NA, NaN) # NaN
 
 These functions participate in rray's [common name determination
-rules](https://rray.r-lib.org/dev/reference/faq-common-names.md).
+rules](https://r-lib.github.io/rray/dev/reference/faq-common-names.md).
 
 ## Examples
 

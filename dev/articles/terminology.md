@@ -119,7 +119,7 @@ In the other vignettes, dimensions are often written out in parentheses,
 like `(2, 3, 2)` for `x`.
 
 You can change the dimensions of an array with
-[`rray_set_dimensions()`](https://rray.r-lib.org/dev/reference/rray_set_dimensions.md),
+[`rray_set_dimensions()`](https://r-lib.github.io/rray/dev/reference/rray_set_dimensions.md),
 as long as the total number of elements stays the same:
 
 ``` r
@@ -245,7 +245,7 @@ rray_names(y)
 ```
 
 To get the names along one axis, use
-[`rray_axis_names()`](https://rray.r-lib.org/dev/reference/rray_axis_names.md):
+[`rray_axis_names()`](https://r-lib.github.io/rray/dev/reference/rray_axis_names.md):
 
 ``` r
 
@@ -351,5 +351,5 @@ rray_add(a, b)
 ```
 
 Broadcasting is important enough to get its own vignette. See
-[`vignette("broadcasting")`](https://rray.r-lib.org/dev/articles/broadcasting.md)
+[`vignette("broadcasting")`](https://r-lib.github.io/rray/dev/articles/broadcasting.md)
 to learn more.

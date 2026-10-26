@@ -17,8 +17,8 @@ rray_permute_axes(x, axes)
 - axes:
 
   The axes of `x` in their new order, given [by position or by
-  title](https://rray.r-lib.org/dev/reference/faq-axes.md). It must use
-  each axis of `x` exactly once.
+  title](https://r-lib.github.io/rray/dev/reference/faq-axes.md). It
+  must use each axis of `x` exactly once.
 
 ## Value
 
@@ -33,7 +33,7 @@ Names and titles travel with their axis to its new position.
 
 ## See also
 
-[`rray_move_axes()`](https://rray.r-lib.org/dev/reference/rray_move_axes.md)
+[`rray_move_axes()`](https://r-lib.github.io/rray/dev/reference/rray_move_axes.md)
 
 ## Examples
 

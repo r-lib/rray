@@ -6,25 +6,25 @@ instead of silently picking one input’s names or titles.
 
 These functions follow the rules:
 
-- [`rray_add()`](https://rray.r-lib.org/dev/reference/rray-arithmetic.md),
-  [`rray_subtract()`](https://rray.r-lib.org/dev/reference/rray-arithmetic.md),
-  [`rray_multiply()`](https://rray.r-lib.org/dev/reference/rray-arithmetic.md),
-  [`rray_divide()`](https://rray.r-lib.org/dev/reference/rray-arithmetic.md),
+- [`rray_add()`](https://r-lib.github.io/rray/dev/reference/rray-arithmetic.md),
+  [`rray_subtract()`](https://r-lib.github.io/rray/dev/reference/rray-arithmetic.md),
+  [`rray_multiply()`](https://r-lib.github.io/rray/dev/reference/rray-arithmetic.md),
+  [`rray_divide()`](https://r-lib.github.io/rray/dev/reference/rray-arithmetic.md),
   and
-  [`rray_exponentiate()`](https://rray.r-lib.org/dev/reference/rray-arithmetic.md)
+  [`rray_exponentiate()`](https://r-lib.github.io/rray/dev/reference/rray-arithmetic.md)
 
-- [`rray_and()`](https://rray.r-lib.org/dev/reference/rray-logical.md),
-  [`rray_or()`](https://rray.r-lib.org/dev/reference/rray-logical.md),
+- [`rray_and()`](https://r-lib.github.io/rray/dev/reference/rray-logical.md),
+  [`rray_or()`](https://r-lib.github.io/rray/dev/reference/rray-logical.md),
   and
-  [`rray_xor()`](https://rray.r-lib.org/dev/reference/rray-logical.md)
+  [`rray_xor()`](https://r-lib.github.io/rray/dev/reference/rray-logical.md)
 
-- [`rray_pmax()`](https://rray.r-lib.org/dev/reference/rray-extremum.md)
+- [`rray_pmax()`](https://r-lib.github.io/rray/dev/reference/rray-extremum.md)
   and
-  [`rray_pmin()`](https://rray.r-lib.org/dev/reference/rray-extremum.md)
+  [`rray_pmin()`](https://r-lib.github.io/rray/dev/reference/rray-extremum.md)
 
-- [`rray_combine()`](https://rray.r-lib.org/dev/reference/rray_combine.md)
+- [`rray_combine()`](https://r-lib.github.io/rray/dev/reference/rray_combine.md)
   and
-  [`rray_stack()`](https://rray.r-lib.org/dev/reference/rray_stack.md)
+  [`rray_stack()`](https://r-lib.github.io/rray/dev/reference/rray_stack.md)
 
 ## Rules
 
@@ -38,7 +38,7 @@ broadcast or has no names, it is excluded from common name
 determination.
 
 To resolve a conflict, preemptively remove the names from one input with
-[`rray_set_names()`](https://rray.r-lib.org/dev/reference/rray_set_names.md).
+[`rray_set_names()`](https://r-lib.github.io/rray/dev/reference/rray_set_names.md).
 
 ## Examples
 
@@ -124,11 +124,11 @@ there, but the titles are not:
     #> ! Can't find common titles at axis 1. `x` has title "Row" and `y` has title "Sample".
 
 To resolve a conflict, remove the titles from one input with
-[`rray_set_titles()`](https://rray.r-lib.org/dev/reference/rray-titles.md).
+[`rray_set_titles()`](https://r-lib.github.io/rray/dev/reference/rray-titles.md).
 
 ## Combining and stacking
 
-[`rray_combine()`](https://rray.r-lib.org/dev/reference/rray_combine.md)
+[`rray_combine()`](https://r-lib.github.io/rray/dev/reference/rray_combine.md)
 never checks names on `.axis`. They are combined from every input, with
 `""` for inputs that have none. Titles on `.axis` are checked like any
 other axis. Every other axis follows the rules above:
@@ -149,7 +149,7 @@ other axis. Every other axis follows the rules above:
     #>    3 4
     #> r3 5 6
 
-[`rray_stack()`](https://rray.r-lib.org/dev/reference/rray_stack.md)
+[`rray_stack()`](https://r-lib.github.io/rray/dev/reference/rray_stack.md)
 names the new axis with the names of `...`, and gives it no title. Every
 other axis follows the rules above, which catches data that was
 reordered:
@@ -164,8 +164,9 @@ reordered:
 ## Comparisons
 
 Comparison functions like
-[`rray_equal()`](https://rray.r-lib.org/dev/reference/rray-equal.md) and
-[`rray_greater_than()`](https://rray.r-lib.org/dev/reference/rray-compare.md)
+[`rray_equal()`](https://r-lib.github.io/rray/dev/reference/rray-equal.md)
+and
+[`rray_greater_than()`](https://r-lib.github.io/rray/dev/reference/rray-compare.md)
 return a logical relation about their inputs rather than a new value of
 the input type, so they don’t return names or titles on the result and
 aren’t subject to these checks:

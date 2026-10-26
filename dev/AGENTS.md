@@ -130,7 +130,7 @@ just as much here.
 - Order a `.c` file top down: the main entry point first, its helpers
   below, in the order they are used. For `src/broadcast.c` that is
   `ffi_rray_broadcast()`,
-  [`rray_broadcast()`](https://rray.r-lib.org/dev/reference/rray_broadcast.md),
+  [`rray_broadcast()`](https://r-lib.github.io/rray/dev/reference/rray_broadcast.md),
   the `rray_broadcast_lgl()` family, `rray_broadcast_names()`, then
   everything else. Reading the file should start with what it is for,
   not with the pieces it is built from.

@@ -141,7 +141,7 @@ vertically, and apply the broadcasting rules.
     (1 -> 3, 1 -> 2) | y
 
 You can explicitly see these rules in action with
-[`rray_dimensions_common()`](https://rray.r-lib.org/dev/reference/rray_dimensions_common.md)
+[`rray_dimensions_common()`](https://r-lib.github.io/rray/dev/reference/rray_dimensions_common.md)
 
 ``` r
 
@@ -151,7 +151,7 @@ dimensions
 ```
 
 And you can explicitly broadcast with
-[`rray_broadcast()`](https://rray.r-lib.org/dev/reference/rray_broadcast.md),
+[`rray_broadcast()`](https://r-lib.github.io/rray/dev/reference/rray_broadcast.md),
 which generates “conformable” arrays that base R can add together:
 
 ``` r
@@ -178,9 +178,9 @@ x_broadcast + y_broadcast
 ```
 
 The downside of
-[`rray_broadcast()`](https://rray.r-lib.org/dev/reference/rray_broadcast.md)
+[`rray_broadcast()`](https://r-lib.github.io/rray/dev/reference/rray_broadcast.md)
 is that this materializes the fully broadcast version of `y` in memory.
-[`rray_add()`](https://rray.r-lib.org/dev/reference/rray-arithmetic.md)
+[`rray_add()`](https://r-lib.github.io/rray/dev/reference/rray-arithmetic.md)
 instead iterates over both `x` and `y` without materializing the
 intermediate result, which is much more efficient!
 

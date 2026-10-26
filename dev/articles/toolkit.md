@@ -51,9 +51,9 @@ dimensions change as: `(2, 2, 2) -> (1, 2, 2)`.
 ## Combining
 
 Reducers like
-[`rray_sum()`](https://rray.r-lib.org/dev/reference/rray-reduce.md)
+[`rray_sum()`](https://r-lib.github.io/rray/dev/reference/rray-reduce.md)
 aren’t the only functions with this `axes` guarantee. With
-[`rray_combine()`](https://rray.r-lib.org/dev/reference/rray_combine.md),
+[`rray_combine()`](https://r-lib.github.io/rray/dev/reference/rray_combine.md),
 you specify the `.axis` that you want to combine along. This has the
 same guarantee that only the `.axis` specified will be changing. The
 only caveat here is that the inputs are first broadcast to common
@@ -116,7 +116,7 @@ combined
 ```
 
 The inverse of combining is splitting via
-[`rray_split()`](https://rray.r-lib.org/dev/reference/rray_split.md).
+[`rray_split()`](https://r-lib.github.io/rray/dev/reference/rray_split.md).
 Splitting requires an `axis` to split along and a vector of `dimensions`
 that represent the dimension of each output along `axis`. So, to recover
 `x`, `y`, and `z`, we could do:
@@ -172,7 +172,7 @@ rray_combine(x, y, .axis = 3)
 ```
 
 To do this, you’ll instead want
-[`rray_stack()`](https://rray.r-lib.org/dev/reference/rray_stack.md):
+[`rray_stack()`](https://r-lib.github.io/rray/dev/reference/rray_stack.md):
 
 ``` r
 
@@ -192,9 +192,9 @@ stacked
 ```
 
 Conceptually, stacking arrays involves inserting a new axis via
-[`rray_insert_axes()`](https://rray.r-lib.org/dev/reference/rray_insert_axes.md)
+[`rray_insert_axes()`](https://r-lib.github.io/rray/dev/reference/rray_insert_axes.md)
 at the chosen `.axis`, and then combining the results together via
-[`rray_combine()`](https://rray.r-lib.org/dev/reference/rray_combine.md).
+[`rray_combine()`](https://r-lib.github.io/rray/dev/reference/rray_combine.md).
 The `.axis` to stack along can be any axis between `1` to
 `dimensionality + 1` of the inputs.
 
@@ -252,13 +252,14 @@ rray_stack(x, y, .axis = 2)
 ```
 
 The inverse of
-[`rray_stack()`](https://rray.r-lib.org/dev/reference/rray_stack.md) is
-[`rray_unstack()`](https://rray.r-lib.org/dev/reference/rray_unstack.md).
+[`rray_stack()`](https://r-lib.github.io/rray/dev/reference/rray_stack.md)
+is
+[`rray_unstack()`](https://r-lib.github.io/rray/dev/reference/rray_unstack.md).
 With
-[`rray_stack()`](https://rray.r-lib.org/dev/reference/rray_stack.md),
+[`rray_stack()`](https://r-lib.github.io/rray/dev/reference/rray_stack.md),
 you always get an output with a dimensionality 1 greater than the
 inputs. With
-[`rray_unstack()`](https://rray.r-lib.org/dev/reference/rray_unstack.md),
+[`rray_unstack()`](https://r-lib.github.io/rray/dev/reference/rray_unstack.md),
 you get a list of outputs with a dimensionality 1 less than the input.
 
 ``` r
@@ -290,9 +291,9 @@ rray_unstack(stacked, axis = 3)
 
 If you find yourself reaching for `rray_split(dimensions = 1)` followed
 by
-[`rray_remove_axes()`](https://rray.r-lib.org/dev/reference/rray_remove_axes.md),
+[`rray_remove_axes()`](https://r-lib.github.io/rray/dev/reference/rray_remove_axes.md),
 you probably wanted
-[`rray_unstack()`](https://rray.r-lib.org/dev/reference/rray_unstack.md)
+[`rray_unstack()`](https://r-lib.github.io/rray/dev/reference/rray_unstack.md)
 instead!
 
 ## Removing axes
@@ -300,8 +301,8 @@ instead!
 One thing you will immediately notice when working with rray is that it
 often tries *not* to remove axes automatically. This is most apparent
 with subsetting, and in the reducers like
-[`rray_sum()`](https://rray.r-lib.org/dev/reference/rray-reduce.md) and
-is in stark contrast to base R.
+[`rray_sum()`](https://r-lib.github.io/rray/dev/reference/rray-reduce.md)
+and is in stark contrast to base R.
 
 ``` r
 
@@ -378,7 +379,7 @@ This works nicely in rray because of two reasons, both are necessary:
 - When dividing, broadcasting kicks in
 
 If you do want to remove axes, you can explicitly call
-[`rray_remove_axes()`](https://rray.r-lib.org/dev/reference/rray_remove_axes.md)
+[`rray_remove_axes()`](https://r-lib.github.io/rray/dev/reference/rray_remove_axes.md)
 afterwards. As a rule of thumb, it is much easier to remove axes
 explicitly than it is to recover them.
 

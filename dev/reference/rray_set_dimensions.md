@@ -2,7 +2,7 @@
 
 `rray_set_dimensions()` sets the dimensions of `x` to a new set of
 dimensions without changing the total number of elements. Unlike
-[`rray_broadcast()`](https://rray.r-lib.org/dev/reference/rray_broadcast.md),
+[`rray_broadcast()`](https://r-lib.github.io/rray/dev/reference/rray_broadcast.md),
 which repeats elements to fill new dimensions, `rray_set_dimensions()`
 simply reinterprets the existing elements under new dimensions without
 changing its size.

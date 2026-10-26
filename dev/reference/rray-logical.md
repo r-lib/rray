@@ -35,7 +35,7 @@ Missing values are handled the same way as `&`, `|`, and
 [`xor()`](https://rdrr.io/r/base/Logic.html).
 
 These functions participate in rray's [common name determination
-rules](https://rray.r-lib.org/dev/reference/faq-common-names.md).
+rules](https://r-lib.github.io/rray/dev/reference/faq-common-names.md).
 
 ## Examples
 

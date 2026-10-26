@@ -17,7 +17,7 @@ rray_remove_axes(x, axes)
 - axes:
 
   The axes to remove, given [by position or by
-  title](https://rray.r-lib.org/dev/reference/faq-axes.md). Each
+  title](https://r-lib.github.io/rray/dev/reference/faq-axes.md). Each
   selected axis must have a dimension of 1. At least one axis must
   remain.
 

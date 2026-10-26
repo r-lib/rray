@@ -5,7 +5,7 @@
 that have a dimensionality 1 less than `x` itself.
 
 Using
-[`rray_stack()`](https://rray.r-lib.org/dev/reference/rray_stack.md)
+[`rray_stack()`](https://r-lib.github.io/rray/dev/reference/rray_stack.md)
 along the same `axis` reconstructs `x`.
 
 ## Usage
@@ -27,7 +27,7 @@ rray_unstack(x, ..., axis)
 - axis:
 
   The axis to unstack along, given [by position or by
-  title](https://rray.r-lib.org/dev/reference/faq-axes.md).
+  title](https://r-lib.github.io/rray/dev/reference/faq-axes.md).
 
 ## Value
 
@@ -45,7 +45,7 @@ dimensionality of at least 2 to begin with.
 
 ## See also
 
-[`rray_stack()`](https://rray.r-lib.org/dev/reference/rray_stack.md)
+[`rray_stack()`](https://r-lib.github.io/rray/dev/reference/rray_stack.md)
 
 ## Examples
 

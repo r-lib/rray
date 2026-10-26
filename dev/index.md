@@ -33,15 +33,15 @@ pak::pak("r-lib/rray")
   the package should feel pretty natural.
 
 - It is *fast*! rray is written entirely in C. Reduction functions like
-  [`rray_sum()`](https://rray.r-lib.org/dev/reference/rray-reduce.md)
+  [`rray_sum()`](https://r-lib.github.io/rray/dev/reference/rray-reduce.md)
   and accumulators such as
-  [`rray_cumulative_max()`](https://rray.r-lib.org/dev/reference/rray-cumulative.md)
+  [`rray_cumulative_max()`](https://r-lib.github.io/rray/dev/reference/rray-cumulative.md)
   are often significantly faster than their base R equivalents.
   Additionally, while base R has fast variants like
   [`rowSums()`](https://rdrr.io/r/base/colSums.html) and
   [`colSums()`](https://rdrr.io/r/base/colSums.html), rray equivalents
   like
-  [`rray_sum()`](https://rray.r-lib.org/dev/reference/rray-reduce.md)
+  [`rray_sum()`](https://r-lib.github.io/rray/dev/reference/rray-reduce.md)
   can sum over any axis (like the 3rd axis), and over multiple axes at
   once (summing up the rows and columns in a 3D array).
 
@@ -137,7 +137,7 @@ sweep(x, 2, apply(x, 2, sum), "/")
 ```
 
 When combining arrays with
-[`rray_combine()`](https://rray.r-lib.org/dev/reference/rray_combine.md),
+[`rray_combine()`](https://r-lib.github.io/rray/dev/reference/rray_combine.md),
 broadcasting allows you to combine in ways that base R cannot with the
 native [`cbind()`](https://rdrr.io/r/base/cbind.html) and
 [`rbind()`](https://rdrr.io/r/base/cbind.html) functions:

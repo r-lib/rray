@@ -17,7 +17,7 @@ rray_insert_axes(x, axes)
 - axes:
 
   The axes to insert, given [by position in the
-  output](https://rray.r-lib.org/dev/reference/faq-axes.md).
+  output](https://r-lib.github.io/rray/dev/reference/faq-axes.md).
 
 ## Value
 
@@ -52,7 +52,7 @@ their names and titles and carry them to their new locations.
 
 ## See also
 
-[`rray_remove_axes()`](https://rray.r-lib.org/dev/reference/rray_remove_axes.md)
+[`rray_remove_axes()`](https://r-lib.github.io/rray/dev/reference/rray_remove_axes.md)
 
 ## Examples
 

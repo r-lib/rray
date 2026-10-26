@@ -2,7 +2,7 @@
 
 `rray_broadcast_common()` broadcasts every array to the common
 dimensions found by
-[`rray_dimensions_common()`](https://rray.r-lib.org/dev/reference/rray_dimensions_common.md).
+[`rray_dimensions_common()`](https://r-lib.github.io/rray/dev/reference/rray_dimensions_common.md).
 
 ## Usage
 

@@ -21,7 +21,7 @@ runs across the columns, and so on.
 
 Titles are the names of the dimension names list, like `row` in
 `list(row = NULL)`.
-[`rray_titles()`](https://rray.r-lib.org/dev/reference/rray-titles.md)
+[`rray_titles()`](https://r-lib.github.io/rray/dev/reference/rray-titles.md)
 returns them. A title works most anywhere a position does:
 
     rray_titles(x)
@@ -37,9 +37,9 @@ returns them. A title works most anywhere a position does:
 
 Some arguments specify a position in the output rather than an axis of
 `x`, like `axes` in
-[`rray_insert_axes()`](https://rray.r-lib.org/dev/reference/rray_insert_axes.md)
+[`rray_insert_axes()`](https://r-lib.github.io/rray/dev/reference/rray_insert_axes.md)
 and `.axis` in
-[`rray_stack()`](https://rray.r-lib.org/dev/reference/rray_stack.md).
+[`rray_stack()`](https://r-lib.github.io/rray/dev/reference/rray_stack.md).
 That axis doesn’t exist yet, so it has no title, and these arguments
 only take positions:
 

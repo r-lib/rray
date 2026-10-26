@@ -23,12 +23,12 @@ rray_move_axes(x, ..., from, to)
 - from:
 
   The axes to move, given [by
-  position](https://rray.r-lib.org/dev/reference/faq-axes.md).
+  position](https://r-lib.github.io/rray/dev/reference/faq-axes.md).
 
 - to:
 
   The axes to move to, given [by position in the
-  output](https://rray.r-lib.org/dev/reference/faq-axes.md).
+  output](https://r-lib.github.io/rray/dev/reference/faq-axes.md).
 
 ## Value
 
@@ -40,7 +40,7 @@ Names and titles travel with their axis to its new position.
 
 ## See also
 
-[`rray_permute_axes()`](https://rray.r-lib.org/dev/reference/rray_permute_axes.md)
+[`rray_permute_axes()`](https://r-lib.github.io/rray/dev/reference/rray_permute_axes.md)
 
 ## Examples
 

@@ -2,6 +2,6 @@
 
 ### All vignettes
 
-- [Broadcasting](https://rray.r-lib.org/dev/articles/broadcasting.md):
-- [Terminology](https://rray.r-lib.org/dev/articles/terminology.md):
-- [Toolkit](https://rray.r-lib.org/dev/articles/toolkit.md):
+- [Broadcasting](https://r-lib.github.io/rray/dev/articles/broadcasting.md):
+- [Terminology](https://r-lib.github.io/rray/dev/articles/terminology.md):
+- [Toolkit](https://r-lib.github.io/rray/dev/articles/toolkit.md):

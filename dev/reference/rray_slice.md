@@ -64,7 +64,7 @@ rray_slice_assign_columns(x, i, value)
 - axis:
 
   The axis to slice along, given [by position or by
-  title](https://rray.r-lib.org/dev/reference/faq-axes.md).
+  title](https://r-lib.github.io/rray/dev/reference/faq-axes.md).
 
 - value:
 

@@ -39,12 +39,12 @@ rray_roll_each(x, ..., n, axis)
 - axes:
 
   The axes to roll along, given [by position or by
-  title](https://rray.r-lib.org/dev/reference/faq-axes.md).
+  title](https://r-lib.github.io/rray/dev/reference/faq-axes.md).
 
 - axis:
 
   The axis to roll along, given [by position or by
-  title](https://rray.r-lib.org/dev/reference/faq-axes.md).
+  title](https://r-lib.github.io/rray/dev/reference/faq-axes.md).
 
 ## Value
 
@@ -61,7 +61,7 @@ or any multiple of the dimension, leaves the axis unchanged.
 
 Rolling an axis with a uniform `n` can be thought of as a carefully
 crafted
-[`rray_slice()`](https://rray.r-lib.org/dev/reference/rray_slice.md).
+[`rray_slice()`](https://r-lib.github.io/rray/dev/reference/rray_slice.md).
 Along an axis with dimension `d`, position `i` of the result comes from
 position `(i - 1 - n) %% d + 1` of `x`:
 
@@ -83,12 +83,12 @@ position `(i - 1 - n) %% d + 1` of `x`:
     #> 4 5 1 2 3
 
 Rolling several axes at once is one
-[`rray_slice()`](https://rray.r-lib.org/dev/reference/rray_slice.md),
+[`rray_slice()`](https://r-lib.github.io/rray/dev/reference/rray_slice.md),
 with these locations on each rolled axis and `TRUE` on the rest.
 
 Since a uniform roll is a slice, names on a rolled axis move with the
 data, just like they do in
-[`rray_slice()`](https://rray.r-lib.org/dev/reference/rray_slice.md).
+[`rray_slice()`](https://r-lib.github.io/rray/dev/reference/rray_slice.md).
 Every other axis keeps its names untouched. The titles of `x` are kept.
 
 ## Roll each
@@ -100,7 +100,7 @@ to 1, so it holds one `n` for every row, column, and so on that gets
 rolled.
 
 Variable rolling can be mimicked with the more flexible indexing of
-[`rray_index()`](https://rray.r-lib.org/dev/reference/rray_index.md).
+[`rray_index()`](https://r-lib.github.io/rray/dev/reference/rray_index.md).
 Along `axis`, the coordinates come from the same `(i - 1 - n) %% d + 1`
 formula as `rray_roll()`, with a different `n` for each row, column, and
 so on. Along every other axis, the coordinates are just the positions

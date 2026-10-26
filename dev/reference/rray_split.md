@@ -3,7 +3,7 @@
 `rray_split()` divides `x` into contiguous arrays along an `axis`.
 
 Using
-[`rray_combine()`](https://rray.r-lib.org/dev/reference/rray_combine.md)
+[`rray_combine()`](https://r-lib.github.io/rray/dev/reference/rray_combine.md)
 along the same `axis` reconstructs `x`.
 
 ## Usage
@@ -25,7 +25,7 @@ rray_split(x, ..., axis, dimensions)
 - axis:
 
   The axis to split along, given [by position or by
-  title](https://rray.r-lib.org/dev/reference/faq-axes.md).
+  title](https://r-lib.github.io/rray/dev/reference/faq-axes.md).
 
 - dimensions:
 

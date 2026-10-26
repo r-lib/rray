@@ -21,10 +21,10 @@ rray_stack(..., .axis)
 - .axis:
 
   The axis to stack along, given [by position in the
-  output](https://rray.r-lib.org/dev/reference/faq-axes.md). Must be
-  between 1 and one greater than the maximum dimensionality of the input
-  arrays. For example, you can stack 2D matrices along axis 3, but not
-  axis 4.
+  output](https://r-lib.github.io/rray/dev/reference/faq-axes.md). Must
+  be between 1 and one greater than the maximum dimensionality of the
+  input arrays. For example, you can stack 2D matrices along axis 3, but
+  not axis 4.
 
 ## Value
 
@@ -38,13 +38,13 @@ An array with the following dimensions:
 ## Details
 
 This function participates in rray's [common name determination
-rules](https://rray.r-lib.org/dev/reference/faq-common-names.md) on
-every existing axis. Names of `...` become the names of the new axis.
+rules](https://r-lib.github.io/rray/dev/reference/faq-common-names.md)
+on every existing axis. Names of `...` become the names of the new axis.
 
 ## See also
 
-[`rray_unstack()`](https://rray.r-lib.org/dev/reference/rray_unstack.md),
-[`rray_combine()`](https://rray.r-lib.org/dev/reference/rray_combine.md)
+[`rray_unstack()`](https://r-lib.github.io/rray/dev/reference/rray_unstack.md),
+[`rray_combine()`](https://r-lib.github.io/rray/dev/reference/rray_combine.md)
 
 ## Examples
 

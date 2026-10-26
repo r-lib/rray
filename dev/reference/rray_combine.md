@@ -18,8 +18,8 @@ rray_combine(..., .axis)
 - .axis:
 
   The axis to combine along, given [by
-  position](https://rray.r-lib.org/dev/reference/faq-axes.md). Must be
-  between 1 and the greatest input dimensionality.
+  position](https://r-lib.github.io/rray/dev/reference/faq-axes.md).
+  Must be between 1 and the greatest input dimensionality.
 
 ## Value
 
@@ -33,9 +33,9 @@ An array with the following dimensions:
 ## Details
 
 This function participates in rray's [common name determination
-rules](https://rray.r-lib.org/dev/reference/faq-common-names.md). Names
-on `.axis` are never checked. They are pasted together from every input,
-with `""` for inputs that have none.
+rules](https://r-lib.github.io/rray/dev/reference/faq-common-names.md).
+Names on `.axis` are never checked. They are pasted together from every
+input, with `""` for inputs that have none.
 
 ## Examples
 

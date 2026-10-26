@@ -22,7 +22,7 @@ rray_reverse(x, ..., axes)
 - axes:
 
   The axes to reverse along, given [by position or by
-  title](https://rray.r-lib.org/dev/reference/faq-axes.md).
+  title](https://r-lib.github.io/rray/dev/reference/faq-axes.md).
 
 ## Value
 

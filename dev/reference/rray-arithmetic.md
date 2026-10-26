@@ -48,7 +48,7 @@ If the result of an integer operation would overflow, an error is
 thrown.
 
 These functions participate in rray's [common name determination
-rules](https://rray.r-lib.org/dev/reference/faq-common-names.md).
+rules](https://r-lib.github.io/rray/dev/reference/faq-common-names.md).
 
 ## Casting
 
