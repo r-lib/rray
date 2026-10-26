@@ -14,7 +14,7 @@ Broadcast, reshape, reduce, and index base R arrays. Broadcasting repeats axes w
 Useful links:
 \itemize{
   \item \url{https://github.com/r-lib/rray}
-  \item \url{https://rray.r-lib.org}
+  \item \url{https://r-lib.github.io/rray}
   \item Report bugs at \url{https://github.com/r-lib/rray/issues}
 }
 

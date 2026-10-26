@@ -12,7 +12,7 @@ Description: Broadcast, reshape, reduce, and index base R arrays.
     broadcasts its inputs, so operations such as arithmetic, comparison,
     and combining work consistently across axes.
 License: MIT + file LICENSE
-URL: https://github.com/r-lib/rray, https://rray.r-lib.org
+URL: https://github.com/r-lib/rray, https://r-lib.github.io/rray
 BugReports: https://github.com/r-lib/rray/issues
 Depends:
     R (>= 4.3.0)
