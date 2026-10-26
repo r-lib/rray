@@ -1,4 +1,4 @@
-# rray (development version)
+# rray 0.2.0
 
 - Revival of rray!
 
