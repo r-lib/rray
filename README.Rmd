@@ -30,13 +30,13 @@ arrays.
 
 ## Installation
 
-You can install the CRAN version of rray with:
+Install the CRAN version of rray with:
 
 ```r
 install.packages("rray")
 ```
 
-You can install the development version of rray from
+Install the development version of rray from
 [GitHub](https://github.com/) with:
 
 ```r
