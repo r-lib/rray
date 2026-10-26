@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# rray <a href='https://r-lib.github.io/rray/'><img src='man/figures/logo.png' align="right" height="139" /></a>
+# rray <a href='https://rray.r-lib.org/'><img src='man/figures/logo.png' align="right" height="139" /></a>
 
 <!-- badges: start -->
 
@@ -36,7 +36,7 @@ pak::pak("r-lib/rray")
   and margins are all terms that are thrown around loosely when refering
   to arrays. rray has been thoughtfully designed to use a very
   consistent set of
-  [terminology](https://r-lib.github.io/rray/articles/terminology.html)
+  [terminology](https://rray.r-lib.org/articles/terminology.html)
   throughout the entire package. Once you learn a few key terms, using
   the package should feel pretty natural.
 
@@ -53,7 +53,7 @@ pak::pak("r-lib/rray")
   an axis of dimension 1 against any other dimension. This allows for
   novel yet intuitive array operations, which you can read more about
   below, or in the
-  [broadcasting](https://r-lib.github.io/rray/articles/broadcasting.html)
+  [broadcasting](https://rray.r-lib.org/articles/broadcasting.html)
   vignette.
 
 - It supports *long vectors*! A “long” vector in R is any vector greater
@@ -62,8 +62,8 @@ pak::pak("r-lib/rray")
   (the product of each dimension) can be “long”. rray fully supports
   these long arrays throughout the entire package.
 
-View [the website](https://r-lib.github.io/rray/) to learn more about
-how to use rray, or read on for a quick overview.
+View [the website](https://rray.r-lib.org/) to learn more about how to
+use rray, or read on for a quick overview.
 
 ``` r
 library(rray)

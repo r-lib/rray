@@ -1,6 +1,6 @@
 Package: rray
 Title: Array Helpers
-Version: 0.1.0.9000
+Version: 0.2.0
 Authors@R: c(
     person("Davis", "Vaughan", , "davis@posit.co", role = c("aut", "cre")),
     person("Posit Software, PBC", role = c("cph", "fnd"),
@@ -12,7 +12,7 @@ Description: Broadcast, reshape, reduce, and index base R arrays.
     broadcasts its inputs, so operations such as arithmetic, comparison,
     and combining work consistently across axes.
 License: MIT + file LICENSE
-URL: https://github.com/r-lib/rray, https://r-lib.github.io/rray/
+URL: https://github.com/r-lib/rray, https://rray.r-lib.org/
 BugReports: https://github.com/r-lib/rray/issues
 Depends:
     R (>= 4.3.0)
