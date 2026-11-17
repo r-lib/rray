@@ -12,7 +12,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/r-lib/rray/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/r-lib/rray/blob/v0.2.0/DESCRIPTION)
 
 Vaughan D (2026). *rray: Array Helpers*. R package version 0.2.0,
 <https://github.com/r-lib/rray>.
