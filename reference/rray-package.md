@@ -12,7 +12,7 @@ Useful links:
 
 - <https://github.com/r-lib/rray>
 
-- <https://rray.r-lib.org>
+- <https://rray.r-lib.org/>
 
 - Report bugs at <https://github.com/r-lib/rray/issues>
 

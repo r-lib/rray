@@ -14,13 +14,13 @@
 Source:
 [`DESCRIPTION`](https://github.com/r-lib/rray/blob/main/DESCRIPTION)
 
-Vaughan D (2026). *rray: Array Helpers*. R package version 0.0.0.9000,
+Vaughan D (2026). *rray: Array Helpers*. R package version 0.2.0,
 <https://github.com/r-lib/rray>.
 
     @Manual{,
       title = {rray: Array Helpers},
       author = {Davis Vaughan},
       year = {2026},
-      note = {R package version 0.0.0.9000},
+      note = {R package version 0.2.0},
       url = {https://github.com/r-lib/rray},
     }
