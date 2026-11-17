@@ -20,3 +20,4 @@
 ^codecov\.yml$
 ^panache.toml$
 ^cran-comments\.md$
+^CRAN-SUBMISSION$
